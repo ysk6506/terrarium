@@ -1,0 +1,29 @@
+# Documentation quality contract. Enforced by harness/checks/docs.py (REQ-020).
+# Protected path: change only with an accepted ADR.
+docs_root: docs
+index: docs/index.md
+root_docs: [README.md, AGENTS.md, ARCHITECTURE.md]
+adr_dir: docs/design-docs/adr
+generated_dir: docs/generated
+archive_dir: docs/archive
+
+kinds: [guide, reference, spec, plan, decision]
+statuses: [active, superseded, archived]
+required_keys: [title, kind, status, last_verified]
+
+# An active doc older than this many days since last_verified fails (null = never ages).
+max_age_days:
+  guide: 60
+  reference: 90
+  spec: 180
+  plan: 30
+  decision: null
+
+# Line limits keep docs readable and force splitting instead of sprawl.
+max_lines:
+  AGENTS.md: 120
+  default: 400
+
+# Where checked paths in `inline code` must live to be verified for existence.
+path_roots: [src/, docs/, harness/, tests/, .github/]
+root_files: [pyproject.toml, Makefile, README.md, AGENTS.md, ARCHITECTURE.md]

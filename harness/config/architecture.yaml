@@ -1,0 +1,46 @@
+# Architecture contract for src/terrarium. Enforced by harness/checks/architecture.py.
+# This file is a protected path: changing it requires an accepted ADR (see docs/design-docs/adr/).
+# Read docs/design-docs/architecture.md for the reasoning behind each layer.
+package: terrarium
+source_dir: src
+
+# A layer may import only the layers listed in may_import. Imports inside a layer are free
+# (subject to sibling isolation and the no-cycle rule).
+layers:
+  kernel: {may_import: []}                      # ids, units, errors, clock/rng ports
+  spatial: {may_import: [kernel]}               # pure geometry and coordinate-system derivation
+  world: {may_import: [kernel, spatial]}        # entities, state, event log
+  catalog: {may_import: [kernel]}               # equipment model catalog (data, not behavior)
+  profiles: {may_import: [kernel, catalog]}     # per product-version behavior variants
+  physics: {may_import: [kernel, spatial, world, catalog]}   # thermal / power / cooling dynamics
+  facades: {may_import: [kernel, world, catalog, profiles]}  # Redfish / vCenter / vROps translation
+  sources: {may_import: [kernel, spatial, world, catalog]}   # worldgen and realimport (world producers)
+  service: {may_import: [kernel, spatial, world, catalog, profiles, physics, facades, sources]}
+  api: {may_import: [kernel, world, catalog, facades, service]}
+
+# Modules directly under the package that are allowed to exist, with the layers they may import.
+# Everything else at the package root is an error (new code belongs in a layer).
+root_modules:
+  __init__: []
+  __main__: [api, service]
+
+# Cross-layer imports must target the layer package itself (terrarium.<layer>) or one of these
+# extra public modules. Each layer's __init__.py must define __all__.
+public_modules: []
+
+# Sibling packages that must not import each other.
+isolated_siblings:
+  terrarium.sources: [worldgen, realimport]
+
+# third-party top-level name -> module prefixes allowed to import it. An empty list forbids it.
+third_party_scope:
+  fastapi: [terrarium.api]
+  uvicorn: [terrarium.api, terrarium.__main__]
+  falkordb: [terrarium.sources.realimport]
+  harness: []
+
+# Constructs banned everywhere in src/.
+banned_calls: [print, eval, exec, breakpoint, os.system]
+
+# Sources of nondeterminism (REQ-001). Only these modules may use wall clock, global RNG, uuid4.
+nondeterminism_allowed: [terrarium.kernel.entropy, terrarium.api]

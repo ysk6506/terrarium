@@ -1,0 +1,11 @@
+# Protected paths (REQ-021, REQ-023). Changing any of these weakens a guardrail, so a change here
+# needs an ADR added in the same change that lists the path under `touches_protected`.
+# CI enforces this (harness/checks/protected.py --base); .github/CODEOWNERS adds human review.
+# One glob per line.
+harness/**
+pyproject.toml
+Makefile
+.github/**
+docs/design-docs/adr/**
+docs/product-specs/requirements.md
+AGENTS.md

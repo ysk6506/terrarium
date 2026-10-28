@@ -1,0 +1,3384 @@
+{
+ "entries": {
+  "tests/harness/conftest.py::<import:56dade60>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "56dade60b0887402",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/conftest.py::<import:59051b17>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "59051b17634cdcb5",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/conftest.py::<import:5b0cada2>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "5b0cada2ee49e50a",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/conftest.py::<import:890bede5>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "890bede517510aea",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/conftest.py::<import:ae2911f3>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "ae2911f319f9b441",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/conftest.py::=DEMO_ARCHITECTURE": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "e763b15bc3164d65",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/conftest.py::=MiniRepo": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "f742bc95f029874f",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/conftest.py::mini_repo": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "3f3f7f324e4d4f2a",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::<import:06a537df>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "06a537df37038ae3",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::<import:354f8b43>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "354f8b43736456a9",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::<import:5b0cada2>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "5b0cada2ee49e50a",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::<import:890bede5>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "890bede517510aea",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::<import:b461ae95>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "b461ae95c16c1e73",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::=pytestmark": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "7254bad35bc53c06",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::codes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "5f24a56e691ad033",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_bare_except_and_star_import_are_banned": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "178ffc2b7cee4b52",
+   "kind": "test",
+   "literals": [
+    "'ARCH051'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_clean_mini_repo_passes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "aac9db8339d995aa",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_cycle_inside_a_layer_is_rejected": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "a38fcf84e04eda8b",
+   "kind": "test",
+   "literals": [
+    "'ARCH030'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_declared_layer_without_directory_is_rejected": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "a3b91ce903c6a0dc",
+   "kind": "test",
+   "literals": [
+    "'ARCH003'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_downward_layer_import_through_public_api_is_allowed": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "b177c69e01002e11",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_every_violation_tells_the_agent_how_to_fix_it": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "18fa6351046bfb05",
+   "kind": "test",
+   "literals": [
+    "'ARCH'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_from_package_import_submodule_counts_as_internal_reach": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "e7ad088b611e8b86",
+   "kind": "test",
+   "literals": [
+    "'ARCH011'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_isolated_siblings_must_not_import_each_other": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "e6fd62efd294f39f",
+   "kind": "test",
+   "literals": [
+    "'ARCH012'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_missing_dunder_all_in_layer_is_rejected": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "f8f069d0a20b7715",
+   "kind": "test",
+   "literals": [
+    "'ARCH040'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_nondeterminism_is_allowed_in_entropy_module": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "0e7f3fdd1468dec2",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_nondeterminism_is_rejected_outside_allowed_modules": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "9278ff39b32731f3",
+   "kind": "test",
+   "literals": [
+    "'ARCH052'",
+    "'src/demo/world/a.py'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_print_is_banned": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "7b59e985d2d9b977",
+   "kind": "test",
+   "literals": [
+    "'ARCH050'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_product_code_must_not_import_harness": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "60cfa35e73b0015e",
+   "kind": "test",
+   "literals": [
+    "'ARCH020'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_reaching_into_layer_internals_is_rejected": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "2e17e9f59fa92fa8",
+   "kind": "test",
+   "literals": [
+    "'ARCH011'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_real_repository_is_clean": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "e55221cb8073c072",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_relative_imports_are_resolved_for_layer_rules": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "63b4351d21435b3e",
+   "kind": "test",
+   "literals": [
+    "'ARCH010'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_seeded_random_instances_are_allowed": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "be8063079c93ec63",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_sibling_may_use_shared_module_outside_isolated_set": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "6978735c52bd7ab6",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_stray_root_module_is_rejected": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "f80ad0e24809f935",
+   "kind": "test",
+   "literals": [
+    "'ARCH002'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_third_party_inside_scope_is_allowed": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "cde4d84c11a1aa34",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_third_party_outside_scope_is_rejected": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "c3b6f981052d1e1b",
+   "kind": "test",
+   "literals": [
+    "'ARCH020'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_unknown_layer_is_rejected": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "df07ef51f3a2996b",
+   "kind": "test",
+   "literals": [
+    "'ARCH001'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_architecture_check.py::test_upward_layer_import_is_rejected": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "984508b6cb5444d6",
+   "kind": "test",
+   "literals": [
+    "'ARCH010'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::<import:211ee427>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "211ee42757705c7e",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::<import:2c30293a>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "2c30293a6d8de870",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::<import:59051b17>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "59051b17634cdcb5",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::<import:5b0cada2>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "5b0cada2ee49e50a",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::<import:73be8b6e>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "73be8b6e8227767f",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::<import:80a818e8>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "80a818e8c3d1b5aa",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::<import:890bede5>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "890bede517510aea",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::<import:b617c59c>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "b617c59c0e4f0ba2",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::<import:c505308a>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "c505308a7aeb8c16",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::=CHECK_MODULES": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "2763d17c81a8edfc",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::=CLASSY": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "514d081e920e3270",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::=pytestmark": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "6bfb6004c6d09d78",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::make_docs_repo": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "b666444649273396",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_as_date": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "4e381219ba821501",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_class_based_tests_and_module_level_statements_are_collected": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 10,
+   "hash": "4e782a30e0a8fead",
+   "kind": "test",
+   "literals": [
+    "'<import:'",
+    "'<stmt:'",
+    "'support'",
+    "'support'",
+    "'support'",
+    "'support'",
+    "'test'",
+    "'tests/test_classy.py::=CONSTANT'",
+    "'tests/test_classy.py::=registry'",
+    "'tests/test_classy.py::Empty.<stmt:'",
+    "'tests/test_classy.py::Helper.run'",
+    "'tests/test_classy.py::TestThing.=limit'",
+    "'tests/test_classy.py::TestThing.helper'",
+    "'tests/test_classy.py::TestThing::test_one'",
+    "'tests/test_classy.py::TestThing::test_one'",
+    "1"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_coverage_cli_ratchet_prints_floors": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "7ce5910c207ce8dc",
+   "kind": "test",
+   "literals": [
+    "'--root'",
+    "'harness: 99.0%'",
+    "'ratchet'",
+    "0"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_coverage_main_exit_code_matches_run_result": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "57e759de6a399413",
+   "kind": "test",
+   "literals": [
+    "'--root'",
+    "'FAIL'",
+    "'OK'",
+    "'check'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_data_files_are_locked_with_their_content": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "3df48bab6c507993",
+   "kind": "test",
+   "literals": [
+    "'data'",
+    "'tests/data/expected.json::<data>'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_debt_check_without_register_or_baseline_files_is_clean": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "24e3cba8af24cc99",
+   "kind": "test",
+   "literals": [
+    "10",
+    "2026",
+    "28"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_debt_cli_ratchet_removes_fixed_entries": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 3,
+   "hash": "309cccf2c2988ce2",
+   "kind": "test",
+   "literals": [
+    "'--root'",
+    "'harness/config/debt-baseline.json'",
+    "'ratchet'",
+    "'removed 1 fixed baseline entry'",
+    "0"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_docs_cli_reverify_and_seal_adr": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 4,
+   "hash": "6f5e35186fe8de6e",
+   "kind": "test",
+   "literals": [
+    "'--note'",
+    "'--root'",
+    "'--root'",
+    "'checked'",
+    "'checked'",
+    "'covers_hash'",
+    "'decision_hash'",
+    "'reverify'",
+    "'seal-adr'",
+    "'verification_log'",
+    "0",
+    "0",
+    "0",
+    "None",
+    "None"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_find_root_fails_outside_a_repo": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "9916171b9e1a6b56",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_finish_prints_ok_or_sorted_failures": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 5,
+   "hash": "20a1503871a04506",
+   "kind": "test",
+   "literals": [
+    "'FAIL demo: 2 violation(s)'",
+    "'OK   demo'",
+    "'[A]'",
+    "'[B]'",
+    "'demo'",
+    "'demo'",
+    "0",
+    "1"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_git_returns_none_outside_a_repository_or_on_failure": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "b5bc88d967e84d69",
+   "kind": "test",
+   "literals": [
+    "'HEAD'",
+    "'rev-parse'",
+    "None"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_main_exit_code_matches_run_result": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "531aaf909e447622",
+   "kind": "test",
+   "literals": [
+    "'--root'",
+    "'FAIL'",
+    "'OK'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_run_all_runs_every_check_and_reports_overall_verdict": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 3,
+   "hash": "ee9f43adeb206ebe",
+   "kind": "test",
+   "literals": [
+    "'ALL CHECKS PASSED'",
+    "'coverage'",
+    "0"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_run_all_skips_coverage_unless_asked": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "f899399a5a9572c2",
+   "kind": "test",
+   "literals": [
+    "'coverage'",
+    "'coverage'",
+    "1"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_seal_adr_rejects_non_decisions_and_reverify_rejects_missing_front_matter": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "66ba34537346c529",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_split_front_matter_returns_none_for_unusable_input": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "5a6cbb5c12ff7e36",
+   "kind": "test",
+   "literals": [
+    "None"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_split_front_matter_splits_data_and_body": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "bc95d46b319bba8c",
+   "kind": "test",
+   "literals": [
+    "'a'",
+    "'hello'",
+    "1"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_testguard_cli_lock_appends_new_tests_and_refuses_changes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 4,
+   "hash": "2e15fe3c80c05392",
+   "kind": "test",
+   "literals": [
+    "'--root'",
+    "'--root'",
+    "'--root'",
+    "'check'",
+    "'lock'",
+    "'lock'",
+    "'refused: tests/test_a.py::test_a'",
+    "0",
+    "0",
+    "1"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_testguard_main_exit_code_matches_run_result": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "b9c3f6a766fa5b70",
+   "kind": "test",
+   "literals": [
+    "'--root'",
+    "'FAIL'",
+    "'OK'",
+    "'check'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_today_can_be_pinned": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "94865af9ed749378",
+   "kind": "test",
+   "literals": [
+    "1",
+    "2",
+    "2030"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_cli_and_common.py::test_violation_render_includes_location_problem_and_fix": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "5024bcc86cc5b395",
+   "kind": "test",
+   "literals": [
+    "'X001'",
+    "'[X001] a/b.py:7'",
+    "'a/b.py'",
+    "'a/b.py\\n'",
+    "'bad'",
+    "'fix'",
+    "'fix: do this'",
+    "'problem: bad'",
+    "0"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::<import:06a537df>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "06a537df37038ae3",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::<import:211ee427>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "211ee42757705c7e",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::<import:59051b17>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "59051b17634cdcb5",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::<import:5b0cada2>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "5b0cada2ee49e50a",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::<import:73be8b6e>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "73be8b6e8227767f",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::<import:890bede5>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "890bede517510aea",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::<import:920d77e2>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "920d77e2e47b9cdf",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::<import:ba0cc80d>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "ba0cc80d1b28d0c3",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::<import:bb134ca6>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "bb134ca6c8f43358",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::=TODAY": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "f42191bfa03f9a99",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::=pytestmark": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "28e0eea37abab6d3",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::branchy": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "53140ce4db706ade",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::codes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "711830e2c4d30d95",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::debt_repo": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "e00a29f974a9426a",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::item": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "752bd7ca63d1f6f1",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::long_function": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "dd67aa9fb2484413",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::register": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "628a294e7a1d913b",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_bad_id_format_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "0691b2bc47b41c06",
+   "kind": "test",
+   "literals": [
+    "'DEBT010'",
+    "'TD-1'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_baselined_violation_is_tolerated": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "9a4599d61ebfa5cc",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_baselined_violation_that_gets_worse_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "ee8a5bfc16026bd4",
+   "kind": "test",
+   "literals": [
+    "'DEBT031'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_clean_repo_passes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "ddfdeea43f3794ea",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_closed_overdue_item_is_fine": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "f62ac4197ae94cea",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_closing_without_resolution_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "581be661acc320f2",
+   "kind": "test",
+   "literals": [
+    "'DEBT010'",
+    "'done'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_complex_function_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "828fc8eee76411bb",
+   "kind": "test",
+   "literals": [
+    "'DEBT022'",
+    "'src/demo/a.py'",
+    "13"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_complexity_counts_branches_without_nested_functions": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "e0d8c29387825657",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_duplicate_ids_fail": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "1e4f57d74013a8d7",
+   "kind": "test",
+   "literals": [
+    "'DEBT010'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_file_level_waiver_on_first_line": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "8ec3576a4c585757",
+   "kind": "test",
+   "literals": [
+    "'src/demo/a.py'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_fixed_baseline_entry_must_be_removed": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "ad697e4260eec409",
+   "kind": "test",
+   "literals": [
+    "'DEBT030'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_high_severity_budget_is_enforced": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "ada24525ac66b411",
+   "kind": "test",
+   "literals": [
+    "'DEBT012'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_long_file_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "ed0be8fe558d3ef8",
+   "kind": "test",
+   "literals": [
+    "'DEBT020'",
+    "'X = 1\\n'",
+    "'src/demo/a.py'",
+    "501"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_long_function_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "8bcd4bb0c15cf81b",
+   "kind": "test",
+   "literals": [
+    "'DEBT021'",
+    "'src/demo/a.py'",
+    "85"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_marker_for_closed_item_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "b47ca4e61609a932",
+   "kind": "test",
+   "literals": [
+    "'DEBT013'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_marker_for_unknown_item_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "a6dad0c062d4abe3",
+   "kind": "test",
+   "literals": [
+    "'DEBT002'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_markers_are_checked_in_tests_too": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "cc700319304e0128",
+   "kind": "test",
+   "literals": [
+    "'DEBT001'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_markers_inside_strings_are_not_comments": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "3d8d3423e05b2448",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_open_debt_budget_is_enforced": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "c0718c384625223f",
+   "kind": "test",
+   "literals": [
+    "'DEBT012'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_overdue_open_item_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "f4fc93c92de2cf57",
+   "kind": "test",
+   "literals": [
+    "'DEBT011'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_ratchet_removes_fixed_entries_and_lowers_values_but_never_adds": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "9a2c2b8ffff46909",
+   "kind": "test",
+   "literals": [
+    "'src/demo/a.py::f::complexity'",
+    "'src/demo/a.py::gone::lines'",
+    "14"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_real_repository_debt_is_clean": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "8f7d1c8230f6c6a0",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_register_entry_missing_fields_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "a07bf059e11d8943",
+   "kind": "test",
+   "literals": [
+    "'DEBT010'",
+    "'TD-0001'",
+    "'id'",
+    "'t'",
+    "'title'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_self_and_cls_do_not_count_as_parameters": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "953d737c6fe9bbc4",
+   "kind": "test",
+   "literals": [
+    "'src/demo/a.py'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_tests_are_exempt_from_size_limits": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "904a6be242daa03b",
+   "kind": "test",
+   "literals": [
+    "'tests/test_big.py'",
+    "120"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_too_many_parameters_fail": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "41c36a9cb7ded350",
+   "kind": "test",
+   "literals": [
+    "'DEBT023'",
+    "'src/demo/a.py'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_tracked_marker_pointing_at_open_item_passes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "62daf6ad4f22dce5",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_untracked_markers_fail": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "a1085a12cfe7ee5c",
+   "kind": "test",
+   "literals": [
+    "'DEBT001'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_waiver_for_closed_item_does_not_help": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "1cd21215dda406a6",
+   "kind": "test",
+   "literals": [
+    "'DEBT013'",
+    "'DEBT021'",
+    "'src/demo/a.py'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_waiver_that_is_no_longer_needed_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "7df13ff0e01f6e2d",
+   "kind": "test",
+   "literals": [
+    "'DEBT032'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::test_waiver_with_open_item_tolerates_violation": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "7dbe48b64d4a0deb",
+   "kind": "test",
+   "literals": [
+    "'src/demo/a.py'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_debt_check.py::write_baseline": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "89f781eebdbbd37b",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::<import:13a6b3e4>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "13a6b3e471bb5f4c",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::<import:38970ff1>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "38970ff169733e3a",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::<import:59051b17>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "59051b17634cdcb5",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::<import:5b0cada2>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "5b0cada2ee49e50a",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::<import:73be8b6e>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "73be8b6e8227767f",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::<import:890bede5>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "890bede517510aea",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::<import:920d77e2>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "920d77e2e47b9cdf",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::=MODULE_SRC": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "bc1a3886e8b314b4",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::=TODAY": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "f42191bfa03f9a99",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::=pytestmark": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "6f9eb49ae0e8b068",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::adr_body": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "90a823e7b814ec71",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::adr_files": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "973caaacba0032f2",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::codes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "7f0a85b23c56c94f",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::docs_repo": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "7ff4f3ae3ce52bed",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::front": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "3989740047f2c04b",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::sealed": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "61387b785566461b",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_adr_enforced_by_unknown_rule_or_missing_test_is_flagged": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "6e6e02d28a24c9b7",
+   "kind": "test",
+   "literals": [
+    "'DOC080'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_adr_must_say_how_it_is_enforced": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "37a406f4c54e1d3a",
+   "kind": "test",
+   "literals": [
+    "'DOC080'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_adr_outside_adr_dir_is_flagged": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "504c204c927cbc5f",
+   "kind": "test",
+   "literals": [
+    "'DOC060'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_adr_without_mechanical_enforcement_must_explain_why": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "0a38eb7ae6697247",
+   "kind": "test",
+   "literals": [
+    "'DOC080'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_agents_md_has_a_tighter_limit": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "98f98c40cd326b33",
+   "kind": "test",
+   "literals": [
+    "'DOC050'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_broken_link_and_dead_path_reference": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "930a9c65a6ca8317",
+   "kind": "test",
+   "literals": [
+    "'DOC030'",
+    "'DOC031'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_changing_adr_front_matter_status_does_not_break_the_seal": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "0b1b4b3ca3973c9e",
+   "kind": "test",
+   "literals": [
+    "'DOC070'",
+    "None"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_clean_repo_passes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "1dd908dc74025ad3",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_comment_and_docstring_changes_do_not_make_docs_stale": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "9f2cc4aaf21885d1",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_completed_plans_must_be_archived": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "389f05c8a81ce89a",
+   "kind": "test",
+   "literals": [
+    "'DOC060'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_covers_matching_nothing_is_flagged": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "06ceb00ac5c2e8f6",
+   "kind": "test",
+   "literals": [
+    "'DOC012'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_covers_without_hash_is_flagged": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "70489c792caf0e47",
+   "kind": "test",
+   "literals": [
+    "'DOC011'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_decisions_never_expire_by_age": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "5e1d0655913b4ba4",
+   "kind": "test",
+   "literals": [
+    "'DOC020'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_doc_goes_stale_when_covered_code_changes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "7291f2855ad55d6c",
+   "kind": "test",
+   "literals": [
+    "'DOC010'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_editing_a_sealed_adr_body_is_flagged": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "97cf9b2ac7ad1051",
+   "kind": "test",
+   "literals": [
+    "'DOC070'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_external_links_and_anchors_are_ignored": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "a22ab1eb4afac3c5",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_fenced_code_is_not_checked_for_links_or_paths": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "a68da7255b14f62e",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_future_verification_date_is_flagged": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "5ce6cbcac84bd166",
+   "kind": "test",
+   "literals": [
+    "'DOC021'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_invalid_kind_and_status": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "8216240a734c71d6",
+   "kind": "test",
+   "literals": [
+    "'DOC002'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_missing_front_matter": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "42b5541325e4d99d",
+   "kind": "test",
+   "literals": [
+    "'DOC001'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_missing_required_key": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "4e78fd17246db669",
+   "kind": "test",
+   "literals": [
+    "'DOC001'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_new_covered_file_makes_doc_stale": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "f654baf8b064e62a",
+   "kind": "test",
+   "literals": [
+    "'DOC010'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_old_docs_expire_by_kind": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "bf63c8963f972dcc",
+   "kind": "test",
+   "literals": [
+    "'DOC020'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_orphan_doc_is_flagged": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "372a11e29f9dff8f",
+   "kind": "test",
+   "literals": [
+    "'DOC040'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_overlong_doc_is_flagged": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "4469da924cd4a3e5",
+   "kind": "test",
+   "literals": [
+    "'DOC050'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_real_repository_docs_are_clean": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "79d75d8618f39f0c",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_reverify_clears_staleness_and_logs_the_note": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "1d7d2864181ef3bf",
+   "kind": "test",
+   "literals": [
+    "'checked add() docs'",
+    "'verification_log'",
+    "1",
+    "None"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_reverify_requires_a_note": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "73bec14060a62c87",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_superseded_adr_needs_an_existing_successor": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "90b3ca362d77b149",
+   "kind": "test",
+   "literals": [
+    "'DOC060'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_transitively_linked_doc_is_not_an_orphan": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "fdf3b69bdb6fe19f",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_unsealed_accepted_adr_is_flagged_then_sealed_passes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "caabd4c9b3e3c8a7",
+   "kind": "test",
+   "literals": [
+    "'DOC071'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::test_verification_log_keeps_only_recent_entries": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "b70709ea8a536599",
+   "kind": "test",
+   "literals": [
+    "'verification_log'",
+    "5",
+    "None"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_docs_check.py::verified_guide": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "aa21d013888c51ab",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::<import:06a537df>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "06a537df37038ae3",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::<import:211ee427>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "211ee42757705c7e",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::<import:59051b17>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "59051b17634cdcb5",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::<import:5b0cada2>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "5b0cada2ee49e50a",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::<import:890bede5>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "890bede517510aea",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::<import:920d77e2>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "920d77e2e47b9cdf",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::<import:9d97d469>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "9d97d469cf8d6646",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::<import:e46fb5b6>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "e46fb5b65c6c98e2",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::=GIT_ID": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "2fe354231961333b",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::=MARKED": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "a83eacb2c6ba6890",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::=OWNERS": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "b26a83401123dc62",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::=PROTECTED": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "b3b5fbf3a9866b8d",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::=REQS": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "25d6866aa95d1404",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::add_adr": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "87dc62b17e32dd93",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::ccodes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "c640bc2294a29cc1",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::committed_repo": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "ceb438d17b0db1ff",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::coverage_repo": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "2f5f1e7e2716b812",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::debt_base_repo": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "a5e32449b9f01523",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::git": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "5c5622caab7c3571",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::pcodes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "4150c695267a5ef5",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::protected_repo": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "d743b5b390128b23",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::tcodes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "2aff1ec1b224c0ee",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_adr_authorizing_by_pattern": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "326d76d75547310e",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_adr_that_already_existed_on_base_cannot_authorize_new_changes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "5a4cca75d3532756",
+   "kind": "test",
+   "literals": [
+    "'PROT001'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_codeowners_must_cover_protected_paths": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "1d6fb3aacab4e23d",
+   "kind": "test",
+   "literals": [
+    "'PROT003'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_coverage_at_or_above_floor_passes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "4ebd18bf853acba9",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_coverage_below_floor_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "e7a42e0654382981",
+   "kind": "test",
+   "literals": [
+    "'COV001'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_debt_baseline_may_only_shrink": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "f35950430393a051",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_deleting_a_guardrail_without_adr_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "1cd36ea44c7e36c3",
+   "kind": "test",
+   "literals": [
+    "'PROT001'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_duplicate_requirement_ids_fail": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "80f17e08421f9716",
+   "kind": "test",
+   "literals": [
+    "'TRACE004'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_every_ratchet_file_has_a_guard_that_exists": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "0d77eeb6f1adf6c7",
+   "kind": "test",
+   "literals": [
+    "'\"'",
+    "'\"'",
+    "'.py'",
+    "'harness/checks/'",
+    "'harness/config/'",
+    "'utf-8'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_every_requirement_needs_a_test": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "ad4cf52c9de44dc4",
+   "kind": "test",
+   "literals": [
+    "'REQ-002 has no test'",
+    "'TRACE001'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_floor_below_global_minimum_is_invalid": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "cdc96a4543563ea1",
+   "kind": "test",
+   "literals": [
+    "'COV002'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_floor_may_not_be_lowered_against_base": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "9d2e7ac7fbed0bab",
+   "kind": "test",
+   "literals": [
+    "'HEAD'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_loosening_a_guardrail_without_adr_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "96896d560a02532d",
+   "kind": "test",
+   "literals": [
+    "'PROT001'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_missing_report_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "038d56380010040b",
+   "kind": "test",
+   "literals": [
+    "'COV004'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_new_file_under_protected_path_needs_adr": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "25428a4245c87577",
+   "kind": "test",
+   "literals": [
+    "'PROT001'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_new_package_without_floor_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "1ee339274c1543a6",
+   "kind": "test",
+   "literals": [
+    "'COV002'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_package_mapping": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 4,
+   "hash": "a67d76380855921a",
+   "kind": "test",
+   "literals": [
+    "'harness'",
+    "'harness/checks/docs.py'",
+    "'src/terrarium/__init__.py'",
+    "'src/terrarium/kernel/ids.py'",
+    "'terrarium'",
+    "'terrarium.kernel'",
+    "'tests/unit/test_x.py'",
+    "None"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_pragma_no_cover_needs_a_reason_and_has_a_budget": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "0d4822d596ddd17e",
+   "kind": "test",
+   "literals": [
+    "'COV005'",
+    "'COV005'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_ratchet_files_are_exempt_from_the_adr_rule": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "76e9bd9a5ce60cdf",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_ratchet_raises_floors_but_never_lowers_or_goes_under_minimum": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "644971d475c3849a",
+   "kind": "test",
+   "literals": [
+    "'harness'",
+    "'terrarium.kernel'",
+    "'terrarium.world'",
+    "90.0",
+    "97.0",
+    "99.0"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_real_repository_codeowners_is_complete": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "d4fe20049131e239",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_sealed_adr_added_in_the_same_change_authorizes_it": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "d42a4f1b4b9696d1",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_spec_tests_must_link_requirements_but_unit_tests_need_not": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "1f7d0c09e4866273",
+   "kind": "test",
+   "literals": [
+    "'TRACE003'",
+    "'tests/spec/test_unlinked.py'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_unknown_requirement_reference_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "c9e72b1612072c01",
+   "kind": "test",
+   "literals": [
+    "'TRACE002'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_unprotected_change_passes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "79236b44e944afea",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::test_unsealed_authorizing_adr_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "02efe863d539afca",
+   "kind": "test",
+   "literals": [
+    "'PROT001'",
+    "'PROT002'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::trace_repo": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "ac9da9e05cd22acc",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_ratchets_and_protection.py::write": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "44f14afe4f2d7969",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::<import:06a537df>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "06a537df37038ae3",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::<import:211ee427>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "211ee42757705c7e",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::<import:59051b17>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "59051b17634cdcb5",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::<import:5b0cada2>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "5b0cada2ee49e50a",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::<import:73be8b6e>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "73be8b6e8227767f",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::<import:890bede5>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "890bede517510aea",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::<import:8c4c46b0>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "8c4c46b0b17c9c3d",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::<import:920d77e2>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "920d77e2e47b9cdf",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::<import:9d97d469>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "9d97d469cf8d6646",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::=GOOD_TEST": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "2780284db27f2f95",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::=PYPROJECT": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "d6a34aa9d716e6cc",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::=REASON": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "f635c768b1978337",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::=TODAY": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "f42191bfa03f9a99",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::=pytestmark": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "929591113156d714",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::codes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "ea94a4c2d18b6c17",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::edit": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "23b41bbe6184331c",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::guard_repo": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "be7bdc8674db3ef6",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::lock": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "aea6eabb48d88e8d",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_amended_removal_is_recorded": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "c206417a69e14387",
+   "kind": "test",
+   "literals": [
+    "'0009-amend.md'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_amendment_adr_allows_the_listed_change": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 3,
+   "hash": "9d3a5368eac250f5",
+   "kind": "test",
+   "literals": [
+    "'0009-amend.md'",
+    "'0009-amend.md'",
+    "'amended_by'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_amendment_adr_does_not_cover_unlisted_items": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "dbf6f8e3eac033d4",
+   "kind": "test",
+   "literals": [
+    "'0009-amend.md'",
+    "'tests/test_add.py::helper'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_broad_except_that_swallows_failures_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "d55eb4e8a385de4e",
+   "kind": "test",
+   "literals": [
+    "'TEST004'",
+    "'tests/test_x.py'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_changing_a_helper_that_tests_rely_on_is_caught": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "7427363765c83e78",
+   "kind": "test",
+   "literals": [
+    "'TLOCK001'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_changing_a_module_level_subscript_assignment_is_caught": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "9ddfbf52c7a1255f",
+   "kind": "test",
+   "literals": [
+    "'TLOCK001'",
+    "'TLOCK002'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_changing_expected_value_is_caught": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "92ea170b5e58b749",
+   "kind": "test",
+   "literals": [
+    "'TLOCK001'",
+    "'expected values'",
+    "0"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_clean_locked_repo_passes": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "1e04322e023f84da",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_comments_formatting_and_docstrings_do_not_trip_the_lock": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "9a6a3940ba785126",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_conftest_hooks_that_hide_tests_fail": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "2064fb0fb931bc16",
+   "kind": "test",
+   "literals": [
+    "'TCFG002'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_coverage_omit_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "91fbf30a4b9710a7",
+   "kind": "test",
+   "literals": [
+    "'TCFG003'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_deleting_a_test_is_caught": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "a82f40887611f37c",
+   "kind": "test",
+   "literals": [
+    "'TLOCK002'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_editing_expected_data_files_is_caught": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "7c979908f2cdaef1",
+   "kind": "test",
+   "literals": [
+    "'TLOCK001'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_extra_coverage_exclusions_fail": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "1d5c2cdb013d52ef",
+   "kind": "test",
+   "literals": [
+    "'TCFG003'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_forbidden_pytest_addopts_fail": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "9fb7c60e502e9f09",
+   "kind": "test",
+   "literals": [
+    "'TCFG001'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_forging_the_lock_by_hand_is_caught_by_the_amendment_check": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "6c759a60810b58e5",
+   "kind": "test",
+   "literals": [
+    "'TLOCK004'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_forging_the_lock_without_amended_by_is_caught_against_the_base_ref": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "84e09bf03c070f6a",
+   "kind": "test",
+   "literals": [
+    "'HEAD'",
+    "'TLOCK005'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_imperative_skip_without_reason_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "ae8cc62976d3d5e9",
+   "kind": "test",
+   "literals": [
+    "'TEST002'",
+    "'tests/test_x.py'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_lock_command_refuses_unamended_changes_and_writes_nothing": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "e4eb9e3fd39827bf",
+   "kind": "test",
+   "literals": [
+    "'harness/config/test-lock.json'",
+    "'tests/test_add.py::test_add'",
+    "'utf-8'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_loosening_tolerance_is_reported": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "8ee29641cc1e51b7",
+   "kind": "test",
+   "literals": [
+    "'tolerance loosened'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_lowering_coverage_fail_under_below_minimum_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "0048a02e474dd423",
+   "kind": "test",
+   "literals": [
+    "'TCFG003'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_new_test_must_be_locked": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 3,
+   "hash": "28899d5a83a4c2ce",
+   "kind": "test",
+   "literals": [
+    "'TLOCK003'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_other_assertion_forms_count": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "479ddb4eaae5a6bd",
+   "kind": "test",
+   "literals": [
+    "'TEST001'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_plain_fixtures_in_conftest_are_fine": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "d4b6ca24050c74eb",
+   "kind": "test",
+   "literals": [
+    "'tests/conftest.py'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_real_repository_tests_are_intact": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "e933b39759ba3eb9",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_removing_an_assertion_is_reported_as_weakening": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "9f8a9ea81e83985f",
+   "kind": "test",
+   "literals": [
+    "'assertions 2 -> 1'",
+    "0"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_renaming_a_test_is_caught": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "e60818c8c4058f1c",
+   "kind": "test",
+   "literals": [
+    "'TLOCK002'",
+    "'TLOCK003'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_repeated_identical_statements_are_each_locked": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "7c7a3800e16a619e",
+   "kind": "test",
+   "literals": [
+    "'tests/test_x.py::=X#2'",
+    "'tests/test_x.py::=X'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_second_pytest_config_file_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "d3a9a637235d560f",
+   "kind": "test",
+   "literals": [
+    "'TCFG004'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_skip_is_counted_once_per_occurrence": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "b5f52aa1f61b2263",
+   "kind": "test",
+   "literals": [
+    "1"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_skip_or_xfail_without_debt_reason_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "bc370be5fd136963",
+   "kind": "test",
+   "literals": [
+    "'TEST002'",
+    "'tests/test_x.py'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_skip_with_debt_reference_is_allowed": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "4dd185c67146633d",
+   "kind": "test",
+   "literals": [
+    "'tests/test_x.py'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_specific_except_or_reraise_is_fine": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "c4fe59a58f2a8c93",
+   "kind": "test",
+   "literals": [
+    "'TEST004'",
+    "'tests/test_x.py'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_swapping_an_import_for_a_fake_is_caught": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "3c1435780afebb5f",
+   "kind": "test",
+   "literals": [
+    "'TLOCK002'",
+    "'TLOCK003'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_test_without_assertion_fails": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "6d90fd73576d6b4e",
+   "kind": "test",
+   "literals": [
+    "'TEST001'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_trivially_true_assertions_fail": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "caec3f377f5d6dc1",
+   "kind": "test",
+   "literals": [
+    "'TEST003'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::test_weak_or_unsealed_amendment_adr_is_rejected": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 3,
+   "hash": "f333838c63a34a94",
+   "kind": "test",
+   "literals": [
+    "'0009-amend.md'",
+    "'TLOCK004'",
+    "0"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/harness/test_testguard_check.py::write_adr": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "e841b215c1caada8",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/spec/test_process.py::<import:13a6b3e4>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "13a6b3e471bb5f4c",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/spec/test_process.py::<import:44a89227>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "44a892273a49f86d",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/spec/test_process.py::<import:5b0cada2>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "5b0cada2ee49e50a",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/spec/test_process.py::<import:890bede5>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "890bede517510aea",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/spec/test_process.py::=ADR_FILES": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "12c863adb95c274d",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/spec/test_process.py::=ROOT": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "ad5ee771e101b72b",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/spec/test_process.py::=pytestmark": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "f264e21ab3a5efb0",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/spec/test_process.py::test_every_adr_is_sealed_enforced_and_listed_in_the_index": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 5,
+   "hash": "a5d30d369b4c69a5",
+   "kind": "test",
+   "literals": [
+    "'decision'",
+    "'decision_hash'",
+    "'docs/index.md'",
+    "'enforced_by'",
+    "'kind'",
+    "'utf-8'",
+    "None"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/spec/test_process.py::test_every_layer_is_explained_in_the_architecture_doc": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "fd391128c238ed8c",
+   "kind": "test",
+   "literals": [
+    "'ARCHITECTURE.md'",
+    "'`'",
+    "'`'",
+    "'utf-8'"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/spec/test_process.py::test_there_are_decision_records": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "4c9f0252d319f927",
+   "kind": "test",
+   "literals": [
+    "9"
+   ],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/unit/test_layers.py::<import:06a537df>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "06a537df37038ae3",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/unit/test_layers.py::<import:20dd306b>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "20dd306b163f7048",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/unit/test_layers.py::<import:44a89227>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "44a892273a49f86d",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/unit/test_layers.py::<import:5b0cada2>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "5b0cada2ee49e50a",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/unit/test_layers.py::<import:890bede5>": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "890bede517510aea",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/unit/test_layers.py::=LAYERS": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 0,
+   "hash": "8e1972d3e5a14bc3",
+   "kind": "support",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/unit/test_layers.py::test_layer_is_importable_and_declares_a_public_api": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 2,
+   "hash": "1f59424d432a2c00",
+   "kind": "test",
+   "literals": [],
+   "skips": 0,
+   "tolerances": []
+  },
+  "tests/unit/test_layers.py::test_package_exposes_a_version": {
+   "added": "2026-10-28",
+   "amended_by": null,
+   "asserts": 1,
+   "hash": "2a0a57fa631b70fd",
+   "kind": "test",
+   "literals": [
+    "'.'",
+    "2"
+   ],
+   "skips": 0,
+   "tolerances": []
+  }
+ },
+ "removed": {},
+ "version": 1
+}

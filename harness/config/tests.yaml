@@ -1,0 +1,21 @@
+# Test integrity contract. Enforced by harness/checks/testguard.py and coverage.py (REQ-023).
+# Protected path: change only with an accepted ADR.
+test_dirs: [tests]
+lock: harness/config/test-lock.json
+# Files that define expected results besides test code. Locked like tests.
+data_globs: ["tests/data/**/*", "tests/golden/**/*"]
+
+coverage_json: coverage.json
+coverage_floor: harness/config/coverage-floor.json
+min_floor: 90.0                 # no package floor may ever be set below this
+max_pragma_no_cover: 3          # `# pragma: no cover` budget in src/ (each needs a reason)
+
+# pytest options that would let a run "pass" by not running tests.
+forbidden_addopts: ["--deselect", "--ignore", "--ignore-glob", "-k", "-m", "--lf", "--last-failed",
+                    "--ff", "--collect-only", "--co", "--no-cov", "-p"]
+# conftest.py hooks/variables that change which tests run or how results are reported.
+forbidden_conftest_names: [collect_ignore, collect_ignore_glob, pytest_collection_modifyitems,
+                           pytest_ignore_collect, pytest_runtest_makereport, pytest_runtest_call,
+                           pytest_runtest_protocol]
+# Coverage exclusion lines that are acceptable (anything else hides code from coverage).
+allowed_exclude_lines: ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]

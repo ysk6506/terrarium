@@ -1,0 +1,10 @@
+# Humans (or a designated reviewer agent) must approve changes to guardrails.
+# Replace @terrarium-maintainers with the real GitHub user or team when the repo is hosted.
+# Keep in sync with harness/config/protected-paths.txt (checked by PROT003).
+/harness/** @terrarium-maintainers
+/pyproject.toml @terrarium-maintainers
+/Makefile @terrarium-maintainers
+/.github/** @terrarium-maintainers
+/docs/design-docs/adr/** @terrarium-maintainers
+/docs/product-specs/requirements.md @terrarium-maintainers
+/AGENTS.md @terrarium-maintainers

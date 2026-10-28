@@ -1,0 +1,14 @@
+{
+  "harness": 95.5,
+  "terrarium": 90.0,
+  "terrarium.api": 90.0,
+  "terrarium.catalog": 90.0,
+  "terrarium.facades": 90.0,
+  "terrarium.kernel": 90.0,
+  "terrarium.physics": 90.0,
+  "terrarium.profiles": 90.0,
+  "terrarium.service": 90.0,
+  "terrarium.sources": 90.0,
+  "terrarium.spatial": 90.0,
+  "terrarium.world": 90.0
+}
