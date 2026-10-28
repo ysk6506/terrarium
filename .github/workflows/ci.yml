@@ -11,13 +11,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
         with:
-          python-version: "3.13"
-      - run: make setup
-      # Pull requests are compared with the base branch: protected paths, test lock, debt baseline
-      # and coverage floors may not be loosened without an ADR.
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Pull requests are compared with the base branch: protected paths, the test lock, the debt
+      # baseline and coverage/UX floors may not be loosened without an ADR.
       - if: github.event_name == 'pull_request'
-        run: make check BASE=origin/${{ github.base_ref }}
+        run: pnpm lint && pnpm typecheck && pnpm test && pnpm tsx harness/src/run-all.ts --with-coverage --base origin/${{ github.base_ref }}
       - if: github.event_name != 'pull_request'
-        run: make check
+        run: pnpm check

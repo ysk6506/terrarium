@@ -1,7 +1,8 @@
 ---
 title: ADR-0001 레이어 아키텍처
 kind: decision
-status: active
+status: superseded
+superseded_by: 0011-units-v2.md
 last_verified: 2026-10-28
 enforced_by:
 - ARCH001

@@ -1,5 +1,5 @@
 ---
-title: 구현 계획 — 테라리움 재시작
+title: 구현 계획 — 테라리움
 kind: plan
 status: active
 last_verified: 2026-10-28
@@ -7,24 +7,19 @@ last_verified: 2026-10-28
 
 # 구현 계획
 
-목표는 [requirements.md](../../product-specs/requirements.md)의 REQ-001~REQ-025를 충족하는 것이다.
-순서는 **가드레일 → 아래 레이어 → 위 레이어**이고, 각 단계는 `make check`가 통과해야 끝난다.
-
-## 단계
+목표는 [requirements.md](../../product-specs/requirements.md)의 모든 요구사항을 충족하는 것이다.
+순서는 **가드레일 → core → 실험 엔진 → 서버 → 웹 → UX 반복**이고, 각 단계는 `pnpm check`가 통과해야 끝난다.
 
 | # | 단계 | 요구사항 | 상태 |
 |---|---|---|---|
-| 0 | 하네스: 문서·아키텍처·부채·테스트 잠금·보호 경로·추적 | REQ-020~025 | 완료 |
-| 1 | `kernel`: ID, 단위, Clock/Rng, 오류 | REQ-001 | 대기 |
-| 2 | `spatial`: 위치 프로퍼티 → 좌표계 | REQ-012, 013 | 대기 |
-| 3 | `world`: 엔티티, 이벤트 로그, 스냅샷/리셋 | REQ-001, 014 | 대기 |
-| 4 | `catalog`, `profiles` | REQ-004 | 대기 |
-| 5 | `physics`: 열·전력·공조 | REQ-005 | 대기 |
-| 6 | `facades`: Redfish, vCenter, vROps | REQ-002, 003 | 대기 |
-| 7 | `sources`: worldgen, realimport(FalkorDB) | REQ-009~011 | 대기 |
-| 8 | `service`: 시나리오, 장애 주입, 진단 기록 | REQ-014, 015 | 대기 |
-| 9 | `api` + 웹 UI | REQ-006, 007, 008 | 대기 |
+| 0 | 하네스 (TS 이식) | REQ-020~025 | 진행 중 |
+| 1 | core: kernel·spatial·catalog·world·profiles·physics | REQ-001, 005, 012~014 | 대기 |
+| 2 | core: facades·tools·scenario·oracle·session | REQ-002~004, 007, 008, 034 | 대기 |
+| 3 | core: sources(worldgen 사업장 프리셋, realimport) | REQ-009~011, 033, 035 | 대기 |
+| 4 | core: experiments·analysis·contract | REQ-030, 031, 037~040 | 대기 |
+| 5 | server: 저장소·하네스 어댑터·워커 호스트·스케줄러·MCP·HTTP·ClickStack·FalkorDB | REQ-030~032, 037 | 대기 |
+| 6 | web: 타이쿤 빌더·시나리오 편집기·실험·결과·대시보드 | REQ-006, 034~036, 038~040 | 대기 |
+| 7 | UX Honeycomb 측정과 개선 반복 | REQ-041 | 대기 |
+| 8 | 용량 측정과 최종 검증 | REQ-032 | 대기 |
 
-## 결정 로그
-
-결정은 ADR에 있다. 이 계획에는 일정과 상태만 둔다.
+결정은 ADR에 있다. 이 계획에는 순서와 상태만 둔다.

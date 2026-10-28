@@ -1,4 +1,4 @@
-# Documentation quality contract. Enforced by harness/checks/docs.py (REQ-020).
+# Documentation quality contract. Enforced by harness/src/checks/docs.ts (REQ-020, ADR-0002).
 # Protected path: change only with an accepted ADR.
 docs_root: docs
 index: docs/index.md
@@ -12,18 +12,11 @@ statuses: [active, superseded, archived]
 required_keys: [title, kind, status, last_verified]
 
 # An active doc older than this many days since last_verified fails (null = never ages).
-max_age_days:
-  guide: 60
-  reference: 90
-  spec: 180
-  plan: 30
-  decision: null
+max_age_days: {guide: 60, reference: 90, spec: 180, plan: 30, decision: null}
 
 # Line limits keep docs readable and force splitting instead of sprawl.
-max_lines:
-  AGENTS.md: 120
-  default: 400
+max_lines: {AGENTS.md: 120, default: 400}
 
-# Where checked paths in `inline code` must live to be verified for existence.
-path_roots: [src/, docs/, harness/, tests/, .github/]
-root_files: [pyproject.toml, Makefile, README.md, AGENTS.md, ARCHITECTURE.md]
+# `inline code` that looks like a path and starts with one of these is checked for existence.
+path_roots: [packages/, apps/, docs/, harness/, tests/, .github/]
+root_files: [package.json, README.md, AGENTS.md, ARCHITECTURE.md, vitest.config.ts, biome.json, tsconfig.json, pnpm-workspace.yaml]

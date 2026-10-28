@@ -10,8 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
         with:
-          python-version: "3.13"
-      - run: make setup
-      - run: python -m harness.run_all
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm tsx harness/src/run-all.ts

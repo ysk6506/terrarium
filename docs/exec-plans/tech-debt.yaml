@@ -1,6 +1,6 @@
-# Technical debt register (REQ-022). One entry per known compromise.
-# Rules, enforced by `make check`:
-#   - every TODO/FIXME/HACK/XXX comment in code must read TODO(TD-NNNN) and point at an open item here
+# Technical debt register (REQ-022, ADR-0003). One entry per known compromise.
+# Rules, enforced by `pnpm check`:
+#   - every TODO/FIXME/HACK/XXX comment must read TODO(TD-NNNN) and point at an open item here
 #   - open items past `due` fail the build; so does exceeding the open-debt budget (harness/config/debt.yaml)
 #   - closing an item (done/wontfix) needs a `resolution`, and no marker for it may remain in code
 # Statuses: open | done | wontfix. Severity: low | medium | high.

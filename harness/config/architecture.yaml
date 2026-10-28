@@ -1,46 +1,68 @@
-# Architecture contract for src/terrarium. Enforced by harness/checks/architecture.py.
-# This file is a protected path: changing it requires an accepted ADR (see docs/design-docs/adr/).
-# Read docs/design-docs/architecture.md for the reasoning behind each layer.
-package: terrarium
-source_dir: src
+# Architecture contract. Enforced by harness/src/checks/architecture.ts (REQ-021, ADR-0011).
+# Protected path: change only with an accepted ADR that lists it in touches_protected.
+#
+# A *unit* is a folder. A file belongs to the first unit (in this order) whose path contains it.
+# A unit may import only the units in may_import ("core.*" = every unit whose name starts "core.").
+# Other units are reached only through their index.ts (or the @terrarium/core/<path> alias).
+units:
+  core.kernel:              {path: packages/core/src/kernel, may_import: []}
+  core.spatial:             {path: packages/core/src/spatial, may_import: [core.kernel]}
+  core.catalog:             {path: packages/core/src/catalog, may_import: [core.kernel]}
+  core.world:               {path: packages/core/src/world, may_import: [core.kernel, core.spatial, core.catalog]}
+  core.profiles:            {path: packages/core/src/profiles, may_import: [core.kernel, core.catalog]}
+  core.physics:             {path: packages/core/src/physics, may_import: [core.kernel, core.spatial, core.catalog, core.world]}
+  core.facades:             {path: packages/core/src/facades, may_import: [core.kernel, core.catalog, core.profiles, core.world]}
+  core.tools:               {path: packages/core/src/tools, may_import: [core.kernel, core.catalog, core.world, core.facades]}
+  core.scenario:            {path: packages/core/src/scenario, may_import: [core.kernel, core.catalog, core.world, core.physics, core.tools]}
+  core.oracle:              {path: packages/core/src/oracle, may_import: [core.kernel, core.world, core.scenario]}
+  core.sources.worldgen:    {path: packages/core/src/sources/worldgen, may_import: [core.kernel, core.spatial, core.catalog, core.world, core.sources]}
+  core.sources.realimport:  {path: packages/core/src/sources/realimport, may_import: [core.kernel, core.spatial, core.catalog, core.world, core.sources]}
+  core.sources:             {path: packages/core/src/sources, may_import: [core.kernel, core.spatial, core.catalog, core.world]}
+  core.session:             {path: packages/core/src/session, may_import: [core.kernel, core.spatial, core.catalog, core.world, core.profiles, core.physics, core.facades, core.tools, core.scenario, core.oracle, core.sources]}
+  core.experiments:         {path: packages/core/src/experiments, may_import: [core.kernel, core.catalog, core.world, core.tools, core.scenario, core.oracle]}
+  core.analysis:            {path: packages/core/src/analysis, may_import: [core.kernel, core.tools, core.scenario, core.oracle, core.experiments]}
+  core.contract:            {path: packages/core/src/contract, may_import: [core.kernel, core.spatial, core.catalog, core.world, core.profiles, core.tools, core.scenario, core.oracle, core.experiments, core.analysis]}
+  server.adapters:          {path: apps/server/src/adapters, may_import: ["core.*"]}
+  server.runtime:           {path: apps/server/src/runtime, may_import: ["core.*", server.adapters]}
+  server.mcp:               {path: apps/server/src/mcp, may_import: ["core.*", server.runtime]}
+  server.http:              {path: apps/server/src/http, may_import: ["core.*", server.adapters, server.runtime, server.mcp]}
+  server.main:              {path: apps/server/src, may_import: ["core.*", "server.*"], public_index: false}
+  web.logic:                {path: apps/web/src/logic, may_import: ["core.*"]}
+  web.ui:                   {path: apps/web/src/ui, may_import: ["core.*", web.logic]}
+  web.main:                 {path: apps/web/src, may_import: ["core.*", "web.*"], public_index: false}
+  harness:                  {path: harness/src, may_import: [], public_index: false}
+  tests.spec:               {path: tests/spec, may_import: ["core.*", "server.*"], public_index: false}
+  tests.e2e:                {path: tests/e2e, may_import: ["core.*"], public_index: false}
 
-# A layer may import only the layers listed in may_import. Imports inside a layer are free
-# (subject to sibling isolation and the no-cycle rule).
-layers:
-  kernel: {may_import: []}                      # ids, units, errors, clock/rng ports
-  spatial: {may_import: [kernel]}               # pure geometry and coordinate-system derivation
-  world: {may_import: [kernel, spatial]}        # entities, state, event log
-  catalog: {may_import: [kernel]}               # equipment model catalog (data, not behavior)
-  profiles: {may_import: [kernel, catalog]}     # per product-version behavior variants
-  physics: {may_import: [kernel, spatial, world, catalog]}   # thermal / power / cooling dynamics
-  facades: {may_import: [kernel, world, catalog, profiles]}  # Redfish / vCenter / vROps translation
-  sources: {may_import: [kernel, spatial, world, catalog]}   # worldgen and realimport (world producers)
-  service: {may_import: [kernel, spatial, world, catalog, profiles, physics, facades, sources]}
-  api: {may_import: [kernel, world, catalog, facades, service]}
+# Only these units may import Node built-ins (core and web must run in a browser).
+node_builtins: ["server.*", harness, "tests.*"]
 
-# Modules directly under the package that are allowed to exist, with the layers they may import.
-# Everything else at the package root is an error (new code belongs in a layer).
-root_modules:
-  __init__: []
-  __main__: [api, service]
+# Third-party package -> units allowed to import it. Unknown packages are errors (ARCH020):
+# adding a dependency is a decision and needs an ADR plus an entry here.
+third_party:
+  zod: ["core.*", "server.*", "web.*"]
+  fastify: [server.http]
+  "@fastify/static": [server.http]
+  "@modelcontextprotocol/sdk": [server.mcp]
+  falkordb: [server.adapters]
+  react: [web.ui, web.main]
+  react-dom: [web.ui, web.main]
+  "@xyflow/react": [web.ui]
+  three: [web.ui]
+  typescript: [harness]
+  yaml: [harness]
+  playwright: [tests.e2e, harness]
+  "@axe-core/playwright": [tests.e2e, harness]
 
-# Cross-layer imports must target the layer package itself (terrarium.<layer>) or one of these
-# extra public modules. Each layer's __init__.py must define __all__.
-public_modules: []
+# Packages only test code (*.test.ts, test-support/) may import.
+test_only: [vitest, fast-check]
 
-# Sibling packages that must not import each other.
-isolated_siblings:
-  terrarium.sources: [worldgen, realimport]
+# Code that may read the wall clock or global randomness (REQ-001, ADR-0006).
+nondeterminism_allowed: [packages/core/src/kernel/entropy.ts, apps/, harness/, tests/]
 
-# third-party top-level name -> module prefixes allowed to import it. An empty list forbids it.
-third_party_scope:
-  fastapi: [terrarium.api]
-  uvicorn: [terrarium.api, terrarium.__main__]
-  falkordb: [terrarium.sources.realimport]
-  harness: []
+source_roots: [packages, apps, harness/src, tests/spec, tests/e2e]
+alias_prefix: "@terrarium/core/"
+alias_target: packages/core/src
 
-# Constructs banned everywhere in src/.
-banned_calls: [print, eval, exec, breakpoint, os.system]
-
-# Sources of nondeterminism (REQ-001). Only these modules may use wall clock, global RNG, uuid4.
-nondeterminism_allowed: [terrarium.kernel.entropy, terrarium.api]
+# Files under source_roots that belong to no unit on purpose (tool configuration).
+ignored_files: [apps/web/vite.config.ts]

@@ -1,3384 +1,4232 @@
 {
+ "version": 1,
  "entries": {
-  "tests/harness/conftest.py::<import:56dade60>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "56dade60b0887402",
+  "harness/src/checks/architecture.test.ts::<import:0458d18f>": {
    "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/conftest.py::<import:59051b17>": {
-   "added": "2026-10-28",
-   "amended_by": null,
+   "hash": "0458d18f1a491d16",
    "asserts": 0,
-   "hash": "59051b17634cdcb5",
-   "kind": "support",
    "literals": [],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/conftest.py::<import:5b0cada2>": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
    "asserts": 0,
-   "hash": "5b0cada2ee49e50a",
-   "kind": "support",
    "literals": [],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/conftest.py::<import:890bede5>": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::<import:50321f6c>": {
+   "kind": "support",
+   "hash": "50321f6c860a7a17",
    "asserts": 0,
-   "hash": "890bede517510aea",
-   "kind": "support",
    "literals": [],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/conftest.py::<import:ae2911f3>": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::<import:7885fa13>": {
+   "kind": "support",
+   "hash": "7885fa13d8775cab",
    "asserts": 0,
-   "hash": "ae2911f319f9b441",
-   "kind": "support",
    "literals": [],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/conftest.py::=DEMO_ARCHITECTURE": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::<import:8bbb0e90>": {
+   "kind": "support",
+   "hash": "8bbb0e900ac5b6a5",
    "asserts": 0,
-   "hash": "e763b15bc3164d65",
-   "kind": "support",
    "literals": [],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/conftest.py::=MiniRepo": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::<import:a6a94b18>": {
+   "kind": "support",
+   "hash": "a6a94b1815f1ad1f",
    "asserts": 0,
-   "hash": "f742bc95f029874f",
-   "kind": "support",
    "literals": [],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/conftest.py::mini_repo": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
    "asserts": 0,
-   "hash": "3f3f7f324e4d4f2a",
-   "kind": "support",
    "literals": [],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::<import:06a537df>": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::=codes": {
+   "kind": "support",
+   "hash": "b6256adbce13099b",
    "asserts": 0,
-   "hash": "06a537df37038ae3",
-   "kind": "support",
    "literals": [],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::<import:354f8b43>": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
    "asserts": 0,
-   "hash": "354f8b43736456a9",
-   "kind": "support",
    "literals": [],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::<import:5b0cada2>": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "5b0cada2ee49e50a",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
+   "amended_by": null
   },
-  "tests/harness/test_architecture_check.py::<import:890bede5>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "890bede517510aea",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::<import:b461ae95>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "b461ae95c16c1e73",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::=pytestmark": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "7254bad35bc53c06",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::codes": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "5f24a56e691ad033",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_bare_except_and_star_import_are_banned": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "178ffc2b7cee4b52",
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > a child unit may use its parent unit": {
    "kind": "test",
+   "hash": "02573fc1b362d7b6",
+   "asserts": 1,
    "literals": [
-    "'ARCH051'"
+    "\"a child unit may use its parent unit\"",
+    "\"import { s } from \\\"..\\\";\\nexport const a = s;\\n\"",
+    "\"packages/core/src/sources/gen/a.ts\""
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_clean_mini_repo_passes": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "aac9db8339d995aa",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
+   "amended_by": null
   },
-  "tests/harness/test_architecture_check.py::test_cycle_inside_a_layer_is_rejected": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "a38fcf84e04eda8b",
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > a healthy mini repo passes": {
    "kind": "test",
+   "hash": "3ae00dd6fdeeca3a",
+   "asserts": 1,
    "literals": [
-    "'ARCH030'"
+    "\"a healthy mini repo passes\""
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_declared_layer_without_directory_is_rejected": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "a3b91ce903c6a0dc",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > a unit without index.ts is rejected, a missing unit folder too": {
    "kind": "test",
-   "literals": [
-    "'ARCH003'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_downward_layer_import_through_public_api_is_allowed": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "b177c69e01002e11",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_every_violation_tells_the_agent_how_to_fix_it": {
-   "added": "2026-10-28",
-   "amended_by": null,
+   "hash": "4cf8185ae1ce23b7",
    "asserts": 2,
-   "hash": "18fa6351046bfb05",
-   "kind": "test",
    "literals": [
-    "'ARCH'"
+    "\"\"",
+    "\"ARCH003\"",
+    "\"ARCH003\"",
+    "\"ARCH040\"",
+    "\"ARCH040\"",
+    "\"a unit without index.ts is rejected, a missing unit folder too\"",
+    "\"apps/server/src/http\"",
+    "\"packages/core/src/world/index.ts\"",
+    "\"packages/core/src/world/index.ts\"",
+    "true"
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_from_package_import_submodule_counts_as_internal_reach": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "e7ad088b611e8b86",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > banned construct: %s": {
    "kind": "test",
+   "hash": "2012ca14f76749d9",
+   "asserts": 1,
    "literals": [
-    "'ARCH011'"
+    "\"// @ts-ignore\\nexport const a: number = 'x';\\n\"",
+    "\"ARCH050\"",
+    "\"ARCH050\"",
+    "\"ARCH050\"",
+    "\"ARCH051\"",
+    "\"ARCH051\"",
+    "\"ARCH052\"",
+    "\"ARCH052\"",
+    "\"ARCH052\"",
+    "\"ARCH052\"",
+    "\"ARCH052\"",
+    "\"Date.now\"",
+    "\"Math.random\"",
+    "\"banned construct: %s\"",
+    "\"crypto.randomUUID\"",
+    "\"debugger\"",
+    "\"eval\"",
+    "\"export * from \\\"./b\\\";\\n\"",
+    "\"export const a = Date.now();\\n\"",
+    "\"export const a = Math.random();\\n\"",
+    "\"export const a = crypto.randomUUID();\\n\"",
+    "\"export const a = eval(\\\"1\\\");\\n\"",
+    "\"export const a = new Date();\\n\"",
+    "\"export const a = new Function(\\\"return 1\\\");\\n\"",
+    "\"export const a = performance.now();\\n\"",
+    "\"export const b = 1;\\n\"",
+    "\"export function a() {\\n  debugger;\\n}\\n\"",
+    "\"export star\"",
+    "\"new Date()\"",
+    "\"new Function\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/b.ts\"",
+    "\"performance.now\"",
+    "\"ts-ignore\""
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_isolated_siblings_must_not_import_each_other": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "e6fd62efd294f39f",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > declared packages are confined to their units": {
    "kind": "test",
+   "hash": "0bba2bf59b7880e4",
+   "asserts": 1,
    "literals": [
-    "'ARCH012'"
+    "\"ARCH020\"",
+    "\"ARCH020\"",
+    "\"apps/server/src/http/b.ts\"",
+    "\"declared packages are confined to their units\"",
+    "\"import Fastify from \\\"fastify\\\";\\nexport const a = Fastify;\\n\"",
+    "\"import Fastify from \\\"fastify\\\";\\nexport const b = Fastify;\\n\"",
+    "\"import { z } from \\\"zod\\\";\\nexport const c = z;\\n\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/c.ts\""
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_missing_dunder_all_in_layer_is_rejected": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "f8f069d0a20b7715",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > downward imports through the index are allowed, by path or alias": {
    "kind": "test",
+   "hash": "ecab028d21241836",
+   "asserts": 1,
    "literals": [
-    "'ARCH040'"
+    "\"apps/server/src/http/b.ts\"",
+    "\"downward imports through the index are allowed, by path or alias\"",
+    "\"import { k } from \\\"../kernel\\\";\\nexport const a = k;\\n\"",
+    "\"import { w } from \\\"@terrarium/core/world\\\";\\nexport const b = w;\\n\"",
+    "\"packages/core/src/world/a.ts\""
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_nondeterminism_is_allowed_in_entropy_module": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "0e7f3fdd1468dec2",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
+   "amended_by": null
   },
-  "tests/harness/test_architecture_check.py::test_nondeterminism_is_rejected_outside_allowed_modules": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "9278ff39b32731f3",
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > dynamic import() and require() are checked too": {
    "kind": "test",
+   "hash": "d2a2cecae1cecaab",
+   "asserts": 1,
    "literals": [
-    "'ARCH052'",
-    "'src/demo/world/a.py'"
+    "\"ARCH010\"",
+    "\"ARCH010\"",
+    "\"ARCH020\"",
+    "\"ARCH020\"",
+    "\"dynamic import() and require() are checked too\"",
+    "\"export const a = () => import(\\\"../world\\\");\\nexport const b = require(\\\"fastify\\\");\\n\"",
+    "\"packages/core/src/kernel/a.ts\""
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_print_is_banned": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "7b59e985d2d9b977",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > every violation explains how to fix it": {
    "kind": "test",
-   "literals": [
-    "'ARCH050'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_product_code_must_not_import_harness": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "60cfa35e73b0015e",
-   "kind": "test",
-   "literals": [
-    "'ARCH020'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_reaching_into_layer_internals_is_rejected": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "2e17e9f59fa92fa8",
-   "kind": "test",
-   "literals": [
-    "'ARCH011'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_real_repository_is_clean": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "e55221cb8073c072",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_relative_imports_are_resolved_for_layer_rules": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "63b4351d21435b3e",
-   "kind": "test",
-   "literals": [
-    "'ARCH010'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_seeded_random_instances_are_allowed": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "be8063079c93ec63",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_sibling_may_use_shared_module_outside_isolated_set": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "6978735c52bd7ab6",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_stray_root_module_is_rejected": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "f80ad0e24809f935",
-   "kind": "test",
-   "literals": [
-    "'ARCH002'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_third_party_inside_scope_is_allowed": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "cde4d84c11a1aa34",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_third_party_outside_scope_is_rejected": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "c3b6f981052d1e1b",
-   "kind": "test",
-   "literals": [
-    "'ARCH020'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_unknown_layer_is_rejected": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "df07ef51f3a2996b",
-   "kind": "test",
-   "literals": [
-    "'ARCH001'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_architecture_check.py::test_upward_layer_import_is_rejected": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "984508b6cb5444d6",
-   "kind": "test",
-   "literals": [
-    "'ARCH010'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::<import:211ee427>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "211ee42757705c7e",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::<import:2c30293a>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "2c30293a6d8de870",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::<import:59051b17>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "59051b17634cdcb5",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::<import:5b0cada2>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "5b0cada2ee49e50a",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::<import:73be8b6e>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "73be8b6e8227767f",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::<import:80a818e8>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "80a818e8c3d1b5aa",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::<import:890bede5>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "890bede517510aea",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::<import:b617c59c>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "b617c59c0e4f0ba2",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::<import:c505308a>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "c505308a7aeb8c16",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::=CHECK_MODULES": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "2763d17c81a8edfc",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::=CLASSY": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "514d081e920e3270",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::=pytestmark": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "6bfb6004c6d09d78",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::make_docs_repo": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "b666444649273396",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_as_date": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "4e381219ba821501",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_class_based_tests_and_module_level_statements_are_collected": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 10,
-   "hash": "4e782a30e0a8fead",
-   "kind": "test",
-   "literals": [
-    "'<import:'",
-    "'<stmt:'",
-    "'support'",
-    "'support'",
-    "'support'",
-    "'support'",
-    "'test'",
-    "'tests/test_classy.py::=CONSTANT'",
-    "'tests/test_classy.py::=registry'",
-    "'tests/test_classy.py::Empty.<stmt:'",
-    "'tests/test_classy.py::Helper.run'",
-    "'tests/test_classy.py::TestThing.=limit'",
-    "'tests/test_classy.py::TestThing.helper'",
-    "'tests/test_classy.py::TestThing::test_one'",
-    "'tests/test_classy.py::TestThing::test_one'",
-    "1"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_coverage_cli_ratchet_prints_floors": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "7ce5910c207ce8dc",
-   "kind": "test",
-   "literals": [
-    "'--root'",
-    "'harness: 99.0%'",
-    "'ratchet'",
-    "0"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_coverage_main_exit_code_matches_run_result": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "57e759de6a399413",
-   "kind": "test",
-   "literals": [
-    "'--root'",
-    "'FAIL'",
-    "'OK'",
-    "'check'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_data_files_are_locked_with_their_content": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "3df48bab6c507993",
-   "kind": "test",
-   "literals": [
-    "'data'",
-    "'tests/data/expected.json::<data>'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_debt_check_without_register_or_baseline_files_is_clean": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "24e3cba8af24cc99",
-   "kind": "test",
-   "literals": [
-    "10",
-    "2026",
-    "28"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_debt_cli_ratchet_removes_fixed_entries": {
-   "added": "2026-10-28",
-   "amended_by": null,
+   "hash": "659e107a503457ed",
    "asserts": 3,
-   "hash": "309cccf2c2988ce2",
-   "kind": "test",
    "literals": [
-    "'--root'",
-    "'harness/config/debt-baseline.json'",
-    "'ratchet'",
-    "'removed 1 fixed baseline entry'",
-    "0"
+    "\"1\"",
+    "\"1\"",
+    "\"10\"",
+    "\"10\"",
+    "\"every violation explains how to fix it\"",
+    "\"import { w } from \\\"../world\\\";\\nexport const a = w + Math.random();\\n\"",
+    "\"packages/core/src/kernel/a.ts\""
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_docs_cli_reverify_and_seal_adr": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 4,
-   "hash": "6f5e35186fe8de6e",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > files outside any unit are rejected unless ignored": {
    "kind": "test",
-   "literals": [
-    "'--note'",
-    "'--root'",
-    "'--root'",
-    "'checked'",
-    "'checked'",
-    "'covers_hash'",
-    "'decision_hash'",
-    "'reverify'",
-    "'seal-adr'",
-    "'verification_log'",
-    "0",
-    "0",
-    "0",
-    "None",
-    "None"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_find_root_fails_outside_a_repo": {
-   "added": "2026-10-28",
-   "amended_by": null,
+   "hash": "2d3a95906acd90e5",
    "asserts": 1,
-   "hash": "9916171b9e1a6b56",
-   "kind": "test",
-   "literals": [],
+   "literals": [
+    "\"ARCH001\"",
+    "\"ARCH001\"",
+    "\"apps/server/tool.config.ts\"",
+    "\"export const s = 1;\\n\"",
+    "\"export {};\\n\"",
+    "\"files outside any unit are rejected unless ignored\"",
+    "\"packages/core/src/stray.ts\"",
+    "\"packages/core/src/stray.ts\"",
+    "\"packages/core/src/stray.ts\""
+   ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_finish_prints_ok_or_sorted_failures": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > import cycles are rejected, type-only cycles are not": {
+   "kind": "test",
+   "hash": "a2e2ac6128626d32",
+   "asserts": 2,
+   "literals": [
+    "\"ARCH030\"",
+    "\"ARCH030\"",
+    "\"import cycles are rejected, type-only cycles are not\"",
+    "\"import type { A } from \\\"./a\\\";\\nexport type B = { a?: A };\\n\"",
+    "\"import type { B } from \\\"./b\\\";\\nexport type A = { b?: B };\\n\"",
+    "\"import { a } from \\\"./a\\\";\\nexport const b = 1 + a;\\n\"",
+    "\"import { b } from \\\"./b\\\";\\nexport const a = 1 + b;\\n\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/b.ts\"",
+    "\"packages/core/src/world/b.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > imports inside one unit are free": {
+   "kind": "test",
+   "hash": "21541a3bd9e7e6f5",
+   "asserts": 1,
+   "literals": [
+    "\"export const b = 1;\\n\"",
+    "\"import { b } from \\\"./b\\\";\\nexport const a = b;\\n\"",
+    "\"imports inside one unit are free\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/b.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > new Date(value) is deterministic and allowed": {
+   "kind": "test",
+   "hash": "0b722f3a7432b104",
+   "asserts": 1,
+   "literals": [
+    "\"export const a = new Date(0);\\n\"",
+    "\"export const a = new Date(0);\\n\"",
+    "\"new Date(value) is deterministic and allowed\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/a.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > node built-ins are rejected in browser-safe code and allowed on the server": {
+   "kind": "test",
+   "hash": "c6bca99fbc6940fc",
+   "asserts": 1,
+   "literals": [
+    "\"ARCH021\"",
+    "\"ARCH021\"",
+    "\"ARCH021\"",
+    "\"ARCH021\"",
+    "\"apps/server/src/http/c.ts\"",
+    "\"import fs from \\\"node:fs\\\";\\nexport const a = fs;\\n\"",
+    "\"import fs from \\\"node:fs\\\";\\nexport const c = fs;\\n\"",
+    "\"import path from \\\"path\\\";\\nexport const b = path;\\n\"",
+    "\"node built-ins are rejected in browser-safe code and allowed on the server\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/b.ts\"",
+    "\"packages/core/src/world/b.ts\"",
+    "\"packages/core/src/world/b.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > nondeterminism is allowed where configured": {
+   "kind": "test",
+   "hash": "097b586fc66a5c8e",
+   "asserts": 1,
+   "literals": [
+    "\"apps/server/src/http/b.ts\"",
+    "\"export const a = Date.now() + Math.random();\\n\"",
+    "\"export const b = Date.now();\\n\"",
+    "\"nondeterminism is allowed where configured\"",
+    "\"packages/core/src/kernel/entropy.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > production code must not import test support, tests may": {
+   "kind": "test",
+   "hash": "d4ed7dcbad54c4a4",
+   "asserts": 1,
+   "literals": [
+    "\"ARCH013\"",
+    "\"ARCH013\"",
+    "\"export const fake = 1;\\n\"",
+    "\"import { fake } from \\\"./test-support/fake\\\";\\nexport const a = fake;\\n\"",
+    "\"import { fake } from \\\"./test-support/fake\\\";\\nexport const t = fake;\\n\"",
+    "\"packages/core/src/world/a.test.ts\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/test-support/fake.ts\"",
+    "\"production code must not import test support, tests may\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > reaching inside another unit is rejected": {
+   "kind": "test",
+   "hash": "412cc7e515dab3d4",
+   "asserts": 1,
+   "literals": [
+    "\"ARCH011\"",
+    "\"ARCH011\"",
+    "\"export const x = 1;\\n\"",
+    "\"import { x } from \\\"../kernel/ids\\\";\\nexport const a = x;\\n\"",
+    "\"packages/core/src/kernel/ids.ts\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"reaching inside another unit is rejected\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > scoped package names are recognised": {
+   "kind": "test",
+   "hash": "e9a8bf05dbda0237",
+   "asserts": 1,
+   "literals": [
+    "\"'@scope/pkg'\"",
+    "\"'@scope/pkg'\"",
+    "\"0\"",
+    "\"0\"",
+    "\"import x from \\\"@scope/pkg/deep\\\";\\nexport const a = x;\\n\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"scoped package names are recognised\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > sibling units must not know each other": {
+   "kind": "test",
+   "hash": "0d39b2609df404a1",
+   "asserts": 1,
+   "literals": [
+    "\"ARCH012\"",
+    "\"ARCH012\"",
+    "\"import { i } from \\\"../imp\\\";\\nexport const a = i;\\n\"",
+    "\"packages/core/src/sources/gen/a.ts\"",
+    "\"sibling units must not know each other\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > test-only packages are rejected outside tests": {
+   "kind": "test",
+   "hash": "1e1da4e00696a3d5",
+   "asserts": 1,
+   "literals": [
+    "\"ARCH022\"",
+    "\"ARCH022\"",
+    "\"import { expect } from \\\"vitest\\\";\\nexport const a = expect;\\n\"",
+    "\"import { expect } from \\\"vitest\\\";\\nexport const t = expect;\\n\"",
+    "\"packages/core/src/world/a.test.ts\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"test-only packages are rejected outside tests\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > the real repository passes": {
+   "kind": "test",
+   "hash": "194727c7edf73c38",
+   "asserts": 1,
+   "literals": [
+    "\"the real repository passes\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > type-only imports follow the same layer rules": {
+   "kind": "test",
+   "hash": "030573becad56421",
+   "asserts": 1,
+   "literals": [
+    "\"ARCH010\"",
+    "\"ARCH010\"",
+    "\"import type { w } from \\\"../world\\\";\\nexport type A = typeof w;\\n\"",
+    "\"packages/core/src/kernel/a.ts\"",
+    "\"type-only imports follow the same layer rules\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > undeclared packages are rejected": {
+   "kind": "test",
+   "hash": "d7543116307bedc9",
+   "asserts": 1,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"import lodash from \\\"lodash\\\";\\nexport const a = lodash;\\n\"",
+    "\"not declared\"",
+    "\"not declared\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"undeclared packages are rejected\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > unresolvable imports are reported": {
+   "kind": "test",
+   "hash": "785291a68243f6b9",
+   "asserts": 1,
+   "literals": [
+    "\"ARCH014\"",
+    "\"ARCH014\"",
+    "\"import { x } from \\\"./missing\\\";\\nexport const a = x;\\n\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"unresolvable imports are reported\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::architecture check [REQ-021] > upward imports are rejected": {
+   "kind": "test",
+   "hash": "faab8a5f5b782f10",
+   "asserts": 1,
+   "literals": [
+    "\"ARCH010\"",
+    "\"ARCH010\"",
+    "\"import { w } from \\\"../world\\\";\\nexport const a = w;\\n\"",
+    "\"packages/core/src/kernel/a.ts\"",
+    "\"upward imports are rejected\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::import graph cycles [REQ-021] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::import graph cycles [REQ-021] > an acyclic graph has no cycles": {
+   "kind": "test",
+   "hash": "190a9c299ce82c14",
+   "asserts": 1,
+   "literals": [
+    "\"a\"",
+    "\"a\"",
+    "\"an acyclic graph has no cycles\"",
+    "\"b\"",
+    "\"b\"",
+    "\"b\"",
+    "\"b\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/architecture.test.ts::import graph cycles [REQ-021] > finds components with more than one member and self loops": {
+   "kind": "test",
+   "hash": "a641b8947b5f2927",
+   "asserts": 1,
+   "literals": [
+    "\"a\"",
+    "\"a\"",
+    "\"a\"",
+    "\"a\"",
+    "\"b\"",
+    "\"b\"",
+    "\"b\"",
+    "\"b\"",
+    "\"c\"",
+    "\"c\"",
+    "\"d\"",
+    "\"d\"",
+    "\"d\"",
+    "\"d\"",
+    "\"finds components with more than one member and self loops\"",
+    "\"missing\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::<import:0357398d>": {
+   "kind": "support",
+   "hash": "0357398d02e844af",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::<import:50321f6c>": {
+   "kind": "support",
+   "hash": "50321f6c860a7a17",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::<import:92d11c27>": {
+   "kind": "support",
+   "hash": "92d11c273fc6952a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::<import:92f44056>": {
+   "kind": "support",
+   "hash": "92f440565031fda5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::<import:98612625>": {
+   "kind": "support",
+   "hash": "98612625b34b36e0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::<import:cd66fb27>": {
+   "kind": "support",
+   "hash": "cd66fb2759e02f26",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::=branchy": {
+   "kind": "support",
+   "hash": "ad3dbc764f9647e3",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::=codes": {
+   "kind": "support",
+   "hash": "f16882c6b084f198",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::=debtRepo": {
+   "kind": "support",
+   "hash": "e5d77ffc748935f8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::=item": {
+   "kind": "support",
+   "hash": "a5825aaed61a44e8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::=longFunction": {
+   "kind": "support",
+   "hash": "e2dc3343f551f0d0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::=realConfig": {
+   "kind": "support",
+   "hash": "0dfde21e47538880",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::=TODAY": {
+   "kind": "support",
+   "hash": "71dd2f21d9c3aeb5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::complexity measurement [REQ-022] > %s has complexity %i": {
+   "kind": "test",
+   "hash": "1bcf8b2c0aa924dd",
+   "asserts": 1,
+   "literals": [
+    "\"%s has complexity %i\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"3\"",
+    "\"3\"",
+    "\"3\"",
+    "\"4\"",
+    "\"a.ts\"",
+    "\"function f() { return 1; }\"",
+    "\"function f(x) { const g = () => { if (x) return 1; }; return g; }\"",
+    "\"function f(x) { for (const i of x) { while (i) {} } }\"",
+    "\"function f(x) { if (x) { return 1; } return 2; }\"",
+    "\"function f(x) { switch (x) { case 1: return 1; case 2: return 2; default: return 0; } }\"",
+    "\"function f(x) { try { } catch { } return x ? 1 : 2; }\"",
+    "\"function f(x, y) { if (x && y) return 1; return x ?? y; }\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::complexity measurement [REQ-022] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::debt markers [REQ-022] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::debt markers [REQ-022] > a clean repo passes": {
+   "kind": "test",
+   "hash": "55e43d1d096f3e70",
+   "asserts": 1,
+   "literals": [
+    "\"a clean repo passes\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::debt markers [REQ-022] > markers in tests count too": {
+   "kind": "test",
+   "hash": "f728db36f39b0dee",
+   "asserts": 1,
+   "literals": [
+    "\"// HACK fast path\\nexport const t = 1;\\n\"",
+    "\"// HACK fast path\\nexport const t = 1;\\n\"",
+    "\"DEBT001\"",
+    "\"DEBT001\"",
+    "\"markers in tests count too\"",
+    "\"tests/spec/x.test.ts\"",
+    "\"tests/spec/x.test.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::debt markers [REQ-022] > markers inside strings are not comments; block comments are": {
+   "kind": "test",
+   "hash": "946489fabbd48bf4",
+   "asserts": 2,
+   "literals": [
+    "\"/* FIXME */\\nexport const x = 1;\\n\"",
+    "\"/* FIXME */\\nexport const x = 1;\\n\"",
+    "\"DEBT001\"",
+    "\"DEBT001\"",
+    "\"export const x = \\\"TODO later\\\";\\n\"",
+    "\"export const x = \\\"TODO later\\\";\\n\"",
+    "\"markers inside strings are not comments; block comments are\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::debt markers [REQ-022] > the real repository's debt is under control": {
+   "kind": "test",
+   "hash": "009065b1091a4784",
+   "asserts": 1,
+   "literals": [
+    "\"the real repository's debt is under control\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::debt markers [REQ-022] > tracked markers pointing at open items pass; unknown or closed items fail": {
+   "kind": "test",
+   "hash": "1b16405cf9e5298c",
+   "asserts": 3,
+   "literals": [
+    "\"// TODO(TD-0009) x\\nexport const x = 1;\\n\"",
+    "\"// TODO(TD-0009) x\\nexport const x = 1;\\n\"",
+    "\"DEBT002\"",
+    "\"DEBT002\"",
+    "\"DEBT013\"",
+    "\"DEBT013\"",
+    "\"TD-0001\"",
+    "\"TD-0001\"",
+    "\"done\"",
+    "\"done\"",
+    "\"export const x = 1; // TODO(TD-0001) split\\n\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\"",
+    "\"r\"",
+    "\"r\"",
+    "\"tracked markers pointing at open items pass; unknown or closed items fail\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::debt markers [REQ-022] > untracked %s fails": {
+   "kind": "test",
+   "hash": "9af991424d0e0a08",
+   "asserts": 1,
+   "literals": [
+    "\"DEBT001\"",
+    "\"DEBT001\"",
+    "\"FIXME\"",
+    "\"HACK\"",
+    "\"TODO\"",
+    "\"XXX\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\"",
+    "\"untracked %s fails\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::debt register [REQ-022] > %s fails": {
+   "kind": "test",
+   "hash": "a18343e0a550b343",
+   "asserts": 1,
+   "literals": [
+    "\"%s fails\"",
+    "\"DEBT010\"",
+    "\"DEBT010\"",
+    "\"TD-0001\"",
+    "\"TD-0001\"",
+    "\"TD-0001\"",
+    "\"TD-0001\"",
+    "\"TD-1\"",
+    "\"bad date\"",
+    "\"bad id\"",
+    "\"bad severity\"",
+    "\"closed without resolution\"",
+    "\"done\"",
+    "\"duplicate ids\"",
+    "\"huge\"",
+    "\"missing fields\"",
+    "\"soon\"",
+    "\"t\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::debt register [REQ-022] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::debt register [REQ-022] > overdue open items fail, overdue closed items do not": {
+   "kind": "test",
+   "hash": "180586fdd6beab8f",
+   "asserts": 2,
+   "literals": [
+    "\"2026-10-01\"",
+    "\"2026-10-01\"",
+    "\"2026-10-01\"",
+    "\"2026-10-01\"",
+    "\"DEBT011\"",
+    "\"DEBT011\"",
+    "\"TD-0001\"",
+    "\"TD-0001\"",
+    "\"TD-0001\"",
+    "\"TD-0001\"",
+    "\"done\"",
+    "\"done\"",
+    "\"overdue open items fail, overdue closed items do not\"",
+    "\"r\"",
+    "\"r\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::debt register [REQ-022] > the open-debt budget is enforced, for high severity too": {
+   "kind": "test",
+   "hash": "d7d4a62731d04771",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"13\"",
+    "\"3\"",
+    "\"4\"",
+    "\"DEBT012\"",
+    "\"DEBT012\"",
+    "\"DEBT012\"",
+    "\"DEBT012\"",
+    "\"high\"",
+    "\"the open-debt budget is enforced, for high severity too\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::ratchet baseline [REQ-022] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::ratchet baseline [REQ-022] > =writeBaseline": {
+   "kind": "support",
+   "hash": "3a22fb51ec18f47a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::ratchet baseline [REQ-022] > against the base ref the baseline may only shrink (%o -> %o)": {
+   "kind": "test",
+   "hash": "8bf55e067b2fa917",
+   "asserts": 1,
+   "literals": [
+    "\"13\"",
+    "\"14\"",
+    "\"14\"",
+    "\"14\"",
+    "\"14\"",
+    "\"15\"",
+    "\"DEBT033\"",
+    "\"DEBT033\"",
+    "\"HEAD\"",
+    "\"HEAD\"",
+    "\"against the base ref the baseline may only shrink (%o -> %o)\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::ratchet baseline [REQ-022] > baselined violations are tolerated until they grow": {
+   "kind": "test",
+   "hash": "717e95b497b2b992",
+   "asserts": 2,
+   "literals": [
+    "\"13\"",
+    "\"14\"",
+    "\"15\"",
+    "\"DEBT031\"",
+    "\"DEBT031\"",
+    "\"baselined violations are tolerated until they grow\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts::f::complexity\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::ratchet baseline [REQ-022] > fixed entries must be removed, and ratchet removes them and lowers values": {
+   "kind": "test",
+   "hash": "059eb7b34c898b95",
+   "asserts": 3,
+   "literals": [
+    "\"13\"",
+    "\"14\"",
+    "\"14\"",
+    "\"20\"",
+    "\"99\"",
+    "\"DEBT030\"",
+    "\"DEBT030\"",
+    "\"fixed entries must be removed, and ratchet removes them and lowers values\"",
+    "\"harness/config/debt-baseline.json\"",
+    "\"harness/config/debt-baseline.json\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts::f::complexity\"",
+    "\"packages/core/src/a.ts::f::complexity\"",
+    "\"packages/core/src/a.ts::f::complexity\"",
+    "\"packages/core/src/a.ts::gone::lines\"",
+    "\"packages/core/src/a.ts::gone::lines\"",
+    "\"packages/core/src/a.ts::gone::lines\"",
+    "\"utf8\"",
+    "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::ratchet baseline [REQ-022] > the CLI ratchets and checks": {
+   "kind": "test",
+   "hash": "1a349028f7384015",
+   "asserts": 3,
+   "literals": [
+    "\"--root\"",
+    "\"--root\"",
+    "\"--root\"",
+    "\"--root\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"ratchet\"",
+    "\"ratchet\"",
+    "\"ratchet: removed 0 fixed baseline entries\"",
+    "\"ratchet: removed 0 fixed baseline entries\"",
+    "\"the CLI ratchets and checks\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::size and complexity [REQ-022] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::size and complexity [REQ-022] > a file-level waiver on line 1 covers the file length": {
+   "kind": "test",
+   "hash": "242b08c2ec14f1ce",
+   "asserts": 1,
+   "literals": [
+    "\"510\"",
+    "\"a file-level waiver on line 1 covers the file length\"",
+    "\"export const x = 1;\\n\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::size and complexity [REQ-022] > a waiver pointing at an open item tolerates a violation; a closed item does not": {
+   "kind": "test",
+   "hash": "85d43351e08ee44c",
+   "asserts": 2,
+   "literals": [
+    "\"85\"",
+    "\"DEBT013\"",
+    "\"DEBT013\"",
+    "\"DEBT021\"",
+    "\"DEBT021\"",
+    "\"TD-0001\"",
+    "\"a waiver pointing at an open item tolerates a violation; a closed item does not\"",
+    "\"done\"",
+    "\"export function f(): number { // debt-ok: TD-0001\"",
+    "\"export function f(): number {\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\"",
+    "\"r\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::size and complexity [REQ-022] > a waiver that nothing needs fails": {
+   "kind": "test",
+   "hash": "3b73fdec92019fe2",
+   "asserts": 1,
+   "literals": [
+    "\"DEBT032\"",
+    "\"DEBT032\"",
+    "\"a waiver that nothing needs fails\"",
+    "\"export const x = 1; // debt-ok: TD-0001\\n\"",
+    "\"export const x = 1; // debt-ok: TD-0001\\n\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::size and complexity [REQ-022] > long files, long functions, complex functions and long parameter lists fail": {
+   "kind": "test",
+   "hash": "6087b02618b1d42e",
+   "asserts": 4,
+   "literals": [
+    "\"13\"",
+    "\"13\"",
+    "\"501\"",
+    "\"501\"",
+    "\"85\"",
+    "\"85\"",
+    "\"DEBT020\"",
+    "\"DEBT020\"",
+    "\"DEBT021\"",
+    "\"DEBT021\"",
+    "\"DEBT022\"",
+    "\"DEBT022\"",
+    "\"DEBT023\"",
+    "\"DEBT023\"",
+    "\"export const x = 1;\\n\"",
+    "\"export const x = 1;\\n\"",
+    "\"export function f(a: 1, b: 1, c: 1, d: 1, e: 1, g: 1, h: 1) {\\n  return a;\\n}\\n\"",
+    "\"export function f(a: 1, b: 1, c: 1, d: 1, e: 1, g: 1, h: 1) {\\n  return a;\\n}\\n\"",
+    "\"long files, long functions, complex functions and long parameter lists fail\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::size and complexity [REQ-022] > methods and arrow functions are measured; `this` parameters do not count": {
+   "kind": "test",
+   "hash": "837aacd279601aec",
+   "asserts": 2,
+   "literals": [
+    "\"\"",
+    "\"13\"",
+    "\"DEBT022\"",
+    "\"DEBT022\"",
+    "\"export class C {\\n  m(this: C, a: 1, b: 1, c: 1, d: 1, e: 1, f: 1) {\\n    return a;\\n  }\\n}\\n\"",
+    "\"methods and arrow functions are measured; `this` parameters do not count\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\"",
+    "\"packages/core/src/a.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::size and complexity [REQ-022] > test files are exempt from size limits": {
+   "kind": "test",
+   "hash": "3c502acb07193275",
+   "asserts": 1,
+   "literals": [
+    "\"150\"",
+    "\"150\"",
+    "\"packages/core/src/a.test.ts\"",
+    "\"packages/core/src/a.test.ts\"",
+    "\"test files are exempt from size limits\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::<import:0458d18f>": {
+   "kind": "support",
+   "hash": "0458d18f1a491d16",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::<import:0bf8b541>": {
+   "kind": "support",
+   "hash": "0bf8b5419b863156",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::<import:92f44056>": {
+   "kind": "support",
+   "hash": "92f440565031fda5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::<import:cd66fb27>": {
+   "kind": "support",
+   "hash": "cd66fb2759e02f26",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::<import:f1d4fea3>": {
+   "kind": "support",
+   "hash": "f1d4fea37fd0735b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::=ADR": {
+   "kind": "support",
+   "hash": "58afb1a232565eb4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::=adrRepo": {
+   "kind": "support",
+   "hash": "d2c43f177e216755",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::=codes": {
+   "kind": "support",
+   "hash": "cf39d3a7b1f381a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::=docsRepo": {
+   "kind": "support",
+   "hash": "2bfc408951b07079",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::=edit": {
+   "kind": "support",
+   "hash": "87fe88db4eb0e9e1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::=front": {
+   "kind": "support",
+   "hash": "4f66beaa35e9f733",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::=MODULE": {
+   "kind": "support",
+   "hash": "69f32a9f49853bdd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::=realConfig": {
+   "kind": "support",
+   "hash": "c119bd1c43e4f785",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::=TODAY": {
+   "kind": "support",
+   "hash": "71dd2f21d9c3aeb5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::=verifiedGuide": {
+   "kind": "support",
+   "hash": "1a2430e47df4e32d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::ADR rules [REQ-020] [REQ-021] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::ADR rules [REQ-020] [REQ-021] > a superseded ADR needs an existing successor": {
+   "kind": "test",
+   "hash": "8d305779d4ed8d81",
+   "asserts": 1,
+   "literals": [
+    "\"9999-none.md\"",
+    "\"9999-none.md\"",
+    "\"DOC060\"",
+    "\"DOC060\"",
+    "\"a superseded ADR needs an existing successor\"",
+    "\"superseded\"",
+    "\"superseded\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::ADR rules [REQ-020] [REQ-021] > an ADR must say how it is enforced, with real rule codes or tests": {
+   "kind": "test",
+   "hash": "1e922b1e6afc8116",
+   "asserts": 6,
+   "literals": [
+    "\"ARCH999\"",
+    "\"ARCH999\"",
+    "\"DOC080\"",
+    "\"DOC080\"",
+    "\"DOC080\"",
+    "\"DOC080\"",
+    "\"DOC080\"",
+    "\"DOC080\"",
+    "\"DOC080\"",
+    "\"DOC080\"",
+    "\"an ADR must say how it is enforced, with real rule codes or tests\"",
+    "\"none\"",
+    "\"none\"",
+    "\"none\"",
+    "\"none\"",
+    "\"src/mod.ts\"",
+    "\"src/mod.ts\"",
+    "\"taste, not checkable\"",
+    "\"taste, not checkable\"",
+    "\"tests/spec/missing.test.ts\"",
+    "\"tests/spec/missing.test.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::ADR rules [REQ-020] [REQ-021] > an unsealed accepted ADR fails until sealed": {
+   "kind": "test",
+   "hash": "851eacd9b94bed14",
+   "asserts": 2,
+   "literals": [
+    "\"DOC071\"",
+    "\"DOC071\"",
+    "\"an unsealed accepted ADR fails until sealed\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::ADR rules [REQ-020] [REQ-021] > changing front matter does not break the seal": {
+   "kind": "test",
+   "hash": "75b4a06119dc7fcc",
+   "asserts": 3,
+   "literals": [
+    "\"(design-docs/adr/0001-x.md) [y](design-docs/adr/0002-y.md)\"",
+    "\"(design-docs/adr/0001-x.md)\"",
+    "\"changing front matter does not break the seal\"",
+    "\"decision\"",
+    "\"docs/design-docs/adr/0002-y.md\"",
+    "\"docs/design-docs/adr/0002-y.md\"",
+    "\"docs/guide.md\"",
+    "\"none\"",
+    "\"r\"",
+    "\"status: active\"",
+    "\"status: superseded\\nsuperseded_by: 0002-y.md\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::ADR rules [REQ-020] [REQ-021] > decisions outside the ADR folder, or non-decisions inside it, fail": {
+   "kind": "test",
+   "hash": "b78bc58623dbc1ed",
+   "asserts": 2,
+   "literals": [
+    "\"ARCH010\"",
+    "\"ARCH010\"",
+    "\"DOC060\"",
+    "\"DOC060\"",
+    "\"DOC060\"",
+    "\"DOC060\"",
+    "\"decision\"",
+    "\"decision\"",
+    "\"decisions outside the ADR folder, or non-decisions inside it, fail\"",
+    "\"docs/design-docs/adr/0003-z.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::ADR rules [REQ-020] [REQ-021] > editing a sealed ADR body fails": {
+   "kind": "test",
+   "hash": "549679dfadccfc5b",
+   "asserts": 2,
+   "literals": [
+    "\"DOC070\"",
+    "\"DOC070\"",
+    "\"because Y\"",
+    "\"because Z\"",
+    "\"editing a sealed ADR body fails\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::ADR rules [REQ-020] [REQ-021] > seal-adr refuses non-decisions": {
+   "kind": "test",
+   "hash": "2d1da67d3a59f468",
+   "asserts": 1,
+   "literals": [
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"seal-adr refuses non-decisions\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > a clean repo passes": {
+   "kind": "test",
+   "hash": "1d58fe6d97358de3",
+   "asserts": 1,
+   "literals": [
+    "\"a clean repo passes\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > a doc goes stale when its covered code changes": {
+   "kind": "test",
+   "hash": "df27e381b9473db3",
+   "asserts": 3,
+   "literals": [
+    "\"DOC010\"",
+    "\"DOC010\"",
+    "\"a + b\"",
+    "\"a - b\"",
+    "\"a doc goes stale when its covered code changes\"",
+    "\"src/mod.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > a new covered file makes the doc stale": {
+   "kind": "test",
+   "hash": "25cb7a98c8b97870",
+   "asserts": 1,
+   "literals": [
+    "\"DOC010\"",
+    "\"DOC010\"",
+    "\"a new covered file makes the doc stale\"",
+    "\"export const x = 1;\\n\"",
+    "\"src/extra.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > broken links and dead path references fail; fenced code and external links are ignored": {
+   "kind": "test",
+   "hash": "ab84dbf290bbea6d",
+   "asserts": 1,
+   "literals": [
+    "\"# G\\n[gone](missing.md)\\nSee `packages/nope.ts` and `docs/index.md`.\\n```\\n[x](missing2.md) `packages/nope2.ts`\\n```\\n[ext](https://example.com) [anchor](#top)\\n\"",
+    "\"8\"",
+    "\"8\"",
+    "\"9\"",
+    "\"9\"",
+    "\"DOC030\"",
+    "\"DOC030\"",
+    "\"DOC031\"",
+    "\"DOC031\"",
+    "\"broken links and dead path references fail; fenced code and external links are ignored\"",
+    "\"docs/guide.md\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > comment and formatting changes do not make docs stale": {
+   "kind": "test",
+   "hash": "9b36502a726bbf65",
+   "asserts": 1,
+   "literals": [
+    "\"// note\\nexport function add(a: number, b: number): number { /* sum */ return a + b }\\n\"",
+    "\"comment and formatting changes do not make docs stale\"",
+    "\"src/mod.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > covers without a hash, or matching nothing, fail": {
+   "kind": "test",
+   "hash": "5ba931acab08c375",
+   "asserts": 2,
+   "literals": [
+    "\"DOC011\"",
+    "\"DOC011\"",
+    "\"DOC012\"",
+    "\"DOC012\"",
+    "\"covers without a hash, or matching nothing, fail\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"nothing/*.ts\"",
+    "\"nothing/*.ts\"",
+    "\"src/*.ts\"",
+    "\"src/*.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > docs expire by kind, decisions never do": {
+   "kind": "test",
+   "hash": "3b6ce0060e54b117",
+   "asserts": 3,
+   "literals": [
+    "\"2020-01-01\"",
+    "\"2026-08-28\"",
+    "\"2026-08-28\"",
+    "\"2026-08-29\"",
+    "\"2026-08-29\"",
+    "\"DOC020\"",
+    "\"DOC020\"",
+    "\"DOC020\"",
+    "\"DOC020\"",
+    "\"docs expire by kind, decisions never do\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > future or malformed dates fail": {
+   "kind": "test",
+   "hash": "a81d64d916fadd9f",
+   "asserts": 2,
+   "literals": [
+    "\"2026-02-30\"",
+    "\"2026-02-30\"",
+    "\"2026-11-01\"",
+    "\"2026-11-01\"",
+    "\"DOC001\"",
+    "\"DOC001\"",
+    "\"DOC021\"",
+    "\"DOC021\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"future or malformed dates fail\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > generated and archived docs are not checked": {
+   "kind": "test",
+   "hash": "70a60e0c4fecf563",
+   "asserts": 1,
+   "literals": [
+    "\"docs/archive/y.md\"",
+    "\"docs/archive/y.md\"",
+    "\"docs/generated/x.md\"",
+    "\"docs/generated/x.md\"",
+    "\"generated and archived docs are not checked\"",
+    "\"no front matter\\n\"",
+    "\"no front matter\\n\"",
+    "\"nope\\n\"",
+    "\"nope\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > invalid kind and status fail": {
+   "kind": "test",
+   "hash": "9661f79efbae3c5c",
+   "asserts": 1,
+   "literals": [
+    "\"DOC002\"",
+    "\"DOC002\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"essay\"",
+    "\"essay\"",
+    "\"invalid kind and status fail\"",
+    "\"wip\"",
+    "\"wip\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > long docs fail, AGENTS.md has a tighter limit": {
+   "kind": "test",
+   "hash": "155e9d3522603f62",
+   "asserts": 2,
+   "literals": [
+    "\"125\"",
+    "\"125\"",
+    "\"401\"",
+    "\"401\"",
+    "\"AGENTS.md\"",
+    "\"AGENTS.md\"",
+    "\"DOC050\"",
+    "\"DOC050\"",
+    "\"DOC050\"",
+    "\"DOC050\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"line\\n\"",
+    "\"line\\n\"",
+    "\"line\\n\"",
+    "\"line\\n\"",
+    "\"long docs fail, AGENTS.md has a tighter limit\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > missing front matter or keys fail": {
+   "kind": "test",
+   "hash": "899e3ecd2da8e9ff",
+   "asserts": 3,
+   "literals": [
+    "\"# no front matter\\n\"",
+    "\"# no front matter\\n\"",
+    "\"---\\n- a list\\n---\\nbody\\n\"",
+    "\"---\\n- a list\\n---\\nbody\\n\"",
+    "\"---\\ntitle: x\\n---\\nbody\\n\"",
+    "\"---\\ntitle: x\\n---\\nbody\\n\"",
+    "\"DOC001\"",
+    "\"DOC001\"",
+    "\"DOC001\"",
+    "\"DOC001\"",
+    "\"DOC001\"",
+    "\"DOC001\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"missing front matter or keys fail\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > orphans fail, transitively linked docs do not": {
+   "kind": "test",
+   "hash": "9806d6e8b730f8dd",
+   "asserts": 2,
+   "literals": [
+    "\"DOC040\"",
+    "\"DOC040\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/orphan.md\"",
+    "\"docs/orphan.md\"",
+    "\"docs/sub/deep.md\"",
+    "\"docs/sub/deep.md\"",
+    "\"orphans fail, transitively linked docs do not\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > plans must match their folder": {
+   "kind": "test",
+   "hash": "b86bdc17e0f5b165",
+   "asserts": 2,
+   "literals": [
+    "\"DOC060\"",
+    "\"DOC060\"",
+    "\"DOC060\"",
+    "\"DOC060\"",
+    "\"archived\"",
+    "\"docs/exec-plans/active/p.md\"",
+    "\"docs/exec-plans/completed/p.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"plan\"",
+    "\"plan\"",
+    "\"plans must match their folder\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > reverify clears staleness, logs the note and keeps the last five notes": {
+   "kind": "test",
+   "hash": "62bfa7b8225e38b0",
+   "asserts": 4,
+   "literals": [
+    "\"0\"",
+    "\"4\"",
+    "\"4\"",
+    "\"5\"",
+    "\"5\"",
+    "\"7\"",
+    "\"a * b\"",
+    "\"a + b\"",
+    "\"checked 6\"",
+    "\"checked 6\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"reverify clears staleness, logs the note and keeps the last five notes\"",
+    "\"src/mod.ts\"",
+    "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > reverify needs a note and front matter": {
+   "kind": "test",
+   "hash": "38a027e677f5abf1",
+   "asserts": 2,
+   "literals": [
+    "\"  \"",
+    "\"  \"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/plain.md\"",
+    "\"docs/plain.md\"",
+    "\"docs/plain.md\"",
+    "\"no front matter\\n\"",
+    "\"reverify needs a note and front matter\"",
+    "\"x\"",
+    "\"x\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::docs check [REQ-020] > the real repository's docs are clean": {
+   "kind": "test",
+   "hash": "6711fb06d8247af4",
+   "asserts": 1,
+   "literals": [
+    "\"the real repository's docs are clean\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::<import:061b407e>": {
+   "kind": "support",
+   "hash": "061b407e22e80127",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::<import:2c81e1a8>": {
+   "kind": "support",
+   "hash": "2c81e1a864e5efab",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::<import:50321f6c>": {
+   "kind": "support",
+   "hash": "50321f6c860a7a17",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::<import:571cce8a>": {
+   "kind": "support",
+   "hash": "571cce8a8cc07780",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::<import:92d11c27>": {
+   "kind": "support",
+   "hash": "92d11c273fc6952a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::<import:92f44056>": {
+   "kind": "support",
+   "hash": "92f440565031fda5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::<import:de1b9768>": {
+   "kind": "support",
+   "hash": "de1b9768ba185e70",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::<import:eedf8cd8>": {
+   "kind": "support",
+   "hash": "eedf8cd84d5daddb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::<import:fcb65df2>": {
+   "kind": "support",
+   "hash": "fcb65df235f03171",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::=addAdr": {
+   "kind": "support",
+   "hash": "52feb46976e8fcbe",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::=covCodes": {
+   "kind": "support",
+   "hash": "9ee524fbb35a9feb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::=coverageRepo": {
+   "kind": "support",
+   "hash": "00b0e686a92ae21d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::=protCodes": {
+   "kind": "support",
+   "hash": "867c17a7bb64d9dc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::=protectedRepo": {
+   "kind": "support",
+   "hash": "68dfea2a80b67a52",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::=read": {
+   "kind": "support",
+   "hash": "a02ca9415c6b60bb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::=REAL": {
+   "kind": "support",
+   "hash": "63811c58bfe4d972",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::=REQS": {
+   "kind": "support",
+   "hash": "1df56de733124fd1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::=SPEC": {
+   "kind": "support",
+   "hash": "38d40d34c0f42e02",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::=summary": {
+   "kind": "support",
+   "hash": "bbd73a2bf39e7c87",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::=traceRepo": {
+   "kind": "support",
+   "hash": "5ed1e8822e748fa8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::coverage ratchet [REQ-023] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::coverage ratchet [REQ-023] > a missing summary fails": {
+   "kind": "test",
+   "hash": "5cfc00a3176c01f8",
+   "asserts": 1,
+   "literals": [
+    "\"COV004\"",
+    "\"COV004\"",
+    "\"a missing summary fails\"",
+    "\"coverage/coverage-summary.json\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::coverage ratchet [REQ-023] > a unit without a floor, or a floor below the minimum, fails": {
+   "kind": "test",
+   "hash": "494332375597571b",
+   "asserts": 2,
+   "literals": [
+    "\"100\"",
+    "\"100\"",
+    "\"100\"",
+    "\"100\"",
+    "\"50\"",
+    "\"50\"",
+    "\"99\"",
+    "\"99\"",
+    "\"99\"",
+    "\"99\"",
+    "\"COV002\"",
+    "\"COV002\"",
+    "\"COV002\"",
+    "\"COV002\"",
+    "\"a unit without a floor, or a floor below the minimum, fails\"",
+    "\"core.world\"",
+    "\"core.world\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/a.ts\"",
+    "\"packages/core/src/world/a.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::coverage ratchet [REQ-023] > at or above the floor passes, below fails": {
+   "kind": "test",
+   "hash": "f5181dded7271b8d",
+   "asserts": 2,
+   "literals": [
+    "\"100\"",
+    "\"100\"",
+    "\"100\"",
+    "\"100\"",
+    "\"94\"",
+    "\"94\"",
+    "\"95\"",
+    "\"95\"",
+    "\"95\"",
+    "\"95\"",
+    "\"95\"",
+    "\"95\"",
+    "\"COV001\"",
+    "\"COV001\"",
+    "\"at or above the floor passes, below fails\"",
+    "\"core.kernel\"",
+    "\"core.kernel\"",
+    "\"core.kernel\"",
+    "\"core.kernel\"",
+    "\"packages/core/src/kernel/a.ts\"",
+    "\"packages/core/src/kernel/a.ts\"",
+    "\"packages/core/src/kernel/a.ts\"",
+    "\"packages/core/src/kernel/a.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::coverage ratchet [REQ-023] > coverage is grouped by architecture unit and absolute paths are understood": {
+   "kind": "test",
+   "hash": "48ca04591c6440a2",
+   "asserts": 1,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"10\"",
+    "\"10\"",
+    "\"10\"",
+    "\"100\"",
+    "\"100\"",
+    "\"5\"",
+    "\"9\"",
+    "\"95\"",
+    "\"95\"",
+    "\"core.kernel\"",
+    "\"core.kernel\"",
+    "\"core.world\"",
+    "\"core.world\"",
+    "\"coverage is grouped by architecture unit and absolute paths are understood\"",
+    "\"elsewhere/c.ts\"",
+    "\"packages/core/src/kernel/a.ts\"",
+    "\"packages/core/src/world/b.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::coverage ratchet [REQ-023] > coverage-ignore comments need a reason and have a budget": {
+   "kind": "test",
+   "hash": "ff45ed6ed639e72e",
+   "asserts": 3,
+   "literals": [
+    "\"/* v8 ignore next */\\nexport const a = 1;\\n\"",
+    "\"/* v8 ignore next -- only reachable on Windows hosts */\\nexport const a = 1;\\n\"",
+    "\"/* v8 ignore next -- only reachable on Windows hosts */\\nexport const a = 1;\\n\"",
+    "\"4\"",
+    "\"COV005\"",
+    "\"COV005\"",
+    "\"COV005\"",
+    "\"COV005\"",
+    "\"coverage-ignore comments need a reason and have a budget\"",
+    "\"packages/core/src/kernel/a.ts\"",
+    "\"packages/core/src/kernel/a.ts\"",
+    "\"packages/core/src/kernel/a.ts\"",
+    "\"packages/core/src/kernel/a.ts\"",
+    "\"packages/core/src/kernel/a.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::coverage ratchet [REQ-023] > floors may not drop against the base ref (%o)": {
+   "kind": "test",
+   "hash": "ab5d1f6765992bba",
+   "asserts": 1,
+   "literals": [
+    "\"100\"",
+    "\"94\"",
+    "\"95\"",
+    "\"96\"",
+    "\"99\"",
+    "\"COV003\"",
+    "\"COV003\"",
+    "\"HEAD\"",
+    "\"HEAD\"",
+    "\"core.kernel\"",
+    "\"core.kernel\"",
+    "\"core.kernel\"",
+    "\"floors may not drop against the base ref (%o)\"",
+    "\"harness/config/coverage-floor.json\"",
+    "\"packages/core/src/kernel/a.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::coverage ratchet [REQ-023] > ratchet raises floors, never lowers them and never goes under the minimum": {
+   "kind": "test",
+   "hash": "a27ec85e87fc8db2",
+   "asserts": 1,
+   "literals": [
+    "\"100\"",
+    "\"100\"",
+    "\"100\"",
+    "\"80\"",
+    "\"90\"",
+    "\"90\"",
+    "\"93\"",
+    "\"95\"",
+    "\"97\"",
+    "\"97\"",
+    "\"97\"",
+    "\"99\"",
+    "\"99\"",
+    "\"99\"",
+    "\"apps/server/src/http/c.ts\"",
+    "\"core.kernel\"",
+    "\"core.kernel\"",
+    "\"core.kernel\"",
+    "\"core.world\"",
+    "\"core.world\"",
+    "\"packages/core/src/kernel/a.ts\"",
+    "\"packages/core/src/world/b.ts\"",
+    "\"ratchet raises floors, never lowers them and never goes under the minimum\"",
+    "\"server.http\"",
+    "\"server.http\"",
+    "\"server.http\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::coverage ratchet [REQ-023] > the CLI prints ratcheted floors": {
+   "kind": "test",
+   "hash": "357be09cc6245191",
+   "asserts": 3,
+   "literals": [
+    "\"--root\"",
+    "\"--root\"",
+    "\"--root\"",
+    "\"--root\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"100\"",
+    "\"99\"",
+    "\"core.kernel: 99.0%\"",
+    "\"core.kernel: 99.0%\"",
+    "\"packages/core/src/kernel/a.ts\"",
+    "\"ratchet\"",
+    "\"ratchet\"",
+    "\"the CLI prints ratcheted floors\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::protected paths [REQ-021] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::protected paths [REQ-021] > a sealed ADR added in the same change authorizes the path or its pattern": {
+   "kind": "test",
+   "hash": "7323b9bcffade2bb",
+   "asserts": 2,
+   "literals": [
+    "\"a sealed ADR added in the same change authorizes the path or its pattern\"",
+    "\"harness/**\"",
+    "\"harness/config/x.yaml\"",
+    "\"harness/config/x.yaml\"",
+    "\"harness/config/x.yaml\"",
+    "\"limit: 999\\n\"",
+    "\"limit: 999\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::protected paths [REQ-021] > an ADR that already existed cannot authorize new changes": {
+   "kind": "test",
+   "hash": "85a93c455e77ff2b",
+   "asserts": 1,
+   "literals": [
+    "\"PROT001\"",
+    "\"PROT001\"",
+    "\"an ADR that already existed cannot authorize new changes\"",
+    "\"harness/config/x.yaml\"",
+    "\"harness/config/x.yaml\"",
+    "\"limit: 999\\n\"",
+    "\"old adr\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::protected paths [REQ-021] > an unsealed ADR does not authorize": {
+   "kind": "test",
+   "hash": "011c03128320e9d5",
+   "asserts": 1,
+   "literals": [
+    "\"PROT001\"",
+    "\"PROT001\"",
+    "\"PROT002\"",
+    "\"PROT002\"",
+    "\"an unsealed ADR does not authorize\"",
+    "\"harness/config/x.yaml\"",
+    "\"harness/config/x.yaml\"",
+    "\"limit: 999\\n\"",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::protected paths [REQ-021] > changing, deleting or adding under a protected path without an ADR fails": {
+   "kind": "test",
+   "hash": "24de9ba24edf0a34",
+   "asserts": 3,
+   "literals": [
+    "\"PROT001\"",
+    "\"PROT001\"",
+    "\"PROT001\"",
+    "\"PROT001\"",
+    "\"PROT001\"",
+    "\"PROT001\"",
+    "\"a: 1\\n\"",
+    "\"changing, deleting or adding under a protected path without an ADR fails\"",
+    "\"harness/config/new.yaml\"",
+    "\"harness/config/x.yaml\"",
+    "\"harness/config/x.yaml\"",
+    "\"limit: 999\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::protected paths [REQ-021] > CODEOWNERS must cover every protected path": {
+   "kind": "test",
+   "hash": "ee14f8d213215184",
+   "asserts": 2,
+   "literals": [
+    "\".github/CODEOWNERS\"",
+    "\"/harness/** @o\\n\"",
+    "\"CODEOWNERS must cover every protected path\"",
+    "\"PROT003\"",
+    "\"PROT003\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::protected paths [REQ-021] > ratchet files are exempt and each names an existing guard": {
+   "kind": "test",
+   "hash": "306e6a5274738d8a",
+   "asserts": 2,
+   "literals": [
+    "\"harness/config/debt-baseline.json\"",
+    "\"ratchet files are exempt and each names an existing guard\"",
+    "\"{\\\"a\\\": 1}\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::protected paths [REQ-021] > unprotected changes pass": {
+   "kind": "test",
+   "hash": "91b76d40c523081b",
+   "asserts": 1,
+   "literals": [
+    "\"export const a = 2;\\n\"",
+    "\"src/a.ts\"",
+    "\"unprotected changes pass\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::traceability [REQ-023] [REQ-025] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::traceability [REQ-023] [REQ-025] > a test citing an unknown requirement fails": {
+   "kind": "test",
+   "hash": "6a1f6ffd15f8c3b2",
+   "asserts": 1,
+   "literals": [
+    "\"TRACE002\"",
+    "\"TRACE002\"",
+    "\"a [REQ-001] [REQ-002] [REQ-999]\"",
+    "\"a test citing an unknown requirement fails\"",
+    "\"tests/spec/a.test.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::traceability [REQ-023] [REQ-025] > duplicate requirement ids fail": {
+   "kind": "test",
+   "hash": "434ae96caf270b3d",
+   "asserts": 1,
+   "literals": [
+    "\"TRACE004\"",
+    "\"TRACE004\"",
+    "\"[REQ-001] [REQ-002]\"",
+    "\"docs/product-specs/requirements.md\"",
+    "\"duplicate requirement ids fail\"",
+    "\"tests/spec/a.test.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::traceability [REQ-023] [REQ-025] > every requirement needs a test": {
+   "kind": "test",
+   "hash": "6303d90ce922089a",
+   "asserts": 1,
+   "literals": [
+    "\"REQ-002 has no test\"",
+    "\"REQ-002 has no test\"",
+    "\"TRACE001\"",
+    "\"TRACE001\"",
+    "\"a [REQ-001]\"",
+    "\"every requirement needs a test\"",
+    "\"tests/spec/a.test.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::traceability [REQ-023] [REQ-025] > spec tests must cite a requirement, unit tests need not": {
+   "kind": "test",
+   "hash": "c10242e1a102eae6",
+   "asserts": 1,
+   "literals": [
+    "\"TRACE003\"",
+    "\"TRACE003\"",
+    "\"a [REQ-001] [REQ-002]\"",
+    "\"packages/core/src/x.test.ts\"",
+    "\"spec tests must cite a requirement, unit tests need not\"",
+    "\"tests/spec/a.test.ts\"",
+    "\"tests/spec/b.test.ts\"",
+    "\"tests/spec/b.test.ts\"",
+    "\"tests/spec/b.test.ts\"",
+    "\"unit\"",
+    "\"unlinked\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::<import:50321f6c>": {
+   "kind": "support",
+   "hash": "50321f6c860a7a17",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::<import:881f9dde>": {
+   "kind": "support",
+   "hash": "881f9dde3b27c0d0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::<import:92d11c27>": {
+   "kind": "support",
+   "hash": "92d11c273fc6952a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::<import:92f44056>": {
+   "kind": "support",
+   "hash": "92f440565031fda5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::<import:cd66fb27>": {
+   "kind": "support",
+   "hash": "cd66fb2759e02f26",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::<import:de1b9768>": {
+   "kind": "support",
+   "hash": "de1b9768ba185e70",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::=codes": {
+   "kind": "support",
+   "hash": "3cd455e89dec3ee4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::=edit": {
+   "kind": "support",
+   "hash": "87fe88db4eb0e9e1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::=GOOD": {
+   "kind": "support",
+   "hash": "dae05bcb61fece22",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::=guardRepo": {
+   "kind": "support",
+   "hash": "1afbee9b9faf60bb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::=read": {
+   "kind": "support",
+   "hash": "a02ca9415c6b60bb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::=REAL": {
+   "kind": "support",
+   "hash": "63811c58bfe4d972",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::=REASON": {
+   "kind": "support",
+   "hash": "305444975fba60a3",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::=TEST_FILE": {
+   "kind": "support",
+   "hash": "661535d331e14b9c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::=withTest": {
+   "kind": "support",
+   "hash": "28201aaabf3a96a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::=writeAdr": {
+   "kind": "support",
+   "hash": "026e228444d2955e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: amendments [REQ-023] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: amendments [REQ-023] > =setup": {
+   "kind": "support",
+   "hash": "52f9ada64ae182d0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: amendments [REQ-023] > a sealed amendment ADR allows exactly the listed change": {
+   "kind": "test",
+   "hash": "bb497b9612eec845",
+   "asserts": 4,
+   "literals": [
+    "\"() => 2\"",
+    "\"() => 5\"",
+    "\"0009-amend.md\"",
+    "\"0009-amend.md\"",
+    "\"0009-amend.md\"",
+    "\"0009-amend.md\"",
+    "\"0009-amend.md\"",
+    "\"a sealed amendment ADR allows exactly the listed change\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: amendments [REQ-023] > a weak or unsealed amendment is rejected (sealed=%s)": {
+   "kind": "test",
+   "hash": "30c33b804810e5bd",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0009-amend.md\"",
+    "\"0009-amend.md\"",
+    "\"0009-amend.md\"",
+    "\"0009-amend.md\"",
+    "\"TLOCK004\"",
+    "\"TLOCK004\"",
+    "\"a weak or unsealed amendment is rejected (sealed=%s)\"",
+    "\"because\"",
+    "\"not sealed\"",
+    "\"test_change_reason\"",
+    "false",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: amendments [REQ-023] > an amended removal is recorded and accepted": {
+   "kind": "test",
+   "hash": "d8abeb49220b0827",
+   "asserts": 4,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"0009-amend.md\"",
+    "\"0009-amend.md\"",
+    "\"0009-amend.md\"",
+    "\"an amended removal is recorded and accepted\"",
+    "\"docs/design-docs/adr/.keep\"",
+    "\"test(\\\"adds\\\", () => {\\n  expect(add(1, 1)).toBe(helper());\\n});\\n\"",
+    "\"test(\\\"adds\\\", () => {\\n  expect(add(1, 1)).toBe(helper());\\n});\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: amendments [REQ-023] > forging the lock by hand with a fake ADR name is caught": {
+   "kind": "test",
+   "hash": "52b04d6428236786",
+   "asserts": 2,
+   "literals": [
+    "\"0042-fake.md\"",
+    "\"TLOCK004\"",
+    "\"TLOCK004\"",
+    "\"forging the lock by hand with a fake ADR name is caught\"",
+    "\"harness/config/test-lock.json\"",
+    "\"harness/config/test-lock.json\"",
+    "\"toBe(3)\"",
+    "\"toBe(helper())\"",
+    "\"utf8\"",
+    "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: amendments [REQ-023] > forging the lock without amended_by is caught against the base ref": {
+   "kind": "test",
+   "hash": "7af92d542c81f0f5",
    "asserts": 5,
-   "hash": "20a1503871a04506",
-   "kind": "test",
    "literals": [
-    "'FAIL demo: 2 violation(s)'",
-    "'OK   demo'",
-    "'[A]'",
-    "'[B]'",
-    "'demo'",
-    "'demo'",
-    "0",
-    "1"
+    "\"HEAD\"",
+    "\"HEAD\"",
+    "\"TLOCK005\"",
+    "\"TLOCK005\"",
+    "\"forging the lock without amended_by is caught against the base ref\"",
+    "\"harness/config/test-lock.json\"",
+    "\"harness/config/test-lock.json\"",
+    "\"toBe(3)\"",
+    "\"toBe(3)\"",
+    "\"toBe(helper())\"",
+    "\"toBe(helper())\"",
+    "\"utf8\"",
+    "\"utf8\""
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_git_returns_none_outside_a_repository_or_on_failure": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "b5bc88d967e84d69",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: amendments [REQ-023] > the CLI reports refusals with the way forward": {
    "kind": "test",
-   "literals": [
-    "'HEAD'",
-    "'rev-parse'",
-    "None"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_main_exit_code_matches_run_result": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "531aaf909e447622",
-   "kind": "test",
-   "literals": [
-    "'--root'",
-    "'FAIL'",
-    "'OK'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_run_all_runs_every_check_and_reports_overall_verdict": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 3,
-   "hash": "ee9f43adeb206ebe",
-   "kind": "test",
-   "literals": [
-    "'ALL CHECKS PASSED'",
-    "'coverage'",
-    "0"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_run_all_skips_coverage_unless_asked": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "f899399a5a9572c2",
-   "kind": "test",
-   "literals": [
-    "'coverage'",
-    "'coverage'",
-    "1"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_seal_adr_rejects_non_decisions_and_reverify_rejects_missing_front_matter": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "66ba34537346c529",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_split_front_matter_returns_none_for_unusable_input": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "5a6cbb5c12ff7e36",
-   "kind": "test",
-   "literals": [
-    "None"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_split_front_matter_splits_data_and_body": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "bc95d46b319bba8c",
-   "kind": "test",
-   "literals": [
-    "'a'",
-    "'hello'",
-    "1"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_testguard_cli_lock_appends_new_tests_and_refuses_changes": {
-   "added": "2026-10-28",
-   "amended_by": null,
+   "hash": "e0468169d28d9357",
    "asserts": 4,
-   "hash": "2e15fe3c80c05392",
-   "kind": "test",
    "literals": [
-    "'--root'",
-    "'--root'",
-    "'--root'",
-    "'check'",
-    "'lock'",
-    "'lock'",
-    "'refused: tests/test_a.py::test_a'",
-    "0",
-    "0",
-    "1"
+    "\"--root\"",
+    "\"--root\"",
+    "\"--root\"",
+    "\"--root\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"lock\"",
+    "\"lock\"",
+    "\"refused\"",
+    "\"refused\"",
+    "\"requirement changed\"",
+    "\"requirement changed\"",
+    "\"the CLI reports refusals with the way forward\""
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_testguard_main_exit_code_matches_run_result": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: configuration [REQ-023] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: configuration [REQ-023] > a second test configuration fails; a vite config without tests is fine": {
+   "kind": "test",
+   "hash": "3a3d8a4f2ac7a2ba",
+   "asserts": 6,
+   "literals": [
+    "\"TCFG004\"",
+    "\"TCFG004\"",
+    "\"TCFG004\"",
+    "\"TCFG004\"",
+    "\"a second test configuration fails; a vite config without tests is fine\"",
+    "\"apps/web/vite.config.ts\"",
+    "\"apps/web/vite.config.ts\"",
+    "\"apps/web/vite.config.ts\"",
+    "\"apps/web/vite.config.ts\"",
+    "\"apps/web/vitest.config.ts\"",
+    "\"apps/web/vitest.config.ts\"",
+    "\"export default { plugins: [] };\\n\"",
+    "\"export default { plugins: [] };\\n\"",
+    "\"export default { test: { include: [] } };\\n\"",
+    "\"export default { test: { include: [] } };\\n\"",
+    "\"export default {};\\n\"",
+    "\"export default {};\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: configuration [REQ-023] > changing the test include list fails": {
+   "kind": "test",
+   "hash": "82734d00aa972e77",
+   "asserts": 3,
+   "literals": [
+    "\"TCFG002\"",
+    "\"TCFG002\"",
+    "\"\\\"tests/spec/**/*.test.ts\\\",\\n    ],\"",
+    "\"],\"",
+    "\"changing the test include list fails\"",
+    "\"vitest.config.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: configuration [REQ-023] > changing the test script fails": {
+   "kind": "test",
+   "hash": "6b997a2f57c5ce6a",
    "asserts": 2,
-   "hash": "b9c3f6a766fa5b70",
-   "kind": "test",
    "literals": [
-    "'--root'",
-    "'FAIL'",
-    "'OK'",
-    "'check'"
+    "\"TCFG001\"",
+    "\"TCFG001\"",
+    "\"changing the test script fails\"",
+    "\"package.json\"",
+    "\"vitest run --coverage -t adds\""
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_today_can_be_pinned": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: configuration [REQ-023] > forbidden vitest option fails: %s": {
+   "kind": "test",
+   "hash": "3b21754dda8ef813",
+   "asserts": 3,
+   "literals": [
+    "\"TCFG001\"",
+    "\"TCFG001\"",
+    "\"allowOnly: true\"",
+    "\"bail: 1\"",
+    "\"environment: \\\"node\\\",\"",
+    "\"exclude: []\"",
+    "\"forbidden vitest option fails: %s\"",
+    "\"passWithNoTests: true\"",
+    "\"retry: 3\"",
+    "\"setupFiles: ['s.ts']\"",
+    "\"testNamePattern: 'x'\"",
+    "\"vitest.config.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: configuration [REQ-023] > hiding code from coverage fails": {
+   "kind": "test",
+   "hash": "7c28b4e009b5c1e0",
+   "asserts": 6,
+   "literals": [
+    "\"\"",
+    "\"TCFG003\"",
+    "\"TCFG003\"",
+    "\"TCFG003\"",
+    "\"TCFG003\"",
+    "\"\\\"**/test-support/**\\\", \\\"apps/server/src/hard.ts\\\"]\"",
+    "\"\\\"**/test-support/**\\\"]\"",
+    "\"\\\"apps/web/src/logic/**\\\",\"",
+    "\"hiding code from coverage fails\"",
+    "\"vitest.config.ts\"",
+    "\"vitest.config.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: static rules [REQ-023] > .only fails anywhere": {
+   "kind": "test",
+   "hash": "b1bbacf77fe6530c",
    "asserts": 2,
-   "hash": "94865af9ed749378",
-   "kind": "test",
    "literals": [
-    "1",
-    "2",
-    "2030"
+    "\".only fails anywhere\"",
+    "\"2\"",
+    "\"2\"",
+    "\"TEST005\"",
+    "\"TEST005\"",
+    "\"test.only(\\\"x\\\", () => {\\n  expect(1 + 1).toBe(2);\\n});\\ndescribe.only(\\\"s\\\", () => {});\""
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_cli_and_common.py::test_violation_render_includes_location_problem_and_fix": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "5024bcc86cc5b395",
-   "kind": "test",
-   "literals": [
-    "'X001'",
-    "'[X001] a/b.py:7'",
-    "'a/b.py'",
-    "'a/b.py\\n'",
-    "'bad'",
-    "'fix'",
-    "'fix: do this'",
-    "'problem: bad'",
-    "0"
-   ],
-   "skips": 0,
-   "tolerances": []
+   "amended_by": null
   },
-  "tests/harness/test_debt_check.py::<import:06a537df>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "06a537df37038ae3",
+  "harness/src/checks/testguard.test.ts::test integrity: static rules [REQ-023] > <suite>": {
    "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::<import:211ee427>": {
-   "added": "2026-10-28",
-   "amended_by": null,
+   "hash": "edb4bbfe0a867169",
    "asserts": 0,
-   "hash": "211ee42757705c7e",
-   "kind": "support",
    "literals": [],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::<import:59051b17>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "59051b17634cdcb5",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::<import:5b0cada2>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "5b0cada2ee49e50a",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::<import:73be8b6e>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "73be8b6e8227767f",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::<import:890bede5>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "890bede517510aea",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::<import:920d77e2>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "920d77e2e47b9cdf",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::<import:ba0cc80d>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "ba0cc80d1b28d0c3",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::<import:bb134ca6>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "bb134ca6c8f43358",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::=TODAY": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "f42191bfa03f9a99",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::=pytestmark": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "28e0eea37abab6d3",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::branchy": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "53140ce4db706ade",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::codes": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "711830e2c4d30d95",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::debt_repo": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "e00a29f974a9426a",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::item": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "752bd7ca63d1f6f1",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::long_function": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "dd67aa9fb2484413",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::register": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "628a294e7a1d913b",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_bad_id_format_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "0691b2bc47b41c06",
-   "kind": "test",
-   "literals": [
-    "'DEBT010'",
-    "'TD-1'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_baselined_violation_is_tolerated": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "9a4599d61ebfa5cc",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_baselined_violation_that_gets_worse_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "ee8a5bfc16026bd4",
-   "kind": "test",
-   "literals": [
-    "'DEBT031'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_clean_repo_passes": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "ddfdeea43f3794ea",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_closed_overdue_item_is_fine": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "f62ac4197ae94cea",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_closing_without_resolution_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "581be661acc320f2",
-   "kind": "test",
-   "literals": [
-    "'DEBT010'",
-    "'done'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_complex_function_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "828fc8eee76411bb",
-   "kind": "test",
-   "literals": [
-    "'DEBT022'",
-    "'src/demo/a.py'",
-    "13"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_complexity_counts_branches_without_nested_functions": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "e0d8c29387825657",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_duplicate_ids_fail": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "1e4f57d74013a8d7",
-   "kind": "test",
-   "literals": [
-    "'DEBT010'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_file_level_waiver_on_first_line": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "8ec3576a4c585757",
-   "kind": "test",
-   "literals": [
-    "'src/demo/a.py'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_fixed_baseline_entry_must_be_removed": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "ad697e4260eec409",
-   "kind": "test",
-   "literals": [
-    "'DEBT030'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_high_severity_budget_is_enforced": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "ada24525ac66b411",
-   "kind": "test",
-   "literals": [
-    "'DEBT012'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_long_file_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "ed0be8fe558d3ef8",
-   "kind": "test",
-   "literals": [
-    "'DEBT020'",
-    "'X = 1\\n'",
-    "'src/demo/a.py'",
-    "501"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_long_function_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "8bcd4bb0c15cf81b",
-   "kind": "test",
-   "literals": [
-    "'DEBT021'",
-    "'src/demo/a.py'",
-    "85"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_marker_for_closed_item_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "b47ca4e61609a932",
-   "kind": "test",
-   "literals": [
-    "'DEBT013'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_marker_for_unknown_item_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "a6dad0c062d4abe3",
-   "kind": "test",
-   "literals": [
-    "'DEBT002'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_markers_are_checked_in_tests_too": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "cc700319304e0128",
-   "kind": "test",
-   "literals": [
-    "'DEBT001'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_markers_inside_strings_are_not_comments": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "3d8d3423e05b2448",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_open_debt_budget_is_enforced": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "c0718c384625223f",
-   "kind": "test",
-   "literals": [
-    "'DEBT012'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_overdue_open_item_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "f4fc93c92de2cf57",
-   "kind": "test",
-   "literals": [
-    "'DEBT011'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_ratchet_removes_fixed_entries_and_lowers_values_but_never_adds": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "9a2c2b8ffff46909",
-   "kind": "test",
-   "literals": [
-    "'src/demo/a.py::f::complexity'",
-    "'src/demo/a.py::gone::lines'",
-    "14"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_real_repository_debt_is_clean": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "8f7d1c8230f6c6a0",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_register_entry_missing_fields_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "a07bf059e11d8943",
-   "kind": "test",
-   "literals": [
-    "'DEBT010'",
-    "'TD-0001'",
-    "'id'",
-    "'t'",
-    "'title'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_self_and_cls_do_not_count_as_parameters": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "953d737c6fe9bbc4",
-   "kind": "test",
-   "literals": [
-    "'src/demo/a.py'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_tests_are_exempt_from_size_limits": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "904a6be242daa03b",
-   "kind": "test",
-   "literals": [
-    "'tests/test_big.py'",
-    "120"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_too_many_parameters_fail": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "41c36a9cb7ded350",
-   "kind": "test",
-   "literals": [
-    "'DEBT023'",
-    "'src/demo/a.py'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_tracked_marker_pointing_at_open_item_passes": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "62daf6ad4f22dce5",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_untracked_markers_fail": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "a1085a12cfe7ee5c",
-   "kind": "test",
-   "literals": [
-    "'DEBT001'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_waiver_for_closed_item_does_not_help": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "1cd21215dda406a6",
-   "kind": "test",
-   "literals": [
-    "'DEBT013'",
-    "'DEBT021'",
-    "'src/demo/a.py'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_waiver_that_is_no_longer_needed_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "7df13ff0e01f6e2d",
-   "kind": "test",
-   "literals": [
-    "'DEBT032'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::test_waiver_with_open_item_tolerates_violation": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "7dbe48b64d4a0deb",
-   "kind": "test",
-   "literals": [
-    "'src/demo/a.py'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_debt_check.py::write_baseline": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "89f781eebdbbd37b",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::<import:13a6b3e4>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "13a6b3e471bb5f4c",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::<import:38970ff1>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "38970ff169733e3a",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::<import:59051b17>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "59051b17634cdcb5",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::<import:5b0cada2>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "5b0cada2ee49e50a",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::<import:73be8b6e>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "73be8b6e8227767f",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::<import:890bede5>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "890bede517510aea",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::<import:920d77e2>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "920d77e2e47b9cdf",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::=MODULE_SRC": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "bc1a3886e8b314b4",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::=TODAY": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "f42191bfa03f9a99",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::=pytestmark": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "6f9eb49ae0e8b068",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::adr_body": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "90a823e7b814ec71",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::adr_files": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "973caaacba0032f2",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::codes": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "7f0a85b23c56c94f",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::docs_repo": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "7ff4f3ae3ce52bed",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::front": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "3989740047f2c04b",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::sealed": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "61387b785566461b",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_adr_enforced_by_unknown_rule_or_missing_test_is_flagged": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "6e6e02d28a24c9b7",
-   "kind": "test",
-   "literals": [
-    "'DOC080'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_adr_must_say_how_it_is_enforced": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "37a406f4c54e1d3a",
-   "kind": "test",
-   "literals": [
-    "'DOC080'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_adr_outside_adr_dir_is_flagged": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "504c204c927cbc5f",
-   "kind": "test",
-   "literals": [
-    "'DOC060'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_adr_without_mechanical_enforcement_must_explain_why": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "0a38eb7ae6697247",
-   "kind": "test",
-   "literals": [
-    "'DOC080'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_agents_md_has_a_tighter_limit": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "98f98c40cd326b33",
-   "kind": "test",
-   "literals": [
-    "'DOC050'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_broken_link_and_dead_path_reference": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "930a9c65a6ca8317",
-   "kind": "test",
-   "literals": [
-    "'DOC030'",
-    "'DOC031'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_changing_adr_front_matter_status_does_not_break_the_seal": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "0b1b4b3ca3973c9e",
-   "kind": "test",
-   "literals": [
-    "'DOC070'",
-    "None"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_clean_repo_passes": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "1dd908dc74025ad3",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_comment_and_docstring_changes_do_not_make_docs_stale": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "9f2cc4aaf21885d1",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_completed_plans_must_be_archived": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "389f05c8a81ce89a",
-   "kind": "test",
-   "literals": [
-    "'DOC060'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_covers_matching_nothing_is_flagged": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "06ceb00ac5c2e8f6",
-   "kind": "test",
-   "literals": [
-    "'DOC012'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_covers_without_hash_is_flagged": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "70489c792caf0e47",
-   "kind": "test",
-   "literals": [
-    "'DOC011'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_decisions_never_expire_by_age": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "5e1d0655913b4ba4",
-   "kind": "test",
-   "literals": [
-    "'DOC020'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_doc_goes_stale_when_covered_code_changes": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "7291f2855ad55d6c",
-   "kind": "test",
-   "literals": [
-    "'DOC010'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_editing_a_sealed_adr_body_is_flagged": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "97cf9b2ac7ad1051",
-   "kind": "test",
-   "literals": [
-    "'DOC070'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_external_links_and_anchors_are_ignored": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "a22ab1eb4afac3c5",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_fenced_code_is_not_checked_for_links_or_paths": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "a68da7255b14f62e",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_future_verification_date_is_flagged": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "5ce6cbcac84bd166",
-   "kind": "test",
-   "literals": [
-    "'DOC021'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_invalid_kind_and_status": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "8216240a734c71d6",
-   "kind": "test",
-   "literals": [
-    "'DOC002'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_missing_front_matter": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "42b5541325e4d99d",
-   "kind": "test",
-   "literals": [
-    "'DOC001'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_missing_required_key": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "4e78fd17246db669",
-   "kind": "test",
-   "literals": [
-    "'DOC001'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_new_covered_file_makes_doc_stale": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "f654baf8b064e62a",
-   "kind": "test",
-   "literals": [
-    "'DOC010'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_old_docs_expire_by_kind": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "bf63c8963f972dcc",
-   "kind": "test",
-   "literals": [
-    "'DOC020'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_orphan_doc_is_flagged": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "372a11e29f9dff8f",
-   "kind": "test",
-   "literals": [
-    "'DOC040'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_overlong_doc_is_flagged": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "4469da924cd4a3e5",
-   "kind": "test",
-   "literals": [
-    "'DOC050'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_real_repository_docs_are_clean": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "79d75d8618f39f0c",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_reverify_clears_staleness_and_logs_the_note": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "1d7d2864181ef3bf",
-   "kind": "test",
-   "literals": [
-    "'checked add() docs'",
-    "'verification_log'",
-    "1",
-    "None"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_reverify_requires_a_note": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "73bec14060a62c87",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_superseded_adr_needs_an_existing_successor": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "90b3ca362d77b149",
-   "kind": "test",
-   "literals": [
-    "'DOC060'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_transitively_linked_doc_is_not_an_orphan": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "fdf3b69bdb6fe19f",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_unsealed_accepted_adr_is_flagged_then_sealed_passes": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "caabd4c9b3e3c8a7",
-   "kind": "test",
-   "literals": [
-    "'DOC071'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::test_verification_log_keeps_only_recent_entries": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "b70709ea8a536599",
-   "kind": "test",
-   "literals": [
-    "'verification_log'",
-    "5",
-    "None"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_docs_check.py::verified_guide": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "aa21d013888c51ab",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::<import:06a537df>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "06a537df37038ae3",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::<import:211ee427>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "211ee42757705c7e",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::<import:59051b17>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "59051b17634cdcb5",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::<import:5b0cada2>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "5b0cada2ee49e50a",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::<import:890bede5>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "890bede517510aea",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::<import:920d77e2>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "920d77e2e47b9cdf",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::<import:9d97d469>": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "9d97d469cf8d6646",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::<import:e46fb5b6>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "e46fb5b65c6c98e2",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::=GIT_ID": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "2fe354231961333b",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::=MARKED": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "a83eacb2c6ba6890",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::=OWNERS": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "b26a83401123dc62",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::=PROTECTED": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "b3b5fbf3a9866b8d",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::=REQS": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "25d6866aa95d1404",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::add_adr": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "87dc62b17e32dd93",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::ccodes": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "c640bc2294a29cc1",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::committed_repo": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "ceb438d17b0db1ff",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::coverage_repo": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "2f5f1e7e2716b812",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::debt_base_repo": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "a5e32449b9f01523",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::git": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "5c5622caab7c3571",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::pcodes": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "4150c695267a5ef5",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::protected_repo": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "d743b5b390128b23",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::tcodes": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "2aff1ec1b224c0ee",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_adr_authorizing_by_pattern": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "326d76d75547310e",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_adr_that_already_existed_on_base_cannot_authorize_new_changes": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "5a4cca75d3532756",
-   "kind": "test",
-   "literals": [
-    "'PROT001'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_codeowners_must_cover_protected_paths": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "1d6fb3aacab4e23d",
-   "kind": "test",
-   "literals": [
-    "'PROT003'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_coverage_at_or_above_floor_passes": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "4ebd18bf853acba9",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_coverage_below_floor_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "e7a42e0654382981",
-   "kind": "test",
-   "literals": [
-    "'COV001'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_debt_baseline_may_only_shrink": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "f35950430393a051",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_deleting_a_guardrail_without_adr_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "1cd36ea44c7e36c3",
-   "kind": "test",
-   "literals": [
-    "'PROT001'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_duplicate_requirement_ids_fail": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "80f17e08421f9716",
-   "kind": "test",
-   "literals": [
-    "'TRACE004'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_every_ratchet_file_has_a_guard_that_exists": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "0d77eeb6f1adf6c7",
-   "kind": "test",
-   "literals": [
-    "'\"'",
-    "'\"'",
-    "'.py'",
-    "'harness/checks/'",
-    "'harness/config/'",
-    "'utf-8'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_every_requirement_needs_a_test": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "ad4cf52c9de44dc4",
-   "kind": "test",
-   "literals": [
-    "'REQ-002 has no test'",
-    "'TRACE001'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_floor_below_global_minimum_is_invalid": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "cdc96a4543563ea1",
-   "kind": "test",
-   "literals": [
-    "'COV002'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_floor_may_not_be_lowered_against_base": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "9d2e7ac7fbed0bab",
-   "kind": "test",
-   "literals": [
-    "'HEAD'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_loosening_a_guardrail_without_adr_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "96896d560a02532d",
-   "kind": "test",
-   "literals": [
-    "'PROT001'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_missing_report_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "038d56380010040b",
-   "kind": "test",
-   "literals": [
-    "'COV004'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_new_file_under_protected_path_needs_adr": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "25428a4245c87577",
-   "kind": "test",
-   "literals": [
-    "'PROT001'"
-   ],
-   "skips": 0,
-   "tolerances": []
+   "amended_by": null
   },
-  "tests/harness/test_ratchets_and_protection.py::test_new_package_without_floor_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "1ee339274c1543a6",
+  "harness/src/checks/testguard.test.ts::test integrity: static rules [REQ-023] > a catch that swallows failures fails; rethrowing or asserting is fine": {
    "kind": "test",
-   "literals": [
-    "'COV002'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_package_mapping": {
-   "added": "2026-10-28",
-   "amended_by": null,
+   "hash": "d758509711974d32",
    "asserts": 4,
-   "hash": "a67d76380855921a",
-   "kind": "test",
    "literals": [
-    "'harness'",
-    "'harness/checks/docs.py'",
-    "'src/terrarium/__init__.py'",
-    "'src/terrarium/kernel/ids.py'",
-    "'terrarium'",
-    "'terrarium.kernel'",
-    "'tests/unit/test_x.py'",
-    "None"
+    "\"TEST004\"",
+    "\"TEST004\"",
+    "\"TEST004\"",
+    "\"TEST004\"",
+    "\"a catch that swallows failures fails; rethrowing or asserting is fine\"",
+    "\"test(\\\"x\\\", () => {\\n  try {\\n    expect(1 + 1).toBe(2);\\n  } catch (e) {\\n    throw e;\\n  }\\n});\"",
+    "\"test(\\\"x\\\", () => {\\n  try {\\n    expect(1 + 1).toBe(3);\\n  } catch {\\n    // ignore\\n  }\\n});\""
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_pragma_no_cover_needs_a_reason_and_has_a_budget": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: static rules [REQ-023] > a clean locked repo passes": {
+   "kind": "test",
+   "hash": "55548b98628dde57",
    "asserts": 2,
-   "hash": "0d4822d596ddd17e",
-   "kind": "test",
    "literals": [
-    "'COV005'",
-    "'COV005'"
+    "\"a clean locked repo passes\""
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_ratchet_files_are_exempt_from_the_adr_rule": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "76e9bd9a5ce60cdf",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: static rules [REQ-023] > a skip that cites a debt item is allowed": {
    "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_ratchet_raises_floors_but_never_lowers_or_goes_under_minimum": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "644971d475c3849a",
-   "kind": "test",
-   "literals": [
-    "'harness'",
-    "'terrarium.kernel'",
-    "'terrarium.world'",
-    "90.0",
-    "97.0",
-    "99.0"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_real_repository_codeowners_is_complete": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "d4fe20049131e239",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_sealed_adr_added_in_the_same_change_authorizes_it": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "d42a4f1b4b9696d1",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_spec_tests_must_link_requirements_but_unit_tests_need_not": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "1f7d0c09e4866273",
-   "kind": "test",
-   "literals": [
-    "'TRACE003'",
-    "'tests/spec/test_unlinked.py'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_unknown_requirement_reference_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "c9e72b1612072c01",
-   "kind": "test",
-   "literals": [
-    "'TRACE002'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_unprotected_change_passes": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "79236b44e944afea",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::test_unsealed_authorizing_adr_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "02efe863d539afca",
-   "kind": "test",
-   "literals": [
-    "'PROT001'",
-    "'PROT002'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::trace_repo": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "ac9da9e05cd22acc",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_ratchets_and_protection.py::write": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "44f14afe4f2d7969",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::<import:06a537df>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "06a537df37038ae3",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::<import:211ee427>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "211ee42757705c7e",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::<import:59051b17>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "59051b17634cdcb5",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::<import:5b0cada2>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "5b0cada2ee49e50a",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::<import:73be8b6e>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "73be8b6e8227767f",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::<import:890bede5>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "890bede517510aea",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::<import:8c4c46b0>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "8c4c46b0b17c9c3d",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::<import:920d77e2>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "920d77e2e47b9cdf",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::<import:9d97d469>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "9d97d469cf8d6646",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::=GOOD_TEST": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "2780284db27f2f95",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::=PYPROJECT": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "d6a34aa9d716e6cc",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::=REASON": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "f635c768b1978337",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::=TODAY": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "f42191bfa03f9a99",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::=pytestmark": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "929591113156d714",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::codes": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "ea94a4c2d18b6c17",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::edit": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "23b41bbe6184331c",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::guard_repo": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "be7bdc8674db3ef6",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::lock": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "aea6eabb48d88e8d",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_amended_removal_is_recorded": {
-   "added": "2026-10-28",
-   "amended_by": null,
+   "hash": "b5102553ffb87822",
    "asserts": 2,
-   "hash": "c206417a69e14387",
-   "kind": "test",
    "literals": [
-    "'0009-amend.md'"
+    "\"a skip that cites a debt item is allowed\"",
+    "\"test.skip(\\\"TD-0001: needs a FalkorDB server\\\", () => {\\n  expect(1 + 1).toBe(2);\\n});\""
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_amendment_adr_allows_the_listed_change": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: static rules [REQ-023] > a test without assertions fails": {
+   "kind": "test",
+   "hash": "b7c483d58d735d25",
+   "asserts": 2,
+   "literals": [
+    "\"TEST001\"",
+    "\"TEST001\"",
+    "\"a test without assertions fails\"",
+    "\"test(\\\"x\\\", () => {\\n  const y = 1;\\n});\"",
+    "\"test(\\\"x\\\", () => {\\n  const y = 1;\\n});\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: static rules [REQ-023] > assertion form counts: %s": {
+   "kind": "test",
+   "hash": "06130b71fca6221c",
+   "asserts": 2,
+   "literals": [
+    "\"TEST001\"",
+    "\"TEST001\"",
+    "\"assertion form counts: %s\"",
+    "\"const ok = (v: number) => expect(v).toBe(1);\\ntest(\\\"x\\\", () => {\\n  ok(2 - 1);\\n});\"",
+    "\"expect.soft\"",
+    "\"helper that asserts\"",
+    "\"import assert from \\\"node:assert\\\";\\ntest(\\\"x\\\", () => {\\n  assert.equal(1 + 1, 2);\\n});\"",
+    "\"node assert\"",
+    "\"test(\\\"x\\\", () => {\\n  expect(() => JSON.parse(\\\"{\\\")).toThrow();\\n});\"",
+    "\"test(\\\"x\\\", () => {\\n  expect.soft(1 + 1).toBe(2);\\n});\"",
+    "\"toThrow\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: static rules [REQ-023] > skips without a debt reference fail: %s": {
+   "kind": "test",
+   "hash": "81be8ce544156a55",
+   "asserts": 2,
+   "literals": [
+    "\"TEST002\"",
+    "\"TEST002\"",
+    "\"context.skip\"",
+    "\"describe.skip\"",
+    "\"describe.skip(\\\"suite\\\", () => {\\n  test(\\\"x\\\", () => {\\n    expect(1 + 1).toBe(2);\\n  });\\n});\"",
+    "\"skips without a debt reference fail: %s\"",
+    "\"test(\\\"x\\\", (ctx) => {\\n  ctx.skip();\\n  expect(1 + 1).toBe(2);\\n});\"",
+    "\"test.fails\"",
+    "\"test.fails(\\\"broken\\\", () => {\\n  expect(1 + 1).toBe(3);\\n});\"",
+    "\"test.skip\"",
+    "\"test.skip(\\\"later\\\", () => {\\n  expect(1 + 1).toBe(3);\\n});\"",
+    "\"test.skipIf\"",
+    "\"test.skipIf(true)(\\\"x\\\", () => {\\n  expect(1 + 1).toBe(2);\\n});\"",
+    "\"test.todo\"",
+    "\"test.todo(\\\"someday\\\");\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: static rules [REQ-023] > the real repository's tests are intact": {
+   "kind": "test",
+   "hash": "c2ffac41c74d0445",
+   "asserts": 1,
+   "literals": [
+    "\"the real repository's tests are intact\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: static rules [REQ-023] > trivially decided assertions fail: %s": {
+   "kind": "test",
+   "hash": "e749fdfd993480ed",
+   "asserts": 2,
+   "literals": [
+    "\"TEST003\"",
+    "\"TEST003\"",
+    "\"constant truthy\"",
+    "\"literal subject\"",
+    "\"negated constant\"",
+    "\"same expression\"",
+    "\"test(\\\"x\\\", () => {\\n  const v = 3;\\n  expect(v).toBe(v);\\n});\"",
+    "\"test(\\\"x\\\", () => {\\n  expect(1).toBeTruthy();\\n});\"",
+    "\"test(\\\"x\\\", () => {\\n  expect(\\\"a\\\").not.toBe(\\\"b\\\");\\n});\"",
+    "\"test(\\\"x\\\", () => {\\n  expect(true).toBe(true);\\n});\"",
+    "\"trivially decided assertions fail: %s\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: the lock [REQ-023] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: the lock [REQ-023] > adding a skip is reported": {
+   "kind": "test",
+   "hash": "fac085e4ea60f903",
    "asserts": 3,
-   "hash": "9d3a5368eac250f5",
-   "kind": "test",
    "literals": [
-    "'0009-amend.md'",
-    "'0009-amend.md'",
-    "'amended_by'"
+    "\"TLOCK002\"",
+    "\"TLOCK002\"",
+    "\"adding a skip is reported\"",
+    "\"skip\"",
+    "\"skip\"",
+    "\"test(\\\"adds\\\"\"",
+    "\"test.skip(\\\"adds\\\"\"",
+    "true",
+    "true"
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_amendment_adr_does_not_cover_unlisted_items": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "dbf6f8e3eac033d4",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: the lock [REQ-023] > changing a helper the tests rely on is caught": {
    "kind": "test",
-   "literals": [
-    "'0009-amend.md'",
-    "'tests/test_add.py::helper'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_broad_except_that_swallows_failures_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "d55eb4e8a385de4e",
-   "kind": "test",
-   "literals": [
-    "'TEST004'",
-    "'tests/test_x.py'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_changing_a_helper_that_tests_rely_on_is_caught": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "7427363765c83e78",
-   "kind": "test",
-   "literals": [
-    "'TLOCK001'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_changing_a_module_level_subscript_assignment_is_caught": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "9ddfbf52c7a1255f",
-   "kind": "test",
-   "literals": [
-    "'TLOCK001'",
-    "'TLOCK002'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_changing_expected_value_is_caught": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "92ea170b5e58b749",
-   "kind": "test",
-   "literals": [
-    "'TLOCK001'",
-    "'expected values'",
-    "0"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_clean_locked_repo_passes": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "1e04322e023f84da",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_comments_formatting_and_docstrings_do_not_trip_the_lock": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "9a6a3940ba785126",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_conftest_hooks_that_hide_tests_fail": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "2064fb0fb931bc16",
-   "kind": "test",
-   "literals": [
-    "'TCFG002'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_coverage_omit_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "91fbf30a4b9710a7",
-   "kind": "test",
-   "literals": [
-    "'TCFG003'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_deleting_a_test_is_caught": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "a82f40887611f37c",
-   "kind": "test",
-   "literals": [
-    "'TLOCK002'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_editing_expected_data_files_is_caught": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "7c979908f2cdaef1",
-   "kind": "test",
-   "literals": [
-    "'TLOCK001'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_extra_coverage_exclusions_fail": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "1d5c2cdb013d52ef",
-   "kind": "test",
-   "literals": [
-    "'TCFG003'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_forbidden_pytest_addopts_fail": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "9fb7c60e502e9f09",
-   "kind": "test",
-   "literals": [
-    "'TCFG001'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_forging_the_lock_by_hand_is_caught_by_the_amendment_check": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "6c759a60810b58e5",
-   "kind": "test",
-   "literals": [
-    "'TLOCK004'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_forging_the_lock_without_amended_by_is_caught_against_the_base_ref": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "84e09bf03c070f6a",
-   "kind": "test",
-   "literals": [
-    "'HEAD'",
-    "'TLOCK005'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_imperative_skip_without_reason_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "ae8cc62976d3d5e9",
-   "kind": "test",
-   "literals": [
-    "'TEST002'",
-    "'tests/test_x.py'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_lock_command_refuses_unamended_changes_and_writes_nothing": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 2,
-   "hash": "e4eb9e3fd39827bf",
-   "kind": "test",
-   "literals": [
-    "'harness/config/test-lock.json'",
-    "'tests/test_add.py::test_add'",
-    "'utf-8'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_loosening_tolerance_is_reported": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "8ee29641cc1e51b7",
-   "kind": "test",
-   "literals": [
-    "'tolerance loosened'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_lowering_coverage_fail_under_below_minimum_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "0048a02e474dd423",
-   "kind": "test",
-   "literals": [
-    "'TCFG003'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_new_test_must_be_locked": {
-   "added": "2026-10-28",
-   "amended_by": null,
+   "hash": "d072f17d282fddbf",
    "asserts": 3,
-   "hash": "28899d5a83a4c2ce",
-   "kind": "test",
    "literals": [
-    "'TLOCK003'"
+    "\"() => 2\"",
+    "\"() => 3\"",
+    "\"TLOCK001\"",
+    "\"TLOCK001\"",
+    "\"changing a helper the tests rely on is caught\""
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_other_assertion_forms_count": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "479ddb4eaae5a6bd",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: the lock [REQ-023] > changing a hook or a describe-level helper is caught": {
    "kind": "test",
-   "literals": [
-    "'TEST001'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_plain_fixtures_in_conftest_are_fine": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "d4b6ca24050c74eb",
-   "kind": "test",
-   "literals": [
-    "'tests/conftest.py'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_real_repository_tests_are_intact": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "e933b39759ba3eb9",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_removing_an_assertion_is_reported_as_weakening": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "9f8a9ea81e83985f",
-   "kind": "test",
-   "literals": [
-    "'assertions 2 -> 1'",
-    "0"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_renaming_a_test_is_caught": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "e60818c8c4058f1c",
-   "kind": "test",
-   "literals": [
-    "'TLOCK002'",
-    "'TLOCK003'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_repeated_identical_statements_are_each_locked": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "7c7a3800e16a619e",
-   "kind": "test",
-   "literals": [
-    "'tests/test_x.py::=X#2'",
-    "'tests/test_x.py::=X'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_second_pytest_config_file_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "d3a9a637235d560f",
-   "kind": "test",
-   "literals": [
-    "'TCFG004'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_skip_is_counted_once_per_occurrence": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "b5f52aa1f61b2263",
-   "kind": "test",
-   "literals": [
-    "1"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_skip_or_xfail_without_debt_reason_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "bc370be5fd136963",
-   "kind": "test",
-   "literals": [
-    "'TEST002'",
-    "'tests/test_x.py'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_skip_with_debt_reference_is_allowed": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "4dd185c67146633d",
-   "kind": "test",
-   "literals": [
-    "'tests/test_x.py'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_specific_except_or_reraise_is_fine": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "c4fe59a58f2a8c93",
-   "kind": "test",
-   "literals": [
-    "'TEST004'",
-    "'tests/test_x.py'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_swapping_an_import_for_a_fake_is_caught": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "3c1435780afebb5f",
-   "kind": "test",
-   "literals": [
-    "'TLOCK002'",
-    "'TLOCK003'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_test_without_assertion_fails": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "6d90fd73576d6b4e",
-   "kind": "test",
-   "literals": [
-    "'TEST001'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_trivially_true_assertions_fail": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "caec3f377f5d6dc1",
-   "kind": "test",
-   "literals": [
-    "'TEST003'"
-   ],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::test_weak_or_unsealed_amendment_adr_is_rejected": {
-   "added": "2026-10-28",
-   "amended_by": null,
+   "hash": "26ba5296b240c1c5",
    "asserts": 3,
-   "hash": "f333838c63a34a94",
-   "kind": "test",
    "literals": [
-    "'0009-amend.md'",
-    "'TLOCK004'",
-    "0"
+    "\"\"",
+    "\"TLOCK001\"",
+    "\"TLOCK001\"",
+    "\"changing a hook or a describe-level helper is caught\"",
+    "\"describe(\\\"s\\\", () => {\\n  let n = 0;\\n  beforeEach(() => {\\n    n = 1;\\n  });\\n  test(\\\"x\\\", () => {\\n    expect(n).toBe(1);\\n  });\\n});\"",
+    "\"import\"",
+    "\"n = 1;\"",
+    "\"n = 2;\"",
+    "\"packages/demo/src/x.test.ts\""
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/harness/test_testguard_check.py::write_adr": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "e841b215c1caada8",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: the lock [REQ-023] > changing a test.each table is caught": {
+   "kind": "test",
+   "hash": "93bfc5f46b0676f6",
+   "asserts": 3,
+   "literals": [
+    "\"TLOCK001\"",
+    "\"TLOCK001\"",
+    "\"[[1, 2], [0, 0]]\"",
+    "\"[[1, 2]]\"",
+    "\"changing a test.each table is caught\"",
+    "\"packages/demo/src/x.test.ts\"",
+    "\"test.each([[1, 2]])(\\\"doubles %i\\\", (a, b) => {\\n  expect(a * 2).toBe(b);\\n});\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: the lock [REQ-023] > changing an expected value is caught and named": {
+   "kind": "test",
+   "hash": "c0db3c9723913f0d",
+   "asserts": 4,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"TLOCK001\"",
+    "\"TLOCK001\"",
+    "\"changing an expected value is caught and named\"",
+    "\"expected values changed\"",
+    "\"expected values changed\"",
+    "\"toBe(3)\"",
+    "\"toBe(helper())\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: the lock [REQ-023] > comments and formatting do not trip the lock": {
+   "kind": "test",
+   "hash": "4535d76baf020947",
+   "asserts": 3,
+   "literals": [
+    "\"// explains the test\\ntest('adds', () =>   {\"",
+    "\"comments and formatting do not trip the lock\"",
+    "\"test(\\\"adds\\\", () => {\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: the lock [REQ-023] > deleting or renaming a test is caught": {
+   "kind": "test",
+   "hash": "d1a40c8f6cecd8e3",
+   "asserts": 6,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"TLOCK002\"",
+    "\"TLOCK002\"",
+    "\"TLOCK002\"",
+    "\"TLOCK002\"",
+    "\"TLOCK003\"",
+    "\"TLOCK003\"",
+    "\"deleting or renaming a test is caught\"",
+    "\"test(\\\"adds numbers\\\"\"",
+    "\"test(\\\"adds\\\"\"",
+    "\"test(\\\"adds\\\", () => {\\n  expect(add(1, 1)).toBe(helper());\\n});\\n\"",
+    "\"test(\\\"adds\\\", () => {\\n  expect(add(1, 1)).toBe(helper());\\n});\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: the lock [REQ-023] > editing expected-data files is caught": {
+   "kind": "test",
+   "hash": "3cd64639541e52a0",
+   "asserts": 2,
+   "literals": [
+    "\"TLOCK001\"",
+    "\"TLOCK001\"",
+    "\"editing expected-data files is caught\"",
+    "\"packages/demo/src/__fixtures__/expected.json\"",
+    "\"packages/demo/src/__fixtures__/expected.json\"",
+    "\"{\\\"temp\\\": 24.5}\"",
+    "\"{\\\"temp\\\": 30}\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: the lock [REQ-023] > loosening toBeCloseTo precision is reported": {
+   "kind": "test",
+   "hash": "23f712347fc30428",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0.3, 1\"",
+    "\"0.3, 9\"",
+    "\"loosening toBeCloseTo precision is reported\"",
+    "\"packages/demo/src/x.test.ts\"",
+    "\"precision loosened\"",
+    "\"precision loosened\"",
+    "\"test(\\\"x\\\", () => {\\n  expect(0.1 + 0.2).toBeCloseTo(0.3, 9);\\n});\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: the lock [REQ-023] > new tests must be locked, then pass": {
+   "kind": "test",
+   "hash": "edac119a38849249",
+   "asserts": 4,
+   "literals": [
+    "\"TLOCK003\"",
+    "\"TLOCK003\"",
+    "\"import { expect, test } from \\\"vitest\\\";\\ntest(\\\"n\\\", () => {\\n  expect(1 + 1).toBe(2);\\n});\\n\"",
+    "\"import { expect, test } from \\\"vitest\\\";\\ntest(\\\"n\\\", () => {\\n  expect(1 + 1).toBe(2);\\n});\\n\"",
+    "\"new tests must be locked, then pass\"",
+    "\"packages/demo/src/new.test.ts\"",
+    "\"packages/demo/src/new.test.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: the lock [REQ-023] > removing an assertion is reported as weakening": {
+   "kind": "test",
+   "hash": "48830fee766b912b",
+   "asserts": 3,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"0\"",
+    "\"0\"",
+    "\"\\n  expect(add(0, 0)).toBe(0);\"",
+    "\"\\n  expect(add(0, 0)).toBe(0);\"",
+    "\"assertions 2 -> 1\"",
+    "\"assertions 2 -> 1\"",
+    "\"removing an assertion is reported as weakening\"",
+    "\"toBe(helper());\"",
+    "\"toBe(helper());\\n  expect(add(0, 0)).toBe(0);\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: the lock [REQ-023] > repeated identical statements are each locked": {
+   "kind": "test",
+   "hash": "bba7a8aa04d9aec0",
+   "asserts": 2,
+   "literals": [
+    "\"2\"",
+    "\"2\"",
+    "\"<stmt:\"",
+    "\"<stmt:\"",
+    "\"const x = 1;\\nconsole.log(x);\\nconsole.log(x);\\ntest(\\\"x\\\", () => {\\n  expect(x + 1).toBe(2);\\n});\"",
+    "\"harness/config/test-lock.json\"",
+    "\"repeated identical statements are each locked\"",
+    "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: the lock [REQ-023] > swapping an import for a fake is caught": {
+   "kind": "test",
+   "hash": "099b8c8ca298a69e",
+   "asserts": 3,
+   "literals": [
+    "\"TLOCK002\"",
+    "\"TLOCK002\"",
+    "\"TLOCK003\"",
+    "\"TLOCK003\"",
+    "\"from \\\"./add\\\"\"",
+    "\"from \\\"./fake-add\\\"\"",
+    "\"swapping an import for a fake is caught\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::test integrity: the lock [REQ-023] > the lock command refuses unamended changes and writes nothing": {
+   "kind": "test",
+   "hash": "9dbcfc97baf2dce4",
+   "asserts": 4,
+   "literals": [
+    "\"harness/config/test-lock.json\"",
+    "\"harness/config/test-lock.json\"",
+    "\"harness/config/test-lock.json\"",
+    "\"the lock command refuses unamended changes and writes nothing\"",
+    "\"toBe(3)\"",
+    "\"toBe(helper())\"",
+    "\"utf8\"",
+    "\"utf8\"",
+    "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::<import:007beb93>": {
    "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/spec/test_process.py::<import:13a6b3e4>": {
-   "added": "2026-10-28",
-   "amended_by": null,
+   "hash": "007beb93cef3e58d",
    "asserts": 0,
-   "hash": "13a6b3e471bb5f4c",
-   "kind": "support",
    "literals": [],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/spec/test_process.py::<import:44a89227>": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::<import:15a3c16c>": {
+   "kind": "support",
+   "hash": "15a3c16c770c8edc",
    "asserts": 0,
-   "hash": "44a892273a49f86d",
-   "kind": "support",
    "literals": [],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/spec/test_process.py::<import:5b0cada2>": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
    "asserts": 0,
-   "hash": "5b0cada2ee49e50a",
-   "kind": "support",
    "literals": [],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/spec/test_process.py::<import:890bede5>": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::<import:34e94614>": {
+   "kind": "support",
+   "hash": "34e94614db90827f",
    "asserts": 0,
-   "hash": "890bede517510aea",
-   "kind": "support",
    "literals": [],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/spec/test_process.py::=ADR_FILES": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::<import:3a8a12f3>": {
+   "kind": "support",
+   "hash": "3a8a12f3b3f4f067",
    "asserts": 0,
-   "hash": "12c863adb95c274d",
-   "kind": "support",
    "literals": [],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/spec/test_process.py::=ROOT": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::<import:5ca6a8ae>": {
+   "kind": "support",
+   "hash": "5ca6a8ae235a1cc6",
    "asserts": 0,
-   "hash": "ad5ee771e101b72b",
-   "kind": "support",
    "literals": [],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/spec/test_process.py::=pytestmark": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::<import:64e5c835>": {
+   "kind": "support",
+   "hash": "64e5c835333c3eac",
    "asserts": 0,
-   "hash": "f264e21ab3a5efb0",
-   "kind": "support",
    "literals": [],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/spec/test_process.py::test_every_adr_is_sealed_enforced_and_listed_in_the_index": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::<import:a1675dd9>": {
+   "kind": "support",
+   "hash": "a1675dd91a76fc7f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::<import:a261edf0>": {
+   "kind": "support",
+   "hash": "a261edf027ea5f70",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::<import:b8248253>": {
+   "kind": "support",
+   "hash": "b8248253b9067b19",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::<import:b8908003>": {
+   "kind": "support",
+   "hash": "b8908003e9fe658c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::<import:fc38e4e0>": {
+   "kind": "support",
+   "hash": "fc38e4e01244139f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::check entry points [REQ-024] > %s CLI returns 0 or 1": {
+   "kind": "test",
+   "hash": "f598029d15f9ff01",
+   "asserts": 1,
+   "literals": [
+    "\"%s CLI returns 0 or 1\"",
+    "\"--root\"",
+    "\"--root\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"architecture\"",
+    "\"docs\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::check entry points [REQ-024] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::check entry points [REQ-024] > =quiet": {
+   "kind": "support",
+   "hash": "d66d36395fcd6d19",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::check entry points [REQ-024] > =root": {
+   "kind": "support",
+   "hash": "90c8da4ae3d68e28",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::check entry points [REQ-024] > run-all runs every check and prints a verdict": {
+   "kind": "test",
+   "hash": "0147bfcc607e289b",
+   "asserts": 4,
+   "literals": [
+    "\"\"",
+    "\"--root\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"ALL CHECKS PASSED\"",
+    "\"ALL CHECKS PASSED\"",
+    "\"CHECK(S) FAILED\"",
+    "\"CHECK(S) FAILED\"",
+    "\"architecture\"",
+    "\"architecture\"",
+    "\"coverage\"",
+    "\"coverage\"",
+    "\"coverage\"",
+    "\"coverage\"",
+    "\"debt\"",
+    "\"debt\"",
+    "\"docs\"",
+    "\"docs\"",
+    "\"protected-paths\"",
+    "\"protected-paths\"",
+    "\"run-all runs every check and prints a verdict\"",
+    "\"test-integrity\"",
+    "\"test-integrity\"",
+    "\"traceability\"",
+    "\"traceability\"",
+    "false",
+    "false",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::check entry points [REQ-024] > traceability and protected CLIs return 0 or 1": {
+   "kind": "test",
+   "hash": "cffc9f79c9837de7",
+   "asserts": 2,
+   "literals": [
+    "\"--root\"",
+    "\"--root\"",
+    "\"--root\"",
+    "\"--root\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"traceability and protected CLIs return 0 or 1\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::file helpers [REQ-024] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::file helpers [REQ-024] > expandGlobs matches files and whole directories": {
+   "kind": "test",
+   "hash": "f3f937471b3b368c",
+   "asserts": 2,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"**/*.ts\"",
+    "\"**/*.ts\"",
+    "\"docs\"",
+    "\"docs\"",
+    "\"docs/a.md\"",
+    "\"docs/a.md\"",
+    "\"docs/a.md\"",
+    "\"docs/sub/b.md\"",
+    "\"docs/sub/b.md\"",
+    "\"docs/sub/b.md\"",
+    "\"expandGlobs matches files and whole directories\"",
+    "\"src/c.ts\"",
+    "\"src/c.ts\"",
+    "\"src/c.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::file helpers [REQ-024] > glob %s matches %s: %s": {
+   "kind": "test",
+   "hash": "c574be4673d53250",
+   "asserts": 1,
+   "literals": [
+    "\"**/*.test.ts\"",
+    "\"**/*.test.ts\"",
+    "\"a.md\"",
+    "\"a/b/c.test.ts\"",
+    "\"a?.md\"",
+    "\"aXmd\"",
+    "\"ab.md\"",
+    "\"c.test.ts\"",
+    "\"glob %s matches %s: %s\"",
+    "\"packages/*/src/**\"",
+    "\"packages/*/src/**\"",
+    "\"packages/core/lib/a.ts\"",
+    "\"packages/core/src/a/b.ts\"",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::file helpers [REQ-024] > test files and test support are recognised": {
+   "kind": "test",
+   "hash": "03dcce800f1b3d27",
+   "asserts": 4,
+   "literals": [
+    "\"a/b.test.ts\"",
+    "\"a/b.test.ts\"",
+    "\"a/b.test.tsx\"",
+    "\"a/b.test.tsx\"",
+    "\"a/b.ts\"",
+    "\"a/b.ts\"",
+    "\"a/test-support/x.ts\"",
+    "\"a/test-support/x.ts\"",
+    "\"test files and test support are recognised\"",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::harness common helpers [REQ-024] > <hook:afterEach>": {
+   "kind": "support",
+   "hash": "c4ad3e5cdf212301",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::harness common helpers [REQ-024] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::harness common helpers [REQ-024] > daysBetween counts whole days": {
+   "kind": "test",
+   "hash": "18643dd88c3f8193",
+   "asserts": 2,
+   "literals": [
+    "\"2026-10-01\"",
+    "\"2026-10-01\"",
+    "\"2026-10-01\"",
+    "\"2026-10-01\"",
+    "\"2026-10-28\"",
+    "\"2026-10-28\"",
+    "\"2026-10-28\"",
+    "\"2026-10-28\"",
+    "\"27\"",
+    "\"27\"",
+    "\"27\"",
+    "\"27\"",
+    "\"daysBetween counts whole days\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::harness common helpers [REQ-024] > findRoot walks up and fails outside a repo": {
+   "kind": "test",
+   "hash": "877e701cd457e930",
+   "asserts": 2,
+   "literals": [
+    "\"findRoot walks up and fails outside a repo\"",
+    "\"harness\"",
+    "\"harness\"",
+    "\"nowhere-\"",
+    "\"nowhere-\"",
+    "\"src\"",
+    "\"src\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::harness common helpers [REQ-024] > finish prints OK, or sorted failures": {
+   "kind": "test",
+   "hash": "1644243e92fb3c41",
    "asserts": 5,
-   "hash": "a5d30d369b4c69a5",
-   "kind": "test",
    "literals": [
-    "'decision'",
-    "'decision_hash'",
-    "'docs/index.md'",
-    "'enforced_by'",
-    "'kind'",
-    "'utf-8'",
-    "None"
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"A\"",
+    "\"A\"",
+    "\"B\"",
+    "\"B\"",
+    "\"FAIL demo: 2 violation(s)\\n\"",
+    "\"FAIL demo: 2 violation(s)\\n\"",
+    "\"OK   demo\"",
+    "\"OK   demo\"",
+    "\"[A]\"",
+    "\"[A]\"",
+    "\"a\"",
+    "\"a\"",
+    "\"demo\"",
+    "\"demo\"",
+    "\"demo\"",
+    "\"demo\"",
+    "\"f\"",
+    "\"f\"",
+    "\"f\"",
+    "\"f\"",
+    "\"finish prints OK, or sorted failures\"",
+    "\"m\"",
+    "\"m\"",
+    "\"m\"",
+    "\"m\"",
+    "\"z\"",
+    "\"z\"",
+    "true",
+    "true"
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/spec/test_process.py::test_every_layer_is_explained_in_the_architecture_doc": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::harness common helpers [REQ-024] > front matter splits and joins": {
+   "kind": "test",
+   "hash": "fc04c5c7519a654f",
+   "asserts": 4,
+   "literals": [
+    "\"---\\na: 1\\n---\\nhello\\n\"",
+    "\"1\"",
+    "\"1\"",
+    "\"4\"",
+    "\"4\"",
+    "\"\\n\\nbody\"",
+    "\"\\n\\nbody\"",
+    "\"front matter splits and joins\"",
+    "\"hello\\n\"",
+    "\"hello\\n\"",
+    "\"x\"",
+    "\"x\"",
+    "\"x\"",
+    "\"x\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::harness common helpers [REQ-024] > git returns null outside a repository": {
+   "kind": "test",
+   "hash": "9db5b17532098d2e",
    "asserts": 1,
-   "hash": "fd391128c238ed8c",
-   "kind": "test",
    "literals": [
-    "'ARCHITECTURE.md'",
-    "'`'",
-    "'`'",
-    "'utf-8'"
+    "\"HEAD\"",
+    "\"HEAD\"",
+    "\"git returns null outside a repository\"",
+    "\"nogit-\"",
+    "\"nogit-\"",
+    "\"rev-parse\"",
+    "\"rev-parse\""
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/spec/test_process.py::test_there_are_decision_records": {
    "added": "2026-10-28",
-   "amended_by": null,
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::harness common helpers [REQ-024] > isIsoDate(%s) = %s": {
+   "kind": "test",
+   "hash": "17fcc506eb7d0b50",
    "asserts": 1,
-   "hash": "4c9f0252d319f927",
-   "kind": "test",
    "literals": [
-    "9"
+    "\"2026-02-30\"",
+    "\"2026-10-28\"",
+    "\"20261028\"",
+    "\"26-10-28\"",
+    "\"isIsoDate(%s) = %s\"",
+    "false",
+    "false",
+    "false",
+    "true"
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/unit/test_layers.py::<import:06a537df>": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "06a537df37038ae3",
-   "kind": "support",
-   "literals": [],
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::harness common helpers [REQ-024] > isMain is false for imported modules": {
+   "kind": "test",
+   "hash": "42f20a7f001a6125",
+   "asserts": 1,
+   "literals": [
+    "\"isMain is false for imported modules\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
-  },
-  "tests/unit/test_layers.py::<import:20dd306b>": {
    "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "20dd306b163f7048",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
+   "amended_by": null
   },
-  "tests/unit/test_layers.py::<import:44a89227>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "44a892273a49f86d",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/unit/test_layers.py::<import:5b0cada2>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "5b0cada2ee49e50a",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/unit/test_layers.py::<import:890bede5>": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "890bede517510aea",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/unit/test_layers.py::=LAYERS": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 0,
-   "hash": "8e1972d3e5a14bc3",
-   "kind": "support",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/unit/test_layers.py::test_layer_is_importable_and_declares_a_public_api": {
-   "added": "2026-10-28",
-   "amended_by": null,
+  "harness/src/common.test.ts::harness common helpers [REQ-024] > parseArgs separates positional arguments, valued flags and boolean flags": {
+   "kind": "test",
+   "hash": "d35169bb457c79a6",
    "asserts": 2,
-   "hash": "1f59424d432a2c00",
-   "kind": "test",
-   "literals": [],
-   "skips": 0,
-   "tolerances": []
-  },
-  "tests/unit/test_layers.py::test_package_exposes_a_version": {
-   "added": "2026-10-28",
-   "amended_by": null,
-   "asserts": 1,
-   "hash": "2a0a57fa631b70fd",
-   "kind": "test",
    "literals": [
-    "'.'",
-    "2"
+    "\"--amend\"",
+    "\"--root\"",
+    "\"--with-coverage\"",
+    "\"/r\"",
+    "\"/r\"",
+    "\"/r\"",
+    "\"lock\"",
+    "\"lock\"",
+    "\"lock\"",
+    "\"parseArgs separates positional arguments, valued flags and boolean flags\"",
+    "\"with-coverage\"",
+    "\"with-coverage\"",
+    "\"x.md\"",
+    "\"x.md\"",
+    "\"x.md\"",
+    "true",
+    "true"
    ],
+   "precision": [],
    "skips": 0,
-   "tolerances": []
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::harness common helpers [REQ-024] > today can be pinned, and a bad pin is rejected": {
+   "kind": "test",
+   "hash": "429cecebed47d583",
+   "asserts": 3,
+   "literals": [
+    "\"2030-01-02\"",
+    "\"2030-01-02\"",
+    "\"2030-01-02\"",
+    "\"soon\"",
+    "\"today can be pinned, and a bad pin is rejected\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::harness common helpers [REQ-024] > unusable front matter gives null: %j": {
+   "kind": "test",
+   "hash": "52a3084423b30c52",
+   "asserts": 1,
+   "literals": [
+    "\"---\\n- a\\n---\\nbody\"",
+    "\"---\\na: [\\n---\\nbody\"",
+    "\"---\\nnever closed\\n\"",
+    "\"no front matter\"",
+    "\"unusable front matter gives null: %j\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/common.test.ts::harness common helpers [REQ-024] > violations render with location, problem and fix": {
+   "kind": "test",
+   "hash": "c941df0875018399",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"7\"",
+    "\"X001\"",
+    "\"X001\"",
+    "\"X001\"",
+    "\"[X001] a/b.ts:7\\n    problem: bad\\n    fix: do this\"",
+    "\"[X001] a/b.ts:7\\n    problem: bad\\n    fix: do this\"",
+    "\"a/b.ts\"",
+    "\"a/b.ts\"",
+    "\"a/b.ts\"",
+    "\"bad\"",
+    "\"bad\"",
+    "\"bad\"",
+    "\"do this\"",
+    "\"fix\"",
+    "\"fix\"",
+    "\"violations render with location, problem and fix\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/test-support/mini-repo.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/test-support/mini-repo.ts::<import:8a947ef8>": {
+   "kind": "support",
+   "hash": "8a947ef8675a8ebd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/test-support/mini-repo.ts::<import:e65b41ba>": {
+   "kind": "support",
+   "hash": "e65b41baa016e435",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/test-support/mini-repo.ts::<import:fc38e4e0>": {
+   "kind": "support",
+   "hash": "fc38e4e01244139f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/test-support/mini-repo.ts::=BASE": {
+   "kind": "support",
+   "hash": "e4d5e6489a871671",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/test-support/mini-repo.ts::=commitAll": {
+   "kind": "support",
+   "hash": "30962ef2a072c8b4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/test-support/mini-repo.ts::=DEMO_ARCHITECTURE": {
+   "kind": "support",
+   "hash": "62ff530e9da05ad2",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/test-support/mini-repo.ts::=miniRepo": {
+   "kind": "support",
+   "hash": "d3ac2bbe54d35562",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/test-support/mini-repo.ts::=writeFiles": {
+   "kind": "support",
+   "hash": "60a642b631630348",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
   }
  },
- "removed": {},
- "version": 1
+ "removed": {}
 }

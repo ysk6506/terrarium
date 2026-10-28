@@ -12,7 +12,7 @@ last_verified: 2026-10-28
 ## 언제 쓰나
 
 - 새 레이어, 새 외부 라이브러리, 의존 규칙 변경
-- 하네스(`harness/`), 설정, 요구사항, AGENTS.md 변경 (보호 경로)
+- 하네스(`harness/`), 설정 파일(`package.json`, `vitest.config.ts` 등), 요구사항, AGENTS.md 변경 (보호 경로)
 - 요구사항이 바뀌어 잠긴 테스트를 바꿔야 할 때
 - 설계에서 여러 길 중 하나를 고를 때
 
@@ -28,12 +28,12 @@ kind: decision
 status: active          # active | superseded
 last_verified: 2026-10-28
 enforced_by: [ARCH010]  # 규칙 코드 또는 테스트 경로. 못 하면 [none] + no_enforcement_reason
-touches_protected: []   # 이 ADR로 바꾸는 보호 경로 (harness/**, pyproject.toml ...)
+touches_protected: []   # 이 ADR로 바꾸는 보호 경로 (harness/**, package.json ...)
 amends_tests: []        # 요구사항 변경으로 바꾸는 잠긴 테스트 키
 test_change_reason: ""  # amends_tests를 쓸 때: 왜 요구사항이 바뀌었는지 (40자 이상)
 ```
 
-4. 봉인: `python -m harness.checks.docs seal-adr docs/design-docs/adr/NNNN-....md`
+4. 봉인: `pnpm tsx harness/src/checks/docs.ts seal-adr docs/design-docs/adr/NNNN-....md`
 5. [색인](../index.md)에 링크한다.
 
 ## 봉인된 ADR은 수정 금지

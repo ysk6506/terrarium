@@ -1,0 +1,18 @@
+{
+  "name": "@terrarium/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "start": "tsx src/main.ts"
+  },
+  "dependencies": {
+    "@terrarium/core": "workspace:*",
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "@fastify/static": "8.3.0",
+    "fastify": "5.12.7",
+    "falkordb": "7.0.0",
+    "zod": "3.25.76"
+  }
+}

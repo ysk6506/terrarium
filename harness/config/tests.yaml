@@ -1,21 +1,20 @@
-# Test integrity contract. Enforced by harness/checks/testguard.py and coverage.py (REQ-023).
-# Protected path: change only with an accepted ADR.
-test_dirs: [tests]
+# Test integrity contract. Enforced by harness/src/checks/testguard.ts and coverage.ts
+# (REQ-023, ADR-0004). Protected path: change only with an accepted ADR.
+test_globs: ["packages/**/*.test.ts", "apps/**/*.test.ts", "apps/**/*.test.tsx", "harness/src/**/*.test.ts", "tests/spec/**/*.test.ts", "tests/e2e/**/*.e2e.ts"]
+support_globs: ["packages/**/test-support/**", "apps/**/test-support/**", "harness/src/test-support/**", "tests/e2e/support/**"]
+data_globs: ["**/__fixtures__/**", "tests/**/fixtures/**"]
 lock: harness/config/test-lock.json
-# Files that define expected results besides test code. Locked like tests.
-data_globs: ["tests/data/**/*", "tests/golden/**/*"]
 
-coverage_json: coverage.json
+# Configuration that decides which tests run must stay exactly like this.
+vitest_config: vitest.config.ts
+test_script: vitest run --coverage
+vitest_include: ["packages/**/src/**/*.test.ts", "apps/**/src/**/*.test.{ts,tsx}", "harness/src/**/*.test.ts", "tests/spec/**/*.test.ts"]
+coverage_include: ["packages/*/src/**", "apps/server/src/**", "apps/web/src/logic/**", "harness/src/**"]
+coverage_exclude_allowed: ["**/*.test.ts", "**/*.test.tsx", "**/test-support/**"]
+forbidden_test_options: [exclude, passWithNoTests, allowOnly, retry, bail, testNamePattern, setupFiles, globalSetup, onConsoleLog, dangerouslyIgnoreUnhandledErrors]
+
+# Coverage ratchet.
+coverage_summary: coverage/coverage-summary.json
 coverage_floor: harness/config/coverage-floor.json
-min_floor: 90.0                 # no package floor may ever be set below this
-max_pragma_no_cover: 3          # `# pragma: no cover` budget in src/ (each needs a reason)
-
-# pytest options that would let a run "pass" by not running tests.
-forbidden_addopts: ["--deselect", "--ignore", "--ignore-glob", "-k", "-m", "--lf", "--last-failed",
-                    "--ff", "--collect-only", "--co", "--no-cov", "-p"]
-# conftest.py hooks/variables that change which tests run or how results are reported.
-forbidden_conftest_names: [collect_ignore, collect_ignore_glob, pytest_collection_modifyitems,
-                           pytest_ignore_collect, pytest_runtest_makereport, pytest_runtest_call,
-                           pytest_runtest_protocol]
-# Coverage exclusion lines that are acceptable (anything else hides code from coverage).
-allowed_exclude_lines: ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]
+min_floor: 90
+max_ignore_comments: 3   # `/* v8 ignore */` budget in production code; each needs a reason
