@@ -39,6 +39,8 @@ export {
   type Position3,
 } from "./geometry";
 export { BlueprintIndex } from "./graph";
+export { KIND_LABELS, kindList, LINK_LABELS } from "./labels";
+export { reportedInletC } from "./sensors";
 export {
   type Alarm,
   AMBIENT_C,

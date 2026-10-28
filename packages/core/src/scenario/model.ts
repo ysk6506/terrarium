@@ -1,0 +1,157 @@
+/**
+ * The scenario document (REQ-033, REQ-034). It is what the no-code editor saves, the runner executes
+ * and the oracle scores. Two parts:
+ *
+ *   flow          a graph of blocks (start → wait → inject fault → agent task → ...) run in simulated time
+ *   expectations  the scoring sheet: expected diagnosis, required/forbidden actions, final state, limits
+ *
+ * Entities are referenced by id, so a scenario belongs to one world (`worldId`). Positions and labels
+ * are layout only: they never change the scenario's digest (see digest.ts).
+ */
+
+export const SCENARIO_SCHEMA_VERSION = 1;
+
+export type CompareOp = "<" | "<=" | ">" | ">=" | "==" | "!=";
+export const COMPARE_OPS: readonly CompareOp[] = ["<", "<=", ">", ">=", "==", "!="];
+
+/** A question about the world or the agent, asked by branch/wait_until blocks and by expectations. */
+export type Condition =
+  /** A state field of one entity, e.g. srv-a1.inletC > 35. */
+  | {
+      readonly kind: "state";
+      readonly entity: string;
+      readonly field: string;
+      readonly op: CompareOp;
+      readonly value: number | boolean | string;
+    }
+  /** Whether an alarm matching the filters is active (`active: false` asks for "no such alarm"). */
+  | {
+      readonly kind: "alarm";
+      readonly active: boolean;
+      readonly entity?: string;
+      readonly code?: string;
+      readonly severity?: "warning" | "critical";
+    }
+  /** Whether the agent has called a tool (optionally on a given target). */
+  | { readonly kind: "tool_called"; readonly tool: string; readonly target?: string }
+  /** Whether the agent has submitted its diagnosis. */
+  | { readonly kind: "diagnosis_submitted" }
+  | { readonly kind: "all"; readonly of: readonly Condition[] }
+  | { readonly kind: "any"; readonly of: readonly Condition[] };
+
+export type ParamValue = string | number | boolean | Condition | Readonly<Record<string, number>>;
+
+export interface ScenarioNode {
+  readonly id: string;
+  readonly type: string;
+  readonly params: Readonly<Record<string, ParamValue>>;
+  /** Editor canvas position (layout only). */
+  readonly position: { readonly x: number; readonly y: number };
+  /** Optional caption shown on the canvas (layout only). */
+  readonly label?: string;
+}
+
+export interface ScenarioEdge {
+  readonly id: string;
+  readonly from: string;
+  /** Output port of `from`, e.g. "next", "yes", "no", "met", "timeout", "1". */
+  readonly port: string;
+  readonly to: string;
+}
+
+interface ExpectationBase {
+  readonly id: string;
+  /** What a person reads in the result (layout only). */
+  readonly label?: string;
+}
+
+/** Points for a correct diagnosis; any listed root cause / fault type counts as correct. */
+export interface DiagnosisExpectation extends ExpectationBase {
+  readonly kind: "diagnosis";
+  readonly rootCause: readonly string[];
+  readonly faultType: readonly string[];
+  readonly weight: number;
+}
+
+/** Points if the condition holds when the run ends (e.g. "every server is still powered"). */
+export interface FinalStateExpectation extends ExpectationBase {
+  readonly kind: "final_state";
+  readonly condition: Condition;
+  readonly weight: number;
+}
+
+/** Points if the agent called this tool (on this target) at least once. */
+export interface RequiredActionExpectation extends ExpectationBase {
+  readonly kind: "required_action";
+  readonly tool: string;
+  readonly target?: string;
+  readonly weight: number;
+}
+
+/** A penalty, in points, each time the agent calls this tool (on this target). */
+export interface ForbiddenActionExpectation extends ExpectationBase {
+  readonly kind: "forbidden_action";
+  readonly tool: string;
+  readonly target?: string;
+  readonly penalty: number;
+}
+
+/** Points if the diagnosis came within this many simulated seconds of the agent task starting. */
+export interface TimeLimitExpectation extends ExpectationBase {
+  readonly kind: "time_limit";
+  readonly seconds: number;
+  readonly weight: number;
+}
+
+/** Points if the agent used at most this many tool calls. */
+export interface ToolBudgetExpectation extends ExpectationBase {
+  readonly kind: "tool_budget";
+  readonly maxCalls: number;
+  readonly weight: number;
+}
+
+export type Expectation =
+  | DiagnosisExpectation
+  | FinalStateExpectation
+  | RequiredActionExpectation
+  | ForbiddenActionExpectation
+  | TimeLimitExpectation
+  | ToolBudgetExpectation;
+
+export type ExpectationKind = Expectation["kind"];
+
+export interface ScenarioDoc {
+  readonly schemaVersion: number;
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  /** The world (blueprint id) whose entities this scenario references. */
+  readonly worldId: string;
+  readonly nodes: readonly ScenarioNode[];
+  readonly edges: readonly ScenarioEdge[];
+  readonly expectations: readonly Expectation[];
+  /** Which built-in template it came from, if any (informational). */
+  readonly template?: string;
+}
+
+/** An empty scenario with just a start block, as the editor creates it. */
+export function emptyScenario(id: string, worldId: string, name = "새 시나리오"): ScenarioDoc {
+  return {
+    schemaVersion: SCENARIO_SCHEMA_VERSION,
+    id,
+    name,
+    description: "",
+    worldId,
+    nodes: [{ id: "start", type: "start", params: {}, position: { x: 0, y: 0 } }],
+    edges: [],
+    expectations: [],
+  };
+}
+
+/** Values in tool-call arguments that name a target entity. */
+export const TARGET_ARGS: readonly string[] = ["id", "unitId", "server", "entityId", "target"];
+
+/** The entity ids a tool call acted on, read from its arguments. */
+export function callTargets(args: Readonly<Record<string, unknown>>): string[] {
+  return TARGET_ARGS.map((key) => args[key]).filter((v): v is string => typeof v === "string");
+}

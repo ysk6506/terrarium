@@ -5,7 +5,12 @@
  */
 import { hashHex } from "@terrarium/core/kernel";
 import { memberId, type RedfishProfile } from "@terrarium/core/profiles";
-import type { Entity, ServerState, WorldReader } from "@terrarium/core/world";
+import {
+  type Entity,
+  reportedInletC,
+  type ServerState,
+  type WorldReader,
+} from "@terrarium/core/world";
 import { simTimeIso } from "./http";
 
 export interface BmcContext {
@@ -39,11 +44,9 @@ function status(s: ServerState): { State: string; Health: string; HealthRollup: 
   };
 }
 
-export const reportedInletC = (ctx: BmcContext): number => {
-  const drift =
-    ctx.world.faultsOn(ctx.server.id).find((f) => f.type === "sensor_drift")?.params.deltaC ?? 0;
-  return Math.round((state(ctx).inletC + drift) * 10) / 10;
-};
+/** The inlet reading the BMC reports (0.1 °C resolution), drift included. */
+export const reportedInlet = (ctx: BmcContext): number =>
+  Math.round(reportedInletC(ctx.world, ctx.server.id) * 10) / 10;
 
 export function serviceRoot(ctx: BmcContext): Record<string, unknown> {
   return {
@@ -180,7 +183,7 @@ function temperatureReadings(
     {
       id: "0",
       name: "System Board Inlet Temp",
-      reading: reportedInletC(ctx),
+      reading: reportedInlet(ctx),
       warn: 27,
       crit: m.maxInletC,
     },

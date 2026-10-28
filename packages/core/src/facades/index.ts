@@ -16,6 +16,6 @@ export {
   stableUuid,
 } from "./http";
 export { RedfishFacade, redfishError } from "./redfish";
-export { reportedInletC, serialOf } from "./redfish-resources";
+export { reportedInlet, serialOf } from "./redfish-resources";
 export { VcenterFacade, vcenterError } from "./vcenter";
 export { VropsFacade, vropsError } from "./vrops";

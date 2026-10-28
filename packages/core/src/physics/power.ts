@@ -43,6 +43,12 @@ export class SupplyResolver {
   }
 }
 
+/** A VM's CPU demand (0..1 of its vCPUs), including a vm_cpu_spike. */
+export function vmDemand(world: World, vmId: string): number {
+  const spike = world.faultsOn(vmId).find((f) => f.type === "vm_cpu_spike")?.params.demand ?? 0;
+  return Math.max(world.stateAs(vmId, "vm").cpuDemand, spike);
+}
+
 /** Effective CPU utilisation of a server: its own load, its VMs' demand and any runaway process. */
 export function effectiveUtil(world: World, server: Entity): number {
   const state = world.stateAs(server.id, "server");
@@ -50,11 +56,8 @@ export function effectiveUtil(world: World, server: Entity): number {
   const cores = model.cpuSockets * model.coresPerSocket;
   let vmLoad = 0;
   for (const link of world.index.incoming(server.id, "runs_on")) {
-    const vm = world.stateAs(link.from, "vm");
-    const spike =
-      world.faultsOn(link.from).find((f) => f.type === "vm_cpu_spike")?.params.demand ?? 0;
     const vcpus = Number(world.index.entity(link.from).props.cpuCount ?? 4);
-    if (vm.running) vmLoad += Math.max(vm.cpuDemand, spike) * vcpus;
+    if (world.stateAs(link.from, "vm").running) vmLoad += vmDemand(world, link.from) * vcpus;
   }
   const runaway = world.faultsOn(server.id).find((f) => f.type === "cpu_runaway")?.params.util ?? 0;
   const util = Math.max(state.cpuUtil + vmLoad / cores, runaway);
@@ -136,7 +139,11 @@ export function updateDevices(world: World, supply: SupplyResolver): void {
     const host = world.index.outgoing(vm.id, "runs_on")[0];
     const hostState = host ? world.stateAs(host.to, "server") : undefined;
     const hostUp = hostState ? hostState.powered && hostState.adminOn : true;
-    world.patch(vm.id, "vm", { running: world.stateAs(vm.id, "vm").adminOn && hostUp });
+    const running = world.stateAs(vm.id, "vm").adminOn && hostUp;
+    // A throttled host caps what its VMs get, as it caps the host itself (see effectiveUtil).
+    const demand = vmDemand(world, vm.id);
+    const cpuUsage = running ? (hostState?.throttled ? Math.min(demand, 0.7) : demand) : 0;
+    world.patch(vm.id, "vm", { running, cpuUsage });
   }
 }
 

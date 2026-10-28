@@ -98,7 +98,7 @@ export const TOOL_SPECS: readonly ToolSpec[] = [
     category: "observe",
     mutating: false,
     description:
-      "Recent time series of one metric of one entity, e.g. inletC, cpuC, powerW, cpuUtil (servers); ambientC (rooms); supplyC, loadKw (cooling units); loadW (pdu/panel); batteryPct (ups).",
+      "Recent time series of one metric of one entity, e.g. inletC, cpuC, powerW, cpuUtil (servers); ambientC (rooms); supplyC, loadKw (cooling units); loadW (pdu/panel); batteryPct (ups); cpuUsage (vms).",
     inputSchema: obj(
       {
         id: str("Entity id"),

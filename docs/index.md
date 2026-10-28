@@ -21,6 +21,7 @@ last_verified: 2026-10-28
 - [ADR 작성 절차](design-docs/adr-process.md)
 - [품질 하네스 사용법](design-docs/harness-guide.md)
 - [UX Honeycomb 측정](design-docs/ux-honeycomb.md)
+- [시나리오 모델](design-docs/scenario-model.md)
 
 ### ADR
 
@@ -39,6 +40,9 @@ last_verified: 2026-10-28
 - [0013 TEST003 보정: 같은 호출을 두 번 비교](design-docs/adr/0013-test003-repeated-evaluations.md)
 - [0014 커버리지 래칫의 근거 기준](design-docs/adr/0014-coverage-ratchet-evidence.md)
 - [0015 테스트 코드의 any 허용](design-docs/adr/0015-tests-may-use-any.md)
+- [0016 시나리오 = 흐름 + 채점표](design-docs/adr/0016-scenario-flow-and-scoring.md)
+- [0017 에이전트는 센서 값을 본다](design-docs/adr/0017-agents-see-sensor-readings.md)
+- [0018 테스트를 어디에 두나](design-docs/adr/0018-test-placement.md)
 
 ## 계획과 부채
 

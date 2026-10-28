@@ -2,22 +2,25 @@
  * Alarms derived from state, like a monitoring system would raise them. Ids are `code:entity`, so
  * the same condition is one alarm for as long as it lasts. Messages are shown to people (Korean).
  */
-import type {
-  Alarm,
-  CoolingState,
-  Entity,
-  PanelState,
-  PduState,
-  ServerState,
-  UpsState,
-  World,
+import {
+  type Alarm,
+  type CoolingState,
+  type Entity,
+  type PanelState,
+  type PduState,
+  reportedInletC,
+  type ServerState,
+  type UpsState,
+  type World,
 } from "@terrarium/core/world";
-import { capacityW } from "./power";
+import { capacityW, effectiveUtil } from "./power";
 
 export const INLET_WARNING_C = 27;
 export const RACK_CRITICAL_C = 32;
 export const ROOM_WARNING_C = 30;
 export const ROOM_CRITICAL_C = 35;
+/** CPU utilisation (0..1) at which monitoring warns, for hosts and VMs. */
+export const CPU_HIGH = 0.9;
 
 type Draft = Omit<Alarm, "id" | "since">;
 type Rule<S> = (
@@ -66,8 +69,18 @@ const SERVER_RULES: ReadonlyArray<Rule<ServerState>> = [
 function serverAlarms(world: World, entity: Entity): Draft[] {
   const s = world.stateAs(entity.id, "server");
   const model = world.catalog.getOf(entity.modelId ?? "", "server");
-  return [...SERVER_RULES, inletRule(model.maxInletC)]
-    .map((rule) => rule(s, entity.name))
+  // Monitoring sees the sensor reading, so a drifting sensor raises (false) inlet alarms.
+  const sensed: ServerState = { ...s, inletC: reportedInletC(world, entity.id) };
+  const util = effectiveUtil(world, entity);
+  const busy: Hit | undefined =
+    s.powered && s.adminOn && util >= CPU_HIGH
+      ? ["cpu_high", "warning", `${entity.name} CPU 사용률 ${Math.round(util * 100)}%`]
+      : undefined;
+  return [
+    ...SERVER_RULES.map((rule) => rule(s, entity.name)),
+    inletRule(model.maxInletC)(sensed, entity.name),
+    busy,
+  ]
     .filter((hit) => hit !== undefined)
     .map(([code, severity, message]) => ({ entityId: entity.id, code, severity, message }));
 }
@@ -168,10 +181,13 @@ function itAlarms(world: World, entity: Entity): Draft[] {
     return s.failedDisks > 0
       ? [at("disk_failed", "warning", `${entity.name} 디스크 ${s.failedDisks}개 고장`)]
       : [];
-  if (s.kind === "vm")
-    return s.adminOn && !s.running
-      ? [at("vm_down", "warning", `${entity.name} 중지됨 (호스트 이상)`)]
+  if (s.kind === "vm") {
+    if (s.adminOn && !s.running)
+      return [at("vm_down", "warning", `${entity.name} 중지됨 (호스트 이상)`)];
+    return s.running && s.cpuUsage >= CPU_HIGH
+      ? [at("vm_cpu_high", "warning", `${entity.name} CPU 사용률 ${Math.round(s.cpuUsage * 100)}%`)]
       : [];
+  }
   return [];
 }
 

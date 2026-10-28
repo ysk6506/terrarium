@@ -65,7 +65,7 @@ function stats(world: WorldPort, entity: Entity, profile: VropsProfile): Array<[
   const s = world.stateOf(entity.id);
   if (s.kind === "vm") {
     return [
-      [profile.cpuStatKey, s.running ? Math.round(s.cpuDemand * 1000) / 10 : 0],
+      [profile.cpuStatKey, Math.round(s.cpuUsage * 1000) / 10],
       ["mem|usage_average", s.running ? Math.round(s.memUtil * 1000) / 10 : 0],
       ["sys|poweredOn", s.running ? 1 : 0],
     ];

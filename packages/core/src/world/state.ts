@@ -81,7 +81,10 @@ export interface VmState extends Base {
   kind: "vm";
   adminOn: boolean;
   running: boolean;
+  /** What the workload asks for (0..1 of its vCPUs); scenarios and load changes set this. */
   cpuDemand: number;
+  /** What it actually uses after spikes and host throttling; physics computes this. */
+  cpuUsage: number;
   memUtil: number;
 }
 export interface PlainState extends Base {
@@ -195,6 +198,7 @@ const FACTORIES: Partial<Record<EntityKind, Factory>> = {
     adminOn: true,
     running: true,
     cpuDemand: 0.3,
+    cpuUsage: 0.3,
     memUtil: 0.5,
   }),
 };

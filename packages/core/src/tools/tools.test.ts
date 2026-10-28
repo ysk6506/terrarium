@@ -399,3 +399,26 @@ describe("protocol and action tools [REQ-007]", () => {
     expect(answers).toEqual([full, { rootCause: "x", faultType: "y", summary: "z", actions: [] }]);
   });
 });
+
+describe("what agents observe [REQ-007]", () => {
+  test("tools show what sensors report, so a drifting sensor misleads the agent as it would a person", () => {
+    const { world, ctx, tools } = setup();
+    const truth = world.stateAs("srv-a1", "server").inletC;
+    world.apply(
+      {
+        type: "fault.add",
+        fault: { id: "d", type: "sensor_drift", target: "srv-a1", params: { deltaC: 9 } },
+      },
+      "scenario",
+    );
+    const shown = (
+      tools.call("get_entity", { id: "srv-a1" }, ctx).data as { state: { inletC: number } }
+    ).state.inletC;
+    expect(shown).toBeCloseTo(truth + 9, 2);
+    expect(world.stateAs("srv-a1", "server").inletC).toBe(truth);
+    const rack = (
+      tools.call("get_entity", { id: "rack-a" }, ctx).data as { state: { inletC: number } }
+    ).state.inletC;
+    expect(rack).toBeCloseTo(world.stateAs("rack-a", "rack").inletC, 2);
+  });
+});

@@ -1,7 +1,13 @@
 /** Tool implementations over a world port and the protocol facades. */
 import type { FacadeRequest, Facades, Method } from "@terrarium/core/facades";
 import { InvalidValueError, NotFoundError, round } from "@terrarium/core/kernel";
-import type { Entity, EntityState, LinkKind, WorldPort } from "@terrarium/core/world";
+import {
+  type Entity,
+  type EntityState,
+  type LinkKind,
+  reportedInletC,
+  type WorldPort,
+} from "@terrarium/core/world";
 
 export interface MetricSource {
   /** Samples [t, value] of `metric` on `entityId` since simulated time `sinceT`. */
@@ -40,6 +46,15 @@ export function locationPath(ctx: ToolContext, id: string): string {
     .map((e) => e.name)
     .concat(entityOf(ctx, id).name)
     .join(" > ");
+}
+
+/**
+ * The state as monitoring observes it. Agents see what sensors report; only the oracle sees the
+ * truth. So a drifting inlet sensor shows its (wrong) reading here too.
+ */
+export function observedState(ctx: ToolContext, id: string): EntityState {
+  const state = ctx.world.stateOf(id);
+  return state.kind === "server" ? { ...state, inletC: reportedInletC(ctx.world, id) } : state;
 }
 
 /** State with numbers rounded, for agents to read. */
@@ -112,7 +127,7 @@ const getEntity: Handler = (ctx, args) => {
     location: locationPath(ctx, entity.id),
     children: ctx.world.index.childrenOf(entity.id).map((c) => c.id),
     connections: connections(ctx, entity.id),
-    state: summarizeState(ctx.world.stateOf(entity.id)),
+    state: summarizeState(observedState(ctx, entity.id)),
     alarms: ctx.world
       .alarms()
       .filter((a) => a.entityId === entity.id)
@@ -252,12 +267,12 @@ const facilityStatus: Handler = (ctx, args) => {
         .map((id) => ({
           id,
           name: entityOf(ctx, id).name,
-          ...summarizeState(ctx.world.stateOf(id)),
+          ...summarizeState(observedState(ctx, id)),
         }));
     return {
       room: room.id,
       name: room.name,
-      ...summarizeState(ctx.world.stateOf(room.id)),
+      ...summarizeState(observedState(ctx, room.id)),
       cooling: pick("cooling_unit"),
       panels: pick("power_panel"),
       pdus: pick("pdu"),
