@@ -36,6 +36,7 @@ last_verified: 2026-10-28
 - [0010 TypeScript 단일 언어 모노레포](design-docs/adr/0010-typescript-monorepo.md)
 - [0011 단위 기반 아키텍처](design-docs/adr/0011-units-v2.md)
 - [0012 웹 커버리지 분리](design-docs/adr/0012-web-coverage-split.md)
+- [0013 TEST003 보정: 같은 호출을 두 번 비교](design-docs/adr/0013-test003-repeated-evaluations.md)
 
 ## 계획과 부채
 

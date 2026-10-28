@@ -89,6 +89,12 @@ describe("test integrity: static rules [REQ-023]", () => {
     expect(codes(guardRepo(withTest(body)))).toContain("TEST003");
   });
 
+  test("comparing two evaluations of the same call is not trivial", () => {
+    const body =
+      'test("x", () => {\n  const run = () => [1, 2].map((v) => v * 2);\n  expect(run()).toEqual(run());\n});';
+    expect(codes(guardRepo(withTest(body)))).not.toContain("TEST003");
+  });
+
   test.each([
     ["test.skip", 'test.skip("later", () => {\n  expect(1 + 1).toBe(3);\n});'],
     [

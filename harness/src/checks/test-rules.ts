@@ -51,14 +51,25 @@ function expectParts(
   return subject ? { subject, arg: call.arguments[0] } : undefined;
 }
 
+function containsCall(node: ts.Node): boolean {
+  let found = false;
+  walk(node, (child) => {
+    if (ts.isCallExpression(child) || ts.isNewExpression(child)) found = true;
+  });
+  return found;
+}
+
 function trivialAssertions(file: string, sf: ts.SourceFile, test: ts.Node): Violation[] {
   const out: Violation[] = [];
   walk(test, (node) => {
     if (!ts.isCallExpression(node)) return;
     const parts = expectParts(node);
     if (!parts) return;
+    // `expect(x).toBe(x)` cannot fail, but `expect(run()).toEqual(run())` compares two evaluations.
     const sameAsArg =
-      parts.arg !== undefined && structureOf(parts.subject) === structureOf(parts.arg);
+      parts.arg !== undefined &&
+      !containsCall(parts.subject) &&
+      structureOf(parts.subject) === structureOf(parts.arg);
     if (isConstant(parts.subject) || sameAsArg) {
       out.push(
         violation(
