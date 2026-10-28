@@ -152,8 +152,9 @@ export function memberId(
   entityId: string,
   ordinal = 1,
 ): string {
+  // Embedded-style BMCs use the same id for the system and its chassis.
   if (profile.idStyle === "embedded")
-    return kind === "Manager" ? `iDRAC.Embedded.${ordinal}` : `${kind}.Embedded.${ordinal}`;
+    return kind === "Manager" ? `iDRAC.Embedded.${ordinal}` : `System.Embedded.${ordinal}`;
   if (profile.idStyle === "numeric") return String(ordinal);
   return entityId;
 }
