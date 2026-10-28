@@ -72,3 +72,14 @@ export function josa(word: string, particle: Particle): string {
 export function withJosa(word: string, particle: Particle): string {
   return `${word}${josa(word, particle)}`;
 }
+
+/** A duration people read at a glance: "45초", "12분 30초", "1시간 5분" (seconds dropped past an hour). */
+export function formatDuration(seconds: number): string {
+  const total = Math.max(0, Math.round(seconds));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  if (h > 0) return m > 0 ? `${h}시간 ${m}분` : `${h}시간`;
+  if (m > 0) return s > 0 ? `${m}분 ${s}초` : `${m}분`;
+  return `${s}초`;
+}

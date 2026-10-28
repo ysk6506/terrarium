@@ -13,9 +13,13 @@ export {
 } from "./blocks";
 export {
   type AgentSignals,
+  actionsOf,
+  agentActions,
   compare,
+  type Diagnosis,
   describe as describeCondition,
   evaluate,
+  matchesAction,
   matchesCall,
   NO_AGENT,
   type ToolCallRecord,
@@ -23,6 +27,10 @@ export {
 export { scenarioDigest } from "./digest";
 export { SCENARIO_TEMPLATES, type ScenarioTemplate, scenarioTemplate } from "./library";
 export {
+  ACTION_KINDS,
+  ACTION_LABELS,
+  type ActionKind,
+  type AgentAction,
   COMPARE_OPS,
   type CompareOp,
   type Condition,

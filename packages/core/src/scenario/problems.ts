@@ -15,6 +15,9 @@ import {
 } from "@terrarium/core/world";
 import { blockSpec, CONDITION_FIELDS, type ParamSpec } from "./blocks";
 import {
+  ACTION_KINDS,
+  ACTION_LABELS,
+  type ActionKind,
   COMPARE_OPS,
   type Condition,
   type Expectation,
@@ -160,6 +163,20 @@ function toolProblem(
   return target === undefined ? undefined : entityProblem(env, target);
 }
 
+function actionProblem(
+  env: ScenarioEnv,
+  action: string,
+  target: string | undefined,
+  code: string,
+): Problem {
+  if (!ACTION_KINDS.includes(action as ActionKind))
+    return bad(
+      `알 수 없는 행동 '${action}' (가능: ${ACTION_KINDS.map((a) => ACTION_LABELS[a]).join(", ")})`,
+      code,
+    );
+  return target === undefined ? undefined : entityProblem(env, target);
+}
+
 type Checks<U extends { kind: string }, Extra extends unknown[]> = {
   readonly [K in U["kind"]]: (
     item: Extract<U, { kind: K }>,
@@ -187,6 +204,7 @@ const CONDITION_CHECKS: Checks<Condition, [depth: number]> = {
   state: (c, env) => stateConditionProblem(c, env),
   alarm: (c, env) => (c.entity === undefined ? undefined : entityProblem(env, c.entity)),
   tool_called: (c, env) => toolProblem(env, c.tool, c.target, "SC014"),
+  action_taken: (c, env) => actionProblem(env, c.action, c.target, "SC014"),
   diagnosis_submitted: () => undefined,
   all: groupProblem,
   any: groupProblem,
@@ -249,9 +267,9 @@ const EXPECTATION_CHECKS: Checks<Expectation, []> = {
   diagnosis: diagnosisProblem,
   final_state: (e, env) => conditionProblem(e.condition, env) ?? positive(e.weight, "배점"),
   required_action: (e, env) =>
-    toolProblem(env, e.tool, e.target, "SC016") ?? positive(e.weight, "배점"),
+    actionProblem(env, e.action, e.target, "SC016") ?? positive(e.weight, "배점"),
   forbidden_action: (e, env) =>
-    toolProblem(env, e.tool, e.target, "SC016") ?? positive(e.penalty, "감점"),
+    actionProblem(env, e.action, e.target, "SC016") ?? positive(e.penalty, "감점"),
   time_limit: (e) => positive(e.seconds, "제한 시간") ?? positive(e.weight, "배점"),
   tool_budget: (e) => positive(e.maxCalls, "툴 호출 한도") ?? positive(e.weight, "배점"),
 };

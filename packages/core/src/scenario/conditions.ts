@@ -1,9 +1,18 @@
 /** Evaluating and describing conditions. Shared by the runner (branch, wait_until) and the oracle. */
 import { josa } from "@terrarium/core/kernel";
 import type { Diagnosis } from "@terrarium/core/tools";
-import type { BlueprintIndex, WorldReader } from "@terrarium/core/world";
+import type { BlueprintIndex, WorldCommand, WorldReader } from "@terrarium/core/world";
 import { CONDITION_FIELDS } from "./blocks";
-import { type CompareOp, type Condition, callTargets } from "./model";
+import {
+  ACTION_LABELS,
+  type ActionKind,
+  type AgentAction,
+  type CompareOp,
+  type Condition,
+  callTargets,
+} from "./model";
+
+export type { Diagnosis } from "@terrarium/core/tools";
 
 /** One tool call the agent made, as the session records it. */
 export interface ToolCallRecord {
@@ -11,6 +20,52 @@ export interface ToolCallRecord {
   readonly tool: string;
   readonly args: Readonly<Record<string, unknown>>;
   readonly ok: boolean;
+  /** Why the call failed, as the agent was told. */
+  readonly error?: string;
+  /** What the call did to the world (derived from the world events it caused). */
+  readonly effects?: readonly AgentAction[];
+}
+
+const SIMPLE_ACTIONS: Partial<Record<WorldCommand["type"], ActionKind>> = {
+  "breaker.reset": "breaker_reset",
+  "setpoint.set": "setpoint_change",
+};
+
+/**
+ * The actions in the world commands one tool call caused. Off then on for the same target within
+ * one call is a restart (power_server off/on, Redfish ForceRestart, restart_cooling_unit).
+ */
+export function actionsOf(commands: readonly WorldCommand[]): AgentAction[] {
+  const out: AgentAction[] = [];
+  const consumed = new Set<number>();
+  commands.forEach((c, i) => {
+    if (consumed.has(i)) return;
+    if (c.type !== "power.set") {
+      const action = SIMPLE_ACTIONS[c.type];
+      if (action && "target" in c) out.push({ action, target: c.target });
+      return;
+    }
+    const backOn = c.on
+      ? -1
+      : commands.findIndex(
+          (n, j) => j > i && n.type === "power.set" && n.target === c.target && n.on,
+        );
+    if (backOn >= 0) consumed.add(backOn);
+    out.push({
+      action: backOn >= 0 ? "restart" : c.on ? "power_on" : "power_off",
+      target: c.target,
+    });
+  });
+  return out;
+}
+
+/** Every action the agent took, in order. */
+export function agentActions(calls: readonly ToolCallRecord[]): AgentAction[] {
+  return calls.flatMap((c) => c.effects ?? []);
+}
+
+export function matchesAction(a: AgentAction, action: ActionKind, target?: string): boolean {
+  return a.action === action && (target === undefined || a.target === target);
 }
 
 /** What the scenario can observe about the agent. */
@@ -56,6 +111,10 @@ export function evaluate(condition: Condition, world: Readable, agent: AgentSign
     }
     case "tool_called":
       return agent.toolCalls().some((c) => matchesCall(c, condition.tool, condition.target));
+    case "action_taken":
+      return agentActions(agent.toolCalls()).some((a) =>
+        matchesAction(a, condition.action, condition.target),
+      );
     case "diagnosis_submitted":
       return agent.diagnosis() !== undefined;
     case "all":
@@ -112,6 +171,10 @@ const DESCRIBERS: Describers = {
   },
   tool_called: (c, name) =>
     `에이전트가 ${c.tool}${c.target ? `(${name(c.target)})` : ""}${josa(c.tool, "을")} 호출했다`,
+  action_taken: (c, name) => {
+    const label = ACTION_LABELS[c.action];
+    return `에이전트가 ${c.target ? `${name(c.target)} ` : ""}${label}${josa(label, "을")} 했다`;
+  },
   diagnosis_submitted: () => "에이전트가 진단을 제출했다",
   all: (c, _name, index) => c.of.map((inner) => describe(inner, index)).join(" 그리고 "),
   any: (c, _name, index) => c.of.map((inner) => describe(inner, index)).join(" 또는 "),

@@ -46,7 +46,9 @@ export function run(root: string, base?: string): Violation[] {
 
 export function lock(root: string, amend?: string, now: string = today()): string[] {
   const config = loadTestsConfig(root);
-  return applyLock(root, config.lock, currentUnits(root, config), amend, now);
+  // Accept the ADR's file name or its repository path; the lock records the file name (ADR-0020).
+  const adr = amend === undefined ? undefined : path.basename(amend);
+  return applyLock(root, config.lock, currentUnits(root, config), adr, now);
 }
 
 export function main(argv: readonly string[], out: (line: string) => void = console.log): number {

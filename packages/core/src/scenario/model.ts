@@ -12,6 +12,28 @@
 export const SCENARIO_SCHEMA_VERSION = 1;
 
 export type CompareOp = "<" | "<=" | ">" | ">=" | "==" | "!=";
+
+/**
+ * What an agent did to the world, whichever tool it used (a power-off through power_server and one
+ * through a Redfish ComputerSystem.Reset are the same action). Scoring judges actions, not tool names,
+ * so experiments with different toolsets stay comparable (ADR-0019).
+ */
+export type ActionKind = "power_off" | "power_on" | "restart" | "breaker_reset" | "setpoint_change";
+
+export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
+  power_off: "전원 끄기",
+  power_on: "전원 켜기",
+  restart: "재시작",
+  breaker_reset: "차단기 리셋",
+  setpoint_change: "냉방 설정 변경",
+};
+
+export const ACTION_KINDS = Object.keys(ACTION_LABELS) as ActionKind[];
+
+export interface AgentAction {
+  readonly action: ActionKind;
+  readonly target: string;
+}
 export const COMPARE_OPS: readonly CompareOp[] = ["<", "<=", ">", ">=", "==", "!="];
 
 /** A question about the world or the agent, asked by branch/wait_until blocks and by expectations. */
@@ -34,6 +56,8 @@ export type Condition =
     }
   /** Whether the agent has called a tool (optionally on a given target). */
   | { readonly kind: "tool_called"; readonly tool: string; readonly target?: string }
+  /** Whether the agent has done something to the world (optionally to a given target), by any tool. */
+  | { readonly kind: "action_taken"; readonly action: ActionKind; readonly target?: string }
   /** Whether the agent has submitted its diagnosis. */
   | { readonly kind: "diagnosis_submitted" }
   | { readonly kind: "all"; readonly of: readonly Condition[] }
@@ -80,18 +104,18 @@ export interface FinalStateExpectation extends ExpectationBase {
   readonly weight: number;
 }
 
-/** Points if the agent called this tool (on this target) at least once. */
+/** Points if the agent did this to the world (to this target) at least once, by any tool. */
 export interface RequiredActionExpectation extends ExpectationBase {
   readonly kind: "required_action";
-  readonly tool: string;
+  readonly action: ActionKind;
   readonly target?: string;
   readonly weight: number;
 }
 
-/** A penalty, in points, each time the agent calls this tool (on this target). */
+/** A penalty, in points, each time the agent does this to the world (to this target), by any tool. */
 export interface ForbiddenActionExpectation extends ExpectationBase {
   readonly kind: "forbidden_action";
-  readonly tool: string;
+  readonly action: ActionKind;
   readonly target?: string;
   readonly penalty: number;
 }

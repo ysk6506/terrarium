@@ -11,7 +11,8 @@ verification_log:
   - "2026-10-28: first version"
   - "2026-10-28: first version, checked against model.ts, blocks.ts, runner.ts"
   - "2026-10-28: first version, checked against model.ts, blocks.ts, runner.ts"
-covers_hash: f832f305b0fb6ea5
+  - "2026-10-28: actions judged by effect (ADR-0019)"
+covers_hash: ee216dbce8ee3e07
 ---
 # 시나리오 모델 (REQ-033, REQ-034)
 
@@ -45,12 +46,16 @@ covers_hash: f832f305b0fb6ea5
 |---|---|
 | `diagnosis` | 정답 원인(여러 개 허용)과 장애 종류 |
 | `final_state` | 끝났을 때 참이어야 하는 조건 (예: 영향권 서버가 모두 살아 있다) |
-| `required_action` | 반드시 해야 하는 조치 (예: 차단기 리셋) |
-| `forbidden_action` | 하면 감점인 조치 (예: 멀쩡한 서버 전원 끄기) |
+| `required_action` | 반드시 해야 하는 조치 (예: pdu-a 차단기 리셋) |
+| `forbidden_action` | 할 때마다 감점인 조치 (예: 멀쩡한 서버 전원 끄기) |
 | `time_limit` | 과제 시작 후 몇 초 안에 진단했나 |
 | `tool_budget` | 툴 호출을 몇 번 이하로 썼나 |
 
 채점은 `core.oracle`이 한다. 조건은 흐름과 채점표가 같은 `Condition` 형식을 쓴다.
+
+조치는 **툴 이름이 아니라 세계에 끼친 효과**로 적는다(전원 끄기·켜기, 재시작, 차단기 리셋, 냉방 설정 변경 — ADR-0019).
+`power_server`로 껐든 Redfish `ComputerSystem.Reset`으로 껐든 같은 "전원 끄기"다. 그래야 툴 조합이 다른 실험끼리 공정하게 비교된다.
+세션이 툴 호출마다 그 호출이 일으킨 월드 명령을 행동(`effects`)으로 묶어 기록한다.
 
 ## 쓸 수 없는 블록과 그 이유
 

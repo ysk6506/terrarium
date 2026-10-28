@@ -52,6 +52,8 @@ export interface WorldReader {
   faultsOn(target: string): Fault[];
   alarms(): Alarm[];
   events(sinceSeq?: number): WorldEvent[];
+  /** Sequence number of the latest event (0 before any), cheap to read before and after a call. */
+  lastSeq(): number;
 }
 
 /** A reader that also accepts commands. Facades depend only on this port (REQ-008). */
@@ -139,6 +141,10 @@ export class World implements WorldPort {
 
   alarms(): Alarm[] {
     return Object.values(this.state.alarms).sort((a, b) => a.id.localeCompare(b.id));
+  }
+
+  lastSeq(): number {
+    return this.seq;
   }
 
   events(sinceSeq = 0): WorldEvent[] {
@@ -318,6 +324,7 @@ export class ReadOnlyWorldPort implements WorldPort {
   faultsOn = (target: string): Fault[] => this.reader.faultsOn(target);
   alarms = (): Alarm[] => this.reader.alarms();
   events = (sinceSeq?: number): WorldEvent[] => this.reader.events(sinceSeq);
+  lastSeq = (): number => this.reader.lastSeq();
 
   apply(command: WorldCommand): WorldEvent {
     throw new ReadOnlyViolationError(

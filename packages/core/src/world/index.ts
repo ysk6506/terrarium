@@ -22,6 +22,7 @@ export {
   type SpaceKind,
   type VirtualKind,
 } from "./blueprint";
+export { blueprintDigest } from "./digest";
 export {
   FAULT_SPECS,
   type Fault,

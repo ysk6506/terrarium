@@ -373,13 +373,17 @@ describe("scenario validation [REQ-034]", () => {
     const withExpectation = (e: Expectation) =>
       check({ ...base(), expectations: [...base().expectations, e] });
     expect(
-      withExpectation({ id: "x", kind: "required_action", tool: "fly", weight: 1 })[0],
-    ).toMatchObject({ code: "SC016", expectationId: "x" });
+      withExpectation({ id: "x", kind: "required_action", action: "fly" as never, weight: 1 })[0],
+    ).toMatchObject({
+      code: "SC016",
+      expectationId: "x",
+      message: expect.stringContaining("'fly'"),
+    });
     expect(
       withExpectation({
         id: "x",
         kind: "forbidden_action",
-        tool: "power_server",
+        action: "power_off",
         target: "ghost",
         penalty: 5,
       })[0]?.code,

@@ -343,6 +343,13 @@ describe("test integrity: amendments [REQ-023]", () => {
     expect(lock(root, "0009-amend.md")).toEqual([`${TEST_FILE}::=helper`]);
   });
 
+  test("the amendment ADR can be named by file name or by its repository path", () => {
+    const root = setup();
+    writeAdr(root, "0009-amend.md", [`${TEST_FILE}::adds`], REASON);
+    expect(lock(root, "docs/design-docs/adr/0009-amend.md")).toEqual([]);
+    expect(codes(root)).toEqual([]);
+  });
+
   test("an amended removal is recorded and accepted", () => {
     const root = guardRepo({ "docs/design-docs/adr/.keep": "" });
     edit(root, TEST_FILE, 'test("adds", () => {\n  expect(add(1, 1)).toBe(helper());\n});\n', "");

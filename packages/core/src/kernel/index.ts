@@ -21,7 +21,7 @@ export {
   slug,
 } from "./ids";
 export { type Rng, SeededRng } from "./rng";
-export { josa, type Particle, withJosa } from "./text";
+export { formatDuration, josa, type Particle, withJosa } from "./text";
 export {
   approach,
   clamp,
