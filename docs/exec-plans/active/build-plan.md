@@ -12,9 +12,9 @@ last_verified: 2026-10-28
 
 | # | 단계 | 요구사항 | 상태 |
 |---|---|---|---|
-| 0 | 하네스 (TS 이식) | REQ-020~025 | 진행 중 |
-| 1 | core: kernel·spatial·catalog·world·profiles·physics | REQ-001, 005, 012~014 | 대기 |
-| 2 | core: facades·tools·scenario·oracle·session | REQ-002~004, 007, 008, 034 | 대기 |
+| 0 | 하네스 (TS 이식) | REQ-020~025 | 완료 |
+| 1 | core: kernel·spatial·catalog·world·profiles·physics | REQ-001, 005, 012~014 | 완료 |
+| 2 | core: facades·tools·scenario·oracle·session | REQ-002~004, 007, 008, 034 | 진행 중 |
 | 3 | core: sources(worldgen 사업장 프리셋, realimport) | REQ-009~011, 033, 035 | 대기 |
 | 4 | core: experiments·analysis·contract | REQ-030, 031, 037~040 | 대기 |
 | 5 | server: 저장소·하네스 어댑터·워커 호스트·스케줄러·MCP·HTTP·ClickStack·FalkorDB | REQ-030~032, 037 | 대기 |

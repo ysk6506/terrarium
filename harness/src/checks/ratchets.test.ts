@@ -104,6 +104,14 @@ describe("coverage ratchet [REQ-023]", () => {
     expect(ratchet(root)).toEqual({ "core.kernel": 97, "core.world": 90, "server.http": 99 });
   });
 
+  test("ratchet keeps the minimum floor for units with little code and caps floors at 98 (ADR-0014)", () => {
+    const root = coverageRepo({
+      "packages/core/src/kernel/a.ts": [10, 10],
+      "packages/core/src/world/b.ts": [200, 200],
+    });
+    expect(ratchet(root)).toEqual({ "core.kernel": 90, "core.world": 98 });
+  });
+
   test.each([
     [{ "core.kernel": 96 }, []],
     [{ "core.kernel": 94 }, ["COV003"]],
@@ -140,7 +148,7 @@ describe("coverage ratchet [REQ-023]", () => {
     const root = coverageRepo({ "packages/core/src/kernel/a.ts": [99, 100] });
     const lines: string[] = [];
     expect(coverageMain(["ratchet", "--root", root], (l) => lines.push(l))).toBe(0);
-    expect(lines).toEqual(["core.kernel: 99.0%"]);
+    expect(lines).toEqual(["core.kernel: 98.0%"]);
     expect(coverageMain(["--root", root], () => undefined)).toBe(0);
   });
 });

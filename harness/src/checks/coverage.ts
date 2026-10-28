@@ -31,8 +31,24 @@ type Summary = Record<string, { lines: Counter; branches: Counter }>;
 
 const IGNORE_RE = /\b(v8|c8|istanbul)\s+ignore\b/;
 
+export interface UnitCoverage {
+  readonly percent: number;
+  /** Lines + branches measured: how much evidence the percentage rests on. */
+  readonly measured: number;
+}
+
+/** Units with less measured code than this keep the minimum floor (too little evidence to ratchet). */
+export const MIN_MEASURED_FOR_RATCHET = 50;
+/** Floors never go above this, leaving room for a defensive branch or two (ADR-0014). */
+export const MAX_FLOOR = 98;
+
 /** Combined line + branch percentage per unit. */
 export function perUnit(root: string, summary: Summary): Map<string, number> {
+  return new Map([...coverageByUnit(root, summary)].map(([unit, c]) => [unit, c.percent]));
+}
+
+/** Combined line + branch coverage per unit, with the amount of evidence behind it. */
+export function coverageByUnit(root: string, summary: Summary): Map<string, UnitCoverage> {
   const config = loadArchConfig(root);
   const totals = new Map<string, [number, number]>();
   for (const [file, data] of Object.entries(summary)) {
@@ -45,7 +61,10 @@ export function perUnit(root: string, summary: Summary): Map<string, number> {
     totals.set(unit.name, bucket);
   }
   return new Map(
-    [...totals].map(([unit, [hit, all]]) => [unit, all === 0 ? 100 : (100 * hit) / all]),
+    [...totals].map(([unit, [hit, all]]) => [
+      unit,
+      { percent: all === 0 ? 100 : (100 * hit) / all, measured: all },
+    ]),
   );
 }
 
@@ -161,12 +180,12 @@ export function ratchet(root: string): Record<string, number> {
   const summary = loadSummary(root, config);
   if (!summary) throw new Error("coverage summary missing: run `pnpm test` first");
   const floors = loadFloors(root, config);
-  for (const [unit, percent] of perUnit(root, summary)) {
-    floors[unit] = Math.max(
-      floors[unit] ?? config.min_floor,
-      Math.floor(percent * 2) / 2,
-      config.min_floor,
-    );
+  for (const [unit, { percent, measured }] of coverageByUnit(root, summary)) {
+    const candidate =
+      measured < MIN_MEASURED_FOR_RATCHET
+        ? config.min_floor
+        : Math.min(Math.floor(percent * 2) / 2, MAX_FLOOR);
+    floors[unit] = Math.max(floors[unit] ?? config.min_floor, candidate, config.min_floor);
   }
   const sorted = Object.fromEntries(Object.entries(floors).sort(([a], [b]) => a.localeCompare(b)));
   writeFileSync(path.join(root, config.coverage_floor), `${JSON.stringify(sorted, null, 2)}\n`);

@@ -2342,6 +2342,32 @@
    "added": "2026-10-28",
    "amended_by": null
   },
+  "harness/src/checks/ratchets.test.ts::coverage ratchet [REQ-023] > ratchet keeps the minimum floor for units with little code and caps floors at 98 (ADR-0014)": {
+   "kind": "test",
+   "hash": "126f69eb486f534a",
+   "asserts": 1,
+   "literals": [
+    "\"10\"",
+    "\"10\"",
+    "\"200\"",
+    "\"200\"",
+    "\"90\"",
+    "\"90\"",
+    "\"98\"",
+    "\"98\"",
+    "\"core.kernel\"",
+    "\"core.kernel\"",
+    "\"core.world\"",
+    "\"core.world\"",
+    "\"packages/core/src/kernel/a.ts\"",
+    "\"packages/core/src/world/b.ts\"",
+    "\"ratchet keeps the minimum floor for units with little code and caps floors at 98 (ADR-0014)\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-10-28",
+   "amended_by": null
+  },
   "harness/src/checks/ratchets.test.ts::coverage ratchet [REQ-023] > ratchet raises floors, never lowers them and never goes under the minimum": {
    "kind": "test",
    "hash": "a27ec85e87fc8db2",
@@ -2381,7 +2407,7 @@
   },
   "harness/src/checks/ratchets.test.ts::coverage ratchet [REQ-023] > the CLI prints ratcheted floors": {
    "kind": "test",
-   "hash": "357be09cc6245191",
+   "hash": "24af0f8cef38f387",
    "asserts": 3,
    "literals": [
     "\"--root\"",
@@ -2394,8 +2420,8 @@
     "\"0\"",
     "\"100\"",
     "\"99\"",
-    "\"core.kernel: 99.0%\"",
-    "\"core.kernel: 99.0%\"",
+    "\"core.kernel: 98.0%\"",
+    "\"core.kernel: 98.0%\"",
     "\"packages/core/src/kernel/a.ts\"",
     "\"ratchet\"",
     "\"ratchet\"",
@@ -2404,7 +2430,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-10-28",
-   "amended_by": null
+   "amended_by": "0014-coverage-ratchet-evidence.md"
   },
   "harness/src/checks/ratchets.test.ts::protected paths [REQ-021] > <suite>": {
    "kind": "support",
