@@ -24,6 +24,7 @@ last_verified: 2026-10-29
 - [시나리오 모델](design-docs/scenario-model.md)
 - [세계 소스 — 생성과 가져오기](design-docs/world-sources.md)
 - [실험과 결과 분석](design-docs/experiments-and-analysis.md)
+- [HTTP API 계약](design-docs/http-api.md)
 
 ### ADR
 
