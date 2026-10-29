@@ -74,6 +74,15 @@ export interface ScoreItem {
   readonly max: number;
   /** What happened, for people. */
   readonly detail: string;
+  /** Diagnosis items: which parts were right and what the answer was, for analysis. */
+  readonly facts?: DiagnosisFacts;
+}
+
+export interface DiagnosisFacts {
+  readonly root: boolean;
+  readonly type: boolean;
+  readonly rootCause: readonly string[];
+  readonly faultType: readonly string[];
 }
 
 export interface Score {
@@ -103,7 +112,7 @@ function sameFault(submitted: string, expected: string): boolean {
   return isFaultType(expected) && norm(faultSpec(expected).label) === norm(submitted);
 }
 
-type Scored = Pick<ScoreItem, "verdict" | "points" | "detail"> & { label?: string };
+type Scored = Pick<ScoreItem, "verdict" | "points" | "detail" | "facts"> & { label?: string };
 type Scorer<K extends Expectation["kind"]> = (
   e: Extract<Expectation, { kind: K }>,
   outcome: RunOutcome,
@@ -112,13 +121,25 @@ type Scorer<K extends Expectation["kind"]> = (
 function scoreDiagnosis(e: Extract<Expectation, { kind: "diagnosis" }>, o: RunOutcome): Scored {
   const d = o.diagnosis;
   const answer = `정답: ${e.rootCause.join(" 또는 ")} / ${e.faultType.join(" 또는 ")}`;
-  if (!d) return { verdict: "fail", points: 0, detail: `진단을 제출하지 않았다 (${answer})` };
+  if (!d)
+    return {
+      verdict: "fail",
+      points: 0,
+      detail: `진단을 제출하지 않았다 (${answer})`,
+      facts: { root: false, type: false, rootCause: e.rootCause, faultType: e.faultType },
+    };
   const root = e.rootCause.some((r) => sameEntity(o, d.rootCause, r));
   const type = e.faultType.some((t) => sameFault(d.faultType, t));
   const points = round(e.weight * ((root ? ROOT_SHARE : 0) + (type ? 1 - ROOT_SHARE : 0)), 2);
   const mark = (ok: boolean) => (ok ? "맞음" : "틀림");
   const detail = `제출: ${d.rootCause} / ${d.faultType} — 원인 ${mark(root)}, 종류 ${mark(type)}${root && type ? "" : ` (${answer})`}`;
-  return { verdict: root && type ? "pass" : root || type ? "partial" : "fail", points, detail };
+  const verdict = root && type ? "pass" : root || type ? "partial" : "fail";
+  return {
+    verdict,
+    points,
+    detail,
+    facts: { root, type, rootCause: e.rootCause, faultType: e.faultType },
+  };
 }
 
 function signals(o: RunOutcome): AgentSignals {
@@ -239,6 +260,7 @@ export function score(outcome: RunOutcome): Score {
       points: scored.points,
       max: possibleOf(e),
       detail: scored.detail,
+      ...(scored.facts ? { facts: scored.facts } : {}),
     };
   });
   const possible = items.reduce((sum, i) => sum + i.max, 0);

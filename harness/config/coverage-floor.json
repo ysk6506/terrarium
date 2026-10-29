@@ -1,8 +1,8 @@
 {
-  "core.analysis": 90,
+  "core.analysis": 97,
   "core.catalog": 100,
   "core.contract": 90,
-  "core.experiments": 90,
+  "core.experiments": 98,
   "core.facades": 94.5,
   "core.kernel": 99.5,
   "core.oracle": 98,

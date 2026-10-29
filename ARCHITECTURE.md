@@ -2,12 +2,13 @@
 title: ARCHITECTURE — 단위와 의존 방향
 kind: reference
 status: active
-last_verified: 2026-10-28
+last_verified: 2026-10-29
 covers:
   - harness/config/architecture.yaml
-covers_hash: 1eb12685160a1d5a
+covers_hash: a286d5ac4273e72f
 verification_log:
   - "2026-10-28: rewritten for units v2"
+  - "2026-10-29: unit table and diagram updated for ADR-0022"
 ---
 # 아키텍처
 
@@ -27,8 +28,8 @@ verification_log:
 
 ```
 contract ─► analysis ─► experiments ─► oracle ─► scenario ─► tools ─► facades ─► world ─► spatial ─► kernel
-                                                     │            └──────────► profiles ─► catalog ─┘
-session (조립) ─► physics ─► world        sources(worldgen | realimport) ─► world
+                │            │                       │            └──────────► profiles ─► catalog ─┘
+                └────────────┴─► session (조립) ─► physics ─► world        sources(worldgen | realimport) ─► world
 ```
 
 | 단위 | 책임 | 쓸 수 있는 단위 |
@@ -45,9 +46,9 @@ session (조립) ─► physics ─► world        sources(worldgen | realimpor
 | `oracle` | 시나리오 정답 기준 채점 | kernel, world, scenario |
 | `sources` / `sources/worldgen` / `sources/realimport` | 세계를 만드는 쪽. worldgen과 realimport는 서로 모른다 | kernel, spatial, catalog, world (+부모 sources) |
 | `session` | 실행 중인 시뮬레이션 하나를 조립 | 위의 시뮬레이터 단위 전부 |
-| `experiments` | 레시피·계보·수명주기·스케줄러 정책·포트 | kernel, catalog, world, tools, scenario, oracle |
-| `analysis` | 결과 분석, 리더보드, 공유 렌더링 | kernel, tools, scenario, oracle, experiments |
-| `contract` | HTTP API 계약(zod) | session을 뺀 core 전부 |
+| `experiments` | 레시피·계보·수명주기·스케줄러 정책·포트 | kernel, catalog, world, tools, scenario, oracle, session (ADR-0022) |
+| `analysis` | 결과 분석, 리더보드, 공유 렌더링 | kernel, world, tools, scenario, oracle, session, experiments |
+| `contract` | HTTP API 계약(zod) | core 전부 (ADR-0022) |
 
 ## server와 web의 단위
 

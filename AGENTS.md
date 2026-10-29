@@ -2,14 +2,15 @@
 title: AGENTS.md — 에이전트 진입점
 kind: guide
 status: active
-last_verified: 2026-10-28
+last_verified: 2026-10-29
 covers:
   - package.json
   - harness/config/architecture.yaml
   - harness/config/protected-paths.txt
-covers_hash: e5f83797bbbd57c2
+covers_hash: 1dc630b5d0cf3da4
 verification_log:
   - "2026-10-28: rewritten for the TypeScript monorepo"
+  - "2026-10-29: checked against the new may_import lists (ADR-0022); the map needs no change"
 ---
 # Terrarium — 코딩 에이전트 안내서
 

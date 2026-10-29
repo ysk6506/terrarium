@@ -2,7 +2,7 @@
 title: 문서 색인
 kind: reference
 status: active
-last_verified: 2026-10-28
+last_verified: 2026-10-29
 ---
 
 # 문서 색인
@@ -23,6 +23,7 @@ last_verified: 2026-10-28
 - [UX Honeycomb 측정](design-docs/ux-honeycomb.md)
 - [시나리오 모델](design-docs/scenario-model.md)
 - [세계 소스 — 생성과 가져오기](design-docs/world-sources.md)
+- [실험과 결과 분석](design-docs/experiments-and-analysis.md)
 
 ### ADR
 
@@ -47,6 +48,9 @@ last_verified: 2026-10-28
 - [0019 행동은 효과로 판정한다](design-docs/adr/0019-score-actions-by-effect.md)
 - [0020 잠금 수정 명령은 ADR 경로도 받는다](design-docs/adr/0020-amend-accepts-paths.md)
 - [0021 세계 소스: 건강한 생성, 읽기만 하는 가져오기](design-docs/adr/0021-world-sources.md)
+- [0022 실험·분석·계약은 세션을 쓸 수 있다](design-docs/adr/0022-experiments-see-sessions.md)
+- [0023 벤치마크 세트와 "분명한 차이"](design-docs/adr/0023-benchmark-sets-and-comparison.md)
+- [0024 공정 스케줄링](design-docs/adr/0024-fair-scheduling.md)
 
 ## 계획과 부채
 
