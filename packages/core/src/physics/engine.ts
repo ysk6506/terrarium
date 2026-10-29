@@ -108,15 +108,16 @@ export class Physics {
     const events: WorldEvent[] = [];
     const desired = new Map(desiredAlarms(this.world).map((d) => [`${d.code}:${d.entityId}`, d]));
     // An alarm keeps the message it was raised with; it ends when the condition ends or changes severity.
-    for (const alarm of this.world.alarms()) {
+    const raised = this.world.alarms();
+    const kept = new Set<string>();
+    for (const alarm of raised) {
       const next = desired.get(alarm.id);
       if (!next || next.severity !== alarm.severity) {
         events.push(this.world.apply({ type: "alarm.clear", alarmId: alarm.id }, CAUSE));
-      }
+      } else kept.add(alarm.id);
     }
-    const active = new Map(this.world.alarms().map((a) => [a.id, a]));
     for (const [id, draft] of desired) {
-      if (!active.has(id))
+      if (!kept.has(id))
         events.push(
           this.world.apply(
             { type: "alarm.raise", alarm: { ...draft, id, since: this.world.time() } },

@@ -40,6 +40,15 @@ export interface WorldSnapshot {
   readonly state: WorldState;
 }
 
+/**
+ * A snapshot plus the event log up to it: enough to start a fresh world of the same blueprint exactly
+ * where this one stands (warm start, REQ-032). Events are never changed once written, so checkpoints
+ * and the worlds adopting them share them.
+ */
+export interface WorldCheckpoint extends WorldSnapshot {
+  readonly log: readonly WorldEvent[];
+}
+
 /** What facades, tools and the oracle may read. */
 export interface WorldReader {
   readonly index: BlueprintIndex;
@@ -72,6 +81,7 @@ const POWERABLE: ReadonlySet<EntityKind> = new Set([
 export class World implements WorldPort {
   readonly index: BlueprintIndex;
   private state: WorldState;
+  private sortedAlarms: Alarm[] | undefined;
   private log: WorldEvent[] = [];
   private seq = 0;
 
@@ -136,11 +146,15 @@ export class World implements WorldPort {
   }
 
   faultsOn(target: string): Fault[] {
-    return this.faults().filter((f) => f.target === target);
+    return Object.values(this.state.faults)
+      .filter((f) => f.target === target)
+      .sort((a, b) => a.id.localeCompare(b.id));
   }
 
   alarms(): Alarm[] {
-    return Object.values(this.state.alarms).sort((a, b) => a.id.localeCompare(b.id));
+    // Physics asks for the alarm list several times a step; sorting thousands of ids each time dominated big worlds.
+    this.sortedAlarms ??= Object.values(this.state.alarms).sort((a, b) => a.id.localeCompare(b.id));
+    return [...this.sortedAlarms];
   }
 
   lastSeq(): number {
@@ -163,8 +177,22 @@ export class World implements WorldPort {
     return { seq: this.seq, state: structuredClone(this.state) };
   }
 
+  /** Everything needed to continue from here in another world built from the same blueprint. */
+  checkpoint(): WorldCheckpoint {
+    return { ...this.snapshot(), log: [...this.log] };
+  }
+
+  /** Continue from a checkpoint taken on a world of the same blueprint and catalog. */
+  adopt(checkpoint: WorldCheckpoint): void {
+    this.state = structuredClone(checkpoint.state);
+    this.sortedAlarms = undefined;
+    this.seq = checkpoint.seq;
+    this.log = [...checkpoint.log];
+  }
+
   restore(snapshot: WorldSnapshot): void {
     this.state = structuredClone(snapshot.state);
+    this.sortedAlarms = undefined;
     this.seq = snapshot.seq;
     this.log = this.log.filter((e) => e.seq <= snapshot.seq);
   }
@@ -272,9 +300,11 @@ export class World implements WorldPort {
         return;
       case "alarm.raise":
         s.alarms[command.alarm.id] = command.alarm;
+        this.sortedAlarms = undefined;
         return;
       case "alarm.clear":
         delete s.alarms[command.alarmId];
+        this.sortedAlarms = undefined;
         return;
       case "note":
         return;

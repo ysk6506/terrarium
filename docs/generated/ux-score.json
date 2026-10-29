@@ -1,6 +1,6 @@
 {
   "measuredOn": "2026-10-29",
-  "webHash": "d87ce76db9ce13b1",
+  "webHash": "5240b0d36c463ec5",
   "scores": {
     "useful": 100,
     "usable": 100,
@@ -62,8 +62,8 @@
       "ok": 3
     },
     "load": {
-      "kb": 532.77734375,
-      "ms": 380,
+      "kb": 532.9443359375,
+      "ms": 361,
       "sceneDrawn": true
     },
     "reach": {

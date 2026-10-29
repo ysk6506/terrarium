@@ -28,6 +28,7 @@ last_verified: 2026-10-29
 - [하네스 프로토콜](design-docs/harness-protocol.md)
 - [서버 운영 — 설치와 사내 시스템 연결](design-docs/operations.md)
 - [규모 키우기 — 스케일 업과 스케일 아웃](design-docs/scaling.md)
+- [용량 — 한 프로세스가 동시에 몇 개를 들고 있나](design-docs/capacity.md)
 - [웹 화면 — 디자인 원칙과 구조](design-docs/web-ui.md)
 
 ### ADR
@@ -64,6 +65,7 @@ last_verified: 2026-10-29
 - [0030 웹 기술 선택](design-docs/adr/0030-web-stack.md)
 - [0031 UX는 브라우저가 세고 하네스가 점수를 매긴다](design-docs/adr/0031-ux-honeycomb-measurement.md)
 - [0032 스케일 아웃은 워커 노드를 붙이는 것, 스케일 업은 스레드를 늘리는 것](design-docs/adr/0032-scale-out-workers.md)
+- [0033 워밍업 상태를 기억해 두고 세션을 빨리 연다](design-docs/adr/0033-warm-start-and-capacity-defaults.md)
 
 ## 계획과 부채
 

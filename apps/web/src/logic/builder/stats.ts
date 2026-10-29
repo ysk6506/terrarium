@@ -38,7 +38,7 @@ function draw(model: EquipmentModel | undefined, util: number): { max: number; t
 }
 
 /** Everything a level contains, however deep. */
-function scope(index: BlueprintIndex, level: Level): Entity[] {
+function scope(index: BlueprintIndex, level: Level): readonly Entity[] {
   if (level.kind === "site") return index.all();
   return index.descendants(level.id);
 }

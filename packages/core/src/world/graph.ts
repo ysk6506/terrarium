@@ -10,6 +10,7 @@ export class BlueprintIndex {
   private readonly children = new Map<string, Entity[]>();
   private readonly outgoingLinks = new Map<string, Link[]>();
   private readonly incomingLinks = new Map<string, Link[]>();
+  private readonly descendantsOf = new Map<string, readonly Entity[]>();
 
   constructor(readonly blueprint: Blueprint) {
     for (const entity of [...blueprint.entities].sort(byId)) {
@@ -85,7 +86,13 @@ export class BlueprintIndex {
     return this.ancestors(id).find((e) => e.kind === kind);
   }
 
-  descendants(id: string): Entity[] {
+  /**
+   * Everything below `id`, depth first. The blueprint never changes under an index, and physics asks for the
+   * same room's contents once per rack per step, so the answer is kept (callers must not change the array).
+   */
+  descendants(id: string): readonly Entity[] {
+    const kept = this.descendantsOf.get(id);
+    if (kept) return kept;
     const out: Entity[] = [];
     const stack = [...this.childrenOf(id)].reverse();
     while (stack.length > 0) {
@@ -93,6 +100,7 @@ export class BlueprintIndex {
       out.push(next);
       stack.push(...[...this.childrenOf(next.id)].reverse());
     }
+    this.descendantsOf.set(id, out);
     return out;
   }
 

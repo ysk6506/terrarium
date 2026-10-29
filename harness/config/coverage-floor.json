@@ -9,7 +9,7 @@
   "core.physics": 96,
   "core.profiles": 100,
   "core.scenario": 98,
-  "core.session": 97,
+  "core.session": 97.5,
   "core.sources": 98,
   "core.sources.realimport": 97.5,
   "core.sources.worldgen": 98,

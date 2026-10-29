@@ -4,7 +4,7 @@
  * entry so it can be tested on the main thread.
  */
 import { TerrariumError } from "@terrarium/core/kernel";
-import { Session } from "@terrarium/core/session";
+import { Session, WarmStartCache } from "@terrarium/core/session";
 import { LocalSession } from "./hosts";
 import type { FromWorker, ToWorker, WorkerError } from "./worker-protocol";
 
@@ -15,6 +15,8 @@ export function errorOf(err: unknown): WorkerError {
 
 export class WorkerSessions {
   private readonly sessions = new Map<string, LocalSession>();
+  /** Warmed-up worlds of this thread: repeat runs on one world skip the warm-up (ADR-0033). */
+  readonly warm = new WarmStartCache();
 
   constructor(private readonly send: (message: FromWorker) => void) {}
 
@@ -30,7 +32,7 @@ export class WorkerSessions {
 
   private open(id: string, config: Extract<ToWorker, { kind: "open" }>["config"]): void {
     try {
-      const local = new LocalSession(Session.create(config), (reason) =>
+      const local = new LocalSession(Session.create({ ...config, warm: this.warm }), (reason) =>
         this.send({ kind: "ended", id, reason }),
       );
       this.sessions.set(id, local);

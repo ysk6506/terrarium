@@ -10,6 +10,7 @@ covers_hash: 3615385ac26172a2
 verification_log:
   - "2026-10-29: first version, checked against the cluster code and deploy/ (ADR-0032)"
   - "2026-10-29: 역할, 지표 이름, 하트비트·비우기 동작을 protocol.ts, control-routes.ts, main.ts와 대조했다"
+  - "2026-10-29: 용량 문서 링크 추가"
 ---
 # 규모 키우기 (REQ-042, [ADR-0032](adr/0032-scale-out-workers.md))
 
@@ -17,6 +18,7 @@ verification_log:
 
 **실행 하나는 대부분 에이전트를 기다린다. 그래서 한 프로세스가 수십~수백 개를 동시에 들고 있을 수 있고, 모자라면 세션을 들고 있는
 "일꾼 노드"를 더 붙이면 된다.** 일꾼은 상태가 없다. 상태(저장소, 줄 서기, 화면)는 컨트롤 한 곳에 있다.
+얼마나 들고 있을 수 있는지는 [용량](capacity.md)에 잰 값이 있다.
 
 ## 어떻게 늘리나
 

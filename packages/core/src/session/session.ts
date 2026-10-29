@@ -43,6 +43,7 @@ import {
 import { type Blueprint, blueprintDigest, World, type WorldEvent } from "@terrarium/core/world";
 import { DEFAULT_RECORDER, MetricRecorder, type MetricSeries, RECORDED_METRICS } from "./recorder";
 import { buildTimeline, type TimelineEntry } from "./timeline";
+import type { WarmStartCache } from "./warm";
 
 export type TimePolicy =
   /** Each tool call costs this many simulated seconds (default; deterministic). */
@@ -69,6 +70,11 @@ export interface SessionConfig {
   readonly maxPreAgentSeconds?: number;
   readonly sampleSeconds?: number;
   readonly retentionSeconds?: number;
+  /**
+   * Where warmed-up worlds are kept between sessions (a host passes one per thread). A session with a
+   * custom catalog never uses it: the catalog is not part of the cache key.
+   */
+  readonly warm?: WarmStartCache;
 }
 
 export type SessionStatus = "ready" | "running" | "ended";
@@ -178,8 +184,7 @@ export class Session {
   /** Warm up, then play the scenario until it hands the task to the agent. */
   start(): AgentTask {
     if (this.state !== "ready") throw new ConflictError("the session has already started");
-    this.physics.settle();
-    this.advance(this.config.warmupSeconds ?? 600);
+    this.warmUp();
     this.scenarioStart = this.world.time();
     this.runner.start();
     this.runner.tick();
@@ -192,6 +197,33 @@ export class Session {
     this.task = this.runner.agentTask;
     this.state = "running";
     return this.task;
+  }
+
+  /** Bring the world to normal operation: from the cache when this world was warmed before. */
+  private warmUp(): void {
+    const warmup = this.config.warmupSeconds ?? 600;
+    const cache = this.config.catalog ? undefined : this.config.warm;
+    const key = cache && this.warmKey(warmup);
+    const hit = key && cache ? cache.get(key) : undefined;
+    if (hit) {
+      this.world.adopt(hit.world);
+      this.recorder.adopt(hit.recorder);
+      return;
+    }
+    this.physics.settle();
+    this.advance(warmup);
+    const recorder = this.recorder.capture();
+    if (key && cache && recorder) cache.put(key, { world: this.world.checkpoint(), recorder });
+  }
+
+  private warmKey(warmup: number): string {
+    const o = this.recorder.options;
+    return [
+      blueprintDigest(this.config.blueprint),
+      warmup,
+      o.sampleSeconds,
+      o.retentionSeconds,
+    ].join("|");
   }
 
   call(tool: string, args: Args = {}): CallResult {

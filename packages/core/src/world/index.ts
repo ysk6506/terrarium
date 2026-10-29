@@ -65,6 +65,7 @@ export { hasErrors, type Issue, validateBlueprint } from "./validate";
 export {
   ReadOnlyWorldPort,
   World,
+  type WorldCheckpoint,
   type WorldCommand,
   type WorldEvent,
   type WorldPort,

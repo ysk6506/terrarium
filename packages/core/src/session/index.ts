@@ -4,6 +4,7 @@ export {
   MetricRecorder,
   type MetricSeries,
   RECORDED_METRICS,
+  type RecorderCapture,
   type RecorderOptions,
 } from "./recorder";
 export {
@@ -16,3 +17,4 @@ export {
   type TimePolicy,
 } from "./session";
 export { buildTimeline, type TimelineEntry, type TimelineSource } from "./timeline";
+export { type WarmStart, WarmStartCache } from "./warm";

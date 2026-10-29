@@ -12,11 +12,12 @@ import {
   type RunResult,
   Session,
   type SessionConfig,
+  WarmStartCache,
 } from "@terrarium/core/session";
 import type { ToolSpec } from "@terrarium/core/tools";
 
-/** A session config that can cross a thread boundary (no catalog instance: the host makes its own). */
-export type PlainSessionConfig = Omit<SessionConfig, "catalog">;
+/** A session config that can cross a thread boundary (no catalog instance or warm cache: the host makes its own). */
+export type PlainSessionConfig = Omit<SessionConfig, "catalog" | "warm">;
 
 export interface HostedSession {
   readonly task: AgentTask;
@@ -97,13 +98,14 @@ export class LocalSession implements HostedSession {
 
 export class InProcessHost implements SessionHost {
   private count = 0;
+  private readonly warm = new WarmStartCache();
 
   get openCount(): number {
     return this.count;
   }
 
   async open(config: PlainSessionConfig): Promise<HostedSession> {
-    const local = new LocalSession(Session.create(config));
+    const local = new LocalSession(Session.create({ ...config, warm: this.warm }));
     this.count++;
     let disposed = false;
     const dispose = () => {

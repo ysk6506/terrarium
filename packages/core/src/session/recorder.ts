@@ -3,6 +3,7 @@
  * CPU, power, temperatures. Samples land on a fixed simulated-time grid and live in fixed-size ring
  * buffers, so memory per run is bounded: entities × metrics × (retention / interval) × 4 bytes.
  */
+import { InvalidValueError } from "@terrarium/core/kernel";
 import { effectiveUtil } from "@terrarium/core/physics";
 import type { MetricSource } from "@terrarium/core/tools";
 import { type EntityKind, reportedInletC, type World } from "@terrarium/core/world";
@@ -26,6 +27,14 @@ export interface RecorderOptions {
 }
 
 export const DEFAULT_RECORDER: RecorderOptions = { sampleSeconds: 30, retentionSeconds: 4 * 3600 };
+
+/** The samples taken so far, trimmed to what was written (warm start, REQ-032). */
+export interface RecorderCapture {
+  readonly count: number;
+  readonly nextAt: number;
+  readonly times: Float64Array;
+  readonly values: readonly Float32Array[];
+}
 
 type Reader = (world: World, id: string) => number;
 
@@ -88,6 +97,29 @@ export class MetricRecorder implements MetricSource {
     for (const s of this.all) s.values[slot] = s.read(this.world, s.id);
     this.count++;
     this.nextAt = (Math.floor(now / this.options.sampleSeconds) + 1) * this.options.sampleSeconds;
+  }
+
+  /** The samples so far, or nothing once the ring has wrapped (then they are not a simple prefix). */
+  capture(): RecorderCapture | undefined {
+    if (this.count > this.times.length) return undefined;
+    return {
+      count: this.count,
+      nextAt: this.nextAt,
+      times: this.times.slice(0, this.count),
+      values: this.all.map((s) => s.values.slice(0, this.count)),
+    };
+  }
+
+  /** Continue from a capture taken on a recorder over the same blueprint and options. */
+  adopt(capture: RecorderCapture): void {
+    if (capture.values.length !== this.all.length || capture.count > this.times.length)
+      throw new InvalidValueError("the recorder capture does not fit this recorder");
+    this.times.set(capture.times);
+    this.all.forEach((s, i) => {
+      s.values.set(capture.values[i] as Float32Array);
+    });
+    this.count = capture.count;
+    this.nextAt = capture.nextAt;
   }
 
   /** Samples [t, value] of `metric` on `entityId` at or after simulated time `sinceT`. */
