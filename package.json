@@ -17,7 +17,6 @@
     "structure": "tsx harness/src/run-all.ts --with-coverage && tsx harness/src/ux/run.ts check",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm structure",
     "check:pr": "pnpm lint && pnpm typecheck && pnpm test && tsx harness/src/run-all.ts --with-coverage --base origin/main && tsx harness/src/ux/run.ts check --base origin/main",
-    "e2e": "tsx tests/e2e/run.ts",
     "ux": "tsx harness/src/ux/run.ts",
     "ratchet": "tsx harness/src/checks/coverage.ts ratchet && tsx harness/src/checks/debt.ts ratchet",
     "lock-tests": "tsx harness/src/checks/testguard.ts lock"

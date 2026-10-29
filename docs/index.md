@@ -66,6 +66,7 @@ last_verified: 2026-10-29
 - [0031 UX는 브라우저가 세고 하네스가 점수를 매긴다](design-docs/adr/0031-ux-honeycomb-measurement.md)
 - [0032 스케일 아웃은 워커 노드를 붙이는 것, 스케일 업은 스레드를 늘리는 것](design-docs/adr/0032-scale-out-workers.md)
 - [0033 워밍업 상태를 기억해 두고 세션을 빨리 연다](design-docs/adr/0033-warm-start-and-capacity-defaults.md)
+- [0034 쓰지 않는 e2e 스크립트를 없앤다](design-docs/adr/0034-remove-stale-e2e-script.md)
 
 ## 계획과 부채
 

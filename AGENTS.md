@@ -7,11 +7,12 @@ covers:
   - package.json
   - harness/config/architecture.yaml
   - harness/config/protected-paths.txt
-covers_hash: 150ffb49fd1ba86e
+covers_hash: 6569de98e209ca73
 verification_log:
   - "2026-10-28: rewritten for the TypeScript monorepo"
   - "2026-10-29: checked against the new may_import lists (ADR-0022); the map needs no change"
   - "2026-10-29: UX 측정 줄과 보호 경로 표를 architecture.yaml(server.cluster 단위 추가)과 대조했다"
+  - "2026-10-29: package.json의 e2e 스크립트 제거(ADR-0034), 명령 목록은 영향 없음을 확인했다"
 ---
 # Terrarium — 코딩 에이전트 안내서
 
