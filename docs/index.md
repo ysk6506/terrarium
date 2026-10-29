@@ -25,6 +25,8 @@ last_verified: 2026-10-29
 - [세계 소스 — 생성과 가져오기](design-docs/world-sources.md)
 - [실험과 결과 분석](design-docs/experiments-and-analysis.md)
 - [HTTP API 계약](design-docs/http-api.md)
+- [하네스 프로토콜](design-docs/harness-protocol.md)
+- [서버 운영 — 설치와 사내 시스템 연결](design-docs/operations.md)
 
 ### ADR
 
@@ -52,6 +54,11 @@ last_verified: 2026-10-29
 - [0022 실험·분석·계약은 세션을 쓸 수 있다](design-docs/adr/0022-experiments-see-sessions.md)
 - [0023 벤치마크 세트와 "분명한 차이"](design-docs/adr/0023-benchmark-sets-and-comparison.md)
 - [0024 공정 스케줄링](design-docs/adr/0024-fair-scheduling.md)
+- [0025 저장소는 Node 내장 SQLite](design-docs/adr/0025-sqlite-store.md)
+- [0026 하네스 연결 세 가지](design-docs/adr/0026-harness-adapters.md)
+- [0027 실행 호스팅과 끝내는 규칙](design-docs/adr/0027-run-hosting.md)
+- [0028 사용자 식별과 공유](design-docs/adr/0028-identity-and-sharing.md)
+- [0029 하네스 파싱 캐시](design-docs/adr/0029-harness-parse-cache.md)
 
 ## 계획과 부채
 

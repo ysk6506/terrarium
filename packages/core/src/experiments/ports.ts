@@ -43,6 +43,8 @@ export interface ToolEndpoint {
 
 export interface AgentRunRequest {
   readonly runId: string;
+  /** The run's seed, so scripted agents are as repeatable as the world. */
+  readonly seed: number;
   readonly agentId: string;
   readonly prompt: string;
   readonly limits: { readonly maxToolCalls: number; readonly timeLimitSeconds: number };
@@ -74,6 +76,8 @@ export interface ExperimentFilter {
   readonly parentId?: string;
   readonly worldId?: string;
   readonly scenarioId?: string;
+  /** Words that must all appear in the name or note (case-insensitive). */
+  readonly text?: string;
   readonly limit?: number;
 }
 
@@ -107,6 +111,8 @@ export interface ExperimentStore {
   getRun(id: string): Promise<RunRecord | undefined>;
   /** In run order. */
   listRuns(experimentId: string): Promise<RunRecord[]>;
+  /** Runs still queued or running, oldest first: what a restarted server must pick up. */
+  listActiveRuns(): Promise<RunRecord[]>;
   putShare(share: ShareRecord): Promise<void>;
   getShare(token: string): Promise<ShareRecord | undefined>;
   deleteShare(token: string): Promise<boolean>;

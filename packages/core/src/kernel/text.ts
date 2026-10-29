@@ -45,9 +45,13 @@ function latinFinal(word: string): string {
   return (acronym ? LETTER_NAMES[last] : WORD_ENDINGS[last]) ?? "";
 }
 
+/** Closing quotes and brackets are not read aloud: "'crah-1'" sounds like "crah-1". */
+const CLOSERS = /['"’”`)\]}>»」』]+$/u;
+
 /** "b" (final consonant), "l" (final ㄹ), "" (none), or undefined when unknown. */
-function finalSound(word: string): string | undefined {
-  const last = word.trimEnd().at(-1);
+function finalSound(raw: string): string | undefined {
+  const word = raw.trimEnd().replace(CLOSERS, "");
+  const last = word.at(-1);
   if (last === undefined) return undefined;
   const code = last.charCodeAt(0);
   if (code >= 0xac00 && code <= 0xd7a3) {
@@ -55,7 +59,7 @@ function finalSound(word: string): string | undefined {
     return final === 0 ? "" : final === 8 ? "l" : "b";
   }
   if (/[0-9]/.test(last)) return DIGITS[Number(last)];
-  if (/[a-z]/i.test(last)) return latinFinal(word.trimEnd());
+  if (/[a-z]/i.test(last)) return latinFinal(word);
   return undefined;
 }
 

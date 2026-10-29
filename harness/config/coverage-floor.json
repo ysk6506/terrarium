@@ -17,9 +17,10 @@
   "core.tools": 98,
   "core.world": 98.5,
   "harness": 97,
-  "server.adapters": 90,
-  "server.http": 90,
-  "server.mcp": 90,
-  "server.runtime": 90,
+  "server.adapters": 97,
+  "server.http": 97.5,
+  "server.main": 91,
+  "server.mcp": 98,
+  "server.runtime": 96.5,
   "web.logic": 90
 }

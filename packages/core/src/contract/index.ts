@@ -3,9 +3,12 @@ export {
   type ApiError,
   type ErrorReply,
   errorReply,
+  ForbiddenError,
+  InvalidInputError,
   invalidInput,
   isApiError,
   toErrorReply,
+  UnavailableError,
 } from "./errors";
 export { type ApiIssue, issuesOf, koreanErrorMap, type Parsed, parseWith, pathOf } from "./korean";
 export {
@@ -46,6 +49,8 @@ export {
 export {
   type BodyOf,
   type Method,
+  type ParsedBodyOf,
+  type ParsedQueryOf,
   type Produces,
   paramNames,
   pathFor,

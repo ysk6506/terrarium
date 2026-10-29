@@ -12,8 +12,18 @@ export function scriptKind(file: string): ts.ScriptKind {
   return ts.ScriptKind.TS;
 }
 
+/**
+ * Parsed files, reused while the text is unchanged: one run of all checks reads each file once
+ * instead of once per check (ADR-0029).
+ */
+const parsed = new Map<string, { readonly text: string; readonly sf: ts.SourceFile }>();
+
 export function parse(file: string, text: string): ts.SourceFile {
-  return ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, scriptKind(file));
+  const hit = parsed.get(file);
+  if (hit?.text === text) return hit.sf;
+  const sf = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, scriptKind(file));
+  parsed.set(file, { text, sf });
+  return sf;
 }
 
 export function lineOf(sf: ts.SourceFile, pos: number): number {

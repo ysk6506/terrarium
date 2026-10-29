@@ -5,6 +5,30 @@
 import { TerrariumError } from "@terrarium/core/kernel";
 import type { ApiIssue } from "./korean";
 
+/** Input that is well-formed but wrong in meaning; the issues say where (shown next to the field). */
+export class InvalidInputError extends TerrariumError {
+  override readonly code = "invalid_input";
+  override readonly status = 400;
+  constructor(
+    message: string,
+    readonly issues: readonly ApiIssue[],
+  ) {
+    super(message);
+  }
+}
+
+/** The viewer may not do this (e.g. cancel someone else's experiment). */
+export class ForbiddenError extends TerrariumError {
+  override readonly code = "forbidden";
+  override readonly status = 403;
+}
+
+/** A connected system (harness, graph, ClickStack) did not answer. */
+export class UnavailableError extends TerrariumError {
+  override readonly code = "unavailable";
+  override readonly status = 503;
+}
+
 export interface ApiError {
   readonly error: {
     readonly code: string;
@@ -47,6 +71,11 @@ export function errorReply(status: number, code: string, message?: string): Erro
 
 /** Errors the core raises carry their own status; anything else is a 500 that hides internals. */
 export function toErrorReply(err: unknown): ErrorReply {
+  if (err instanceof InvalidInputError)
+    return {
+      status: 400,
+      body: { error: { code: err.code, message: err.message, issues: err.issues } },
+    };
   if (err instanceof TerrariumError) return errorReply(err.status, err.code, err.message);
   return errorReply(
     500,

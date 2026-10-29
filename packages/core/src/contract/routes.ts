@@ -312,6 +312,14 @@ export type QueryOf<N extends RouteName> = Spec<N> extends { query: z.ZodTypeAny
   ? z.input<Spec<N>["query"]>
   : undefined;
 
+/** Body and query after parsing (defaults filled in), as the server's handlers see them. */
+export type ParsedBodyOf<N extends RouteName> = Spec<N> extends { body: z.ZodTypeAny }
+  ? z.output<Spec<N>["body"]>
+  : undefined;
+export type ParsedQueryOf<N extends RouteName> = Spec<N> extends { query: z.ZodTypeAny }
+  ? z.output<Spec<N>["query"]>
+  : undefined;
+
 /** `:name` segments of a path. */
 export function paramNames(path: string): string[] {
   return [...path.matchAll(/:([A-Za-z]+)/g)].map((m) => m[1] as string);

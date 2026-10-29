@@ -9,6 +9,7 @@ covers_hash: a286d5ac4273e72f
 verification_log:
   - "2026-10-28: rewritten for units v2"
   - "2026-10-29: unit table and diagram updated for ADR-0022"
+  - "2026-10-29: server unit rows describe stage 5 (ADR-0025..0028)"
 ---
 # 아키텍처
 
@@ -54,10 +55,10 @@ contract ─► analysis ─► experiments ─► oracle ─► scenario ─►
 
 | 단위 | 책임 | 쓸 수 있는 단위 |
 |---|---|---|
-| `server.adapters` | 저장소(SQLite), 하네스 어댑터, ClickStack, FalkorDB | core 전부 |
-| `server.runtime` | 워커 스레드 세션 호스트, 스케줄러 루프 | core, adapters |
-| `server.mcp` | 실험별 MCP 엔드포인트 | core, runtime |
-| `server.http` | Fastify 라우트, 정적 웹 | core, adapters, runtime, mcp |
+| `server.adapters` | 설정, 저장소(SQLite, ADR-0025), 하네스 어댑터(내장·OpenAI 호환·하네스 프로토콜, ADR-0026), ClickStack, FalkorDB | core 전부 |
+| `server.runtime` | 워커 스레드 세션 호스트, 실행기, 스케줄러 루프(ADR-0027), 세계·시나리오·실험·결과 서비스 | core, adapters |
+| `server.mcp` | 실행마다 하나인 MCP 툴 엔드포인트 | core, runtime |
+| `server.http` | 계약의 경로 표 그대로의 Fastify 라우트, SSE, 공유 링크, 정적 웹, 사용자 식별(ADR-0028) | core, adapters, runtime, mcp |
 | `web.logic` | 화면 상태와 계산(DOM 없이 테스트) | core |
 | `web.ui` | React 화면, 3D 빌더, 시나리오 편집기 | core, web.logic |
 

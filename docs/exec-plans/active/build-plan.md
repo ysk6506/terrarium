@@ -17,8 +17,8 @@ last_verified: 2026-10-29
 | 2 | core: facades·tools·scenario·oracle·session | REQ-002~004, 007, 008, 034 | 완료 |
 | 3 | core: sources(worldgen 사업장 프리셋, realimport) | REQ-009~011, 033, 035 | 완료 |
 | 4 | core: experiments·analysis·contract | REQ-015, 030, 031, 037~040 | 완료 |
-| 5 | server: 저장소·하네스 어댑터·워커 호스트·스케줄러·MCP·HTTP·ClickStack·FalkorDB | REQ-030~032, 037 | 진행 중 |
-| 6 | web: 타이쿤 빌더·시나리오 편집기·실험·결과·대시보드 | REQ-006, 034~036, 038~040 | 대기 |
+| 5 | server: 저장소·하네스 어댑터·워커 호스트·스케줄러·MCP·HTTP·ClickStack·FalkorDB | REQ-030~032, 037 | 완료 |
+| 6 | web: 타이쿤 빌더·시나리오 편집기·실험·결과·대시보드 | REQ-006, 034~036, 038~040 | 진행 중 |
 | 7 | UX Honeycomb 측정과 개선 반복 | REQ-041 | 대기 |
 | 8 | 용량 측정과 최종 검증 | REQ-032 | 대기 |
 

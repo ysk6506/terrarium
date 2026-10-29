@@ -11,8 +11,23 @@ function countKinds(bp: Blueprint): Partial<Record<EntityKind, number>> {
   return out;
 }
 
+/** Every word of `text` appears in the experiment's name or note. */
+export function matchesText(
+  e: Pick<Experiment, "name" | "note">,
+  text: string | undefined,
+): boolean {
+  if (text === undefined) return true;
+  const hay = `${e.name}\n${e.note ?? ""}`.toLowerCase();
+  return text
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean)
+    .every((word) => hay.includes(word));
+}
+
 function matches(e: Experiment, f: ExperimentFilter): boolean {
   return (
+    matchesText(e, f.text) &&
     (f.owner === undefined || e.owner === f.owner) &&
     (f.benchmarkKey === undefined || e.benchmarkKey === f.benchmarkKey) &&
     (f.parentId === undefined || e.parentId === f.parentId) &&
@@ -110,6 +125,13 @@ export class MemoryStore implements ExperimentStore {
     return [...this.runs.values()]
       .filter((r) => r.experimentId === experimentId)
       .sort((a, b) => a.index - b.index)
+      .map(copy);
+  }
+
+  async listActiveRuns(): Promise<RunRecord[]> {
+    return [...this.runs.values()]
+      .filter((r) => r.status === "queued" || r.status === "running")
+      .sort((a, b) => a.queuedAt.localeCompare(b.queuedAt) || a.index - b.index)
       .map(copy);
   }
 

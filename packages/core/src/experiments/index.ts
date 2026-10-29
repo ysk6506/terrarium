@@ -16,7 +16,7 @@ export {
   type RecipeChange,
   recipeDiff,
 } from "./lineage";
-export { MemoryStore } from "./memory-store";
+export { MemoryStore, matchesText } from "./memory-store";
 export {
   type Experiment,
   type ExperimentStatus,

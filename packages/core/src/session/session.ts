@@ -165,6 +165,11 @@ export class Session {
     return this.state;
   }
 
+  /** How simulated time moves: hosts sync realtime sessions to the wall clock. */
+  get timePolicy(): TimePolicy {
+    return this.time;
+  }
+
   /** The tools the agent may call, with their JSON schemas (for harness adapters and MCP). */
   toolSpecs(): ToolSpec[] {
     return this.toolbox.list();

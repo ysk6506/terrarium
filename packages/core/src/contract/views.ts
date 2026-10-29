@@ -22,7 +22,7 @@ import type {
   WorldRecord,
   WorldSummary,
 } from "@terrarium/core/experiments";
-import type { ScenarioIssue, TraceEntry } from "@terrarium/core/scenario";
+import type { ScenarioIssue } from "@terrarium/core/scenario";
 import type { MetricSeries, TimelineEntry } from "@terrarium/core/session";
 import type { ImportReport } from "@terrarium/core/sources/realimport";
 import type { WorldgenResult } from "@terrarium/core/sources/worldgen";
@@ -74,7 +74,6 @@ export interface SavedScenario {
 }
 
 export interface DryRunView {
-  readonly trace: readonly TraceEntry[];
   readonly timeline: readonly TimelineEntry[];
   readonly series: readonly MetricSeries[];
   /** Simulated seconds until the agent would be handed the task, if it ever is. */

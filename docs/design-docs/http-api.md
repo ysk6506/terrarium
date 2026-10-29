@@ -6,9 +6,10 @@ last_verified: 2026-10-29
 covers:
   - packages/core/src/contract/routes.ts
   - packages/core/src/contract/errors.ts
-covers_hash: 9c689175f2f244b4
+covers_hash: 08ff421fa8c2d91d
 verification_log:
   - "2026-10-29: first version, route table copied from ROUTES; errors checked"
+  - "2026-10-29: errors.ts gained InvalidInputError/ForbiddenError/UnavailableError; routes.ts gained parsed types; table unchanged"
 ---
 # HTTP API 계약 (core.contract)
 
