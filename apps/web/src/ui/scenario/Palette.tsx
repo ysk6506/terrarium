@@ -67,7 +67,7 @@ export function Palette({ e }: { readonly e: ScenarioEditor }) {
         const groups = [...new Set(mine.map((i) => i.group ?? ""))];
         return (
           <div key={category} className="builder-block">
-            <h3>{CATEGORY_LABELS[category]}</h3>
+            <h2>{CATEGORY_LABELS[category]}</h2>
             {groups.map((g) => (
               <div key={g || "all"} style={{ marginBottom: 10 }}>
                 {g && (

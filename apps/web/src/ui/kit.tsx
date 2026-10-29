@@ -12,7 +12,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { STATUS_TONES, statusLabel, type Tone } from "../logic";
+import { ApiError, SECTIONS, STATUS_TONES, sectionOf, statusLabel, type Tone } from "../logic";
+import { Go, useApp } from "./context";
 import { Icon } from "./icons";
 
 export {
@@ -109,18 +110,26 @@ export function Note({
 }
 
 /** An error from loading something, with a way to try again. */
+/** What went wrong in the server's words, and the ways on: try again (unless it is simply gone) or go to the list. */
 export function Failure({ error, retry }: { readonly error: Error; readonly retry?: () => void }) {
+  const { page } = useApp();
+  const gone = error instanceof ApiError && error.status === 404;
+  const section = SECTIONS.find((s) => s.key === sectionOf(page));
+  const away = section && section.key !== "home" ? section : undefined;
   return (
     <Note tone="bad">
       <div className="stack">
         <span>{error.message}</span>
-        {retry && (
-          <div>
+        <div className="row">
+          {retry && !gone && (
             <Button size="small" onClick={retry}>
               다시 불러오기
             </Button>
-          </div>
-        )}
+          )}
+          <Go to={away ? away.page : { name: "home" }} className="btn btn-small">
+            {away ? `${away.label} 목록으로` : "홈으로"}
+          </Go>
+        </div>
       </div>
     </Note>
   );
@@ -177,11 +186,12 @@ export function Figures({
   return (
     <dl className="figures">
       {items.map((f) => (
-        <div className="figure" key={f.label} title={f.hint}>
+        <div className="figure" key={f.label}>
           <dd className="figure-value" style={{ margin: 0 }}>
             {f.value}
           </dd>
           <dt className="figure-label">{f.label}</dt>
+          {f.hint && <dd className="figure-hint">{f.hint}</dd>}
         </div>
       ))}
     </dl>

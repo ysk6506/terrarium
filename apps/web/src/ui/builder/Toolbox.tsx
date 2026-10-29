@@ -99,7 +99,7 @@ export function Toolbox({ b }: { readonly b: Builder }) {
   return (
     <aside className="builder-side" aria-label="놓을 것">
       <div className="builder-block">
-        <h3>놓을 것</h3>
+        <h2>놓을 것</h2>
         <div className="stack" style={{ gap: 2 }}>
           <button
             type="button"
@@ -130,7 +130,7 @@ export function Toolbox({ b }: { readonly b: Builder }) {
         </div>
       </div>
       <div className="builder-block tiny muted">
-        <h3>조작</h3>
+        <h2>조작</h2>
         <dl className="keys">
           {KEYS.map(([k, v]) => (
             <div key={k}>

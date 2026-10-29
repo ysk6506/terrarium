@@ -7,10 +7,11 @@ covers:
   - package.json
   - harness/config/architecture.yaml
   - harness/config/protected-paths.txt
-covers_hash: 1dc630b5d0cf3da4
+covers_hash: 150ffb49fd1ba86e
 verification_log:
   - "2026-10-28: rewritten for the TypeScript monorepo"
   - "2026-10-29: checked against the new may_import lists (ADR-0022); the map needs no change"
+  - "2026-10-29: UX 측정 줄과 보호 경로 표를 architecture.yaml(server.cluster 단위 추가)과 대조했다"
 ---
 # Terrarium — 코딩 에이전트 안내서
 
@@ -50,8 +51,8 @@ pnpm check        # lint + 타입 + 테스트 + 모든 구조 검사. 이게 통
 - **새 테스트 추가** → 제목에 `[REQ-NNN]`을 넣고, 작성 후 `pnpm lock-tests` (새 항목만 추가됨).
 - **새 결정** → [ADR 작성 절차](docs/design-docs/adr-process.md). `enforced_by`로 강제 장치에 연결한다.
 - **부채를 남겨야 함** → 장부에 항목 등록 후 `TODO(TD-NNNN)`. 기한과 예산이 있다.
-- **커버리지나 UX 점수를 올렸다** → `pnpm ratchet`으로 하한을 고정.
-- **UX 점검** → `pnpm ux` (Honeycomb 7개 면, [UX 측정](docs/design-docs/ux-honeycomb.md)).
+- **커버리지를 올렸다** → `pnpm ratchet`으로 하한을 고정.
+- **웹 화면을 바꿨다** → `pnpm ux`로 다시 잰다(브라우저가 필요하고 몇 분 걸린다). 안 재면 `UX004`로 실패한다. 점수가 올랐으면 `pnpm ux ratchet`으로 하한을 고정한다. 읽는 법은 [UX 측정](docs/design-docs/ux-honeycomb.md).
 
 ## 철학
 

@@ -59,6 +59,16 @@ const powered = (id: string): Condition => ({
   value: true,
 });
 
+/** The contract allows 20 conditions in one all/any, so a long list becomes groups of groups. */
+const GROUP_SIZE = 20;
+export function allOf(conditions: readonly Condition[]): Condition {
+  if (conditions.length <= GROUP_SIZE) return { kind: "all", of: conditions };
+  const groups: Condition[] = [];
+  for (let i = 0; i < conditions.length; i += GROUP_SIZE)
+    groups.push(allOf(conditions.slice(i, i + GROUP_SIZE)));
+  return allOf(groups);
+}
+
 function doc(
   template: ScenarioTemplate,
   worldId: string,
@@ -148,7 +158,7 @@ const coolingFailure: ScenarioTemplate = {
                 id: "servers-alive",
                 kind: "final_state" as const,
                 label: "냉방 영향권 서버가 모두 살아 있다",
-                condition: { kind: "all" as const, of: servers.map(powered) },
+                condition: allOf(servers.map(powered)),
                 weight: 20,
               },
             ]

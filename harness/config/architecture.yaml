@@ -24,6 +24,7 @@ units:
   core.contract:            {path: packages/core/src/contract, may_import: [core.kernel, core.spatial, core.catalog, core.world, core.profiles, core.tools, core.scenario, core.oracle, core.session, core.sources, core.sources.worldgen, core.sources.realimport, core.experiments, core.analysis]}
   server.adapters:          {path: apps/server/src/adapters, may_import: ["core.*"]}
   server.runtime:           {path: apps/server/src/runtime, may_import: ["core.*", server.adapters]}
+  server.cluster:           {path: apps/server/src/cluster, may_import: ["core.*", server.runtime]}
   server.mcp:               {path: apps/server/src/mcp, may_import: ["core.*", server.runtime]}
   server.http:              {path: apps/server/src/http, may_import: ["core.*", server.adapters, server.runtime, server.mcp]}
   server.main:              {path: apps/server/src, may_import: ["core.*", "server.*"], public_index: false}
@@ -41,7 +42,7 @@ node_builtins: ["server.*", harness, "tests.*"]
 # adding a dependency is a decision and needs an ADR plus an entry here.
 third_party:
   zod: ["core.*", "server.*", "web.*"]
-  fastify: [server.http]
+  fastify: [server.http, server.cluster]
   "@fastify/static": [server.http]
   "@modelcontextprotocol/sdk": [server.mcp]
   falkordb: [server.adapters]

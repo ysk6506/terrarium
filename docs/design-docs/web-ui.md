@@ -6,9 +6,10 @@ last_verified: 2026-10-29
 covers:
   - apps/web/src/styles.css
   - apps/web/src/logic/router.ts
-covers_hash: 6be2438c9b3852a4
+covers_hash: 15b1038d5eb74f57
 verification_log:
   - "2026-10-29: 토큰과 주소 표를 styles.css, router.ts와 대조했다"
+  - "2026-10-29: 토큰 규칙을 styles.css(:root 토큰 추가)와 대조했다"
 ---
 # 웹 화면 (REQ-006, REQ-030~041)
 
@@ -33,6 +34,7 @@ verification_log:
 - 크기: 13 · 14 · 16 · 20 · 26 · 34px (≈1.25배). 본문 16, 표와 편집기는 14.
 - 모서리: 조작 요소 6px, 패널 10px, 3D 유리 상자는 각진 모서리. 모든 것에 같은 둥글기를 쓰지 않는다.
 - 그림자 대신 경계선. 떠 있는 것(메뉴, 대화상자)만 그림자.
+- 색 값(그림자, 막, 열 눈금 포함)은 `:root`의 토큰으로만 쓴다. 규칙 밖에 색 값을 직접 쓰면 UX 측정의 "디자인 토큰" 점수가 깎인다.
 
 ## 원칙
 

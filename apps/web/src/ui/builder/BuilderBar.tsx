@@ -82,6 +82,7 @@ export function BuilderBar({ b }: { readonly b: Builder }) {
         <Icon name="back" size={18} />
       </Go>
       <div className="toolbar-title">
+        <h1 className="sr-only">{world.name}</h1>
         <WorldName b={b} />
         <div className="row tiny muted" style={{ gap: 10 }}>
           <Crumbs b={b} />

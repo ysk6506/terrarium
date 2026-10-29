@@ -20,9 +20,10 @@ export {
   type SessionHost,
 } from "./hosts";
 export { type Stamps, SYSTEM_STAMPS } from "./ids";
-export { Platform, type PlatformOptions } from "./platform";
+export { Platform, type PlatformOptions, withCapacity } from "./platform";
 export { type ReportFormat, Results } from "./results";
 export { Scenarios } from "./scenarios";
-export { WorkerHost, type WorkerHostOptions } from "./worker-host";
+export { raise, WorkerHost, type WorkerHostOptions } from "./worker-host";
+export type { WorkerError } from "./worker-protocol";
 export { errorOf, WorkerSessions } from "./worker-sessions";
 export { blueprintIssues, Worlds } from "./worlds";

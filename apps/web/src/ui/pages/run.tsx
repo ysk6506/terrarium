@@ -8,7 +8,7 @@ import { END_REASON_LABELS } from "@terrarium/core/oracle";
 import { BlueprintIndex } from "@terrarium/core/world";
 import { useMemo, useState } from "react";
 import { formatDuration, scoreText } from "../../logic";
-import { Go, useApp, useAsync } from "../context";
+import { Go, useApp, useAsync, usePageTitle } from "../context";
 import { Failure, Figures, Loading, Note, PageHead, Section, Status, Tabs } from "../kit";
 import { SeriesGrid, Timeline } from "../results";
 import { CallsTable, DiagnosisCompare, ScoreSheet, TelemetryPanel } from "./run-parts";
@@ -88,8 +88,16 @@ function RunFigures({ view }: { readonly view: RunView }) {
   return (
     <Figures
       items={[
-        { label: "점수", value: scoreText(analysis.score), hint: run.result?.score.summary ?? "" },
-        { label: "합격", value: run.result ? (analysis.passed ? "합격" : "불합격") : "—" },
+        {
+          label: "점수",
+          value: scoreText(analysis.score),
+          hint: run.result?.score.summary || "채점표 항목의 점수를 더한 값",
+        },
+        {
+          label: "합격",
+          value: run.result ? (analysis.passed ? "합격" : "불합격") : "—",
+          hint: "70점 이상이면 합격이다",
+        },
         {
           label: "진단까지",
           value: after === undefined ? "—" : formatDuration(after),
@@ -100,8 +108,16 @@ function RunFigures({ view }: { readonly view: RunView }) {
           value: `${e.investigationCalls}회`,
           hint: `실패한 호출 ${e.failedCalls}회`,
         },
-        { label: "같은 호출 반복", value: `${analysis.behaviour.repeated}회` },
-        { label: "토큰", value: tokens },
+        {
+          label: "같은 호출 반복",
+          value: `${analysis.behaviour.repeated}회`,
+          hint: "같은 툴을 같은 인자로 다시 부른 횟수",
+        },
+        {
+          label: "토큰",
+          value: tokens,
+          hint: "하네스가 알려 준 입력과 출력 토큰의 합",
+        },
       ]}
     />
   );
@@ -167,6 +183,7 @@ export function RunPage({ id }: { readonly id: string }) {
   const { api } = useApp();
   const state = useAsync((signal) => api.call("getRun", { params: { id }, signal }), [id]);
   const view = state.data;
+  usePageTitle(view && `${view.run.index + 1}번째 실행, ${view.experiment.experiment.name}`);
   return (
     <div className="page">
       {state.error && !view && <Failure error={state.error} retry={state.reload} />}

@@ -7,7 +7,7 @@ import type { ExperimentView } from "@terrarium/core/contract";
 import { withJosa } from "@terrarium/core/kernel";
 import { useState } from "react";
 import { dateText, statusLabel } from "../../logic";
-import { Go, useAction, useApp, useAsync } from "../context";
+import { Go, useAction, useApp, useAsync, usePageTitle } from "../context";
 import {
   Button,
   Dialog,
@@ -206,6 +206,7 @@ export function ExperimentPage({ id }: { readonly id: string }) {
   const { api } = useApp();
   const state = useAsync((signal) => api.call("getExperiment", { params: { id }, signal }), [id]);
   const view = state.data;
+  usePageTitle(view?.experiment.name);
   const live = useLive(view, state.reload);
   if (state.error && !view)
     return (

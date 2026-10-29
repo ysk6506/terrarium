@@ -181,6 +181,11 @@ export function HowStep({ draft, set, problems }: StepProps) {
       <div className="grid-2">
         <NumberField
           label="실행 횟수"
+          error={
+            draft.runs < 1 || draft.runs > MAX_SEEDS
+              ? `실행 횟수는 1~${MAX_SEEDS}번이다`
+              : undefined
+          }
           value={draft.runs}
           min={1}
           max={MAX_SEEDS}

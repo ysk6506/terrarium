@@ -16,10 +16,11 @@
   "core.spatial": 99,
   "core.tools": 98,
   "core.world": 98.5,
-  "harness": 97,
+  "harness": 97.5,
   "server.adapters": 97,
+  "server.cluster": 90.5,
   "server.http": 97.5,
-  "server.main": 91,
+  "server.main": 94,
   "server.mcp": 98,
   "server.runtime": 96.5,
   "web.logic": 96.5

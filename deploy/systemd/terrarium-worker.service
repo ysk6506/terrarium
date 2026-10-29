@@ -1,0 +1,22 @@
+# A worker node on a VM or bare metal. Copy to /etc/systemd/system/, then:
+#   systemctl daemon-reload && systemctl enable --now terrarium-worker
+# /etc/terrarium/worker.env holds TERRARIUM_CLUSTER_TOKEN=... (mode 0600) and, if needed,
+# TERRARIUM_ADVERTISE_URL=http://<this machine's address>:8787
+[Unit]
+Description=Terrarium worker node
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=terrarium
+WorkingDirectory=/opt/terrarium
+Environment=TERRARIUM_CONFIG=/etc/terrarium/worker.json
+EnvironmentFile=/etc/terrarium/worker.env
+ExecStart=/usr/bin/node --import tsx apps/server/src/main.ts
+Restart=on-failure
+# SIGTERM makes the node drain; give it as long as cluster.drainSeconds plus a little.
+KillSignal=SIGTERM
+TimeoutStopSec=660
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,34 @@
+# Scale workers by the work waiting, not by CPU: a run mostly waits for the model, so CPU stays low while queues grow.
+# The control plane publishes terrarium_nodes_wanted (workers needed for everything running and queued) at /metrics.
+# /metrics wants the cluster token as a bearer token; Prometheus reads it from a Secret (credentials).
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata: { name: terrarium-control }
+spec:
+  selector: { matchLabels: { app: terrarium-control } }
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      authorization:
+        type: Bearer
+        credentials: { name: terrarium-cluster, key: token }
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata: { name: terrarium-worker }
+spec:
+  scaleTargetRef: { name: terrarium-worker }
+  minReplicaCount: 1
+  maxReplicaCount: 100
+  # Scale in slowly: a worker leaving first drains, but flapping wastes warm-up and world transfers.
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleDown: { stabilizationWindowSeconds: 600 }
+  triggers:
+    - type: prometheus
+      metadata:
+        serverAddress: http://prometheus.monitoring:9090
+        query: terrarium_nodes_wanted
+        threshold: "1"

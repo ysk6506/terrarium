@@ -1,0 +1,114 @@
+# Terrarium on Kubernetes: one control plane, any number of worker pods (ADR-0032, docs/design-docs/scaling.md).
+# Replace the image, the token and the hostnames. Not exercised in CI: it is a starting point, not a promise.
+apiVersion: v1
+kind: Secret
+metadata: { name: terrarium-cluster }
+type: Opaque
+stringData:
+  # openssl rand -hex 32 — the same value goes to the control plane and every worker.
+  token: REPLACE-WITH-A-LONG-RANDOM-STRING
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: terrarium-control }
+data:
+  terrarium.json: |
+    {
+      "port": 8787,
+      "publicUrl": "https://terrarium.dc.internal",
+      "dataDir": "/data",
+      "cluster": { "role": "control", "tokenEnv": "TERRARIUM_CLUSTER_TOKEN" }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: terrarium-worker }
+data:
+  terrarium.json: |
+    {
+      "port": 8787,
+      "dataDir": "/tmp/terrarium",
+      "cluster": {
+        "role": "worker",
+        "tokenEnv": "TERRARIUM_CLUSTER_TOKEN",
+        "controlUrl": "http://terrarium-control:8787",
+        "drainSeconds": 600
+      }
+    }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: terrarium-data }
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 20Gi } }
+---
+# The control plane keeps the store (SQLite, one writer), so there is exactly one and it is replaced, not rolled.
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: terrarium-control }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector: { matchLabels: { app: terrarium-control } }
+  template:
+    metadata: { labels: { app: terrarium-control } }
+    spec:
+      containers:
+        - name: terrarium
+          image: registry.example.internal/terrarium:latest
+          env:
+            - { name: TERRARIUM_CONFIG, value: /etc/terrarium/terrarium.json }
+            - name: TERRARIUM_CLUSTER_TOKEN
+              valueFrom: { secretKeyRef: { name: terrarium-cluster, key: token } }
+          ports: [{ containerPort: 8787 }]
+          readinessProbe: { httpGet: { path: /healthz, port: 8787 } }
+          livenessProbe: { httpGet: { path: /healthz, port: 8787 }, periodSeconds: 20 }
+          resources:
+            requests: { cpu: "1", memory: 2Gi }
+          volumeMounts:
+            - { name: config, mountPath: /etc/terrarium }
+            - { name: data, mountPath: /data }
+      volumes:
+        - { name: config, configMap: { name: terrarium-control } }
+        - { name: data, persistentVolumeClaim: { claimName: terrarium-data } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: terrarium-control }
+spec:
+  selector: { app: terrarium-control }
+  ports: [{ name: http, port: 8787, targetPort: 8787 }]
+---
+# Workers hold sessions only. Scale this Deployment freely; each pod's slots are 32 per CPU thread (cpu limit - 1, at least 1).
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: terrarium-worker }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: terrarium-worker } }
+  template:
+    metadata: { labels: { app: terrarium-worker } }
+    spec:
+      # Longer than cluster.drainSeconds: a pod that is told to leave finishes its sessions first.
+      terminationGracePeriodSeconds: 660
+      containers:
+        - name: terrarium
+          image: registry.example.internal/terrarium:latest
+          env:
+            - { name: TERRARIUM_CONFIG, value: /etc/terrarium/terrarium.json }
+            - name: POD_IP
+              valueFrom: { fieldRef: { fieldPath: status.podIP } }
+            - { name: TERRARIUM_ADVERTISE_URL, value: "http://$(POD_IP):8787" }
+            - { name: TERRARIUM_NODE_ID, valueFrom: { fieldRef: { fieldPath: metadata.name } } }
+            - name: TERRARIUM_CLUSTER_TOKEN
+              valueFrom: { secretKeyRef: { name: terrarium-cluster, key: token } }
+          ports: [{ containerPort: 8787 }]
+          readinessProbe: { httpGet: { path: /healthz, port: 8787 } }
+          resources:
+            requests: { cpu: "4", memory: 8Gi }
+            limits: { cpu: "4", memory: 8Gi }
+          volumeMounts:
+            - { name: config, mountPath: /etc/terrarium }
+      volumes:
+        - { name: config, configMap: { name: terrarium-worker } }

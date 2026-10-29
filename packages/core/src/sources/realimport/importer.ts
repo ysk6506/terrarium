@@ -80,6 +80,14 @@ function split(
   return { unknown, skipped };
 }
 
+/** The answer to a room filter that matches nothing: say what was asked and what could have been. */
+function noRoomMatches(asked: readonly string[], names: readonly string[]): string {
+  const shown = names.slice(0, 8).join(", ");
+  const more = names.length > 8 ? ` 외 ${names.length - 8}곳` : "";
+  const known = names.length > 0 ? ` 있는 서버룸: ${shown}${more}` : " 가져올 서버룸이 소스에 없다";
+  return `"${asked.join(", ")}"에 맞는 서버룸이 없다. 이름이나 id의 일부를 다시 확인한다.${known}`;
+}
+
 /** Drop rooms outside the scope, then whatever no longer connects to anything kept. */
 function applyScope(plan: Plan, scope: readonly string[]): { rooms: number; links: number } {
   if (scope.length === 0) return { rooms: 0, links: 0 };
@@ -171,6 +179,15 @@ function counts<T extends string>(items: readonly { kind: T }[]): Partial<Record
   return out;
 }
 
+/** Keep only the asked-for rooms. Asking for rooms that do not exist is an error that lists the ones that do. */
+function scopeToRooms(plan: Parameters<typeof applyScope>[0], rooms: readonly string[]) {
+  const roomNames = [...plan.rooms.values()].map((r) => r.name);
+  const outOfScope = applyScope(plan, rooms);
+  if (rooms.length > 0 && plan.rooms.size === 0)
+    throw new InvalidValueError(noRoomMatches(rooms, roomNames));
+  return outOfScope;
+}
+
 export async function importReality(
   source: RealitySource,
   options: ImportOptions = {},
@@ -189,7 +206,7 @@ export async function importReality(
   ).flat();
   const classification = classify(mapping, nodes, rels);
   const plan = resolve(classification, mapping, catalog, options.siteName ?? "현실 사업장");
-  const outOfScope = applyScope(plan, options.rooms ?? []);
+  const outOfScope = scopeToRooms(plan, options.rooms ?? []);
   const size = plannedCount(plan);
   const max = options.maxEntities ?? DEFAULT_MAX_ENTITIES;
   if (size > max)

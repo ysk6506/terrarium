@@ -79,7 +79,9 @@ export function DiagnosisCompare({ view }: { readonly view: RunView }) {
       <table className="table">
         <thead>
           <tr>
-            <th />
+            <th>
+              <span className="sr-only">항목</span>
+            </th>
             <th>에이전트의 답</th>
             <th>실제 정답</th>
             <th>맞았나</th>

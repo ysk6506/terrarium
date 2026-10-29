@@ -5,7 +5,7 @@
 import type { WorldRecord } from "@terrarium/core/experiments";
 import { useMemo } from "react";
 import { builder, celsius, count, watts, won } from "../../logic";
-import { useApp, useAsync, useLeaveGuard } from "../context";
+import { useApp, useAsync, useLeaveGuard, usePageTitle } from "../context";
 import { Failure, Loading } from "../kit";
 import { BuilderBar } from "./BuilderBar";
 import { Inspector } from "./Inspector";
@@ -58,6 +58,7 @@ function Hud({ b }: { readonly b: Builder }) {
 function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
   const b = useBuilder(initial);
   const { index, level, preview, selected, dirty } = b.state;
+  usePageTitle(initial.name);
   useBuilderKeys(b);
   useLeaveGuard(dirty ? "저장하지 않고 나가면 고친 것이 사라진다. 그래도 나갈까?" : undefined);
   const gestures = useGestures(b);

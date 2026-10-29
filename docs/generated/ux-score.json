@@ -1,0 +1,111 @@
+{
+  "measuredOn": "2026-10-29",
+  "webHash": "d87ce76db9ce13b1",
+  "scores": {
+    "useful": 100,
+    "usable": 100,
+    "desirable": 100,
+    "findable": 100,
+    "accessible": 100,
+    "credible": 100,
+    "valuable": 100
+  },
+  "measurements": {
+    "journeys": {
+      "build": {
+        "ok": true,
+        "actions": 7
+      },
+      "import": {
+        "ok": true,
+        "actions": 4
+      },
+      "design": {
+        "ok": true,
+        "actions": 6
+      },
+      "run": {
+        "ok": true,
+        "actions": 2
+      },
+      "cancel": {
+        "ok": true,
+        "actions": 5
+      },
+      "share": {
+        "ok": true,
+        "actions": 5
+      },
+      "fork": {
+        "ok": true,
+        "actions": 6
+      },
+      "compare": {
+        "ok": true,
+        "actions": 2
+      }
+    },
+    "clean": {
+      "tried": 26,
+      "ok": 26
+    },
+    "invalid": {
+      "tried": 4,
+      "ok": 4
+    },
+    "colors": {
+      "literals": 54,
+      "offToken": 0
+    },
+    "progress": {
+      "tried": 3,
+      "ok": 3
+    },
+    "load": {
+      "kb": 532.77734375,
+      "ms": 380,
+      "sceneDrawn": true
+    },
+    "reach": {
+      "tried": 10,
+      "ok": 10
+    },
+    "orientation": {
+      "tried": 12,
+      "ok": 12
+    },
+    "axe": {
+      "pages": 24,
+      "critical": 0,
+      "serious": 0,
+      "moderate": 0
+    },
+    "keyboard": {
+      "tried": 5,
+      "ok": 5
+    },
+    "focus": {
+      "tried": 69,
+      "ok": 69
+    },
+    "motion": {
+      "animated": 0
+    },
+    "failures": {
+      "tried": 6,
+      "ok": 6
+    },
+    "empties": {
+      "tried": 4,
+      "ok": 4
+    },
+    "provenance": {
+      "tried": 13,
+      "ok": 13
+    },
+    "value": {
+      "tried": 7,
+      "ok": 7
+    }
+  }
+}

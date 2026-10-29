@@ -31,6 +31,8 @@ export interface AppServices {
   askName(): void;
   /** While set, leaving the page asks first (unsaved work); returns the question to ask. */
   setLeaveGuard(guard: (() => string | undefined) | undefined): void;
+  /** What this page is about, put in front of the tab title ("화성사업장 — 세계 — 테라리움"). */
+  setTitle(name: string | undefined): void;
 }
 
 export const AppContext = createContext<AppServices | null>(null);
@@ -39,6 +41,15 @@ export function useApp(): AppServices {
   const app = useContext(AppContext);
   if (!app) throw new Error("useApp outside <App>");
   return app;
+}
+
+/** Name the open page in the browser tab, so tabs and history entries can be told apart. */
+export function usePageTitle(name: string | undefined): void {
+  const { setTitle } = useApp();
+  useEffect(() => {
+    setTitle(name);
+    return () => setTitle(undefined);
+  }, [name, setTitle]);
 }
 
 export interface Async<T> {

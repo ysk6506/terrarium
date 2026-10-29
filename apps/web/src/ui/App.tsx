@@ -160,18 +160,22 @@ function useToasts() {
 /** The address bar is the state: pages come from it, and going somewhere asks first when work is unsaved. */
 function useNavigation() {
   const [page, setPage] = useState<Page>(() => parseLocation(location.pathname, location.search));
+  const [detail, setDetail] = useState<string>();
   const leaveGuard = useRef<(() => string | undefined) | undefined>(undefined);
   const setLeaveGuard = useCallback((guard: (() => string | undefined) | undefined) => {
     leaveGuard.current = guard;
   }, []);
   useEffect(() => {
-    const back = () => setPage(parseLocation(location.pathname, location.search));
+    const back = () => {
+      setDetail(undefined);
+      setPage(parseLocation(location.pathname, location.search));
+    };
     window.addEventListener("popstate", back);
     return () => window.removeEventListener("popstate", back);
   }, []);
   useEffect(() => {
-    document.title = titleOf(page);
-  }, [page]);
+    document.title = titleOf(page, detail);
+  }, [page, detail]);
   const navigate = useCallback((next: Page, options: { replace?: boolean } = {}) => {
     const question = leaveGuard.current?.();
     if (question && !window.confirm(question)) return;
@@ -179,10 +183,11 @@ function useNavigation() {
     const href = hrefOf(next);
     if (options.replace) history.replaceState(null, "", href);
     else history.pushState(null, "", href);
+    setDetail(undefined);
     setPage(next);
     document.querySelector(".main")?.scrollTo({ top: 0 });
   }, []);
-  return { page, navigate, setLeaveGuard };
+  return { page, navigate, setLeaveGuard, setTitle: setDetail };
 }
 
 function Rail({
@@ -244,7 +249,7 @@ function Toasts({ toasts }: { readonly toasts: readonly Toast[] }) {
 }
 
 export function App({ api, identity }: { readonly api: Api; readonly identity: Identity }) {
-  const { page, navigate, setLeaveGuard } = useNavigation();
+  const { page, navigate, setLeaveGuard, setTitle } = useNavigation();
   const mainId = useId();
   const { toasts, toast } = useToasts();
   const [asking, setAsking] = useState(false);
@@ -268,8 +273,9 @@ export function App({ api, identity }: { readonly api: Api; readonly identity: I
       ...(me ? { me } : {}),
       askName: () => setAsking(true),
       setLeaveGuard,
+      setTitle,
     }),
-    [api, identity, page, navigate, meta.data, meta.reload, toast, me, setLeaveGuard],
+    [api, identity, page, navigate, meta.data, meta.reload, toast, me, setLeaveGuard, setTitle],
   );
   return (
     <AppContext.Provider value={services}>

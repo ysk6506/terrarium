@@ -5,11 +5,12 @@ status: active
 last_verified: 2026-10-29
 covers:
   - harness/config/architecture.yaml
-covers_hash: a286d5ac4273e72f
+covers_hash: a042792c336d0c57
 verification_log:
   - "2026-10-28: rewritten for units v2"
   - "2026-10-29: unit table and diagram updated for ADR-0022"
   - "2026-10-29: server unit rows describe stage 5 (ADR-0025..0028)"
+  - "2026-10-29: server.cluster 단위 행과 fastify 허용 단위를 architecture.yaml과 대조했다 (ADR-0032)"
 ---
 # 아키텍처
 
@@ -57,6 +58,7 @@ contract ─► analysis ─► experiments ─► oracle ─► scenario ─►
 |---|---|---|
 | `server.adapters` | 설정, 저장소(SQLite, ADR-0025), 하네스 어댑터(내장·OpenAI 호환·하네스 프로토콜, ADR-0026), ClickStack, FalkorDB | core 전부 |
 | `server.runtime` | 워커 스레드 세션 호스트, 실행기, 스케줄러 루프(ADR-0027), 세계·시나리오·실험·결과 서비스 | core, adapters |
+| `server.cluster` | 스케일 아웃: 워커 노드 서버, 노드 등록부, 배치(`ClusterHost`), 자동 확장 지표(ADR-0032) | core, runtime |
 | `server.mcp` | 실행마다 하나인 MCP 툴 엔드포인트 | core, runtime |
 | `server.http` | 계약의 경로 표 그대로의 Fastify 라우트, SSE, 공유 링크, 정적 웹, 사용자 식별(ADR-0028) | core, adapters, runtime, mcp |
 | `web.logic` | 화면 상태와 계산(DOM 없이 테스트) | core |
@@ -66,7 +68,7 @@ contract ─► analysis ─► experiments ─► oracle ─► scenario ─►
 
 - **공개 API**: 다른 단위는 그 단위의 `index.ts`만 import한다. core는 `@terrarium/core/<경로>` 별칭으로 가져온다 (`ARCH011`).
 - **형제 격리**: `worldgen`과 `realimport`는 서로를 import하지 않는다. 공유할 것은 `sources` 또는 `spatial`로 내린다 (`ARCH012`).
-- **외부 라이브러리 가두기**: 모든 패키지는 계약에 선언되어야 하고, 허용된 단위에서만 쓴다 (`ARCH020`). 예: `fastify`는 `server.http`, `three`는 `web.ui`.
+- **외부 라이브러리 가두기**: 모든 패키지는 계약에 선언되어야 하고, 허용된 단위에서만 쓴다 (`ARCH020`). 예: `fastify`는 `server.http`와 `server.cluster`, `three`는 `web.ui`.
 - **테스트 도구**: `vitest`, `fast-check`는 테스트 파일에서만 (`ARCH022`). 운영 코드는 `test-support/`를 import하지 않는다 (`ARCH013`).
 - **순환 금지** (`ARCH030`, 타입 전용 import는 제외).
 

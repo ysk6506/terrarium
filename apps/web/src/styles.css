@@ -22,6 +22,17 @@
   --busy: #2f55d4;
   --on-ink: #f3f7f5;
   --shadow: 0 8px 28px rgb(23 48 42 / 16%);
+  --lift: 0 1px 2px rgb(0 0 0 / 12%);
+  --lift-faint: 0 1px 2px rgb(0 0 0 / 8%);
+  --scrim: rgb(10 20 18 / 40%);
+  --on-bad: #fff;
+  --edge-faint: rgb(0 0 0 / 15%);
+  --sheen: rgb(255 255 255 / 30%);
+  --ink-hover: color-mix(in srgb, var(--ink) 86%, var(--cobalt));
+  --glass-92: color-mix(in srgb, var(--surface) 92%, transparent);
+  --glass-85: color-mix(in srgb, var(--surface) 85%, transparent);
+  --glass-ink: color-mix(in srgb, var(--ink) 88%, transparent);
+  --heat: linear-gradient(90deg, #3a86c9 0%, #a9b6b1 43%, #c9821a 71%, #c43d2b 100%);
   --radius-control: 6px;
   --radius-panel: 10px;
   --rail: 84px;
@@ -328,7 +339,7 @@ p {
 
 .btn-primary:hover {
   border-color: var(--ink);
-  background: color-mix(in srgb, var(--ink) 86%, var(--cobalt));
+  background: var(--ink-hover);
 }
 
 .btn-quiet {
@@ -464,7 +475,7 @@ p {
 .segmented button[aria-selected="true"] {
   background: var(--surface);
   color: var(--ink);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
+  box-shadow: var(--lift);
 }
 
 /* ── tables and lists ──────────────────────────────────────────────────────── */
@@ -646,6 +657,14 @@ p {
   font-size: 14px;
 }
 
+/* What the number is, in words: a tooltip alone does not reach keyboards, touch, or screen readers. */
+.figure-hint {
+  margin: 2px 0 0;
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 /* ── dialogs and toasts ────────────────────────────────────────────────────── */
 
 .scrim {
@@ -654,7 +673,7 @@ p {
   display: grid;
   place-items: center;
   padding: 20px;
-  background: rgb(10 20 18 / 40%);
+  background: var(--scrim);
   z-index: 50;
 }
 
@@ -697,7 +716,7 @@ p {
 
 .toast-bad {
   background: var(--bad);
-  color: #fff;
+  color: var(--on-bad);
 }
 
 .menu {
@@ -776,7 +795,7 @@ p {
   aspect-ratio: 4 / 3;
   border: 1px solid var(--line-strong);
   border-radius: 2px;
-  background: linear-gradient(180deg, rgb(255 255 255 / 30%), transparent 40%), var(--sunk);
+  background: linear-gradient(180deg, var(--sheen), transparent 40%), var(--sunk);
   overflow: hidden;
 }
 
@@ -854,6 +873,7 @@ p {
   border-bottom: 1px solid var(--line);
 }
 
+.builder-block h2,
 .builder-block h3 {
   margin-bottom: 10px;
   font-size: 14px;
@@ -896,12 +916,12 @@ p {
   width: 18px;
   height: 18px;
   border-radius: 3px;
-  border: 1px solid rgb(0 0 0 / 15%);
+  border: 1px solid var(--edge-faint);
 }
 
 .tool-cost {
   margin-left: auto;
-  color: var(--ink-3);
+  color: var(--ink-2);
   font-size: 12px;
 }
 
@@ -940,7 +960,7 @@ p {
   gap: 0;
   border: 1px solid var(--line);
   border-radius: var(--radius-panel);
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  background: var(--glass-92);
   font-size: 13px;
 }
 
@@ -965,7 +985,7 @@ p {
   transform: translateX(-50%);
   padding: 6px 12px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--ink) 88%, transparent);
+  background: var(--glass-ink);
   color: var(--on-ink);
   font-size: 13px;
   white-space: nowrap;
@@ -974,7 +994,7 @@ p {
 
 .stage-hint-bad {
   background: var(--bad);
-  color: #fff;
+  color: var(--on-bad);
 }
 
 .heat-scale {
@@ -992,7 +1012,7 @@ p {
   width: 120px;
   height: 8px;
   border-radius: 4px;
-  background: linear-gradient(90deg, #3a86c9 0%, #a9b6b1 43%, #c9821a 71%, #c43d2b 100%);
+  background: var(--heat);
 }
 
 .elevation {
@@ -1115,7 +1135,7 @@ p {
   color: var(--ink);
   font-family: var(--font);
   font-size: 13px;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+  box-shadow: var(--lift-faint);
 }
 
 .block[data-category="flow"] {
@@ -1390,7 +1410,7 @@ p {
 }
 
 .diff-before {
-  color: var(--ink-3);
+  color: var(--ink-2);
   text-decoration: line-through;
 }
 
@@ -1574,6 +1594,7 @@ p {
   border-color: var(--cobalt);
   background: var(--surface);
   outline: none;
+  box-shadow: 0 0 0 3px var(--cobalt-soft);
 }
 
 .link-button {
@@ -1595,7 +1616,7 @@ p {
   transform: translate(-50%, -100%);
   padding: 1px 6px;
   border-radius: 4px;
-  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  background: var(--glass-85);
   color: var(--ink);
   font-size: 12px;
   font-weight: 600;

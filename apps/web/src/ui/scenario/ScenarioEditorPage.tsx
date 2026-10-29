@@ -4,8 +4,8 @@
  */
 import type { ScenarioRecord, WorldRecord } from "@terrarium/core/experiments";
 import { hasErrors, type ScenarioIssue } from "@terrarium/core/scenario";
-import { useEffect, useRef, useState } from "react";
-import { Go, useApp, useAsync, useLeaveGuard } from "../context";
+import { type KeyboardEvent as ReactKeyboardEvent, useEffect, useRef, useState } from "react";
+import { Go, useApp, useAsync, useLeaveGuard, usePageTitle } from "../context";
 import { Icon } from "../icons";
 import { Button, Failure, Loading, Note } from "../kit";
 import { SeriesGrid, Timeline } from "../results";
@@ -43,24 +43,32 @@ function ModeSwitch({
   readonly tab: Tab;
   readonly setTab: (t: Tab) => void;
 }) {
+  const tabs: ReadonlyArray<readonly [Tab, string]> = [
+    ["flow", "흐름"],
+    ["sheet", `채점표 (${e.doc.expectations.length})`],
+  ];
+  // Arrow keys move between the two, as in every tab list; only the chosen one is a tab stop.
+  const move = (ev: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (ev.key !== "ArrowRight" && ev.key !== "ArrowLeft") return;
+    ev.preventDefault();
+    const next = tab === "flow" ? 1 : 0;
+    setTab(tabs[next]?.[0] ?? tab);
+    (ev.currentTarget.querySelectorAll("button")[next] as HTMLElement | undefined)?.focus();
+  };
   return (
-    <div className="segmented" role="tablist" aria-label="편집할 것">
-      <button
-        type="button"
-        role="tab"
-        aria-selected={tab === "flow"}
-        onClick={() => setTab("flow")}
-      >
-        흐름
-      </button>
-      <button
-        type="button"
-        role="tab"
-        aria-selected={tab === "sheet"}
-        onClick={() => setTab("sheet")}
-      >
-        채점표 ({e.doc.expectations.length})
-      </button>
+    <div className="segmented" role="tablist" aria-label="편집할 것" onKeyDown={move}>
+      {tabs.map(([id, label]) => (
+        <button
+          key={id}
+          type="button"
+          role="tab"
+          aria-selected={tab === id}
+          tabIndex={tab === id ? 0 : -1}
+          onClick={() => setTab(id)}
+        >
+          {label}
+        </button>
+      ))}
     </div>
   );
 }
@@ -122,6 +130,7 @@ function Bar({
         <Icon name="back" size={18} />
       </Go>
       <div className="toolbar-title">
+        <h1 className="sr-only">{e.record.name}</h1>
         <Name e={e} />
         <span className="tiny muted">
           세계 <Go to={{ name: "world", id: e.world.id }}>{e.world.name}</Go>
@@ -237,6 +246,7 @@ function EditorScreen({
   readonly world: WorldRecord;
 }) {
   const e = useScenario(scenario, world);
+  usePageTitle(scenario.name);
   const [tab, setTab] = useState<Tab>("flow");
   useLeaveGuard(e.dirty ? "저장하지 않고 나가면 고친 것이 사라진다. 그래도 나갈까?" : undefined);
   useEditorKeys(e);

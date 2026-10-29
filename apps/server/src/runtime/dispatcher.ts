@@ -89,6 +89,11 @@ export class Dispatcher {
     return true;
   }
 
+  /** Capacity changed (a node joined): start whatever now fits. */
+  wake(): void {
+    this.pump();
+  }
+
   private pump(): void {
     if (this.stopped) return;
     for (const next of this.scheduler.take([...this.running.values()].map((r) => r.queued))) {

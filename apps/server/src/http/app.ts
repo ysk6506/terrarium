@@ -3,6 +3,7 @@
  * answered with one error shape; live progress as server-sent events; per-run MCP endpoints for
  * harnesses; and the web app itself.
  */
+
 import { existsSync } from "node:fs";
 import path from "node:path";
 import fastifyStatic from "@fastify/static";
@@ -20,6 +21,7 @@ import {
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from "fastify";
 import type { McpGateway } from "../mcp";
 import type { Platform } from "../runtime";
+import { compressWeb } from "./compress";
 import { HANDLERS, type HandlerInput } from "./handlers";
 import { viewerOf } from "./viewer";
 
@@ -195,14 +197,29 @@ function registerMcp(app: FastifyInstance, gateway: McpGateway): void {
   });
 }
 
+/** Paths that belong to machines: when they are missing the answer is a 404, never the web app. */
+const API_PREFIXES = ["/api/", "/mcp/", "/cluster/", "/node/"];
+
 function registerWeb(app: FastifyInstance, webDist: string | undefined): void {
   const index = webDist ? path.join(webDist, "index.html") : undefined;
   const hasWeb = index !== undefined && existsSync(index);
-  if (hasWeb) void app.register(fastifyStatic, { root: webDist as string, wildcard: false });
+  // Files are looked up per request, so a rebuilt web app is served without restarting the server.
+  if (hasWeb) {
+    compressWeb(app);
+    void app.register(fastifyStatic, { root: webDist as string });
+  }
   app.setNotFoundHandler((req, reply) => {
     const url = req.url.split("?")[0] ?? "";
-    if (url.startsWith("/api/") || url.startsWith("/mcp/") || !hasWeb || req.method !== "GET")
+    if (
+      API_PREFIXES.some((p) => url.startsWith(p)) ||
+      url === "/metrics" ||
+      !hasWeb ||
+      req.method !== "GET"
+    )
       return reply.status(404).send(errorReply(404, "not_found", "그런 주소는 없다").body);
+    // A missing file is a 404, not the app: a script that answers with HTML only hides the real problem.
+    if (/\.[A-Za-z0-9]{1,8}$/.test(url))
+      return reply.status(404).send(errorReply(404, "not_found", "그런 파일은 없다").body);
     // The web app routes in the browser: every other page is the app.
     return reply.type("text/html; charset=utf-8").sendFile("index.html");
   });

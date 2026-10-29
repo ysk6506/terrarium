@@ -6,10 +6,12 @@ last_verified: 2026-10-29
 covers:
   - apps/server/src/adapters/config.ts
   - apps/server/src/main.ts
-covers_hash: b29ba7624eb8c3cf
+covers_hash: b3f1072863070b99
 verification_log:
   - "2026-10-29: first version, checked against ConfigSchema and main.ts"
   - "2026-10-29: main.ts now exports run(); behaviour and doc unchanged"
+  - "2026-10-29: cluster 설정 블록과 main.ts의 역할 분기, 기본 상한(스레드 수 x 32)을 코드와 대조했다"
+  - "2026-10-29: main.ts 정리(배치 계산을 함수로 분리, 노드 합류 시 스케줄러를 깨우는 훅 수정) 뒤 역할 분기와 기본 상한 설명을 다시 대조했다"
 ---
 # 서버 운영
 
@@ -28,7 +30,9 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 
 - 데이터는 `dataDir`(기본: 설정 파일 옆 `data/`)의 `terrarium.db` 한 파일이다. 백업은 이 파일 복사.
 - 멈출 때(SIGTERM) 돌던 실행은 "서버가 멈춰 실행이 중단됐다"로 남고, 대기하던 실행은 다음 시작 때 이어서 돈다.
-- 세션은 워커 스레드에서 돈다. 개수는 `workers`(기본: CPU 수 − 1).
+- 세션은 워커 스레드에서 돈다. 개수는 `workers`(기본: CPU 수 − 1). 스레드 하나가 세션 32개(`cluster.sessionsPerThread`)를 들고 있으므로,
+  동시 실행 상한의 기본값은 `스레드 수 × 32`다(`limits`를 정하면 그 값이 위쪽 한도). CPU를 늘리면 상한도 는다.
+- 한 대로 모자라면 워커 노드를 더 붙인다: [규모 키우기](scaling.md).
 
 ## 설정 파일 예
 
@@ -39,7 +43,7 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
   "port": 8787,
   "publicUrl": "https://terrarium.dc.internal",
   "identity": { "header": "x-forwarded-user" },
-  "limits": { "maxRunning": 32, "perUser": 8, "perHarness": 16 },
+  "limits": { "maxRunning": 200, "perUser": 50, "perHarness": 100 },
   "harnesses": [
     {
       "kind": "http", "id": "symphony", "name": "Symphony 하네스",

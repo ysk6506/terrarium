@@ -1,0 +1,9 @@
+{
+  "port": 8787,
+  "dataDir": "/var/lib/terrarium",
+  "cluster": {
+    "role": "worker",
+    "tokenEnv": "TERRARIUM_CLUSTER_TOKEN",
+    "controlUrl": "http://terrarium-control.dc.internal:8787"
+  }
+}

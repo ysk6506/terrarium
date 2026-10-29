@@ -27,6 +27,8 @@ export interface PlatformOptions {
   readonly host: SessionHost;
   readonly gateway?: ToolGateway;
   readonly limits?: Partial<SchedulerLimits>;
+  /** Sessions the hosts can run at once, now. When given, it (not a fixed number) caps how many runs start. */
+  readonly capacity?: () => number;
   readonly stamps?: Stamps;
   readonly version?: string;
   /** Wall-clock limit per agent run, and the grace after the session ends (tests shorten these). */
@@ -35,6 +37,31 @@ export interface PlatformOptions {
 }
 
 const AGENTS_TTL_MS = 30_000;
+
+/**
+ * Limits that follow what the hosts can hold right now (ADR-0032). `maxRunning` is the smaller of the
+ * configured cap, if any, and the capacity. A per-user or per-harness cap nobody configured is a share
+ * of the capacity (a quarter and a half), so one person's experiment can use a big cluster while the
+ * fair queue still lets others in. Read each time the scheduler looks: nodes joining or leaving change
+ * how many runs start without restarting anything.
+ */
+export function withCapacity(
+  limits: SchedulerLimits,
+  configured: Partial<SchedulerLimits> | undefined,
+  capacity: () => number,
+): SchedulerLimits {
+  const live = { ...limits };
+  const share = (floor: number, divisor: number) => () =>
+    Math.max(floor, Math.ceil(capacity() / divisor));
+  const follow = (key: "maxRunning" | "perUser" | "perHarness", get: () => number) =>
+    Object.defineProperty(live, key, { enumerable: true, get });
+  follow("maxRunning", () =>
+    Math.max(0, Math.min(configured?.maxRunning ?? Number.POSITIVE_INFINITY, capacity())),
+  );
+  if (configured?.perUser === undefined) follow("perUser", share(limits.perUser, 4));
+  if (configured?.perHarness === undefined) follow("perHarness", share(limits.perHarness, 2));
+  return live;
+}
 
 export class Platform {
   readonly worlds: Worlds;
@@ -75,7 +102,9 @@ export class Platform {
       this.ctx.store,
       (run, experiment, signal, reason) => executeRun(deps, run, experiment, signal, reason),
       stamps,
-      { ...DEFAULT_LIMITS, ...options.limits },
+      options.capacity
+        ? withCapacity({ ...DEFAULT_LIMITS, ...options.limits }, options.limits, options.capacity)
+        : { ...DEFAULT_LIMITS, ...options.limits },
       (id) => void this.announce(id),
     );
     this.worlds = new Worlds(this.ctx);

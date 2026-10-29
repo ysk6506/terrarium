@@ -16,6 +16,7 @@ import type { CallResult, RunResult } from "@terrarium/core/session";
 import type { HostedSession, PlainSessionConfig, SessionHost } from "./hosts";
 import type { FromWorker, ToWorker, WorkerError } from "./worker-protocol";
 
+/** Error kinds that keep their type when they cross a thread or a network (see `raise`). */
 const ERRORS: Readonly<Record<string, new (message: string) => TerrariumError>> = {
   invalid_value: InvalidValueError,
   not_found: NotFoundError,
@@ -23,7 +24,8 @@ const ERRORS: Readonly<Record<string, new (message: string) => TerrariumError>> 
   unsupported: UnsupportedError,
 };
 
-const raise = (e: WorkerError): Error => {
+/** Turn an error sent as data back into the same kind of error it was. */
+export const raise = (e: WorkerError): Error => {
   const Kind = e.code ? ERRORS[e.code] : undefined;
   return Kind ? new Kind(e.message) : new Error(e.message);
 };

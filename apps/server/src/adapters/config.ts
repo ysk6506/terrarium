@@ -90,6 +90,33 @@ const ClickStack = z
   })
   .strict();
 
+/** Scale-out (ADR-0032). Without `tokenEnv` the server is a single process, as before. */
+const Cluster = z
+  .object({
+    /** all: this process does everything (and takes workers if a token is set); control: no sessions of its own; worker: runs sessions for a control plane. */
+    role: z.enum(["all", "control", "worker"]).default("all"),
+    /** Environment variable holding the shared secret between control plane and workers. */
+    tokenEnv: EnvName.optional(),
+    /** worker: where the control plane is. */
+    controlUrl: Url.optional(),
+    /** worker: where the control plane reaches this node (default: this host's name and port). */
+    advertiseUrl: Url.optional(),
+    nodeId: Id.optional(),
+    /** Sessions one worker thread holds at once. Most of a run is waiting for the model. */
+    sessionsPerThread: z.number().int().min(1).max(1024).default(32),
+    /** control: slots a new worker brings, only for the nodes_wanted metric when no worker is known yet. */
+    nodeSlots: z.number().int().min(1).max(100_000).optional(),
+    heartbeatSeconds: z.number().min(1).max(60).default(5),
+    /** control: a worker silent for this long is gone. */
+    nodeTtlSeconds: z.number().min(3).max(600).default(20),
+    /** worker: after SIGTERM, how long running sessions get to finish. */
+    drainSeconds: z.number().int().min(0).max(86_400).default(600),
+    /** worker: a session nobody has touched for this long is abandoned. */
+    idleSeconds: z.number().int().min(30).max(86_400).default(3600),
+  })
+  .strict()
+  .default({});
+
 export const ConfigSchema = z
   .object({
     port: z.number().int().min(1).max(65535).default(8787),
@@ -114,6 +141,7 @@ export const ConfigSchema = z
       .default([]),
     sources: z.array(FalkorSource).default([]),
     telemetry: ClickStack.optional(),
+    cluster: Cluster,
   })
   .strict();
 
@@ -127,6 +155,34 @@ export type ClickStackConfig = z.output<typeof ClickStack>;
 /** The built-in harness is always there, so a fresh server can run an experiment at once. */
 export const BUILTIN_HARNESS_ID = "builtin";
 
+/** Why a cluster block cannot work, in words that say what to add. */
+export function clusterProblem(c: Config["cluster"]): string | undefined {
+  if (c.role !== "all" && !c.tokenEnv)
+    return `역할 ${c.role}에는 tokenEnv(토큰이 든 환경 변수 이름)가 필요하다`;
+  if (c.role === "worker" && !c.controlUrl) return "역할 worker에는 controlUrl이 필요하다";
+  if (c.role !== "worker" && c.controlUrl) return "controlUrl은 역할 worker에만 쓴다";
+  if (c.nodeTtlSeconds <= c.heartbeatSeconds * 2)
+    return "nodeTtlSeconds는 heartbeatSeconds의 두 배보다 커야 한다 (한 번 놓쳐도 노드가 사라지면 안 된다)";
+  return undefined;
+}
+
+/** Deployment systems set the role and addresses with environment variables; they win over the file. */
+function withClusterEnv(
+  raw: Record<string, unknown>,
+  env: NodeJS.ProcessEnv,
+): Record<string, unknown> {
+  const wanted = {
+    role: env.TERRARIUM_ROLE,
+    controlUrl: env.TERRARIUM_CONTROL_URL,
+    advertiseUrl: env.TERRARIUM_ADVERTISE_URL,
+    nodeId: env.TERRARIUM_NODE_ID,
+    tokenEnv: env.TERRARIUM_CLUSTER_TOKEN_ENV,
+  };
+  const set = Object.fromEntries(Object.entries(wanted).filter(([, v]) => v));
+  if (Object.keys(set).length === 0) return raw;
+  return { ...raw, cluster: { ...(raw.cluster as object | undefined), ...set } };
+}
+
 export function parseConfig(raw: unknown, origin = "설정"): Config {
   const parsed = parseWith(ConfigSchema, raw);
   if (!parsed.ok)
@@ -134,6 +190,8 @@ export function parseConfig(raw: unknown, origin = "설정"): Config {
       `${origin}${josa(origin, "이")} 올바르지 않다: ${parsed.issues.map((i) => `${i.path || "(전체)"} ${i.message}`).join("; ")}`,
     );
   const config = parsed.value;
+  const wrong = clusterProblem(config.cluster);
+  if (wrong) throw new InvalidValueError(`${origin}: cluster ${wrong}`);
   const ids = config.harnesses.map((h) => h.id);
   if (new Set(ids).size !== ids.length)
     throw new InvalidValueError(`${origin}: 하네스 id가 겹친다`);
@@ -149,9 +207,9 @@ export function parseConfig(raw: unknown, origin = "설정"): Config {
 /** Read the config file named by TERRARIUM_CONFIG (none: defaults). Relative paths are relative to the file. */
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   const file = env.TERRARIUM_CONFIG;
-  if (!file) return parseConfig({}, "기본 설정");
+  if (!file) return parseConfig(withClusterEnv({}, env), "기본 설정");
   const raw = JSON.parse(readFileSync(file, "utf8")) as Record<string, unknown>;
-  const config = parseConfig(raw, file);
+  const config = parseConfig(withClusterEnv(raw, env), file);
   return { ...config, dataDir: path.resolve(path.dirname(file), config.dataDir) };
 }
 
