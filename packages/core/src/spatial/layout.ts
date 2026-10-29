@@ -44,7 +44,12 @@ export interface DeviceInput {
   /** Explicit rack relation; wins over the hint's text reference. */
   readonly rackId?: string;
   readonly heightU: number;
+  /** Floor footprint of free-standing equipment, so neighbours do not overlap. */
+  readonly footprint?: { readonly w: number; readonly d: number };
 }
+
+/** Gap between free-standing units that have a known footprint. */
+const EQUIPMENT_GAP_M = 0.6;
 
 export interface RackPlacement {
   readonly x: number;
@@ -194,14 +199,12 @@ export function deriveRoomLayout(
   const devices = new Map<string, DevicePlacement>();
   const equipment = new Map<string, EquipmentPlacement>();
   const states = new Map<string, RackState>();
+  let equipmentX = spec.margin;
   for (const device of devicesSorted) {
     const rackId = rackOf(device, racks);
     if (rackId === undefined) {
-      equipment.set(device.id, {
-        x: spec.margin + equipment.size * spec.equipmentPitch,
-        y: spec.margin,
-        inferred: true,
-      });
+      equipment.set(device.id, { x: equipmentX, y: spec.margin, inferred: true });
+      equipmentX += device.footprint ? device.footprint.w + EQUIPMENT_GAP_M : spec.equipmentPitch;
       continue;
     }
     const state = states.get(rackId) ?? { occupied: new Set<number>(), nextFree: 1 };
@@ -215,9 +218,6 @@ export function deriveRoomLayout(
     spec.margin + (freeStanding.length > 0 ? spec.equipmentZone : 0),
     ...[...racks.values()].map((r) => r.y + spec.rackDepth),
   );
-  const width = Math.max(
-    spec.margin * 2 + columns * spec.rackWidth,
-    spec.margin * 2 + equipment.size * spec.equipmentPitch,
-  );
+  const width = Math.max(spec.margin * 2 + columns * spec.rackWidth, equipmentX + spec.margin);
   return { racks, devices, equipment, size: { w: width, d: lastY + spec.margin }, notes };
 }

@@ -22,6 +22,7 @@ last_verified: 2026-10-28
 - [품질 하네스 사용법](design-docs/harness-guide.md)
 - [UX Honeycomb 측정](design-docs/ux-honeycomb.md)
 - [시나리오 모델](design-docs/scenario-model.md)
+- [세계 소스 — 생성과 가져오기](design-docs/world-sources.md)
 
 ### ADR
 
@@ -45,6 +46,7 @@ last_verified: 2026-10-28
 - [0018 테스트를 어디에 두나](design-docs/adr/0018-test-placement.md)
 - [0019 행동은 효과로 판정한다](design-docs/adr/0019-score-actions-by-effect.md)
 - [0020 잠금 수정 명령은 ADR 경로도 받는다](design-docs/adr/0020-amend-accepts-paths.md)
+- [0021 세계 소스: 건강한 생성, 읽기만 하는 가져오기](design-docs/adr/0021-world-sources.md)
 
 ## 계획과 부채
 
