@@ -25,7 +25,13 @@ export {
   type ToolCallRecord,
 } from "./conditions";
 export { scenarioDigest } from "./digest";
-export { SCENARIO_TEMPLATES, type ScenarioTemplate, scenarioTemplate } from "./library";
+export {
+  ALL_SCENARIO_TEMPLATES,
+  FACILITY_TEMPLATES,
+  SCENARIO_TEMPLATES,
+  type ScenarioTemplate,
+  scenarioTemplate,
+} from "./library";
 export {
   ACTION_KINDS,
   ACTION_LABELS,

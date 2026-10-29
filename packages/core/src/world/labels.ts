@@ -3,6 +3,7 @@ import type { EntityKind, LinkKind } from "./blueprint";
 
 export const KIND_LABELS: Readonly<Record<EntityKind, string>> = {
   site: "사업장",
+  parcel: "부지",
   building: "건물",
   floor: "층",
   room: "서버룸",
@@ -15,6 +16,9 @@ export const KIND_LABELS: Readonly<Record<EntityKind, string>> = {
   cooling_unit: "냉방기",
   power_panel: "분전반",
   ups: "UPS",
+  cdu: "CDU(냉각수 분배)",
+  chiller: "냉각 플랜트",
+  generator: "발전기",
   vcenter: "vCenter",
   cluster: "클러스터",
   vm: "VM",

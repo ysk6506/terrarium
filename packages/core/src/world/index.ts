@@ -38,9 +38,11 @@ export {
   footprint,
   heightU,
   type Position3,
+  rackUnits,
 } from "./geometry";
 export { BlueprintIndex } from "./graph";
 export { KIND_LABELS, kindList, LINK_LABELS } from "./labels";
+export { ROOM_PURPOSE_LABELS, ROOM_PURPOSES, type RoomPurpose, roomPurposeOf } from "./purpose";
 export { reportedInletC } from "./sensors";
 export {
   type Alarm,

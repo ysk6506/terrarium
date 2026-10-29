@@ -33,9 +33,24 @@ export const DEFAULT_LAYOUT: LayoutSpec = {
   rackUnits: RACK_UNITS_DEFAULT,
 };
 
+/** Where a rack stands when the caller already knows (a generated hall): used as is, no grid is derived. */
+export interface RackSpot {
+  readonly x: number;
+  readonly y: number;
+  readonly rotation: Rotation;
+  readonly row: number;
+  readonly column: number;
+}
+
 export interface RackInput {
   readonly id: string;
   readonly hint: LocationHint;
+  /** Known place in the room; racks without one are placed on the derived grid. */
+  readonly at?: RackSpot;
+  /** Floor size of this rack (a liquid rack or a tank is wider and deeper than a standard one). */
+  readonly size?: { readonly w: number; readonly d: number };
+  /** Rack units this rack offers; the layout's standard when omitted. */
+  readonly units?: number;
 }
 
 export interface DeviceInput {
@@ -46,6 +61,8 @@ export interface DeviceInput {
   readonly heightU: number;
   /** Floor footprint of free-standing equipment, so neighbours do not overlap. */
   readonly footprint?: { readonly w: number; readonly d: number };
+  /** Known place of free-standing equipment (room frame); otherwise it is lined up along the front. */
+  readonly at?: { readonly x: number; readonly y: number };
 }
 
 /** Gap between free-standing units that have a known footprint. */
@@ -69,7 +86,7 @@ export interface DevicePlacement {
 export interface EquipmentPlacement {
   readonly x: number;
   readonly y: number;
-  readonly inferred: true;
+  readonly inferred: boolean;
 }
 
 export interface RoomLayout {
@@ -147,8 +164,10 @@ function placeRacks(
   spec: LayoutSpec,
   notes: string[],
 ): Map<string, RackPlacement> {
+  const placements = new Map<string, RackPlacement>();
+  for (const rack of racks) if (rack.at) placements.set(rack.id, { ...rack.at, inferred: false });
   const slots = assignSlots(
-    racks.map((r) => [r.id, r.hint] as const),
+    racks.filter((r) => !r.at).map((r) => [r.id, r.hint] as const),
     spec.racksPerRow,
     notes,
   );
@@ -159,7 +178,6 @@ function placeRacks(
     rowY.set(row, { y: edge, rotation: index % 2 === 0 ? 0 : 180 });
     edge += spec.rackDepth + (index % 2 === 0 ? spec.coldAisle : spec.hotAisle);
   });
-  const placements = new Map<string, RackPlacement>();
   for (const [id, slot] of [...slots].sort(([a], [b]) => (a < b ? -1 : 1))) {
     const row = rowY.get(slot.row) as { y: number; rotation: Rotation };
     placements.set(id, {
@@ -196,6 +214,7 @@ export function deriveRoomLayout(
     (d) => !rackIds.has(d.rackId ?? "") && !rackIds.has(d.hint.rackRef ?? ""),
   );
   const racks = placeRacks([...rackInputs].sort(byId), freeStanding.length > 0, spec, notes);
+  const unitsOf = new Map(rackInputs.map((r) => [r.id, r.units ?? spec.rackUnits]));
   const devices = new Map<string, DevicePlacement>();
   const equipment = new Map<string, EquipmentPlacement>();
   const states = new Map<string, RackState>();
@@ -203,21 +222,59 @@ export function deriveRoomLayout(
   for (const device of devicesSorted) {
     const rackId = rackOf(device, racks);
     if (rackId === undefined) {
+      if (device.at) {
+        equipment.set(device.id, { ...device.at, inferred: false });
+        continue;
+      }
       equipment.set(device.id, { x: equipmentX, y: spec.margin, inferred: true });
       equipmentX += device.footprint ? device.footprint.w + EQUIPMENT_GAP_M : spec.equipmentPitch;
       continue;
     }
     const state = states.get(rackId) ?? { occupied: new Set<number>(), nextFree: 1 };
     states.set(rackId, state);
-    const { u, inferred } = chooseUnit(device, state, spec.rackUnits, notes);
+    const units = unitsOf.get(rackId) ?? spec.rackUnits;
+    const { u, inferred } = chooseUnit(device, state, units, notes);
     for (let unit = u; unit < u + device.heightU; unit++) state.occupied.add(unit);
     devices.set(device.id, { rackId, u, inferred });
   }
-  const columns = Math.max(0, ...[...racks.values()].map((r) => r.column));
-  const lastY = Math.max(
-    spec.margin + (freeStanding.length > 0 ? spec.equipmentZone : 0),
-    ...[...racks.values()].map((r) => r.y + spec.rackDepth),
+  return {
+    racks,
+    devices,
+    equipment,
+    size: roomSize(rackInputs, racks, devicesSorted, spec, equipmentX, freeStanding.length > 0),
+    notes,
+  };
+}
+
+/** The room just large enough for its racks and equipment, plus the margin all round. */
+function roomSize(
+  rackInputs: readonly RackInput[],
+  racks: ReadonlyMap<string, RackPlacement>,
+  devices: readonly DeviceInput[],
+  spec: LayoutSpec,
+  equipmentX: number,
+  hasEquipment: boolean,
+): { w: number; d: number } {
+  const sizeOf = new Map(
+    rackInputs.map((r) => [r.id, r.size ?? { w: spec.rackWidth, d: spec.rackDepth }]),
   );
-  const width = Math.max(spec.margin * 2 + columns * spec.rackWidth, equipmentX + spec.margin);
-  return { racks, devices, equipment, size: { w: width, d: lastY + spec.margin }, notes };
+  let right = 0;
+  let back = spec.margin + (hasEquipment ? spec.equipmentZone : 0);
+  for (const [id, p] of racks) {
+    const size = sizeOf.get(id) as { w: number; d: number };
+    const turned = p.rotation === 90 || p.rotation === 270;
+    right = Math.max(right, p.x + (turned ? size.d : size.w));
+    back = Math.max(back, p.y + (turned ? size.w : size.d));
+  }
+  const placed = devices.filter((d) => d.at && d.footprint);
+  for (const d of placed) {
+    right = Math.max(right, (d.at as { x: number }).x + (d.footprint as { w: number }).w);
+    back = Math.max(back, (d.at as { y: number }).y + (d.footprint as { d: number }).d);
+  }
+  const columns = Math.max(0, ...[...racks.values()].map((r) => r.column));
+  const gridRight = spec.margin + columns * spec.rackWidth;
+  return {
+    w: Math.max(Math.max(right, gridRight) + spec.margin, equipmentX + spec.margin),
+    d: back + spec.margin,
+  };
 }

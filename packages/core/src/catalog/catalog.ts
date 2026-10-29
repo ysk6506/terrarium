@@ -44,6 +44,11 @@ export class Catalog {
       .sort((a, b) => a.id.localeCompare(b.id));
   }
 
+  /** Who makes the models of a kind (all kinds when omitted), A to Z. */
+  vendors(kind?: ModelKind): string[] {
+    return [...new Set(this.list(kind).map((m) => m.vendor))].sort((a, b) => a.localeCompare(b));
+  }
+
   /**
    * Map a model name found in an import (e.g. "PowerEdge R760") to a known model: exact id, then a
    * case-insensitive name match, then the default for the kind. Returns whether it was a guess.

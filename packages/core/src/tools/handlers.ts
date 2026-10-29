@@ -186,7 +186,7 @@ export function dependents(ctx: ToolContext, id: string): string[] {
     for (const child of index.childrenOf(node)) fails(child.id);
     for (const link of index.incoming(node)) {
       if (PROPAGATES.has(link.kind)) fails(link.from);
-      else if (link.kind === "cooling") heatRisk(ctx, link.from, out, fails);
+      else if (link.kind === "cooling") coolingLost(ctx, link.from, out, fails);
     }
   }
   out.delete(id);
@@ -202,17 +202,32 @@ const PROPAGATES: ReadonlySet<LinkKind> = new Set<LinkKind>([
   "backed_by",
 ]);
 
-/** A rack that lost cooling is at risk; only its servers actually shut down from heat. */
-function heatRisk(ctx: ToolContext, rack: string, out: Set<string>, fails: (id: string) => void) {
-  out.add(rack);
-  for (const device of ctx.world.index.descendants(rack))
+/**
+ * `consumer` lost what cools it. A rack is at risk, and only its servers actually shut down from heat;
+ * a CDU or a chilled-water unit whose plant is lost stops cooling what hangs on it, which this follows.
+ */
+function coolingLost(
+  ctx: ToolContext,
+  consumer: string,
+  out: Set<string>,
+  fails: (id: string) => void,
+) {
+  if (ctx.world.index.entity(consumer).kind !== "rack") {
+    fails(consumer);
+    return;
+  }
+  out.add(consumer);
+  for (const device of ctx.world.index.descendants(consumer))
     if (device.kind === "server") fails(device.id);
 }
 
-/** Cooling units a server's rack relies on. */
+/** What cools a device: a server's rack relies on cooling units or CDUs, and those rely on a plant. */
 function coolingOf(ctx: ToolContext, id: string): string[] {
   const index = ctx.world.index;
-  if (index.entity(id).kind !== "server") return [];
+  const kind = index.entity(id).kind;
+  if (kind === "cdu" || kind === "cooling_unit")
+    return index.outgoing(id, "cooling").map((l) => l.to);
+  if (kind !== "server") return [];
   const rack = index.enclosing(id, "rack");
   return rack ? index.outgoing(rack.id, "cooling").map((l) => l.to) : [];
 }
@@ -259,7 +274,9 @@ const facilityStatus: Handler = (ctx, args) => {
     const inside = ctx.world.index.descendants(room.id);
     // Panels and UPSes often sit in an electrical room; what matters is that they feed this room.
     const feeding = inside.flatMap((e) => ctx.world.index.upstream(e.id, "power"));
-    const relevant = new Set([...inside.map((e) => e.id), ...feeding]);
+    // The plant that takes the room's heat (CDUs, chillers) can stand in a plant room or the yard.
+    const cooled = inside.flatMap((e) => ctx.world.index.upstream(e.id, "cooling"));
+    const relevant = new Set([...inside.map((e) => e.id), ...feeding, ...cooled]);
     const pick = (kind: Entity["kind"]) =>
       [...relevant]
         .filter((id) => entityOf(ctx, id).kind === kind)
@@ -274,9 +291,12 @@ const facilityStatus: Handler = (ctx, args) => {
       name: room.name,
       ...summarizeState(observedState(ctx, room.id)),
       cooling: pick("cooling_unit"),
+      cdus: pick("cdu"),
+      chillers: pick("chiller"),
       panels: pick("power_panel"),
       pdus: pick("pdu"),
       ups: pick("ups"),
+      generators: pick("generator"),
     };
   });
 };

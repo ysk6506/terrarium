@@ -3,13 +3,14 @@
  * power the devices ask for against what the rack's PDUs can give.
  */
 import type { Catalog, EquipmentModel } from "@terrarium/core/catalog";
-import { RACK_UNITS_DEFAULT, withJosa } from "@terrarium/core/kernel";
+import { withJosa } from "@terrarium/core/kernel";
 import {
   type Blueprint,
   BlueprintIndex,
   type Entity,
   heightU,
   isRackMountedKind,
+  rackUnits,
 } from "@terrarium/core/world";
 import { type Edit, EditError, nextId } from "./edit";
 
@@ -33,7 +34,8 @@ export interface Elevation {
   readonly supplyW: number;
 }
 
-export const unitsOf = (rack: Entity) => Number(rack.props.units ?? RACK_UNITS_DEFAULT);
+/** U count of a rack: what was set, else what its model is built with, else 42U. */
+export const unitsOf = (rack: Entity, catalog: Catalog) => rackUnits(rack, catalog);
 
 function maxPowerW(model: EquipmentModel | undefined): number {
   if (!model) return 0;
@@ -44,7 +46,7 @@ function maxPowerW(model: EquipmentModel | undefined): number {
 
 export function elevation(index: BlueprintIndex, catalog: Catalog, rackId: string): Elevation {
   const rack = index.entity(rackId);
-  const units = unitsOf(rack);
+  const units = unitsOf(rack, catalog);
   const devices = index.childrenOf(rackId).filter((d) => isRackMountedKind(d.kind));
   const pdus = devices.filter((d) => heightU(d, catalog) === 0);
   const mounted = devices

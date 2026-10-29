@@ -67,6 +67,9 @@ last_verified: 2026-10-29
 - [0032 스케일 아웃은 워커 노드를 붙이는 것, 스케일 업은 스레드를 늘리는 것](design-docs/adr/0032-scale-out-workers.md)
 - [0033 워밍업 상태를 기억해 두고 세션을 빨리 연다](design-docs/adr/0033-warm-start-and-capacity-defaults.md)
 - [0034 쓰지 않는 e2e 스크립트를 없앤다](design-docs/adr/0034-remove-stale-e2e-script.md)
+- [0035 캠퍼스 세계: 용도별 방, 수랭 사슬, 전원 사슬, 제조사 다양성](design-docs/adr/0035-campus-world-model.md)
+- [0036 사업장은 개략 외곽선을 갖고 건물은 그 안에 선다](design-docs/adr/0036-site-outlines.md)
+- [0037 화면 디자인은 사용자가 고른 안으로만 바꾼다](design-docs/adr/0037-design-approval-gate.md)
 
 ## 계획과 부채
 

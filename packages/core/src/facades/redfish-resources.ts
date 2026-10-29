@@ -3,6 +3,7 @@
  * Readings are what the BMC would *report*: a sensor_drift fault offsets the inlet sensor while the
  * true temperature in the world stays correct.
  */
+import { manufacturerOf } from "@terrarium/core/catalog";
 import { hashHex } from "@terrarium/core/kernel";
 import { memberId, type RedfishProfile } from "@terrarium/core/profiles";
 import {
@@ -103,7 +104,7 @@ export function system(ctx: BmcContext): Record<string, unknown> {
     Name: ctx.server.name,
     HostName: ctx.server.name,
     SystemType: "Physical",
-    Manufacturer: m.manufacturer,
+    Manufacturer: manufacturerOf(m),
     Model: m.name,
     SKU: m.id,
     SerialNumber: serialOf(ctx.server.id),
@@ -145,7 +146,7 @@ export function chassis(ctx: BmcContext): Record<string, unknown> {
     Id: cid,
     Name: `${ctx.server.name} Chassis`,
     ChassisType: "RackMount",
-    Manufacturer: model(ctx).manufacturer,
+    Manufacturer: manufacturerOf(model(ctx)),
     Model: model(ctx).name,
     SerialNumber: serialOf(ctx.server.id),
     PowerState: s.powered && s.adminOn ? "On" : "Off",

@@ -133,7 +133,7 @@ function EntityFields({ entity, b }: { readonly entity: Entity; readonly b: Buil
           label="달린 자리 (맨 아래 U)"
           value={entity.placement.u}
           min={1}
-          max={builder.unitsOf(rack)}
+          max={builder.unitsOf(rack, catalog)}
           unit="U"
           onChange={(u) =>
             u !== undefined && b.apply((bp) => builder.remount(bp, catalog, entity.id, u))

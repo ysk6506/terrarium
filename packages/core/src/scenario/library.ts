@@ -4,103 +4,22 @@
  * and in a whole site. The prompt never names the answer.
  */
 import { withJosa } from "@terrarium/core/kernel";
+import type { BlueprintIndex, Entity } from "@terrarium/core/world";
+import { FACILITY_TEMPLATES } from "./library-facility";
 import {
-  type BlueprintIndex,
-  type Entity,
-  type EntityKind,
-  type FaultType,
-  kindList,
-} from "@terrarium/core/world";
-import type { Condition, Expectation, ScenarioDoc, ScenarioEdge, ScenarioNode } from "./model";
-import { SCENARIO_SCHEMA_VERSION } from "./model";
+  agent,
+  allOf,
+  busiestServer,
+  byLinks,
+  doc,
+  Flow,
+  needs,
+  powered,
+  type ScenarioTemplate,
+  SUBMIT,
+} from "./library-kit";
 
-export interface ScenarioTemplate {
-  readonly id: string;
-  readonly name: string;
-  readonly summary: string;
-  readonly difficulty: "쉬움" | "보통" | "어려움";
-  readonly faultTypes: readonly FaultType[];
-  /** Why this template cannot be built for the world, or undefined when it can. */
-  unavailable(index: BlueprintIndex): string | undefined;
-  build(index: BlueprintIndex, worldId: string): ScenarioDoc;
-}
-
-/** Lays blocks out top to bottom, as the editor does; `row` > 0 places a side branch to the right. */
-class Flow {
-  readonly nodes: ScenarioNode[] = [];
-  readonly edges: ScenarioEdge[] = [];
-  private column = 0;
-
-  add(
-    id: string,
-    type: string,
-    params: ScenarioNode["params"],
-    from?: string,
-    port = "next",
-    row = 0,
-  ): string {
-    this.nodes.push({ id, type, params, position: { x: 260 * row, y: 120 * this.column++ } });
-    if (from) this.edges.push({ id: `e-${from}-${port}-${id}`, from, port, to: id });
-    return id;
-  }
-}
-
-const byLinks = (index: BlueprintIndex, kind: EntityKind, count: (e: Entity) => number) =>
-  [...index.ofKind(kind)].sort((a, b) => count(b) - count(a) || a.id.localeCompare(b.id))[0];
-
-const busiestServer = (index: BlueprintIndex) =>
-  byLinks(index, "server", (s) => index.incoming(s.id, "runs_on").length);
-
-const powered = (id: string): Condition => ({
-  kind: "state",
-  entity: id,
-  field: "powered",
-  op: "==",
-  value: true,
-});
-
-/** The contract allows 20 conditions in one all/any, so a long list becomes groups of groups. */
-const GROUP_SIZE = 20;
-export function allOf(conditions: readonly Condition[]): Condition {
-  if (conditions.length <= GROUP_SIZE) return { kind: "all", of: conditions };
-  const groups: Condition[] = [];
-  for (let i = 0; i < conditions.length; i += GROUP_SIZE)
-    groups.push(allOf(conditions.slice(i, i + GROUP_SIZE)));
-  return allOf(groups);
-}
-
-function doc(
-  template: ScenarioTemplate,
-  worldId: string,
-  description: string,
-  flow: Flow,
-  expectations: Expectation[],
-): ScenarioDoc {
-  return {
-    schemaVersion: SCENARIO_SCHEMA_VERSION,
-    id: template.id,
-    name: template.name,
-    description,
-    worldId,
-    template: template.id,
-    nodes: flow.nodes,
-    edges: flow.edges,
-    expectations,
-  };
-}
-
-const needs = (index: BlueprintIndex, kinds: EntityKind[]) =>
-  kinds.every((k) => index.ofKind(k).length > 0)
-    ? undefined
-    : `이 세계에 필요한 장비(${kindList(kinds)})가 없다`;
-
-const agent = (prompt: string, maxToolCalls = 40, timeLimitSeconds = 3600) => ({
-  prompt,
-  maxToolCalls,
-  timeLimitSeconds,
-});
-
-const SUBMIT = "근본 원인을 찾아 필요한 조치를 하고, submit_diagnosis로 진단을 제출하라.";
+export { allOf, type ScenarioTemplate };
 
 const coolingFailure: ScenarioTemplate = {
   id: "cooling-failure",
@@ -444,6 +363,15 @@ export const SCENARIO_TEMPLATES: readonly ScenarioTemplate[] = [
   noisyNeighbour,
 ];
 
+/** Incidents that need a plant, liquid cooling or a generator: only worlds that have them can use these. */
+export { FACILITY_TEMPLATES };
+
+/** Every built-in template, the facility ones last. */
+export const ALL_SCENARIO_TEMPLATES: readonly ScenarioTemplate[] = [
+  ...SCENARIO_TEMPLATES,
+  ...FACILITY_TEMPLATES,
+];
+
 export function scenarioTemplate(id: string): ScenarioTemplate | undefined {
-  return SCENARIO_TEMPLATES.find((t) => t.id === id);
+  return ALL_SCENARIO_TEMPLATES.find((t) => t.id === id);
 }

@@ -72,6 +72,53 @@ export interface RackState extends Base {
   inletC: number;
   outletC: number;
   powerW: number;
+  /** Heat the liquid loop carries away, W (0 for an air-cooled rack). */
+  liquidW: number;
+  /** Coolant temperature at the rack, °C; 0 when the rack has no liquid loop. */
+  coolantC: number;
+  /** Fluid temperature in an immersion tank, °C; 0 for a rack. */
+  bathC: number;
+}
+export interface CduState extends Base {
+  kind: "cdu";
+  adminOn: boolean;
+  powered: boolean;
+  running: boolean;
+  setpointC: number;
+  /** Coolant sent to the racks and coming back, °C. */
+  supplyC: number;
+  returnC: number;
+  loadKw: number;
+  capacityKw: number;
+  pumpsOk: boolean[];
+}
+export interface ChillerState extends Base {
+  kind: "chiller";
+  adminOn: boolean;
+  powered: boolean;
+  running: boolean;
+  /** Water sent out and coming back, °C. */
+  supplyC: number;
+  returnC: number;
+  loadKw: number;
+  capacityKw: number;
+  powerW: number;
+}
+export interface GeneratorState extends Base {
+  kind: "generator";
+  adminOn: boolean;
+  /** standby: waiting for the grid to fail. starting: cranking. running: carrying load. failed: could not start. */
+  phase: "standby" | "starting" | "running" | "failed";
+  /** Seconds since the start signal while starting. */
+  startedFor: number;
+  fuelPct: number;
+  loadKw: number;
+}
+export interface ContainmentState extends Base {
+  kind: "containment";
+  /** Mean air temperature at the rack fronts and backs inside, °C. */
+  coldC: number;
+  hotC: number;
 }
 export interface RoomState extends Base {
   kind: "room";
@@ -88,7 +135,7 @@ export interface VmState extends Base {
   memUtil: number;
 }
 export interface PlainState extends Base {
-  kind: "site" | "building" | "floor" | "containment" | "vcenter" | "cluster" | "datastore";
+  kind: "site" | "parcel" | "building" | "floor" | "vcenter" | "cluster" | "datastore";
 }
 
 export type EntityState =
@@ -100,6 +147,10 @@ export type EntityState =
   | UpsState
   | CoolingState
   | RackState
+  | CduState
+  | ChillerState
+  | GeneratorState
+  | ContainmentState
   | RoomState
   | VmState
   | PlainState;
@@ -190,6 +241,49 @@ const FACTORIES: Partial<Record<EntityKind, Factory>> = {
     inletC: AMBIENT_C,
     outletC: AMBIENT_C + 10,
     powerW: 0,
+    liquidW: 0,
+    coolantC: 0,
+    bathC: 0,
+  }),
+  cdu: (model) => ({
+    kind: "cdu",
+    health: "ok",
+    adminOn: true,
+    powered: true,
+    running: true,
+    setpointC: model?.kind === "cdu" ? model.supplySetpointC : 32,
+    supplyC: model?.kind === "cdu" ? model.supplySetpointC : 32,
+    returnC: 38,
+    loadKw: 0,
+    capacityKw: model?.kind === "cdu" ? model.capacityKw : 500,
+    pumpsOk: Array(model?.kind === "cdu" ? model.pumps : 3).fill(true),
+  }),
+  chiller: (model) => ({
+    kind: "chiller",
+    health: "ok",
+    adminOn: true,
+    powered: true,
+    running: true,
+    supplyC: model?.kind === "chiller" ? model.supplySetpointC : 12,
+    returnC: model?.kind === "chiller" ? model.supplySetpointC + 6 : 18,
+    loadKw: 0,
+    capacityKw: model?.kind === "chiller" ? model.capacityKw : 1000,
+    powerW: 0,
+  }),
+  generator: () => ({
+    kind: "generator",
+    health: "ok",
+    adminOn: true,
+    phase: "standby",
+    startedFor: 0,
+    fuelPct: 100,
+    loadKw: 0,
+  }),
+  containment: () => ({
+    kind: "containment",
+    health: "ok",
+    coldC: AMBIENT_C,
+    hotC: AMBIENT_C + 10,
   }),
   room: () => ({ kind: "room", health: "ok", ambientC: AMBIENT_C }),
   vm: () => ({

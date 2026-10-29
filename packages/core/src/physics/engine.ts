@@ -6,8 +6,9 @@
 import { InvalidValueError } from "@terrarium/core/kernel";
 import type { Health, World, WorldEvent } from "@terrarium/core/world";
 import { desiredAlarms } from "./alarms";
+import { updateGenerators, updatePlant } from "./plant";
 import { aggregateLoads, capacityW, SupplyResolver, updateBatteries, updateDevices } from "./power";
-import { updateRack, updateRoom } from "./thermal";
+import { updateContainments, updateRack, updateRoom } from "./thermal";
 
 export interface PhysicsOptions {
   /** Size of one simulation step in seconds. */
@@ -53,10 +54,13 @@ export class Physics {
 
   private compute(dt: number): WorldEvent[] {
     const events: WorldEvent[] = [];
+    updateGenerators(this.world, new SupplyResolver(this.world), dt);
     this.updateElectrical();
     updateBatteries(this.world, dt);
     for (const room of this.world.index.ofKind("room")) updateRoom(this.world, room, dt);
     for (const rack of this.world.index.ofKind("rack")) updateRack(this.world, rack, dt);
+    updateContainments(this.world);
+    updatePlant(this.world, dt);
     events.push(...this.protect());
     if (events.length > 0) this.updateElectrical();
     events.push(...this.syncAlarms());

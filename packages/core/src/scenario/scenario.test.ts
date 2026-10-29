@@ -2,6 +2,7 @@ import { Catalog } from "@terrarium/core/catalog";
 import { BlueprintIndex, ENTITY_KINDS, FAULT_SPECS, World } from "@terrarium/core/world";
 import { describe, expect, test } from "vitest";
 import { sampleBlueprint, withChanges } from "../world/test-support/sample";
+import { campusBlueprint } from "../world/test-support/sample-campus";
 import {
   BLOCK_SPECS,
   CONDITION_FIELDS,
@@ -88,7 +89,8 @@ describe("scenario blocks [REQ-034]", () => {
   });
 
   test("every condition field exists in the simulated state with the declared type", () => {
-    const world = World.fromBlueprint(sampleBlueprint(), catalog);
+    // The campus sample has every kind of entity, including plant, liquid cooling and land.
+    const world = World.fromBlueprint(campusBlueprint(), catalog);
     const kindsSeen = new Set(world.index.all().map((e) => e.kind));
     expect(kindsSeen.size).toBe(ENTITY_KINDS.length);
     for (const entity of world.index.all()) {
@@ -114,7 +116,19 @@ describe("scenario palette [REQ-034]", () => {
     const palette = paletteFor(index);
     const faults = palette.filter((p) => p.type === "inject_fault");
     expect(faults.map((f) => f.params.faultType)).toEqual(FAULT_SPECS.map((f) => f.type));
-    expect(faults.every((f) => f.available)).toBe(true);
+    // The hall has no plant, CDU or generator, so exactly the faults that need those are disabled.
+    const missing = faults.filter((f) => !f.available).map((f) => f.params.faultType);
+    expect(missing).toEqual([
+      "chiller_failure",
+      "chiller_degraded",
+      "cdu_failure",
+      "cdu_pump_failure",
+      "generator_start_failure",
+    ]);
+    // In the campus sample every supported fault has something to act on.
+    const campus = paletteFor(new BlueprintIndex(campusBlueprint()));
+    const campusFaults = campus.filter((p) => p.type === "inject_fault");
+    expect(campusFaults.every((f) => f.available)).toBe(true);
     expect(palette.find((p) => p.key === "inject_fault:cooling_unit_failure")).toMatchObject({
       group: "설비",
       label: "냉방기 정지",

@@ -328,7 +328,8 @@ export class World implements WorldPort {
   private applyImmediate(type: Fault["type"], target: string, active: boolean): void {
     if (type === "breaker_trip")
       Object.assign(this.state.entities[target] as object, { tripped: active });
-    if (type === "grid_outage") this.patch(target, "ups", { inputOk: !active });
+    if (type === "grid_outage" && this.stateOf(target).kind === "ups")
+      this.patch(target, "ups", { inputOk: !active });
     if (type === "link_down") this.setLinkUp(target, !active);
   }
 }

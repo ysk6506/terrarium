@@ -3,21 +3,23 @@
  * as advice ("this rack has no cooling"). Messages are for people using the builder, in Korean.
  */
 import type { Catalog } from "@terrarium/core/catalog";
-import { isEntityId, josa, RACK_UNITS_DEFAULT, withJosa } from "@terrarium/core/kernel";
+import { isEntityId, josa, withJosa } from "@terrarium/core/kernel";
 import { contains, overlaps, type Rect } from "@terrarium/core/spatial";
 import {
   ALLOWED_PARENTS,
   type Blueprint,
   type Entity,
   isFloorStandingKind,
+  isPlantKind,
   isRackMountedKind,
   LINK_RULES,
   MODELLED_KINDS,
   PLACEMENT_OF,
 } from "./blueprint";
-import { footprint, heightU } from "./geometry";
+import { footprint, heightU, rackUnits } from "./geometry";
 import { BlueprintIndex } from "./graph";
 import { KIND_LABELS, kindList, LINK_LABELS } from "./labels";
+import { checkCoolingFit, checkLoops, checkParcels } from "./validate-campus";
 
 export interface Issue {
   readonly severity: "error" | "warning";
@@ -121,7 +123,7 @@ function checkPlacementAndModel(catalog: Catalog, entity: Entity): Issue[] {
       ),
     );
   }
-  if (MODELLED_KINDS.has(entity.kind)) {
+  if (MODELLED_KINDS.has(entity.kind) || (entity.kind === "rack" && entity.modelId)) {
     if (!entity.modelId || !catalog.has(entity.modelId)) {
       out.push(
         error(
@@ -192,9 +194,12 @@ function occupants(
     const rect = footprint(entity, catalog);
     if (!rect || entity.placement?.type === "land" || !entity.parentId) continue;
     const isEquipment = entity.kind === "rack" || isFloorStandingKind(entity.kind);
+    const yard = entity.kind !== "parcel" && index.find(entity.parentId)?.kind === "site";
     const group = isEquipment
       ? `equip:${index.enclosing(entity.parentId, "room")?.id ?? entity.parentId}`
-      : `${entity.kind}:${entity.parentId}`;
+      : yard || isPlantKind(entity.kind)
+        ? `yard:${entity.parentId}`
+        : `${entity.kind}:${entity.parentId}`;
     const list = groups.get(group) ?? [];
     list.push({ entity, rect });
     groups.set(group, list);
@@ -228,7 +233,7 @@ function checkOverlaps(index: BlueprintIndex, catalog: Catalog): Issue[] {
 function checkRackUnits(index: BlueprintIndex, catalog: Catalog): Issue[] {
   const out: Issue[] = [];
   for (const rack of index.ofKind("rack")) {
-    const units = Number(rack.props.units ?? RACK_UNITS_DEFAULT);
+    const units = rackUnits(rack, catalog);
     const used = new Map<number, string>();
     for (const device of index.childrenOf(rack.id).filter((d) => isRackMountedKind(d.kind))) {
       const height = heightU(device, catalog);
@@ -352,6 +357,9 @@ export function validateBlueprint(bp: Blueprint, catalog: Catalog): Issue[] {
     ...checkOverlaps(index, catalog),
     ...checkRackUnits(index, catalog),
     ...checkLinks(index),
+    ...checkParcels(index, catalog),
+    ...checkCoolingFit(index, catalog),
+    ...checkLoops(index, catalog),
     ...adviceWarnings(index),
   ];
 }

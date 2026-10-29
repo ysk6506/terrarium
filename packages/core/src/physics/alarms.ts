@@ -13,6 +13,7 @@ import {
   type UpsState,
   type World,
 } from "@terrarium/core/world";
+import { plantAlarms } from "./plant-alarms";
 import { capacityW, effectiveUtil } from "./power";
 
 export const INLET_WARNING_C = 27;
@@ -215,7 +216,12 @@ export function desiredAlarms(world: World): Draft[] {
   const out: Draft[] = [];
   for (const entity of world.index.all()) {
     if (entity.kind === "server") out.push(...serverAlarms(world, entity));
-    else out.push(...facilityAlarms(world, entity), ...itAlarms(world, entity));
+    else
+      out.push(
+        ...facilityAlarms(world, entity),
+        ...itAlarms(world, entity),
+        ...plantAlarms(world, entity),
+      );
   }
   return [...out, ...linkAlarms(world)];
 }

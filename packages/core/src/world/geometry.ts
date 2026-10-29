@@ -1,6 +1,6 @@
 /** Physical size and absolute position of entities (metres). */
 import type { Catalog } from "@terrarium/core/catalog";
-import { RACK_DEPTH_M, RACK_WIDTH_M, U_HEIGHT_M } from "@terrarium/core/kernel";
+import { RACK_DEPTH_M, RACK_UNITS_DEFAULT, RACK_WIDTH_M, U_HEIGHT_M } from "@terrarium/core/kernel";
 import { type Rect, rotated } from "@terrarium/core/spatial";
 import type { Entity } from "./blueprint";
 import type { BlueprintIndex } from "./graph";
@@ -14,7 +14,7 @@ export function footprint(entity: Entity, catalog: Catalog): Rect | undefined {
   if (p?.type === "land") return { x: 0, y: 0, w: p.w, d: p.d };
   if (p?.type !== "spot") return undefined;
   let size = { w: RACK_WIDTH_M, d: RACK_DEPTH_M };
-  if (entity.kind !== "rack" && entity.modelId && catalog.has(entity.modelId)) {
+  if (entity.modelId && catalog.has(entity.modelId)) {
     const model = catalog.get(entity.modelId);
     if ("footprint" in model) size = model.footprint;
   }
@@ -27,6 +27,20 @@ export function heightU(entity: Entity, catalog: Catalog): number {
   if (!entity.modelId || !catalog.has(entity.modelId)) return 1;
   const model = catalog.get(entity.modelId);
   return "uHeight" in model ? model.uHeight : 0;
+}
+
+/**
+ * Rack units a rack (or immersion tank) offers: what the user set, else what its model is built with,
+ * else the standard 42U.
+ */
+export function rackUnits(rack: Entity, catalog: Catalog): number {
+  const set = Number(rack.props.units);
+  if (Number.isFinite(set) && set > 0) return set;
+  if (rack.modelId && catalog.has(rack.modelId)) {
+    const model = catalog.get(rack.modelId);
+    if (model.kind === "rack") return model.uHeight;
+  }
+  return RACK_UNITS_DEFAULT;
 }
 
 export interface Position3 {

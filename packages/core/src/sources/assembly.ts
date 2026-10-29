@@ -7,7 +7,7 @@
 import type { Catalog } from "@terrarium/core/catalog";
 import {
   deriveRoomLayout,
-  type LocationHint,
+  type Outline,
   packShelves,
   type RoomLayout,
 } from "@terrarium/core/spatial";
@@ -17,79 +17,32 @@ import {
   DEFAULT_FLOOR_HEIGHT_M,
   type Entity,
   type EntityKind,
-  type Issue,
   type Link,
   type LinkKind,
-  type PropValue,
-  type RackMountedKind,
   validateBlueprint,
 } from "@terrarium/core/world";
+import { type PendingRoom, roomEntities } from "./assembly-room";
+import { type BuildingPlan, type SitePlan, siteEntities, type YardEntry } from "./assembly-site";
+import type { AssemblyResult, EquipmentSpec, Props, RoomSpec, YardSpec } from "./assembly-types";
 
-export type Props = Readonly<Record<string, PropValue>>;
-
-export interface RackSpec {
-  readonly id: string;
-  readonly name: string;
-  readonly hint: LocationHint;
-  readonly props?: Props;
-}
-
-export interface DeviceSpec {
-  readonly id: string;
-  readonly kind: RackMountedKind;
-  readonly name: string;
-  readonly modelId: string;
-  readonly hint: LocationHint;
-  /** Explicit rack (e.g. from a graph edge); wins over the hint's rack reference. */
-  readonly rackId?: string;
-  readonly props?: Props;
-}
-
-export interface EquipmentSpec {
-  readonly id: string;
-  readonly kind: "cooling_unit" | "power_panel" | "ups";
-  readonly name: string;
-  readonly modelId: string;
-  readonly props?: Props;
-}
-
-export interface RoomSpec {
-  readonly id: string;
-  readonly name: string;
-  readonly racks: readonly RackSpec[];
-  readonly devices: readonly DeviceSpec[];
-  readonly equipment: readonly EquipmentSpec[];
-  /** Enclose rack pairs facing a cold aisle (or back to back across a hot aisle). */
-  readonly containment?: "cold" | "hot" | "none";
-  readonly props?: Props;
-}
-
-export interface AssemblyResult {
-  readonly blueprint: Blueprint;
-  readonly issues: readonly Issue[];
-  /** Where geometry or slots had to be guessed, for the import report. */
-  readonly notes: readonly string[];
-}
+export type {
+  AssemblyResult,
+  DeviceSpec,
+  EquipmentSpec,
+  PodSpec,
+  Props,
+  RackSpec,
+  RoomSpec,
+  YardSpec,
+} from "./assembly-types";
 
 const GAP_M = 2;
 const BUILDING_MARGIN_M = 3;
-const SITE_MARGIN_M = 20;
-
-interface PendingRoom {
-  readonly spec: RoomSpec;
-  readonly floorId: string;
-  readonly layout: RoomLayout;
-}
 
 export class BlueprintAssembler {
-  private readonly sites: Array<{
-    id: string;
-    name: string;
-    land?: { w: number; d: number };
-    props: Props;
-  }> = [];
-  private readonly buildings: Array<{ id: string; siteId: string; name: string; props: Props }> =
-    [];
+  private readonly sites: SitePlan[] = [];
+  private readonly buildings: BuildingPlan[] = [];
+  private readonly yard: YardEntry[] = [];
   private readonly floors: Array<{
     id: string;
     buildingId: string;
@@ -111,9 +64,36 @@ export class BlueprintAssembler {
     private readonly meta: Props = {},
   ) {}
 
-  /** A site; `land` is its size in metres (grown if the buildings do not fit). */
-  site(id: string, name: string, land?: { w: number; d: number }, props: Props = {}): this {
-    this.sites.push({ id, name, ...(land ? { land } : {}), props });
+  /**
+   * A site; `land` is its size in metres (grown if the buildings do not fit). With `parcels`, the land
+   * in use is the owner's and the rest of `land` is divided into parcels that could be bought. With
+   * an `outline` (metres, from (0, 0)) the land has that shape and buildings are placed inside it.
+   */
+  site(
+    id: string,
+    name: string,
+    land?: { w: number; d: number },
+    props: Props = {},
+    parcels = false,
+    outline?: Outline,
+  ): this {
+    this.sites.push({
+      id,
+      name,
+      ...(land ? { land } : {}),
+      props,
+      parcels,
+      ...(outline ? { outline } : {}),
+    });
+    return this;
+  }
+
+  /**
+   * Plant standing on the site grounds (generators, chillers, transformers), grouped into yards.
+   * With `building`, it stands beside that building.
+   */
+  yardItem(siteId: string, group: string, spec: YardSpec, building?: string): this {
+    this.yard.push({ siteId, group, spec, ...(building ? { building } : {}) });
     return this;
   }
 
@@ -131,8 +111,13 @@ export class BlueprintAssembler {
   /** A room on a floor; its layout is derived now, its position on the floor at build time. */
   room(floorId: string, spec: RoomSpec): this {
     const heights = new Map(spec.devices.map((d) => [d.id, this.heightOf(d.modelId)]));
-    const layout = deriveRoomLayout(
-      spec.racks.map((r) => ({ id: r.id, hint: r.hint })),
+    const derived = deriveRoomLayout(
+      spec.racks.map((r) => ({
+        id: r.id,
+        hint: r.hint,
+        ...(r.at ? { at: r.at } : {}),
+        ...(r.modelId ? this.rackShape(r.modelId) : {}),
+      })),
       [
         ...spec.devices.map((d) => ({
           id: d.id,
@@ -145,9 +130,19 @@ export class BlueprintAssembler {
           hint: { floorInfo: {}, unitSpan: 1 },
           heightU: 1,
           footprint: this.footprintOf(e.modelId),
+          ...(e.at ? { at: e.at } : {}),
         })),
       ],
     );
+    const layout: RoomLayout = spec.size
+      ? {
+          ...derived,
+          size: {
+            w: Math.max(derived.size.w, spec.size.w),
+            d: Math.max(derived.size.d, spec.size.d),
+          },
+        }
+      : derived;
     this.notes.push(...layout.notes.map((n) => `${spec.name}: ${n}`));
     this.rooms.push({ spec, floorId, layout });
     return this;
@@ -192,7 +187,16 @@ export class BlueprintAssembler {
         d: Math.max(10, ...sizes.map((s) => s.d)) + 2 * BUILDING_MARGIN_M,
       });
     }
-    entities.push(...this.siteEntities(buildingSize));
+    entities.push(
+      ...siteEntities(
+        this.catalog,
+        this.sites,
+        this.buildings,
+        buildingSize,
+        this.yard,
+        this.notes,
+      ),
+    );
     entities.push(...this.floors.map((f) => this.floorEntity(f)));
     entities.push(...this.loose);
     const blueprint: Blueprint = {
@@ -209,6 +213,13 @@ export class BlueprintAssembler {
   private footprintOf(modelId: string): { w: number; d: number } {
     const model = this.catalog.get(modelId);
     return "footprint" in model ? model.footprint : { w: 1, d: 1 };
+  }
+
+  /** Floor size and units of a rack model, for the room layout. */
+  private rackShape(modelId: string): { size?: { w: number; d: number }; units?: number } {
+    const model = this.catalog.get(modelId);
+    if (model.kind !== "rack") return {};
+    return { size: model.footprint, units: model.uHeight };
   }
 
   private heightOf(modelId: string): number {
@@ -238,7 +249,7 @@ export class BlueprintAssembler {
     );
     for (const room of rooms) {
       const at = packed.find((p) => p.id === room.spec.id) as (typeof packed)[number];
-      out.push(...this.roomEntities(room, at));
+      out.push(...roomEntities(this.catalog, room, at));
     }
     return {
       w: Math.max(0, ...packed.map((p) => p.x + p.w)) + GAP_M,
@@ -273,157 +284,4 @@ export class BlueprintAssembler {
     }
     return { w: Math.max(used.w, x), d: used.d + depth + GAP_M };
   }
-
-  private roomEntities(room: PendingRoom, at: { x: number; y: number }): Entity[] {
-    const { spec, layout } = room;
-    const out: Entity[] = [
-      {
-        id: spec.id,
-        kind: "room",
-        name: spec.name,
-        parentId: room.floorId,
-        placement: { type: "area", x: at.x, y: at.y, w: layout.size.w, d: layout.size.d },
-        props: spec.props ?? {},
-      },
-    ];
-    const containerOf = this.containments(room, out);
-    out.push(
-      ...rackEntities(room, containerOf),
-      ...deviceEntities(room),
-      ...equipmentEntities(room),
-    );
-    return out;
-  }
-
-  /**
-   * Containments enclose pairs of rack rows: rows 1+2, 3+4 ... face each other across a cold aisle;
-   * rows 2+3, 4+5 ... stand back to back across a hot aisle. Returns rack id → containment id.
-   */
-  private containments(room: PendingRoom, out: Entity[]): Map<string, string> {
-    const mode = room.spec.containment ?? "none";
-    const owner = new Map<string, string>();
-    if (mode === "none") return owner;
-    const rows = [...new Set([...room.layout.racks.values()].map((p) => p.row))].sort(
-      (a, b) => a - b,
-    );
-    const first = mode === "cold" ? 0 : 1;
-    for (let i = first; i + 1 < rows.length; i += 2) {
-      const pair = new Set([rows[i], rows[i + 1]]);
-      const racks = [...room.layout.racks].filter(([, p]) => pair.has(p.row));
-      const xs = racks.map(([, p]) => p.x);
-      const ys = racks.map(([, p]) => p.y);
-      const n = Math.floor(i / 2) + 1;
-      const id = `${room.spec.id}-${mode === "cold" ? "ca" : "ha"}${n}`;
-      out.push({
-        id,
-        kind: "containment",
-        name: `${room.spec.name} ${mode === "cold" ? "냉복도" : "열복도"} ${n}`,
-        parentId: room.spec.id,
-        placement: {
-          type: "area",
-          x: Math.min(...xs) - 0.1,
-          y: Math.min(...ys) - 0.1,
-          w: Math.max(...xs) - Math.min(...xs) + 0.8,
-          d: Math.max(...ys) - Math.min(...ys) + 1.4,
-        },
-        props: { aisle: mode },
-      });
-      for (const [rackId] of racks) owner.set(rackId, id);
-    }
-    return owner;
-  }
-
-  private siteEntities(buildingSize: ReadonlyMap<string, { w: number; d: number }>): Entity[] {
-    const out: Entity[] = [];
-    for (const site of this.sites) {
-      const buildings = this.buildings.filter((b) => b.siteId === site.id);
-      const want = site.land?.w ?? 200;
-      const packed = packShelves(
-        buildings.map((b) => ({
-          id: b.id,
-          ...(buildingSize.get(b.id) as { w: number; d: number }),
-        })),
-        Math.max(want - SITE_MARGIN_M, 50),
-        SITE_MARGIN_M,
-      );
-      const usedW = Math.max(0, ...packed.map((p) => p.x + p.w)) + SITE_MARGIN_M;
-      const usedD = Math.max(0, ...packed.map((p) => p.y + p.d)) + SITE_MARGIN_M;
-      const land = { w: Math.max(site.land?.w ?? 0, usedW), d: Math.max(site.land?.d ?? 0, usedD) };
-      if (site.land && (land.w > site.land.w || land.d > site.land.d))
-        this.notes.push(
-          `${site.name}: 건물이 부지에 다 들어가지 않아 부지를 ${Math.round(land.w)}×${Math.round(land.d)} m로 넓혔다`,
-        );
-      out.push({
-        id: site.id,
-        kind: "site",
-        name: site.name,
-        placement: { type: "land", ...land },
-        props: site.props,
-      });
-      for (const b of buildings) {
-        const p = packed.find((x) => x.id === b.id) as (typeof packed)[number];
-        out.push({
-          id: b.id,
-          kind: "building",
-          name: b.name,
-          parentId: site.id,
-          placement: { type: "area", x: p.x, y: p.y, w: p.w, d: p.d },
-          props: b.props,
-        });
-      }
-    }
-    return out;
-  }
-}
-
-const inferred = (yes: boolean): Props => (yes ? { positionInferred: true } : {});
-
-function rackEntities(room: PendingRoom, containerOf: ReadonlyMap<string, string>): Entity[] {
-  return room.spec.racks.flatMap((rack) => {
-    const p = room.layout.racks.get(rack.id);
-    if (!p) return [];
-    return [
-      {
-        id: rack.id,
-        kind: "rack" as const,
-        name: rack.name,
-        parentId: containerOf.get(rack.id) ?? room.spec.id,
-        placement: { type: "spot" as const, x: p.x, y: p.y, rotation: p.rotation },
-        props: { ...(rack.props ?? {}), ...inferred(p.inferred) },
-      },
-    ];
-  });
-}
-
-function deviceEntities(room: PendingRoom): Entity[] {
-  return room.spec.devices.flatMap((device) => {
-    const p = room.layout.devices.get(device.id);
-    if (!p) return [];
-    return [
-      {
-        id: device.id,
-        kind: device.kind,
-        name: device.name,
-        parentId: p.rackId,
-        modelId: device.modelId,
-        placement: { type: "unit" as const, u: p.u },
-        props: { ...(device.props ?? {}), ...inferred(p.inferred) },
-      },
-    ];
-  });
-}
-
-function equipmentEntities(room: PendingRoom): Entity[] {
-  return room.spec.equipment.map((eq) => {
-    const p = room.layout.equipment.get(eq.id) ?? { x: 1, y: 1 };
-    return {
-      id: eq.id,
-      kind: eq.kind,
-      name: eq.name,
-      parentId: room.spec.id,
-      modelId: eq.modelId,
-      placement: { type: "spot" as const, x: p.x, y: p.y, rotation: 0 as const },
-      props: eq.props ?? {},
-    };
-  });
 }

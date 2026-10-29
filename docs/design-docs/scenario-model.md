@@ -2,17 +2,19 @@
 title: 시나리오 모델
 kind: spec
 status: active
-last_verified: 2026-10-28
+last_verified: 2026-10-29
 covers:
   - packages/core/src/scenario/model.ts
   - packages/core/src/scenario/blocks.ts
   - packages/core/src/scenario/runner.ts
+  - packages/core/src/scenario/library-facility.ts
 verification_log:
   - "2026-10-28: first version"
   - "2026-10-28: first version, checked against model.ts, blocks.ts, runner.ts"
   - "2026-10-28: first version, checked against model.ts, blocks.ts, runner.ts"
   - "2026-10-28: actions judged by effect (ADR-0019)"
-covers_hash: ee216dbce8ee3e07
+  - "2026-10-29: 시설 시나리오 템플릿 세 가지와 ALL_SCENARIO_TEMPLATES를 코드와 대조해 본문에 더했다"
+covers_hash: a2a2271da38642ba
 ---
 # 시나리오 모델 (REQ-033, REQ-034)
 
@@ -76,3 +78,10 @@ covers_hash: ee216dbce8ee3e07
 `SCENARIO_TEMPLATES`(library.ts)는 주어진 세계에서 대상을 골라 시나리오를 만든다(예: 가장 많은 랙을 맡은 냉방기).
 명세 테스트(`tests/spec/scenarios.test.ts`)가 "에이전트가 투입될 때 기본 툴로 근본 원인이 보인다"를 확인한다.
 아무도 풀 수 없는 시나리오는 아무것도 측정하지 못하기 때문이다. 과제 설명에는 증상만 쓰고 정답을 쓰지 않는다(테스트가 확인).
+
+## 시설 시나리오 (REQ-044, REQ-046)
+
+내장 템플릿은 두 묶음이다. `SCENARIO_TEMPLATES`는 어느 서버룸에서나 쓸 수 있는 다섯 가지(팬 고장, 냉방기 정지, 센서 오차, PDU 트립 연쇄,
+VM 폭주). `FACILITY_TEMPLATES`는 플랜트·수랭·발전기가 있는 세계에서만 쓴다: **냉각 플랜트 루프 정지**(한 루프의 칠러가 함께 선다),
+**CDU 정지와 수랭 서버 열 폭주**, **정전과 발전기 기동 실패**(예비 발전기까지 선다). 장비가 없으면 `unavailable`이 이유를 말한다.
+`ALL_SCENARIO_TEMPLATES`가 둘을 합치고 `scenarioTemplate(id)`는 둘 다 찾는다.

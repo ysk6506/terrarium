@@ -36,7 +36,21 @@ export {
   type LayoutSpec,
   type RackInput,
   type RackPlacement,
+  type RackSpot,
   type RoomLayout,
 } from "./layout";
+export {
+  encodeOutline,
+  normalizeOutline,
+  type Outline,
+  type OutlinePacking,
+  outlineArea,
+  outlineBounds,
+  outlineFromLonLat,
+  packInOutline,
+  parseOutline,
+  pointInOutline,
+  rectInOutline,
+} from "./outline";
 export { type PackedItem, packShelves, type SizedItem } from "./packing";
 export { assignSlots, type Slot } from "./slots";

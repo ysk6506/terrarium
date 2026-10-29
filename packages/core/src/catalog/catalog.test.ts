@@ -16,10 +16,10 @@ describe("equipment catalog [REQ-004]", () => {
   });
 
   test("lists filter by kind in id order", () => {
-    expect(new Catalog().list("cooling_unit").map((m) => m.id)).toEqual([
-      "crah-100kw",
-      "inrow-30kw",
-    ]);
+    const ids = new Catalog().list("cooling_unit").map((m) => m.id);
+    expect(ids).toEqual([...ids].sort((a, b) => a.localeCompare(b)));
+    expect(ids).toEqual(expect.arrayContaining(["crah-100kw", "inrow-30kw"]));
+    expect(new Catalog().list("cooling_unit").every((m) => m.kind === "cooling_unit")).toBe(true);
   });
 
   test("getOf checks the kind", () => {

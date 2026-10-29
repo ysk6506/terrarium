@@ -373,15 +373,49 @@ const HEALTH: FieldSpec = { label: "상태", type: "enum", values: ["ok", "warni
 /** Condition fields per entity kind. A test checks every one exists in the world state. */
 export const CONDITION_FIELDS: Readonly<Record<EntityKind, Readonly<Record<string, FieldSpec>>>> = {
   site: { health: HEALTH },
+  parcel: { health: HEALTH },
   building: { health: HEALTH },
   floor: { health: HEALTH },
   room: { health: HEALTH, ambientC: num("실내 온도", "°C") },
-  containment: { health: HEALTH },
+  containment: {
+    health: HEALTH,
+    coldC: num("냉복도 온도", "°C"),
+    hotC: num("열복도 온도", "°C"),
+  },
   rack: {
     health: HEALTH,
     inletC: num("흡기 온도", "°C"),
     outletC: num("배기 온도", "°C"),
     powerW: num("소비 전력", "W"),
+    liquidW: num("수랭 열량", "W"),
+    coolantC: num("냉각수 온도", "°C"),
+    bathC: num("액침 유체 온도", "°C"),
+  },
+  cdu: {
+    health: HEALTH,
+    running: bool("가동 중"),
+    powered: bool("전원 공급"),
+    supplyC: num("공급 냉각수 온도", "°C"),
+    returnC: num("회수 냉각수 온도", "°C"),
+    loadKw: num("부하", "kW"),
+  },
+  chiller: {
+    health: HEALTH,
+    running: bool("가동 중"),
+    powered: bool("전원 공급"),
+    supplyC: num("공급 수온", "°C"),
+    returnC: num("회수 수온", "°C"),
+    loadKw: num("부하", "kW"),
+  },
+  generator: {
+    health: HEALTH,
+    phase: {
+      label: "가동 단계",
+      type: "enum",
+      values: ["standby", "starting", "running", "failed"],
+    },
+    fuelPct: num("연료 잔량", "%"),
+    loadKw: num("부하", "kW"),
   },
   server: {
     health: HEALTH,

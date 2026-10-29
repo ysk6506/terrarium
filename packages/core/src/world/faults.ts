@@ -20,7 +20,16 @@ export type FaultType =
   | "sensor_drift"
   | "cpu_runaway"
   | "vm_cpu_spike"
-  | "bmc_unresponsive";
+  | "bmc_unresponsive"
+  | "chiller_failure"
+  | "chiller_degraded"
+  | "cdu_failure"
+  | "cdu_pump_failure"
+  | "coolant_leak"
+  | "immersion_circulation_failure"
+  | "generator_start_failure"
+  | "ats_stuck"
+  | "utility_outage";
 
 export interface FaultParamSpec {
   readonly name: string;
@@ -111,6 +120,88 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
     description: "배터리 용량이 줄어든다",
     targets: ["ups"],
     params: [p("factor", "남은 용량", 0.05, 0.95, 0.3, "비율")],
+    status: "supported",
+    domain: "facility",
+  },
+  {
+    type: "utility_outage",
+    label: "수전 중단(한전 정전)",
+    description:
+      "한전 인입이 끊긴다. 자동절체반이 있으면 발전기가 기동하고, UPS는 그동안 배터리로 버틴다",
+    targets: ["power_panel"],
+    params: [],
+    status: "supported",
+    domain: "facility",
+  },
+  {
+    type: "chiller_failure",
+    label: "냉각 플랜트 정지",
+    description: "칠러·드라이쿨러·냉각탑이 멈춰 냉수 공급이 끊긴다",
+    targets: ["chiller"],
+    params: [],
+    status: "supported",
+    domain: "facility",
+  },
+  {
+    type: "chiller_degraded",
+    label: "냉각 플랜트 능력 저하",
+    description: "외기 조건이나 압축기 문제로 용량이 일부만 나온다",
+    targets: ["chiller"],
+    params: [p("factor", "남은 용량", 0.05, 0.95, 0.5, "비율")],
+    status: "supported",
+    domain: "facility",
+  },
+  {
+    type: "cdu_failure",
+    label: "CDU 정지",
+    description: "냉각수 분배 장치가 멈춰 수랭 랙과 액침 탱크의 열이 빠지지 않는다",
+    targets: ["cdu"],
+    params: [],
+    status: "supported",
+    domain: "facility",
+  },
+  {
+    type: "cdu_pump_failure",
+    label: "CDU 펌프 고장",
+    description: "예비 펌프까지 쓰고 나면 유량이 줄어 용량이 떨어진다",
+    targets: ["cdu"],
+    params: [p("pumps", "고장 펌프 수", 1, 3, 2, "대")],
+    status: "supported",
+    domain: "facility",
+  },
+  {
+    type: "coolant_leak",
+    label: "냉각수 누설",
+    description: "누설이 감지되어 해당 랙·CDU의 냉각수 공급이 곧 차단된다",
+    targets: ["rack", "cdu"],
+    params: [p("shutoffSeconds", "차단까지", 30, 900, 120, "초")],
+    status: "supported",
+    domain: "facility",
+  },
+  {
+    type: "immersion_circulation_failure",
+    label: "액침 순환 정지",
+    description: "탱크 안 유체 순환이 멈춰 열이 열교환기로 가지 않는다",
+    targets: ["rack"],
+    params: [],
+    status: "supported",
+    domain: "facility",
+  },
+  {
+    type: "generator_start_failure",
+    label: "발전기 기동 실패",
+    description: "정전 때 발전기가 시동되지 않는다",
+    targets: ["generator"],
+    params: [],
+    status: "supported",
+    domain: "facility",
+  },
+  {
+    type: "ats_stuck",
+    label: "자동절체반 고착",
+    description: "ATS가 발전기로 넘어가지 못해 정전된 한전 쪽에 머문다",
+    targets: ["power_panel"],
+    params: [],
     status: "supported",
     domain: "facility",
   },

@@ -114,7 +114,7 @@ export const TOOL_SPECS: readonly ToolSpec[] = [
     category: "observe",
     mutating: false,
     description:
-      "Facility overview per room: room temperature, cooling units (running, supply air, load vs capacity), PDUs (load %), and the power panels and UPS that feed the room wherever they stand.",
+      "Facility overview per room: room temperature, cooling units (running, supply air, load vs capacity), CDUs and chillers that carry liquid cooling (supply water temperature, load vs capacity), PDUs (load %), and the power panels, UPS and generators that feed the room wherever they stand.",
     inputSchema: obj({ roomId: str("Only this room") }),
   },
   {

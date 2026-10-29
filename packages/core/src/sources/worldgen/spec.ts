@@ -3,6 +3,9 @@
  * site maps, so a preset is a name and a plausible land size; everything inside comes from parameters.
  */
 
+import type { Outline } from "@terrarium/core/spatial";
+import { outlineLand, SITE_SHAPES, shapeOutline } from "./sites";
+
 export type SiteId = "giheung" | "hwaseong" | "onyang" | "cheonan" | "suwon" | "pyeongtaek";
 
 export interface SitePreset {
@@ -10,18 +13,28 @@ export interface SitePreset {
   /** Short code used in ids and host names. */
   readonly code: string;
   readonly name: string;
-  /** Land size in metres. Illustrative: not taken from any map. */
+  /** The box around the site's land, metres. Illustrative: sizes keep their proportions, not survey values. */
   readonly land: { readonly w: number; readonly d: number };
+  /** The shape of the land (REQ-048), from (0, 0). */
+  readonly outline: Outline;
+  /** Place on the notional map of all sites (0..100, not to scale). */
+  readonly map: { readonly x: number; readonly y: number };
 }
 
-export const SITE_PRESETS: readonly SitePreset[] = [
-  { id: "giheung", code: "gh", name: "기흥사업장", land: { w: 1400, d: 1000 } },
-  { id: "hwaseong", code: "hs", name: "화성사업장", land: { w: 1600, d: 1100 } },
-  { id: "onyang", code: "oy", name: "온양사업장", land: { w: 800, d: 600 } },
-  { id: "cheonan", code: "ca", name: "천안사업장", land: { w: 900, d: 700 } },
-  { id: "suwon", code: "sw", name: "수원사업장", land: { w: 1300, d: 1300 } },
-  { id: "pyeongtaek", code: "pt", name: "평택사업장", land: { w: 2000, d: 1450 } },
+const NAMES: ReadonlyArray<readonly [SiteId, string, string]> = [
+  ["giheung", "gh", "기흥사업장"],
+  ["hwaseong", "hs", "화성사업장"],
+  ["onyang", "oy", "온양사업장"],
+  ["cheonan", "ca", "천안사업장"],
+  ["suwon", "sw", "수원사업장"],
+  ["pyeongtaek", "pt", "평택사업장"],
 ];
+
+export const SITE_PRESETS: readonly SitePreset[] = NAMES.map(([id, code, name]) => {
+  const shape = SITE_SHAPES[id];
+  const outline = shapeOutline(shape);
+  return { id, code, name, land: outlineLand(outline), outline, map: shape.map };
+});
 
 export function sitePreset(id: string): SitePreset | undefined {
   return SITE_PRESETS.find((p) => p.id === id);
