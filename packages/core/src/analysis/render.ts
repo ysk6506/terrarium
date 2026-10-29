@@ -137,6 +137,9 @@ const METRIC_LABELS: Readonly<Record<string, string>> = {
   usedPct: "사용량(%)",
 };
 
+/** What a metric is called on screen, with its unit: "흡기 온도(°C)". */
+export const metricLabel = (metric: string): string => METRIC_LABELS[metric] ?? metric;
+
 /** One small line chart: the shape over time matters here, not exact values. */
 export function sparkline(points: ReadonlyArray<readonly [number, number]>): string {
   if (points.length < 2) return "";

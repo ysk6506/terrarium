@@ -25,7 +25,7 @@ export interface ScenarioTemplate {
   build(index: BlueprintIndex, worldId: string): ScenarioDoc;
 }
 
-/** Lays blocks out left to right; `row` > 0 places a side branch below the main line. */
+/** Lays blocks out top to bottom, as the editor does; `row` > 0 places a side branch to the right. */
 class Flow {
   readonly nodes: ScenarioNode[] = [];
   readonly edges: ScenarioEdge[] = [];
@@ -39,7 +39,7 @@ class Flow {
     port = "next",
     row = 0,
   ): string {
-    this.nodes.push({ id, type, params, position: { x: 240 * this.column++, y: 140 * row } });
+    this.nodes.push({ id, type, params, position: { x: 260 * row, y: 120 * this.column++ } });
     if (from) this.edges.push({ id: `e-${from}-${port}-${id}`, from, port, to: id });
     return id;
   }

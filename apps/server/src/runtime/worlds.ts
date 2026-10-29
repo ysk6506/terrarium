@@ -30,7 +30,7 @@ import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
 export function blueprintIssues(issues: readonly Issue[]) {
   return issues
     .filter((i) => i.severity === "error")
-    .map((i) => ({ path: i.entityId ?? i.linkId ?? "", message: `${i.message} — ${i.fix}` }));
+    .map((i) => ({ path: i.entityId ?? i.linkId ?? "", message: `${i.message}. ${i.fix}` }));
 }
 
 export class Worlds {

@@ -58,7 +58,7 @@ export class WorkerHost implements SessionHost {
   private nextId = 0;
   private closing = false;
 
-  constructor(private readonly options: WorkerHostOptions) {
+  constructor(options: WorkerHostOptions) {
     if (options.size < 1) throw new InvalidValueError("워커는 하나 이상이어야 한다");
     for (let i = 0; i < options.size; i++) this.slots.push(this.spawn());
   }

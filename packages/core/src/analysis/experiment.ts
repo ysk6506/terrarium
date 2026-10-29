@@ -179,9 +179,9 @@ function experimentFindings(a: Omit<ExperimentAnalysis, "findings">): string[] {
 function parentFindings(p: ParentComparison): string[] {
   const what = p.changes.map((c) => `${c.label} ${c.before} → ${c.after}`).join("; ");
   if (p.scoreDelta === undefined) return [`원본 '${p.name}'에서 바꾼 것: ${what}`];
-  const sign = p.scoreDelta > 0 ? "+" : "";
+  const signed = (n: number) => `${n > 0 ? "+" : ""}${n}`;
   const verdict = p.clear ? "분명한 차이다" : "실행 수에 비해 아직 분명한 차이는 아니다";
   return [
-    `원본 '${p.name}' 대비 평균 ${sign}${p.scoreDelta}점, 합격률 ${sign}${Math.round(p.passRateDelta * 100)}%p — ${verdict} (바꾼 것: ${what})`,
+    `원본 '${p.name}' 대비 평균 ${signed(p.scoreDelta)}점, 합격률 ${signed(Math.round(p.passRateDelta * 100))}%p. ${verdict} (바꾼 것: ${what})`,
   ];
 }

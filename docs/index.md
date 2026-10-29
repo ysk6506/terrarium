@@ -27,6 +27,7 @@ last_verified: 2026-10-29
 - [HTTP API 계약](design-docs/http-api.md)
 - [하네스 프로토콜](design-docs/harness-protocol.md)
 - [서버 운영 — 설치와 사내 시스템 연결](design-docs/operations.md)
+- [웹 화면 — 디자인 원칙과 구조](design-docs/web-ui.md)
 
 ### ADR
 
@@ -58,6 +59,8 @@ last_verified: 2026-10-29
 - [0026 하네스 연결 세 가지](design-docs/adr/0026-harness-adapters.md)
 - [0027 실행 호스팅과 끝내는 규칙](design-docs/adr/0027-run-hosting.md)
 - [0028 사용자 식별과 공유](design-docs/adr/0028-identity-and-sharing.md)
+- [0029 하네스 파싱 캐시](design-docs/adr/0029-harness-parse-cache.md)
+- [0030 웹 기술 선택](design-docs/adr/0030-web-stack.md)
 - [0029 하네스 파싱 캐시](design-docs/adr/0029-harness-parse-cache.md)
 
 ## 계획과 부채

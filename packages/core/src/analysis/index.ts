@@ -14,6 +14,7 @@ export {
 } from "./leaderboard";
 export {
   escapeHtml,
+  metricLabel,
   type RenderOptions,
   renderHtml,
   renderMarkdown,

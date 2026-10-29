@@ -1,0 +1,96 @@
+/** The world builder's model: levels, edits, racks, cables, the 3D scene, totals, undo, preview. */
+export {
+  link,
+  linkProblem,
+  moveTo,
+  remove,
+  rename,
+  resizeArea,
+  rotate,
+  setModel,
+  setProp,
+  unlink,
+} from "./change";
+export {
+  addBuilding,
+  addContainment,
+  addFloor,
+  addRoom,
+  assertFree,
+  type Edit,
+  EditError,
+  emptyWorld,
+  footprintAt,
+  GRID,
+  nextId,
+  placeEquipment,
+  placementProblem,
+  placeRack,
+  placeRackRow,
+  replaceEntity,
+  type Spot,
+  snap,
+  snapRect,
+  snapSpot,
+  TILE_M,
+} from "./edit";
+export {
+  gridOf,
+  movePlan,
+  nextRotation,
+  type Plan,
+  type Point,
+  planFor,
+  pointingHint,
+  rectBetween,
+  type Tool,
+  toolFits,
+  type Where,
+} from "./gesture";
+export { History } from "./history";
+export {
+  type Crumb,
+  crumbs,
+  floorsOf,
+  type Level,
+  levelArea,
+  levelEntities,
+  levelOf,
+  levelParent,
+  sameLevel,
+  siteOf,
+  startLevel,
+} from "./levels";
+export { PREVIEW_SECONDS, type Preview, preview } from "./preview";
+export {
+  type Elevation,
+  elevation,
+  firstFreeU,
+  mountDevice,
+  remount,
+  type Slot,
+  unitsOf,
+} from "./rack";
+export {
+  COLORS,
+  type GroupKey,
+  HEAT_STOPS,
+  HEIGHTS,
+  heatColor,
+  hex,
+  type InstanceGroup,
+  mix,
+  type Overlay,
+  type Scene,
+  type SceneLabel,
+  sceneOf,
+} from "./scene";
+export { type LevelStats, levelStats, TYPICAL_UTIL } from "./stats";
+export {
+  autoWireRack,
+  autoWireRoom,
+  type Candidate,
+  candidates,
+  linkKindsFrom,
+  type Wiring,
+} from "./wiring";
