@@ -34,6 +34,8 @@ export interface PodPlan {
   readonly perRow: number;
   readonly family: Family;
   readonly aisle: PodAisle;
+  /** Racks of this pod are light racks (REQ-049): servers counted, not built one by one. */
+  readonly light: boolean;
 }
 
 export interface HallPlan {
@@ -58,6 +60,8 @@ export interface BuildingPlan {
 export interface CampusPlan {
   readonly buildings: readonly BuildingPlan[];
   readonly racks: number;
+  /** Racks built server by server. */
+  readonly detailedRacks: number;
 }
 
 const HALL_LETTERS = "ABCD";
@@ -151,14 +155,26 @@ interface PodShapeChoice {
   readonly family: Family;
   readonly airRow: number;
   readonly aisle: PodAisle;
+  readonly light: boolean;
+}
+
+/**
+ * Whether the pod at `index` of a hall is a light one. The pods built in detail are spread evenly
+ * along the hall, and the first one always is, so a hall never lacks equipment to act on.
+ */
+export function isLightPod(index: number, detail: number): boolean {
+  if (index === 0 || detail >= 1) return false;
+  return Math.floor((index + 1) * detail) === Math.floor(index * detail);
 }
 
 function podPlan(rng: SeededRng, c: PodShapeChoice): PodPlan {
-  const { kind, family, aisle } = c;
-  if (kind === "air") return { kind, rackModel: family.rack, perRow: c.airRow, family, aisle };
-  if (kind === "rdhx") return { kind, rackModel: RDHX_RACK, perRow: 5, family, aisle };
-  if (kind === "dlc") return { kind, rackModel: rng.pick(DLC_RACKS), perRow: 4, family, aisle };
-  return { kind, rackModel: rng.pick(TANKS), perRow: 4, family, aisle: "open" };
+  const { kind, family, aisle, light } = c;
+  if (kind === "air")
+    return { kind, rackModel: family.rack, perRow: c.airRow, family, aisle, light };
+  if (kind === "rdhx") return { kind, rackModel: RDHX_RACK, perRow: 5, family, aisle, light };
+  if (kind === "dlc")
+    return { kind, rackModel: rng.pick(DLC_RACKS), perRow: 4, family, aisle, light };
+  return { kind, rackModel: rng.pick(TANKS), perRow: 4, family, aisle: "open", light };
 }
 
 type HallBase = Omit<HallPlan, "pods" | "containment" | "aspect">;
@@ -174,6 +190,7 @@ function planHall(spec: CampusSpec, rng: SeededRng, hall: HallBase): HallPlan {
       family: spec.vendors === "single" ? single : rng.pick(FAMILIES),
       airRow,
       aisle: podAisle(containment, i),
+      light: isLightPod(i, spec.detail),
     }),
   );
   // A hall counts as having no containment when none of its pods ended up sealed (tanks never are).
@@ -183,6 +200,7 @@ function planHall(spec: CampusSpec, rng: SeededRng, hall: HallBase): HallPlan {
 
 export function planCampus(spec: CampusSpec, code: string, rng: SeededRng): CampusPlan {
   let racks = 0;
+  let detailedRacks = 0;
   const buildings: BuildingPlan[] = [];
   for (let b = 1; b <= spec.buildings; b++) {
     const id = `${code}-dc${b}`;
@@ -202,9 +220,10 @@ export function planCampus(spec: CampusSpec, code: string, rng: SeededRng): Camp
           mode,
         });
         racks += plan.pods.reduce((n, p) => n + 2 * p.perRow, 0);
+        detailedRacks += plan.pods.reduce((n, p) => n + (p.light ? 0 : 2 * p.perRow), 0);
         halls.push(plan);
       }
     buildings.push({ index: b, id, halls });
   }
-  return { buildings, racks };
+  return { buildings, racks, detailedRacks };
 }

@@ -19,6 +19,7 @@ import {
 import { footprint, heightU, rackUnits } from "./geometry";
 import { BlueprintIndex } from "./graph";
 import { KIND_LABELS, kindList, LINK_LABELS } from "./labels";
+import { checkLightRacks } from "./validate-bulk";
 import { checkCoolingFit, checkLoops, checkParcels } from "./validate-campus";
 
 export interface Issue {
@@ -359,6 +360,7 @@ export function validateBlueprint(bp: Blueprint, catalog: Catalog): Issue[] {
     ...checkLinks(index),
     ...checkParcels(index, catalog),
     ...checkCoolingFit(index, catalog),
+    ...checkLightRacks(index, catalog),
     ...checkLoops(index, catalog),
     ...adviceWarnings(index),
   ];

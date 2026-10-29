@@ -5,7 +5,7 @@
  */
 import type { RackCooling } from "@terrarium/core/catalog";
 import { approach, clamp } from "@terrarium/core/kernel";
-import type { Entity, World } from "@terrarium/core/world";
+import { bulkOf, type Entity, type World } from "@terrarium/core/world";
 import { leakIsolated } from "./plant";
 
 /** Share of a rack's heat a working rear door takes out of the exhaust air. */
@@ -61,6 +61,12 @@ const AIR_ONLY: RackLiquid = { cooling: "air", ok: false, liquidW: 0, coolantC: 
 
 /** Heat the servers of a rack give to liquid when it flows, W. */
 function directLiquidW(world: World, rack: Entity): number {
+  const light = bulkOf(rack);
+  if (light) {
+    const model = world.catalog.getOf(light.modelId, "server");
+    const serversW = Math.max(0, world.stateAs(rack.id, "rack").powerW - light.overheadW);
+    return serversW * model.liquidShare;
+  }
   let w = 0;
   for (const dev of world.index.childrenOf(rack.id)) {
     if (dev.kind !== "server") continue;
@@ -80,7 +86,9 @@ function tankBath(
 ) {
   const state = world.stateAs(rack.id, "rack");
   const model = world.catalog.getOf(rack.modelId ?? "", "rack");
-  const servers = world.index.childrenOf(rack.id).filter((d) => d.kind === "server").length;
+  const servers =
+    bulkOf(rack)?.servers ??
+    world.index.childrenOf(rack.id).filter((d) => d.kind === "server").length;
   const circulation = world
     .faultsOn(rack.id)
     .some((f) => f.type === "immersion_circulation_failure")
@@ -147,8 +155,12 @@ export function rackAirHeatW(world: World, rack: Entity, ambient: number): numbe
   return Math.max(0, deviceW(world, rack) - s.liquidW);
 }
 
-/** Electric power of the IT devices in a rack, W (read from the devices, so it is this step's). */
+/**
+ * Electric power of the IT devices in a rack, W (read from the devices, so it is this step's). A light
+ * rack has no devices to read; the electrical update has already written what it draws.
+ */
 export function deviceW(world: World, rack: Entity): number {
+  if (bulkOf(rack)) return world.stateAs(rack.id, "rack").powerW;
   let sum = 0;
   for (const d of world.index.childrenOf(rack.id)) {
     const s = world.stateOf(d.id);

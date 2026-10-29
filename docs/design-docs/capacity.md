@@ -5,13 +5,16 @@ status: active
 last_verified: 2026-10-29
 covers:
   - packages/core/src/session/warm.ts
+  - packages/core/src/world/bulk.ts
   - tests/spec/capacity.ts
-covers_hash: d48df0a3cc52725a
+  - tests/spec/hall-scale.ts
+covers_hash: 4b67f44785ddbdb0
 verification_log:
-  - "2026-10-29: first version; numbers measured with tests/spec/capacity.ts on a 2-vCPU container"
   - "2026-10-29: 첫 판. 측정 숫자는 tests/spec/capacity.ts 실행 결과와 대조했다"
   - "2026-10-29: capacity.ts 서식 정리 후 다시 확인"
   - "2026-10-29: 랙 8 기본 월드로 다시 잰 값으로 갱신"
+  - "2026-10-29: 큰 캠퍼스와 묶음 랙 절을 hall-scale.ts 실측값으로 더했다 (ADR-0038)"
+  - "2026-10-29: hall-scale.ts의 출력 방식만 바뀌었다. 표의 수치와 재측정 명령은 그대로이고, 코드와 대조했다"
 ---
 # 용량 (REQ-032, REQ-042, [ADR-0033](adr/0033-warm-start-and-capacity-defaults.md))
 
@@ -77,6 +80,21 @@ verification_log:
 
 "캐시로 열기"에 남은 시간은 시나리오가 에이전트에게 일을 넘기기 전까지 굴리는 시간(고장 주입, 증상이 나타나길 기다림)이라 시나리오마다 다르다.
 
+### 큰 캠퍼스와 묶음 랙 ([ADR-0038](adr/0038-light-racks.md), `tests/spec/hall-scale.ts`)
+
+사용자가 보려는 큰 홀은 컨테인먼트 수십~수백 개, 랙 수천 개다. 서버를 모두 개체로 만들면 한 걸음 비용이 개체 수에 비례해(개체당 약 15 µs) 감당이 안 된다.
+그래서 컨테인먼트의 일부만 서버까지 만들고 나머지는 **묶음 랙**(서버를 대수로 세는 랙)으로 둔다(`detail`). 같은 컨테이너에서 잰 값:
+
+| 구성 | 개체 수 | 랙 | 서버 개체 | 생성 | 열기(검증 포함) | 한 걸음(10초) |
+|---|---|---|---|---|---|---|
+| 건물 2·홀 2·컨테인먼트 약 6, 전부 상세 | 6,210 | 408 | 3,994 | 0.4 s | 0.2 s | 95 ms |
+| 건물 3·층 2·홀 2·컨테인먼트 약 40, 상세 5% | 12,610 | 5,562 | 3,511 | 0.9 s | 0.4 s | 167 ms |
+| 건물 4·층 2·홀 3·컨테인먼트 약 60, 상세 3% | 36,137 | 19,704 | 7,172 | 2.1 s | 1.5 s | 546 ms |
+
+읽는 법: 랙이 2만 개여도 서버 대부분을 묶으면 개체가 3.6만 개로 줄어 한 걸음이 0.5초다. 같은 랙 2만 개를 전부 상세하게 만들면 서버만 40만 개라 이 표의 가장 큰 줄보다 열 배 넘게 무겁다.
+상세한 랙은 3000개, 전체 랙은 2만 개까지만 만든다(`MAX_DETAILED_RACKS`, `MAX_CAMPUS_RACKS`). 한 걸음이 개체 수에 비례하므로 이 위의 규모는 `detail`을 낮추거나 노드를 늘려서 푼다.
+세션을 처음 열 때의 워밍업(600초 = 60걸음)은 가장 큰 줄에서 약 30초다. 캐시된 뒤에는 복사로 열린다.
+
 ## 무엇을 믿고 무엇을 조심하나
 
 - **작은 세계에서 "수백~수천 동시 실행"은 한 노드로 올려 둘 수 있다.** 스레드 하나에 1024개를 올려도 실패 없이 끝났다. 다만 처리량은
@@ -97,6 +115,13 @@ npx tsx tests/spec/capacity.ts --concurrency 64 --racks 50 --think 1000 --total 
 ```
 
 한 줄짜리 JSON으로 초당 완료, 호출 지연, 이벤트 루프 지연, 메모리, DB 크기가 나온다. 인자: `--concurrency --think --threads --total --users --racks`.
+
+큰 캠퍼스의 생성·열기·걸음 비용은 다음으로 잰다(인자 없이 돌리면 위 표의 세 줄).
+
+```bash
+npx tsx tests/spec/hall-scale.ts
+npx tsx tests/spec/hall-scale.ts --buildings 4 --floors 2 --halls 3 --pods 60 --detail 0.03
+```
 
 ## 요약 표(배치 계획용)
 

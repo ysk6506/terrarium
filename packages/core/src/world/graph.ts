@@ -3,31 +3,61 @@ import type { Blueprint, Entity, EntityKind, Link, LinkKind } from "./blueprint"
 
 const byId = (a: { id: string }, b: { id: string }) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 
-/** Read-only indexes over a blueprint: lookups, the containment tree and link adjacency. */
+const NO_ENTITIES: readonly Entity[] = [];
+const NO_LINKS: readonly Link[] = [];
+
+/** Items grouped by owner and then by kind, so a lookup by both is one step and allocates nothing. */
+class Grouped<T, K> {
+  private readonly all = new Map<string, T[]>();
+  private readonly byKind = new Map<string, Map<K, T[]>>();
+
+  add(owner: string, kind: K, item: T): void {
+    const list = this.all.get(owner);
+    if (list) list.push(item);
+    else this.all.set(owner, [item]);
+    let kinds = this.byKind.get(owner);
+    if (!kinds) {
+      kinds = new Map();
+      this.byKind.set(owner, kinds);
+    }
+    const group = kinds.get(kind);
+    if (group) group.push(item);
+    else kinds.set(kind, [item]);
+  }
+
+  get(owner: string, none: readonly T[], kind?: K): readonly T[] {
+    if (kind === undefined) return this.all.get(owner) ?? none;
+    return this.byKind.get(owner)?.get(kind) ?? none;
+  }
+}
+
+/**
+ * Read-only indexes over a blueprint: lookups, the containment tree and link adjacency. The blueprint
+ * never changes under an index, so every answer is kept and handed out as it is (callers must not
+ * change the arrays they get; the types say so).
+ */
 export class BlueprintIndex {
   private readonly entities = new Map<string, Entity>();
   private readonly links = new Map<string, Link>();
-  private readonly children = new Map<string, Entity[]>();
-  private readonly outgoingLinks = new Map<string, Link[]>();
-  private readonly incomingLinks = new Map<string, Link[]>();
+  private readonly children = new Grouped<Entity, EntityKind>();
+  private readonly outgoingLinks = new Grouped<Link, LinkKind>();
+  private readonly incomingLinks = new Grouped<Link, LinkKind>();
   private readonly descendantsOf = new Map<string, readonly Entity[]>();
+  private readonly ofKinds = new Map<EntityKind, readonly Entity[]>();
+  private readonly enclosingOf = new Map<EntityKind, Map<string, Entity | null>>();
+  private everyEntity?: readonly Entity[];
+  private everyLink?: readonly Link[];
 
   constructor(readonly blueprint: Blueprint) {
     for (const entity of [...blueprint.entities].sort(byId)) {
       this.entities.set(entity.id, entity);
-      if (entity.parentId !== undefined) this.push(this.children, entity.parentId, entity);
+      if (entity.parentId !== undefined) this.children.add(entity.parentId, entity.kind, entity);
     }
     for (const link of [...blueprint.links].sort(byId)) {
       this.links.set(link.id, link);
-      this.push(this.outgoingLinks, link.from, link);
-      this.push(this.incomingLinks, link.to, link);
+      this.outgoingLinks.add(link.from, link.kind, link);
+      this.incomingLinks.add(link.to, link.kind, link);
     }
-  }
-
-  private push<T>(map: Map<string, T[]>, key: string, value: T): void {
-    const list = map.get(key);
-    if (list) list.push(value);
-    else map.set(key, [value]);
   }
 
   has(id: string): boolean {
@@ -50,20 +80,27 @@ export class BlueprintIndex {
     return link;
   }
 
-  all(): Entity[] {
-    return [...this.entities.values()];
+  all(): readonly Entity[] {
+    this.everyEntity ??= [...this.entities.values()];
+    return this.everyEntity;
   }
 
-  allLinks(): Link[] {
-    return [...this.links.values()];
+  allLinks(): readonly Link[] {
+    this.everyLink ??= [...this.links.values()];
+    return this.everyLink;
   }
 
-  ofKind(kind: EntityKind): Entity[] {
-    return this.all().filter((e) => e.kind === kind);
+  ofKind(kind: EntityKind): readonly Entity[] {
+    let list = this.ofKinds.get(kind);
+    if (!list) {
+      list = this.all().filter((e) => e.kind === kind);
+      this.ofKinds.set(kind, list);
+    }
+    return list;
   }
 
-  childrenOf(id: string, kind?: EntityKind): Entity[] {
-    return (this.children.get(id) ?? []).filter((e) => kind === undefined || e.kind === kind);
+  childrenOf(id: string, kind?: EntityKind): readonly Entity[] {
+    return this.children.get(id, NO_ENTITIES, kind);
   }
 
   /** Parent, grandparent, ... up to the root. */
@@ -81,9 +118,17 @@ export class BlueprintIndex {
 
   /** The nearest ancestor (or the entity itself) of the given kind. */
   enclosing(id: string, kind: EntityKind): Entity | undefined {
+    let known = this.enclosingOf.get(kind);
+    if (!known) {
+      known = new Map();
+      this.enclosingOf.set(kind, known);
+    }
+    const hit = known.get(id);
+    if (hit !== undefined) return hit ?? undefined;
     const self = this.find(id);
-    if (self?.kind === kind) return self;
-    return this.ancestors(id).find((e) => e.kind === kind);
+    const found = self?.kind === kind ? self : this.ancestors(id).find((e) => e.kind === kind);
+    known.set(id, found ?? null);
+    return found;
   }
 
   /**
@@ -104,12 +149,12 @@ export class BlueprintIndex {
     return out;
   }
 
-  outgoing(id: string, kind?: LinkKind): Link[] {
-    return (this.outgoingLinks.get(id) ?? []).filter((l) => kind === undefined || l.kind === kind);
+  outgoing(id: string, kind?: LinkKind): readonly Link[] {
+    return this.outgoingLinks.get(id, NO_LINKS, kind);
   }
 
-  incoming(id: string, kind?: LinkKind): Link[] {
-    return (this.incomingLinks.get(id) ?? []).filter((l) => kind === undefined || l.kind === kind);
+  incoming(id: string, kind?: LinkKind): readonly Link[] {
+    return this.incomingLinks.get(id, NO_LINKS, kind);
   }
 
   /** Every entity reachable by following `kind` links from `id` (suppliers of a consumer). */

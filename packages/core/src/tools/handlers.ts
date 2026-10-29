@@ -2,6 +2,7 @@
 import type { FacadeRequest, Facades, Method } from "@terrarium/core/facades";
 import { InvalidValueError, NotFoundError, round } from "@terrarium/core/kernel";
 import {
+  bulkOf,
   type Entity,
   type EntityState,
   type LinkKind,
@@ -117,6 +118,21 @@ function connections(ctx: ToolContext, id: string): Record<string, string[]> {
   return out;
 }
 
+/** A light rack holds no servers as entities; say what stands in it so nobody looks for them. */
+function inventoryOf(ctx: ToolContext, entity: Entity): Record<string, unknown> {
+  const light = bulkOf(entity);
+  if (!light) return {};
+  const model = ctx.world.catalog.getOf(light.modelId, "server");
+  return {
+    inventory: {
+      servers: light.servers,
+      model: model.name,
+      meanCpuUtil: round(ctx.world.stateAs(entity.id, "rack").util, 2),
+      note: "묶음 랙이라 서버를 개별 장비로 두지 않고 대수로 센다. 서버별 BMC·상태 조회는 되지 않는다.",
+    },
+  };
+}
+
 const getEntity: Handler = (ctx, args) => {
   const entity = entityOf(ctx, str(args, "id"));
   return {
@@ -126,6 +142,7 @@ const getEntity: Handler = (ctx, args) => {
     model: entity.modelId ? ctx.world.catalog.get(entity.modelId).name : null,
     location: locationPath(ctx, entity.id),
     children: ctx.world.index.childrenOf(entity.id).map((c) => c.id),
+    ...inventoryOf(ctx, entity),
     connections: connections(ctx, entity.id),
     state: summarizeState(observedState(ctx, entity.id)),
     alarms: ctx.world
@@ -224,8 +241,10 @@ function coolingLost(
 /** What cools a device: a server's rack relies on cooling units or CDUs, and those rely on a plant. */
 function coolingOf(ctx: ToolContext, id: string): string[] {
   const index = ctx.world.index;
-  const kind = index.entity(id).kind;
-  if (kind === "cdu" || kind === "cooling_unit")
+  const entity = index.entity(id);
+  const kind = entity.kind;
+  // A light rack stands for its servers, so it relies on the cooling they would.
+  if (kind === "cdu" || kind === "cooling_unit" || bulkOf(entity))
     return index.outgoing(id, "cooling").map((l) => l.to);
   if (kind !== "server") return [];
   const rack = index.enclosing(id, "rack");

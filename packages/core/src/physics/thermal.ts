@@ -25,9 +25,40 @@ const ROOM_HEIGHT_M = 3;
 const roomArea = (room: Entity): number =>
   room.placement?.type === "area" ? room.placement.w * room.placement.d : 100;
 
-function coolingUnitsIn(world: World, roomId: string): Entity[] {
-  return world.index.descendants(roomId).filter((e) => e.kind === "cooling_unit");
+const unitsByRoom = new WeakMap<World["index"], Map<string, readonly Entity[]>>();
+
+/** The cooling units standing in a room (the layout never changes, so this is worked out once). */
+function coolingUnitsIn(world: World, roomId: string): readonly Entity[] {
+  let rooms = unitsByRoom.get(world.index);
+  if (!rooms) {
+    rooms = new Map();
+    unitsByRoom.set(world.index, rooms);
+  }
+  let units = rooms.get(roomId);
+  if (!units) {
+    units = world.index.descendants(roomId).filter((e) => e.kind === "cooling_unit");
+    rooms.set(roomId, units);
+  }
+  return units;
 }
+
+const assignedUnits = new WeakMap<Entity, readonly Entity[]>();
+
+/** The cooling units a rack is wired to. */
+function assignedUnitsOf(world: World, rack: Entity): readonly Entity[] {
+  let units = assignedUnits.get(rack);
+  if (!units) {
+    units = world.index
+      .outgoing(rack.id, "cooling")
+      .map((l) => world.index.entity(l.to))
+      .filter((e) => e.kind === "cooling_unit");
+    assignedUnits.set(rack, units);
+  }
+  return units;
+}
+
+const runningOf = (world: World, units: readonly Entity[]): Entity[] =>
+  units.filter((u) => world.stateAs(u.id, "cooling_unit").running);
 
 function effectiveCapacityW(world: World, unit: Entity): number {
   const model = world.catalog.getOf(unit.modelId ?? "", "cooling_unit");
@@ -98,13 +129,9 @@ function supplyFor(
   rack: Entity,
   roomId: string,
 ): { supplyC: number; extraMix: number } | undefined {
-  const explicit = world.index
-    .outgoing(rack.id, "cooling")
-    .map((l) => world.index.entity(l.to))
-    .filter((e) => e.kind === "cooling_unit");
-  const live = (list: Entity[]) => list.filter((u) => world.stateAs(u.id, "cooling_unit").running);
-  const assigned = live(explicit);
-  const fallback = assigned.length > 0 ? assigned : live(coolingUnitsIn(world, roomId));
+  const explicit = assignedUnitsOf(world, rack);
+  const assigned = runningOf(world, explicit);
+  const fallback = assigned.length > 0 ? assigned : runningOf(world, coolingUnitsIn(world, roomId));
   if (fallback.length === 0) return undefined;
   const supplyC =
     fallback.reduce((sum, u) => sum + world.stateAs(u.id, "cooling_unit").supplyC, 0) /

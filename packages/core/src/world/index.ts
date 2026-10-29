@@ -22,6 +22,16 @@ export {
   type SpaceKind,
   type VirtualKind,
 } from "./blueprint";
+export {
+  BULK_SWITCH_U,
+  type BulkLoad,
+  bulkOf,
+  bulkPowerW,
+  bulkProps,
+  bulkSlots,
+  bulkUnits,
+  isBulkRack,
+} from "./bulk";
 export { blueprintDigest } from "./digest";
 export {
   FAULT_SPECS,

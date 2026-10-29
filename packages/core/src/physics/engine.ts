@@ -72,8 +72,6 @@ export class Physics {
     const supply = new SupplyResolver(this.world);
     updateDevices(this.world, supply);
     aggregateLoads(this.world, supply);
-    // Cooling unit draw depends on its load, which depends on loads above; one more pass settles it.
-    aggregateLoads(this.world, new SupplyResolver(this.world));
   }
 
   private protect(): WorldEvent[] {

@@ -12,6 +12,7 @@ import {
   ReadOnlyViolationError,
 } from "@terrarium/core/kernel";
 import type { Blueprint, EntityKind } from "./blueprint";
+import { isBulkRack } from "./bulk";
 import { type Fault, faultSpec } from "./faults";
 import { BlueprintIndex } from "./graph";
 import { type Alarm, type EntityState, initialState, type StateOf, type WorldState } from "./state";
@@ -82,6 +83,8 @@ export class World implements WorldPort {
   readonly index: BlueprintIndex;
   private state: WorldState;
   private sortedAlarms: Alarm[] | undefined;
+  /** Faults grouped by target, kept until a fault starts or ends: physics asks for them per device per step. */
+  private faultsByTarget: Map<string, Fault[]> | undefined;
   private log: WorldEvent[] = [];
   private seq = 0;
 
@@ -146,9 +149,16 @@ export class World implements WorldPort {
   }
 
   faultsOn(target: string): Fault[] {
-    return Object.values(this.state.faults)
-      .filter((f) => f.target === target)
-      .sort((a, b) => a.id.localeCompare(b.id));
+    if (!this.faultsByTarget) {
+      this.faultsByTarget = new Map();
+      for (const fault of this.faults()) {
+        const list = this.faultsByTarget.get(fault.target);
+        if (list) list.push(fault);
+        else this.faultsByTarget.set(fault.target, [fault]);
+      }
+    }
+    const list = this.faultsByTarget.get(target);
+    return list ? [...list] : [];
   }
 
   alarms(): Alarm[] {
@@ -186,6 +196,7 @@ export class World implements WorldPort {
   adopt(checkpoint: WorldCheckpoint): void {
     this.state = structuredClone(checkpoint.state);
     this.sortedAlarms = undefined;
+    this.faultsByTarget = undefined;
     this.seq = checkpoint.seq;
     this.log = [...checkpoint.log];
   }
@@ -193,6 +204,7 @@ export class World implements WorldPort {
   restore(snapshot: WorldSnapshot): void {
     this.state = structuredClone(snapshot.state);
     this.sortedAlarms = undefined;
+    this.faultsByTarget = undefined;
     this.seq = snapshot.seq;
     this.log = this.log.filter((e) => e.seq <= snapshot.seq);
   }
@@ -249,8 +261,9 @@ export class World implements WorldPort {
 
   private validateLoad(target: string, value: number): void {
     const kind = this.stateOf(target).kind;
-    if (kind !== "server" && kind !== "vm")
-      throw new InvalidValueError(`load can only be set on servers and VMs`);
+    const light = kind === "rack" && isBulkRack(this.index.entity(target));
+    if (kind !== "server" && kind !== "vm" && !light)
+      throw new InvalidValueError(`load can only be set on servers, VMs and light racks`);
     if (!(value >= 0 && value <= 1)) throw new InvalidValueError("load must be between 0 and 1");
   }
 
@@ -266,6 +279,7 @@ export class World implements WorldPort {
 
   private reduce(command: WorldCommand): void {
     const s = this.state;
+    if (changesFaults(command)) this.faultsByTarget = undefined;
     switch (command.type) {
       case "power.set":
         Object.assign(s.entities[command.target] as object, { adminOn: command.on });
@@ -291,9 +305,7 @@ export class World implements WorldPort {
         this.patch(command.target, "cooling_unit", { setpointC: command.celsius });
         return;
       case "breaker.reset":
-        for (const fault of this.faultsOn(command.target).filter((f) => f.type === "breaker_trip"))
-          delete s.faults[fault.id];
-        Object.assign(s.entities[command.target] as object, { tripped: false });
+        this.resetBreaker(command.target);
         return;
       case "thermal.shutdown":
         this.patch(command.target, "server", { adminOn: false, health: "critical" });
@@ -311,10 +323,18 @@ export class World implements WorldPort {
     }
   }
 
+  private resetBreaker(target: string): void {
+    for (const fault of this.faultsOn(target).filter((f) => f.type === "breaker_trip"))
+      delete this.state.faults[fault.id];
+    this.faultsByTarget = undefined;
+    Object.assign(this.state.entities[target] as object, { tripped: false });
+  }
+
   private reduceLoad(target: string, value: number): void {
     const state = this.stateOf(target);
     if (state.kind === "server") state.cpuUtil = value;
     else if (state.kind === "vm") state.cpuDemand = value;
+    else if (state.kind === "rack") state.util = value;
   }
 
   private withDefaults(fault: Omit<Fault, "since">): Record<string, number> {
@@ -333,6 +353,12 @@ export class World implements WorldPort {
     if (type === "link_down") this.setLinkUp(target, !active);
   }
 }
+
+/** Whether a command adds, removes or clears faults, so the per-target fault lookup must be rebuilt. */
+const changesFaults = (command: WorldCommand): boolean =>
+  command.type === "fault.add" ||
+  command.type === "fault.remove" ||
+  command.type === "breaker.reset";
 
 /** Wraps a reader so that every command is refused: the shape of a connection to reality (REQ-011). */
 export class ReadOnlyWorldPort implements WorldPort {

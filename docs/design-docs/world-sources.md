@@ -11,17 +11,20 @@ covers:
   - packages/core/src/sources/worldgen/sites.ts
   - packages/core/src/sources/worldgen/campus.ts
   - packages/core/src/sources/worldgen/campus-plan.ts
+  - packages/core/src/sources/worldgen/campus-spec.ts
+  - packages/core/src/sources/worldgen/campus-rack.ts
+  - packages/core/src/world/bulk.ts
   - packages/core/src/sources/realimport/mapping.ts
   - packages/core/src/sources/realimport/synthesize.ts
 verification_log:
-  - "2026-10-29: first version"
   - "2026-10-29: first version, checked against assembly, worldgen spec, mapping, synthesize"
   - "2026-10-29: refactor only (split helpers); behaviour and text unchanged"
   - "2026-10-29: 캠퍼스 생성기, 사업장 외곽선, 외곽선 안 건물 배치를 코드와 대조해 본문에 더했다 (ADR-0035, ADR-0036)"
   - "2026-10-29: 린트 정리(반복문 변환) 후 코드와 다시 대조했다. 내용 변화 없음"
-covers_hash: f97755017d49ad55
+  - "2026-10-29: 캠퍼스 생성 입력에 상세 모델링 비율을, 묶음 랙 절을 더했다. 코드와 대조했다 (ADR-0038)"
+covers_hash: 4cc6da50e887b464
 ---
-# 세계 소스 (REQ-009~013, REQ-035, REQ-043~048)
+# 세계 소스 (REQ-009~013, REQ-035, REQ-043~049)
 
 세계(blueprint)를 만드는 길은 셋이다. 타이쿤 빌더로 직접 짓기(웹), **생성하기**(worldgen), **가져오기**(realimport).
 뒤의 둘은 "무엇이 어디 있는지"만 정하고, 실제 좌표는 공용 조립기(`BlueprintAssembler`)가 정한다.
@@ -48,11 +51,11 @@ CRAH와 A/B 분전반, 층마다 A/B UPS, 서버룸마다 vSphere 클러스터. 
 
 위의 생성기는 서버룸 하나를 닮은 방을 찍어 낸다. 캠퍼스 생성기는 **데이터센터 단지**를 만든다. 입력은 사업장, 구성(공랭 전용 / 공랭+수랭 /
 AI 수랭·액침 / 동별로 다름), 건물 수, 건물당 데이터 홀 층과 층당 홀 수, 홀당 컨테인먼트 수(보통), 채움 비율, GPU 비율, 전원 계통(N / 2N),
-벤더 구성(섞기 / 홀마다 한 곳)과 시드다. 같은 입력이면 같은 세계가 나온다.
+벤더 구성(섞기 / 홀마다 한 곳), 상세 모델링 비율(`detail`)과 시드다. 같은 입력이면 같은 세계가 나온다.
 
 - **홀마다 다르다.** 홀 크기는 보통 크기의 0.5~2배 사이에서 갈리고, 냉각 방식(공랭 / 혼합 / 직접수랭 / 액침), 컨테인먼트(냉복도 밀폐 /
   열복도 밀폐 / 일부만 / 아예 없음), 랙 줄 길이, 가로세로 비율이 홀마다 다르다. 오래된 공랭 홀에는 컨테인먼트가 없을 수 있다. 홀 하나에
-  컨테인먼트가 수십~수백 개 들어간다(캠퍼스 전체 랙은 3000개까지).
+  컨테인먼트가 수십~수백 개 들어간다(홀당 컨테인먼트는 보통 크기가 최대 240, 캠퍼스 전체 랙은 2만 개까지).
 - **장비는 여러 제조사에서 온다.** 포드(컨테인먼트 한 칸)마다 서버·랙·스위치·PDU·스토리지를 한 제조사 묶음(family)에서 고르고,
   GPU·수랭·액침 서버는 냉각 방식에 맞는 모델만 쓴다.
 - **건물 안**: 1층에 전기실(분전반·ATS), 배터리실(UPS), 통신실(MMR, 코어 스위치), 첫 건물에는 관제실(NOC). 데이터 홀 층마다 기계실(CDU).
@@ -60,6 +63,12 @@ AI 수랭·액침 / 동별로 다름), 건물 수, 건물당 데이터 홀 층�
 - **건물 밖(야외)**: 변압기, 발전기(계통마다 예비 한 대), 기계 전원반, 냉수 플랜트(칠러)와 냉각수 플랜트(드라이쿨러·냉각탑).
 - **전원 사슬**: 한전 → 변압기 → ATS(+발전기) → UPS → 분전반 → PDU → 장비. 각 단계는 뒤에 매달린 부하에 맞춰 크기를 정한다.
   **평상시 알람이 없어야 한다** — `tests/spec/campus.test.ts`가 구성마다 확인한다.
+
+### 큰 홀과 묶음 랙 (REQ-049, [ADR-0038](adr/0038-light-racks.md))
+
+`detail`(0~1)은 홀마다 컨테인먼트 중 서버까지 만들 비율이다. 나머지 컨테인먼트의 랙은 **묶음 랙**이다. 서버를 개체로 만들지 않고 랙의 `props`에 대수·서버 모델·평균 사용률·나머지 전력을 적는다
+(`bulkProps`/`bulkOf`, `world/bulk.ts`). 묶음 랙은 분전반 A·B에 직접 전원이 연결되고, 열과 냉각은 상세한 랙과 같은 계산을 거친다. 상세한 컨테인먼트는 홀을 따라 고르게 퍼지고
+홀마다 첫 번째는 언제나 상세하다. 기본값 1은 전부 상세(예전 그대로)다. 상세한 랙은 3000개까지다. 서버 단위 API(Redfish 등)와 서버 사이 네트워크는 상세한 서버에만 있다.
 
 ### 사업장의 모양 (REQ-048)
 

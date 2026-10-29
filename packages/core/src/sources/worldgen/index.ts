@@ -15,6 +15,7 @@ export {
   campusProblems,
   DEFAULT_CAMPUS,
   MAX_CAMPUS_RACKS,
+  MAX_DETAILED_RACKS,
 } from "./campus-spec";
 export { generateWorld, type WorldgenResult } from "./generate";
 export { outlineLand, SITE_SHAPES, type SiteShape, shapeOutline } from "./sites";

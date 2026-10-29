@@ -4,7 +4,7 @@
  */
 import { panelCapacityW } from "@terrarium/core/catalog";
 import { clamp } from "@terrarium/core/kernel";
-import type { Entity, StateOf, World } from "@terrarium/core/world";
+import { bulkOf, bulkPowerW, type Entity, type StateOf, type World } from "@terrarium/core/world";
 
 export const POWER_FACTOR = 0.95;
 
@@ -14,6 +14,7 @@ const hasFault = (world: World, id: string, type: string) =>
 /** Whether a supplier delivers power to what is connected to it. Memoised per step, cycle-safe. */
 export class SupplyResolver {
   private readonly memo = new Map<string, boolean>();
+  private readonly feeds = new Map<string, readonly string[]>();
   private readonly visiting = new Set<string>();
 
   constructor(private readonly world: World) {}
@@ -46,10 +47,21 @@ export class SupplyResolver {
   }
 
   /** The suppliers that actually carry a consumer's load right now: a transfer switch uses one source. */
-  activeFeeds(id: string): string[] {
+  activeFeeds(id: string): readonly string[] {
+    const known = this.feeds.get(id);
+    if (known) return known;
+    const feeds = this.computeFeeds(id);
+    this.feeds.set(id, feeds);
+    return feeds;
+  }
+
+  private computeFeeds(id: string): string[] {
     const links = this.world.index.outgoing(id, "power");
-    if (!isTransferSwitch(this.world, id))
-      return links.filter((l) => this.delivers(l.to)).map((l) => l.to);
+    if (!isTransferSwitch(this.world, id)) {
+      const live: string[] = [];
+      for (const link of links) if (this.delivers(link.to)) live.push(link.to);
+      return live;
+    }
     if (this.utilityOk(id)) {
       const upstream = links.filter((l) => this.world.index.entity(l.to).kind !== "generator");
       return upstream.length === 0
@@ -83,13 +95,22 @@ export class SupplyResolver {
   }
 }
 
+const transferSwitches = new WeakMap<World, ReadonlySet<string>>();
+
 /** A power panel of style "ats": it picks the utility side, else a generator. */
 export function isTransferSwitch(world: World, id: string): boolean {
-  const entity = world.index.entity(id);
-  if (entity.kind !== "power_panel" || !entity.modelId || !world.catalog.has(entity.modelId))
-    return false;
-  const model = world.catalog.get(entity.modelId);
-  return model.kind === "power_panel" && model.style === "ats";
+  const cached = transferSwitches.get(world);
+  if (cached) return cached.has(id);
+  const ids = new Set<string>();
+  for (const entity of world.index.ofKind("power_panel")) {
+    const model =
+      entity.modelId && world.catalog.has(entity.modelId)
+        ? world.catalog.get(entity.modelId)
+        : undefined;
+    if (model?.kind === "power_panel" && model.style === "ats") ids.add(entity.id);
+  }
+  transferSwitches.set(world, ids);
+  return ids.has(id);
 }
 
 /** A VM's CPU demand (0..1 of its vCPUs), including a vm_cpu_spike. */
@@ -130,6 +151,19 @@ const updateServer: Updater = (world, entity, supply) => {
     powered,
     psuOk,
     powerW: running ? model.idlePowerW + (model.maxPowerW - model.idlePowerW) * util : 0,
+  });
+};
+
+/** A light rack draws what its servers add up to while it is fed; losing its feeds darkens all of them. */
+const updateLightRack: Updater = (world, entity, supply) => {
+  const light = bulkOf(entity);
+  if (!light) return;
+  const state = world.stateAs(entity.id, "rack");
+  const powered = supply.fed(entity.id);
+  const model = world.catalog.getOf(light.modelId, "server");
+  world.patch(entity.id, "rack", {
+    powered,
+    powerW: powered ? bulkPowerW(light, model, state.util) : 0,
   });
 };
 
@@ -186,6 +220,7 @@ const updateDistribution: Updater = (world, entity, supply) => {
 
 const UPDATERS: Partial<Record<Entity["kind"], Updater>> = {
   server: updateServer,
+  rack: updateLightRack,
   switch: updateSwitch,
   storage: updateStorage,
   cooling_unit: updateCooling,
@@ -231,6 +266,7 @@ export function drawW(world: World, id: string): number {
     case "server":
     case "switch":
     case "storage":
+    case "rack":
     case "chiller":
       return state.powerW;
     case "cooling_unit":

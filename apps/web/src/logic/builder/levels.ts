@@ -23,7 +23,7 @@ export const siteOf = (index: BlueprintIndex) => index.ofKind("site")[0];
 /** Floors of a building, lowest first. */
 export function floorsOf(index: BlueprintIndex, buildingId: string): Entity[] {
   const levelNo = (e: Entity) => (e.placement?.type === "level" ? e.placement.level : 0);
-  return index.childrenOf(buildingId, "floor").sort((a, b) => levelNo(a) - levelNo(b));
+  return [...index.childrenOf(buildingId, "floor")].sort((a, b) => levelNo(a) - levelNo(b));
 }
 
 /** The level an entity is seen and edited on. */
@@ -72,7 +72,7 @@ export function crumbs(index: BlueprintIndex, level: Level): Crumb[] {
 export function levelEntities(index: BlueprintIndex, level: Level): Entity[] {
   if (level.kind === "site") {
     const site = siteOf(index);
-    return site ? index.childrenOf(site.id, "building") : [];
+    return site ? [...index.childrenOf(site.id, "building")] : [];
   }
   if (level.kind === "floor") return index.childrenOf(level.id).filter((e) => e.kind !== "floor");
   const direct = index.childrenOf(level.id);

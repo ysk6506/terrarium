@@ -33,7 +33,7 @@ function NameBox({ entity, b }: { readonly entity: Entity; readonly b: Builder }
 function Links({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
   const { index } = b.state;
   const kinds = builder
-    .linkKindsFrom(entity.kind)
+    .linkKindsFrom(entity.kind, entity)
     .filter((k) => k !== "member_of" && k !== "managed_by");
   if (kinds.length === 0) return null;
   return (

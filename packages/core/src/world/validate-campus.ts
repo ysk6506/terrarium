@@ -140,7 +140,7 @@ export function checkCoolingFit(index: BlueprintIndex, catalog: Catalog): Issue[
   return out;
 }
 
-function fitProblem(server: string, rack: string): string | undefined {
+export function fitProblem(server: string, rack: string): string | undefined {
   if (server === "immersion" && rack !== "immersion")
     return "액침 전용이라 액침 탱크에만 둘 수 있다";
   if (rack === "immersion" && server !== "immersion")

@@ -7,6 +7,7 @@ import type { Catalog } from "@terrarium/core/catalog";
 import type { SeededRng } from "@terrarium/core/kernel";
 import type { EquipmentSpec, PodSpec, RackSpec, RoomSpec } from "@terrarium/core/sources";
 import type { RackSpot } from "@terrarium/core/spatial";
+import { bulkProps } from "@terrarium/core/world";
 import type { HallPlan, PodPlan } from "./campus-plan";
 import { HALL_MODE_LABELS } from "./campus-plan";
 import { draftRack, sidesOf } from "./campus-rack";
@@ -227,6 +228,7 @@ export function emitHall(ctx: CampusCtx, hall: HallDraft, parts: HallParts): voi
         hint: { floorInfo: {}, unitSpan: 1 },
         modelId: rack.model,
         at,
+        ...(rack.light ? { props: bulkProps(rack.light) } : {}),
       });
       rackX.set(rack.id, at.x);
     }
@@ -259,6 +261,11 @@ export function emitHall(ctx: CampusCtx, hall: HallDraft, parts: HallParts): voi
 function wirePower(ctx: CampusCtx, hall: HallDraft, pod: PodDraft, rack: RackDraft): void {
   const block = blockId(hall, pod.block);
   const sides = sidesOf(ctx.spec.powerRedundancy);
+  if (rack.light) {
+    // A light rack has no PDUs of its own to stand in for: it takes both feeds itself.
+    for (const side of sides) ctx.asm.link("power", rack.id, `${block}-sw-${side}`);
+    return;
+  }
   rack.powered.forEach((device, i) => {
     for (const side of sides) {
       const list = rack.pdus[side];
@@ -271,6 +278,7 @@ function wirePower(ctx: CampusCtx, hall: HallDraft, pod: PodDraft, rack: RackDra
 
 /** Rack network: every device to the rack's top-of-rack switch, which goes up to the pod's spines. */
 function wireNetwork(ctx: CampusCtx, pod: PodDraft, rack: RackDraft): void {
+  if (rack.light) return;
   const tor = `${rack.id}-tor`;
   for (const device of rack.powered)
     if (device !== tor && !pod.spines.includes(device)) ctx.asm.link("network", device, tor);

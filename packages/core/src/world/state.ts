@@ -1,6 +1,7 @@
 /** Dynamic state of the world: JSON-serialisable so it can be snapshotted and sent between threads. */
 import type { Catalog, EquipmentModel } from "@terrarium/core/catalog";
 import type { EntityKind } from "./blueprint";
+import { bulkOf } from "./bulk";
 import type { Fault } from "./faults";
 import type { BlueprintIndex } from "./graph";
 
@@ -72,6 +73,10 @@ export interface RackState extends Base {
   inletC: number;
   outletC: number;
   powerW: number;
+  /** Whether a light rack is fed (always true for a rack that holds its devices itself). */
+  powered: boolean;
+  /** Mean CPU load of a light rack's servers, 0..1. */
+  util: number;
   /** Heat the liquid loop carries away, W (0 for an air-cooled rack). */
   liquidW: number;
   /** Coolant temperature at the rack, °C; 0 when the rack has no liquid loop. */
@@ -241,6 +246,8 @@ const FACTORIES: Partial<Record<EntityKind, Factory>> = {
     inletC: AMBIENT_C,
     outletC: AMBIENT_C + 10,
     powerW: 0,
+    powered: true,
+    util: 0,
     liquidW: 0,
     coolantC: 0,
     bathC: 0,
@@ -310,6 +317,7 @@ export function initialState(index: BlueprintIndex, catalog: Catalog): WorldStat
       state.cpuDemand = entity.props.cpuDemand;
     if (state.kind === "server" && typeof entity.props.cpuUtil === "number")
       state.cpuUtil = entity.props.cpuUtil;
+    if (state.kind === "rack") state.util = bulkOf(entity)?.util ?? 0;
     if (state.kind === "cooling_unit" && typeof entity.props.setpointC === "number")
       state.setpointC = entity.props.setpointC;
     entities[entity.id] = state;

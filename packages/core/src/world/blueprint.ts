@@ -160,6 +160,7 @@ export const LINK_RULES: Readonly<
       "server",
       "switch",
       "storage",
+      "rack",
       "pdu",
       "cooling_unit",
       "power_panel",

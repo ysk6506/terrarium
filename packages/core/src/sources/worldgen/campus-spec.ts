@@ -42,6 +42,12 @@ export interface CampusSpec {
   readonly podsPerHall: number;
   /** Share of each rack's units filled with servers (power permitting). */
   readonly fill: number;
+  /**
+   * Share of each hall's containments built server by server; the rest stand as light racks that
+   * count their servers (REQ-049). 1 builds everything in detail; every hall keeps at least one
+   * containment in detail so there is always something to act on.
+   */
+  readonly detail: number;
   /** Share of air-cooled servers that are GPU servers. */
   readonly gpuShare: number;
   readonly powerRedundancy: "N" | "2N";
@@ -56,6 +62,7 @@ export const DEFAULT_CAMPUS: Omit<CampusSpec, "site" | "seed"> = {
   hallsPerFloor: 2,
   podsPerHall: 6,
   fill: 0.5,
+  detail: 1,
   gpuShare: 0.1,
   powerRedundancy: "2N",
   vendors: "mixed",
@@ -63,7 +70,14 @@ export const DEFAULT_CAMPUS: Omit<CampusSpec, "site" | "seed"> = {
 
 /** The numbers a campus form asks for, with the limits the generator accepts. */
 export const CAMPUS_NUMBERS: ReadonlyArray<{
-  readonly key: "buildings" | "floors" | "hallsPerFloor" | "podsPerHall" | "fill" | "gpuShare";
+  readonly key:
+    | "buildings"
+    | "floors"
+    | "hallsPerFloor"
+    | "podsPerHall"
+    | "fill"
+    | "detail"
+    | "gpuShare";
   readonly label: string;
   readonly min: number;
   readonly max: number;
@@ -77,16 +91,19 @@ export const CAMPUS_NUMBERS: ReadonlyArray<{
     key: "podsPerHall",
     label: "홀당 컨테인먼트(보통)",
     min: 1,
-    max: 80,
+    max: 240,
     unit: "개",
     integer: true,
   },
   { key: "fill", label: "랙 채움 비율", min: 0.1, max: 0.9, unit: "비율", integer: false },
+  { key: "detail", label: "상세 모델링 비율", min: 0, max: 1, unit: "비율", integer: false },
   { key: "gpuShare", label: "GPU 서버 비율", min: 0, max: 0.5, unit: "비율", integer: false },
 ];
 
-/** Largest campus built; bigger worlds slow every run (see the capacity notes). */
-export const MAX_CAMPUS_RACKS = 3000;
+/** Most racks a campus has, light or not; the cost of a run grows with what the world holds (see the capacity notes). */
+export const MAX_CAMPUS_RACKS = 20_000;
+/** Most racks built server by server; every one of them brings its servers, switches and PDUs. */
+export const MAX_DETAILED_RACKS = 3000;
 
 const CHOICES = {
   profile: Object.keys(CAMPUS_PROFILE_LABELS),

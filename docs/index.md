@@ -70,6 +70,7 @@ last_verified: 2026-10-29
 - [0035 캠퍼스 세계: 용도별 방, 수랭 사슬, 전원 사슬, 제조사 다양성](design-docs/adr/0035-campus-world-model.md)
 - [0036 사업장은 개략 외곽선을 갖고 건물은 그 안에 선다](design-docs/adr/0036-site-outlines.md)
 - [0037 화면 디자인은 사용자가 고른 안으로만 바꾼다](design-docs/adr/0037-design-approval-gate.md)
+- [0038 묶음 랙: 서버를 개체로 만들지 않고 대수로 세는 랙](design-docs/adr/0038-light-racks.md)
 
 ## 계획과 부채
 

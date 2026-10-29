@@ -13,7 +13,12 @@ import { type CrahPlan, draftHall, emitHall, planCrah } from "./campus-hall";
 import type { HallContainment } from "./campus-plan";
 import { type BuildingPlan, type CampusPlan, type HallMode, planCampus } from "./campus-plan";
 import { emitPower } from "./campus-power";
-import { type CampusSpec, campusProblems, MAX_CAMPUS_RACKS } from "./campus-spec";
+import {
+  type CampusSpec,
+  campusProblems,
+  MAX_CAMPUS_RACKS,
+  MAX_DETAILED_RACKS,
+} from "./campus-spec";
 import { emitNetworkRoom, emitRoom, roomCooling } from "./campus-support";
 import type { CampusCtx, HallDraft } from "./campus-types";
 import { type SitePreset, sitePreset } from "./spec";
@@ -127,6 +132,10 @@ export function generateCampus(spec: CampusSpec, catalog: Catalog = new Catalog(
   if (plan.racks > MAX_CAMPUS_RACKS)
     throw new InvalidValueError(
       `세계를 만들 수 없다: 랙이 ${plan.racks}개다. 한 캠퍼스는 ${MAX_CAMPUS_RACKS}개까지 만들 수 있다`,
+    );
+  if (plan.detailedRacks > MAX_DETAILED_RACKS)
+    throw new InvalidValueError(
+      `세계를 만들 수 없다: 서버까지 만드는 랙이 ${plan.detailedRacks}개다. ${MAX_DETAILED_RACKS}개까지 만들 수 있으니 상세 모델링 비율을 낮춘다`,
     );
   const asm = new BlueprintAssembler(
     `${preset.code}-c${spec.seed}`,

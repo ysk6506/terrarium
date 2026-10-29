@@ -4,10 +4,12 @@
  */
 import {
   type Alarm,
+  bulkOf,
   type CoolingState,
   type Entity,
   type PanelState,
   type PduState,
+  type RackState,
   reportedInletC,
   type ServerState,
   type UpsState,
@@ -67,11 +69,25 @@ const SERVER_RULES: ReadonlyArray<Rule<ServerState>> = [
       : undefined,
 ];
 
+/** A server that is fed, on, cool (as its sensor says), with every PSU and fan running has nothing to report but load. */
+function plainlyHealthy(s: ServerState, sensedInletC: number): boolean {
+  return (
+    s.powered &&
+    s.adminOn &&
+    !s.throttled &&
+    sensedInletC <= INLET_WARNING_C &&
+    s.psuOk.every(Boolean) &&
+    s.fanRpm.every((rpm) => rpm > 0)
+  );
+}
+
 function serverAlarms(world: World, entity: Entity): Draft[] {
   const s = world.stateAs(entity.id, "server");
+  const sensedInletC = reportedInletC(world, entity.id);
+  if (plainlyHealthy(s, sensedInletC) && effectiveUtil(world, entity) < CPU_HIGH) return [];
   const model = world.catalog.getOf(entity.modelId ?? "", "server");
   // Monitoring sees the sensor reading, so a drifting sensor raises (false) inlet alarms.
-  const sensed: ServerState = { ...s, inletC: reportedInletC(world, entity.id) };
+  const sensed: ServerState = { ...s, inletC: sensedInletC };
   const util = effectiveUtil(world, entity);
   const busy: Hit | undefined =
     s.powered && s.adminOn && util >= CPU_HIGH
@@ -133,6 +149,25 @@ function temperatureHits(
   return value > warnAt ? [[code, "warning", `${label} ${value.toFixed(1)}°C`]] : [];
 }
 
+function rackHits(entity: Entity, s: RackState): Hit[] {
+  const hits = temperatureHits(
+    "rack_inlet_high",
+    s.inletC,
+    INLET_WARNING_C,
+    RACK_CRITICAL_C,
+    `${entity.name} 흡기`,
+  );
+  // A light rack has no servers of its own to report that they lost power, so the rack does.
+  const light = bulkOf(entity);
+  if (light && light.servers > 0 && !s.powered)
+    hits.push([
+      "rack_power_lost",
+      "critical",
+      `${entity.name} 전원 상실 (서버 ${light.servers}대)`,
+    ]);
+  return hits;
+}
+
 function facilityAlarms(world: World, entity: Entity): Draft[] {
   const s = world.stateOf(entity.id);
   let hits: Hit[] = [];
@@ -140,14 +175,7 @@ function facilityAlarms(world: World, entity: Entity): Draft[] {
   else if (s.kind === "pdu" || s.kind === "power_panel")
     hits = breakerHits(world, entity.id, s, entity.name);
   else if (s.kind === "ups") hits = upsHits(s, entity.name);
-  else if (s.kind === "rack")
-    hits = temperatureHits(
-      "rack_inlet_high",
-      s.inletC,
-      INLET_WARNING_C,
-      RACK_CRITICAL_C,
-      `${entity.name} 흡기`,
-    );
+  else if (s.kind === "rack") hits = rackHits(entity, s);
   else if (s.kind === "room")
     hits = temperatureHits(
       "room_temp_high",

@@ -14,6 +14,7 @@ import {
   BlueprintIndex,
   type Entity,
   type EntityKind,
+  isBulkRack,
   isRackMountedKind,
   LINK_RULES,
   type LinkKind,
@@ -50,9 +51,16 @@ export function candidates(
     .sort((a, b) => a.metres - b.metres || a.entity.id.localeCompare(b.entity.id));
 }
 
-/** The link kinds an entity can start. */
-export const linkKindsFrom = (kind: EntityKind): LinkKind[] =>
-  (Object.keys(LINK_RULES) as LinkKind[]).filter((k) => LINK_RULES[k].from.includes(kind));
+/**
+ * The link kinds an entity can start. A rack is fed through its devices' PDUs; only a light rack
+ * (which has no devices to carry the cable) takes power itself, so pass the entity to see that.
+ */
+export const linkKindsFrom = (kind: EntityKind, entity?: Entity): LinkKind[] =>
+  (Object.keys(LINK_RULES) as LinkKind[]).filter(
+    (k) =>
+      LINK_RULES[k].from.includes(kind) &&
+      !(kind === "rack" && k === "power" && !(entity && isBulkRack(entity))),
+  );
 
 const hasLink = (index: BlueprintIndex, from: string, kind: LinkKind) =>
   index.outgoing(from, kind).length > 0;
@@ -97,7 +105,9 @@ function near(index: BlueprintIndex, id: string, kind: EntityKind): Entity[] {
   const inRoom = room ? index.descendants(room.id).filter((e) => e.kind === kind) : [];
   if (inRoom.length > 0) return inRoom;
   const floor = index.enclosing(id, "floor");
-  return floor ? index.descendants(floor.id).filter((e) => e.kind === kind) : index.ofKind(kind);
+  return floor
+    ? index.descendants(floor.id).filter((e) => e.kind === kind)
+    : [...index.ofKind(kind)];
 }
 
 function wireRackInto(

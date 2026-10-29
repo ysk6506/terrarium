@@ -2,6 +2,7 @@
 import type { Catalog } from "@terrarium/core/catalog";
 import type { SeededRng } from "@terrarium/core/kernel";
 import type { BlueprintAssembler, DeviceSpec } from "@terrarium/core/sources";
+import type { BulkLoad } from "@terrarium/core/world";
 import type { HallPlan, PodKind, PodPlan } from "./campus-plan";
 import type { CampusSpec } from "./campus-spec";
 
@@ -30,6 +31,8 @@ export interface RackDraft {
   /** Devices that take power from the rack's PDUs. */
   readonly powered: string[];
   readonly pdus: { readonly a: string[]; readonly b: string[] };
+  /** Set for a light rack (REQ-049): what it stands for instead of devices. */
+  light?: BulkLoad;
   /** Expected load, W: electric, and the share the air and the liquid loop carry away. */
   loadW: number;
   airW: number;

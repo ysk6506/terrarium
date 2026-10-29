@@ -204,18 +204,41 @@ function addServers(
   }
 }
 
-/** Fill one rack of a pod. The first rack of a pod's first row also holds the pod's spine pair. */
-export function draftRack(
-  ctx: CampusCtx,
-  rng: SeededRng,
-  pod: PodDraft,
-  slot: RackSlot,
-): RackDraft {
-  const model = ctx.catalog.getOf(pod.plan.rackModel, "rack");
-  const rack: RackDraft = {
+/**
+ * A light rack (REQ-049): one server model, counted rather than built. It follows the same limits as a
+ * rack built in detail (units, and the peak a pair of PDUs would carry), and gives the same expected
+ * heat, so cooling and power are sized alike whichever way a pod is built.
+ */
+function draftLightRack(ctx: CampusCtx, rng: SeededRng, pod: PodDraft, slot: RackSlot): RackDraft {
+  const plan = pod.plan;
+  const rack = emptyRack(ctx, pod, slot);
+  const model = ctx.catalog.getOf(plan.rackModel, "rack");
+  const switchW = ctx.catalog.getOf(plan.family.tor, "switch").powerW;
+  const overheadW = switchW + OVERHEAD_W / 2;
+  const peakW = power(ctx, plan, model.maxKw).peakW;
+  const serverId = rng.pick(serverPool(plan, rng, ctx.spec.gpuShare));
+  const server = ctx.catalog.getOf(serverId, "server");
+  const byUnits = Math.floor(((model.uHeight - 1) * ctx.spec.fill) / server.uHeight);
+  const byPower = Math.floor(peakW / server.maxPowerW);
+  const servers = Math.max(0, Math.min(byUnits, byPower));
+  const heavy = plan.kind !== "air";
+  const util = round2(heavy ? rng.uniform(0.2, 0.5) : rng.uniform(0.1, 0.3));
+  rack.light = { servers, modelId: serverId, util, overheadW };
+  rack.loadW += overheadW;
+  rack.airW += overheadW;
+  for (let n = 0; n < servers; n++) addLoad(rack, server);
+  if (rack.kind === "rdhx") {
+    rack.liquidW = RDHX_SHARE * rack.loadW;
+    rack.airW = rack.loadW - rack.liquidW;
+  }
+  return rack;
+}
+
+function emptyRack(ctx: CampusCtx, pod: PodDraft, slot: RackSlot): RackDraft {
+  return {
     id: slot.id,
     name: slot.name,
-    model: model.id,
+    model: ctx.catalog.getOf(pod.plan.rackModel, "rack").id,
     kind: pod.plan.kind,
     row: slot.row,
     col: slot.col,
@@ -226,14 +249,29 @@ export function draftRack(
     airW: 0,
     liquidW: 0,
   };
-  const power = powerPlan(ctx.catalog, pod.plan, model.maxKw);
-  addPdus(rack, { ...power, redundancy: ctx.spec.powerRedundancy });
+}
+
+const power = (ctx: CampusCtx, plan: PodPlan, rackKw: number) =>
+  powerPlan(ctx.catalog, plan, rackKw);
+
+/** Fill one rack of a pod. The first rack of a pod's first row also holds the pod's spine pair. */
+export function draftRack(
+  ctx: CampusCtx,
+  rng: SeededRng,
+  pod: PodDraft,
+  slot: RackSlot,
+): RackDraft {
+  if (pod.plan.light) return draftLightRack(ctx, rng, pod, slot);
+  const model = ctx.catalog.getOf(pod.plan.rackModel, "rack");
+  const rack = emptyRack(ctx, pod, slot);
+  const plan = power(ctx, pod.plan, model.maxKw);
+  addPdus(rack, { ...plan, redundancy: ctx.spec.powerRedundancy });
   const cursor: Cursor = { bottom: 1, top: model.uHeight };
   const first = slot.row === 0 && slot.col === 0;
   addSwitches(ctx, rack, pod, cursor, first);
   if (slot.row === 1 && slot.col === 0 && pod.plan.kind === "air")
     addStorage(ctx, rack, pod, cursor);
-  addServers(ctx, rng, rack, { pod, slot, cursor, peakW: power.peakW });
+  addServers(ctx, rng, rack, { pod, slot, cursor, peakW: plan.peakW });
   if (rack.kind === "rdhx") {
     rack.liquidW = RDHX_SHARE * rack.loadW;
     rack.airW = rack.loadW - rack.liquidW;
