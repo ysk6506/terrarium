@@ -7,7 +7,7 @@
     "node": ">=22.12"
   },
   "scripts": {
-    "dev": "pnpm --filter @terrarium/server dev & pnpm --filter @terrarium/web dev",
+    "dev": "pnpm --parallel --filter @terrarium/server --filter @terrarium/web dev",
     "build": "pnpm --filter @terrarium/web build",
     "start": "pnpm --filter @terrarium/server start",
     "lint": "biome check .",
