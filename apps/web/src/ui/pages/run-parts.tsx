@@ -2,7 +2,7 @@
  * The parts of a run's page (REQ-037): what the agent answered against the truth, the scoring sheet,
  * each tool call, and what the harness itself recorded (spans, logs) when ClickStack has it.
  */
-import { type Span, spanKind, type Telemetry, usageOf } from "@terrarium/core/analysis";
+import { costOf, type Span, spanKind, type Telemetry, usageOf } from "@terrarium/core/analysis";
 import type { RunView } from "@terrarium/core/contract";
 import type { ScoreItem } from "@terrarium/core/oracle";
 import { formatDuration, simTime } from "../../logic";
@@ -184,20 +184,48 @@ function SpanRow({ span, origin }: { readonly span: Span; readonly origin: numbe
   );
 }
 
-export function TelemetryPanel({ telemetry }: { readonly telemetry: Telemetry }) {
-  if (telemetry.spans.length === 0 && telemetry.logs.length === 0)
-    return <Note>하네스가 이 실행에 대해 보낸 기록이 없어요.</Note>;
+/** Calls, time in the model, answer time per call, tokens, models and cost, in one sentence each. */
+function UsageLines({ telemetry }: { readonly telemetry: Telemetry }) {
   const usage = usageOf(telemetry);
+  const cost = costOf(telemetry);
+  const each = usage.llmCalls > 0 ? usage.llmSeconds / usage.llmCalls : 0;
+  return (
+    <div className="stack" style={{ gap: 4 }}>
+      <p className="small" style={{ margin: 0 }}>
+        모델 호출 {usage.llmCalls}회, 모델에 쓴 시간 {usage.llmSeconds.toFixed(1)}초
+        {usage.llmCalls > 0 && `(한 번에 ${each.toFixed(1)}초)`}.
+      </p>
+      <p className="small" style={{ margin: 0 }}>
+        토큰 {(usage.inputTokens + usage.outputTokens).toLocaleString("ko-KR")}개
+        {usage.models.length > 0 && `, 모델 ${usage.models.join(", ")}`}
+        {cost > 0 && `, 비용 ${cost.toFixed(4)} 달러`}.
+        {usage.errors > 0 && ` 오류 ${usage.errors}건.`}
+      </p>
+    </div>
+  );
+}
+
+export function TelemetryPanel({
+  telemetry,
+  source,
+}: {
+  readonly telemetry: Telemetry;
+  /** The tool the records were read from. */
+  readonly source?: string;
+}) {
+  if (telemetry.spans.length === 0 && telemetry.logs.length === 0)
+    return (
+      <Note>
+        {source ? `${source}에서` : "트레이스를 쌓는 곳에서"} 이 실행의 기록을 찾지 못했어요.
+        하네스가 run_id를 남기는지 봐 주세요.
+      </Note>
+    );
   const origin = Math.min(...telemetry.spans.map((s) => s.start));
   const errorLogs = telemetry.logs.filter((l) => l.level === "error" || l.level === "warn");
   return (
     <div className="stack" style={{ gap: 20 }}>
-      <p className="small">
-        모델 호출 {usage.llmCalls}회, 모델에 쓴 시간 {usage.llmSeconds.toFixed(1)}초, 토큰{" "}
-        {(usage.inputTokens + usage.outputTokens).toLocaleString("ko-KR")}
-        {usage.models.length > 0 && `, 모델 ${usage.models.join(", ")}`}.
-        {usage.errors > 0 && ` 오류 ${usage.errors}건.`}
-      </p>
+      {source && <p className="small muted">{source}에서 읽었어요.</p>}
+      <UsageLines telemetry={telemetry} />
       <div className="table-wrap">
         <table className="table">
           <thead>

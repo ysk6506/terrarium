@@ -2,8 +2,12 @@
  * Deciding what a campus holds before anything is built: which halls each building has, how big each
  * is, how it is cooled, and which kinds of pod fill it. Pure: the same spec gives the same plan.
  */
+import type { Catalog } from "@terrarium/core/catalog";
 import type { SeededRng } from "@terrarium/core/kernel";
+import type { Rect } from "@terrarium/core/spatial";
 import { DLC_RACKS, FAMILIES, type Family, RDHX_RACK, TANKS } from "./campus-families";
+import { fitPods } from "./campus-fit";
+import { planLockedCentre } from "./campus-locked-plan";
 import type { CampusProfile, CampusSpec } from "./campus-spec";
 import type { SiteSlot } from "./sites";
 
@@ -50,6 +54,8 @@ export interface HallPlan {
   /** Width over depth the hall's pods are arranged to: long and thin halls and squarish ones both exist. */
   readonly aspect: number;
   readonly pods: readonly PodPlan[];
+  /** A hall on a floor plan (REQ-076): the room it stands in, and the columns of pods its width takes. */
+  readonly room?: { readonly rect: Rect; readonly columns: number };
 }
 
 export interface BuildingPlan {
@@ -67,6 +73,11 @@ export interface BuildingPlan {
   readonly topBay?: { readonly w: number; readonly d: number };
   /** Where a map shows this building standing on the site, when it does. */
   readonly slot?: SiteSlot;
+  /** A building with the size of a real one (REQ-076): its fixed floor, and where every room stands on it. */
+  readonly fixed?: {
+    readonly size: { readonly w: number; readonly d: number };
+    readonly rooms: Readonly<Record<string, Rect>>;
+  };
 }
 
 /** Where a site's buildings stand on its map, in the order the campus fills them. */
@@ -90,6 +101,8 @@ const SIZE_FACTORS = [0.5, 0.75, 1, 1, 1.5, 2];
 const FAB_SIZE_FACTORS = [0.4, 0.55, 0.7, 0.85];
 /** Racks in one row of such a room's containment: ten to twenty racks to a containment. */
 const ROOM_ROW_LENGTHS = [5, 6, 7, 8, 9, 10];
+/** Racks in one row of a pod in a hall of a real building: long rows, as big halls have, waste the least floor. */
+const LOCKED_ROW_LENGTHS = [12];
 /** The floor a fab keeps its server rooms on differs from fab to fab. */
 const FAB_ROOM_FLOORS = [2, 3, 4];
 /** Floors above the ground of a DSR tower (the 2014 article gives 27). */
@@ -221,14 +234,29 @@ function podPlan(rng: SeededRng, c: PodShapeChoice): PodPlan {
 
 type HallBase = Omit<HallPlan, "pods" | "containment" | "aspect">;
 
+/** A hall that is given its room: the catalogue to measure pods with, and the room's rectangle. */
+interface HallRoom {
+  readonly catalog: Catalog;
+  readonly rect: Rect;
+}
+
+/** Fewest square metres one pod can take, which bounds how many pods a room may be asked to hold. */
+const SMALLEST_POD_M2 = 20;
+
 function planHall(
   spec: CampusSpec,
   rng: SeededRng,
   hall: HallBase,
-  factors: readonly number[] = SIZE_FACTORS,
-  rows: readonly number[] = ROW_LENGTHS,
+  shape: { factors?: readonly number[]; rows?: readonly number[]; room?: HallRoom } = {},
 ): HallPlan {
-  const count = Math.max(1, Math.round(spec.podsPerHall * rng.pick(factors)));
+  const { factors = SIZE_FACTORS, rows = ROW_LENGTHS, room } = shape;
+  // A hall in a room is asked for the typical number of pods and keeps as many as its room takes (a smaller ask gives a smaller hall).
+  const count = room
+    ? Math.min(
+        Math.ceil((room.rect.w * room.rect.d) / SMALLEST_POD_M2),
+        Math.max(1, spec.podsPerHall),
+      )
+    : Math.max(1, Math.round(spec.podsPerHall * rng.pick(factors)));
   const single = rng.pick(FAMILIES);
   const containment = pickWeighted(rng, CONTAINMENT_MIX[hall.mode]);
   const airRow = rng.pick(rows);
@@ -241,9 +269,18 @@ function planHall(
       light: isLightPod(i, spec.detail),
     }),
   );
+  // A hall in a room keeps the pods the room takes.
+  const fitted = room ? fitPods(room.catalog, pods, room.rect) : undefined;
+  const kept = fitted ? pods.slice(0, fitted.pods) : pods;
   // A hall counts as having no containment when none of its pods ended up sealed (tanks never are).
-  const sealed = pods.some((p) => p.aisle !== "open");
-  return { ...hall, containment: sealed ? containment : "none", aspect: rng.pick(ASPECTS), pods };
+  const sealed = kept.some((p) => p.aisle !== "open");
+  return {
+    ...hall,
+    containment: sealed ? containment : "none",
+    aspect: rng.pick(ASPECTS),
+    pods: kept,
+    ...(room && fitted ? { room: { rect: room.rect, columns: fitted.columns } } : {}),
+  };
 }
 
 /** The cooling of a fab's server rooms: older rooms are mostly air, one may carry liquid. */
@@ -264,15 +301,35 @@ function count(tally: Tally, plan: HallPlan): void {
   tally.detailedRacks += plan.pods.reduce((n, p) => n + (p.light ? 0 : 2 * p.perRow), 0);
 }
 
+/** What planning a data-centre building needs besides the spec: the running tally, the map's place and the catalogue. */
+interface CentreTools {
+  readonly tally: Tally;
+  readonly slot?: SiteSlot;
+  readonly catalog?: Catalog;
+}
+
 function planDataCentre(
   spec: CampusSpec,
   code: string,
   rng: SeededRng,
   b: number,
-  tally: Tally,
-  slot?: SiteSlot,
-) {
+  tools: CentreTools,
+): BuildingPlan {
+  const { tally, slot, catalog } = tools;
   const id = `${code}-dc${b}`;
+  if (slot && catalog) {
+    const centre = planLockedCentre({
+      spec,
+      id,
+      index: b,
+      size: { w: slot.w, d: slot.d },
+      rng,
+      makeHall: (hallRng, base, rect) =>
+        planHall(spec, hallRng, base, { room: { catalog, rect }, rows: LOCKED_ROW_LENGTHS }),
+    });
+    for (const hall of centre.halls) count(tally, hall);
+    return { ...centre, slot };
+  }
   const halls: HallPlan[] = [];
   for (let level = 2; level <= spec.floors + 1; level++)
     for (let h = 0; h < spec.hallsPerFloor; h++) {
@@ -291,7 +348,7 @@ function planDataCentre(
       halls.push(plan);
     }
   const levels = Array.from({ length: spec.floors }, (_, i) => i + 2);
-  return { index: b, id, kind: "dc" as const, halls, levels, ...(slot ? { slot } : {}) };
+  return { index: b, id, kind: "dc", halls, levels, ...(slot ? { slot } : {}) };
 }
 
 /** A fab: server rooms two to a floor, a cleanroom bay on every floor above the ground, one more floor of bay on top. */
@@ -321,8 +378,7 @@ function planFab(
         letter,
         mode: fabHallMode(spec.profile, h),
       },
-      FAB_SIZE_FACTORS,
-      ROOM_ROW_LENGTHS,
+      { factors: FAB_SIZE_FACTORS, rows: ROOM_ROW_LENGTHS },
     );
     count(tally, plan);
     halls.push(plan);
@@ -367,8 +423,7 @@ function planLab(
         letter,
         mode: fabHallMode(spec.profile, h),
       },
-      FAB_SIZE_FACTORS,
-      ROOM_ROW_LENGTHS,
+      { factors: FAB_SIZE_FACTORS, rows: ROOM_ROW_LENGTHS },
     );
     count(tally, plan);
     return plan;
@@ -402,11 +457,20 @@ export function planCampus(
   code: string,
   rng: SeededRng,
   slots: CampusSlots = { dcs: [], fabs: [] },
+  catalog?: Catalog,
 ): CampusPlan {
   const tally: Tally = { racks: 0, detailedRacks: 0 };
   const buildings: BuildingPlan[] = [];
-  for (let b = 1; b <= spec.buildings; b++)
-    buildings.push(planDataCentre(spec, code, rng, b, tally, slots.dcs[b - 1]));
+  for (let b = 1; b <= spec.buildings; b++) {
+    const slot = slots.dcs[b - 1];
+    buildings.push(
+      planDataCentre(spec, code, rng, b, {
+        tally,
+        ...(slot ? { slot } : {}),
+        ...(catalog ? { catalog } : {}),
+      }),
+    );
+  }
   for (let f = 1; f <= spec.fabs; f++)
     buildings.push(planFab(spec, code, rng, f, tally, slots.fabs[f - 1]));
   for (let l = 1; l <= spec.labs; l++)

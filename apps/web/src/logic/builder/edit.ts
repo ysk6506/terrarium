@@ -28,11 +28,14 @@ import {
   type RoomPurpose,
   roomRects,
 } from "@terrarium/core/world";
+import { EditError } from "./edit-error";
+import { assertFloorRoom } from "./floor-notes";
 import { GRID, TILE_M } from "./grid";
 import { floorsOf, type Level, levelArea, levelEntities, levelParent, levelShape } from "./levels";
+import { assertPower } from "./power";
 import { roomFull, WIDEN_ROOM } from "./room-space";
 
-export class EditError extends Error {}
+export { EditError };
 
 export interface Edit {
   readonly blueprint: Blueprint;
@@ -202,6 +205,8 @@ export const ROOM_WORDS: Readonly<Record<RoomPurpose, string>> = {
   battery: "배터리실",
   noc: "관제실",
   cleanroom: "클린룸",
+  storage: "창고",
+  lobby: "로비·하역장",
 };
 
 export function addRoom(
@@ -234,7 +239,9 @@ export function addRoom(
     placement: { type: "area", ...r },
     props: purpose === "data_hall" ? {} : { purpose },
   };
-  return { blueprint: withEntities(bp, [room]), select: [id] };
+  const next = withEntities(bp, [room]);
+  assertFloorRoom(bp, next, catalog, floorId);
+  return { blueprint: next, select: [id] };
 }
 
 /** A cold or hot aisle around the racks under it; those racks move into it. */
@@ -457,5 +464,7 @@ export function placeEquipment(
     placement: { type: "spot", ...spot },
     props: {},
   };
-  return { blueprint: withEntities(bp, [entity]), select: [id] };
+  const next = withEntities(bp, [entity]);
+  assertPower(bp, next, catalog);
+  return { blueprint: next, select: [id] };
 }

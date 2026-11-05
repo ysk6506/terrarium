@@ -3,11 +3,10 @@
  * server sees only ports (ExperimentStore, HarnessPort, RealitySource, TelemetryPort).
  */
 import path from "node:path";
-import type { TelemetryPort } from "@terrarium/core/analysis";
+import type { TelemetryAdapter, TelemetryPort } from "@terrarium/core/analysis";
 import type { SourceView } from "@terrarium/core/contract";
 import type { ExperimentStore, HarnessPort } from "@terrarium/core/experiments";
 import { MemorySource, type RealitySource, sampleGraph } from "@terrarium/core/sources/realimport";
-import { ClickStackTelemetry } from "./clickstack";
 import type { Config, HarnessConfig } from "./config";
 import { secret } from "./config";
 import { type ConnectContext, connectorOf } from "./connectors";
@@ -15,6 +14,7 @@ import { falkorSource } from "./falkordb";
 import type { FetchLike } from "./fetch";
 import { SecretBox } from "./secret-box";
 import { SqliteStore } from "./sqlite-store";
+import { ClickStackAdapter, ClickStackTelemetry } from "./telemetry";
 
 export const SAMPLE_SOURCE_ID = "sample";
 
@@ -38,6 +38,8 @@ export interface Adapters {
   readonly retention: { readonly days: number; readonly warnDays: number };
   readonly sources: ReadonlyMap<string, SourceEntry>;
   readonly telemetry?: { readonly port: TelemetryPort; readonly name: string };
+  /** The same server default as an adapter, which a connection that says "default" uses (ADR-0085). */
+  readonly telemetryDefault?: TelemetryAdapter;
   close(): Promise<void>;
 }
 
@@ -101,6 +103,9 @@ export function buildAdapters(config: Config, options: AdapterOptions = {}): Ada
   const telemetry = t
     ? { port: new ClickStackTelemetry(t, secret(env, t.passwordEnv), fetchImpl), name: t.name }
     : undefined;
+  const telemetryDefault = t
+    ? new ClickStackAdapter(t, secret(env, t.passwordEnv), fetchImpl)
+    : undefined;
   const ownStore = options.store
     ? undefined
     : new SqliteStore(path.join(config.dataDir, "terrarium.db"));
@@ -114,6 +119,7 @@ export function buildAdapters(config: Config, options: AdapterOptions = {}): Ada
     ...(config.connections.allowedHosts ? { allowedHosts: config.connections.allowedHosts } : {}),
     sources,
     ...(telemetry ? { telemetry } : {}),
+    ...(telemetryDefault ? { telemetryDefault } : {}),
     async close() {
       await Promise.all(closers.map((c) => c().catch(() => undefined)));
       ownStore?.close();

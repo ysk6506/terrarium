@@ -5,13 +5,14 @@
 
 import { withJosa } from "@terrarium/core/kernel";
 import type { Entity, LinkKind } from "@terrarium/core/world";
-import { KIND_LABELS, LINK_LABELS, MODELLED_KINDS } from "@terrarium/core/world";
+import { isSizeLocked, KIND_LABELS, LINK_LABELS, MODELLED_KINDS } from "@terrarium/core/world";
 import { useEffect, useState } from "react";
 import { builder, celsius, count, watts, won } from "../../logic";
 import { Button, Figures, Note, NumberField, Segmented, SelectField } from "../kit";
 import { FillPanel } from "./FillPanel";
 import { LandList, ParcelPanel, PurposeField } from "./LandPanel";
 import { RackPanel } from "./RackPanel";
+import { PowerLine, RealSizeNote, SourcesPanel } from "./RealSizePanel";
 import { SizePanel } from "./SizePanel";
 import type { Builder } from "./useBuilder";
 import { catalog } from "./useBuilder";
@@ -237,9 +238,13 @@ function EntityPanel({ entity, b }: { readonly entity: Entity; readonly b: Build
         <EntityActions entity={entity} b={b} />
       </div>
       {entity.kind === "rack" && <RackPanel rack={entity} b={b} />}
+      {(entity.kind === "room" || entity.kind === "building") && (
+        <RealSizeNote entity={entity} b={b} />
+      )}
       {builder.handlesFit(b.state.index, b.state.level, entity) && (
         <SizePanel entity={entity} b={b} />
       )}
+      {entity.kind === "room" && <SourcesPanel room={entity} b={b} />}
       {entity.kind === "parcel" && <ParcelPanel entity={entity} b={b} />}
       <Links entity={entity} b={b} />
       {entity.kind !== "parcel" && <RemoveBlock entity={entity} b={b} />}
@@ -309,13 +314,17 @@ function Floors({ b, buildingId }: { readonly b: Builder; readonly buildingId: s
             {f.name}
           </Button>
         ))}
-        <Button
-          size="small"
-          icon="plus"
-          onClick={() => b.apply((bp) => builder.addFloor(bp, buildingId), "층을 올렸어요")}
-        >
-          층 더하기
-        </Button>
+        {isSizeLocked(building) ? (
+          <span className="small muted">실제 층수예요</span>
+        ) : (
+          <Button
+            size="small"
+            icon="plus"
+            onClick={() => b.apply((bp) => builder.addFloor(bp, buildingId), "층을 올렸어요")}
+          >
+            층 더하기
+          </Button>
+        )}
       </div>
     </div>
   );
@@ -326,6 +335,7 @@ function LevelTotals({ b }: { readonly b: Builder }) {
   const stats = builder.levelStats(index, catalog, level);
   return (
     <>
+      {level.kind === "site" && <PowerLine b={b} />}
       <Figures
         items={[
           { label: "들인 돈", value: won(stats.costM) },
@@ -373,8 +383,12 @@ function LevelPanel({ b }: { readonly b: Builder }) {
         )}
         {building && <Floors b={b} buildingId={building.id} />}
       </div>
+      {level.kind !== "site" && <RealSizeNote b={b} />}
       {level.kind === "room" && <SizePanel entity={index.entity(level.id)} b={b} />}
-      {building && <SizePanel entity={building} b={b} />}
+      {building && builder.handlesFit(index, level, building) && (
+        <SizePanel entity={building} b={b} />
+      )}
+      {level.kind === "room" && <SourcesPanel room={index.entity(level.id)} b={b} />}
       {level.kind === "room" && <FillPanel roomId={level.id} b={b} />}
       {level.kind === "site" && <LandList b={b} />}
       <IssuesBlock b={b} />

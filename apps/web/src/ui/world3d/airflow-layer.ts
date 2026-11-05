@@ -3,20 +3,20 @@
  * a soft floor temperature, a tinted front door on every rack, the glowing tiles of the cold aisles, and
  * the air as puffs and arrows that move along their paths — faster and stronger where more air moves.
  * The numbers come from the pure `hallAir.airflowOf`; this file only draws them. In "still" (people who
- * asked their system for less motion, or a machine that cannot keep up) only the arrows are drawn, standing.
+ * asked their system for less motion) only the arrows are drawn, standing. A machine that cannot keep up gets
+ * fewer puffs and arrows (half for each level of strain, never none) and moves them less often, but they keep moving.
  * Nothing here needs a transmission material: they would hide the puffs.
  */
 import * as THREE from "three";
-import type { world3d } from "../../logic";
+import { world3d } from "../../logic";
 import { AisleTiles, Doors, HeatPlane, PickRing } from "./airflow-floor";
 import { AirMotion } from "./airflow-motion";
 import type { Engine } from "./engine";
-import { Strain } from "./strain";
 
 type Airflow = world3d.Airflow;
 type AirView = world3d.AirView;
 
-/** live: the air moves. still: only the arrows, standing. off: no air at all (the floor and the doors stay). */
+/** live: the air moves (fewer of it as the machine struggles). still: only the arrows, standing. off: no air at all (the floor and the doors stay). */
 export type AirMode = "live" | "still" | "off";
 
 export interface AirStats {
@@ -40,7 +40,7 @@ export interface AirflowLayer {
   dispose(): void;
 }
 
-/** Seconds between two moves of the air: about thirty a second. */
+/** Seconds between two moves of the air at ease: about thirty a second. */
 const STEP_S = 1 / 30;
 
 /** The pieces of the layer, already in one group. */
@@ -61,10 +61,8 @@ export function buildAirflowLayer(
   engine: Engine,
   scene: world3d.RoomScene,
   first: Airflow,
-  onSlow: () => void,
 ): AirflowLayer {
   const { group, plane, tiles, doors, ring, motion } = buildParts(scene, first);
-  const strain = new Strain();
   const stats = { puffs: 0, arrows: 0, updateMs: 0 };
   let mode: AirMode = "live";
   let clock = 0;
@@ -73,6 +71,9 @@ export function buildAirflowLayer(
 
   const draw = () => {
     const started = performance.now();
+    motion.setLevel(engine.strain.level);
+    stats.puffs = motion.puffs;
+    stats.arrows = motion.arrows;
     motion.group.visible = mode !== "off";
     motion.draw(clock, mode === "live", mode === "live");
     stats.updateMs = stats.updateMs * 0.9 + (performance.now() - started) * 0.1;
@@ -83,13 +84,7 @@ export function buildAirflowLayer(
     clock = time;
     if (mode !== "live") return;
     since += dt;
-    if (strain.frame(dt)) {
-      mode = "still";
-      draw();
-      onSlow();
-      return;
-    }
-    if (since < STEP_S) return;
+    if (since < world3d.stepAt(STEP_S, engine.strain.level)) return;
     since = 0;
     draw();
   });
@@ -103,13 +98,10 @@ export function buildAirflowLayer(
       doors.set(view, next.racks);
       tiles.set(reach);
       motion.set(next.paths, view, engine.topDown);
-      stats.puffs = motion.puffs;
-      stats.arrows = motion.arrows;
       draw();
     },
     setMode: (next) => {
       mode = next;
-      strain.reset();
       draw();
     },
     setTopDown: (on) => {

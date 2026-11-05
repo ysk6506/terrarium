@@ -106,11 +106,18 @@ export {
 } from "./palette";
 export { type Bounds, type Box, boundsOfBox, centreOf, inflate, type Pt } from "./plan";
 export {
+  type GraphicsChoice,
   JUDGE_FRAMES,
   lighter,
+  MIN_PIXEL_RATIO,
+  type Planned,
+  pixelRatioFor,
+  planQuality,
+  QUALITY_EVENT,
   QUALITY_HIGH,
   QUALITY_LOW,
   QUALITY_MIN,
+  QUALITY_NOTICE,
   type Quality,
   QualityGovernor,
   RECHECK_FRAMES,
@@ -174,3 +181,19 @@ export {
   type YardKind,
 } from "./site";
 export { type Spot, spotOf } from "./spot";
+export {
+  DROP_AFTER_S,
+  keptAmong,
+  type Level,
+  MAX_LEVEL,
+  PAYBACK,
+  peopleKept,
+  RISE_AFTER_MAX_S,
+  RISE_AFTER_S,
+  SLOW_FRAME_S,
+  SPIN_STOPS_AT,
+  Strain,
+  shownAt,
+  spinsAt,
+  stepAt,
+} from "./strain";

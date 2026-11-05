@@ -4,6 +4,8 @@
  * (gen_ai.* attributes); anything else is still shown, just not counted as model or tool work.
  */
 
+import type { TelemetryAttachment } from "@terrarium/core/experiments";
+
 export type AttributeValue = string | number | boolean;
 
 export interface Span {
@@ -45,6 +47,28 @@ export interface TelemetryPort {
   trace(traceId: string): Promise<Telemetry>;
 }
 
+/**
+ * Where one harness's traces pile up, and how to find a run's again (ADR-0085). Each tool has its own
+ * key to tie spans to a run, so the adapter decides: what to ask the harness to carry, and how to read.
+ */
+export interface TelemetryAdapter {
+  /** "clickstack", "langfuse". */
+  readonly kind: string;
+  /** Shown to people. */
+  readonly name: string;
+  /** What the harness must carry for this run. Pure: nothing is sent anywhere. */
+  attach(run: { readonly runId: string }): TelemetryAttachment;
+  /**
+   * Spans, logs and tokens recorded for the run; empty when nothing was found. `hint.traceId` is the trace
+   * id the harness reported back, which wins over the one we asked for.
+   */
+  fetch(runId: string, hint?: { readonly traceId?: string }): Promise<Telemetry>;
+}
+
+/** The trace id in a W3C traceparent ("00-<trace>-<span>-01"). */
+export const traceIdOf = (traceparent: string | undefined): string | undefined =>
+  traceparent?.split("-")[1];
+
 export type SpanKind = "llm" | "tool" | "agent" | "other";
 
 /** What a span was: a model call, a tool call, the agent's own step, or something else. */
@@ -63,6 +87,13 @@ export function spanKind(span: Span): SpanKind {
   return "other";
 }
 
+const num = (v: AttributeValue | undefined) => (typeof v === "number" ? v : Number(v ?? 0) || 0);
+
+/** Dollars the harness's own model calls cost, when the trace says (`gen_ai.usage.cost`). */
+export function costOf(t: Telemetry): number {
+  return t.spans.reduce((sum, s) => sum + num(s.attributes["gen_ai.usage.cost"]), 0);
+}
+
 export interface ModelUsage {
   readonly llmCalls: number;
   readonly llmSeconds: number;
@@ -73,8 +104,6 @@ export interface ModelUsage {
   readonly wallSeconds: number;
   readonly errorLogs: number;
 }
-
-const num = (v: AttributeValue | undefined) => (typeof v === "number" ? v : Number(v ?? 0) || 0);
 
 /** Totals over a trace: model calls, time in the model, tokens, models used, errors. */
 export function usageOf(t: Telemetry): ModelUsage {

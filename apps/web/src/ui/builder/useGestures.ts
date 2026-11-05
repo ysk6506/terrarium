@@ -108,7 +108,8 @@ function commit(b: Builder, p: builder.Plan | undefined): void {
   if (!p) return;
   if (p.edit) {
     const edit = p.edit;
-    b.apply(() => edit);
+    // A drag that stopped at the limit of the floor is applied as far as it went, and says why it went no further.
+    if (b.apply(() => edit) && p.stopped) b.refuse(p.stopped.message, p.stopped.way);
   } else if (p.problem) b.refuse(p.problem, p.way);
 }
 

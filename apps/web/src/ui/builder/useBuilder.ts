@@ -40,6 +40,14 @@ export interface BuilderState {
   readonly piece?: number;
   /** The last edit that was refused, with the way on when there is one (a bigger building, more land). */
   readonly refusal?: Refused;
+  /** What the last resize of a room gained, in racks that fit more (REQ-076); gone with the next edit. */
+  readonly gain?: Gain;
+}
+
+/** "랙 N대가 더 들어가요" for the room that was made bigger. */
+export interface Gain {
+  readonly id: string;
+  readonly text: string;
 }
 
 /** An edit that was not accepted: what to tell, and where to go from there. */
@@ -166,6 +174,7 @@ function useEdits(initial: Blueprint, clearPreview: () => void) {
   const [blueprint, setBlueprint] = useState(initial);
   const [selected, setSelected] = useState<readonly string[]>([]);
   const [refusal, setRefusal] = useState<Refused>();
+  const [gain, setGain] = useState<Gain>();
   const refuse = useCallback(
     (message: string, way?: Refused["way"]) => {
       setRefusal({ message, ...(way ? { way } : {}) });
@@ -181,6 +190,7 @@ function useEdits(initial: Blueprint, clearPreview: () => void) {
         setBlueprint(edit.blueprint);
         setSelected(edit.select);
         setRefusal(undefined);
+        setGain(undefined);
         clearPreview();
         if (done) toast(done);
         return true;
@@ -201,6 +211,8 @@ function useEdits(initial: Blueprint, clearPreview: () => void) {
     selected,
     setSelected,
     refusal,
+    gain,
+    setGain,
     refuse,
     clearRefusal: () => setRefusal(undefined),
     apply,
@@ -259,6 +271,7 @@ export function useBuilder(initial: WorldRecord) {
     mine: saving.world.owner === (me ?? "anonymous"),
     ...(piece !== undefined ? { piece } : {}),
     ...(edits.refusal ? { refusal: edits.refusal } : {}),
+    ...(edits.gain ? { gain: edits.gain } : {}),
   };
   const { apply, undo, redo } = edits;
   const { save, saveCopy, renameWorld } = saving;
@@ -271,6 +284,7 @@ export function useBuilder(initial: WorldRecord) {
     setSelected,
     setPiece,
     refuse: edits.refuse,
+    setGain: edits.setGain,
     setTool,
     setRotation,
     runPreview,

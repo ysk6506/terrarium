@@ -6,7 +6,7 @@ import type { ScenarioRecord, WorldSummary } from "@terrarium/core/experiments";
 import { MAX_SEEDS } from "@terrarium/core/experiments";
 import { BUILTIN_PROFILES } from "@terrarium/core/profiles";
 import { useEffect } from "react";
-import { experiment } from "../../logic";
+import { experiment, hiddenWarning } from "../../logic";
 import { useApp, useAsync } from "../context";
 import { Check, Note, NumberField, SelectField, TextField } from "../kit";
 import { ExperimentMetadata, NoHarness, VersionPreview } from "./experiment-subject";
@@ -124,13 +124,18 @@ export function WhoStep({ draft, set, problems }: StepProps) {
           value={draft.agentId}
           options={harness.agents.map((a) => ({
             value: a.id,
-            label: a.model ? `${a.name} (${a.model})` : a.name,
+            label: `${a.model ? `${a.name} (${a.model})` : a.name}${a.hidden ? " · 숨겼던 에이전트" : ""}`,
           }))}
           onChange={(agentId) => set({ agentId })}
           {...(harness.agents.find((a) => a.id === draft.agentId)?.description
             ? { help: harness.agents.find((a) => a.id === draft.agentId)?.description }
             : {})}
         />
+      )}
+      {hiddenWarning(harness?.agents.find((a) => a.id === draft.agentId)) && (
+        <Note tone="warn">
+          {hiddenWarning(harness?.agents.find((a) => a.id === draft.agentId))}
+        </Note>
       )}
       {harness?.error && <Note tone="warn">{harness.error}</Note>}
       {harness && draft.agentId && (

@@ -41,6 +41,12 @@ export class Materials {
     opacity: 0.32,
     depthWrite: false,
   });
+  /** The bare floor of a storey, drawn faintly where a room may still grow (REQ-076). */
+  readonly freeFloor = std("#8fd3b6", 0.9, 0, {
+    transparent: true,
+    opacity: 0.42,
+    depthWrite: false,
+  });
   readonly galv = std("#b4bcc6", 0.6, 0.3);
   readonly white = std("#fbf8f1", 0.8, 0);
   readonly dark = std(THEME.rack.frame, 0.5, 0.6);

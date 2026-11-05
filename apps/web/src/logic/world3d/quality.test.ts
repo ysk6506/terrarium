@@ -54,7 +54,7 @@ describe("the 3D picture gets lighter on a machine that cannot keep up [REQ-036]
 
   it("goes down one step at a time, and stops timing frames at the lightest", () => {
     const g = new QualityGovernor();
-    expect(feed(g, WINDOW, 60)).toBe(QUALITY_LOW);
+    expect(feed(g, WINDOW, 40)).toBe(QUALITY_LOW);
     expect(g.measuring()).toBe(true);
     expect(feed(g, WINDOW, 200)).toBe(QUALITY_MIN);
     expect(g.measuring()).toBe(false);
@@ -71,7 +71,7 @@ describe("the 3D picture gets lighter on a machine that cannot keep up [REQ-036]
     expect(lighter(QUALITY_MIN, 1)).toBeUndefined();
     expect(lighter(QUALITY_LOW, 1)).toBeUndefined();
     const g = new QualityGovernor();
-    feed(g, WINDOW, 60);
+    feed(g, WINDOW, 40);
     feed(g, WINDOW * 4, 1);
     expect(g.quality).toBe(QUALITY_LOW);
   });

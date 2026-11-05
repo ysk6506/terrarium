@@ -7,7 +7,6 @@ export {
   SAMPLE_SOURCE_ID,
   type SourceEntry,
 } from "./build";
-export { attributeValue, ClickStackTelemetry, logOf, spanOf } from "./clickstack";
 export {
   BUILTIN_HARNESS_ID,
   type ClickStackConfig,
@@ -32,3 +31,13 @@ export { HARNESS_PROTOCOL, HttpHarness, type RemoteRunStatus, traceIdOf } from "
 export { CAUSE_CODES, ScriptedHarness } from "./harness/scripted";
 export { SecretBox } from "./secret-box";
 export { SqliteStore } from "./sqlite-store";
+export {
+  adapterOfPort,
+  attachmentFor,
+  ClickStackAdapter,
+  ClickStackTelemetry,
+  TELEMETRY_KINDS,
+  type TelemetryKind,
+  telemetryKindOf,
+} from "./telemetry";
+export { attributeValue, logOf, spanOf } from "./telemetry/clickstack";

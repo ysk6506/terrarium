@@ -5,6 +5,7 @@ status: active
 last_verified: 2026-11-05
 verification_log:
   - "2026-11-05: harness-e2e.md 링크를 더했다"
+  - "2026-11-05: ADR-0082 링크를 더했다"
 ---
 # 문서 색인
 
@@ -45,6 +46,7 @@ verification_log:
 - [설정 변경 시나리오 — 누군가 바꾼 설정으로 사고를 만들고, 블록은 장비가 가진 것에서 고른다](design-docs/config-scenarios.md)
 - [제어 가능 요소표 — 실험이 무엇을 바꿀 수 있고, 에이전트가 무엇을 할 수 있는가](design-docs/controllability.md)
 - [측정의 신뢰 — 효율 점수는 과제를 푼 만큼만, 시험지는 기준선 에이전트로 점검](design-docs/measurement.md)
+- [세계 만들기 검토 — 설명 없이도 되는가, 토스의 원칙으로](design-docs/world-builder-review.md)
 - [시나리오 편집기 검토 — 처음 쓰는 사람의 눈으로, 토스의 원칙으로](design-docs/scenario-editor-review.md)
 - [용어집 — 화면에 쓰는 말은 여기서 정한다](design-docs/glossary.md)
 
@@ -131,9 +133,22 @@ verification_log:
 - [0079 서버룸과 건물은 직사각형 안에서 자유롭게 넓히고, 꽉 차면 길을 보여 준다](design-docs/adr/0079-room-resize.md)
 - [0080 방은 직사각형 조각을 붙인 하나의 공간이다 — L자와 육각형 윤곽을 그대로 만든다](design-docs/adr/0080-room-pieces.md)
 - [0081 건물은 실제 크기에 묶이고, 방은 그 바닥이 허락하는 만큼 자유롭다](design-docs/adr/0081-real-building-size.md)
+- [0083 세계 만들기는 결과를 고르고, 빌더는 고른 것 하나에 할 일 하나다](design-docs/adr/0083-world-making-redesign.md)
+- [0084 가져오기를 없애고 토폴로지 보기를 둔다 — 같은 것은 접고 다른 것만 편다](design-docs/adr/0084-topology-view.md)
+- [0085 텔레메트리는 연결마다 어댑터로 붙이고, 묶는 열쇠는 어댑터가 정한다](design-docs/adr/0085-telemetry-adapters.md)
+- [0087 툴 범위는 실험 설계자가 정하고, 현실 수준 꼬리표를 달고, 에스컬레이션과 절차서는 실험 변수다](design-docs/adr/0087-tool-scope-escalation-sop.md)
+- [0088 테라리움의 데이터는 재활용하도록 설계한다 — 불변 사건, 버전 묶음, 표준 내보내기, 라벨 사건](design-docs/adr/0088-data-reuse.md)
+- [0089 홈은 경영진 한 장이고 그 뒤가 엔지니어 근거다 — 벤치마크는 pass^k·실패 유형·버전 세트·비용을 말한다](design-docs/adr/0089-dashboard-benchmark.md)
+- [0091 세계에 서비스·OS 층을 올리고, 채점은 복구 우선이다](design-docs/adr/0091-service-os-layer-recovery-first.md)
+- [0092 서비스부터 세계를 만들 수 있고, 만든 구성은 저장해 두고 다시 쓴다](design-docs/adr/0092-service-first-world-and-templates.md)
+- [0094 운영 모드 — 끝이 없는 실험, 당겨서 보는 모니터링, 실시간과 빨리 감기](design-docs/adr/0094-operation-mode.md)
+- [0095 현실의 쌍둥이는 네 단계로 가고, 세계의 모델은 플러그인으로 바꿀 수 있다](design-docs/adr/0095-digital-twin-and-model-plugins.md)
+- [0096 파워 캐핑 — 전기요금을 아끼면서 서비스를 지키는 줄다리기를 잰다](design-docs/adr/0096-power-capping.md)
+- [0082 느린 기계에서는 멈추지 않고 줄인다 — 품질·부하 시험 기대값을 고친다](design-docs/adr/0082-quality-degrade-amend-tests.md)
 
 ## 계획과 부채
 
 - [진행 중 계획](exec-plans/active/build-plan.md)
 - [클로즈 베타 피드백 장부](exec-plans/active/beta-feedback.md)
+- [클로즈 베타 차수 계획](exec-plans/active/beta-rounds.md)
 - [기술 부채 장부](exec-plans/tech-debt.yaml) (YAML)

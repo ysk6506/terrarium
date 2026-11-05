@@ -5,6 +5,14 @@
  * kept"; clearing one is a separate choice.
  */
 import type { ConnectionHeader, ConnectionView, ConnectorSpec } from "@terrarium/core/contract";
+import {
+  advancedChanges,
+  presetOf,
+  presetProblems,
+  presetSettings,
+  typedUrl,
+} from "./connection-presets";
+import { type TracesForm, tracesFormOf } from "./connection-traces";
 
 export interface HeaderRow {
   readonly name: string;
@@ -28,6 +36,10 @@ export interface ConnectionForm {
   readonly cleared: readonly string[];
   readonly headers: readonly HeaderRow[];
   readonly metadata: readonly MetaRow[];
+  /** The preset the form is on (a connector's short way to fill it); left out or empty, every field is shown. */
+  readonly preset?: string;
+  /** Where this connection's traces pile up. Left out, the request does not mention it. */
+  readonly traces?: TracesForm;
 }
 
 const text = (v: unknown): string =>
@@ -44,6 +56,7 @@ export function blankForm(spec: ConnectorSpec): ConnectionForm {
     cleared: [],
     headers: [],
     metadata: [],
+    ...(spec.presets?.[0] ? { preset: spec.presets[0].key } : {}),
   };
 }
 
@@ -63,13 +76,20 @@ const headerRow = (h: ConnectionHeader): HeaderRow => ({
 
 /** The form of a connection that already exists: what it was made with, without the secrets. */
 export function formOf(spec: ConnectorSpec, view: ConnectionView): ConnectionForm {
+  const values = Object.fromEntries(
+    spec.fields.map((f) => [f.key, shown(f.type, view.config[f.key])]),
+  );
+  const preset = presetOf(spec, text(view.config.preset));
   return {
     name: view.name,
     description: view.description ?? "",
-    values: Object.fromEntries(spec.fields.map((f) => [f.key, shown(f.type, view.config[f.key])])),
+    values: preset ? { ...values, url: typedUrl(preset, view.config) } : values,
     cleared: [],
     headers: view.headers.map(headerRow),
     metadata: Object.entries(view.metadata).map(([key, value]) => ({ key, value })),
+    ...(spec.presets ? { preset: preset?.key ?? "" } : {}),
+    // A server from before ADR-0085 sends no `traces`; the form then leaves the choice alone.
+    ...(view.traces ? { traces: tracesFormOf(view.traces) } : {}),
   };
 }
 
@@ -100,14 +120,34 @@ function valueFor(
   }
 }
 
-/** What goes in the request's `config`: only what was given, a cleared secret as `null`. */
-export function configOf(spec: ConnectorSpec, form: ConnectionForm): Record<string, unknown> {
+/** What goes in a request's settings for these fields: only what was given, a cleared secret as `null`. */
+export function settingsOf(
+  fields: ConnectorSpec["fields"],
+  values: Readonly<Record<string, string>>,
+  cleared: readonly string[],
+): Record<string, unknown> {
   const out: Record<string, unknown> = {};
-  for (const field of spec.fields) {
-    const v = valueFor(field, form.values[field.key] ?? "", form.cleared.includes(field.key));
+  for (const field of fields) {
+    const v = valueFor(field, values[field.key] ?? "", cleared.includes(field.key));
     if (v !== undefined) out[field.key] = v;
   }
   return out;
+}
+
+/**
+ * What goes in the request's `config`. On a preset it is what the preset stands for, with the token as the
+ * secret rules want it, and whatever the "고급" fold changed from its defaults on top.
+ */
+export function configOf(spec: ConnectorSpec, form: ConnectionForm): Record<string, unknown> {
+  const preset = presetOf(spec, form.preset);
+  if (!preset) return settingsOf(spec.fields, form.values, form.cleared);
+  const asked = settingsOf(
+    preset.fields.filter((f) => f.type === "secret"),
+    form.values,
+    form.cleared,
+  );
+  const changed = settingsOf(advancedChanges(spec, preset, form.values), form.values, form.cleared);
+  return { ...presetSettings(preset, form.values), ...changed, ...asked };
 }
 
 /** The headers to send: rows without a name are dropped, a kept secret goes without its value. */
@@ -177,7 +217,11 @@ export function formProblems(
 ): Record<string, string> {
   const out: Record<string, string> = {};
   if (form.name.trim() === "") out.name = "이름을 적어 주세요";
-  for (const field of spec.fields) {
+  const preset = presetOf(spec, form.preset);
+  if (preset) Object.assign(out, presetProblems(preset, form.values, kept, form.cleared));
+  for (const field of preset
+    ? spec.fields.filter((f) => !preset.fields.some((p) => p.key === f.key))
+    : spec.fields) {
     const problem = fieldProblem(field, form, kept);
     if (problem) out[field.key] = problem;
   }

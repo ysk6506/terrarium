@@ -5,7 +5,7 @@
  * lookup per puff and nothing is allocated. Lines and ribbons are not used: they read as noodles.
  */
 import * as THREE from "three";
-import type { world3d } from "../../logic";
+import { world3d } from "../../logic";
 import { ORDER } from "./airflow-floor";
 
 type FlowPath = world3d.FlowPath;
@@ -156,18 +156,43 @@ export class AirMotion {
   private arrowMesh: THREE.InstancedMesh | undefined;
   private view: AirView = "flow";
   private topDown = false;
+  /** How strained the machine is: each level shows half as many puffs and arrows, spread over all paths. */
+  private level = 0;
   private readonly p = new THREE.Vector3();
   private readonly d = new THREE.Vector3();
   private readonly q = new THREE.Quaternion();
   private readonly m = new THREE.Matrix4();
   private readonly one = new THREE.Vector3(1, 1, 1);
+  private readonly gone = new THREE.Matrix4().makeScale(0, 0, 0);
 
-  get puffs(): number {
+  /** Puffs laid down, and how many of them are shown at the current level. */
+  private get puffsLaid(): number {
     return this.tracks.reduce((n, t) => n + t.puffs, 0);
   }
 
-  get arrows(): number {
+  private get arrowsLaid(): number {
     return this.tracks.reduce((n, t) => n + t.arrows, 0);
+  }
+
+  get puffs(): number {
+    return this.tracks.reduce((n, t) => n + this.puffsOf(t), 0);
+  }
+
+  get arrows(): number {
+    return this.tracks.reduce((n, t) => n + this.arrowsOf(t), 0);
+  }
+
+  /** How many of a path's puffs and arrows are shown: every 2^level-th of all in the room, so each level halves the total. */
+  private puffsOf(t: Track): number {
+    return world3d.keptAmong(t.first, t.puffs, this.level);
+  }
+
+  private arrowsOf(t: Track): number {
+    return world3d.keptAmong(t.firstArrow, t.arrows, this.level);
+  }
+
+  setLevel(level: number): void {
+    this.level = level;
   }
 
   /** Lay new paths down. The sprites made earlier are reused; any spare ones are let go. */
@@ -175,7 +200,7 @@ export class AirMotion {
     this.tracks = tracksOf(paths);
     this.view = view;
     this.topDown = topDown;
-    const need = this.puffs;
+    const need = this.puffsLaid;
     while (this.sprites.length < need) {
       const sprite = new THREE.Sprite(
         new THREE.SpriteMaterial({
@@ -198,7 +223,7 @@ export class AirMotion {
     this.arrowMesh?.removeFromParent();
     this.arrowMesh?.dispose();
     this.arrowMesh = undefined;
-    const arrows = this.arrows;
+    const arrows = this.arrowsLaid;
     if (arrows > 0) {
       this.arrowMesh = new THREE.InstancedMesh(this.cone, this.coneMaterial, arrows);
       this.arrowMesh.renderOrder = ORDER.arrows;
@@ -223,11 +248,12 @@ export class AirMotion {
     for (const t of this.tracks) {
       const [s0, s1] = sizeOf(t.path);
       const alpha = alphaOf(t.path, this.view, this.topDown);
+      const shown = this.puffsOf(t);
       for (let j = 0; j < t.puffs; j++) {
         const sprite = this.sprites[t.first + j] as THREE.Sprite;
-        sprite.visible = on;
-        if (!on) continue;
-        const f = (j / t.puffs + time * t.rate) % 1;
+        sprite.visible = on && j < shown;
+        if (!sprite.visible) continue;
+        const f = (j / shown + time * t.rate) % 1;
         pointAt(t, f, this.p, this.d);
         sprite.position.copy(this.p);
         const size = s0 + (s1 - s0) * f;
@@ -243,13 +269,19 @@ export class AirMotion {
   private drawArrows(time: number, moving: boolean): void {
     const mesh = this.arrowMesh;
     if (!mesh) return;
-    for (const t of this.tracks)
+    for (const t of this.tracks) {
+      const shown = this.arrowsOf(t);
       for (let k = 0; k < t.arrows; k++) {
-        const f = moving ? ((k + 0.5) / t.arrows + time * t.rate) % 1 : (k + 1) / (t.arrows + 1);
+        if (k >= shown) {
+          mesh.setMatrixAt(t.firstArrow + k, this.gone);
+          continue;
+        }
+        const f = moving ? ((k + 0.5) / shown + time * t.rate) % 1 : (k + 1) / (shown + 1);
         pointAt(t, f, this.p, this.d);
         this.q.setFromUnitVectors(UP, this.d);
         mesh.setMatrixAt(t.firstArrow + k, this.m.compose(this.p, this.q, this.one));
       }
+    }
     mesh.instanceMatrix.needsUpdate = true;
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
   }

@@ -1,14 +1,20 @@
 /** core.contract: the HTTP API contract shared by server and web — routes, request schemas, views, errors. */
 
 export type {
+  AgentCensus,
   AgentHistoryView,
   AgentVersionView,
   ConnectionCheck,
   ConnectionHeader,
+  ConnectionTraces,
   ConnectionView,
   ConnectorField,
+  ConnectorPreset,
   ConnectorSpec,
   FieldType,
+  TelemetryAdapterList,
+  TelemetryAdapterSpec,
+  TryResult,
 } from "./connections";
 export {
   type ApiError,
@@ -62,6 +68,10 @@ export {
   type RecipeRequest,
   ReportQuery,
   ScenarioQuery,
+  TracesBody,
+  type TracesRequest,
+  TryConnectionBody,
+  type TryConnectionRequest,
   TwinQuery,
   type TwinQueryParams,
   UpdateConnectionBody,

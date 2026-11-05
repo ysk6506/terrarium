@@ -12,10 +12,13 @@
  */
 import type {
   AgentInfo,
+  AgentInventory,
   AgentRunOutcome,
   AgentRunRequest,
   HarnessInfo,
   HarnessPort,
+  TalkReply,
+  TalkRequest,
 } from "@terrarium/core/experiments";
 import { z } from "zod";
 import type { FetchLike } from "../fetch";
@@ -41,6 +44,8 @@ const schema = z
       .regex(/^[^/\s]+\/\S+$/, "provider/model 모양이어야 해요")
       .optional(),
     pollSeconds: z.number().min(0.05).max(60).default(2),
+    /** Put OpenCode's helper agents and subagents in the list too (each marked with why). */
+    showHidden: z.boolean().default(false),
   })
   .strict();
 
@@ -63,6 +68,12 @@ interface MessageEntry {
     readonly error?: { readonly name?: string; readonly data?: { readonly message?: string } };
   };
   readonly parts?: ReadonlyArray<{ readonly type?: string; readonly text?: string }>;
+}
+
+/** Why OpenCode would not offer an agent to a person, or nothing if it would. */
+function leftOutWhy(a: AgentEntry): string | undefined {
+  if (a.hidden === true) return "hidden helper";
+  return a.mode === "subagent" ? "mode subagent" : undefined;
 }
 
 export class OpenCodeHarness implements HarnessPort {
@@ -90,23 +101,88 @@ export class OpenCodeHarness implements HarnessPort {
     );
   }
 
-  async agents(): Promise<readonly AgentInfo[]> {
+  async inventory(): Promise<AgentInventory> {
     const list = await this.rest.json<AgentEntry[]>(
       "에이전트 목록",
       "GET",
       "/agent",
       AbortSignal.timeout(10_000),
     );
-    return list
-      .filter((a): a is AgentEntry & { name: string } => typeof a.name === "string")
-      .filter((a) => a.mode !== "subagent" && a.hidden !== true)
-      .map((a) => ({
-        id: a.name,
-        name: a.name,
-        ...(a.description ? { description: a.description } : {}),
-        ...(this.config.model ? { model: this.config.model } : {}),
-        ...(a.mode ? { facts: { mode: a.mode } } : {}),
-      }));
+    const named = list.filter(
+      (a): a is AgentEntry & { name: string } => typeof a.name === "string",
+    );
+    const infoOf = (a: AgentEntry & { name: string }, hidden?: string): AgentInfo => ({
+      id: a.name,
+      name: a.name,
+      ...(a.description ? { description: a.description } : {}),
+      ...(this.config.model ? { model: this.config.model } : {}),
+      ...(hidden ? { hidden } : {}),
+      ...(a.mode ? { facts: { mode: a.mode } } : {}),
+    });
+    const hidden = new Map<string, AgentInfo[]>();
+    const shown: AgentInfo[] = [];
+    for (const a of named) {
+      const why = leftOutWhy(a);
+      if (!why) shown.push(infoOf(a));
+      else hidden.set(why, [...(hidden.get(why) ?? []), infoOf(a, why)]);
+    }
+    return {
+      shown,
+      hidden: [...hidden].map(([reason, agents]) => ({ reason, agents })),
+      includesHidden: this.config.showHidden,
+      ...(list.length === 0 ? { empty: "응답의 에이전트 목록이 비어 있어요" } : {}),
+      notes: [],
+    };
+  }
+
+  async agents(): Promise<readonly AgentInfo[]> {
+    const { shown, hidden } = await this.inventory();
+    return this.config.showHidden ? [...shown, ...hidden.flatMap((h) => h.agents)] : shown;
+  }
+
+  /** One question in a session of its own, without the tools of any run; the session is removed afterwards. */
+  async talk(req: TalkRequest): Promise<TalkReply> {
+    const made = await this.rest.json<{ id: string }>(
+      "세션 만들기",
+      "POST",
+      "/session",
+      req.signal,
+      {
+        title: `terrarium try ${req.runId}`,
+      },
+    );
+    const at = `/session/${encodeURIComponent(made.id)}`;
+    try {
+      await this.rest.json("말 보내기", "POST", `${at}/prompt_async`, req.signal, {
+        agent: req.agentId,
+        ...(this.config.model ? { model: modelOf(this.config.model) } : {}),
+        parts: [{ type: "text", text: req.text }],
+      });
+      await this.untilIdle(made.id, req.signal);
+      if (req.signal.aborted) throw new Error("멈췄어요");
+      const messages = await this.rest.json<MessageEntry[]>(
+        "메시지 읽기",
+        "GET",
+        `${at}/message`,
+        req.signal,
+      );
+      const replies = messages.filter((m) => m.info?.role === "assistant");
+      const failed = replies.map((m) => m.info?.error).findLast((e) => e !== undefined);
+      if (failed) throw new Error(failed.data?.message ?? failed.name ?? "이유 모름");
+      const answered = replies.findLast((m) => m.info?.modelID);
+      const parts = replies.flatMap((m) => m.parts ?? []);
+      return {
+        text: replies.at(-1)?.parts?.findLast((p) => p.type === "text")?.text ?? "",
+        ...(answered
+          ? { model: [answered.info?.providerID, answered.info?.modelID].filter(Boolean).join("/") }
+          : {}),
+        inputTokens: replies.reduce((n, m) => n + (m.info?.tokens?.input ?? 0), 0),
+        outputTokens: replies.reduce((n, m) => n + (m.info?.tokens?.output ?? 0), 0),
+        toolCalls: parts.filter((p) => p.type === "tool").length,
+      };
+    } finally {
+      await this.rest.send("DELETE", at, AbortSignal.timeout(10_000)).catch(() => undefined);
+    }
   }
 
   async run(req: AgentRunRequest): Promise<AgentRunOutcome> {
@@ -270,6 +346,14 @@ export const openCodeConnector = defineConnector({
         help: "provider/model 모양. 비워 두면 에이전트에 정해진 모델을 써요.",
       },
       { key: "pollSeconds", label: "상태를 묻는 간격(초)", type: "number", default: 2 },
+      {
+        key: "showHidden",
+        label: "도우미 에이전트도 목록에 넣기",
+        type: "boolean",
+        default: false,
+        advanced: true,
+        help: "OpenCode가 안에서 쓰는 도우미(hidden)와 서브에이전트(subagent)는 기본으로 숨겨요. 켜면 목록에 넣고 이유를 붙여요.",
+      },
     ],
   },
   schema,

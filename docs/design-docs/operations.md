@@ -2,17 +2,17 @@
 title: 서버 운영 — 설치와 사내 시스템 연결
 kind: guide
 status: active
-last_verified: 2026-11-04
+last_verified: 2026-11-05
 covers:
   - apps/server/src/adapters/config.ts
   - apps/server/src/main.ts
-covers_hash: 97d8816a08c16532
+covers_hash: fa323c8370e3a20a
 verification_log:
-  - "2026-10-29: main.ts 정리(배치 계산을 함수로 분리, 노드 합류 시 스케줄러를 깨우는 훅 수정) 뒤 역할 분기와 기본 상한 설명을 다시 대조했다"
   - "2026-10-30: 2026-10-30: config.ts의 connections 블록(allowedHosts, retentionDays, warnDays)과 secret-box.ts의 열쇠 위치(TERRARIUM_SECRET_KEY, dataDir/secret.key)를 대조해 설정 예와 항목 표, 비밀 값, 식별 자리 절을 고쳤다. openai 하네스 예를 a2a로 바꿨다"
   - "2026-11-03: 서버·core가 사람에게 돌려주는 안내 문장이 해요체로 바뀐 것만 확인했다. 동작과 본문은 그대로 (ADR-0050)"
   - "2026-11-04: GoClaw·Hermes 연결과 고정 도구 주소 설명을 하네스 항목에 추가하고, 나머지는 현재 코드와 맞는지 다시 읽었다"
   - "2026-11-04: main.ts에서 항상 참인 secretBox 확인(죽은 가지)만 지웠다. 고정 도구 주소가 서버 열쇠에서 나온다는 본문과 같다"
+  - "2026-11-05: config.ts의 하네스 traces 항목(none·default·clickstack·langfuse)과 전역 telemetry가 기본값이라는 것을 설정 표와 확인 목록에 맞췄다 (ADR-0085)"
 ---
 # 서버 운영
 
@@ -72,7 +72,8 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 | `connections.retentionDays` | 화면에서 만든 연결이 실험에 안 쓰이면 지우는 날 수. 0이면 지우지 않는다 | 30 |
 | `connections.warnDays` | 지우기 며칠 전부터 만든 사람에게 알리는가 | 7 |
 | `sources` | 세계를 가져올 현실. FalkorDB는 `GRAPH.RO_QUERY`로만 읽는다(REQ-011) | 샘플 그래프만 |
-| `telemetry` | 하네스가 남긴 trace·log를 읽을 ClickStack. 읽기 전용 계정을 쓴다 | 토큰·모델 시간 칸이 비고 나머지 분석은 그대로 |
+| `telemetry` | 하네스가 남긴 trace·log를 읽을 ClickStack의 **기본값**. 읽기 전용 계정을 쓴다. 연결이 "서버 기본값"을 고르면 이것을 읽는다 | 토큰·모델 시간 칸이 비고 나머지 분석은 그대로 |
+| 하네스의 `traces` | 그 하네스의 트레이스가 쌓이는 곳: `{"kind": "none"}`, `{"kind": "default"}`, `{"kind": "clickstack", "url": …}`, `{"kind": "langfuse", "host": …, "publicKey": …, "secretKeyEnv": …}`. 화면에서는 연결 폼의 "이 하네스의 트레이스는 어디에 쌓이나요?"로 고른다 | 옛 규칙: 하네스가 `telemetry: "clickstack"`이면 서버 기본값 |
 
 ## 비밀 값과 열쇠
 
@@ -93,7 +94,7 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
    - 두 연결은 소스와 문서를 읽고 만들어 가짜 서버로 시험했고, 실제 GoClaw·Hermes로 끝까지 돌려 본 적은 없다.
 2. **FalkorDB**: 실험 화면의 "현실에서 가져오기"에서 소스를 고르고 가져올 서버룸을 좁힌다. 매핑하지 못한 라벨과 가정은 가져오기 보고서와
    모델링 브리프에 나온다.
-3. **ClickStack**: OpenTelemetry ClickHouse exporter 기본 스키마(`otel_traces`, `otel_logs`)를 가정한다. 테이블 이름이 다르면
+3. **트레이스(ClickStack, Langfuse)**: 연결마다 어댑터로 붙는다([ADR-0085](adr/0085-telemetry-adapters.md)). 연결 검사가 도구가 답하는지 보고, "말 걸어 보기"가 한 턴의 트레이스가 이어졌는지 보여 준다. Langfuse는 공개 키와 비밀 키(환경 변수 이름이나 직접 입력)만 있으면 되고, 하네스는 `run_id`를 세션 ID로 남겨야 한다. ClickStack: OpenTelemetry ClickHouse exporter 기본 스키마(`otel_traces`, `otel_logs`)를 가정한다. 테이블 이름이 다르면
    `telemetry.tables`에 적는다.
 
 어느 것이든 닿지 않으면 화면은 "…에 닿을 수 없다"와 이유를 보여 주고, 나머지 기능은 그대로 쓴다.

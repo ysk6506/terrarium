@@ -137,6 +137,8 @@ export interface RunView {
   readonly timeline: readonly TimelineEntry[];
   /** Whether harness telemetry can be fetched for this run. */
   readonly hasTelemetry: boolean;
+  /** Name of the tool the harness's traces are read from (the connection's choice), when there is one. */
+  readonly telemetryName?: string;
 }
 
 export type TelemetryView = Telemetry;

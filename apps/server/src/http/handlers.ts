@@ -40,7 +40,9 @@ export const HANDLERS: Handlers = {
   meta: (p, i) => p.meta(i.viewer),
 
   listConnectors: async (p) => p.connections.specs(),
+  listTelemetryAdapters: async (p) => p.connections.telemetryAdapters(),
   listConnections: (p) => p.connections.views(),
+  tryConnection: (p, i) => p.connections.talk(id(i), i.body),
   checkConnection: (p, i) => p.connections.check(i.viewer, i.body, i.baseUrl),
   createConnection: (p, i) => p.connections.create(i.viewer, i.body),
   updateConnection: (p, i) => p.connections.update(i.viewer, id(i), i.body),

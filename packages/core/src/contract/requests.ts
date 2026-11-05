@@ -269,6 +269,17 @@ const HeadersBody = z
     message: "같은 헤더 이름이 겹쳐요",
   });
 
+/**
+ * Where a connection's traces pile up: "none", "default" (the server's own), or a telemetry adapter's kind
+ * with what its form asked. Secrets follow the connector rule: blank keeps, a value replaces, `null` removes.
+ */
+export const TracesBody = z
+  .object({
+    kind: z.string().regex(/^[a-z][a-z0-9-]{0,30}$/),
+    config: ConnectionConfig.default({}),
+  })
+  .strict();
+
 export const CheckConnectionBody = z
   .object({
     connector: IdSchema,
@@ -276,6 +287,7 @@ export const CheckConnectionBody = z
     id: IdSchema.optional(),
     config: ConnectionConfig,
     headers: HeadersBody.optional(),
+    traces: TracesBody.optional(),
   })
   .strict();
 
@@ -291,6 +303,7 @@ export const CreateConnectionBody = z
     headers: HeadersBody.optional(),
     /** Attached to every experiment run on it (REQ-052). */
     metadata: MetadataBody.optional(),
+    traces: TracesBody.optional(),
   })
   .strict();
 
@@ -306,6 +319,15 @@ export const UpdateConnectionBody = z
     config: ConnectionConfig,
     headers: HeadersBody.optional(),
     metadata: MetadataBody.optional(),
+    traces: TracesBody.optional(),
+  })
+  .strict();
+
+/** One question to one agent of a connection (ADR-0085): no tools, no world, nothing scored. */
+export const TryConnectionBody = z
+  .object({
+    agentId: z.string().min(1).max(200),
+    text: z.string().trim().min(1).max(2000),
   })
   .strict();
 
@@ -333,4 +355,6 @@ export type EditAgentVersionRequest = z.output<typeof EditAgentVersionBody>;
 export type CreateConnectionRequest = z.output<typeof CreateConnectionBody>;
 export type UpdateConnectionRequest = z.output<typeof UpdateConnectionBody>;
 export type CheckConnectionRequest = z.output<typeof CheckConnectionBody>;
+export type TracesRequest = z.output<typeof TracesBody>;
+export type TryConnectionRequest = z.output<typeof TryConnectionBody>;
 export type HeaderRequest = z.output<typeof HeaderBody>;

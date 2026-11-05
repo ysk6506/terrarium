@@ -7,20 +7,29 @@ import type {
   ConnectionView,
   ConnectorField,
   ConnectorSpec,
+  TelemetryAdapterList,
 } from "@terrarium/core/contract";
 import { useState } from "react";
 import {
   blankForm,
+  blankTraces,
   type ConnectionForm,
   configOf,
   formOf,
   formProblems,
   headersOf,
+  hiddenWarning,
   metadataOf,
+  reasonPhrase,
+  settingsOf,
   TRANSPORT_LABELS,
+  tracesProblems,
+  tracesRequest,
 } from "../../logic";
-import { useAction, useApp } from "../context";
+import { useAction, useApp, useAsync } from "../context";
 import { Button, Dialog, Note, SelectField, TextField } from "../kit";
+import { AgentCensusLine } from "./agent-census";
+import { PresetForm, TracesChooser } from "./connection-extras";
 import { ConnectorFieldInput, HeaderEditor, MetaEditor } from "./connection-form";
 
 const emptyForm: ConnectionForm = {
@@ -55,22 +64,47 @@ function ToolGuide({ spec }: { readonly spec: ConnectorSpec }) {
   );
 }
 
-function CheckResult({ check }: { readonly check: ConnectionCheck }) {
-  if (!check.ok) return <Note tone="bad">{check.error ?? "연결하지 못했어요"}</Note>;
+/** Every agent found, with the left-out ones marked with why, for the person who pressed "모두 보기". */
+function AllAgents({ check }: { readonly check: ConnectionCheck }) {
+  const all = [...check.agents, ...check.hiddenAgents];
+  const warned = all.find((a) => a.hidden);
   return (
-    <Note tone="good">
-      <div className="stack" style={{ gap: 4 }}>
-        <span>
-          연결됐어요({check.ms} ms).{" "}
-          {check.agents.length > 0
-            ? `에이전트 ${check.agents.length}개: ${check.agents.map((a) => a.name).join(", ")}`
-            : "이 연결에는 에이전트가 하나 있어요."}
-        </span>
-        {check.notes.map((n) => (
-          <span key={n}>{n}</span>
+    <div className="stack" style={{ gap: 4 }}>
+      <ul className="list-plain small">
+        {all.slice(0, 200).map((a) => (
+          <li key={a.id}>
+            {a.name}
+            {a.hidden ? ` — ${reasonPhrase(a.hidden)}` : ""}
+          </li>
         ))}
-      </div>
-    </Note>
+      </ul>
+      {warned && <span className="small">{hiddenWarning(warned)}</span>}
+    </div>
+  );
+}
+
+function CheckResult({ check }: { readonly check: ConnectionCheck }) {
+  const [all, setAll] = useState(false);
+  if (!check.ok) return <Note tone="bad">{check.error ?? "연결하지 못했어요"}</Note>;
+  const listed = check.agents.filter((a) => !a.hidden).map((a) => a.name);
+  return (
+    <div className="stack" style={{ gap: 8 }}>
+      <Note tone="good">
+        <div className="stack" style={{ gap: 4 }}>
+          <span>연결됐어요({check.ms} ms).</span>
+          {check.census.total > 0 && !all && <span>{listed.slice(0, 8).join(", ")}</span>}
+          {check.notes.map((n) => (
+            <span key={n}>{n}</span>
+          ))}
+        </div>
+      </Note>
+      <AgentCensusLine
+        census={check.census}
+        showing={all || check.census.includesHidden}
+        onToggle={() => setAll(!all)}
+      />
+      {all && <AllAgents check={check} />}
+    </div>
   );
 }
 
@@ -165,6 +199,20 @@ function Extras({
   );
 }
 
+/** Everything wrong with the form before anything is sent, the connector's and the traces'. */
+function problemsOf(
+  spec: ConnectorSpec,
+  form: ConnectionForm,
+  kept: readonly string[],
+  list: TelemetryAdapterList | undefined,
+  existing: ConnectionView | undefined,
+): Record<string, string> {
+  return {
+    ...formProblems(spec, form, kept),
+    ...tracesProblems(list, form.traces ?? blankTraces(list), existing?.traces.secrets ?? []),
+  };
+}
+
 function useConnectionDialog({ connectors, existing, onSaved }: ConnectionDialogProps) {
   const { api } = useApp();
   const { busy, run } = useAction();
@@ -177,7 +225,9 @@ function useConnectionDialog({ connectors, existing, onSaved }: ConnectionDialog
   const [check, setCheck] = useState<ConnectionCheck>();
   const [shown, setShown] = useState(false);
   const kept = existing?.secrets ?? [];
-  const problems = spec && shown ? formProblems(spec, form, kept) : {};
+  const list = useAsync((signal) => api.call("listTelemetryAdapters", { signal }), []).data;
+  const traces = form.traces ?? blankTraces(list);
+  const problems = spec && shown ? problemsOf(spec, form, kept, list, existing) : {};
   const patch = (change: Partial<ConnectionForm>) => {
     setForm((f) => ({ ...f, ...change }));
     setCheck(undefined);
@@ -186,14 +236,24 @@ function useConnectionDialog({ connectors, existing, onSaved }: ConnectionDialog
     const chosen = connectors.find((c) => c.kind === next);
     setKind(next);
     if (chosen)
-      setForm((f) => ({ ...blankForm(chosen), name: f.name, description: f.description }));
+      setForm((f) => ({
+        ...blankForm(chosen),
+        name: f.name,
+        description: f.description,
+        ...(f.traces ? { traces: f.traces } : {}),
+      }));
     setCheck(undefined);
   };
   /** Show what is wrong, and say whether anything is. */
   const ready = (): ConnectorSpec | undefined => {
     setShown(true);
-    return spec && Object.keys(formProblems(spec, form, kept)).length === 0 ? spec : undefined;
+    return spec && Object.keys(problemsOf(spec, form, kept, list, existing)).length === 0
+      ? spec
+      : undefined;
   };
+  /** Where the traces go, for the request; left out when the server's list of tools did not load. */
+  const tracesBody = () =>
+    list ? { traces: tracesRequest(list, traces, settingsOf) } : ({} as Record<string, never>);
   const test = async () => {
     const s = ready();
     if (!s) return;
@@ -202,6 +262,7 @@ function useConnectionDialog({ connectors, existing, onSaved }: ConnectionDialog
       ...(existing ? { id: existing.id } : {}),
       config: configOf(s, form),
       headers: headersOf(form.headers),
+      ...tracesBody(),
     };
     const result = await run(() => api.call("checkConnection", { body }));
     if (result) setCheck(result);
@@ -215,6 +276,7 @@ function useConnectionDialog({ connectors, existing, onSaved }: ConnectionDialog
       config: configOf(s, form),
       headers: headersOf(form.headers),
       metadata: metadataOf(form.metadata),
+      ...tracesBody(),
     };
     const saved = await run(
       () =>
@@ -225,7 +287,7 @@ function useConnectionDialog({ connectors, existing, onSaved }: ConnectionDialog
     );
     if (saved) onSaved(saved);
   };
-  return { busy, kind, spec, form, check, problems, kept, patch, pick, test, save };
+  return { busy, kind, spec, form, check, problems, kept, patch, pick, test, save, list, traces };
 }
 
 /** Add a connection, or change one that exists (the kind of an existing one cannot change). */
@@ -288,7 +350,25 @@ export function ConnectionDialog(props: ConnectionDialogProps) {
               onChange={(description) => d.patch({ description })}
               maxLength={300}
             />
-            <Fields spec={spec} form={form} problems={problems} kept={d.kept} patch={d.patch} />
+            {spec.presets ? (
+              <PresetForm
+                spec={spec}
+                form={form}
+                problems={problems}
+                kept={d.kept}
+                patch={d.patch}
+              />
+            ) : null}
+            {(!spec.presets || !form.preset) && (
+              <Fields spec={spec} form={form} problems={problems} kept={d.kept} patch={d.patch} />
+            )}
+            <TracesChooser
+              list={d.list}
+              traces={d.traces}
+              problems={problems}
+              kept={existing?.traces.secrets ?? []}
+              onChange={(traces) => d.patch({ traces })}
+            />
             <Extras form={form} problems={problems} patch={d.patch} />
             {d.check && <CheckResult check={d.check} />}
             {!existing && (

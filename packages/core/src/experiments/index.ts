@@ -54,6 +54,7 @@ export {
 } from "./model";
 export type {
   AgentInfo,
+  AgentInventory,
   AgentRunOutcome,
   AgentRunRequest,
   ConnectionRecord,
@@ -62,6 +63,9 @@ export type {
   HarnessInfo,
   HarnessPort,
   ShareRecord,
+  TalkReply,
+  TalkRequest,
+  TelemetryAttachment,
   ToolCallOutcome,
   ToolEndpoint,
   WorldSummary,

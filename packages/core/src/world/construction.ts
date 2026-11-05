@@ -37,6 +37,8 @@ export const FIT_OUT_RATE_M_PER_M2: Readonly<Record<RoomPurpose, number>> = {
   battery: 0.8,
   noc: 1,
   cleanroom: 4,
+  storage: 0.2,
+  lobby: 0.3,
 };
 
 /** Sealing an aisle (frame, doors, roof panels), per ㎡ of floor it covers: about 1,500 dollars a rack. */

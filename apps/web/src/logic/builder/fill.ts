@@ -25,6 +25,7 @@ import {
   planRoom,
   type RoomPlan,
 } from "./fill-plan";
+import { assertPower } from "./power";
 
 export interface Fill extends Edit {
   readonly racks: number;
@@ -220,12 +221,14 @@ export function fillRoom(
   if (options.load !== "empty") racks = racks.map((r) => fillRack(b, r, plan.serversPerRack));
   else racks = racks.map((r) => ({ ...r }));
   emitEquipment(b, roomId, plan, racks);
+  const next = {
+    ...bp,
+    entities: [...bp.entities, ...b.entities],
+    links: [...bp.links, ...b.links],
+  };
+  assertPower(bp, next, catalog);
   return {
-    blueprint: {
-      ...bp,
-      entities: [...bp.entities, ...b.entities],
-      links: [...bp.links, ...b.links],
-    },
+    blueprint: next,
     select: [],
     racks: plan.racks,
     servers: options.load === "empty" ? 0 : plan.racks * plan.serversPerRack,

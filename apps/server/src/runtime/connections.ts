@@ -4,6 +4,7 @@
  * the store and rebuilt when the server starts. Each one is reached through the connector of its protocol,
  * so this file knows no protocol. It is also the directory the executor looks harnesses up in.
  */
+import type { TelemetryAdapter } from "@terrarium/core/analysis";
 import {
   type CheckConnectionRequest,
   type ConnectionCheck,
@@ -12,15 +13,13 @@ import {
   type CreateConnectionRequest,
   InvalidInputError,
   parseWith,
+  type TelemetryAdapterList,
+  type TryConnectionRequest,
+  type TryResult,
+  UnavailableError,
   type UpdateConnectionRequest,
 } from "@terrarium/core/contract";
-import type {
-  AgentInfo,
-  ConnectionRecord,
-  ExperimentStore,
-  HarnessInfo,
-  HarnessPort,
-} from "@terrarium/core/experiments";
+import type { ConnectionRecord, ExperimentStore, HarnessPort } from "@terrarium/core/experiments";
 import { ConflictError } from "@terrarium/core/kernel";
 import {
   CONNECTORS,
@@ -35,19 +34,19 @@ import {
   compose,
   fail,
   given,
-  headerViews,
   messageOf,
   metadataOf,
   probe,
   problem,
   recordOf,
   reveal,
-  slotView,
   slug,
   toolsNotes,
   withHeaders,
-  within,
 } from "./connection-form";
+import { adapterList, adapterOf, composeTraces, reachNote, type Traces } from "./connection-traces";
+import { type TryOptions, tryTalk } from "./connection-try";
+import { discover, type Entry, expiryOf, viewOf } from "./connection-view";
 import { type HarnessDirectory, must, ownerOnly, type Viewer } from "./context";
 import type { Stamps } from "./ids";
 
@@ -77,26 +76,14 @@ export interface ConnectionsOptions {
   /** How long a harness's agent list is kept before asking again, ms. */
   readonly agentsTtlMs?: number;
   readonly slotUrl?: (slot: string) => string; // the fixed tool address of a harness with a slot
-}
-
-interface Entry {
-  readonly id: string;
-  readonly source: "config" | "screen";
-  readonly connector: string;
-  readonly name: string;
-  readonly description: string;
-  /** Without secrets: those are sealed in the record. */
-  readonly settings: Readonly<Record<string, unknown>>;
-  readonly metadata: Readonly<Record<string, string>>;
-  readonly record?: ConnectionRecord;
-  /** Undefined when it could not be built (a screen entry whose settings no longer hold). */
-  readonly port?: HarnessPort;
-  readonly error?: string;
+  /** How "말 걸어 보기" waits (tests shorten it). */
+  readonly tryOptions?: TryOptions;
+  /** The server's own telemetry (its config file's `telemetry`): what a connection that says "default" reads from. */
+  readonly defaultTelemetry?: TelemetryAdapter;
 }
 
 const AGENTS_TIMEOUT_MS = 10_000;
 const AGENTS_TTL_MS = 30_000;
-const DAY_MS = 86_400_000;
 const RETENTION_DAYS = 30;
 const WARN_DAYS = 7;
 
@@ -109,11 +96,12 @@ export class Connections implements HarnessDirectory {
 
   constructor(private readonly options: ConnectionsOptions) {
     for (const { port, config } of options.fixed) {
-      const { kind, id, name, description, metadata, ...settings } = config ?? {
+      const { kind, id, name, description, metadata, traces, ...settings } = config ?? {
         kind: port.info.kind,
         id: port.info.id,
         name: port.info.name,
       };
+      const chosen = traces as Traces | undefined;
       this.fixed.set(port.info.id, {
         id,
         source: "config",
@@ -123,8 +111,16 @@ export class Connections implements HarnessDirectory {
         settings,
         metadata: metadataOf(metadata),
         port,
+        ...(chosen ? { traces: chosen } : {}),
+        ...this.adapterEntry(chosen),
       });
     }
+  }
+
+  /** The adapter a choice stands for (in a config file, secrets are named variables). */
+  private adapterEntry(chosen: Traces | undefined): { readonly adapter?: TelemetryAdapter } {
+    const adapter = adapterOf(chosen, this.options.connect, this.options.box);
+    return adapter ? { adapter } : {};
   }
 
   private get retentionDays(): number {
@@ -151,6 +147,25 @@ export class Connections implements HarnessDirectory {
 
   ownerOf(id: string): string | undefined {
     return this.added.get(id)?.record?.owner;
+  }
+
+  /**
+   * Where this connection's traces are read from. A choice made on the form wins ("default" is the server's own
+   * telemetry); a connection nobody chose for keeps the older rule: the server's, if the harness says it emits traces.
+   */
+  telemetryOf(id: string): TelemetryAdapter | undefined {
+    const entry = this.fixed.get(id) ?? this.added.get(id);
+    if (!entry) return undefined;
+    const chosen = entry.traces?.kind;
+    if (chosen === "none") return undefined;
+    if (chosen === "default") return this.options.defaultTelemetry;
+    if (chosen !== undefined) return entry.adapter;
+    return entry.port?.info.telemetry === "clickstack" ? this.options.defaultTelemetry : undefined;
+  }
+
+  /** The tools traces can be kept in, and the server's own default. */
+  telemetryAdapters(): TelemetryAdapterList {
+    return adapterList(this.options.defaultTelemetry);
   }
 
   values(): HarnessPort[] {
@@ -186,7 +201,7 @@ export class Connections implements HarnessDirectory {
   }
 
   async views(): Promise<ConnectionView[]> {
-    return Promise.all(this.entries().map((e) => this.viewOf(e)));
+    return Promise.all(this.entries().map((e) => this.viewOfEntry(e)));
   }
 
   private fromRecord(record: ConnectionRecord): Entry {
@@ -199,66 +214,27 @@ export class Connections implements HarnessDirectory {
       settings: record.config,
       metadata: record.metadata ?? {},
       record,
+      ...(record.traces ? { traces: record.traces } : {}),
     };
     try {
-      return { ...entry, port: this.portOf(record) };
+      return { ...entry, port: this.portOf(record), ...this.adapterEntry(record.traces) };
     } catch (err) {
       return { ...entry, error: messageOf(err) };
     }
   }
 
-  private async viewOf(entry: Entry): Promise<ConnectionView> {
+  private async viewOfEntry(entry: Entry): Promise<ConnectionView> {
     const kept = this.seen.get(entry.id);
     const ttl = this.options.agentsTtlMs ?? AGENTS_TTL_MS;
     if (kept && Date.now() - kept.at < ttl) return kept.view;
-    const view = await this.look(entry);
+    const looked = await discover(entry, this.options.agentsTimeoutMs ?? AGENTS_TIMEOUT_MS);
+    const view = viewOf(entry, looked, {
+      slotUrl: this.options.slotUrl,
+      expiry: this.expiryOf(entry),
+      reads: this.telemetryOf(entry.id),
+    });
     this.seen.set(entry.id, { at: Date.now(), view });
     return view;
-  }
-
-  /** The agents the connection offers now, or why it could not say. */
-  private async discover(
-    entry: Entry,
-  ): Promise<{ readonly agents: readonly AgentInfo[]; readonly error?: string }> {
-    if (!entry.port)
-      return { agents: [], ...(entry.error === undefined ? {} : { error: entry.error }) };
-    try {
-      const wait = this.options.agentsTimeoutMs ?? AGENTS_TIMEOUT_MS;
-      return { agents: await within(entry.port.agents(), wait) };
-    } catch (err) {
-      return { agents: [], error: messageOf(err) };
-    }
-  }
-
-  private async look(entry: Entry): Promise<ConnectionView> {
-    const spec = connectorOf(entry.connector)?.spec;
-    const info: HarnessInfo = entry.port?.info ?? {
-      id: entry.id,
-      name: entry.name,
-      kind: entry.connector,
-      description: entry.description,
-      toolTransport: spec?.toolTransport ?? "mcp",
-      telemetry: "none",
-    };
-    const { agents, error } = await this.discover(entry);
-    const record = entry.record;
-    return {
-      ...info,
-      connector: entry.connector,
-      scope: spec?.scope ?? "harness",
-      source: entry.source,
-      ...(record ? { owner: record.owner, createdAt: record.createdAt } : {}),
-      agents,
-      ...slotView(info, this.options.slotUrl),
-      status: error === undefined ? "ok" : "unreachable",
-      ...(error === undefined ? {} : { error }),
-      metadata: entry.metadata,
-      headers: headerViews(record),
-      secrets: Object.keys(record?.secrets ?? {}),
-      ...(record ? { lastUsedAt: record.lastUsedAt ?? record.createdAt } : {}),
-      ...this.expiryOf(entry),
-      config: entry.settings,
-    };
   }
 
   // ── trying, adding, changing, removing ──────────────────────────────────────────────────────
@@ -324,7 +300,7 @@ export class Connections implements HarnessDirectory {
     const connector = this.connectorFor(input.connector);
     const { id } = input;
     const base = id ? this.ownedScreenEntry(viewer, id, "연결 고치기").record : undefined;
-    const composed = compose(connector, input, base, this.options.box);
+    const composed = this.composed(connector, input, base);
     const name = typeof input.config.name === "string" ? input.config.name : "확인";
     const port = this.portOf({
       id: input.id ?? "check",
@@ -337,8 +313,34 @@ export class Connections implements HarnessDirectory {
       createdAt: this.options.stamps.now(),
     });
     const result = await probe(port, this.options.agentsTimeoutMs ?? AGENTS_TIMEOUT_MS);
-    const notes = [...result.notes, ...toolsNotes(connector, composed.config, toolsBaseUrl)];
+    const reach = await this.reachNotes(composed.traces);
+    const notes = [
+      ...result.notes,
+      ...toolsNotes(connector, composed.config, toolsBaseUrl),
+      ...reach,
+    ];
     return { ...result, notes };
+  }
+
+  /** What was typed, split into what is kept in the open, what is sealed, and where its traces go. */
+  private composed(
+    connector: Connector,
+    input: CheckConnectionRequest | CreateConnectionRequest | UpdateConnectionRequest,
+    base: ConnectionRecord | undefined,
+  ) {
+    const { box, connect, allowedHosts } = this.options;
+    const traces = composeTraces(input.traces, base?.traces, box, connect.env, allowedHosts);
+    return { ...compose(connector, input, base, box), ...(traces ? { traces } : {}) };
+  }
+
+  /** A note when the tool the person chose for traces does not answer. */
+  private async reachNotes(traces: Traces | undefined): Promise<string[]> {
+    const adapter =
+      traces?.kind === "default"
+        ? this.options.defaultTelemetry
+        : adapterOf(traces, this.options.connect, this.options.box);
+    const note = adapter ? await reachNote(adapter) : undefined;
+    return note ? [note] : [];
   }
 
   private idFor(input: CreateConnectionRequest): string {
@@ -366,7 +368,7 @@ export class Connections implements HarnessDirectory {
         connector: input.connector,
         metadata: input.metadata,
       },
-      compose(connector, input, undefined, this.options.box),
+      this.composed(connector, input, undefined),
     );
     const port = this.portOf(record);
     await this.options.store.putConnection(record);
@@ -389,7 +391,7 @@ export class Connections implements HarnessDirectory {
         connector: base.connector,
         metadata: input.metadata ?? base.metadata,
       },
-      compose(connector, input, base, this.options.box),
+      this.composed(connector, input, base),
     );
     const port = this.portOf(record);
     await this.options.store.putConnection(record);
@@ -407,9 +409,25 @@ export class Connections implements HarnessDirectory {
       metadata: record.metadata ?? {},
       record,
       port,
+      ...(record.traces ? { traces: record.traces } : {}),
+      ...this.adapterEntry(record.traces),
     };
     this.added.set(record.id, entry);
     return entry;
+  }
+
+  /** "말 걸어 보기": one question to one agent of a connection, nothing else touched. */
+  async talk(id: string, input: TryConnectionRequest): Promise<TryResult> {
+    const entry = must(this.fixed.get(id) ?? this.added.get(id), `연결 '${id}'`);
+    if (!entry.port)
+      throw new UnavailableError(entry.error ?? "이 연결은 아직 만들어지지 않았어요");
+    return tryTalk(
+      entry.port,
+      this.telemetryOf(id),
+      input,
+      this.options.stamps.id("try"),
+      this.options.tryOptions,
+    );
   }
 
   /** Ask again now: a harness that was down may be up, one whose agents changed shows them. */
@@ -429,7 +447,7 @@ export class Connections implements HarnessDirectory {
 
   private fresh(entry: Entry): Promise<ConnectionView> {
     this.seen.delete(entry.id);
-    return this.viewOf(entry);
+    return this.viewOfEntry(entry);
   }
 
   async remove(viewer: Viewer, id: string): Promise<{ readonly deleted: boolean }> {
@@ -447,13 +465,7 @@ export class Connections implements HarnessDirectory {
 
   /** When a screen connection will be removed for lack of use. Nothing for the config file's, or when removal is off. */
   private expiryOf(entry: Entry) {
-    if (!entry.record || this.retentionDays <= 0) return {};
-    const last = Date.parse(entry.record.lastUsedAt ?? entry.record.createdAt);
-    const expires = last + this.retentionDays * DAY_MS;
-    return {
-      expiresAt: new Date(expires).toISOString(),
-      daysLeft: Math.max(0, Math.ceil((expires - this.now()) / DAY_MS)),
-    };
+    return expiryOf(entry.record, this.retentionDays, this.now());
   }
 
   /** The person's own connections that will be removed within the warning time. */

@@ -125,6 +125,8 @@ function floorTools(): ToolGroup[] {
         room("mechanical", "냉동기와 펌프가 있는 기계실이에요"),
         room("noc", "사람이 모니터링하는 관제실이에요"),
         room("cleanroom", "반도체 팹의 클린룸이에요"),
+        room("storage", "부품과 장비를 쌓아 두는 창고예요"),
+        room("lobby", "사람과 짐이 드나드는 로비와 하역장이에요"),
       ],
     },
     {

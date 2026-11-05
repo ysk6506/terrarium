@@ -31,8 +31,62 @@ export interface AgentInfo {
   readonly name: string;
   readonly description?: string;
   readonly model?: string;
+  /** Why the harness would not list it by itself ("status inactive"); set only when the person asked to see everything. */
+  readonly hidden?: string;
   /** Facts the harness reports about the agent, kept with the experiment for comparing (REQ-052). */
   readonly facts?: Readonly<Record<string, string>>;
+}
+
+/**
+ * What a harness has, and what it left out of the list and why (ADR-0085). A list that quietly drops
+ * agents sends a person looking for them in the wrong place, so the reason is data, not a log line.
+ */
+export interface AgentInventory {
+  /** The agents the harness offers as they are. */
+  readonly shown: readonly AgentInfo[];
+  /** Agents left out, grouped by the reason. Each reason is a short phrase such as "status inactive". */
+  readonly hidden: ReadonlyArray<{
+    readonly reason: string;
+    readonly agents: readonly AgentInfo[];
+  }>;
+  /** Whether `agents()` lists the left-out ones too (the person asked for everything). They keep their `hidden` mark. */
+  readonly includesHidden?: boolean;
+  /** Why there is nothing, when there is nothing, in the harness's own terms. */
+  readonly empty?: string;
+  /** Worth knowing though it worked (for example: this user only sees what is shared with it). */
+  readonly notes?: readonly string[];
+}
+
+/**
+ * What a telemetry adapter asks the harness to carry for one run, so the run's traces can be found again.
+ * A connector adds what it can: the `traceparent` header, the extra headers, `run_id` as a tag or metadata.
+ */
+export interface TelemetryAttachment {
+  readonly traceparent: string;
+  /** Headers a connector may add to its requests (`x-terrarium-run-id`, `baggage`). */
+  readonly headers: Readonly<Record<string, string>>;
+  /** `run_id` and friends, for a harness that puts tags or metadata on its own spans. */
+  readonly tags: Readonly<Record<string, string>>;
+  /** For a tool that groups by session (Langfuse's `sessionId`). */
+  readonly sessionId?: string;
+}
+
+/** One turn of talk with an agent: no tools, no world, nothing scored (REQ-051). */
+export interface TalkRequest {
+  readonly runId: string;
+  readonly agentId: string;
+  readonly text: string;
+  readonly signal: AbortSignal;
+  readonly telemetry?: TelemetryAttachment;
+}
+
+export interface TalkReply {
+  readonly text: string;
+  readonly model?: string;
+  readonly inputTokens?: number;
+  readonly outputTokens?: number;
+  /** How many tools the agent called on its own while answering. */
+  readonly toolCalls: number;
 }
 
 export interface ToolCallOutcome extends ToolResult {
@@ -60,6 +114,8 @@ export interface AgentRunRequest {
   readonly signal: AbortSignal;
   /** W3C trace context, so the harness's spans join this run's trace in ClickStack. */
   readonly traceparent?: string;
+  /** Everything the connection's telemetry adapter wants carried (ADR-0085); `traceparent` is part of it. */
+  readonly telemetry?: TelemetryAttachment;
 }
 
 export interface AgentRunOutcome {
@@ -71,7 +127,11 @@ export interface AgentRunOutcome {
 export interface HarnessPort {
   readonly info: HarnessInfo;
   agents(): Promise<readonly AgentInfo[]>;
+  /** The agents with the ones left out and why. A harness that leaves nothing out need not have it. */
+  inventory?(): Promise<AgentInventory>;
   run(request: AgentRunRequest): Promise<AgentRunOutcome>;
+  /** One question, one answer, no tools. A harness that cannot do it leaves it out and the screen says so. */
+  talk?(request: TalkRequest): Promise<TalkReply>;
 }
 
 export type WorldSummary = Omit<WorldRecord, "blueprint"> & {
@@ -121,6 +181,14 @@ export interface ConnectionRecord {
   }>;
   /** Tokens and passwords typed on the screen, sealed, by the connector's field name. */
   readonly secrets?: Readonly<Record<string, string>>;
+  /** Where this harness's traces pile up, if the person said (ADR-0085). Unset: the old rule, the server's default. */
+  readonly traces?: {
+    /** "none", "default" (the server's), or the kind of a telemetry adapter. */
+    readonly kind: string;
+    readonly config: Readonly<Record<string, unknown>>;
+    /** Sealed, by the adapter's field name. */
+    readonly secrets?: Readonly<Record<string, string>>;
+  };
   readonly owner: string;
   readonly createdAt: string;
   /** When an experiment was last made on it; used to remove connections nobody uses. */

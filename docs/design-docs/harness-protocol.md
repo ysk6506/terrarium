@@ -2,7 +2,7 @@
 title: 하네스 프로토콜 (terrarium.harness/1)
 kind: spec
 status: active
-last_verified: 2026-11-04
+last_verified: 2026-11-05
 covers:
   - apps/server/src/adapters/harness/http.ts
 covers_hash: addb8d1583b2a90e
@@ -11,6 +11,7 @@ verification_log:
   - "2026-10-30: 2026-10-30: http.ts의 설정 타입 위치와 ADR 번호만 바뀌었다. 엔드포인트와 필드는 코드와 같다. 화면 연결, 직접 입력한 토큰, 커스텀 헤더 안내를 더했다"
   - "2026-11-03: 서버·core가 사람에게 돌려주는 안내 문장이 해요체로 바뀐 것만 확인했다. 동작과 본문은 그대로 (ADR-0050)"
   - "2026-11-04: 2026-11-04: ADR-0073. 연결 오류 문장이 '닿을 수 없어요'에서 '연결할 수 없어요'로 바뀐 것에 맞춰 글을 고쳤다. 프로토콜은 그대로"
+  - "2026-11-05: ADR-0085: 트레이스를 쌓는 곳이 연결마다 정해진다는 문장을 더했다. 덮는 코드의 동작은 그대로"
 ---
 # 하네스 프로토콜 `terrarium.harness/1`
 
@@ -58,7 +59,7 @@ verification_log:
 - 2xx로 바로 답하고, 에이전트는 비동기로 돌린다.
 - `tools.mcpUrl`은 Streamable HTTP MCP 엔드포인트다. 이 실행에서 고른 툴만 있고, URL 자체가 비밀이다(다른 실행의 툴은 부를 수 없다).
 - `specs`는 같은 툴의 JSON Schema다. MCP 없이 함수 호출로 넘기고 싶은 하네스가 참고한다.
-- `traceparent`를 에이전트의 OpenTelemetry 루트 스팬 부모로 쓰면, ClickStack에서 이 실행의 trace로 묶인다.
+- `traceparent`를 에이전트의 OpenTelemetry 루트 스팬 부모로 쓰면, 연결이 ClickStack을 고른 경우 이 실행의 trace로 묶인다. 연결이 Langfuse를 고르면 같은 요청의 `x-terrarium-run-id` 헤더와 `baggage`의 `run_id`를 세션 ID(`langfuse.session.id`)나 메타데이터(`langfuse.trace.metadata.run_id`)로 남기면 찾는다([ADR-0085](adr/0085-telemetry-adapters.md)). 트레이스를 어디에 쌓는지는 연결마다 정한다.
 
 ### `GET /runs/{runId}` — 상태
 ```json

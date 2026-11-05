@@ -2586,3 +2586,24 @@ ol.elevation li:first-child .u-slot {
 .air-label-picked {
   color: var(--cobalt);
 }
+
+/* ── settings ──────────────────────────────────────────────────────────────── */
+
+.setting-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.setting-text {
+  flex: 1 1 280px;
+  max-width: 560px;
+}
+
+.setting-text p {
+  margin: 4px 0 0;
+}

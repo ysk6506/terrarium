@@ -25,6 +25,7 @@ export { analyzeRun, type RunAnalysis } from "./run";
 export { clearlyDifferent, ratio, type Summary, summarize, tCritical } from "./stats";
 export {
   type AttributeValue,
+  costOf,
   type LogLine,
   type MetricPoint,
   type ModelUsage,
@@ -33,7 +34,9 @@ export {
   type SpanKind,
   spanKind,
   type Telemetry,
+  type TelemetryAdapter,
   type TelemetryPort,
+  traceIdOf,
   usageOf,
 } from "./telemetry";
 export {

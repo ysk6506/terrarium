@@ -55,6 +55,18 @@ export {
   type MistakeType,
 } from "./faults";
 export {
+  bareRects,
+  buildingFloorSpaces,
+  CORE_SHARE,
+  type FloorSpace,
+  floorSpace,
+  isSizeLocked,
+  RACK_AREA_M2,
+  racksThatFit,
+  roomiestOtherFloor,
+  WHITE_FLOOR_SHARE,
+} from "./floor-space";
+export {
   absolutePosition,
   DEFAULT_FLOOR_HEIGHT_M,
   footprint,
@@ -144,6 +156,13 @@ export {
   sharedEdge,
 } from "./room-shape";
 export { reportedInletC } from "./sensors";
+export {
+  DESIGN_UTIL,
+  designDrawW,
+  type PowerCapacity,
+  powerCapacityOf,
+  siteDrawW,
+} from "./site-power";
 export {
   type Alarm,
   AMBIENT_C,

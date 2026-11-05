@@ -11,6 +11,8 @@ import type {
   ConnectionCheck,
   ConnectionView,
   ConnectorSpec,
+  TelemetryAdapterList,
+  TryResult,
 } from "./connections";
 import {
   AddAgentVersionBody,
@@ -30,6 +32,7 @@ import {
   LeaderboardQuery,
   ReportQuery,
   ScenarioQuery,
+  TryConnectionBody,
   TwinQuery,
   UpdateConnectionBody,
   UpdateScenarioBody,
@@ -83,6 +86,12 @@ export const ROUTES = {
     summary: "연결할 수 있는 프로토콜(커넥터)과 그 입력 칸",
     produces: json,
   },
+  listTelemetryAdapters: {
+    method: "GET",
+    path: "/api/telemetry-adapters",
+    summary: "트레이스를 쌓아 두는 곳(ClickStack, Langfuse)과 그 입력 칸, 서버의 기본값",
+    produces: json,
+  },
   listConnections: {
     method: "GET",
     path: "/api/connections",
@@ -108,6 +117,14 @@ export const ROUTES = {
     path: "/api/connections/:id",
     summary: "연결 설정 바꾸기 (토큰은 비워 두면 그대로. 만든 사람만)",
     body: UpdateConnectionBody,
+    produces: json,
+  },
+  tryConnection: {
+    method: "POST",
+    path: "/api/connections/:id/try",
+    summary:
+      "말 걸어 보기 — 에이전트에게 한 문장을 보내 답을 받는다 (한 턴, 툴 없음, 60초, 세계에 영향 없음)",
+    body: TryConnectionBody,
     produces: json,
   },
   keepConnection: {
@@ -376,7 +393,9 @@ export type RouteName = keyof typeof ROUTES;
 export interface Responses {
   meta: MetaView;
   listConnectors: ConnectorSpec[];
+  listTelemetryAdapters: TelemetryAdapterList;
   listConnections: ConnectionView[];
+  tryConnection: TryResult;
   checkConnection: ConnectionCheck;
   createConnection: ConnectionView;
   updateConnection: ConnectionView;

@@ -65,6 +65,8 @@ export interface Plan {
   /** The way on from a refusal, when there is one. */
   readonly way?: Refusal["way"];
   readonly edit?: Edit;
+  /** A drag that came to rest at the limit of the floor: why it could go no further, and the way on (REQ-076). */
+  readonly stopped?: { readonly message: string; readonly way?: Refusal["way"] };
 }
 
 export const gridOf = (level: Level) => GRID[level.kind];

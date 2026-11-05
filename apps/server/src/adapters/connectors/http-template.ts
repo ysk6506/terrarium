@@ -3,7 +3,13 @@
  * and how to stop it are written as settings with `{{prompt}}`-style holes, so an API that does not speak
  * the Terrarium harness protocol is reached by writing down what it already does, not by writing code.
  */
-import type { AgentRunOutcome, AgentRunRequest, HarnessPort } from "@terrarium/core/experiments";
+import type {
+  AgentRunOutcome,
+  AgentRunRequest,
+  HarnessPort,
+  TalkReply,
+  TalkRequest,
+} from "@terrarium/core/experiments";
 import { z } from "zod";
 import type { FetchLike } from "../fetch";
 import { credential, credentialFields } from "./credential";
@@ -62,6 +68,10 @@ const schema = z
     cancelPath: z.string().max(200).optional(),
     cancelMethod: z.enum(["DELETE", "POST"]).default("DELETE"),
     pollSeconds: z.number().min(0.05).max(60).default(2),
+    /** Where the agent's answer sits in the reply (a JSON pointer), for "말 걸어 보기". Left out, the whole body is the answer. */
+    replyPointer: z.string().max(100).optional(),
+    /** Which preset the form made this from, so editing shows the same few fields again. */
+    preset: z.string().max(30).optional(),
   })
   .strict()
   .superRefine((c, ctx) => {
@@ -109,6 +119,7 @@ export class TemplateAgent implements HarnessPort {
     path: string,
     signal: AbortSignal,
     body?: string,
+    extra: Readonly<Record<string, string>> = {},
   ): Promise<Response> {
     const { config } = this;
     return this.fetchImpl(joinUrl(config.url, path), {
@@ -117,6 +128,7 @@ export class TemplateAgent implements HarnessPort {
         accept: "application/json",
         ...(body === undefined ? {} : { "content-type": "application/json" }),
         ...config.headers,
+        ...extra,
         ...(this.token ? { [config.authHeader]: `${config.authPrefix}${this.token}` } : {}),
       },
       ...(body === undefined ? {} : { body }),
@@ -141,6 +153,55 @@ export class TemplateAgent implements HarnessPort {
     ];
   }
 
+  /** One question, no tools: the start request with the text as the prompt, and the answer read from the reply. */
+  async talk(req: TalkRequest): Promise<TalkReply> {
+    const c = this.config;
+    if (c.mode !== "sync")
+      throw new Error("상태를 물어보는 방식(poll)의 에이전트는 아직 말 걸어 보기를 못 해요");
+    const vars = varsOf(
+      {
+        runId: req.runId,
+        agentId: c.agentId,
+        seed: 0,
+        prompt: req.text,
+        limits: { maxToolCalls: 0, timeLimitSeconds: 60 },
+        tools: { specs: [], call: async () => ({ ok: false, error: "툴이 없어요" }) },
+        signal: req.signal,
+        ...(req.telemetry ? { traceparent: req.telemetry.traceparent } : {}),
+      },
+      { remoteId: "" },
+    );
+    const r = await this.request(
+      c.startMethod,
+      fillPath(c.startPath, vars),
+      req.signal,
+      fillJson(c.startBody, vars),
+      req.telemetry?.headers,
+    );
+    const text = await r.text();
+    if (!r.ok) throw new Error(`${r.status}로 답했어요: ${snippet(text)}`);
+    if (!c.replyPointer) return { text, toolCalls: 0 };
+    const answer = pointerGet(safeJson(text), c.replyPointer);
+    if (typeof answer !== "string")
+      throw new Error(`답에서 ${c.replyPointer} 자리를 찾지 못했어요: ${snippet(text)}`);
+    const reply = safeJson(text) as
+      | { model?: unknown; usage?: Record<string, unknown> }
+      | undefined;
+    const tokens = (k: string) =>
+      typeof reply?.usage?.[k] === "number" ? (reply.usage[k] as number) : undefined;
+    return {
+      text: answer,
+      ...(typeof reply?.model === "string" ? { model: reply.model } : {}),
+      ...(tokens("prompt_tokens") === undefined
+        ? {}
+        : { inputTokens: tokens("prompt_tokens") as number }),
+      ...(tokens("completion_tokens") === undefined
+        ? {}
+        : { outputTokens: tokens("completion_tokens") as number }),
+      toolCalls: 0,
+    };
+  }
+
   async run(req: AgentRunRequest): Promise<AgentRunOutcome> {
     const c = this.config;
     if (!req.tools.mcpUrl && c.startBody.includes("{{mcpUrl}}"))
@@ -157,6 +218,7 @@ export class TemplateAgent implements HarnessPort {
         fillPath(c.startPath, vars),
         wall,
         fillJson(c.startBody, vars),
+        req.telemetry?.headers,
       );
       if (!r.ok)
         return {
@@ -258,6 +320,69 @@ export const httpTemplateConnector = defineConnector({
       "시작 요청 본문에 {{mcpUrl}} 을 쓰면 이 실행 전용 툴 주소가 들어가요. 에이전트는 그 주소의 MCP 서버를 툴로 쓰면 돼요.",
       "본문에 {{mcpUrl}} 이 없으면 테라리움의 툴을 쓰지 않는 에이전트로 보고 실행해요(점수가 나오지 않을 수 있어요).",
       "에이전트가 테라리움 서버 주소에 연결할 수 있어야 해요. 테라리움 주소가 localhost이면 서버 설정의 publicUrl 을 바꿔 주세요.",
+      "OpenAI 호환 채팅은 툴을 받지 못하고 한 번 답하고 끝나요. 말이 통하는지 볼 때 쓰고, 점수를 재는 실험에는 툴을 쓰는 에이전트를 연결해요.",
+    ],
+    presets: [
+      {
+        key: "openai",
+        label: "OpenAI 호환 채팅",
+        description:
+          "OpenAI 호환 채팅 API에 연결해요. vLLM, LiteLLM, Ollama 같은 모델 서버도 이 모양이에요. 주소, 모델, 토큰만 적어요.",
+        fields: [
+          {
+            key: "url",
+            label: "주소",
+            type: "url",
+            required: true,
+            placeholder: "https://llm.internal/v1",
+            help: "끝이 /v1인 주소를 적어요. /chat/completions는 알아서 붙여요.",
+          },
+          { key: "model", label: "모델 이름", type: "text", required: true, placeholder: "gpt-4o" },
+          {
+            key: "token",
+            label: "토큰",
+            type: "secret",
+            help: "입력하면 서버에 암호화해서 저장하고, 저장한 뒤에는 다시 보여 주지 않아요.",
+          },
+        ],
+        fixed: {
+          startBody:
+            '{"model": "[[model]]", "messages": [{"role": "user", "content": "{{prompt}}"}]}',
+          replyPointer: "/choices/0/message/content",
+          preset: "openai",
+        },
+        urlPath: { into: "startPath", append: "/chat/completions" },
+        promise: {
+          request:
+            'POST {주소}/chat/completions · {"model": "…", "messages": [{"role": "user", "content": "과제 문장"}]}',
+          reply: '{"choices": [{"message": {"content": "답"}}]}',
+        },
+      },
+      {
+        key: "simple",
+        label: "간단 JSON",
+        description:
+          "주소 하나만 있는 API에 연결해요. 과제 문장과 툴 서버 주소를 보내고, 답을 text로 받아요.",
+        fields: [
+          {
+            key: "url",
+            label: "주소",
+            type: "url",
+            required: true,
+            placeholder: "https://agent.internal/ask",
+          },
+        ],
+        fixed: {
+          startBody: '{"prompt": "{{prompt}}", "tools": "{{mcpUrl}}"}',
+          replyPointer: "/text",
+          preset: "simple",
+        },
+        urlPath: { into: "startPath" },
+        promise: {
+          request: 'POST {주소} · {"prompt": "과제 문장", "tools": "툴 서버(MCP) 주소"}',
+          reply: '{"text": "답"}',
+        },
+      },
     ],
     fromScreen: true,
     fields: [
@@ -347,6 +472,13 @@ export const httpTemplateConnector = defineConnector({
       },
       { key: "cancelPath", label: "중지 주소", type: "text", placeholder: "/runs/{{remoteId}}" },
       { key: "pollSeconds", label: "상태를 묻는 간격(초)", type: "number", default: 2 },
+      {
+        key: "replyPointer",
+        label: "응답에서 답의 위치",
+        type: "text",
+        placeholder: "/text",
+        help: "말 걸어 보기에서 답으로 보여 줄 값의 위치예요. 비워 두면 응답 전체를 보여 줘요.",
+      },
     ],
   },
   schema,

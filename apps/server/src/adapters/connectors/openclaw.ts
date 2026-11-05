@@ -17,6 +17,8 @@ import type {
   AgentRunRequest,
   HarnessInfo,
   HarnessPort,
+  TalkReply,
+  TalkRequest,
   ToolCallOutcome,
 } from "@terrarium/core/experiments";
 import { z } from "zod";
@@ -24,7 +26,9 @@ import type { FetchLike } from "../fetch";
 import { credential, credentialFields } from "./credential";
 import { base, EnvName, Url } from "./fields";
 import { Rest } from "./rest";
+import { chatTalk } from "./talk";
 import { defineConnector } from "./types";
+import { traceHeaders } from "./util";
 
 const SYSTEM_PROMPT = [
   "You are an on-call engineer for a data center. Investigate with the tools you are given;",
@@ -119,6 +123,10 @@ export class OpenClawHarness implements HarnessPort {
       }));
   }
 
+  talk(req: TalkRequest): Promise<TalkReply> {
+    return chatTalk(this.rest, `openclaw/${req.agentId}`, req);
+  }
+
   async run(req: AgentRunRequest): Promise<AgentRunOutcome> {
     const messages: Message[] = [
       { role: "system", content: SYSTEM_PROMPT },
@@ -184,7 +192,7 @@ export class OpenClawHarness implements HarnessPort {
         })),
         tool_choice: "auto",
       },
-      req.traceparent ? { traceparent: req.traceparent } : {},
+      traceHeaders(req),
     );
     used.inputTokens += body.usage?.prompt_tokens ?? 0;
     used.outputTokens += body.usage?.completion_tokens ?? 0;

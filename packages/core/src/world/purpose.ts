@@ -9,6 +9,8 @@ export const ROOM_PURPOSES = [
   "battery",
   "noc",
   "cleanroom",
+  "storage",
+  "lobby",
 ] as const;
 export type RoomPurpose = (typeof ROOM_PURPOSES)[number];
 
@@ -20,6 +22,8 @@ export const ROOM_PURPOSE_LABELS: Readonly<Record<RoomPurpose, string>> = {
   battery: "배터리실",
   noc: "관제실(NOC)",
   cleanroom: "클린룸",
+  storage: "창고",
+  lobby: "로비·하역장",
 };
 
 /** The purpose a room was given; rooms made before purposes existed are data halls. */

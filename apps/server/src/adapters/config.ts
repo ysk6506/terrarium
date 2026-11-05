@@ -11,6 +11,36 @@ import { InvalidValueError, josa } from "@terrarium/core/kernel";
 import { z } from "zod";
 import { CONNECTORS, connectorOf } from "./connectors";
 import { EnvName, Id, Url } from "./connectors/fields";
+import { TELEMETRY_KINDS, telemetryKindOf } from "./telemetry";
+
+/**
+ * Where one harness's traces pile up (ADR-0085): `none`, `default` (the server's `telemetry`), or a telemetry
+ * kind's own settings (`{"kind": "langfuse", "host": …}`). The kind checks the rest, so a new tool needs no change here.
+ */
+const TracesEntry = z
+  .object({ kind: z.string() })
+  .passthrough()
+  .transform(({ kind, ...settings }, ctx) => {
+    if (kind === "none" || kind === "default")
+      return { kind, config: {} as Record<string, unknown> };
+    const found = telemetryKindOf(kind);
+    if (!found) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["kind"],
+        message: `종류는 'none', 'default', ${TELEMETRY_KINDS.map((k) => `'${k.spec.kind}'`).join(", ")} 중 하나여야 해요`,
+      });
+      return z.NEVER;
+    }
+    const parsed = parseWith(found.schema, { ...settings, kind });
+    if (parsed.ok) {
+      const { kind: _, ...config } = parsed.value as Record<string, unknown>;
+      return { kind, config };
+    }
+    for (const i of parsed.issues)
+      ctx.addIssue({ code: "custom", path: i.path ? i.path.split(".") : [], message: i.message });
+    return z.NEVER;
+  });
 
 /**
  * One harness or agent in the config file: its kind, an id and a name, then what that connector asks for.
@@ -22,9 +52,11 @@ const HarnessEntry = z
     id: Id,
     name: z.string().optional(),
     metadata: MetadataBody.optional(),
+    /** Where this harness's traces pile up; left out, the old rule (the server's default for a harness that says it emits traces). */
+    traces: TracesEntry.optional(),
   })
   .passthrough()
-  .transform(({ metadata, ...entry }, ctx) => {
+  .transform(({ metadata, traces, ...entry }, ctx) => {
     const connector = connectorOf(entry.kind);
     if (!connector) {
       ctx.addIssue({
@@ -35,7 +67,12 @@ const HarnessEntry = z
       return z.NEVER;
     }
     const parsed = parseWith(connector.schema, entry);
-    if (parsed.ok) return { ...(parsed.value as HarnessConfig), ...(metadata ? { metadata } : {}) };
+    if (parsed.ok)
+      return {
+        ...(parsed.value as HarnessConfig),
+        ...(metadata ? { metadata } : {}),
+        ...(traces ? { traces } : {}),
+      };
     for (const i of parsed.issues)
       ctx.addIssue({ code: "custom", path: i.path ? i.path.split(".") : [], message: i.message });
     return z.NEVER;

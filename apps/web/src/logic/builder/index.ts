@@ -54,6 +54,16 @@ export {
   MIN_FILL_M,
 } from "./fill-plan";
 export {
+  assertFloorRoom,
+  type FloorNote,
+  floorFullRefusal,
+  floorNote,
+  floorNoteText,
+  moreRacksText,
+  racksGainText,
+  squareMetres,
+} from "./floor-notes";
+export {
   gridOf,
   movePlan,
   nextRotation,
@@ -117,6 +127,7 @@ export {
   structureOfM,
   tileCount,
 } from "./pieces";
+export { assertPower, megawatts, type SiteUse, siteUse, siteUseText } from "./power";
 export { PREVIEW_SECONDS, type Preview, type PreviewFrame, preview } from "./preview";
 export {
   type Elevation,
@@ -127,6 +138,7 @@ export {
   type Slot,
   unitsOf,
 } from "./rack";
+export type { Way } from "./refusal";
 export { Refusal, SIDE_LABELS, SIDES, type Side, shapeOf } from "./reshape";
 export { roomFull, WIDEN_ROOM } from "./room-space";
 export {
@@ -143,6 +155,14 @@ export {
   type SceneLabel,
   sceneOf,
 } from "./scene";
+export {
+  OUTSIDE_PICKS,
+  type OutsideWay,
+  outsideWays,
+  type RoomSources,
+  roomSources,
+  type SourceGroup,
+} from "./sources";
 export { type LevelStats, levelStats, TYPICAL_UTIL } from "./stats";
 export {
   autoWireRack,

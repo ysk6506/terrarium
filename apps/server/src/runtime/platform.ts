@@ -5,9 +5,10 @@
 import { Catalog } from "@terrarium/core/catalog";
 import type { ConnectionView, HarnessView, MetaView } from "@terrarium/core/contract";
 import { DEFAULT_LIMITS, MAX_SEEDS, type SchedulerLimits } from "@terrarium/core/experiments";
-import { type Adapters, SecretBox } from "../adapters";
+import { type Adapters, adapterOfPort, SecretBox } from "../adapters";
 import { AgentVersions } from "./agent-versions";
 import { BlueprintCache } from "./blueprint-cache";
+import type { TryOptions } from "./connection-try";
 import { Connections } from "./connections";
 import type { PlatformContext, Viewer } from "./context";
 import { Dispatcher } from "./dispatcher";
@@ -23,7 +24,15 @@ import { Worlds } from "./worlds";
 export interface PlatformOptions {
   readonly adapters: Pick<Adapters, "store" | "harnesses" | "sources" | "telemetry"> &
     Partial<
-      Pick<Adapters, "harnessConfigs" | "connect" | "allowedHosts" | "secretBox" | "retention">
+      Pick<
+        Adapters,
+        | "harnessConfigs"
+        | "connect"
+        | "allowedHosts"
+        | "secretBox"
+        | "retention"
+        | "telemetryDefault"
+      >
     >;
   readonly host: SessionHost;
   readonly gateway?: ToolGateway;
@@ -37,6 +46,8 @@ export interface PlatformOptions {
   readonly graceMs?: number;
   /** How long to wait for a harness to list its agents, ms (tests shorten this). */
   readonly agentsTimeoutMs?: number;
+  /** How "말 걸어 보기" waits (tests shorten this). */
+  readonly tryOptions?: TryOptions;
 }
 
 /** What the meta and the experiment form need of a connection: who it is and which agents it has. */
@@ -83,6 +94,12 @@ export function withCapacity(
 function connectionsOf(options: PlatformOptions, stamps: Stamps): Connections {
   const { adapters } = options;
   const configs = new Map((adapters.harnessConfigs ?? []).map((c) => [c.id, c]));
+  // The server's own telemetry, as the adapter a connection that says "default" reads from.
+  const defaultTelemetry =
+    adapters.telemetryDefault ??
+    (adapters.telemetry
+      ? adapterOfPort(adapters.telemetry.port, adapters.telemetry.name)
+      : undefined);
   return new Connections({
     store: adapters.store,
     stamps,
@@ -96,6 +113,8 @@ function connectionsOf(options: PlatformOptions, stamps: Stamps): Connections {
     ...(adapters.retention ? { retention: adapters.retention } : {}),
     ...(adapters.allowedHosts ? { allowedHosts: adapters.allowedHosts } : {}),
     ...(options.agentsTimeoutMs ? { agentsTimeoutMs: options.agentsTimeoutMs } : {}),
+    ...(options.tryOptions ? { tryOptions: options.tryOptions } : {}),
+    ...(defaultTelemetry ? { defaultTelemetry } : {}),
     ...(options.gateway?.slotUrl
       ? { slotUrl: (s: string) => options.gateway?.slotUrl?.(s) ?? "" }
       : {}),

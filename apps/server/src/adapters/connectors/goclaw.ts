@@ -15,18 +15,22 @@
  */
 import type {
   AgentInfo,
+  AgentInventory,
   AgentRunOutcome,
   AgentRunRequest,
   HarnessInfo,
   HarnessPort,
+  TalkReply,
+  TalkRequest,
 } from "@terrarium/core/experiments";
 import { z } from "zod";
 import type { FetchLike } from "../fetch";
 import { credential, credentialFields } from "./credential";
 import { base, EnvName, Url } from "./fields";
 import { Rest } from "./rest";
+import { chatTalk } from "./talk";
 import { defineConnector } from "./types";
-import { KeyedQueue } from "./util";
+import { KeyedQueue, traceHeaders } from "./util";
 
 /** Names of tools reach the agent as `mcp_<prefix>_<tool>`; the prompt says so, or the agent looks for bare names. */
 const TOOL_PREFIX = "mcp_terrarium";
@@ -39,6 +43,8 @@ const schema = z
     /** Whose agents these are: GoClaw scopes agents to a user (header X-GoClaw-User-Id). */
     userId: z.string().min(1).max(100).default("terrarium"),
     requestTimeoutSeconds: z.number().min(10).max(7200).default(1800),
+    /** Put the agents the gateway marks as not active in the list too (each marked with why). */
+    showHidden: z.boolean().default(false),
   })
   .strict();
 
@@ -54,6 +60,23 @@ interface AgentRow {
   readonly status?: string;
   readonly agent_type?: string;
 }
+/** What a gateway might say to mean "more follows": a cursor, a flag, or a total bigger than what came. */
+function nextPage(body: unknown, got: number): string | undefined {
+  if (body === null || typeof body !== "object" || Array.isArray(body)) return undefined;
+  const o = body as Record<string, unknown>;
+  const cursor = [o.next_cursor, o.nextCursor, o.next].find(
+    (c): c is string => typeof c === "string" && c !== "",
+  );
+  if (cursor) return `cursor=${encodeURIComponent(cursor)}`;
+  const more = o.has_more === true || (typeof o.total === "number" && got < o.total);
+  return more ? `offset=${got}` : undefined;
+}
+
+const MAX_PAGES = 50;
+
+/** The phrase that says why an agent is left out of the list. */
+const hiddenWhy = (status: string): string => `status ${status}`;
+
 interface Completion {
   readonly model?: string;
   readonly usage?: { readonly prompt_tokens?: number; readonly completion_tokens?: number };
@@ -101,30 +124,89 @@ export class GoClawHarness implements HarnessPort {
     );
   }
 
-  async agents(): Promise<readonly AgentInfo[]> {
-    const list = await this.rest.json<{ agents?: readonly AgentRow[] }>(
-      "에이전트 목록",
-      "GET",
-      "/v1/agents",
-      AbortSignal.timeout(10_000),
-    );
-    const out: AgentInfo[] = [];
-    for (const a of list.agents ?? []) {
-      const key = a.agent_key;
-      if (!key || (a.status && a.status !== "active")) continue;
-      if (a.id) this.uuids.set(key, a.id);
-      out.push({
-        id: key,
-        name: a.display_name || key,
-        ...(a.frontmatter ? { description: a.frontmatter } : {}),
-        ...(a.model ? { model: a.model } : {}),
-        facts: {
-          ...(a.provider ? { provider: a.provider } : {}),
-          ...(a.agent_type ? { agentType: a.agent_type } : {}),
-        },
-      });
+  /**
+   * Every row the gateway lists. GoClaw answers `GET /v1/agents` with one `{"agents": [...]}` and no paging
+   * (read from internal/http/agents.go), but a gateway that adds a cursor or `total`+`offset` is followed to the end.
+   */
+  private async listAll(): Promise<{ rows: AgentRow[]; missing?: string }> {
+    const rows: AgentRow[] = [];
+    const seen = new Set<string>();
+    let query: string | undefined;
+    for (let page = 0; page < MAX_PAGES; page++) {
+      const body = await this.rest.json<unknown>(
+        "에이전트 목록",
+        "GET",
+        query ? `/v1/agents?${query}` : "/v1/agents",
+        AbortSignal.timeout(10_000),
+      );
+      const list = Array.isArray(body) ? body : (body as { agents?: unknown } | undefined)?.agents;
+      if (!Array.isArray(list))
+        return {
+          rows,
+          missing: `응답에 agents 배열이 없어요(받은 것: ${Object.keys((body ?? {}) as object).join(", ") || "빈 응답"})`,
+        };
+      const fresh = (list as AgentRow[]).filter((a) => !seen.has(a.agent_key ?? a.id ?? ""));
+      for (const a of fresh) seen.add(a.agent_key ?? a.id ?? "");
+      rows.push(...fresh);
+      query = fresh.length === 0 ? undefined : nextPage(body, rows.length);
+      if (!query) break;
     }
-    return out;
+    return { rows };
+  }
+
+  private infoOf(a: AgentRow, key: string, hidden?: string): AgentInfo {
+    if (a.id) this.uuids.set(key, a.id);
+    return {
+      id: key,
+      name: a.display_name || key,
+      ...(a.frontmatter ? { description: a.frontmatter } : {}),
+      ...(a.model ? { model: a.model } : {}),
+      ...(hidden ? { hidden } : {}),
+      facts: {
+        ...(a.provider ? { provider: a.provider } : {}),
+        ...(a.agent_type ? { agentType: a.agent_type } : {}),
+      },
+    };
+  }
+
+  async inventory(): Promise<AgentInventory> {
+    const { rows, missing } = await this.listAll();
+    const shown: AgentInfo[] = [];
+    const hidden = new Map<string, AgentInfo[]>();
+    for (const a of rows) {
+      const key = a.agent_key;
+      if (!key) continue;
+      const why = a.status && a.status !== "active" ? hiddenWhy(a.status) : undefined;
+      if (!why) shown.push(this.infoOf(a, key));
+      else hidden.set(why, [...(hidden.get(why) ?? []), this.infoOf(a, key, why)]);
+    }
+    const notes =
+      shown.length > 1
+        ? []
+        : [
+            `GoClaw는 사용자 ID가 소유자일 때만 모든 에이전트를 보여 줘요. 지금 사용자 ID는 '${this.config.userId}'예요.`,
+            "소유자가 아니면 그 사용자가 만들었거나 공유받은 에이전트만 보여요. 소유자 ID는 기본이 'system'이에요.",
+          ];
+    return {
+      shown,
+      hidden: [...hidden].map(([reason, agents]) => ({ reason, agents })),
+      includesHidden: this.config.showHidden,
+      ...(rows.length === 0
+        ? { empty: missing ?? "응답의 agents 배열이 비어 있어요" }
+        : missing
+          ? { empty: missing }
+          : {}),
+      notes,
+    };
+  }
+
+  async agents(): Promise<readonly AgentInfo[]> {
+    const { shown, hidden } = await this.inventory();
+    return this.config.showHidden ? [...shown, ...hidden.flatMap((h) => h.agents)] : shown;
+  }
+
+  async talk(req: TalkRequest): Promise<TalkReply> {
+    return chatTalk(this.rest, `goclaw:${req.agentId}`, req);
   }
 
   run(req: AgentRunRequest): Promise<AgentRunOutcome> {
@@ -188,7 +270,7 @@ export class GoClawHarness implements HarnessPort {
           stream: false,
           user: `terrarium-${req.runId}`,
         },
-        req.traceparent ? { traceparent: req.traceparent } : {},
+        traceHeaders(req),
       );
       used.inputTokens = body?.usage?.prompt_tokens ?? 0;
       used.outputTokens = body?.usage?.completion_tokens ?? 0;
@@ -246,8 +328,15 @@ export const goClawConnector = defineConnector({
         label: "사용자 ID",
         type: "text",
         default: "terrarium",
+        help: "GoClaw는 이 사용자가 소유자일 때만 모든 에이전트를 보여 줘요(기본 소유자 ID는 system). X-GoClaw-User-Id로 보내요.",
+      },
+      {
+        key: "showHidden",
+        label: "쉬는 에이전트도 목록에 넣기",
+        type: "boolean",
+        default: false,
         advanced: true,
-        help: "GoClaw가 에이전트를 사용자별로 나눠 볼 때 쓰는 이름(X-GoClaw-User-Id).",
+        help: "GoClaw에서 상태가 active가 아닌 에이전트(예: inactive)는 기본으로 숨겨요. 켜면 목록에 넣고 이유를 붙여요.",
       },
       {
         key: "requestTimeoutSeconds",

@@ -15,6 +15,12 @@ export {
   type Worker,
 } from "./activity";
 export {
+  type CensusText,
+  censusText,
+  hiddenWarning,
+  reasonPhrase,
+} from "./agent-census";
+export {
   addRequest,
   canEditVersions,
   changeText,
@@ -38,6 +44,28 @@ export {
 export * as builder from "./builder";
 export { type Box, type LineChart, lineChart, niceTicks, scoreBar } from "./charts";
 export {
+  advancedChanges,
+  advancedFields,
+  CUSTOM_PRESET,
+  presetOf,
+  presetProblems,
+  presetSettings,
+  splitAddress,
+  typedUrl,
+} from "./connection-presets";
+export {
+  adapterSpecOf,
+  blankTraces,
+  TRACES_QUESTION,
+  type TracesForm,
+  tracesFormOf,
+  tracesKind,
+  tracesLabel,
+  tracesOptions,
+  tracesProblems,
+  tracesRequest,
+} from "./connection-traces";
+export {
   blankForm,
   type ConnectionForm,
   configOf,
@@ -52,6 +80,7 @@ export {
   type MetaRow,
   metadataOf,
   metaProblems,
+  settingsOf,
   TRANSPORT_LABELS,
 } from "./connections";
 export * as hallCrew from "./crew";
@@ -98,8 +127,20 @@ export {
   type PageName,
   parseLocation,
   SECTIONS,
+  SETTINGS_SECTION,
   sectionOf,
   titleOf,
 } from "./router";
 export * as scenario from "./scenario";
+export {
+  DEFAULT_SETTINGS,
+  readSettings,
+  SETTING_DEFS,
+  SETTINGS_KEY,
+  type SettingDef,
+  type SettingKey,
+  type Settings,
+  saveSetting,
+} from "./settings";
+export { DEFAULT_QUESTION, type Fact, traceAdvice, tryDetail, tryFacts } from "./try-talk";
 export * as world3d from "./world3d";

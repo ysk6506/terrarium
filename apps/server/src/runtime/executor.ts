@@ -149,8 +149,10 @@ function harnessInfo(
   harness: HarnessPort,
   outcome: AgentRunOutcome,
   traceparent: string,
+  hasAdapter: boolean,
 ): HarnessRunInfo {
-  const traceId = harness.info.telemetry === "clickstack" ? traceparent.split("-")[1] : undefined;
+  const traced = hasAdapter || harness.info.telemetry === "clickstack";
+  const traceId = traced ? traceparent.split("-")[1] : undefined;
   return {
     ...(traceId ? { traceId } : {}),
     ...outcome.harness,
@@ -291,7 +293,11 @@ export async function executeRun(
     harness.info.toolTransport === "mcp"
       ? deps.gateway?.open(run.id, endpoint, harness.info.mcpSlot)
       : undefined;
-  const traceparent = newTraceparent();
+  // Where this connection's traces pile up decides what the harness is asked to carry (ADR-0085).
+  const attachment = deps.harnesses
+    .telemetryOf?.(experiment.recipe.harnessId)
+    ?.attach({ runId: run.id });
+  const traceparent = attachment?.traceparent ?? newTraceparent();
   const w = watch(deps, session, outside);
   try {
     const outcome = await harness
@@ -307,6 +313,7 @@ export async function executeRun(
         tools: { ...endpoint, ...(exposed ? { mcpUrl: exposed.url } : {}) },
         signal: w.controller.signal,
         traceparent,
+        ...(attachment ? { telemetry: attachment } : {}),
       })
       .catch(
         (err: unknown): AgentRunOutcome => ({ status: "error", message: (err as Error).message }),
@@ -315,7 +322,7 @@ export async function executeRun(
       run,
       session,
       outcome,
-      info: harnessInfo(harness, outcome, traceparent),
+      info: harnessInfo(harness, outcome, traceparent, attachment !== undefined),
       calls: counter.calls,
       timedOut: w.timedOut(),
       stopped: stopReason(),

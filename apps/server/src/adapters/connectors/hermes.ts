@@ -24,7 +24,7 @@ import { credential, credentialFields } from "./credential";
 import { base, EnvName, Url } from "./fields";
 import { Rest } from "./rest";
 import { defineConnector } from "./types";
-import { KeyedQueue, sleep } from "./util";
+import { KeyedQueue, sleep, traceHeaders } from "./util";
 
 const schema = z
   .object({
@@ -137,7 +137,7 @@ export class HermesHarness implements HarnessPort {
         "/v1/runs",
         req.signal,
         { input: taskText(req.prompt) },
-        req.traceparent ? { traceparent: req.traceparent } : {},
+        traceHeaders(req),
       );
       runId = started?.run_id;
       if (!runId) throw new Error("Hermes가 실행 번호를 돌려주지 않았어요");

@@ -12,10 +12,10 @@ import {
 } from "@terrarium/core/sources/realimport";
 import { afterAll, describe, expect, test } from "vitest";
 import { buildAdapters } from "./build";
-import { attributeValue, ClickStackTelemetry, logOf, spanOf } from "./clickstack";
 import { BUILTIN_HARNESS_ID, loadConfig, parseConfig, secret } from "./config";
 import { GraphSource, type ReadOnlyGraph } from "./falkordb";
 import { SqliteStore } from "./sqlite-store";
+import { attributeValue, ClickStackTelemetry, logOf, spanOf } from "./telemetry/clickstack";
 import { FakeFetch } from "./test-support/fake-fetch";
 
 const dir = mkdtempSync(path.join(tmpdir(), "terrarium-adapters-"));

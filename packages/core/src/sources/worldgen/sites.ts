@@ -44,6 +44,11 @@ export interface SiteShape {
   readonly areaM2?: number;
   /** Place on the notional map of all sites: x grows east, y grows south, both 0..100. */
   readonly map: { readonly x: number; readonly y: number };
+  /**
+   * What the site's grid connection gives, in megawatts (REQ-076). Only the Hwaseong HPC centre's 108 MW is a
+   * published figure; the others are guesses from how big the site is, and say so.
+   */
+  readonly power: { readonly mw: number; readonly estimated: boolean };
   /** Where fabs stand (the blue roofs on the map), in the order a campus fills them, corners in the outline's frame. */
   readonly fabs?: readonly SiteSlot[];
   /** Where data-centre buildings stand, in the order a campus fills them. */
@@ -82,6 +87,7 @@ export const SITE_SHAPES: Readonly<Record<SiteId, SiteShape>> = {
       [1525, 1270],
     ],
     map: { x: 62, y: 22 },
+    power: { mw: 60, estimated: true },
     // The names are the lines the news gives Giheung (S1 is the 12-inch foundry line, 6 the 8-inch one, NRD-K
     // the research fab); which blue roof carries which name is a reading of the biggest first.
     fabs: [
@@ -122,6 +128,7 @@ export const SITE_SHAPES: Readonly<Record<SiteId, SiteShape>> = {
       [1095, 40],
     ],
     map: { x: 50, y: 38 },
+    power: { mw: 108, estimated: false },
     // Read off the Newsroom render, the satellite picture with the line names and the owner's marks; the
     // slots are the blue roofs of the owner's map. The order is the order a campus builds them.
     fabs: [
@@ -133,8 +140,9 @@ export const SITE_SHAPES: Readonly<Record<SiteId, SiteShape>> = {
       { x: 326, y: 612, w: 190, d: 110, name: "12·13라인" },
       { x: 412, y: 834, w: 210, d: 120, name: "S4" },
     ],
-    // The HPC centre stands on the lawn lot in front of V1 (eleven floors, about 6,800 m² on the ground).
-    dcs: [{ x: 1090, y: 1600, w: 150, d: 110, name: "HPC센터" }],
+    // The HPC centre stands on the lawn lot in front of V1: 95 x 72 m, the 6,806 m² building footprint of the
+    // architect's page (eleven floors above ground and two below, 108 MW). Its size is locked to that.
+    dcs: [{ x: 1090, y: 1600, w: 95, d: 72, name: "HPC센터" }],
     // The three DSR towers (A, B, C), about 3,900 m² a floor each, in the north-east corner of the campus.
     labs: [
       { x: 745, y: 240, w: 66, d: 60 },
@@ -171,6 +179,7 @@ export const SITE_SHAPES: Readonly<Record<SiteId, SiteShape>> = {
       [2285, 805],
     ],
     map: { x: 44, y: 62 },
+    power: { mw: 120, estimated: true },
     // Read off the layout drawing (배치도) and the owner's map: the east block runs P1 to P4 from north to
     // south with the complex buildings between, the west block is P6 and P5 (not built yet), the water and
     // power works line the south edge. The order is the order a campus builds them.
@@ -222,6 +231,7 @@ export const SITE_SHAPES: Readonly<Record<SiteId, SiteShape>> = {
     ],
     areaM2: 1_300_000,
     map: { x: 40, y: 10 },
+    power: { mw: 40, estimated: true },
   },
   cheonan: {
     raw: [
@@ -234,6 +244,7 @@ export const SITE_SHAPES: Readonly<Record<SiteId, SiteShape>> = {
     ],
     areaM2: 660_000,
     map: { x: 68, y: 82 },
+    power: { mw: 30, estimated: true },
   },
   onyang: {
     raw: [
@@ -247,6 +258,7 @@ export const SITE_SHAPES: Readonly<Record<SiteId, SiteShape>> = {
     ],
     areaM2: 500_000,
     map: { x: 46, y: 92 },
+    power: { mw: 20, estimated: true },
   },
 };
 

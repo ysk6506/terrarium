@@ -71,7 +71,7 @@ export class AirStage implements AirPort {
     }
     if (this.mounted?.roomId !== cfg.roomId) {
       this.release();
-      const layer = buildAirflowLayer(this.engine, cfg.scene, cfg.air, () => this.host.slow());
+      const layer = buildAirflowLayer(this.engine, cfg.scene, cfg.air);
       if (!building.mountInRoom(cfg.roomId, layer.group)) {
         layer.dispose();
         return;
@@ -168,11 +168,6 @@ export class AirStage implements AirPort {
   setMode(mode: AirMode): void {
     this.mode = mode;
     this.mounted?.layer.setMode(mode);
-  }
-
-  /** The air stopped moving because frames were slow; later layers start in the same mode. */
-  settle(): void {
-    this.mode = "still";
   }
 
   private release(): void {

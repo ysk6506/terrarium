@@ -2,18 +2,18 @@
 title: HTTP API 계약
 kind: spec
 status: active
-last_verified: 2026-11-04
+last_verified: 2026-11-05
 covers:
   - packages/core/src/contract/routes.ts
   - packages/core/src/contract/errors.ts
   - packages/core/src/contract/views.ts
-covers_hash: 28929660247eb9cf
+covers_hash: c4fb9091cde743eb
 verification_log:
-  - "2026-10-30: 세계 활동 스트림과 호출 이벤트 effect·targets를 routes.ts, views.ts, handlers와 대조해 확인했다 (ADR-0041)"
   - "2026-10-30: 2026-10-30: routes.ts의 연결(listConnectors~deleteConnection)과 에이전트 버전 4개 경로를 표와 '연결' 절에 더하고, 응답 모양을 connections.ts·views.ts와 대조했다 (REQ-051, REQ-053)"
   - "2026-11-03: 오류 문장이 해요체가 된 것을 오류 모양 절에 적었다 (ADR-0050)"
   - "2026-11-04: calibrate 경로를 contract/routes.ts와 대조해 표에 더했다"
   - "2026-11-04: 2026-11-04: ADR-0073. 서버 오류 문장과 라우트 요약의 말(툴, 더하기, 멈추기, 지우기)만 바뀌었다. 경로와 본문 모양은 그대로, 안내 문구만 도구에서 툴로 고쳤다"
+  - "2026-11-05: routes.ts의 telemetry-adapters와 connections/:id/try 두 경로, 확인 응답의 census·hiddenAgents와 traces를 표와 연결 절에 대조해 더했다 (REQ-079)"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -42,9 +42,11 @@ verification_log:
 | `GET /api/meta` | 누구인지, 하네스·소스·대기열 상태, 곧 지워질 내 연결(`expiring`) | |
 | `GET /api/connectors` | 연결할 수 있는 방식(커넥터)과 입력 칸·툴 안내 | |
 | `GET /api/connections` | 연결된 하네스·에이전트, 발견된 에이전트, 남은 날 | |
+| `GET /api/telemetry-adapters` | 트레이스를 쌓아 두는 곳(ClickStack, Langfuse)과 입력 칸, 서버의 기본값 | |
 | `POST /api/connections/check` | 저장하지 않고 연결해 보기 | |
 | `POST /api/connections` | 하네스를 연결하거나 에이전트를 직접 등록 | |
 | `PUT /api/connections/:id` | 연결 고치기 (만든 사람만. 비밀은 비워 두면 그대로) | |
+| `POST /api/connections/:id/try` | 말 걸어 보기: 에이전트에게 한 문장을 보내 답을 받는다(한 턴, 툴 없음, 60초, 세계 영향 없음) | |
 | `POST /api/connections/:id/keep` | 계속 쓰기: 자동 삭제 기간을 다시 센다 | |
 | `POST /api/connections/:id/check` | 다시 확인해 에이전트 목록 새로 받기 | |
 | `DELETE /api/connections/:id` | 연결 끊기 (만든 사람만) | |
@@ -90,6 +92,9 @@ verification_log:
 - **입력은 커넥터가 설명한다.** `GET /api/connectors`의 `fields`로 화면이 폼을 그린다. 칸 종류 `secret`은 토큰·비밀번호를 직접 입력하는 칸이고, `env`는 서버의 환경 변수 이름이다. `toolGuide`는 그 방식에서 테라리움의 도구가 에이전트에게 가는 길이다.
 - **비밀은 돌아오지 않는다.** 응답의 `secrets`는 값이 있는 칸의 이름이고, `headers`의 비밀 헤더는 이름과 `secret: true`만 있다. 고칠 때(`PUT`) 비밀 칸을 비워 두면 그대로, 값을 쓰면 교체, `null`이면 지운다. 비밀 헤더도 값 없이 보내면 같은 이름의 것을 유지한다.
 - **연결 확인**(`POST …/check`)은 저장하지 않는다. 본문에 `id`를 주면 그 연결을 고쳐 본다(만든 사람만, 비워 둔 비밀은 기존 값). 응답에는 걸린 시간과, 테라리움 주소가 localhost일 때의 안내 같은 `notes`가 있다.
+- **숨긴 에이전트**(REQ-079): 확인 응답과 목록에는 `census`(`shown`, `total`, `hidden: [{reason, count}]`, `includesHidden`, `empty`, `notes`)와 `hiddenAgents`가 있다. 하네스가 목록에서 뺀 에이전트를 몇 개 왜 뺐는지 데이터로 말하고, 문장은 화면이 만든다.
+- **말 걸어 보기**(`POST …/try`, 본문 `{agentId, text}`): 응답 `TryResult`는 `ok`, 답 `text`, 실패면 `error`(상태와 상대의 말), `ms`, `model`, `tokens`, `toolCalls`, `trace`(`name`, `linked`, `spans`, `note`)다. 누구나 걸 수 있다. 연결 방식이 못 하면 `ok:false`로 이유를 준다.
+- **트레이스 쌓는 곳**: 만들기·고치기·확인 본문에 `traces: {kind, config}`(`none`·`default`·`clickstack`·`langfuse`)를 줄 수 있다. 비밀은 비워 두면 그대로, `null`이면 지운다. 응답의 `traces`에는 비밀 값 없이 이름과 설정만 있다.
 - **자동 삭제**: 화면에서 만든 연결은 30일 안 쓰면 지워지고, `daysLeft`·`expiresAt`·`lastUsedAt`이 목록에 있다. `meta.expiring`은 7일 안에 지워질 내 연결이다. `keep`은 누구나 호출할 수 있다.
 - **에이전트 버전**: 응답 `AgentHistoryView`는 `versions`(최신이 먼저. 번호, 날짜, `source`(auto/manual), 만든 사람, 이름표·메모·속성, 스냅샷, 앞 버전과 견준 `changes`, 이 버전으로 만든 실험 수)와, 지금 실험을 만들면 무엇이 쓰일지(`pending`: 첫 버전이거나 `changes`)를 준다. 하네스에 닿지 않으면 `pendingError`. 더하기·고치기·지우기는 연결을 만든 사람만(설정 파일의 연결은 누구나). 번호가 숫자가 아니면 404, 이름표가 빈 글자면 400이다.
 - 에이전트 id에 `/`가 있으면 주소에서 `%2F`로 쓴다.

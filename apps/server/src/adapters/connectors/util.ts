@@ -1,5 +1,5 @@
 /** Small pieces the connectors share: waiting, filling templates, reading a value out of JSON. */
-import type { AgentRunRequest } from "@terrarium/core/experiments";
+import type { AgentRunRequest, TelemetryAttachment } from "@terrarium/core/experiments";
 
 export const sleep = (ms: number, signal: AbortSignal) =>
   new Promise<void>((resolve) => {
@@ -13,6 +13,16 @@ export const sleep = (ms: number, signal: AbortSignal) =>
       { once: true },
     );
   });
+
+/**
+ * The headers a run carries for telemetry (ADR-0085): all of the adapter's when it gave any (`traceparent`,
+ * `x-terrarium-run-id`, `baggage`), else the `traceparent` alone.
+ */
+export const traceHeaders = (req: {
+  readonly traceparent?: string;
+  readonly telemetry?: TelemetryAttachment;
+}): Readonly<Record<string, string>> =>
+  req.telemetry?.headers ?? (req.traceparent ? { traceparent: req.traceparent } : {});
 
 /** What a template can use, named the way the connector's help tells the person. */
 export type Vars = Readonly<Record<string, string | number>>;

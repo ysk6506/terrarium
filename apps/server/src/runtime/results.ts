@@ -15,6 +15,7 @@ import {
   renderMarkdown,
   renderText,
   type Telemetry,
+  type TelemetryAdapter,
   toJsonl,
   type WorldGaps,
 } from "@terrarium/core/analysis";
@@ -43,12 +44,19 @@ export class Results {
     private readonly experiments: Experiments,
   ) {}
 
+  /** Where the traces of this run's connection are read from, if anywhere (ADR-0085). */
+  private async adapterOf(run: RunRecord): Promise<TelemetryAdapter | undefined> {
+    const experiment = await this.ctx.store.getExperiment(run.experimentId);
+    return experiment ? this.ctx.harnesses.telemetryOf?.(experiment.recipe.harnessId) : undefined;
+  }
+
   /** The harness's own trace for a run; nothing (not an error) when there is none to read. */
   private async telemetryOf(run: RunRecord): Promise<Telemetry> {
     const traceId = run.harness?.traceId;
-    if (!traceId || !this.ctx.telemetry) return NO_TELEMETRY;
+    const adapter = traceId ? await this.adapterOf(run) : undefined;
+    if (!adapter) return NO_TELEMETRY;
     try {
-      return await this.ctx.telemetry.port.trace(traceId);
+      return await adapter.fetch(run.id, { traceId });
     } catch {
       return NO_TELEMETRY;
     }
@@ -57,25 +65,26 @@ export class Results {
   async run(id: string): Promise<RunView> {
     const run = must(await this.ctx.store.getRun(id), `실행 ${id}`);
     const experiment = await this.experiments.get(run.experimentId);
+    const adapter = await this.adapterOf(run);
     return {
       run,
       analysis: analyzeRun(run, await this.telemetryOf(run)),
       experiment: await this.experiments.summaryOf(experiment),
       timeline: run.result?.timeline ?? [],
-      hasTelemetry: Boolean(run.harness?.traceId && this.ctx.telemetry),
+      hasTelemetry: Boolean(run.harness?.traceId && adapter),
+      ...(adapter ? { telemetryName: adapter.name } : {}),
     };
   }
 
   async telemetry(id: string): Promise<Telemetry> {
     const run = must(await this.ctx.store.getRun(id), `실행 ${id}`);
     const traceId = run.harness?.traceId;
-    if (!traceId || !this.ctx.telemetry) return NO_TELEMETRY;
+    const adapter = traceId ? await this.adapterOf(run) : undefined;
+    if (!adapter) return NO_TELEMETRY;
     try {
-      return await this.ctx.telemetry.port.trace(traceId);
+      return await adapter.fetch(run.id, { traceId });
     } catch (err) {
-      throw new UnavailableError(
-        `${this.ctx.telemetry.name}에 연결할 수 없어요: ${(err as Error).message}`,
-      );
+      throw new UnavailableError(`${adapter.name}에 연결할 수 없어요: ${(err as Error).message}`);
     }
   }
 

@@ -3,7 +3,7 @@
  * and secret headers sealed, the rest in the open; addresses checked; headers put on every request. These
  * are plain functions with no registry in them, so `Connections` is left with keeping and rebuilding.
  */
-import type { ApiIssue, CheckConnectionRequest } from "@terrarium/core/contract";
+import type { ApiIssue, CheckConnectionRequest, ConnectorField } from "@terrarium/core/contract";
 import {
   type ConnectionCheck,
   type ConnectionHeader,
@@ -11,6 +11,14 @@ import {
 } from "@terrarium/core/contract";
 import type { ConnectionRecord, HarnessPort } from "@terrarium/core/experiments";
 import type { Connector, FetchLike, SecretBox } from "../adapters";
+import { NO_AGENTS, survey } from "./connection-agents";
+
+export { within } from "./connection-agents";
+
+/** Anything that describes a form: a connector, or a telemetry kind. */
+export interface FormSource {
+  readonly spec: { readonly fields: readonly ConnectorField[] };
+}
 
 export const problem = (path: string, message: string): ApiIssue => ({ path, message });
 
@@ -67,18 +75,6 @@ export function slug(name: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 40);
-}
-
-export async function within<T>(work: Promise<T>, ms: number): Promise<T> {
-  let timer: NodeJS.Timeout | undefined;
-  const late = new Promise<never>((_, reject) => {
-    timer = setTimeout(() => reject(new Error(`${Math.round(ms / 1000)}초 안에 답이 없어요`)), ms);
-  });
-  try {
-    return await Promise.race([work, late]);
-  } finally {
-    clearTimeout(timer);
-  }
 }
 
 /** The metadata a config file entry carries: only text values count. */
@@ -144,16 +140,29 @@ export function toolsNotes(
 /** Connect and ask for the agents; the outcome is a report, never a throw. */
 export async function probe(port: HarnessPort, timeoutMs: number): Promise<ConnectionCheck> {
   const started = Date.now();
+  const canTalk = typeof port.talk === "function";
   try {
-    const agents = await within(port.agents(), timeoutMs);
+    const found = await survey(port, timeoutMs);
     return {
       ok: true,
-      agents,
+      agents: found.agents,
+      census: found.census,
+      hiddenAgents: found.hiddenAgents,
+      canTalk,
       ms: Date.now() - started,
-      notes: agents.length === 0 ? ["연결은 되지만 에이전트를 하나도 찾지 못했어요"] : [],
+      notes: found.census.total === 0 ? ["연결은 되지만 에이전트를 하나도 찾지 못했어요"] : [],
     };
   } catch (err) {
-    return { ok: false, error: messageOf(err), agents: [], ms: Date.now() - started, notes: [] };
+    return {
+      ok: false,
+      error: messageOf(err),
+      agents: [],
+      census: NO_AGENTS.census,
+      hiddenAgents: [],
+      canTalk,
+      ms: Date.now() - started,
+      notes: [],
+    };
   }
 }
 
@@ -162,20 +171,22 @@ export interface Composed {
   readonly config: Record<string, unknown>;
   readonly secrets: Record<string, string>;
   readonly headers: NonNullable<ConnectionRecord["headers"]>;
+  /** Where its traces pile up, when the person said (ADR-0085). */
+  readonly traces?: ConnectionRecord["traces"];
 }
 
 export interface Sealer {
   seal(text: string): string;
 }
 
-interface Typed {
+export interface Typed {
   readonly rest: Record<string, unknown>;
   readonly typed: ReadonlyMap<string, string>;
   readonly cleared: ReadonlySet<string>;
 }
 
 /** Pull the secret fields out of a form's values: typed, cleared with `null`, or left blank. */
-function splitSecrets(
+export function splitSecrets(
   secretKeys: readonly string[],
   values: Readonly<Record<string, unknown>>,
   issues: ApiIssue[],
@@ -194,11 +205,11 @@ function splitSecrets(
 }
 
 /** A typed secret is sealed; a blank one stays as it was unless a server variable was named or it was cleared. */
-function sealSecrets(
+export function sealSecrets(
   secretKeys: readonly string[],
   split: Typed,
   config: Readonly<Record<string, unknown>>,
-  base: ConnectionRecord | undefined,
+  base: { readonly secrets?: Readonly<Record<string, string>> } | undefined,
   box: Sealer,
   issues: ApiIssue[],
 ): Record<string, string> {
@@ -250,7 +261,7 @@ function headerOf(
  * replaces it, and `null` removes it. Headers left out stay as they were.
  */
 export function compose(
-  connector: Connector,
+  connector: FormSource,
   input: {
     readonly config: Readonly<Record<string, unknown>>;
     readonly headers?: CheckConnectionRequest["headers"];
@@ -292,6 +303,7 @@ export function recordOf(
     ...(has(fields.metadata) ? { metadata: fields.metadata } : {}),
     ...(composed.headers.length > 0 ? { headers: composed.headers } : {}),
     ...(has(composed.secrets) ? { secrets: composed.secrets } : {}),
+    ...(composed.traces ? { traces: composed.traces } : {}),
     owner: base.owner,
     createdAt: base.createdAt,
     ...(base.lastUsedAt ? { lastUsedAt: base.lastUsedAt } : {}),
@@ -300,7 +312,7 @@ export function recordOf(
 
 /** Secrets and headers as they are used: opened from the record. */
 export function reveal(
-  record: ConnectionRecord,
+  record: Pick<ConnectionRecord, "secrets" | "headers">,
   box: Pick<SecretBox, "open">,
 ): {
   readonly secrets: Record<string, string>;
@@ -325,7 +337,7 @@ export function reveal(
 
 /** Addresses must be allowed; secrets must be named variables the server really has. */
 export function checkFields(
-  connector: Connector,
+  connector: FormSource,
   values: Readonly<Record<string, unknown>>,
   env: Readonly<Record<string, string | undefined>>,
   allowedHosts: readonly string[] | undefined,

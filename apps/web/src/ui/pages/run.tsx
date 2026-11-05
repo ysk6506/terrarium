@@ -1,6 +1,6 @@
 /**
  * One run (REQ-037, REQ-038): what happened in the simulated world, what the agent did about it, how
- * it was scored, and, when ClickStack has it, what the harness recorded.
+ * it was scored, and, when its connection keeps traces somewhere, what the harness recorded.
  */
 
 import type { RunView } from "@terrarium/core/contract";
@@ -15,7 +15,16 @@ import { CallsTable, DiagnosisCompare, ScoreSheet, TelemetryPanel } from "./run-
 
 type Tab = "timeline" | "calls" | "metrics" | "harness";
 
-function Telemetry({ id, has }: { readonly id: string; readonly has: boolean }) {
+function Telemetry({
+  id,
+  has,
+  name,
+}: {
+  readonly id: string;
+  readonly has: boolean;
+  /** The tool this run's connection keeps its traces in. */
+  readonly name: string | undefined;
+}) {
   const { api } = useApp();
   const t = useAsync(
     (signal) =>
@@ -25,12 +34,13 @@ function Telemetry({ id, has }: { readonly id: string; readonly has: boolean }) 
   if (!has)
     return (
       <Note>
-        이 실행은 하네스의 추적 번호를 알려 주지 않았거나, ClickStack이 연결되어 있지 않아요.
+        이 연결에는 트레이스를 쌓는 곳이 정해져 있지 않거나, 이 실행이 추적 번호를 남기지 않았어요.
+        연결 화면에서 '이 하네스의 트레이스는 어디에 쌓이나요?'를 골라 주세요.
       </Note>
     );
   if (t.error) return <Failure error={t.error} retry={t.reload} />;
   if (!t.data) return <Loading />;
-  return <TelemetryPanel telemetry={t.data} />;
+  return <TelemetryPanel telemetry={t.data} {...(name ? { source: name } : {})} />;
 }
 
 function Metrics({
@@ -173,7 +183,9 @@ function Records({ view }: { readonly view: RunView }) {
         {tab === "timeline" && <Timeline entries={view.timeline} />}
         {tab === "calls" && <CallsTable view={view} />}
         {tab === "metrics" && <Metrics worldId={worldId} series={result?.series ?? []} />}
-        {tab === "harness" && <Telemetry id={view.run.id} has={view.hasTelemetry} />}
+        {tab === "harness" && (
+          <Telemetry id={view.run.id} has={view.hasTelemetry} name={view.telemetryName} />
+        )}
       </Tabs>
     </section>
   );

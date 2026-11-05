@@ -2,18 +2,25 @@
  * Connections (REQ-051, REQ-052, REQ-053): the harnesses and agents Terrarium can run experiments on, who
  * connected them, whether they answer, how long until an unused one is removed, and the agents each one has.
  */
-import type { ConnectionView } from "@terrarium/core/contract";
+import type { ConnectionView, ConnectorSpec } from "@terrarium/core/contract";
 import { useState } from "react";
-import { expiryOf, TRANSPORT_LABELS } from "../../logic";
+import { expiryOf, reasonPhrase, TRANSPORT_LABELS, tracesLabel } from "../../logic";
 import { Go, useAction, useApp, useAsync } from "../context";
 import { Button, Dialog, Empty, Failure, Loading, Note, PageHead, ToneDot } from "../kit";
+import { AgentCensusLine } from "./agent-census";
 import { ConnectionDialog } from "./connection-dialog";
+import { TryPanel } from "./connection-try";
 
 type Editing = { readonly view?: ConnectionView } | undefined;
 
-function AgentRows({ view }: { readonly view: ConnectionView }) {
-  if (view.agents.length === 0)
-    return <p className="small muted">{view.status === "ok" ? "에이전트가 없어요." : ""}</p>;
+function AgentRows({
+  view,
+  agents,
+}: {
+  readonly view: ConnectionView;
+  readonly agents: ConnectionView["agents"];
+}) {
+  if (agents.length === 0) return null;
   return (
     <div className="table-wrap">
       <table className="table">
@@ -26,9 +33,16 @@ function AgentRows({ view }: { readonly view: ConnectionView }) {
           </tr>
         </thead>
         <tbody>
-          {view.agents.map((a) => (
+          {agents.map((a) => (
             <tr key={a.id}>
-              <td>{a.name}</td>
+              <td>
+                {a.name}
+                {a.hidden && (
+                  <span className="tag" style={{ marginLeft: 8 }}>
+                    {reasonPhrase(a.hidden)}
+                  </span>
+                )}
+              </td>
               <td>{a.model ?? "—"}</td>
               <td className="muted">{a.description ?? ""}</td>
               <td>
@@ -59,6 +73,7 @@ function Badges({ view }: { readonly view: ConnectionView }) {
       </span>
       <span className="tag">{view.scope === "harness" ? "하네스" : "에이전트 하나"}</span>
       <span className="tag">{TRANSPORT_LABELS[view.toolTransport]}</span>
+      <span className="tag">{tracesLabel(view.traces)}</span>
       {expiry.state !== "none" && (
         <ToneDot tone={expiry.state === "soon" ? "warn" : "neutral"}>{expiry.label}</ToneDot>
       )}
@@ -167,13 +182,53 @@ function SlotAddress({ url }: { readonly url: string }) {
   );
 }
 
+/** The agents of a connection, how many there are and why some are left out, and "모두 보기". */
+function AgentsPart({
+  view,
+  spec,
+  mine,
+  onChanged,
+}: {
+  readonly view: ConnectionView;
+  readonly spec: ConnectorSpec | undefined;
+  readonly mine: boolean;
+  readonly onChanged: () => void;
+}) {
+  const { api } = useApp();
+  const { busy, run } = useAction();
+  const [peek, setPeek] = useState(false);
+  // The owner can make the connection list everything for every experiment; others only look.
+  const persist = mine && spec?.fields.some((f) => f.key === "showHidden") === true;
+  const showing = view.census.includesHidden || peek;
+  const toggle = async () => {
+    if (!persist) return setPeek(!peek);
+    const body = { config: { ...view.config, showHidden: !view.census.includesHidden } };
+    if (await run(() => api.call("updateConnection", { params: { id: view.id }, body }))) {
+      setPeek(false);
+      onChanged();
+    }
+  };
+  const agents = peek ? [...view.agents, ...view.hiddenAgents] : view.agents;
+  return (
+    <>
+      {view.status === "ok" && (
+        <AgentCensusLine census={view.census} showing={showing} onToggle={toggle} busy={busy} />
+      )}
+      <AgentRows view={view} agents={agents} />
+      <TryPanel view={view} agents={agents} />
+    </>
+  );
+}
+
 function ConnectionCard({
   view,
+  spec,
   onEdit,
   onDelete,
   onChanged,
 }: {
   readonly view: ConnectionView;
+  readonly spec: ConnectorSpec | undefined;
   readonly onEdit: () => void;
   readonly onDelete: () => void;
   readonly onChanged: () => void;
@@ -206,7 +261,7 @@ function ConnectionCard({
             {view.error ?? "연결하지 못했어요. '다시 확인'을 눌러 한 번 더 해 보세요."}
           </Note>
         )}
-        <AgentRows view={view} />
+        <AgentsPart view={view} spec={spec} mine={mine} onChanged={onChanged} />
       </div>
     </section>
   );
@@ -298,6 +353,7 @@ export function ConnectionsPage() {
           <ConnectionCard
             key={view.id}
             view={view}
+            spec={(connectors.data ?? []).find((c) => c.kind === view.connector)}
             onEdit={() => setEditing({ view })}
             onDelete={() => setDeleting(view)}
             onChanged={changed}

@@ -64,6 +64,8 @@ export interface RoomSpec {
   readonly purpose?: RoomPurpose;
   /** At least this big (metres), e.g. a plant room larger than its equipment needs. */
   readonly size?: { readonly w: number; readonly d: number };
+  /** Where the room's corner stands on its floor (metres). Given for every room of a floor, they replace the packing. */
+  readonly at?: { readonly x: number; readonly y: number };
   readonly props?: Props;
 }
 

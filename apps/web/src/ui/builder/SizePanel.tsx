@@ -3,7 +3,8 @@
  * room to choose, attach and take off, what it comes to in tiles and money, and — when an edit was refused — the
  * reason with the way on. The handles on the 3D view do the same things by dragging.
  */
-import type { Entity } from "@terrarium/core/world";
+import { withJosa } from "@terrarium/core/kernel";
+import type { Blueprint, Entity } from "@terrarium/core/world";
 import { useEffect, useState } from "react";
 import { builder, count, won } from "../../logic";
 import { Button, Field, Note } from "../kit";
@@ -95,6 +96,10 @@ function RefusalNote({ b }: { readonly b: Builder }) {
             <Button size="small" onClick={() => b.go(builder.levelOf(index, target.id))}>
               건물 넓히기
             </Button>
+          ) : way.kind === "other-floor" ? (
+            <Button size="small" onClick={() => b.go({ kind: "floor", id: target.id })}>
+              {withJosa(target.name, "으로")} 가기
+            </Button>
           ) : (
             <Button
               size="small"
@@ -125,6 +130,60 @@ function Totals({ entity, b }: { readonly entity: Entity; readonly b: Builder })
   );
 }
 
+/** Apply an edit to the thing whose size is shown; for a room, say how many racks more the new floor takes (REQ-076). */
+function changer(entity: Entity, b: Builder) {
+  return (make: (bp: Blueprint) => builder.Edit): boolean => {
+    let text: string | undefined;
+    const made = b.apply((bp) => {
+      const edit = make(bp);
+      text =
+        entity.kind === "room" ? builder.racksGainText(bp, edit.blueprint, entity.id) : undefined;
+      return edit;
+    });
+    if (made && text) b.setGain({ id: entity.id, text });
+    return made;
+  };
+}
+
+/** "조각 덧붙이기": the four sides to attach a piece to, and taking off the piece that is chosen. */
+function PieceControls(props: {
+  readonly entity: Entity;
+  readonly b: Builder;
+  readonly piece: number | undefined;
+  readonly attach: (side: builder.Side) => void;
+}) {
+  const { entity, b, piece, attach } = props;
+  return (
+    <div className="stack" style={{ gap: 6 }}>
+      <div className="small" style={{ fontWeight: 600 }}>
+        조각 덧붙이기
+      </div>
+      <div className="row">
+        {builder.SIDES.map((side) => (
+          <Button key={side} size="small" onClick={() => attach(side)}>
+            {builder.SIDE_LABELS[side]}
+          </Button>
+        ))}
+      </div>
+      {piece !== undefined && (
+        <Button
+          size="small"
+          icon="trash"
+          onClick={() => {
+            if (b.apply((bp) => builder.removePiece(bp, catalog, entity.id, piece)))
+              b.setPiece(undefined);
+          }}
+        >
+          조각 떼기
+        </Button>
+      )}
+      <p className="tiny muted">
+        3D 화면에서는 변 가운데의 네모를 끌면 넓어지고, 바깥의 +를 끌어내면 조각이 붙어요.
+      </p>
+    </div>
+  );
+}
+
 export function SizePanel({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
   const shape = builder.shapeOf(entity);
   const room = entity.kind === "room";
@@ -132,8 +191,9 @@ export function SizePanel({ entity, b }: { readonly entity: Entity; readonly b: 
   const piece = b.state.piece !== undefined && b.state.piece < pieces ? b.state.piece : undefined;
   const rect = shape[piece === undefined ? 0 : piece + 1];
   if (!rect) return null;
+  const change = changer(entity, b);
   const resize = (next: { w?: number; d?: number }): boolean =>
-    b.apply((bp) =>
+    change((bp) =>
       piece === undefined
         ? builder.resizeBody(bp, catalog, entity.id, { ...rect, ...next })
         : builder.resizePiece(bp, catalog, entity.id, piece, { ...rect, ...next }),
@@ -142,7 +202,7 @@ export function SizePanel({ entity, b }: { readonly entity: Entity; readonly b: 
     const sideways = side === "left" || side === "right";
     const along = Math.min(sideways ? rect.d : rect.w, DEFAULT_ALONG_M);
     const at = piece === undefined ? 0 : piece + 1;
-    const made = b.apply((bp) =>
+    const made = change((bp) =>
       builder.addPiece(bp, catalog, entity.id, side, { along, out: DEFAULT_OUT_M }, { to: at }),
     );
     if (made) b.setPiece(pieces);
@@ -167,35 +227,12 @@ export function SizePanel({ entity, b }: { readonly entity: Entity; readonly b: 
         />
       </div>
       <Totals entity={entity} b={b} />
-      {room && (
-        <div className="stack" style={{ gap: 6 }}>
-          <div className="small" style={{ fontWeight: 600 }}>
-            조각 덧붙이기
-          </div>
-          <div className="row">
-            {builder.SIDES.map((side) => (
-              <Button key={side} size="small" onClick={() => attach(side)}>
-                {builder.SIDE_LABELS[side]}
-              </Button>
-            ))}
-          </div>
-          {piece !== undefined && (
-            <Button
-              size="small"
-              icon="trash"
-              onClick={() => {
-                if (b.apply((bp) => builder.removePiece(bp, catalog, entity.id, piece)))
-                  b.setPiece(undefined);
-              }}
-            >
-              조각 떼기
-            </Button>
-          )}
-          <p className="tiny muted">
-            3D 화면에서는 변 가운데의 네모를 끌면 넓어지고, 바깥의 +를 끌어내면 조각이 붙어요.
-          </p>
-        </div>
+      {b.state.gain?.id === entity.id && (
+        <Note tone="good">
+          <span data-testid="rack-gain">{b.state.gain.text}</span>
+        </Note>
       )}
+      {room && <PieceControls entity={entity} b={b} piece={piece} attach={attach} />}
       {!room && <p className="tiny muted">건물은 5 m 단위로 바뀌어요. 안의 방이 잘리면 막아요.</p>}
       <RefusalNote b={b} />
     </div>
