@@ -2,7 +2,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createApi, Identity, type KeyValueStore } from "./logic";
-import { App } from "./ui";
+import { App, applySavedTheme } from "./ui";
 
 function browserStorage(): KeyValueStore | undefined {
   try {
@@ -12,6 +12,7 @@ function browserStorage(): KeyValueStore | undefined {
   }
 }
 
+applySavedTheme();
 const identity = new Identity(browserStorage());
 const api = createApi({ user: () => identity.name });
 const root = document.getElementById("root");

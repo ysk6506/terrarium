@@ -17,12 +17,12 @@ covers:
   - packages/core/src/sources/realimport/mapping.ts
   - packages/core/src/sources/realimport/synthesize.ts
 verification_log:
-  - "2026-11-03: 부지 가격과 site props(landMarket, landPriceM)를 assembly-site.ts·campus.ts와 대조해 더했다 (REQ-059, ADR-0051)"
-  - "2026-11-04: campus-families의 fabric 필드와 campus-rack의 스위치 props를 확인해 family별 네트워크 모양 문단을 더했다 (REQ-065)"
   - "2026-11-05: REQ-076: HPC센터 층 구성(campus-floor, campus-locked-plan, campus-fit)과 건물 잠금, 사업장 수전 용량을 코드와 대조해 적었다"
   - "2026-11-05: REQ-076: 잠긴 건물의 홀은 방이 허락하는 만큼 놓되 podsPerHall개를 넘지 않는 것을 campus-plan.ts와 대조해 적었다"
   - "2026-11-05: podsPerHall 상한 문장을 campus-plan.ts와 대조해 고쳤다"
-covers_hash: "4144380297419375"
+  - "2026-11-05: REQ-077 세계 만들기 재설계(작업 #90) 반영: 코드와 대조해 맞는 것을 확인했다"
+  - "2026-11-05: 2026-11-05: 합친 뒤 코드(ADR-0081 실제 크기와 ADR-0083 세계 만들기 재설계)와 다시 대조: 크기와 모양 절, 냉방과 전기, m² 단위, 서버룸 이름이 맞다"
+covers_hash: d1ea874e7b031d4d
 ---
 # 세계 소스 (REQ-009~013, REQ-035, REQ-043~049)
 

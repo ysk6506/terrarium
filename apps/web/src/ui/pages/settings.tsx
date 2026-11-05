@@ -10,7 +10,7 @@ import {
   type Settings,
   saveSetting,
 } from "../../logic";
-import { browserStore } from "../browser-store";
+import { applyTheme, browserStore } from "../browser-store";
 import { PageHead, Section, Segmented } from "../kit";
 
 function Row({
@@ -40,8 +40,11 @@ function Row({
 
 export function SettingsPage() {
   const [settings, setSettings] = useState(() => readSettings(browserStore()));
-  const choose = (def: SettingDef, value: Settings[keyof Settings]) =>
-    setSettings(saveSetting(browserStore(), def.key, value as never));
+  const choose = (def: SettingDef, value: Settings[keyof Settings]) => {
+    const saved = saveSetting(browserStore(), def.key, value as never);
+    setSettings(saved);
+    if (def.key === "theme") applyTheme(saved.theme);
+  };
   return (
     <div className="page">
       <PageHead title="설정" lede="이 브라우저에만 저장돼요. 고르면 바로 기억해요." />

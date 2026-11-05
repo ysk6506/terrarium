@@ -338,7 +338,7 @@ function planDataCentre(
       const total = spec.floors * spec.hallsPerFloor;
       const plan = planHall(spec, rng.fork(`${id}-${level}-${letter}`), {
         id: `${id}-f${level}-${letter.toLowerCase()}`,
-        name: `${level}F-${letter} 데이터 홀`,
+        name: `${level}F-${letter} 서버룸`,
         building: b,
         floorId: `${id}-f${level}`,
         letter,

@@ -97,6 +97,7 @@ export {
 } from "./routes";
 export {
   BlueprintSchema,
+  CampusSpecSchema,
   IdSchema,
   MAX_ENTITIES,
   MAX_LINKS,

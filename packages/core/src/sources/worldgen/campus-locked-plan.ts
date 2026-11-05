@@ -77,7 +77,7 @@ export function planLockedCentre(input: LockedInput): Omit<BuildingPlan, "slot">
           rng.fork(`${id}-${level}-${letter}`),
           {
             id: hallId,
-            name: `${level}F-${letter} 데이터 홀`,
+            name: `${level}F-${letter} 서버룸`,
             building: index,
             floorId: `${id}-f${level}`,
             letter,

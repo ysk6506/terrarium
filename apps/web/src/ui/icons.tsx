@@ -63,6 +63,7 @@ const PATHS: Readonly<Record<string, ReactNode>> = {
   stop: <rect x="6" y="6" width="12" height="12" rx="1.5" />,
   up: <path d="M6 15l6-6 6 6" />,
   back: <path d="M15 6l-6 6 6 6" />,
+  forward: <path d="M9 6l6 6-6 6" />,
   cable: <path d="M4 7h4a4 4 0 0 1 4 4v2a4 4 0 0 0 4 4h4M2 7h2M20 17h2" />,
   wand: <path d="M4 20L16 8M14 4v3M18 6h3M19 10v3M11 5H8" />,
   check: <path d="M5 12.5l4.5 4.5L19 7" />,

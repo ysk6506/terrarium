@@ -1,6 +1,12 @@
 /** core.sources.worldgen: deterministic worlds from site presets and size parameters (REQ-009, REQ-035). */
 
-export { type CampusResult, generateCampus, type HallSummary } from "./campus";
+export {
+  type CampusResult,
+  type CampusSize,
+  campusSize,
+  generateCampus,
+  type HallSummary,
+} from "./campus";
 export {
   CONTAINMENT_LABELS,
   HALL_MODE_LABELS,

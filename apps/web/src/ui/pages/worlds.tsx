@@ -1,14 +1,14 @@
 /**
- * Worlds (REQ-009, REQ-010, REQ-033, REQ-035): the list, and three ways to make one — build by hand on
- * a site, generate from a site preset and a few sizes, or read one from reality (read only, REQ-011).
+ * Worlds (REQ-009, REQ-033, REQ-035, REQ-077): the list, and the new world dialog, which asks for the result
+ * (a site as it is, or a small start) rather than the method. The dialog opens lazily with the planner it measures with.
  */
 import type { WorldOrigin, WorldSummary } from "@terrarium/core/experiments";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { count, relativeTime } from "../../logic";
 import { Go, useApp, useAsync, useNow } from "../context";
-import { Button, Dialog, Empty, Failure, Loading, PageHead, Segmented } from "../kit";
-import { SiteForm } from "./new-site-form";
-import { GenerateForm, ImportForm } from "./world-forms";
+import { Button, Empty, Failure, Loading, PageHead } from "../kit";
+
+const NewWorldDialog = lazy(() => import("./new-world"));
 
 export const ORIGIN_LABELS: Readonly<Record<WorldOrigin, string>> = {
   builder: "직접 지음",
@@ -17,36 +17,11 @@ export const ORIGIN_LABELS: Readonly<Record<WorldOrigin, string>> = {
   sample: "예시",
 };
 
-type Way = "build" | "generate" | "import";
-
-function NewWorldDialog({ onClose }: { readonly onClose: () => void }) {
-  const [way, setWay] = useState<Way>("build");
-  return (
-    <Dialog title="새 세계" onClose={onClose} wide={way === "build"}>
-      <div className="stack">
-        <Segmented
-          label="만드는 방법"
-          value={way}
-          options={[
-            { value: "build", label: "직접 짓기" },
-            { value: "generate", label: "사업장으로 생성" },
-            { value: "import", label: "현실에서 가져오기" },
-          ]}
-          onChange={setWay}
-        />
-        {way === "build" && <SiteForm onDone={onClose} />}
-        {way === "generate" && <GenerateForm onDone={onClose} />}
-        {way === "import" && <ImportForm onDone={onClose} />}
-      </div>
-    </Dialog>
-  );
-}
-
 function scale(w: WorldSummary): string {
   const racks = w.counts.rack ?? 0;
   const servers = w.counts.server ?? 0;
   if (racks === 0 && servers === 0) return "비어 있음";
-  return `랙 ${count(racks)}, 서버 ${count(servers)}`;
+  return `랙 ${count(racks)}대 · 서버 ${count(servers)}대`;
 }
 
 function WorldTable({ worlds }: { readonly worlds: readonly WorldSummary[] }) {
@@ -94,33 +69,42 @@ export function WorldsPage() {
   const { api } = useApp();
   const worlds = useAsync((signal) => api.call("listWorlds", { signal }), []);
   const [making, setMaking] = useState(false);
+  const none = worlds.data?.length === 0;
   return (
     <div className="page">
       <PageHead
         title="세계"
-        lede="에이전트가 일할 데이터센터. 손으로 짓거나, 사업장 규모로 생성하거나, 현실의 구성 정보에서 읽어 와요."
-        actions={
-          <Button kind="primary" icon="plus" onClick={() => setMaking(true)}>
-            새 세계
-          </Button>
-        }
+        lede="에이전트가 일할 데이터센터예요. 사업장 그대로 만들거나, 작게 시작해서 직접 키워요."
+        {...(none
+          ? {}
+          : {
+              actions: (
+                <Button kind="primary" icon="plus" onClick={() => setMaking(true)}>
+                  새 세계
+                </Button>
+              ),
+            })}
       />
       {worlds.error && <Failure error={worlds.error} retry={worlds.reload} />}
       {!worlds.data && !worlds.error && <Loading />}
-      {worlds.data?.length === 0 && (
+      {none && (
         <Empty
           title="아직 세계가 없어요"
           action={
             <Button kind="primary" onClick={() => setMaking(true)}>
-              첫 세계 만들기
+              새 세계 만들기
             </Button>
           }
         >
-          빈 부지에 건물부터 지어 보거나, 사업장 프리셋으로 한 번에 생성해요.
+          세계를 만들면 에이전트가 일할 데이터센터가 생겨요.
         </Empty>
       )}
       {worlds.data && worlds.data.length > 0 && <WorldTable worlds={worlds.data} />}
-      {making && <NewWorldDialog onClose={() => setMaking(false)} />}
+      {making && (
+        <Suspense fallback={null}>
+          <NewWorldDialog onClose={() => setMaking(false)} />
+        </Suspense>
+      )}
     </div>
   );
 }

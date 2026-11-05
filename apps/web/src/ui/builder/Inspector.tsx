@@ -1,36 +1,38 @@
 /**
- * The right panel: the selected thing (name, model, place, cables, rack front), or — with nothing
- * selected — the level's totals, warnings and problems. Problems link to what they are about.
+ * The right panel (REQ-077, ADR-0083): the pick card on top — one thing, one line, one main button — and under it
+ * three folded sections: 크기와 모양, 냉방과 전기, 돈. A rack also shows its front, a parcel its land, and
+ * every pick can be removed. The numbers of the whole level are not here: they are the line over the 3D view.
  */
 
 import { withJosa } from "@terrarium/core/kernel";
 import type { Entity, LinkKind } from "@terrarium/core/world";
-import { isSizeLocked, KIND_LABELS, LINK_LABELS, MODELLED_KINDS } from "@terrarium/core/world";
-import { useEffect, useState } from "react";
-import { builder, celsius, count, watts, won } from "../../logic";
-import { Button, Figures, Note, NumberField, Segmented, SelectField } from "../kit";
-import { FillPanel } from "./FillPanel";
+import { isSizeLocked, LINK_LABELS, MODELLED_KINDS } from "@terrarium/core/world";
+import type { ReactNode } from "react";
+import { builder, celsius, count, won } from "../../logic";
+import { Button, Note, NumberField, Segmented, SelectField } from "../kit";
 import { LandList, ParcelPanel, PurposeField } from "./LandPanel";
+import { PickCardView } from "./PickCard";
 import { RackPanel } from "./RackPanel";
 import { PowerLine, RealSizeNote, SourcesPanel } from "./RealSizePanel";
 import { SizePanel } from "./SizePanel";
 import type { Builder } from "./useBuilder";
 import { catalog } from "./useBuilder";
 
-function NameBox({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
-  const [name, setName] = useState(entity.name);
-  useEffect(() => setName(entity.name), [entity.name]);
-  const commit = () => name !== entity.name && b.apply((bp) => builder.rename(bp, entity.id, name));
+/** A folded section of the panel; `fold` lets the rest of the page open it (widening a full room). */
+function Fold({
+  fold,
+  title,
+  children,
+}: {
+  readonly fold: string;
+  readonly title: string;
+  readonly children: ReactNode;
+}) {
   return (
-    <input
-      className="input"
-      aria-label="이름"
-      value={name}
-      onChange={(e) => setName(e.target.value)}
-      onBlur={commit}
-      onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-      style={{ fontSize: 17, fontWeight: 650 }}
-    />
+    <details className="panel-fold" data-fold={fold}>
+      <summary>{title}</summary>
+      <div className="stack panel-fold-body">{children}</div>
+    </details>
   );
 }
 
@@ -41,19 +43,17 @@ function Links({ entity, b }: { readonly entity: Entity; readonly b: Builder }) 
     .filter((k) => k !== "member_of" && k !== "managed_by");
   if (kinds.length === 0) return null;
   return (
-    <div className="builder-block">
+    <div className="stack">
       <h3>연결</h3>
-      <div className="stack">
-        {kinds.map((kind) => (
-          <LinkKindRow
-            key={kind}
-            kind={kind}
-            entity={entity}
-            b={b}
-            links={index.outgoing(entity.id, kind)}
-          />
-        ))}
-      </div>
+      {kinds.map((kind) => (
+        <LinkKindRow
+          key={kind}
+          kind={kind}
+          entity={entity}
+          b={b}
+          links={index.outgoing(entity.id, kind)}
+        />
+      ))}
     </div>
   );
 }
@@ -111,28 +111,17 @@ function LinkKindRow({
   );
 }
 
-const ENTERABLE = new Set(["building", "room", "floor"]);
-
 function rackOf(b: Builder, entity: Entity): Entity | undefined {
   const parent = entity.parentId ? b.state.index.find(entity.parentId) : undefined;
   return parent?.kind === "rack" ? parent : undefined;
 }
 
-/** Model, rack unit and aisle: what can be changed about the thing itself. */
-function EntityFields({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
-  const models = MODELLED_KINDS.has(entity.kind) ? catalog.list(entity.kind as never) : [];
+/** What the thing is for and where it stands: purpose, the unit it is mounted at, which aisle it is. */
+function ShapeFields({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
   const rack = rackOf(b, entity);
   return (
     <>
       <PurposeField entity={entity} b={b} />
-      {models.length > 1 && (
-        <SelectField
-          label="모델"
-          value={entity.modelId}
-          options={models.map((m) => ({ value: m.id, label: `${m.name} (${won(m.costM)})` }))}
-          onChange={(id) => b.apply((bp) => builder.setModel(bp, catalog, entity.id, id))}
-        />
-      )}
       {entity.placement?.type === "unit" && rack && entity.kind !== "pdu" && (
         <NumberField
           label="달린 자리 (맨 아래 U)"
@@ -160,27 +149,43 @@ function EntityFields({ entity, b }: { readonly entity: Entity; readonly b: Buil
   );
 }
 
+/** The model to choose among, with what each costs: money lives in the 돈 section. */
+function ModelField({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
+  const models = MODELLED_KINDS.has(entity.kind) ? catalog.list(entity.kind as never) : [];
+  if (models.length <= 1) return null;
+  return (
+    <SelectField
+      label="모델"
+      value={entity.modelId}
+      options={models.map((m) => ({ value: m.id, label: `${m.name} (${won(m.costM)})` }))}
+      onChange={(id) => b.apply((bp) => builder.setModel(bp, catalog, entity.id, id))}
+    />
+  );
+}
+
 function wireRack(b: Builder, rackId: string): void {
   const r = builder.autoWireRack(b.state.blueprint, catalog, rackId);
   b.apply(() => r, r.added > 0 ? `케이블 ${r.added}개를 이었어요` : "더 이을 케이블이 없어요");
 }
 
+function wireRoom(b: Builder, roomId: string): void {
+  const r = builder.autoWireRoom(b.state.blueprint, catalog, roomId);
+  b.apply(() => r, r.added > 0 ? `케이블 ${r.added}개를 이었어요` : "더 이을 케이블이 없어요");
+}
+
 function EntityActions({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
-  const { index, level } = b.state;
+  const { level } = b.state;
   const rack = rackOf(b, entity);
+  const turns = entity.placement?.type === "spot";
+  if (!rack && !turns && entity.kind !== "rack") return null;
   return (
     <div className="row">
-      {ENTERABLE.has(entity.kind) && (
-        <Button size="small" kind="primary" onClick={() => b.go(builder.levelOf(index, entity.id))}>
-          들어가기
-        </Button>
-      )}
       {rack && (
         <Button size="small" onClick={() => b.setSelected([rack.id])}>
           {withJosa(rack.name, "으로")} 돌아가기
         </Button>
       )}
-      {entity.placement?.type === "spot" && (
+      {turns && (
         <Button
           size="small"
           icon="rotate"
@@ -219,80 +224,68 @@ function RemoveBlock({ entity, b }: { readonly entity: Entity; readonly b: Build
   );
 }
 
+function MoneyFold({ cost, children }: { readonly cost: number; readonly children?: ReactNode }) {
+  return (
+    <Fold fold="money" title="돈">
+      <p className="small" data-testid="money">
+        들인 돈 <b>{won(cost)}</b>
+      </p>
+      {children}
+    </Fold>
+  );
+}
+
+/** The folded sections of one picked thing: 크기와 모양, 냉방과 전기, 돈. */
+function EntityFolds({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
+  const { index } = b.state;
+  const sized = entity.kind === "room" || entity.kind === "building";
+  const fits = builder.handlesFit(index, b.state.level, entity);
+  const linked = builder.linkKindsFrom(entity.kind, entity).length > 0;
+  const shaped = sized || entity.kind === "containment" || entity.placement?.type === "unit";
+  const priced = entity.kind !== "parcel";
+  return (
+    <>
+      {shaped && (
+        <Fold fold="size" title="크기와 모양">
+          <ShapeFields entity={entity} b={b} />
+          {sized && <RealSizeNote entity={entity} b={b} />}
+          {fits && <SizePanel entity={entity} b={b} />}
+        </Fold>
+      )}
+      {(entity.kind === "room" || linked) && (
+        <Fold fold="power" title="냉방과 전기">
+          {entity.kind === "room" && <SourcesPanel room={entity} b={b} />}
+          <Links entity={entity} b={b} />
+        </Fold>
+      )}
+      {priced && (
+        <MoneyFold cost={builder.costOf(index, catalog, entity)}>
+          <ModelField entity={entity} b={b} />
+        </MoneyFold>
+      )}
+      {priced && <RemoveBlock entity={entity} b={b} />}
+    </>
+  );
+}
+
+/** One picked thing: its card, what it holds, and its folds. */
 function EntityPanel({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
   const { preview } = b.state;
   const heat = preview?.heat.get(entity.id);
   return (
     <>
-      <div className="builder-block stack">
-        <NameBox entity={entity} b={b} />
-        <div className="tiny muted">
-          {KIND_LABELS[entity.kind]} ({entity.id})
+      <PickCardView b={b} entity={entity} />
+      {heat !== undefined && preview && (
+        <div className="builder-block small">
+          흡기 {celsius(heat)} ({Math.round(preview.seconds / 60)}분 돌린 뒤)
         </div>
-        {heat !== undefined && preview && (
-          <div className="small">
-            흡기 {celsius(heat)} ({Math.round(preview.seconds / 60)}분 돌린 뒤)
-          </div>
-        )}
-        <EntityFields entity={entity} b={b} />
-        <EntityActions entity={entity} b={b} />
-      </div>
+      )}
+      <EntityActions entity={entity} b={b} />
       {entity.kind === "rack" && <RackPanel rack={entity} b={b} />}
-      {(entity.kind === "room" || entity.kind === "building") && (
-        <RealSizeNote entity={entity} b={b} />
-      )}
-      {builder.handlesFit(b.state.index, b.state.level, entity) && (
-        <SizePanel entity={entity} b={b} />
-      )}
-      {entity.kind === "room" && <SourcesPanel room={entity} b={b} />}
       {entity.kind === "parcel" && <ParcelPanel entity={entity} b={b} />}
-      <Links entity={entity} b={b} />
-      {entity.kind !== "parcel" && <RemoveBlock entity={entity} b={b} />}
+      <EntityFolds entity={entity} b={b} />
     </>
   );
-}
-
-function IssuesBlock({ b }: { readonly b: Builder }) {
-  const { issues, index } = b.state;
-  if (issues.length === 0) return null;
-  const errors = issues.filter((i) => i.severity === "error");
-  const shown = [...errors, ...issues.filter((i) => i.severity === "warning")].slice(0, 30);
-  return (
-    <div className="builder-block">
-      <h3>
-        고칠 곳 {errors.length > 0 ? `${errors.length}건` : ""}
-        {issues.length - errors.length > 0 ? `, 조언 ${issues.length - errors.length}건` : ""}
-      </h3>
-      <ul className="issues">
-        {shown.map((i, n) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: issues have no ids of their own
-          <li key={n}>
-            <button
-              type="button"
-              className={`issue${i.severity === "error" ? " issue-error" : ""}`}
-              onClick={() => {
-                if (!i.entityId || !index.find(i.entityId)) return;
-                b.go(builder.levelOf(index, i.entityId));
-                setTimeout(() => b.setSelected([i.entityId as string]), 0);
-              }}
-            >
-              <span className="issue-mark" />
-              <span>
-                {i.message}
-                <br />
-                <span className="muted">{i.fix}</span>
-              </span>
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function wireRoom(b: Builder, roomId: string): void {
-  const r = builder.autoWireRoom(b.state.blueprint, catalog, roomId);
-  b.apply(() => r, r.added > 0 ? `케이블 ${r.added}개를 이었어요` : "더 이을 케이블이 없어요");
 }
 
 function Floors({ b, buildingId }: { readonly b: Builder; readonly buildingId: string }) {
@@ -330,47 +323,52 @@ function Floors({ b, buildingId }: { readonly b: Builder; readonly buildingId: s
   );
 }
 
-function LevelTotals({ b }: { readonly b: Builder }) {
-  const { index, level, preview } = b.state;
-  const stats = builder.levelStats(index, catalog, level);
+/** What a run found, in a line under the card: the hottest rack and the alarms. */
+function RunResult({ b }: { readonly b: Builder }) {
+  const { preview } = b.state;
+  if (!preview?.hottest) return null;
   return (
-    <>
-      {level.kind === "site" && <PowerLine b={b} />}
-      <Figures
-        items={[
-          { label: "들인 돈", value: won(stats.costM) },
-          { label: "랙", value: count(stats.racks) },
-          { label: "서버", value: count(stats.servers) },
-        ]}
-      />
-      <div className="small">
-        평소 발열 <b>{watts(stats.itTypicalW)}</b>, 냉방 용량 <b>{stats.coolingKw} kW</b>
-      </div>
-      {stats.warnings.map((w) => (
-        <Note key={w} tone="warn">
-          {w}
-        </Note>
-      ))}
-      {preview?.hottest && (
-        <Note tone={preview.hottest.inletC > 27 ? "bad" : "good"}>
-          {Math.round(preview.seconds / 60)}분 돌린 뒤 가장 더운 랙은 {preview.hottest.name}, 흡기{" "}
-          {celsius(preview.hottest.inletC)}. 알람 {preview.alarms.length}건.
-        </Note>
-      )}
-    </>
+    <div className="builder-block">
+      <Note tone={preview.hottest.inletC > 27 ? "bad" : "good"}>
+        {Math.round(preview.seconds / 60)}분 돌린 뒤 가장 더운 랙은 {preview.hottest.name}, 흡기{" "}
+        {celsius(preview.hottest.inletC)}. 알람 {preview.alarms.length}건.
+      </Note>
+    </div>
   );
 }
 
+/** Nothing picked: the place being looked at. */
 function LevelPanel({ b }: { readonly b: Builder }) {
   const { index, level } = b.state;
-  const crumb = builder.crumbs(index, level).at(-1);
   const building = level.kind === "floor" ? index.enclosing(level.id, "building") : undefined;
+  const stats = builder.levelStats(index, catalog, level);
+  const sizeBuilding = building && builder.handlesFit(index, level, building);
   return (
     <>
-      <div className="builder-block stack">
-        <h2 style={{ fontSize: 18 }}>{crumb?.label}</h2>
-        <LevelTotals b={b} />
-        {level.kind === "room" && (
+      <PickCardView b={b} />
+      <RunResult b={b} />
+      {level.kind === "site" && (
+        <div className="builder-block stack">
+          <PowerLine b={b} />
+        </div>
+      )}
+      {level.kind === "site" && <LandList b={b} />}
+      {(building || level.kind === "room") && (
+        <Fold fold="size" title="크기와 모양">
+          {building && <Floors b={b} buildingId={building.id} />}
+          <RealSizeNote b={b} />
+          {level.kind === "room" && <SizePanel entity={index.entity(level.id)} b={b} />}
+          {sizeBuilding && building && <SizePanel entity={building} b={b} />}
+        </Fold>
+      )}
+      {level.kind === "room" && (
+        <Fold fold="power" title="냉방과 전기">
+          {stats.warnings.map((w) => (
+            <Note key={w} tone="warn">
+              {w}
+            </Note>
+          ))}
+          <SourcesPanel room={index.entity(level.id)} b={b} />
           <div>
             <Button icon="wand" onClick={() => wireRoom(b, level.id)}>
               이 서버룸 자동 배선
@@ -380,18 +378,9 @@ function LevelPanel({ b }: { readonly b: Builder }) {
               분전반으로, 분전반은 UPS로 이어요.
             </p>
           </div>
-        )}
-        {building && <Floors b={b} buildingId={building.id} />}
-      </div>
-      {level.kind !== "site" && <RealSizeNote b={b} />}
-      {level.kind === "room" && <SizePanel entity={index.entity(level.id)} b={b} />}
-      {building && builder.handlesFit(index, level, building) && (
-        <SizePanel entity={building} b={b} />
+        </Fold>
       )}
-      {level.kind === "room" && <SourcesPanel room={index.entity(level.id)} b={b} />}
-      {level.kind === "room" && <FillPanel roomId={level.id} b={b} />}
-      {level.kind === "site" && <LandList b={b} />}
-      <IssuesBlock b={b} />
+      <MoneyFold cost={stats.costM} />
     </>
   );
 }

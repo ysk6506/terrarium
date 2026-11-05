@@ -29,6 +29,8 @@ export interface BuilderState {
   readonly rotation: Rotation;
   readonly preview?: builder.Preview;
   readonly previewing: boolean;
+  /** Whether "돌려 보기" has been done in this visit, even if its result was switched off since. */
+  readonly ran: boolean;
   readonly issues: readonly Issue[];
   readonly dirty: boolean;
   readonly saving: boolean;
@@ -63,6 +65,7 @@ function usePreview(history: History) {
   const { toast } = useApp();
   const [preview, setPreview] = useState<builder.Preview>();
   const [previewing, setPreviewing] = useState(false);
+  const [ran, setRan] = useState(false);
   const run = useCallback(
     (stopped: ReadonlySet<string>) => {
       setPreviewing(true);
@@ -81,6 +84,7 @@ function usePreview(history: History) {
           return;
         }
         setPreview(result);
+        setRan(true);
       }, 30);
     },
     [toast, history],
@@ -99,7 +103,7 @@ function usePreview(history: History) {
     [preview, run],
   );
   const clearPreview = useCallback(() => setPreview(undefined), []);
-  return { preview, previewing, runPreview, toggleUnit, clearPreview };
+  return { preview, previewing, ran, runPreview, toggleUnit, clearPreview };
 }
 
 const CONFLICT = "그사이 다른 곳에서 이 세계가 바뀌었어요. 새로고침하면 바뀐 내용을 볼 수 있어요";
@@ -133,9 +137,8 @@ function useSaving(initial: WorldRecord, history: History) {
         });
         setWorld(result.world);
         setSaved(blueprint);
-        toast("저장했어요");
       }),
-    [api, world, toast, attempt, history],
+    [api, world, attempt, history],
   );
   const saveCopy = useCallback(
     () =>
@@ -225,13 +228,15 @@ export function useBuilder(initial: WorldRecord) {
   const { me } = useApp();
   const clear = useRef<() => void>(() => undefined);
   const edits = useEdits(initial.blueprint, () => clear.current());
-  const { preview, previewing, runPreview, toggleUnit, clearPreview } = usePreview(edits.history);
+  const { preview, previewing, ran, runPreview, toggleUnit, clearPreview } = usePreview(
+    edits.history,
+  );
   clear.current = clearPreview;
   const saving = useSaving(initial, edits.history);
   const index = useMemo(() => new BlueprintIndex(edits.blueprint), [edits.blueprint]);
   const issues = useMemo(() => validateBlueprint(edits.blueprint, catalog), [edits.blueprint]);
   const [level, setLevel] = useState<builder.Level>(() =>
-    builder.startLevel(new BlueprintIndex(initial.blueprint)),
+    builder.openingLevel(new BlueprintIndex(initial.blueprint)),
   );
   const [tool, setTool] = useState<Tool>({ kind: "select" });
   const [rotation, setRotation] = useState<Rotation>(0);
@@ -263,6 +268,7 @@ export function useBuilder(initial: WorldRecord) {
     rotation,
     ...(preview ? { preview } : {}),
     previewing,
+    ran,
     issues,
     dirty: edits.blueprint !== saving.saved,
     saving: saving.saving,

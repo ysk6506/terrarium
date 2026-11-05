@@ -1,230 +1,186 @@
 /**
- * Making a world without building it: generate one from a site preset and a few sizes (REQ-009), or
- * read one from a configured reality source such as the FalkorDB knowledge graph (REQ-010, REQ-011).
+ * "사업장 그대로" (REQ-077, ADR-0083): which site, how big, and what comes out — then one button that says what it
+ * makes. The other numbers are folded under "더 정하기" in three groups (world-details.tsx). While the server builds
+ * the world the button works and a line names the stage; the server does not report progress, so the stage follows time.
  */
-
-import { withJosa } from "@terrarium/core/kernel";
-import type { ImportReport } from "@terrarium/core/sources/realimport";
-import {
-  CHOICE_FIELD_LABELS,
-  CHOICE_LABELS,
-  DEFAULT_WORLDGEN,
-  MAX_RACKS,
-  rackCount,
-  SITE_PRESETS,
-  type SiteId,
-  specProblems,
-  WORLDGEN_FIELDS,
-  type WorldgenSpec,
-} from "@terrarium/core/sources/worldgen";
-import { useState } from "react";
-import { count } from "../../logic";
+import type { CampusSpec, SiteId } from "@terrarium/core/sources/worldgen";
+import { SITE_PRESETS } from "@terrarium/core/sources/worldgen";
+import { useEffect, useMemo, useState } from "react";
+import { count, worldScale } from "../../logic";
 import { messageOf, useApp } from "../context";
-import { Button, Check, Note, NumberField, SelectField, TextField } from "../kit";
+import { Button, Note } from "../kit";
+import { OutlineView } from "./site-pad";
+import { WorldDetails } from "./world-details";
 
-const SITE_OPTIONS = SITE_PRESETS.map((p) => ({ value: p.id, label: p.name }));
-type ChoiceKey = keyof typeof CHOICE_LABELS;
-const CHOICE_KEYS = Object.keys(CHOICE_LABELS) as ChoiceKey[];
+type Form = {
+  readonly site: SiteId;
+  readonly scale: worldScale.ScaleId;
+  readonly changes: Partial<CampusSpec>;
+  readonly name: string;
+};
 
-function useSubmit() {
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string>();
-  const submit = async (work: () => Promise<void>) => {
-    setBusy(true);
-    setError(undefined);
-    try {
-      await work();
-    } catch (err) {
-      setError(messageOf(err));
-    } finally {
-      setBusy(false);
-    }
-  };
-  return { busy, error, submit };
+const START: Form = {
+  site: worldScale.DEFAULT_SITE,
+  scale: worldScale.DEFAULT_SCALE,
+  changes: {},
+  name: "",
+};
+
+/** The site's buildings in a line: "팹 7동 · 연구동 3동 · 데이터센터 1동". */
+function mixText(site: SiteId): string {
+  const spec = worldScale.scaleSpec(site, "real");
+  const parts = [
+    spec.fabs > 0 ? `팹 ${spec.fabs}동` : "",
+    spec.labs > 0 ? `연구동 ${spec.labs}동` : "",
+    spec.buildings > 0 ? `데이터센터 ${spec.buildings}동` : "",
+  ].filter(Boolean);
+  return parts.join(" · ");
 }
 
-function WorldgenFields({
-  spec,
-  set,
+function SiteCards({
+  site,
+  onPick,
 }: {
-  readonly spec: WorldgenSpec;
-  readonly set: <K extends keyof WorldgenSpec>(key: K, value: WorldgenSpec[K]) => void;
+  readonly site: SiteId;
+  readonly onPick: (s: SiteId) => void;
 }) {
   return (
-    <div className="grid-2">
-      {WORLDGEN_FIELDS.map((f) => (
-        <NumberField
-          key={f.key}
-          label={f.label}
-          value={spec[f.key]}
-          min={f.min}
-          max={f.max}
-          step={f.integer ? 1 : 0.05}
-          {...(f.unit !== "비율" ? { unit: f.unit } : {})}
-          onChange={(v) => v !== undefined && set(f.key, v)}
-        />
-      ))}
-      {CHOICE_KEYS.map((key) => (
-        <SelectField
-          key={key}
-          label={CHOICE_FIELD_LABELS[key]}
-          value={String(spec[key])}
-          options={Object.entries(CHOICE_LABELS[key]).map(([value, label]) => ({ value, label }))}
-          onChange={(v) => set(key, v as never)}
-        />
-      ))}
-      <NumberField
-        label="시드"
-        value={spec.seed}
-        min={0}
-        step={1}
-        onChange={(v) => v !== undefined && set("seed", Math.round(v))}
-        help="같은 시드면 같은 세계가 나와요."
-      />
+    <div className="stack" style={{ gap: 8 }}>
+      <b className="small">어느 사업장인가요?</b>
+      <div className="site-cards" role="radiogroup" aria-label="사업장">
+        {SITE_PRESETS.map((p) => (
+          // biome-ignore lint/a11y/useSemanticElements: a card with a picture and text is not a bare radio input
+          <button
+            key={p.id}
+            type="button"
+            role="radio"
+            className="site-card"
+            aria-checked={p.id === site}
+            tabIndex={p.id === site ? 0 : -1}
+            onClick={() => onPick(p.id)}
+          >
+            <OutlineView outline={p.outline} />
+            <b>{p.name}</b>
+            <span className="tiny muted">{mixText(p.id)}</span>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
 
-export function GenerateForm({ onDone }: { readonly onDone: () => void }) {
+function ScaleChoices(props: {
+  readonly choices: readonly worldScale.ScaleChoice[];
+  readonly scale: worldScale.ScaleId;
+  readonly onPick: (s: worldScale.ScaleId) => void;
+}) {
+  return (
+    <div className="stack" style={{ gap: 8 }}>
+      <b className="small">얼마나 크게 만들까요?</b>
+      <div className="scale-cards" role="radiogroup" aria-label="규모">
+        {props.choices.map((c) => (
+          // biome-ignore lint/a11y/useSemanticElements: a card with two lines is not a bare radio input
+          <button
+            key={c.id}
+            type="button"
+            role="radio"
+            className="scale-card"
+            aria-checked={c.id === props.scale}
+            tabIndex={c.id === props.scale ? 0 : -1}
+            onClick={() => props.onPick(c.id)}
+          >
+            <b>{c.label}</b>
+            <span className="small muted">{c.about}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** The stage the server is at, named from time: a server that says nothing of its progress still moves the words. */
+function useStage(busy: boolean, racks: number): string | undefined {
+  const [elapsed, setElapsed] = useState(0);
+  useEffect(() => {
+    if (!busy) return setElapsed(0);
+    const from = performance.now();
+    const timer = window.setInterval(() => setElapsed(performance.now() - from), 400);
+    return () => window.clearInterval(timer);
+  }, [busy]);
+  return busy ? worldScale.stageAt(elapsed, racks) : undefined;
+}
+
+export function CampusForm({ onDone }: { readonly onDone: () => void }) {
   const { api, navigate, toast } = useApp();
-  const [spec, setSpec] = useState<WorldgenSpec>({
-    ...DEFAULT_WORLDGEN,
-    site: "hwaseong",
-    seed: 1,
-  });
-  const { busy, error, submit } = useSubmit();
-  const problems = specProblems(spec);
-  const racks = rackCount(spec);
-  const set = <K extends keyof WorldgenSpec>(key: K, value: WorldgenSpec[K]) =>
-    setSpec((s) => ({ ...s, [key]: value }));
-  const go = () =>
-    submit(async () => {
-      const saved = await api.call("generateWorld", { body: { spec } });
-      toast(
-        `${saved.world.name}: 랙 ${count(saved.stats.rack ?? 0)}개, 서버 ${count(saved.stats.server ?? 0)}대를 만들었어요`,
-      );
+  const [form, setForm] = useState<Form>(START);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string>();
+  const choices = useMemo(() => worldScale.scaleChoices(form.site), [form.site]);
+  const scale = choices.find((c) => c.id === form.scale) ?? choices[choices.length - 1];
+  const base = scale?.spec ?? worldScale.scaleSpec(form.site, "real");
+  const name = form.name.trim() || `${worldScale.siteName(form.site)} 세계`;
+  const spec: CampusSpec = useMemo(
+    () => ({ ...base, ...form.changes, name }),
+    [base, form.changes, name],
+  );
+  const size = useMemo(() => worldScale.sizeOf(spec), [spec]);
+  const problem = worldScale.specProblem(spec);
+  const stage = useStage(busy, size.racks);
+  const set = (change: Partial<Form>) => setForm((f) => ({ ...f, ...change }));
+  const make = async () => {
+    setBusy(true);
+    setError(undefined);
+    try {
+      const saved = await api.call("generateWorld", { body: { campus: spec } });
+      toast(`${saved.world.name}을 만들었어요. 랙 ${count(saved.stats.rack ?? 0)}대예요`);
       onDone();
       navigate({ name: "world", id: saved.world.id });
-    });
+    } catch (err) {
+      setError(messageOf(err));
+      setBusy(false);
+    }
+  };
   return (
     <form
       className="stack"
       onSubmit={(e) => {
         e.preventDefault();
-        void go();
+        void make();
       }}
     >
-      <SelectField
-        label="사업장"
-        value={spec.site}
-        options={SITE_OPTIONS}
-        onChange={(v) => set("site", v as SiteId)}
+      <SiteCards
+        site={form.site}
+        onPick={(site) => set({ site, changes: {}, scale: worldScale.DEFAULT_SCALE })}
       />
-      <WorldgenFields spec={spec} set={set} />
-      <p className="small">
-        랙 {count(racks)}개 (최대 {count(MAX_RACKS)}개)
+      <ScaleChoices
+        choices={choices}
+        scale={scale?.id ?? "real"}
+        onPick={(next) => set({ scale: next, changes: {} })}
+      />
+      <p className="result-line" aria-live="polite" data-testid="world-result">
+        {scale && !Object.keys(form.changes).length
+          ? scale.result
+          : `${worldScale.sizeText(size)} — 정한 대로 만들어요`}
       </p>
-      {problems.map((p) => (
-        <Note key={p} tone="bad">
-          {p}
-        </Note>
-      ))}
+      <WorldDetails
+        spec={spec}
+        onChange={(changes) => set({ changes: { ...form.changes, ...changes } })}
+        name={form.name}
+        onName={(name) => set({ name })}
+        placeholder={`${worldScale.siteName(form.site)} 세계`}
+      />
+      {problem && <Note tone="bad">{problem}</Note>}
       {error && <Note tone="bad">{error}</Note>}
+      {stage && <output className="small muted">{stage}</output>}
       <div className="dialog-actions">
         <Button
           kind="primary"
           type="submit"
           busy={busy}
-          disabled={problems.length > 0}
-          why={problems[0]}
+          disabled={problem !== undefined}
+          {...(problem ? { why: problem } : {})}
         >
-          생성하기
-        </Button>
-      </div>
-    </form>
-  );
-}
-
-function reportText(report: ImportReport): string {
-  const n = (k: keyof ImportReport["entities"]) => count(report.entities[k] ?? 0);
-  const assumed =
-    report.assumptions.length > 0
-      ? ` 가정한 것 ${report.assumptions.length}가지는 세계 정보에 남아요`
-      : "";
-  return `랙 ${n("rack")}개, 서버 ${n("server")}대, VM ${n("vm")}개를 읽었어요.${assumed}`;
-}
-
-export function ImportForm({ onDone }: { readonly onDone: () => void }) {
-  const { api, navigate, toast, meta } = useApp();
-  const sources = (meta?.sources ?? []).filter((s) => s.configured);
-  const [source, setSource] = useState(sources[0]?.id);
-  const [name, setName] = useState("");
-  const [rooms, setRooms] = useState("");
-  const [assume, setAssume] = useState({ power: true, cooling: true });
-  const { busy, error, submit } = useSubmit();
-  const roomList = rooms
-    .split(",")
-    .map((r) => r.trim())
-    .filter(Boolean);
-  const go = () =>
-    submit(async () => {
-      if (!source) return;
-      const saved = await api.call("importWorld", {
-        body: {
-          source,
-          ...(name.trim() ? { name: name.trim() } : {}),
-          ...(roomList.length ? { rooms: roomList } : {}),
-          assume,
-        },
-      });
-      toast(`${withJosa(saved.world.name, "을")} 가져왔어요. ${reportText(saved.report)}`);
-      onDone();
-      navigate({ name: "world", id: saved.world.id });
-    });
-  if (sources.length === 0)
-    return (
-      <Note tone="warn">
-        설정된 현실 소스가 없어요. 서버 설정의 sources에 FalkorDB 같은 소스를 더하면 여기에 나와요.
-      </Note>
-    );
-  return (
-    <form
-      className="stack"
-      onSubmit={(e) => {
-        e.preventDefault();
-        void go();
-      }}
-    >
-      <Note>
-        현실은 읽기만 해요. 가져온 세계는 사본이라 무엇을 해도 실제 장비에는 영향이 없어요.
-      </Note>
-      <SelectField
-        label="소스"
-        value={source}
-        options={sources.map((s) => ({ value: s.id, label: s.name }))}
-        onChange={setSource}
-      />
-      <TextField label="이름 (선택)" value={name} maxLength={80} onChange={setName} />
-      <TextField
-        label="가져올 서버룸 (선택, 쉼표로 구분)"
-        value={rooms}
-        onChange={setRooms}
-        help="비워 두면 전부 가져와요. 큰 그래프는 서버룸을 골라야 빨라요."
-      />
-      <Check
-        label="전원 계통이 없으면 가정해서 채워요"
-        checked={assume.power}
-        onChange={(power) => setAssume((a) => ({ ...a, power }))}
-      />
-      <Check
-        label="냉방 설비가 없으면 가정해서 채워요"
-        checked={assume.cooling}
-        onChange={(cooling) => setAssume((a) => ({ ...a, cooling }))}
-      />
-      {error && <Note tone="bad">{error}</Note>}
-      <div className="dialog-actions">
-        <Button kind="primary" type="submit" busy={busy}>
-          가져오기
+          {worldScale.makeLabel(form.site)}
         </Button>
       </div>
     </form>

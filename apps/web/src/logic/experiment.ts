@@ -5,7 +5,6 @@
  */
 import type { CreateExperimentRequest, ForkRequest } from "@terrarium/core/contract";
 import {
-  DEFAULT_SEEDS,
   type Experiment,
   MAX_SEEDS,
   normalizeTools,
@@ -25,6 +24,7 @@ import {
 } from "@terrarium/core/tools";
 
 import { type MetaRow, metadataOf } from "./connections";
+import { RECOMMENDED_RUNS, runsRange } from "./how-words";
 
 export interface Draft {
   readonly name: string;
@@ -53,7 +53,7 @@ export const emptyDraft = (): Draft => ({
   name: "",
   note: "",
   tools: [...DEFAULT_TOOLSET],
-  runs: DEFAULT_SEEDS.length,
+  runs: RECOMMENDED_RUNS,
   time: DEFAULT_TIME,
   profiles: {},
   metadata: [],
@@ -139,7 +139,7 @@ export function draftProblems(
   if (!draft.scenarioId) what.push("시나리오를 골라 주세요");
   if (!draft.harnessId) who.push("하네스를 골라 주세요");
   else if (!draft.agentId) who.push("에이전트를 골라 주세요");
-  if (draft.runs < 1 || draft.runs > MAX_SEEDS) how.push(`실행 횟수는 1~${MAX_SEEDS}번이에요`);
+  if (draft.runs < 1 || draft.runs > MAX_SEEDS) how.push(runsRange(MAX_SEEDS));
   recipeSteps(draft, agents, who, how);
   return { what, who, how: [...new Set(how)] };
 }

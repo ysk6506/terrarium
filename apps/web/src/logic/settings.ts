@@ -6,8 +6,12 @@
 import type { KeyValueStore } from "./identity";
 import type { GraphicsChoice } from "./world3d/quality";
 
+/** 화면 색: follow the computer, or stay light or dark whatever the computer says (feedback 1). */
+export type ThemeChoice = "system" | "light" | "dark";
+
 export interface Settings {
   readonly graphics: GraphicsChoice;
+  readonly theme: ThemeChoice;
 }
 
 export type SettingKey = keyof Settings;
@@ -19,7 +23,7 @@ export interface SettingDef<K extends SettingKey = SettingKey> {
   readonly options: readonly { readonly value: Settings[K]; readonly label: string }[];
 }
 
-export const DEFAULT_SETTINGS: Settings = { graphics: "auto" };
+export const DEFAULT_SETTINGS: Settings = { graphics: "auto", theme: "system" };
 
 export const SETTINGS_KEY = "terrarium.settings";
 
@@ -34,8 +38,23 @@ const GRAPHICS: SettingDef<"graphics"> = {
   ],
 };
 
+const THEME: SettingDef<"theme"> = {
+  key: "theme",
+  label: "화면 색",
+  help: "시스템은 이 컴퓨터의 설정을 따라가요. 밝게와 어둡게는 컴퓨터 설정과 상관없이 그 색으로 보여 줘요.",
+  options: [
+    { value: "system", label: "시스템" },
+    { value: "light", label: "밝게" },
+    { value: "dark", label: "어둡게" },
+  ],
+};
+
 /** The rows of the settings screen, top to bottom. */
-export const SETTING_DEFS: readonly SettingDef[] = [GRAPHICS as SettingDef];
+export const SETTING_DEFS: readonly SettingDef[] = [THEME as SettingDef, GRAPHICS as SettingDef];
+
+/** The value of `<html data-theme>` for a choice; none for "system", so the computer's own setting decides. */
+export const themeAttribute = (theme: ThemeChoice): "light" | "dark" | undefined =>
+  theme === "system" ? undefined : theme;
 
 type Store = Pick<KeyValueStore, "getItem" | "setItem">;
 
@@ -65,8 +84,12 @@ export function saveSetting<K extends SettingKey>(
   value: Settings[K],
 ): Settings {
   const next = validated({ ...readSettings(store), [key]: value });
+  // Only what differs from the default is kept, so a default that changes later reaches everyone who never chose.
+  const kept = Object.fromEntries(
+    Object.entries(next).filter(([k, v]) => v !== DEFAULT_SETTINGS[k as SettingKey]),
+  );
   try {
-    store?.setItem(SETTINGS_KEY, JSON.stringify(next));
+    store?.setItem(SETTINGS_KEY, JSON.stringify(kept));
   } catch {
     // kept for this visit only
   }

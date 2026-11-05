@@ -279,7 +279,7 @@ describe("the experiment form and forks [REQ-030] [REQ-040]", () => {
     d = { ...d, agentId: "chef" };
     expect(ex.draftProblems(d, ["triage"]).who).toEqual(["하네스에 'chef' 에이전트가 없어요"]);
     d = { ...d, agentId: "triage", runs: 25 };
-    expect(ex.draftProblems(d, ["triage"]).how[0]).toBe("실행 횟수는 1~20번이에요");
+    expect(ex.draftProblems(d, ["triage"]).how[0]).toBe("몇 번 돌릴지는 1~20번 사이로 정해 주세요");
     d = { ...d, runs: 3, profiles: { vcenter: "vcenter/5.5" } };
     expect(ex.draftProblems(d, ["triage"]).how.length).toBe(1);
     d = { ...d, profiles: {} };

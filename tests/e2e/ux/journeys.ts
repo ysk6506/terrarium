@@ -16,8 +16,8 @@ export type JourneyId =
   | "share"
   | "fork"
   | "compare"
-  | "import"
-  | "site";
+  | "site"
+  | "build-small";
 
 export interface Outcome {
   readonly ok: boolean;
@@ -59,20 +59,22 @@ async function hudText(page: Page): Promise<string> {
   return (await page.locator(".hud").innerText()).replace(/\s+/g, " ");
 }
 
+/** A site as it is, at the smallest scale; then a rack in the first server room, and undo. */
 async function build(c: Context): Promise<void> {
   const { page } = c.v;
   await home(c);
   await c.d.click(nav(page, "세계"));
   await c.d.click(page.getByRole("button", { name: "새 세계" }));
-  await c.d.click(page.getByRole("button", { name: "사업장으로 생성" }));
-  await c.d.click(page.getByRole("button", { name: "생성하기" }));
+  await c.d.click(page.getByRole("button", { name: /사업장 그대로/ }));
+  await c.d.click(page.getByRole("radio", { name: /작게/ }));
+  await c.d.click(page.getByRole("button", { name: /만들기$/ }));
   await expectPath(c, /^\/worlds\/w-/);
   await page
     .locator("canvas")
     .first()
-    .waitFor({ timeout: 30 * SECOND });
+    .waitFor({ timeout: 60 * SECOND });
   await page.waitForTimeout(1500);
-  await c.d.click(page.getByRole("button", { name: /^랙/ }).first());
+  await c.d.click(page.getByRole("button", { name: "랙 놓기" }));
   const before = await hudText(page);
   const box = await page.locator("canvas").first().boundingBox();
   if (!box) throw new Error("3D 장면의 자리를 찾지 못했다");
@@ -175,7 +177,7 @@ async function cancel(c: Context): Promise<void> {
   const { page } = c.v;
   await home(c);
   await c.d.click(page.getByRole("link", { name: "새 실험" }).first());
-  await c.d.fill(page.getByLabel("실행 횟수"), "20");
+  await c.d.fill(page.getByLabel("몇 번 돌릴까요"), "20");
   await c.d.click(page.getByRole("button", { name: "실험 시작" }));
   await expectPath(c, /^\/experiments\/e-/);
   await c.d.click(page.getByRole("button", { name: "멈추기", exact: true }));
@@ -247,28 +249,14 @@ async function compare(c: Context): Promise<void> {
   await page.getByRole("button", { name: /조건 바꿔 다시 돌리기|실험 시작/ }).waitFor();
 }
 
-async function importWorld(c: Context): Promise<void> {
-  const { page } = c.v;
-  await home(c);
-  await c.d.click(nav(page, "세계"));
-  await c.d.click(page.getByRole("button", { name: "새 세계" }));
-  await c.d.click(page.getByRole("button", { name: "현실에서 가져오기" }));
-  await c.d.click(page.getByRole("button", { name: "가져오기", exact: true }));
-  await expectPath(c, /^\/worlds\/w-/);
-  await page
-    .locator("canvas")
-    .first()
-    .waitFor({ timeout: 30 * SECOND });
-}
-
-/** A new site on bare land: size it, make it, then buy the land beside it and see what it cost. */
+/** A small site: name it, make it, then buy the land beside it and see the land for sale shrink. */
 async function site(c: Context): Promise<void> {
   const { page } = c.v;
   await home(c);
   await c.d.click(nav(page, "세계"));
   await c.d.click(page.getByRole("button", { name: "새 세계" }));
-  await c.d.click(page.getByRole("button", { name: "크기로 정하기" }));
-  await c.d.click(page.getByRole("button", { name: "이 모양으로 만들기" }));
+  await c.d.click(page.getByRole("button", { name: /작게 시작/ }));
+  await c.d.click(page.getByRole("button", { name: "작은 사업장 만들기" }));
   await expectPath(c, /^\/worlds\/w-/);
   await page
     .locator("canvas")
@@ -276,13 +264,41 @@ async function site(c: Context): Promise<void> {
     .waitFor({ timeout: 30 * SECOND });
   const buy = page.getByRole("button", { name: /에 사기$/ });
   await buy.first().waitFor({ timeout: 15 * SECOND });
-  const before = await hudText(page);
+  const forSale = async (): Promise<number> => {
+    const text = await page.getByText(/^팔고 있는 땅이 \d+곳/).innerText();
+    return Number(/(\d+)곳/.exec(text)?.[1] ?? Number.NaN);
+  };
+  const before = await forSale();
   await c.d.click(buy.first());
   await page.waitForTimeout(500);
-  if ((await hudText(page)) === before) throw new Error("땅을 사도 들인 돈이 늘지 않았다");
+  if ((await forSale()) !== before - 1) throw new Error("땅을 사도 팔고 있는 땅이 줄지 않았다");
   await c.d.press("Control+z");
   await page.waitForTimeout(400);
-  if ((await hudText(page)) !== before) throw new Error("되돌리기가 산 땅을 물리지 못했다");
+  if ((await forSale()) !== before) throw new Error("되돌리기가 산 땅을 물리지 못했다");
+}
+
+/** 작게 시작 → 서버룸 채우기 → 돌려 보기: the three things a first world needs, led by the 다음 할 일 chip. */
+async function buildSmall(c: Context): Promise<void> {
+  const { page } = c.v;
+  await home(c);
+  await c.d.click(nav(page, "세계"));
+  await c.d.click(page.getByRole("button", { name: "새 세계" }));
+  await c.d.click(page.getByRole("button", { name: /작게 시작/ }));
+  await c.d.click(page.getByRole("button", { name: "작은 사업장 만들기" }));
+  await expectPath(c, /^\/worlds\/w-/);
+  await page
+    .locator("canvas")
+    .first()
+    .waitFor({ timeout: 30 * SECOND });
+  await c.d.click(page.getByRole("button", { name: /^다음: 서버룸 채우기/ }));
+  await c.d.click(page.getByTestId("pick-card").getByRole("button", { name: "서버룸 채우기" }));
+  await page
+    .locator(".hud")
+    .getByText(/^24대$/)
+    .first()
+    .waitFor({ timeout: 20 * SECOND });
+  await c.d.click(page.getByTestId("pick-card").getByRole("button", { name: "돌려 보기" }));
+  await page.locator(".heat-scale").waitFor({ timeout: 90 * SECOND });
 }
 
 /** In the order they depend on each other: later ones use what earlier ones made. */
@@ -294,10 +310,10 @@ export const JOURNEYS: ReadonlyArray<readonly [JourneyId, (c: Context) => Promis
   ["share", share],
   ["fork", fork],
   ["compare", compare],
-  ["import", importWorld],
   ["site", site],
   // last: it leaves a bare scenario behind, and the journeys above want the default one to be a real scenario
   ["author", author],
+  ["build-small", buildSmall],
 ];
 
 export async function perform(

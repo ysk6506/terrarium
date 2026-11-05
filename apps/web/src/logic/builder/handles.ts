@@ -20,7 +20,7 @@ import { moreRacksText } from "./floor-notes";
 import type { Plan, Point, Where } from "./gesture";
 import { GRID, TILE_M } from "./grid";
 import type { Level } from "./levels";
-import { addPiece, costDeltaM, pieceRect, resizeBody, resizePiece, tileCount } from "./pieces";
+import { addPiece, costDeltaM, pieceRect, resizeBody, resizePiece } from "./pieces";
 import { Refusal, type Side } from "./reshape";
 import { HEIGHTS } from "./scene";
 
@@ -243,8 +243,8 @@ function sizeLabel(
   const delta = costDeltaM(bp, after, catalog, target.id);
   const amount =
     target.kind === "room"
-      ? `방 전체 타일 ${count(tileCount(next))}장`
-      : `${count(Math.round(shown.w * shown.d))}㎡`;
+      ? `방 전체 ${count(Math.round(roomArea(next)))} m²`
+      : `${count(Math.round(shown.w * shown.d))} m²`;
   const racks =
     target.kind === "room" ? moreRacksText(roomArea(next) - roomArea(target)) : undefined;
   return [`${piece ? "" : `${meters(shown)} · `}${amount}`, costText(delta), racks]

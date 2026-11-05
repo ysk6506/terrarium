@@ -254,3 +254,31 @@ export function generateCampus(spec: CampusSpec, catalog: Catalog = new Catalog(
   for (const e of result.blueprint.entities) stats[e.kind] = (stats[e.kind] ?? 0) + 1;
   return { ...result, stats, halls: summarize(plan, drafts) };
 }
+
+/** What a campus comes to, without building it: the racks exactly, servers and power as round estimates. */
+export interface CampusSize {
+  readonly racks: number;
+  /** Racks built server by server; the rest count their servers. */
+  readonly detailedRacks: number;
+  /** About this many servers (a generated rack holds a dozen on average). */
+  readonly servers: number;
+  /** About this much power the servers ask for, MW. */
+  readonly mw: number;
+}
+
+/** Servers a generated rack holds on average, and the kW it asks for; measured on every site's real mix. */
+const SERVERS_PER_RACK = 12;
+const KW_PER_RACK = 9;
+
+/** The size of the campus a spec would build, from its plan alone: nothing is assembled, so it answers at once. */
+export function campusSize(spec: CampusSpec, catalog: Catalog = new Catalog()): CampusSize {
+  const preset = sitePreset(spec.site) as SitePreset;
+  const rng = new SeededRng(spec.seed).fork("plan");
+  const plan = planCampus(spec, preset.code, rng, preset, catalog);
+  return {
+    racks: plan.racks,
+    detailedRacks: plan.detailedRacks,
+    servers: plan.racks * SERVERS_PER_RACK,
+    mw: Math.round((plan.racks * KW_PER_RACK) / 100) / 10,
+  };
+}

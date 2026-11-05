@@ -4,8 +4,11 @@ kind: decision
 status: active
 last_verified: 2026-11-05
 enforced_by:
-  - none
-no_enforcement_reason: 구현 전 결정 기록이다. 구현 작업이 끝나면 frontmatter의 enforced_by를 시험(apps/web/src/logic/next-step.test.ts, worldgen-scale.test.ts)으로 바꾼다.
+  - apps/web/src/logic/next-step.test.ts
+  - apps/web/src/logic/worldgen-scale.test.ts
+  - apps/web/src/logic/builder/tools.test.ts
+  - apps/web/src/logic/builder/pick.test.ts
+  - apps/web/src/logic/world-words.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: f82a5df910e41ba3

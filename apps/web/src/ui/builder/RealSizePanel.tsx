@@ -37,7 +37,6 @@ export function RealSizeNote({ entity, b }: { readonly entity?: Entity; readonly
   if (!note) return null;
   return (
     <div className="builder-block stack" data-testid="floor-note">
-      <h3>{note.locked ? "실제 크기" : "층의 빈 바닥"}</h3>
       <p className="small" data-testid="floor-note-text">
         {builder.floorNoteText(note)}
       </p>
@@ -125,14 +124,12 @@ export function SourcesPanel({ room, b }: { readonly room: Entity; readonly b: B
   const sources = builder.roomSources(b.state.index, catalog, room.id);
   return (
     <div className="builder-block stack" data-testid="sources-panel">
-      <h3>이 방의 냉방·전력은 어디서</h3>
-      <Groups title="식히는 설비" groups={sources.cooling} />
+      <Groups title="냉방" groups={sources.cooling} />
       <Ways room={room} what="cooling" b={b} />
-      <Groups title="먹이는 설비" groups={sources.power} />
+      <Groups title="전기" groups={sources.power} />
       <Ways room={room} what="power" b={b} />
       <p className="tiny muted">
-        설비는 방 밖에도 둘 수 있어요. 같은 층 기계실·전기실이나 건물 밖 마당에 놓고 방의 랙에
-        이어요.
+        설비는 방 밖에도 놓아요. 같은 층 기계실·전기실이나 건물 밖 마당에 놓고 방의 랙에 이어요.
       </p>
     </div>
   );

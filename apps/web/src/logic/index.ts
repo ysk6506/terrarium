@@ -104,6 +104,7 @@ export {
   won,
 } from "./format";
 export { HEADLINES, type Headline, pickHeadline, STARTS, type Start } from "./home-copy";
+export * as howWords from "./how-words";
 export { Identity, type KeyValueStore, nameProblem } from "./identity";
 export {
   applyEvent,
@@ -121,6 +122,16 @@ export {
   narrowNote,
   narrowOptions,
 } from "./narrow";
+export {
+  type Aim,
+  hasRacks,
+  type NextStep,
+  nextStep,
+  type StepId,
+  TOUR_STEPS,
+  type TourStep,
+  tourLabel,
+} from "./next-step";
 export {
   hrefOf,
   type Page,
@@ -141,6 +152,21 @@ export {
   type SettingKey,
   type Settings,
   saveSetting,
+  type ThemeChoice,
+  themeAttribute,
 } from "./settings";
+export {
+  advanceTour,
+  answerTour,
+  hasLearned,
+  type Lesson,
+  learn,
+  queueTour,
+  readTour,
+  type TourMode,
+  type TourSave,
+  tourMode,
+} from "./tour";
 export { DEFAULT_QUESTION, type Fact, traceAdvice, tryDetail, tryFacts } from "./try-talk";
 export * as world3d from "./world3d";
+export * as worldScale from "./worldgen-scale";

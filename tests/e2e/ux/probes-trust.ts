@@ -87,21 +87,22 @@ export async function invalid(site: Site, notes: string[]): Promise<Tally> {
     const { page } = v;
     await open(page, site.base, "/worlds");
     await page.getByRole("button", { name: "새 세계" }).click();
-    await page.getByRole("button", { name: "사업장으로 생성" }).click();
+    await page.getByRole("button", { name: /사업장 그대로/ }).click();
+    await page.getByText("더 정하기").click();
     await page
-      .getByLabel(/건물 수|동 수|랙/)
-      .first()
+      .getByLabel("데이터센터")
       .fill("99999")
       .catch(() => undefined);
-    note("세계 만들기에 말이 안 되는 크기", await rejects(page, "생성하기"));
+    note(
+      "세계 만들기에 말이 안 되는 크기",
+      await rejects(
+        page,
+        `${(await page.getByRole("button", { name: /만들기$/ }).innerText()).trim()}`,
+      ),
+    );
     await page.keyboard.press("Escape");
-    await page.getByRole("button", { name: "새 세계" }).click();
-    await page.getByRole("button", { name: "현실에서 가져오기" }).click();
-    await page.getByLabel(/서버룸/).fill("없는방-zzz");
-    await page.getByRole("button", { name: "가져오기", exact: true }).click();
-    note("가져올 서버룸이 없을 때", await rejects(page, "가져오기"));
     await open(page, site.base, "/experiments/new");
-    await page.getByLabel("실행 횟수").fill("99");
+    await page.getByLabel("몇 번 돌릴까요").fill("99");
     note("실행 횟수가 너무 많을 때", await rejects(page, "실험 시작"));
   });
   await asVisitor(site, { name: null }, async (v) => {
@@ -130,8 +131,9 @@ export async function progress(site: Site, notes: string[]): Promise<Tally> {
     await slow("**/api/worlds/generate");
     await open(page, site.base, "/worlds");
     await page.getByRole("button", { name: "새 세계" }).click();
-    await page.getByRole("button", { name: "사업장으로 생성" }).click();
-    await page.getByRole("button", { name: "생성하기" }).click();
+    await page.getByRole("button", { name: /사업장 그대로/ }).click();
+    await page.getByRole("radio", { name: /작게/ }).click();
+    await page.getByRole("button", { name: /만들기$/ }).click();
     await page.waitForTimeout(400);
     check("세계 생성", (await page.locator("[aria-busy=true]").count()) > 0);
     await page.waitForURL(/\/worlds\/w-/, { timeout: 30_000 });
@@ -146,7 +148,7 @@ export async function progress(site: Site, notes: string[]): Promise<Tally> {
     await page.unroute("**/api/scenarios/*/dry-run");
 
     await open(page, site.base, `/experiments/new?scenario=${site.ids.scenario}`);
-    await page.getByLabel("실행 횟수").fill("20");
+    await page.getByLabel("몇 번 돌릴까요").fill("20");
     await page.getByRole("button", { name: "실험 시작" }).click();
     await page.waitForURL(/\/experiments\/e-/, { timeout: 15_000 });
     // A small experiment can finish in a second or two, so look for the progress while it runs, not after.
