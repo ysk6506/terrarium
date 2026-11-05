@@ -130,8 +130,10 @@ verification_log:
 - [0078 서버룸의 사람은 꾸밈이지만 세계를 읽는다 — 고장이 나면 걸어가서 일한다](design-docs/adr/0078-people-in-the-hall.md)
 - [0079 서버룸과 건물은 직사각형 안에서 자유롭게 넓히고, 꽉 차면 길을 보여 준다](design-docs/adr/0079-room-resize.md)
 - [0080 방은 직사각형 조각을 붙인 하나의 공간이다 — L자와 육각형 윤곽을 그대로 만든다](design-docs/adr/0080-room-pieces.md)
+- [0081 건물은 실제 크기에 묶이고, 방은 그 바닥이 허락하는 만큼 자유롭다](design-docs/adr/0081-real-building-size.md)
 
 ## 계획과 부채
 
 - [진행 중 계획](exec-plans/active/build-plan.md)
+- [클로즈 베타 피드백 장부](exec-plans/active/beta-feedback.md)
 - [기술 부채 장부](exec-plans/tech-debt.yaml) (YAML)
