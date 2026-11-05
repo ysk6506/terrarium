@@ -19,4 +19,5 @@ export {
   summarizeState,
   type ToolContext,
 } from "./handlers";
+export { type CallEffect, callEffect, callTargets } from "./targets";
 export { Toolbox, type ToolResult, validateArgs } from "./toolbox";

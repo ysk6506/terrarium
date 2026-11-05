@@ -58,7 +58,7 @@ function countOf(index: BlueprintIndex, kinds: readonly (EntityKind | "link")[])
 }
 
 const missing = (kinds: readonly (EntityKind | "link")[]) =>
-  `이 세계에는 대상으로 쓸 장비(${kindList(kinds)})가 없다`;
+  `이 세계에는 대상으로 쓸 장비(${kindList(kinds)})가 없어요`;
 
 function blockItem(spec: BlockSpec, index: BlueprintIndex): PaletteItem {
   const base = {
@@ -73,7 +73,7 @@ function blockItem(spec: BlockSpec, index: BlueprintIndex): PaletteItem {
     return {
       ...base,
       available: false,
-      reason: `아직 시뮬레이터가 지원하지 않는다: ${spec.plannedReason}`,
+      reason: `아직 시뮬레이터가 지원하지 않아요: ${spec.plannedReason}`,
     };
   if (!spec.needsAnyOf) return { ...base, available: true };
   const candidates = countOf(index, spec.needsAnyOf);
@@ -98,7 +98,7 @@ function faultItem(fault: FaultSpec, inject: BlockSpec, index: BlueprintIndex): 
     return {
       ...base,
       available: false,
-      reason: "아직 시뮬레이터가 이 장애의 효과를 계산하지 않는다",
+      reason: "아직 시뮬레이터가 이 고장의 효과를 계산하지 않아요",
     };
   return candidates > 0
     ? { ...base, available: true }

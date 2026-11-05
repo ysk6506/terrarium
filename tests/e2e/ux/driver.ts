@@ -61,9 +61,10 @@ export class Driver {
   actions = 0;
   constructor(readonly page: Page) {}
 
-  async click(target: Locator): Promise<void> {
+  /** `at` is where in the element to press (the empty part of a canvas, say). */
+  async click(target: Locator, at?: { x: number; y: number }): Promise<void> {
     this.actions++;
-    await target.click();
+    await target.click(at ? { position: at } : undefined);
   }
 
   async fill(target: Locator, text: string): Promise<void> {

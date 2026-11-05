@@ -4,7 +4,7 @@
  * shown in words; the family tree can be walked both ways.
  */
 import { InvalidValueError } from "@terrarium/core/kernel";
-import type { Experiment, Recipe, Snapshot } from "./model";
+import type { Experiment, Metadata, Recipe, Snapshot, Subject } from "./model";
 import { benchmarkKey, normalizeTools } from "./recipe";
 
 export interface ForkMeta {
@@ -13,6 +13,10 @@ export interface ForkMeta {
   readonly createdAt: string;
   readonly name?: string;
   readonly note?: string;
+  /** Replaces the parent's metadata; left out, the fork keeps it. */
+  readonly metadata?: Metadata;
+  /** Who runs the fork, when the harness or agent changed; left out, the parent's. */
+  readonly subject?: Subject;
 }
 
 /**
@@ -35,7 +39,7 @@ export function forkExperiment(
     snapshot.scenarioDigest === parent.snapshot.scenarioDigest;
   if (recipeDiff(parent.recipe, recipe).length === 0 && sameVersions)
     throw new InvalidValueError(
-      "포크는 조건을 하나 이상 바꿔야 한다 (같은 조건으로 다시 돌리려면 실행을 추가한다)",
+      "포크는 조건을 하나 이상 바꿔야 해요 (같은 조건으로 다시 돌리려면 실행을 더해 주세요)",
     );
   return {
     id: meta.id,
@@ -47,8 +51,15 @@ export function forkExperiment(
     benchmarkKey: benchmarkKey(snapshot, recipe),
     parentId: parent.id,
     ...(meta.note ? { note: meta.note } : {}),
+    ...withMetadata(meta.metadata ?? parent.metadata, meta.subject ?? parent.subject),
+    ...(parent.agentVersion === undefined ? {} : { agentVersion: parent.agentVersion }),
   };
 }
+
+const withMetadata = (metadata: Metadata | undefined, subject: Subject | undefined) => ({
+  ...(metadata && Object.keys(metadata).length > 0 ? { metadata } : {}),
+  ...(subject ? { subject } : {}),
+});
 
 export interface RecipeChange {
   readonly field: keyof Recipe;

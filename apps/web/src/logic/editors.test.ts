@@ -47,7 +47,7 @@ describe("the scenario canvas [REQ-034]", () => {
   test("blocks are added, wired, rewired, edited and removed — unusable ones say why", () => {
     let doc = emptyScenario("s", "sample");
     expect(() => sc.addBlock(doc, item("start"), { x: 0, y: 0 })).toThrow(
-      "시작은 시나리오에 1개까지만 둔다",
+      "시작은 시나리오에 1개까지만 둘 수 있어요",
     );
     const planned = palette.find((p) => !p.available) as (typeof palette)[number];
     expect(() => sc.addBlock(doc, planned, { x: 0, y: 0 })).toThrow(planned.reason as string);
@@ -63,9 +63,11 @@ describe("the scenario canvas [REQ-034]", () => {
     doc = sc.connect(doc, wait.nodeId, "next", random.nodeId);
     expect(doc.edges.filter((e) => e.from === wait.nodeId)).toHaveLength(1);
     expect(() => sc.connect(doc, random.nodeId, "7", wait.nodeId)).toThrow(
-      "'갈래 7' 출구가 없는 블록이다",
+      "'갈래 7' 출구가 없는 블록이에요",
     );
-    expect(() => sc.connect(doc, wait.nodeId, "next", start)).toThrow("시작으로는 들어갈 수 없다");
+    expect(() => sc.connect(doc, wait.nodeId, "next", start)).toThrow(
+      "시작으로는 들어갈 수 없어요",
+    );
     expect(() => sc.connect(doc, wait.nodeId, "next", wait.nodeId)).toThrow("자기 자신");
     expect(() => sc.connect(doc, "nope", "next", wait.nodeId)).toThrow("없는 블록");
     doc = sc.setParam(doc, random.nodeId, "branches", 3);
@@ -92,19 +94,19 @@ describe("the scenario canvas [REQ-034]", () => {
   test("every block's summary reads as a sentence", () => {
     const n = (type: string, params: Record<string, unknown>) =>
       sc.summaryOf({ id: "n", type, params: params as never, position: { x: 0, y: 0 } }, index);
-    expect(n("wait", { seconds: 300 })).toBe("300초 기다린다");
-    expect(n("wait_until", {})).toBe("조건을 정한다");
+    expect(n("wait", { seconds: 300 })).toBe("5분 기다려요");
+    expect(n("wait_until", {})).toBe("조건을 정해 주세요");
     expect(n("branch", { condition: { kind: "diagnosis_submitted" } })).toMatch(/\?$/);
     expect(n("wait_until", { condition: { kind: "diagnosis_submitted" } })).toMatch(/까지$/);
     expect(n("random", { branches: 3 })).toBe("3갈래 중 하나");
     expect(n("note", { text: "메모" })).toBe("메모");
-    expect(n("clear_fault", {})).toBe("해제할 장애를 고른다");
-    expect(n("clear_fault", { ref: "n2" })).toBe("n2 블록의 장애를 없앤다");
+    expect(n("clear_fault", {})).toBe("복구할 고장을 골라 주세요");
+    expect(n("clear_fault", { ref: "n2" })).toBe("n2 블록의 고장을 복구해요");
     expect(n("set_load", { target: "srv-a1", value: 0.9 })).toMatch(/부하 90%$/);
     expect(n("set_setpoint", { target: "crah-1", celsius: 16 })).toMatch(/16°C$/);
-    expect(n("power", { target: "srv-a1", on: false })).toMatch(/끈다$/);
-    expect(n("power", { target: "srv-a1", on: true })).toMatch(/켠다$/);
-    expect(n("inject_fault", { target: "x" })).toBe("x: 장애");
+    expect(n("power", { target: "srv-a1", on: false })).toMatch(/꺼요$/);
+    expect(n("power", { target: "srv-a1", on: true })).toMatch(/켜요$/);
+    expect(n("inject_fault", { target: "x" })).toBe("x: 고장");
     expect(n("mystery", {})).toBe("");
   });
 });
@@ -114,18 +116,13 @@ describe("the block inspector [REQ-034]", () => {
     const doc = template("cooling-failure");
     const fault = doc.nodes.find((n) => n.type === "inject_fault") as (typeof doc.nodes)[number];
     const fields = sc.fieldsOf(doc, fault.id, index);
-    expect(fields.map((f) => f.name)).toEqual([
-      "faultType",
-      "target",
-      "faultParams",
-      "durationSeconds",
-    ]);
+    expect(fields.map((f) => f.name)).toEqual(["faultType", "target", "durationSeconds"]);
     const type = fields[0] as Extract<sc.Field, { control: "choice" }>;
     expect(type.choices.find((c) => c.value === "cooling_unit_failure")?.label).toBe("냉방기 정지");
     const target = fields[1] as Extract<sc.Field, { control: "choice" }>;
     expect(target.choices.map((c) => c.value).sort()).toEqual(["crah-1", "crah-2"]);
     expect(target.choices[0]?.group).toMatch(/의 냉방기$/);
-    expect(fields[3]).toMatchObject({ control: "number", unit: "초", step: 1 });
+    expect(fields[2]).toMatchObject({ control: "recovery", mode: "until_fixed" });
     expect(sc.fieldsOf(doc, "nope", index)).toEqual([]);
     const agent = doc.nodes.find((n) => n.type === "agent_task") as (typeof doc.nodes)[number];
     expect(sc.fieldsOf(doc, agent.id, index)[0]).toMatchObject({
@@ -207,7 +204,7 @@ describe("the scoring sheet [REQ-034]", () => {
     let doc = emptyScenario("s", "sample");
     expect(sc.sheetTotal(doc)).toEqual({
       points: 0,
-      note: "채점 항목이 없으면 점수가 나오지 않는다",
+      note: "채점 항목이 없으면 점수가 나오지 않아요",
     });
     const kinds = Object.keys(sc.EXPECTATION_LABELS) as (keyof typeof sc.EXPECTATION_LABELS)[];
     for (const k of kinds) doc = sc.addExpectation(doc, k).doc;
@@ -218,7 +215,7 @@ describe("the scoring sheet [REQ-034]", () => {
     expect(sc.sheetTotal(doc)).toEqual({ points: 100 });
     expect(doc.expectations.map((e) => sc.expectationText(e))).toEqual([
       "원인 ? / 고장 ?",
-      "끝 상태 조건",
+      "어느 장비든 심각 알람이 없어요",
       "재시작",
       "전원 끄기 1회마다 −20점",
       "30분 안에",
@@ -226,7 +223,7 @@ describe("the scoring sheet [REQ-034]", () => {
     ]);
     doc = sc.removeExpectation(doc, "x2");
     expect(sc.sheetTotal(doc).note).toBe(
-      "합이 80점이다. 100점이 아니어도 되지만, 100점이면 읽기 쉽다",
+      "합이 80점이에요. 100점이 아니어도 되지만, 100점이면 읽기 쉬워요",
     );
     const real = template("cooling-failure");
     expect(
@@ -273,16 +270,16 @@ describe("the experiment form and forks [REQ-030] [REQ-040]", () => {
   test("a draft says what is missing step by step, and becomes a request", () => {
     let d = ex.emptyDraft();
     expect(ex.draftProblems(d)).toEqual({
-      what: ["세계를 고른다", "시나리오를 고른다"],
-      who: ["하네스를 고른다"],
+      what: ["세계를 골라 주세요", "시나리오를 골라 주세요"],
+      who: ["하네스를 골라 주세요"],
       how: [],
     });
     d = { ...d, worldId: "w-1", scenarioId: "s-1", harnessId: "builtin" };
-    expect(ex.draftProblems(d).who).toEqual(["에이전트를 고른다"]);
+    expect(ex.draftProblems(d).who).toEqual(["에이전트를 골라 주세요"]);
     d = { ...d, agentId: "chef" };
-    expect(ex.draftProblems(d, ["triage"]).who).toEqual(["하네스에 'chef' 에이전트가 없다"]);
+    expect(ex.draftProblems(d, ["triage"]).who).toEqual(["하네스에 'chef' 에이전트가 없어요"]);
     d = { ...d, agentId: "triage", runs: 25 };
-    expect(ex.draftProblems(d, ["triage"]).how[0]).toBe("실행 횟수는 1~20번이다");
+    expect(ex.draftProblems(d, ["triage"]).how[0]).toBe("실행 횟수는 1~20번이에요");
     d = { ...d, runs: 3, profiles: { vcenter: "vcenter/5.5" } };
     expect(ex.draftProblems(d, ["triage"]).how.length).toBe(1);
     d = { ...d, profiles: {} };
@@ -293,7 +290,7 @@ describe("the experiment form and forks [REQ-030] [REQ-040]", () => {
       false,
     );
     expect(ex.draftProblems(none).how).toEqual([
-      "조사에 쓸 툴을 하나 이상 골라야 한다 (진단 제출은 늘 포함된다)",
+      "조사에 쓸 툴을 하나 이상 골라 주세요 (진단 제출은 늘 포함돼요)",
     ]);
     expect(ex.toggleTool(d, "wait", true).tools.filter((t) => t === "wait")).toHaveLength(1);
     const req = ex.toRequest({ ...d, note: "  메모 " }, ex.suggestedName("냉방", "triage"));
@@ -304,7 +301,7 @@ describe("the experiment form and forks [REQ-030] [REQ-040]", () => {
     });
     expect(req.recipe.tools).toContain("submit_diagnosis");
     expect(ex.suggestedName()).toBe("새 실험");
-    expect(() => ex.toRequest(ex.emptyDraft(), "x")).toThrow("실험 조건이 다 정해지지 않았다");
+    expect(() => ex.toRequest(ex.emptyDraft(), "x")).toThrow("실험 조건이 다 정해지지 않았어요");
     expect(ex.toolGroups().map((g) => g.category)).toEqual([
       "observe",
       "protocol",

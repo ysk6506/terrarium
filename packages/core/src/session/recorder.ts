@@ -4,9 +4,16 @@
  * buffers, so memory per run is bounded: entities × metrics × (retention / interval) × 4 bytes.
  */
 import { InvalidValueError } from "@terrarium/core/kernel";
-import { effectiveUtil } from "@terrarium/core/physics";
+import { effectiveUtilAt, faultParam, passOf } from "@terrarium/core/physics";
 import type { MetricSource } from "@terrarium/core/tools";
-import { type EntityKind, reportedInletC, type World } from "@terrarium/core/world";
+import type {
+  BlueprintIndex,
+  EntityKind,
+  EntityState,
+  Fault,
+  StateOf,
+  World,
+} from "@terrarium/core/world";
 
 /** Metrics recorded per entity kind. Servers' cpuUtil is the effective utilisation, not the base load. */
 export const RECORDED_METRICS: Readonly<Partial<Record<EntityKind, readonly string[]>>> = {
@@ -28,42 +35,71 @@ export interface RecorderOptions {
 
 export const DEFAULT_RECORDER: RecorderOptions = { sampleSeconds: 30, retentionSeconds: 4 * 3600 };
 
-/** The samples taken so far, trimmed to what was written (warm start, REQ-032). */
+/**
+ * The samples taken so far, trimmed to what was written (warm start, REQ-032). One row per sample time,
+ * one value per series in the recorder's fixed order. Rows are never changed once written.
+ */
 export interface RecorderCapture {
   readonly count: number;
   readonly nextAt: number;
   readonly times: Float64Array;
-  readonly values: readonly Float32Array[];
+  readonly rows: readonly Float32Array[];
 }
 
-type Reader = (world: World, id: string) => number;
+/** Where a series' value comes from: a plain property of the state, or a figure monitoring works out. */
+const PLAIN = 0;
+const SENSED_INLET = 1;
+const EFFECTIVE_UTIL = 2;
 
-const special: Readonly<Record<string, Reader>> = {
-  "server.inletC": (w, id) => reportedInletC(w, id),
-  "server.cpuUtil": (w, id) => {
-    const s = w.stateAs(id, "server");
-    return s.powered && s.adminOn ? effectiveUtil(w, w.index.entity(id)) : 0;
-  },
-};
-
-function readerFor(kind: EntityKind, metric: string): Reader {
-  return (
-    special[`${kind}.${metric}`] ??
-    ((w, id) => Number((w.stateOf(id) as unknown as Record<string, unknown>)[metric]))
-  );
+/**
+ * The series a blueprint has, in order: which entity, which metric. The same for every recorder over
+ * the blueprint, so it is worked out once and shared (a run holds only its numbers).
+ */
+interface Layout {
+  readonly ids: readonly string[];
+  readonly metrics: readonly string[];
+  readonly at: Int32Array;
+  readonly how: Uint8Array;
+  readonly byKey: ReadonlyMap<string, number>;
 }
 
-interface Series {
-  readonly id: string;
-  readonly metric: string;
-  readonly read: Reader;
-  readonly values: Float32Array;
+const layouts = new WeakMap<BlueprintIndex, Layout>();
+
+function howOf(kind: EntityKind, metric: string): number {
+  if (kind === "server" && metric === "inletC") return SENSED_INLET;
+  if (kind === "server" && metric === "cpuUtil") return EFFECTIVE_UTIL;
+  return PLAIN;
+}
+
+function layoutOf(index: BlueprintIndex): Layout {
+  const known = layouts.get(index);
+  if (known) return known;
+  const ids: string[] = [];
+  const metrics: string[] = [];
+  const at: number[] = [];
+  const how: number[] = [];
+  const byKey = new Map<string, number>();
+  index.all().forEach((entity, i) => {
+    for (const metric of RECORDED_METRICS[entity.kind] ?? []) {
+      byKey.set(`${entity.id}|${metric}`, ids.length);
+      ids.push(entity.id);
+      metrics.push(metric);
+      at.push(i);
+      how.push(howOf(entity.kind, metric));
+    }
+  });
+  const layout = { ids, metrics, at: Int32Array.from(at), how: Uint8Array.from(how), byKey };
+  layouts.set(index, layout);
+  return layout;
 }
 
 export class MetricRecorder implements MetricSource {
-  private readonly all: Series[] = [];
-  private readonly byKey = new Map<string, Series>();
+  private readonly layout: Layout;
   private readonly times: Float64Array;
+  /** One row per sample time, made when the sample is taken: a run that is short holds a short history. */
+  private readonly rows: Array<Float32Array | undefined>;
+  /** Rows that a warm-start capture also holds; they are replaced, not written into. */
+  private readonly shared: Uint8Array;
   private count = 0;
   private nextAt: number;
 
@@ -72,19 +108,10 @@ export class MetricRecorder implements MetricSource {
     readonly options: RecorderOptions = DEFAULT_RECORDER,
   ) {
     const capacity = Math.ceil(options.retentionSeconds / options.sampleSeconds) + 1;
+    this.layout = layoutOf(world.index);
     this.times = new Float64Array(capacity);
-    for (const entity of world.index.all()) {
-      for (const metric of RECORDED_METRICS[entity.kind] ?? []) {
-        const s = {
-          id: entity.id,
-          metric,
-          read: readerFor(entity.kind, metric),
-          values: new Float32Array(capacity),
-        };
-        this.all.push(s);
-        this.byKey.set(`${entity.id}|${metric}`, s);
-      }
-    }
+    this.rows = new Array<Float32Array | undefined>(capacity);
+    this.shared = new Uint8Array(capacity);
     this.nextAt = Math.ceil(world.time() / options.sampleSeconds) * options.sampleSeconds;
   }
 
@@ -94,29 +121,56 @@ export class MetricRecorder implements MetricSource {
     if (now < this.nextAt) return;
     const slot = this.count % this.times.length;
     this.times[slot] = now;
-    for (const s of this.all) s.values[slot] = s.read(this.world, s.id);
+    let row = this.rows[slot];
+    if (!row || this.shared[slot] === 1) {
+      row = new Float32Array(this.layout.ids.length);
+      this.rows[slot] = row;
+      this.shared[slot] = 0;
+    }
+    this.read(row);
     this.count++;
     this.nextAt = (Math.floor(now / this.options.sampleSeconds) + 1) * this.options.sampleSeconds;
+  }
+
+  private read(row: Float32Array): void {
+    const pass = passOf(this.world);
+    const { metrics, at, how } = this.layout;
+    for (let k = 0; k < row.length; k++) {
+      const i = at[k] as number;
+      const state = pass.states[i] as EntityState;
+      const mode = how[k];
+      if (mode === SENSED_INLET) {
+        const drift = faultParam(pass.faults[i] as readonly Fault[], "sensor_drift", "deltaC");
+        row[k] = (state as StateOf<"server">).inletC + (drift ?? 0);
+      } else if (mode === EFFECTIVE_UTIL) {
+        const s = state as StateOf<"server">;
+        row[k] = s.powered && s.adminOn ? effectiveUtilAt(pass, i) : 0;
+      } else row[k] = Number((state as unknown as Record<string, unknown>)[metrics[k] as string]);
+    }
   }
 
   /** The samples so far, or nothing once the ring has wrapped (then they are not a simple prefix). */
   capture(): RecorderCapture | undefined {
     if (this.count > this.times.length) return undefined;
+    // From now on these rows belong to the capture too, so a ring that wraps later must not write into them.
+    this.shared.fill(1, 0, this.count);
     return {
       count: this.count,
       nextAt: this.nextAt,
       times: this.times.slice(0, this.count),
-      values: this.all.map((s) => s.values.slice(0, this.count)),
+      rows: this.rows.slice(0, this.count) as Float32Array[],
     };
   }
 
   /** Continue from a capture taken on a recorder over the same blueprint and options. */
   adopt(capture: RecorderCapture): void {
-    if (capture.values.length !== this.all.length || capture.count > this.times.length)
+    const width = capture.rows[0]?.length ?? this.layout.ids.length;
+    if (width !== this.layout.ids.length || capture.count > this.times.length)
       throw new InvalidValueError("the recorder capture does not fit this recorder");
     this.times.set(capture.times);
-    this.all.forEach((s, i) => {
-      s.values.set(capture.values[i] as Float32Array);
+    capture.rows.forEach((row, i) => {
+      this.rows[i] = row;
+      this.shared[i] = 1;
     });
     this.count = capture.count;
     this.nextAt = capture.nextAt;
@@ -124,26 +178,27 @@ export class MetricRecorder implements MetricSource {
 
   /** Samples [t, value] of `metric` on `entityId` at or after simulated time `sinceT`. */
   series(entityId: string, metric: string, sinceT: number): Array<[number, number]> {
-    const s = this.byKey.get(`${entityId}|${metric}`);
-    if (!s) return [];
+    const k = this.layout.byKey.get(`${entityId}|${metric}`);
+    if (k === undefined) return [];
     const kept = Math.min(this.count, this.times.length);
     const out: Array<[number, number]> = [];
     for (let i = this.count - kept; i < this.count; i++) {
       const slot = i % this.times.length;
       const t = this.times[slot] as number;
-      if (t >= sinceT) out.push([t, s.values[slot] as number]);
+      if (t >= sinceT) out.push([t, (this.rows[slot] as Float32Array)[k] as number]);
     }
     return out;
   }
 
   /** The metrics recorded for an entity. */
   metricsOf(entityId: string): string[] {
-    return this.all.filter((s) => s.id === entityId).map((s) => s.metric);
+    return this.layout.metrics.filter((_, k) => this.layout.ids[k] === entityId);
   }
 
-  /** Approximate memory held by the buffers, for capacity planning (REQ-032). */
+  /** Approximate memory held by the samples, for capacity planning (REQ-032). */
   get bytes(): number {
-    return this.times.byteLength + this.all.reduce((sum, s) => sum + s.values.byteLength, 0);
+    const rows = Math.min(this.count, this.times.length);
+    return this.times.byteLength + rows * this.layout.ids.length * Float32Array.BYTES_PER_ELEMENT;
   }
 
   get samples(): number {
@@ -151,7 +206,7 @@ export class MetricRecorder implements MetricSource {
   }
 
   get seriesCount(): number {
-    return this.all.length;
+    return this.layout.ids.length;
   }
 }
 

@@ -84,7 +84,7 @@ describe("pointing and dragging in the builder [REQ-035]", () => {
       { x: 20, y: 20 },
       { x: 40, y: 30 },
     );
-    expect(plan?.problem).toMatch(/겹친다/);
+    expect(plan?.problem).toMatch(/겹쳐요/);
     expect(plan?.edit).toBeUndefined();
   });
 
@@ -199,7 +199,7 @@ describe("pointing and dragging in the builder [REQ-035]", () => {
     );
     expect(moved?.rect.x).toBeCloseTo(3.6);
     expect(moved?.rect.y).toBeCloseTo(4.2);
-    expect(moved?.label).toMatch(/옮긴다$/);
+    expect(moved?.label).toMatch(/옮겼어요$/);
     expect(moved?.edit).toBeDefined();
     const out = movePlan(where(placed.blueprint, room), id, { x: 1.5, y: 1.5 }, { x: 40, y: 1.5 });
     expect(out?.problem).toBeDefined();
@@ -226,9 +226,9 @@ describe("pointing and dragging in the builder [REQ-035]", () => {
     const { bp } = site();
     const index = new BlueprintIndex(bp);
     const building = index.ofKind("building")[0]?.id as string;
-    expect(pointingHint({ kind: "select" }, undefined, index)).toMatch(/화면이 움직인다/);
-    expect(pointingHint({ kind: "select" }, building, index)).toMatch(/두 번 누르면 들어간다/);
-    expect(pointingHint({ kind: "rack" }, undefined, index)).toMatch(/R로 돌린다/);
+    expect(pointingHint({ kind: "select" }, undefined, index)).toMatch(/화면이 움직여요/);
+    expect(pointingHint({ kind: "select" }, building, index)).toMatch(/두 번 누르면 들어가요/);
+    expect(pointingHint({ kind: "rack" }, undefined, index)).toMatch(/R로 돌려요/);
     for (const tool of [
       { kind: "building" },
       { kind: "room" },

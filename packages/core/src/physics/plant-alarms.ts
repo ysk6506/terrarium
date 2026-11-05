@@ -1,18 +1,16 @@
 /** Alarms for the plant and the liquid side of the halls (REQ-044); same conventions as alarms.ts. */
-import type { Alarm, Entity, World } from "@terrarium/core/world";
+import type { CduModel, ChillerModel, PanelModel } from "@terrarium/core/catalog";
+import type { Entity, Fault, StateOf, World } from "@terrarium/core/world";
+import { type Draft, type Hit, NO_HITS, pushHits, type Scan } from "./alarm-scan";
 import { leakIsolated } from "./plant";
-
-type Draft = Omit<Alarm, "id" | "since">;
-type Hit = [code: string, severity: Alarm["severity"], message: string];
+import { hasFault } from "./power-supply";
 
 /** Bath above this is too warm for the hardware warranty; above the critical level servers throttle. */
 export const BATH_WARNING_C = 45;
 export const BATH_CRITICAL_C = 55;
 export const FUEL_LOW_PCT = 25;
 
-function cduHits(world: World, entity: Entity): Hit[] {
-  const s = world.stateAs(entity.id, "cdu");
-  const model = world.catalog.getOf(entity.modelId ?? "", "cdu");
+function cduHits(s: StateOf<"cdu">, model: CduModel, entity: Entity): Hit[] {
   const hits: Hit[] = [];
   if (s.adminOn && !s.running) hits.push(["cdu_stopped", "critical", `${entity.name} 정지`]);
   const failed = s.pumpsOk.filter((ok) => !ok).length;
@@ -37,9 +35,7 @@ function cduHits(world: World, entity: Entity): Hit[] {
   return hits;
 }
 
-function chillerHits(world: World, entity: Entity): Hit[] {
-  const s = world.stateAs(entity.id, "chiller");
-  const model = world.catalog.getOf(entity.modelId ?? "", "chiller");
+function chillerHits(s: StateOf<"chiller">, model: ChillerModel, entity: Entity): Hit[] {
   const hits: Hit[] = [];
   if (s.adminOn && !s.running) hits.push(["chiller_stopped", "critical", `${entity.name} 정지`]);
   if (s.running && s.loadKw > s.capacityKw)
@@ -57,8 +53,7 @@ function chillerHits(world: World, entity: Entity): Hit[] {
   return hits;
 }
 
-function generatorHits(world: World, entity: Entity): Hit[] {
-  const s = world.stateAs(entity.id, "generator");
+function generatorHits(s: StateOf<"generator">, entity: Entity): Hit[] {
   const hits: Hit[] = [];
   if (s.phase === "running")
     hits.push([
@@ -74,10 +69,15 @@ function generatorHits(world: World, entity: Entity): Hit[] {
   return hits;
 }
 
-function liquidRackHits(world: World, entity: Entity): Hit[] {
-  const s = world.stateAs(entity.id, "rack");
+function liquidRackHits(
+  world: World,
+  s: StateOf<"rack">,
+  faults: readonly Fault[],
+  entity: Entity,
+): readonly Hit[] {
+  if (!(s.bathC > BATH_WARNING_C) && !hasFault(faults, "coolant_leak")) return NO_HITS;
   const hits: Hit[] = [];
-  if (world.faultsOn(entity.id).some((f) => f.type === "coolant_leak"))
+  if (hasFault(faults, "coolant_leak"))
     hits.push([
       "coolant_leak",
       "critical",
@@ -92,27 +92,25 @@ function liquidRackHits(world: World, entity: Entity): Hit[] {
   return hits;
 }
 
-function feedHits(world: World, entity: Entity): Hit[] {
-  const s = world.stateAs(entity.id, "power_panel");
-  const model = world.catalog.getOf(entity.modelId ?? "", "power_panel");
+function feedHits(s: StateOf<"power_panel">, model: PanelModel, entity: Entity): readonly Hit[] {
   const main =
     model.style === "transformer" || model.style === "switchgear" || model.style === "ats";
   return main && !s.powered && !s.tripped
     ? [["feed_lost", "critical", `${entity.name} 전원 상실`]]
-    : [];
+    : NO_HITS;
 }
 
-export function plantAlarms(world: World, entity: Entity): Draft[] {
-  let hits: Hit[] = [];
-  if (entity.kind === "cdu") hits = cduHits(world, entity);
-  else if (entity.kind === "chiller") hits = chillerHits(world, entity);
-  else if (entity.kind === "generator") hits = generatorHits(world, entity);
-  else if (entity.kind === "rack") hits = liquidRackHits(world, entity);
-  else if (entity.kind === "power_panel") hits = feedHits(world, entity);
-  return hits.map(([code, severity, message]) => ({
-    entityId: entity.id,
-    code,
-    severity,
-    message,
-  }));
+/** Alarms for an entity of the plant or the liquid side (nothing for any other kind). */
+export function plantAlarms(scan: Scan, i: number, entity: Entity, out: Draft[]): void {
+  const s = scan.states[i];
+  const model = scan.plan.models[i];
+  let hits: readonly Hit[] = NO_HITS;
+  if (s?.kind === "cdu") hits = cduHits(s, model as CduModel, entity);
+  else if (s?.kind === "chiller")
+    hits = chillerHits(s, scan.world.catalog.getOf(entity.modelId ?? "", "chiller"), entity);
+  else if (s?.kind === "generator") hits = generatorHits(s, entity);
+  else if (s?.kind === "rack")
+    hits = liquidRackHits(scan.world, s, scan.faults[i] as readonly Fault[], entity);
+  else if (s?.kind === "power_panel") hits = feedHits(s, model as PanelModel, entity);
+  pushHits(out, entity, hits);
 }

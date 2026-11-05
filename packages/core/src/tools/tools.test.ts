@@ -31,6 +31,21 @@ function echoFacades(): Facades & { calls: Array<[string, string | undefined, Fa
     redfish: { handle: (server, req) => echo("redfish", server, req) },
     vcenter: { handle: (req) => echo("vcenter", undefined, req) },
     vrops: { handle: (req) => echo("vrops", undefined, req) },
+    snmp: {
+      handle: (device) => ({
+        version: "2c",
+        device,
+        errorStatus: "noError",
+        errorIndex: 0,
+        varbinds: [],
+      }),
+    },
+    bacnet: { handle: (device) => ({ service: "echo", device }) },
+    network: {
+      cli: (device) => ({ timeout: true, device, message: "echo" }),
+      eapi: (device) => ({ timeout: true, device, message: "echo" }),
+      nxapi: (device) => ({ timeout: true, device, message: "echo" }),
+    },
   };
 }
 

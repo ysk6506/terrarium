@@ -30,6 +30,7 @@ import {
   ResultFigures,
   RunsTable,
 } from "./experiment-parts";
+import { SubjectPanel } from "./experiment-subject";
 import { useLive } from "./useLive";
 
 const ACTIVE = new Set(["queued", "running"]);
@@ -42,13 +43,13 @@ function ShareMenu({ view }: { readonly view: ExperimentView }) {
       await navigator.clipboard.writeText(text);
       toast(done);
     } catch {
-      toast("복사하지 못했다. 브라우저가 클립보드를 막고 있다", "bad");
+      toast("복사하지 못했어요. 브라우저가 클립보드를 막고 있어요", "bad");
     }
   };
   const shareLink = async () => {
     try {
       const share = await api.call("createShare", { params: { id }, body: {} });
-      await copy(share.url, "링크를 복사했다. 받은 사람은 로그인 없이 보고서를 볼 수 있다");
+      await copy(share.url, "링크를 복사했어요. 받은 사람은 로그인 없이 보고서를 볼 수 있어요");
     } catch (err) {
       toast(err instanceof Error ? err.message : String(err), "bad");
     }
@@ -57,7 +58,7 @@ function ShareMenu({ view }: { readonly view: ExperimentView }) {
     try {
       await copy(
         await api.call("experimentReport", { params: { id }, query: { format: "text" } }),
-        "보고서 글을 복사했다",
+        "보고서 글을 복사했어요",
       );
     } catch (err) {
       toast(err instanceof Error ? err.message : String(err), "bad");
@@ -70,12 +71,12 @@ function ShareMenu({ view }: { readonly view: ExperimentView }) {
       items={[
         {
           label: "링크 복사",
-          hint: "로그인 없이 보고서가 열린다",
+          hint: "로그인 없이 보고서가 열려요",
           onSelect: () => void shareLink(),
         },
         {
           label: "HTML 보고서 열기",
-          hint: "한 파일로 저장해 메일에 붙일 수 있다",
+          hint: "한 파일로 저장해 메일에 붙일 수 있어요",
           onSelect: () =>
             window.open(
               api.url("experimentReport", { id }, { format: "html" }),
@@ -83,7 +84,7 @@ function ShareMenu({ view }: { readonly view: ExperimentView }) {
               "noopener",
             ),
         },
-        { label: "글로 복사", hint: "메신저에 붙여 넣기 좋다", onSelect: () => void copyText() },
+        { label: "글로 복사", hint: "메신저에 붙여 넣기 좋아요", onSelect: () => void copyText() },
       ]}
     />
   );
@@ -103,7 +104,7 @@ function CancelButton({
   const cancel = async () => {
     const next = await run(
       () => api.call("cancelExperiment", { params: { id: view.experiment.id } }),
-      "남은 실행을 취소했다",
+      "남은 실행을 멈췄어요",
     );
     setAsking(false);
     if (next) onDone(next);
@@ -111,20 +112,20 @@ function CancelButton({
   return (
     <>
       <Button kind="danger" icon="stop" onClick={() => setAsking(true)}>
-        취소
+        멈추기
       </Button>
       {asking && (
         <Dialog
-          title="남은 실행을 취소할까?"
+          title="남은 실행을 멈출까요?"
           onClose={() => setAsking(false)}
           actions={
             <Button kind="danger" busy={busy} onClick={() => void cancel()}>
-              {remaining}회 취소
+              {remaining}회 멈추기
             </Button>
           }
         >
           <p className="small">
-            끝난 실행의 결과는 그대로 남는다. 돌고 있는 실행은 바로 멈추고, 기다리는 실행은 빠진다.
+            끝난 실행의 결과는 그대로 남아요. 돌고 있는 실행은 바로 멈추고, 기다리는 실행은 빠져요.
           </p>
         </Dialog>
       )}
@@ -145,7 +146,7 @@ function AddRuns({
   const add = async () => {
     const next = await run(
       () => api.call("addRuns", { params: { id: view.experiment.id }, body: { count } }),
-      `${count}회를 더 넣었다`,
+      `${count}회를 더했어요`,
     );
     if (next) onDone(next);
   };
@@ -185,7 +186,7 @@ function Head({
       lede={
         <>
           <Status status={view.status} /> {withJosa(e.owner, "이")}{" "}
-          {dateText(e.createdAt, Date.now())}에 만들었다. {view.progress.finished}/
+          {dateText(e.createdAt, Date.now())}에 만들었어요. {view.progress.finished}/
           {view.progress.total}회 끝.
         </>
       }
@@ -235,7 +236,7 @@ export function ExperimentPage({ id }: { readonly id: string }) {
       )}
       <Section title="실행" aside=<EndReasons reasons={view.analysis.endReasons} />>
         {runs.length === 0 ? (
-          <Empty title="아직 실행이 없다" />
+          <Empty title="아직 실행이 없어요" />
         ) : (
           <RunsTable runs={runs} live={live} analysis={view.analysis} />
         )}
@@ -244,6 +245,7 @@ export function ExperimentPage({ id }: { readonly id: string }) {
         </div>
       </Section>
       <CriteriaTable criteria={view.analysis.criteria} />
+      <SubjectPanel experiment={view.experiment} />
       <ConditionsPanel view={view} />
       <Lineage view={view} />
     </div>

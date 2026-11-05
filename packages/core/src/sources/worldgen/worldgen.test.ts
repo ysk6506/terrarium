@@ -200,20 +200,20 @@ describe("worldgen limits [REQ-009]", () => {
     } as unknown as WorldgenSpec;
     expect(specProblems(bad)).toEqual([
       "알 수 없는 사업장 'seoul'",
-      "시드는 정수여야 한다",
-      "건물 수: 1~4 사이의 정수여야 한다 (지금 0)",
-      "서버룸당 랙 줄: 1~12 사이의 정수여야 한다 (지금 1.5)",
-      "랙 채움 비율: 0.1~0.9 사이여야 한다 (지금 2)",
+      "시드는 정수여야 해요",
+      "건물 수: 1~4 사이의 정수여야 해요 (지금 0)",
+      "서버룸당 랙 줄: 1~12 사이의 정수여야 해요 (지금 1.5)",
+      "랙 채움 비율: 0.1~0.9 사이여야 해요 (지금 2)",
       "컨테인먼트: 알 수 없는 값 'glass'",
     ]);
-    expect(() => generateWorld(bad, catalog)).toThrow(/세계를 만들 수 없다: 알 수 없는 사업장/);
+    expect(() => generateWorld(bad, catalog)).toThrow(/세계를 만들 수 없어요: 알 수 없는 사업장/);
   });
 
   test("worlds are capped in size", () => {
     const huge = spec({ buildings: 4, floors: 8, roomsPerFloor: 4, rows: 12, racksPerRow: 20 });
     expect(rackCount(huge)).toBeGreaterThan(MAX_RACKS);
     expect(specProblems(huge)).toEqual([
-      `랙이 ${rackCount(huge)}개다. 한 세계는 ${MAX_RACKS}개까지 만들 수 있다`,
+      `랙이 ${rackCount(huge)}개예요. 한 세계는 ${MAX_RACKS}개까지 만들 수 있어요`,
     ]);
     expect(specProblems(spec())).toEqual([]);
   });

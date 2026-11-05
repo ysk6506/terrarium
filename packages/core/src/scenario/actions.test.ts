@@ -55,10 +55,10 @@ describe("agent actions [REQ-007] [REQ-039]", () => {
     ).toBe(false);
     expect(evaluate({ kind: "action_taken", action: "restart" }, world, agent)).toBe(false);
     expect(describeCondition({ kind: "action_taken", action: "power_off", target: "srv-a1" })).toBe(
-      "에이전트가 srv-a1 전원 끄기를 했다",
+      "에이전트가 srv-a1 전원 끄기를 했어요",
     );
     expect(describeCondition({ kind: "action_taken", action: "breaker_reset" })).toBe(
-      "에이전트가 차단기 리셋을 했다",
+      "에이전트가 차단기 리셋을 했어요",
     );
   });
 });
@@ -85,7 +85,7 @@ describe("validating action conditions [REQ-034]", () => {
       );
     expect(issues({ kind: "action_taken", action: "power_off", target: "srv-a1" })).toEqual([]);
     expect(issues({ kind: "action_taken", action: "explode" as never })[0]?.message).toContain(
-      "알 수 없는 행동 'explode' (가능: 전원 끄기, 전원 켜기, 재시작, 차단기 리셋, 냉방 설정 변경)",
+      "알 수 없는 행동 'explode' (가능: 전원 끄기, 전원 켜기, 재시작, 차단기 리셋, 냉방 설정 변경, 포트 끄기, 포트 켜기, 콘센트 끄기, 콘센트 켜기, 스위치 설정 변경)",
     );
     expect(issues({ kind: "action_taken", action: "restart", target: "ghost" })[0]?.code).toBe(
       "SC012",

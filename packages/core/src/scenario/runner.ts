@@ -8,6 +8,7 @@ import type { FaultType, WorldPort } from "@terrarium/core/world";
 import { blockSpec, outputsOf, type ParamSpec } from "./blocks";
 import { type AgentSignals, evaluate } from "./conditions";
 import type { Condition, ScenarioDoc, ScenarioNode } from "./model";
+import { netCommands } from "./net-blocks";
 
 export interface AgentTask {
   readonly nodeId: string;
@@ -227,12 +228,17 @@ export class ScenarioRunner {
           cause,
         );
         break;
+      case "set_outdoor_temp":
+        this.world.apply({ type: "outdoor.set", celsius: this.num(node, "celsius") }, cause);
+        break;
       case "power":
         this.world.apply({ type: "power.set", target, on: node.params.on === true }, cause);
         break;
       case "agent_task":
         this.startAgent(node, now, started);
         break;
+      default:
+        for (const command of netCommands(node, this.world)) this.world.apply(command, cause);
     }
   }
 

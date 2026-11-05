@@ -1,16 +1,23 @@
 /** The built-in models: nominal, fictional-vendor specs. Imported equipment maps onto these by kind. */
 import type { EquipmentModel } from "../models";
 import { CDUS, CHILLERS, COOLING_UNITS, GENERATORS, PANELS, UPSES } from "./facility";
+import { GPU_SERVERS } from "./gpu-servers";
 import { PDUS, STORAGES, SWITCHES } from "./it";
+import { ORV3_RACKS, ORV3_SERVERS, ORV3_SHELVES, ORV3_SWITCHES } from "./orv3";
 import { RACKS } from "./racks";
 import { SERVERS } from "./servers";
 
 export const BUILTIN_MODELS: readonly EquipmentModel[] = [
   ...SERVERS,
+  ...GPU_SERVERS,
   ...SWITCHES,
   ...STORAGES,
   ...PDUS,
   ...RACKS,
+  ...ORV3_SERVERS,
+  ...ORV3_SWITCHES,
+  ...ORV3_SHELVES,
+  ...ORV3_RACKS,
   ...COOLING_UNITS,
   ...CDUS,
   ...CHILLERS,

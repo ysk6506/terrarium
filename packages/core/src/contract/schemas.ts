@@ -131,6 +131,14 @@ const ConditionSchema: z.ZodType<Condition> = z.lazy(() =>
         target: z.string().max(128).optional(),
       })
       .strict(),
+    z
+      .object({
+        kind: z.literal("event"),
+        type: z.string().max(64),
+        target: z.string().max(128).optional(),
+        occurred: z.boolean().optional(),
+      })
+      .strict(),
     z.object({ kind: z.literal("diagnosis_submitted") }).strict(),
     z.object({ kind: z.literal("all"), of: z.array(ConditionSchema).max(20) }).strict(),
     z.object({ kind: z.literal("any"), of: z.array(ConditionSchema).max(20) }).strict(),
@@ -294,7 +302,7 @@ export const SeedsSchema = z
   )
   .min(1)
   .max(MAX_SEEDS)
-  .refine((xs) => new Set(xs).size === xs.length, { message: "같은 시드가 두 번 있다" });
+  .refine((xs) => new Set(xs).size === xs.length, { message: "같은 시드가 두 번 있어요" });
 
 export const ToolsSchema = z.array(z.string().min(1).max(64)).min(1).max(64);
 

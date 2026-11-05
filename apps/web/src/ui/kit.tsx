@@ -5,6 +5,7 @@
 import type { RunStatus } from "@terrarium/core/experiments";
 import {
   type ButtonHTMLAttributes,
+  type CSSProperties,
   type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
   useEffect,
@@ -31,6 +32,8 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   readonly size?: "small" | "normal";
   readonly icon?: string;
   readonly busy?: boolean;
+  /** What to tell when the button is switched off: shown as a hint and read out by screen readers. */
+  readonly why?: string;
 };
 
 export function Button({
@@ -38,11 +41,15 @@ export function Button({
   size = "normal",
   icon,
   busy,
+  why,
   children,
   className,
   disabled,
+  title,
   ...rest
 }: ButtonProps) {
+  const whyId = useId();
+  const reason = disabled && !busy ? why : undefined;
   const classes = [
     "btn",
     kind !== "plain" && `btn-${kind}`,
@@ -53,16 +60,25 @@ export function Button({
     .filter(Boolean)
     .join(" ");
   return (
-    <button
-      type="button"
-      className={classes}
-      disabled={disabled || busy}
-      aria-busy={busy || undefined}
-      {...rest}
-    >
-      {icon && <Icon name={icon} size={18} />}
-      {children}
-    </button>
+    <>
+      <button
+        type="button"
+        className={classes}
+        disabled={disabled || busy}
+        aria-busy={busy || undefined}
+        title={reason ?? title}
+        {...rest}
+        aria-describedby={reason ? whyId : rest["aria-describedby"]}
+      >
+        {icon && <Icon name={icon} size={18} />}
+        {children}
+      </button>
+      {reason && (
+        <span id={whyId} className="sr-only">
+          {reason}
+        </span>
+      )}
+    </>
   );
 }
 
@@ -184,7 +200,12 @@ export function Figures({
   }[];
 }) {
   return (
-    <dl className="figures">
+    <dl
+      className="figures"
+      style={
+        { "--cols": items.length > 5 ? Math.ceil(items.length / 2) : items.length } as CSSProperties
+      }
+    >
       {items.map((f) => (
         <div className="figure" key={f.label}>
           <dd className="figure-value" style={{ margin: 0 }}>
@@ -204,17 +225,23 @@ export function Dialog({
   onClose,
   children,
   actions,
+  wide,
 }: {
   readonly title: string;
   readonly onClose: () => void;
   readonly children: ReactNode;
   readonly actions?: ReactNode;
+  /** For forms with rows of inputs. */
+  readonly wide?: boolean;
 }) {
   const box = useRef<HTMLDivElement>(null);
   const titleId = useId();
   useEffect(() => {
     const before = document.activeElement as HTMLElement | null;
-    const first = box.current?.querySelector<HTMLElement>("input, select, textarea, button");
+    // a choice list (the chosen card) takes focus before the first field
+    const first =
+      box.current?.querySelector<HTMLElement>("[role='radio'][tabindex='0']") ??
+      box.current?.querySelector<HTMLElement>("input, select, textarea, button");
     first?.focus();
     const key = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", key);
@@ -227,7 +254,13 @@ export function Dialog({
     // biome-ignore lint/a11y/useKeyWithClickEvents: Escape closes it; the scrim click is a convenience
     // biome-ignore lint/a11y/noStaticElementInteractions: the dialog inside is the interactive element
     <div className="scrim" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="dialog" role="dialog" aria-modal="true" aria-labelledby={titleId} ref={box}>
+      <div
+        className={wide ? "dialog dialog-wide" : "dialog"}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        ref={box}
+      >
         <h2 id={titleId} style={{ marginBottom: 14 }}>
           {title}
         </h2>

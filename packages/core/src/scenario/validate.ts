@@ -9,10 +9,12 @@
  * SC011 bad parameter        SC012 bad entity              SC013 fault cannot target this
  * SC014 bad condition        SC015 bad block reference     SC016 bad expectation
  * SC017 no scoring (warn)    SC019 runs twice (warn)       SC020 too large
- * SC021 answer not injected (warn)
+ * SC021 answer not caused by any block (warn)
  */
 import { josa, type Particle, withJosa } from "@terrarium/core/kernel";
+import { diagnosisLabel, isDiagnosisType } from "@terrarium/core/world";
 import { BLOCK_SPECS, blockSpec, outputsOf, type ParamSpec } from "./blocks";
+import { MISTAKE_OF_BLOCK } from "./blocks-net";
 import {
   type Expectation,
   SCENARIO_SCHEMA_VERSION,
@@ -20,6 +22,7 @@ import {
   type ScenarioEdge,
   type ScenarioNode,
 } from "./model";
+import { netBlockProblem } from "./net-blocks";
 import { bad, expectationProblem, type Problem, paramProblem, type ScenarioEnv } from "./problems";
 
 export type { ScenarioEnv } from "./problems";
@@ -61,13 +64,16 @@ export function validateScenario(doc: ScenarioDoc, env: ScenarioEnv): ScenarioIs
     return [
       error(
         "SC001",
-        `시나리오 형식 버전 ${doc.schemaVersion}은 지원하지 않는다 (지원: ${SCENARIO_SCHEMA_VERSION})`,
+        `시나리오 형식 버전 ${doc.schemaVersion}은 지원하지 않아요 (지원: ${SCENARIO_SCHEMA_VERSION})`,
       ),
     ];
   }
   if (doc.nodes.length > MAX_NODES) {
     return [
-      error("SC020", `블록이 ${doc.nodes.length}개다. 한 시나리오는 ${MAX_NODES}개까지 쓸 수 있다`),
+      error(
+        "SC020",
+        `블록이 ${doc.nodes.length}개예요. 한 시나리오는 ${MAX_NODES}개까지 쓸 수 있어요`,
+      ),
     ];
   }
   return [
@@ -89,7 +95,7 @@ function duplicateIds(doc: ScenarioDoc): ScenarioIssue[] {
   const check = (what: string, ids: readonly string[], where: (id: string) => Where) => {
     const seen = new Set<string>();
     for (const id of ids) {
-      if (seen.has(id)) out.push(error("SC002", `${what} id '${id}'가 중복된다`, where(id)));
+      if (seen.has(id)) out.push(error("SC002", `${what} id '${id}'가 중복돼요`, where(id)));
       seen.add(id);
     }
   };
@@ -116,12 +122,12 @@ function blockCounts(doc: ScenarioDoc): ScenarioIssue[] {
   for (const spec of BLOCK_SPECS) {
     const count = doc.nodes.filter((n) => n.type === spec.type).length;
     if (spec.minCount !== undefined && count < spec.minCount)
-      out.push(error("SC005", `「${spec.label}」 블록이 필요하다`));
+      out.push(error("SC005", `「${spec.label}」 블록이 필요해요`));
     if (spec.maxCount !== undefined && count > spec.maxCount)
       out.push(
         error(
           "SC005",
-          `「${spec.label}」 블록은 ${spec.maxCount}개만 둘 수 있다 (지금 ${count}개)`,
+          `「${spec.label}」 블록은 ${spec.maxCount}개만 둘 수 있어요 (지금 ${count}개)`,
         ),
       );
   }
@@ -132,7 +138,7 @@ function checkNode(node: ScenarioNode, doc: ScenarioDoc, env: ScenarioEnv): Scen
   const spec = blockSpec(node.type);
   if (!spec) return [error("SC003", `알 수 없는 블록 종류 '${node.type}'`, { nodeId: node.id })];
   if (spec.status === "planned") {
-    const message = `${nameOf(node)} 블록은 아직 시뮬레이터가 지원하지 않는다: ${spec.plannedReason}`;
+    const message = `${nameOf(node)} 블록은 아직 시뮬레이터가 지원하지 않아요: ${spec.plannedReason}`;
     return [error("SC004", message, { nodeId: node.id })];
   }
   const issues = spec.params.flatMap((param) => checkParam(node, param, doc, env));
@@ -152,7 +158,7 @@ function checkParam(
     const hasDefault = "default" in param && param.default !== undefined;
     return param.optional || hasDefault
       ? []
-      : [error("SC011", `${label}${josa(param.label, "을")} 정해야 한다`, where)];
+      : [error("SC011", `${label}${josa(param.label, "을")} 정해야 해요`, where)];
   }
   const problem = paramProblem(node, param, value, doc, env);
   return problem ? [error(problem.code, `${label}: ${problem.message}`, where)] : [];
@@ -160,13 +166,15 @@ function checkParam(
 
 /** Checks that need more than one parameter or the equipment catalog. */
 function extraChecks(node: ScenarioNode, env: ScenarioEnv): ScenarioIssue[] {
+  const net = netBlockProblem(node, env);
+  if (net) return [error(net.code, `${nameOf(node)}: ${net.message}`, { nodeId: node.id })];
   if (node.type !== "set_setpoint") return [];
   const unit = env.index.entity(String(node.params.target));
   if (!unit.modelId) return [];
   const model = env.catalog.getOf(unit.modelId, "cooling_unit");
   const celsius = Number(node.params.celsius ?? 18);
   if (celsius >= model.minSetpointC && celsius <= model.maxSetpointC) return [];
-  const message = `${unit.name}(${model.name})의 설정 온도는 ${model.minSetpointC}~${model.maxSetpointC} °C 사이여야 한다`;
+  const message = `${unit.name}(${model.name})의 설정 온도는 ${model.minSetpointC}~${model.maxSetpointC} °C 사이여야 해요`;
   return [error("SC011", message, { nodeId: node.id, param: "celsius" })];
 }
 
@@ -179,14 +187,14 @@ function checkEdges(doc: ScenarioDoc): ScenarioIssue[] {
 }
 
 function edgeProblem(edge: ScenarioEdge, from?: ScenarioNode, to?: ScenarioNode): Problem {
-  if (!from || !to) return bad(`연결 ${withJosa(edge.id, "이")} 없는 블록을 가리킨다`, "SC007");
+  if (!from || !to) return bad(`연결 ${withJosa(edge.id, "이")} 없는 블록을 가리켜요`, "SC007");
   // An unknown block is reported once, on the block itself, not again on every edge.
   if (!blockSpec(from.type) || !blockSpec(to.type)) return undefined;
-  if (edge.from === edge.to) return bad(`${named(from, "이")} 자기 자신으로 이어진다`, "SC008");
+  if (edge.from === edge.to) return bad(`${named(from, "이")} 자기 자신으로 이어져요`, "SC008");
   if (!outputsOf(from).includes(edge.port))
-    return bad(`${nameOf(from)}에는 '${edge.port}' 출구가 없다`, "SC007");
+    return bad(`${nameOf(from)}에는 '${edge.port}' 출구가 없어요`, "SC007");
   if (!blockSpec(to.type)?.hasInput)
-    return bad(`${named(to, "로")} 들어오는 연결은 둘 수 없다`, "SC007");
+    return bad(`${named(to, "로")} 들어오는 연결은 둘 수 없어요`, "SC007");
   return undefined;
 }
 
@@ -219,7 +227,7 @@ function checkGraph(doc: ScenarioDoc): ScenarioIssue[] {
     const names = cycle
       .map((id) => nameOf(doc.nodes.find((n) => n.id === id) as ScenarioNode))
       .join(" → ");
-    const message = `블록이 고리를 이룬다: ${names}. 반복은 '조건 대기'로 표현한다`;
+    const message = `블록이 고리를 이뤄요: ${names}. 반복은 '조건 대기'로 표현해요`;
     return [error("SC008", message, { nodeId: cycle[0] })];
   }
   const start = doc.nodes.find((n) => n.type === "start");
@@ -232,10 +240,10 @@ function checkGraph(doc: ScenarioDoc): ScenarioIssue[] {
       node.type === "agent_task"
         ? error(
             "SC010",
-            "「에이전트 투입」 블록이 시작에서 이어지지 않아 에이전트가 투입되지 않는다",
+            "「에이전트 투입」 블록이 시작에서 이어지지 않아 에이전트가 일을 받지 못해요",
             where,
           )
-        : warning("SC009", `${named(node, "은")} 시작에서 이어지지 않아 실행되지 않는다`, where),
+        : warning("SC009", `${named(node, "은")} 시작에서 이어지지 않아 실행되지 않아요`, where),
     );
   }
   return [...out, ...doubleRuns(doc, next)];
@@ -287,7 +295,7 @@ function doubleRuns(
   return doc.nodes
     .filter((n) => flagged.has(n.id))
     .map((n) =>
-      warning("SC019", `${named(n, "은")} 동시에 진행되는 두 갈래에서 모두 실행된다`, {
+      warning("SC019", `${named(n, "은")} 동시에 진행되는 두 갈래에서 모두 실행돼요`, {
         nodeId: n.id,
       }),
     );
@@ -303,22 +311,29 @@ function checkExpectation(e: Expectation, env: ScenarioEnv): ScenarioIssue[] {
   ];
 }
 
+const faultLabel = (type: string) => (isDiagnosisType(type) ? diagnosisLabel(type) : type);
+
 function scoringWarnings(doc: ScenarioDoc): ScenarioIssue[] {
   const out: ScenarioIssue[] = [];
   const diagnosis = doc.expectations.filter((e) => e.kind === "diagnosis");
   if (doc.expectations.length === 0)
-    out.push(warning("SC017", "채점 기준이 없다. 실행은 되지만 점수가 나오지 않는다"));
+    out.push(warning("SC017", "채점표가 없어요. 실행은 되지만 점수가 나오지 않아요"));
   else if (diagnosis.length === 0)
-    out.push(warning("SC017", "진단 정답이 없어 진단은 채점하지 않는다"));
-  const injected = new Set(
-    doc.nodes.filter((n) => n.type === "inject_fault").map((n) => String(n.params.faultType)),
-  );
+    out.push(warning("SC017", "진단 정답이 없어 진단은 채점하지 않아요"));
+  const injected = new Set([
+    ...doc.nodes.filter((n) => n.type === "inject_fault").map((n) => String(n.params.faultType)),
+    ...doc.nodes.flatMap((n) => MISTAKE_OF_BLOCK[n.type] ?? []),
+  ]);
   for (const d of diagnosis) {
     if (!d.faultType.some((t) => injected.has(t)))
       out.push(
-        warning("SC021", `정답 장애 종류(${d.faultType.join(", ")})를 주입하는 블록이 없다`, {
-          expectationId: d.id,
-        }),
+        warning(
+          "SC021",
+          `정답 고장 종류(${d.faultType.map(faultLabel).join(", ")})를 일으키는 블록이 없어요`,
+          {
+            expectationId: d.id,
+          },
+        ),
       );
   }
   return out;

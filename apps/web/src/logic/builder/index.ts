@@ -12,7 +12,6 @@ export {
   unlink,
 } from "./change";
 export {
-  addBuilding,
   addContainment,
   addFloor,
   addRoom,
@@ -27,6 +26,7 @@ export {
   placementProblem,
   placeRack,
   placeRackRow,
+  ROOM_WORDS,
   replaceEntity,
   type Spot,
   snap,
@@ -34,6 +34,25 @@ export {
   snapSpot,
   TILE_M,
 } from "./edit";
+export {
+  addBuilding,
+  buyParcel,
+  landCostM,
+  ownParcelAt,
+  type ParcelView,
+  parcelForSaleAt,
+  parcelViews,
+  placePlant,
+} from "./edit-site";
+export { type Fill, fillRoom } from "./fill";
+export {
+  FILL_AISLES,
+  FILL_LOADS,
+  type FillAisle,
+  type FillLoad,
+  type FillOptions,
+  MIN_FILL_M,
+} from "./fill-plan";
 export {
   gridOf,
   movePlan,
@@ -61,7 +80,20 @@ export {
   siteOf,
   startLevel,
 } from "./levels";
-export { PREVIEW_SECONDS, type Preview, preview } from "./preview";
+export {
+  forSaleParcels,
+  forSaleTotal,
+  newSite,
+  outlineArea,
+  outlineBounds,
+  outlineProblem,
+  type ParcelSpec,
+  rectangleOutline,
+  SITE_GRID_M,
+  SITE_LIMITS,
+  type SiteSpec,
+} from "./new-site";
+export { PREVIEW_SECONDS, type Preview, type PreviewFrame, preview } from "./preview";
 export {
   type Elevation,
   elevation,

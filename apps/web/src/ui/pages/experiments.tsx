@@ -11,6 +11,21 @@ export function progressText(s: ExperimentSummary): string {
   return `${p.finished}/${p.total}회${p.running > 0 ? `, ${p.running}회 실행 중` : ""}`;
 }
 
+/** The `name=value` pairs an experiment carries, small, under its name. */
+export function MetaTags({ metadata }: { readonly metadata?: Readonly<Record<string, string>> }) {
+  const rows = Object.entries(metadata ?? {});
+  if (rows.length === 0) return null;
+  return (
+    <div className="row" style={{ flexWrap: "wrap", gap: 4, marginTop: 4 }}>
+      {rows.map(([k, v]) => (
+        <span className="tag" key={k}>
+          {k}={v}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export function ExperimentTable({
   items,
   showOwner = true,
@@ -20,8 +35,12 @@ export function ExperimentTable({
 }) {
   const now = useNow();
   const { meta } = useApp();
-  const agentName = (h: string, a: string) =>
-    meta?.harnesses.find((x) => x.id === h)?.agents.find((x) => x.id === a)?.name ?? a;
+  const agentName = (e: ExperimentSummary["experiment"]) =>
+    e.subject?.agent.name ??
+    meta?.harnesses
+      .find((x) => x.id === e.recipe.harnessId)
+      ?.agents.find((x) => x.id === e.recipe.agentId)?.name ??
+    e.recipe.agentId;
   return (
     <div className="table-wrap">
       <table className="table">
@@ -47,12 +66,24 @@ export function ExperimentTable({
                     포크
                   </span>
                 )}
+                <MetaTags metadata={s.experiment.metadata} />
               </td>
               <td>
                 <Status status={s.status} /> <span className="tiny muted">{progressText(s)}</span>
               </td>
               <td>{s.experiment.snapshot.scenarioName}</td>
-              <td>{agentName(s.experiment.recipe.harnessId, s.experiment.recipe.agentId)}</td>
+              <td>
+                {agentName(s.experiment)}
+                {s.experiment.agentVersion !== undefined && (
+                  <span
+                    className="tag"
+                    style={{ marginLeft: 6 }}
+                    title="실험을 만들 때의 에이전트 버전"
+                  >
+                    v{s.experiment.agentVersion}
+                  </span>
+                )}
+              </td>
               <td className="num">{s.progress.completed > 0 ? percent(s.passRate) : "—"}</td>
               <td className="num">{scoreText(s.meanScore)}</td>
               {showOwner && <td>{s.experiment.owner}</td>}
@@ -74,17 +105,67 @@ const STATUS_FILTERS = [
 ] as const;
 type StatusFilter = (typeof STATUS_FILTERS)[number]["value"];
 
+/** Narrow the list to experiments that carry a `name=value` (or just a name) in their metadata (REQ-052). */
+function MetaFilter({
+  value,
+  onChange,
+}: {
+  readonly value: string;
+  readonly onChange: (v: string) => void;
+}) {
+  const [text, setText] = useState(value);
+  return (
+    <form
+      className="row"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onChange(text.trim());
+      }}
+    >
+      <input
+        className="input"
+        style={{ width: 240 }}
+        aria-label="메타데이터로 거르기"
+        placeholder="메타데이터 (팀=검색)"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <Button size="small" type="submit">
+        거르기
+      </Button>
+      {value && (
+        <Button
+          size="small"
+          kind="quiet"
+          onClick={() => {
+            setText("");
+            onChange("");
+          }}
+        >
+          거르기 풀기
+        </Button>
+      )}
+    </form>
+  );
+}
+
 export function ExperimentsPage() {
   const { api, page, navigate, me, askName } = useApp();
   const mine = page.name === "experiments" && page.mine === true;
   const [status, setStatus] = useState<StatusFilter>("");
+  const [meta, setMeta] = useState("");
   const list = useAsync(
     (signal) =>
       api.call("listExperiments", {
-        query: { ...(mine && me ? { owner: me } : {}), ...(status ? { status } : {}), limit: 200 },
+        query: {
+          ...(mine && me ? { owner: me } : {}),
+          ...(status ? { status } : {}),
+          ...(meta ? { meta } : {}),
+          limit: 200,
+        },
         signal,
       }),
-    [mine, me, status],
+    [mine, me, status, meta],
   );
   return (
     <div className="page">
@@ -113,25 +194,26 @@ export function ExperimentsPage() {
           }
         />
         <Segmented label="상태" value={status} options={STATUS_FILTERS} onChange={setStatus} />
+        <MetaFilter value={meta} onChange={setMeta} />
       </div>
       {list.error && <Failure error={list.error} retry={list.reload} />}
       {!list.data && !list.error && <Loading />}
       {list.data?.length === 0 && (
         <Empty
-          title={mine ? "아직 내 실험이 없다" : "조건에 맞는 실험이 없다"}
+          title={mine ? "아직 내 실험이 없어요" : "조건에 맞는 실험이 없어요"}
           action={
             <Go to={{ name: "newExperiment" }} className="btn btn-primary">
               실험 만들기
             </Go>
           }
         >
-          세계와 시나리오를 고르고, 하네스와 에이전트를 정하면 바로 돈다.
+          세계와 시나리오를 고르고, 하네스와 에이전트를 정하면 바로 돌아요.
         </Empty>
       )}
       {list.data && list.data.length > 0 && <ExperimentTable items={list.data} />}
       {mine && !me && (
         <p className="small muted" style={{ marginTop: 12 }}>
-          이름을 정해야 내 실험을 고를 수 있다.{" "}
+          이름을 정해야 내 실험을 고를 수 있어요.{" "}
           <Button size="small" kind="quiet" onClick={askName}>
             이름 정하기
           </Button>

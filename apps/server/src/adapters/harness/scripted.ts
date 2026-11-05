@@ -49,17 +49,17 @@ const AGENTS: readonly AgentInfo[] = [
     id: "triage",
     name: "알람 추적 (규칙 기반)",
     description:
-      "알람을 의존 방향으로 따라 올라가, 다른 알람을 가장 많이 설명하는 장비를 원인으로 본다.",
+      "알람을 의존 방향으로 따라 올라가, 다른 알람을 가장 많이 설명하는 장비를 원인으로 봐요.",
   },
   {
     id: "guess",
     name: "무작위 추측",
-    description: "알람이 난 장비와 고장 유형을 무작위로 고른다. 운으로 받는 점수.",
+    description: "알람이 난 장비와 고장 종류을 무작위로 골라요. 운으로 받는 점수.",
   },
   {
     id: "idle",
     name: "아무것도 안 함",
-    description: "알람만 보고 끝낸다. 진단하지 않았을 때의 점수.",
+    description: "알람만 보고 끝내요. 진단하지 않았을 때의 점수.",
   },
 ];
 
@@ -127,14 +127,14 @@ function faultFor(id: string, found: readonly AlarmRow[]): string {
 
 async function triage(req: AgentRunRequest): Promise<AgentRunOutcome> {
   const found = await firstAlarms(req.tools, req.signal);
-  if (found.length === 0) return { status: "finished", message: "알람이 없어 진단하지 않았다" };
+  if (found.length === 0) return { status: "finished", message: "알람이 없어 진단하지 않았어요" };
   const [best] = await candidates(req.tools, found);
   if (!best || req.signal.aborted) return { status: "cancelled" };
   const faultType = faultFor(best.id, found);
   await req.tools.call("submit_diagnosis", {
     rootCause: best.id,
     faultType,
-    summary: `${best.id}의 알람이 다른 알람 ${best.explains}개를 설명한다 (${faultType}).`,
+    summary: `${best.id}의 알람이 다른 알람 ${best.explains}개를 설명해요 (${faultType}).`,
     actions: [],
     confidence: best.explains > 0 ? 0.7 : 0.4,
   });
@@ -145,12 +145,12 @@ async function guess(req: AgentRunRequest): Promise<AgentRunOutcome> {
   const rng = new SeededRng(req.seed);
   const found = await alarms(req.tools);
   const ids = [...new Set(found.map((a) => a.entityId))].sort();
-  if (ids.length === 0) return { status: "finished", message: "알람이 없어 추측할 것이 없다" };
+  if (ids.length === 0) return { status: "finished", message: "알람이 없어 추측할 것이 없어요" };
   const types = [...new Set(Object.values(CAUSE_CODES))].sort();
   await req.tools.call("submit_diagnosis", {
     rootCause: pick(rng, ids),
     faultType: pick(rng, types),
-    summary: "무작위로 골랐다.",
+    summary: "무작위로 골랐어요.",
     actions: [],
     confidence: 0,
   });
@@ -159,7 +159,7 @@ async function guess(req: AgentRunRequest): Promise<AgentRunOutcome> {
 
 async function idle(req: AgentRunRequest): Promise<AgentRunOutcome> {
   await alarms(req.tools);
-  return { status: "finished", message: "알람만 확인했다" };
+  return { status: "finished", message: "알람만 확인했어요" };
 }
 
 const PLAYS: Readonly<Record<string, (req: AgentRunRequest) => Promise<AgentRunOutcome>>> = {
@@ -177,7 +177,7 @@ export class ScriptedHarness implements HarnessPort {
       name,
       kind: "scripted",
       description:
-        "테라리움에 들어 있는 규칙 기반 기준 에이전트. 다른 에이전트와 비교할 바닥과 잣대가 된다.",
+        "테라리움에 들어 있는 규칙 기반 기준 에이전트. 다른 에이전트와 비교할 바닥과 잣대가 돼요.",
       toolTransport: "in-process",
       telemetry: "none",
     };
@@ -190,7 +190,7 @@ export class ScriptedHarness implements HarnessPort {
   async run(req: AgentRunRequest): Promise<AgentRunOutcome> {
     const play = PLAYS[req.agentId];
     if (!play)
-      return { status: "error", message: `내장 하네스에 '${req.agentId}' 에이전트가 없다` };
+      return { status: "error", message: `내장 하네스에 '${req.agentId}' 에이전트가 없어요` };
     return play(req);
   }
 }

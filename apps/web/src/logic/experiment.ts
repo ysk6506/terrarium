@@ -24,6 +24,8 @@ import {
   type ToolSpec,
 } from "@terrarium/core/tools";
 
+import { type MetaRow, metadataOf } from "./connections";
+
 export interface Draft {
   readonly name: string;
   readonly note: string;
@@ -36,7 +38,16 @@ export interface Draft {
   readonly runs: number;
   readonly time: TimePolicy;
   readonly profiles: { readonly vcenter?: string; readonly vrops?: string };
+  /** `name=value` pairs attached to the experiment to tell results apart (REQ-052). */
+  readonly metadata: readonly MetaRow[];
 }
+
+const metaRows = (m: Readonly<Record<string, string>> | undefined): MetaRow[] =>
+  Object.entries(m ?? {}).map(([key, value]) => ({ key, value }));
+
+const sameMeta = (a: Readonly<Record<string, string>>, b: Readonly<Record<string, string>>) =>
+  Object.keys(a).length === Object.keys(b).length &&
+  Object.entries(a).every(([k, v]) => b[k] === v);
 
 export const emptyDraft = (): Draft => ({
   name: "",
@@ -45,6 +56,7 @@ export const emptyDraft = (): Draft => ({
   runs: DEFAULT_SEEDS.length,
   time: DEFAULT_TIME,
   profiles: {},
+  metadata: [],
 });
 
 export const PROFILE_CHOICES = {
@@ -105,7 +117,7 @@ function recipeSteps(
   const recipe = recipeOf(draft);
   if (!recipe) {
     if (normalizeTools(draft.tools).filter((t) => t !== "submit_diagnosis").length === 0)
-      how.push("조사에 쓸 툴을 하나 이상 골라야 한다 (진단 제출은 늘 포함된다)");
+      how.push("조사에 쓸 툴을 하나 이상 골라 주세요 (진단 제출은 늘 포함돼요)");
     return;
   }
   for (const p of recipeProblems(recipe, {
@@ -123,11 +135,11 @@ export function draftProblems(
   const what: string[] = [];
   const who: string[] = [];
   const how: string[] = [];
-  if (!draft.worldId) what.push("세계를 고른다");
-  if (!draft.scenarioId) what.push("시나리오를 고른다");
-  if (!draft.harnessId) who.push("하네스를 고른다");
-  else if (!draft.agentId) who.push("에이전트를 고른다");
-  if (draft.runs < 1 || draft.runs > MAX_SEEDS) how.push(`실행 횟수는 1~${MAX_SEEDS}번이다`);
+  if (!draft.worldId) what.push("세계를 골라 주세요");
+  if (!draft.scenarioId) what.push("시나리오를 골라 주세요");
+  if (!draft.harnessId) who.push("하네스를 골라 주세요");
+  else if (!draft.agentId) who.push("에이전트를 골라 주세요");
+  if (draft.runs < 1 || draft.runs > MAX_SEEDS) how.push(`실행 횟수는 1~${MAX_SEEDS}번이에요`);
   recipeSteps(draft, agents, who, how);
   return { what, who, how: [...new Set(how)] };
 }
@@ -142,10 +154,12 @@ export function suggestedName(scenarioName?: string, agentName?: string): string
 
 export function toRequest(draft: Draft, fallbackName: string): CreateExperimentRequest {
   const recipe = recipeOf(draft);
-  if (!recipe) throw new Error("실험 조건이 다 정해지지 않았다");
+  if (!recipe) throw new Error("실험 조건이 다 정해지지 않았어요");
+  const metadata = metadataOf(draft.metadata);
   return {
     name: draft.name.trim() || fallbackName,
     ...(draft.note.trim() ? { note: draft.note.trim() } : {}),
+    ...(Object.keys(metadata).length > 0 ? { metadata } : {}),
     recipe: {
       worldId: recipe.worldId,
       scenarioId: recipe.scenarioId,
@@ -175,6 +189,7 @@ export function draftFrom(parent: Experiment): Draft {
     runs: r.seeds.length,
     time: r.time,
     profiles: r.profiles,
+    metadata: metaRows(parent.metadata),
   };
 }
 
@@ -186,11 +201,14 @@ export function forkChanges(parent: Experiment, draft: Draft): RecipeChange[] {
 
 export function toForkRequest(parent: Experiment, draft: Draft): ForkRequest {
   const recipe = recipeOf(draft);
-  if (!recipe) throw new Error("실험 조건이 다 정해지지 않았다");
+  if (!recipe) throw new Error("실험 조건이 다 정해지지 않았어요");
   const change: Record<string, unknown> = {};
   for (const c of recipeDiff(parent.recipe, recipe)) change[c.field] = recipe[c.field];
+  const metadata = metadataOf(draft.metadata);
   return {
     change: change as ForkRequest["change"],
+    // Left out when it is the parent's, so the fork keeps it.
+    ...(sameMeta(metadata, parent.metadata ?? {}) ? {} : { metadata }),
     ...(draft.name.trim() && draft.name.trim() !== `${parent.name} (포크)`
       ? { name: draft.name.trim() }
       : {}),

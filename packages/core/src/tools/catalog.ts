@@ -10,7 +10,13 @@ export interface JsonSchema {
   readonly properties: Readonly<
     Record<
       string,
-      { readonly type: string; readonly description: string; readonly enum?: readonly string[] }
+      {
+        readonly type: string;
+        readonly description: string;
+        readonly enum?: readonly string[];
+        /** What the elements of an array are (JSON Schema requires it; providers reject an array without). */
+        readonly items?: { readonly type: string };
+      }
     >
   >;
   readonly required: readonly string[];
@@ -37,6 +43,11 @@ const str = (description: string, values?: readonly string[]) => ({
   ...(values ? { enum: values } : {}),
 });
 const num = (description: string) => ({ type: "number", description });
+const list = (description: string, items = "string") => ({
+  type: "array",
+  description,
+  items: { type: items },
+});
 
 export const TOOL_SPECS: readonly ToolSpec[] = [
   {
@@ -85,7 +96,7 @@ export const TOOL_SPECS: readonly ToolSpec[] = [
   },
   {
     name: "get_impact",
-    title: "장애 영향 범위",
+    title: "고장 영향 범위",
     category: "observe",
     mutating: false,
     description:
@@ -123,10 +134,10 @@ export const TOOL_SPECS: readonly ToolSpec[] = [
     category: "protocol",
     mutating: true,
     description:
-      'Send a Redfish request to the BMC of a server, e.g. GET /redfish/v1/Chassis/System.Embedded.1/Thermal or POST .../Actions/ComputerSystem.Reset with {"ResetType":"On"}.',
+      'Send a Redfish request to the BMC of a server, or to the controller of a PDU, power panel or CDU, e.g. GET /redfish/v1/Chassis/System.Embedded.1/Thermal or POST .../Actions/ComputerSystem.Reset with {"ResetType":"On"}; a PDU or panel lists its circuits under /redfish/v1/PowerEquipment.',
     inputSchema: obj(
       {
-        server: str("Server entity id"),
+        server: str("Server, PDU, power panel or CDU entity id"),
         method: str("HTTP method", ["GET", "POST", "PATCH"]),
         path: str("Path starting with /redfish/v1"),
         body: { type: "object", description: "JSON body for POST/PATCH" },
@@ -164,6 +175,116 @@ export const TOOL_SPECS: readonly ToolSpec[] = [
         query: { type: "object", description: "Query parameters" },
       },
       ["method", "path"],
+    ),
+  },
+  {
+    name: "snmp_request",
+    title: "SNMP 요청",
+    category: "protocol",
+    mutating: true,
+    description:
+      "Send an SNMPv2c request to equipment with an SNMP agent: a UPS (UPS-MIB, RFC 1628: battery status and charge, minutes remaining, input and output, active alarms) or a switch (IF-MIB: one interface per port, ifOperStatus up/down). Operations: get, getnext, getbulk, walk (a whole subtree), set. OIDs are dotted numbers or names such as upsBatteryStatus.0, sysDescr.0 or the subtree names system and upsMIB. Community 'public' reads, 'private' also writes; any other string gets no answer. Errors follow RFC 3416: noSuchObject, noSuchInstance, endOfMibView and error-status.",
+    inputSchema: obj(
+      {
+        device: str("Entity id of the UPS or switch"),
+        operation: str("SNMP operation", ["get", "getnext", "getbulk", "walk", "set"]),
+        oids: list("OIDs or names. For walk: the subtree root (default: everything)"),
+        community: str("Community string (default public)"),
+        nonRepeaters: num("getbulk: how many leading OIDs are fetched once (default 0)"),
+        maxRepetitions: num("getbulk: how many rows to fetch for the other OIDs (default 10)"),
+        values: list(
+          "set: the assignments, [{oid, type: INTEGER | OCTET STRING | OBJECT IDENTIFIER | Gauge32, value}]",
+          "object",
+        ),
+      },
+      ["device", "operation"],
+    ),
+  },
+  {
+    name: "bacnet_request",
+    title: "BACnet 요청",
+    category: "protocol",
+    mutating: true,
+    description:
+      "Send a BACnet/IP service request to building and plant equipment: cooling units (CRAH), chillers, CDUs, generators, power panels and UPSes. Services: who-is (discover devices; leave device out to ask everyone), read-property, read-property-multiple, write-property. Objects are analog-input (readings in °C, kW, %), binary-input (states), multi-state-input, analog-value and binary-output (commandable, written at a priority 1-16). Properties use the standard's names: present-value, object-name, units, status-flags, priority-array. Writing present-value of a cooling unit's Supply-Air-Setpoint, or the Unit-Enable of a cooling unit, chiller, CDU or generator (a generator's is its AUTO/OFF switch), changes the real equipment; relinquish takes a command back. Errors are BACnet error class and code.",
+    inputSchema: obj(
+      {
+        service: str("BACnet service", [
+          "who-is",
+          "read-property",
+          "read-property-multiple",
+          "write-property",
+        ]),
+        device: str("Entity id of the device; leave out for a who-is broadcast"),
+        objectType: str(
+          "analog-input, analog-value, binary-input, binary-output, multi-state-input or device",
+        ),
+        instance: num("Object instance number (for a device, its device instance)"),
+        property: str("Property name such as present-value, or its number"),
+        arrayIndex: num("For array properties: 0 is the length, 1.. the elements"),
+        requests: list(
+          "read-property-multiple: [{objectType, instance, properties: [name, ...]}]; properties may be all",
+          "object",
+        ),
+        value: num("write-property: the value (binary: 1 active, 0 inactive)"),
+        relinquish: {
+          type: "boolean",
+          description: "write-property: take back the command at this priority",
+        },
+        priority: num("write-property: 1 (highest) to 16 (lowest, default)"),
+        low: num("who-is: lowest device instance that should answer"),
+        high: num("who-is: highest device instance that should answer"),
+      },
+      ["service"],
+    ),
+  },
+  {
+    name: "network_cli",
+    title: "스위치 CLI",
+    category: "protocol",
+    mutating: true,
+    description:
+      "Log in to a switch's command line (SSH) and run commands, exactly as a person on the console would; each call is a fresh login and its commands run in order in one session. What it speaks depends on the OS the switch runs: Arista EOS, Cisco NX-OS or Cisco IOS XE (the prompt and `show version` tell). EOS and IOS XE start in user mode (type enable); NX-OS starts privileged. Supported: show version, show interfaces [status | <port> | description | trunk] (NX-OS spells it show interface), show vlan [brief], show mac address-table [vlan <id>], show ip interface brief, show ip route, show ip arp, show lldp neighbors, show running-config [interface <port>], show clock, ping <ip>, traceroute <ip>; then configure terminal, interface <port> | interface vlan <id>, shutdown, no shutdown, description <text>, hostname <name>, vlan <id> (name <text>), switchport mode access|trunk, switchport access vlan <id>, switchport trunk allowed vlan [add|remove] <list>, switchport trunk native vlan <id>, no switchport, ip address <ip>/<len>, ip route <net>/<len> <next-hop>, end, exit, write memory. A VLAN, port or route change takes effect at once and really moves traffic: a server whose port is in the wrong VLAN, or whose gateway or route is gone, stops answering ping and an alarm names it. In a cloud or GPU fabric (leaf-spine) the switches also run BGP: show ip bgp summary, then router bgp <AS>, neighbor <ip> shutdown (NX-OS: neighbor <ip>, then shutdown) and no neighbor <ip> shutdown; show spanning-tree on the legacy VLAN network. Not modelled: LACP, packet counters, routing protocols other than BGP. Commands may be abbreviated (sh int status) and piped (| include, | exclude, | begin, | section). Set `configure` to run the commands in configuration mode without typing enable and configure terminal yourself. Shutting a port with a cable takes the link down for the device on the other end too.",
+    inputSchema: obj(
+      {
+        device: str("Entity id of the switch"),
+        commands: list("CLI lines to run, in order"),
+        configure: {
+          type: "boolean",
+          description: "Wrap the commands in enable / configure terminal ... end",
+        },
+      },
+      ["device", "commands"],
+    ),
+  },
+  {
+    name: "eapi_request",
+    title: "Arista eAPI 요청",
+    category: "protocol",
+    mutating: true,
+    description:
+      'Call Arista eAPI on a switch that runs EOS: a JSON-RPC 2.0 body {"jsonrpc":"2.0","method":"runCmds","params":{"version":1,"cmds":["show version"],"format":"json"},"id":"1"}. format is json (default) or text. Commands run in privileged mode; start config changes with "configure" ("interface Ethernet1","shutdown" follow). A command that cannot be read fails the whole call with an error code as eAPI does (1002 invalid command, 1003 unconverted command).',
+    inputSchema: obj(
+      {
+        device: str("Entity id of the switch (EOS)"),
+        body: { type: "object", description: "The JSON-RPC request body" },
+      },
+      ["device", "body"],
+    ),
+  },
+  {
+    name: "nxapi_request",
+    title: "Cisco NX-API 요청",
+    category: "protocol",
+    mutating: true,
+    description:
+      'Call Cisco NX-API on a switch that runs NX-OS: {"ins_api":{"version":"1.0","type":"cli_show","chunk":"0","sid":"1","input":"show version","output_format":"json"}}. type is cli_show (structured JSON), cli_show_ascii (text) or cli_conf (configuration; separate commands with " ;", e.g. "interface Ethernet1/1 ;shutdown"). Each command gets its own output with a code (200 success, 400 command error with clierror, 501 no structured output).',
+    inputSchema: obj(
+      {
+        device: str("Entity id of the switch (NX-OS)"),
+        body: { type: "object", description: "The ins_api request body" },
+      },
+      ["device", "body"],
     ),
   },
   {
@@ -226,7 +347,7 @@ export const TOOL_SPECS: readonly ToolSpec[] = [
       {
         rootCause: str("Entity id of the root cause"),
         faultType: str(
-          "Fault type, e.g. cooling_unit_failure, breaker_trip, fan_failure, sensor_drift",
+          "Fault or mistake type, e.g. cooling_unit_failure, breaker_trip, fan_failure, sensor_drift, port_vlan_mismatch, port_shutdown, svi_shutdown, bgp_neighbor_shutdown, route_missing, outlet_off",
         ),
         summary: str("What happened and why, in a few sentences"),
         actions: { type: "array", description: "Actions you took or recommend" },

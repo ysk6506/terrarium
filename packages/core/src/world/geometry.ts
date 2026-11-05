@@ -1,6 +1,12 @@
 /** Physical size and absolute position of entities (metres). */
-import type { Catalog } from "@terrarium/core/catalog";
-import { RACK_DEPTH_M, RACK_UNITS_DEFAULT, RACK_WIDTH_M, U_HEIGHT_M } from "@terrarium/core/kernel";
+import { type Catalog, mountOfModel, type RackStandard } from "@terrarium/core/catalog";
+import {
+  OU_HEIGHT_M,
+  RACK_DEPTH_M,
+  RACK_UNITS_DEFAULT,
+  RACK_WIDTH_M,
+  U_HEIGHT_M,
+} from "@terrarium/core/kernel";
 import { type Rect, rotated } from "@terrarium/core/spatial";
 import type { Entity } from "./blueprint";
 import type { BlueprintIndex } from "./graph";
@@ -43,6 +49,24 @@ export function rackUnits(rack: Entity, catalog: Catalog): number {
   return RACK_UNITS_DEFAULT;
 }
 
+/** What a rack holds: its model's standard, else the 19-inch EIA-310 of every older world. */
+export function rackStandardOf(rack: Entity | undefined, catalog: Catalog): RackStandard {
+  if (!rack?.modelId || !catalog.has(rack.modelId)) return "eia310";
+  const model = catalog.get(rack.modelId);
+  return model.kind === "rack" ? (model.standard ?? "eia310") : "eia310";
+}
+
+/** The standard a device is built to mount in (the 19-inch one when its model says nothing). */
+export function mountStandardOf(device: Entity, catalog: Catalog): RackStandard {
+  if (!device.modelId || !catalog.has(device.modelId)) return "eia310";
+  return mountOfModel(catalog.get(device.modelId));
+}
+
+/** Height of one unit in this rack, metres: 44.45 mm for EIA-310, 48 mm for an ORv3 OpenU. */
+export function unitHeightM(rack: Entity | undefined, catalog: Catalog): number {
+  return rackStandardOf(rack, catalog) === "orv3" ? OU_HEIGHT_M : U_HEIGHT_M;
+}
+
 export interface Position3 {
   readonly x: number;
   readonly y: number;
@@ -74,8 +98,9 @@ export function absolutePosition(
       z += (p.level >= 1 ? p.level - 1 : p.level) * p.height;
       center = { x, y, z };
     } else if (p.type === "unit") {
-      z += (p.u - 1) * U_HEIGHT_M;
-      center = { x: center.x, y: center.y, z: z + (heightU(node, catalog) * U_HEIGHT_M) / 2 };
+      const unitM = unitHeightM(node.parentId ? index.find(node.parentId) : undefined, catalog);
+      z += (p.u - 1) * unitM;
+      center = { x: center.x, y: center.y, z: z + (heightU(node, catalog) * unitM) / 2 };
     } else {
       const rect = footprint(node, catalog) as Rect;
       if (p.type !== "land") {

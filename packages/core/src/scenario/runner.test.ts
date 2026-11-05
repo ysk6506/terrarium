@@ -394,10 +394,10 @@ describe("built-in scenarios [REQ-033]", () => {
       withChanges(sampleBlueprint(), { remove: ["crah-1", "crah-2", "vm-web", "vm-db"] }),
     );
     expect(scenarioTemplate("cooling-failure")?.unavailable(bare)).toBe(
-      "이 세계에 필요한 장비(냉방기·서버)가 없다",
+      "이 세계에 필요한 장비(냉방기·서버)가 없어요",
     );
     expect(scenarioTemplate("vm-cpu-spike-escalation")?.unavailable(bare)).toBe(
-      "호스트에 올라간 VM이 없다",
+      "호스트에 올라간 VM이 없어요",
     );
     expect(scenarioTemplate("fan-failure-throttle")?.unavailable(bare)).toBeUndefined();
     expect(scenarioTemplate("nope")).toBeUndefined();

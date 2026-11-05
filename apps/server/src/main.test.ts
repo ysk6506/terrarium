@@ -49,7 +49,7 @@ describe("starting and stopping the server [REQ-030]", () => {
     const file = path.join(dir, "broken.json");
     writeFileSync(file, JSON.stringify({ port: "eighty" }));
     await expect(run({ env: { TERRARIUM_CONFIG: file }, logger: false })).rejects.toThrow(
-      "port 숫자여야 하는데 문자열이다",
+      "port 숫자여야 해요 (지금은 문자열이에요)",
     );
   });
 });

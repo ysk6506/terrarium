@@ -5,7 +5,7 @@ type Spec = Omit<ServerModel, "kind" | "cooling" | "liquidShare" | "coolantRiseC
   Partial<Pick<ServerModel, "cooling" | "liquidShare" | "coolantRiseC">>;
 
 /** Air-cooled unless the spec says otherwise. */
-const server = (spec: Spec): ServerModel => ({
+export const server = (spec: Spec): ServerModel => ({
   kind: "server",
   cooling: "air",
   liquidShare: 0,
@@ -64,7 +64,7 @@ export const SERVERS: readonly ServerModel[] = [
     id: "srv-4u-gpu",
     name: "4U GPU 서버",
     description: "GPU 8장 학습 노드",
-    costM: 400,
+    costM: 270,
     look: STYLE.generic("gpu-grille"),
     uHeight: 4,
     idlePowerW: 900,
@@ -130,7 +130,7 @@ export const SERVERS: readonly ServerModel[] = [
     id: "hc-m2u-4tb",
     name: "HC-M240 2U 대용량 메모리",
     description: "4TiB 메모리, 인메모리 DB용",
-    costM: 48,
+    costM: 80,
     look: STYLE.halcyon("drive-bays"),
     uHeight: 2,
     idlePowerW: 320,
@@ -262,7 +262,7 @@ export const SERVERS: readonly ServerModel[] = [
     id: "ax-2u-4gpu",
     name: "AX-4 2U GPU 4장",
     description: "추론용 GPU 4장, 공랭",
-    costM: 140,
+    costM: 200,
     look: STYLE.aerion("gpu-grille"),
     uHeight: 2,
     idlePowerW: 480,
@@ -284,7 +284,7 @@ export const SERVERS: readonly ServerModel[] = [
     id: "ax-4u-8gpu-air",
     name: "AX-8 4U GPU 8장 (공랭)",
     description: "학습용 GPU 8장, 공랭, 고출력 팬",
-    costM: 420,
+    costM: 480,
     look: STYLE.aerion("gpu-grille"),
     uHeight: 4,
     idlePowerW: 950,
@@ -306,7 +306,7 @@ export const SERVERS: readonly ServerModel[] = [
     id: "ax-4u-8gpu-dlc",
     name: "AX-8L 4U GPU 8장 (수랭)",
     description: "학습용 GPU 8장, 콜드플레이트 직접 수랭 + 잔열 공랭",
-    costM: 520,
+    costM: 600,
     look: STYLE.aerion("gpu-grille"),
     uHeight: 4,
     idlePowerW: 1100,
@@ -331,7 +331,7 @@ export const SERVERS: readonly ServerModel[] = [
     id: "ax-2u-4gpu-dlc",
     name: "AX-4L 2U GPU 4장 (수랭)",
     description: "추론·미세조정용 GPU 4장, 직접 수랭",
-    costM: 190,
+    costM: 260,
     look: STYLE.aerion("gpu-grille"),
     uHeight: 2,
     idlePowerW: 520,

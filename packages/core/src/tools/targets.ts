@@ -1,0 +1,83 @@
+/**
+ * What a tool call touches (REQ-050). A call names the equipment it works on in one of its arguments
+ * (`id`, `server`, `unitId`, …); the live view needs those ids and the kind of act, not the whole call.
+ * Which argument names equipment is written down once, here, and a test keeps it in step with the catalog.
+ */
+import { toolSpec } from "./catalog";
+
+/** What the agent does to the world with a call. */
+export type CallEffect = "observe" | "act" | "wait" | "answer";
+
+/** The arguments of each tool that hold an entity id. */
+export const TARGET_ARGS: Readonly<Record<string, readonly string[]>> = {
+  list_alarms: ["entityId"],
+  list_entities: ["under"],
+  get_entity: ["id"],
+  get_topology: ["id"],
+  get_impact: ["id"],
+  query_metrics: ["id"],
+  facility_status: ["roomId"],
+  redfish_request: ["server"],
+  vcenter_request: [],
+  vrops_request: [],
+  snmp_request: ["device"],
+  bacnet_request: ["device"],
+  network_cli: ["device"],
+  eapi_request: ["device"],
+  nxapi_request: ["device"],
+  set_cooling_setpoint: ["unitId"],
+  restart_cooling_unit: ["unitId"],
+  reset_breaker: ["id"],
+  power_server: ["id"],
+  wait: [],
+  submit_diagnosis: ["rootCause"],
+};
+
+/** The entity ids a call names, in argument order, without repeats; nothing for a tool that names none. */
+export function callTargets(name: string, args: Readonly<Record<string, unknown>>): string[] {
+  const ids: string[] = [];
+  for (const key of TARGET_ARGS[name] ?? []) {
+    const value = args[key];
+    if (typeof value === "string" && value !== "" && !ids.includes(value)) ids.push(value);
+  }
+  return ids;
+}
+
+/** Lines that only look: show commands and the session housekeeping around them. */
+const LOOKING = /^\s*(show|sh|enable|en|terminal|term|exit|logout)\b/i;
+
+const eapiCommands = (args: Readonly<Record<string, unknown>>): unknown[] => {
+  const params = (args.body as { params?: { cmds?: unknown } } | undefined)?.params;
+  return Array.isArray(params?.cmds) ? params.cmds : [];
+};
+
+/** Protocol tools that change the world only for some requests: SNMP `set`, BACnet `write-property`, a configuring CLI line. */
+const WRITES: Readonly<Record<string, (args: Readonly<Record<string, unknown>>) => boolean>> = {
+  snmp_request: (args) => args.operation === "set",
+  bacnet_request: (args) => args.service === "write-property",
+  network_cli: (args) =>
+    args.configure === true ||
+    (Array.isArray(args.commands) && args.commands.some((c) => !LOOKING.test(String(c)))),
+  eapi_request: (args) =>
+    eapiCommands(args).some(
+      (c) => !LOOKING.test(typeof c === "string" ? c : String((c as { cmd?: unknown })?.cmd ?? "")),
+    ),
+  nxapi_request: (args) =>
+    (args.body as { ins_api?: { type?: unknown } } | undefined)?.ins_api?.type === "cli_conf",
+};
+
+/**
+ * What the call does: `act` changes the world (a Redfish or vCenter request only when it is not a plain GET),
+ * `wait` lets time pass, `answer` hands in the diagnosis, and everything else only looks.
+ */
+export function callEffect(name: string, args: Readonly<Record<string, unknown>>): CallEffect {
+  const spec = toolSpec(name);
+  if (!spec) return "observe";
+  if (spec.category === "answer") return "answer";
+  if (name === "wait") return "wait";
+  if (spec.category === "act") return "act";
+  if (!spec.mutating) return "observe";
+  const writes = WRITES[name];
+  if (writes) return writes(args) ? "act" : "observe";
+  return String(args.method ?? "GET").toUpperCase() === "GET" ? "observe" : "act";
+}

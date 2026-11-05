@@ -6,7 +6,13 @@
 import { TerrariumError } from "@terrarium/core/kernel";
 import { Session, WarmStartCache } from "@terrarium/core/session";
 import { LocalSession } from "./hosts";
-import type { FromWorker, ToWorker, WorkerError } from "./worker-protocol";
+import {
+  type FromWorker,
+  NEED_BLUEPRINT,
+  type ToWorker,
+  type WorkerError,
+} from "./worker-protocol";
+import { WorldCache } from "./world-cache";
 
 export function errorOf(err: unknown): WorkerError {
   if (err instanceof TerrariumError) return { message: err.message, code: err.code };
@@ -17,6 +23,8 @@ export class WorkerSessions {
   private readonly sessions = new Map<string, LocalSession>();
   /** Warmed-up worlds of this thread: repeat runs on one world skip the warm-up (ADR-0033). */
   readonly warm = new WarmStartCache();
+  /** Checked and indexed worlds of this thread, shared by its sessions (ADR-0056). */
+  readonly worlds = new WorldCache();
 
   constructor(private readonly send: (message: FromWorker) => void) {}
 
@@ -26,14 +34,26 @@ export class WorkerSessions {
 
   private sessionOf(id: string): LocalSession {
     const s = this.sessions.get(id);
-    if (!s) throw new Error(`세션 ${id}가 이 워커에 없다`);
+    if (!s) throw new Error(`세션 ${id}가 이 워커에 없어요`);
     return s;
   }
 
-  private open(id: string, config: Extract<ToWorker, { kind: "open" }>["config"]): void {
+  private open(msg: Extract<ToWorker, { kind: "open" }>): void {
+    const { id, config, world, blueprint } = msg;
     try {
-      const local = new LocalSession(Session.create({ ...config, warm: this.warm }), (reason) =>
-        this.send({ kind: "ended", id, reason }),
+      const prepared =
+        this.worlds.get(world.key) ?? (blueprint && this.worlds.prepare(world, blueprint));
+      if (!prepared) {
+        this.send({
+          kind: "open_failed",
+          id,
+          error: { message: "이 워커에 세계가 없어요", code: NEED_BLUEPRINT },
+        });
+        return;
+      }
+      const local = new LocalSession(
+        Session.create({ ...config, blueprint: prepared.blueprint, warm: this.warm, prepared }),
+        (reason) => this.send({ kind: "ended", id, reason }),
       );
       this.sessions.set(id, local);
       this.send({ kind: "opened", id, task: local.task, specs: local.specs });
@@ -43,7 +63,7 @@ export class WorkerSessions {
   }
 
   async handle(msg: ToWorker): Promise<void> {
-    if (msg.kind === "open") return this.open(msg.id, msg.config);
+    if (msg.kind === "open") return this.open(msg);
     if (msg.kind === "dispose") {
       this.sessions.get(msg.id)?.dispose();
       this.sessions.delete(msg.id);

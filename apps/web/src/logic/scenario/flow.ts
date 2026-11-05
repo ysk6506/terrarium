@@ -8,6 +8,7 @@ import {
   type BlockCategory,
   blockSpec,
   describeCondition,
+  minutesText,
   outputsOf,
   type PaletteItem,
   type ParamValue,
@@ -50,32 +51,44 @@ const nameOf = (index: BlueprintIndex | undefined, id: unknown) =>
   typeof id === "string" ? (index?.find(id)?.name ?? id) : "?";
 
 const SUMMARIES: Readonly<Record<string, (n: ScenarioNode, index?: BlueprintIndex) => string>> = {
-  wait: (n) => `${Number(n.params.seconds ?? 0)}초 기다린다`,
+  wait: (n) => `${minutesText(Number(n.params.seconds ?? 0))} 기다려요`,
   wait_until: (n, index) =>
     typeof n.params.condition === "object"
       ? `${describeCondition(n.params.condition as never, index)}까지`
-      : "조건을 정한다",
+      : "조건을 정해 주세요",
   branch: (n, index) =>
     typeof n.params.condition === "object"
       ? `${describeCondition(n.params.condition as never, index)}?`
-      : "조건을 정한다",
+      : "조건을 정해 주세요",
   random: (n) => `${outputsOf(n).length}갈래 중 하나`,
   note: (n) => String(n.params.text ?? ""),
   inject_fault: (n, index) => {
     const type = String(n.params.faultType ?? "");
-    const label = isFaultType(type) ? faultSpec(type).label : "장애";
+    const label = isFaultType(type) ? faultSpec(type).label : "고장";
     return `${nameOf(index, n.params.target)}: ${label}`;
   },
   clear_fault: (n) =>
-    n.params.ref ? `${String(n.params.ref)} 블록의 장애를 없앤다` : "해제할 장애를 고른다",
+    n.params.ref ? `${String(n.params.ref)} 블록의 고장을 복구해요` : "복구할 고장을 골라 주세요",
   set_load: (n, index) =>
     `${nameOf(index, n.params.target)} 부하 ${Math.round(Number(n.params.value ?? 0) * 100)}%`,
   set_setpoint: (n, index) =>
     `${nameOf(index, n.params.target)} ${String(n.params.celsius ?? "?")}°C`,
   power: (n, index) =>
-    `${withJosa(nameOf(index, n.params.target), "을")} ${n.params.on ? "켠다" : "끈다"}`,
+    `${withJosa(nameOf(index, n.params.target), "을")} ${n.params.on ? "켜요" : "꺼요"}`,
+  port_admin: (n, index) =>
+    `${nameOf(index, n.params.target)}의 ${nameOf(index, n.params.peer)} 쪽 포트를 ${n.params.down === false ? "켜요" : "꺼요"}`,
+  port_vlan: (n, index) =>
+    `${nameOf(index, n.params.target)}의 ${nameOf(index, n.params.peer)} 쪽 포트를 VLAN ${String(n.params.vlan ?? "?")}로`,
+  svi_admin: (n, index) =>
+    `${nameOf(index, n.params.target)}의 VLAN ${String(n.params.vlan ?? "?")} 인터페이스를 ${n.params.down === false ? "켜요" : "꺼요"}`,
+  bgp_admin: (n, index) =>
+    `${nameOf(index, n.params.target)}의 BGP 이웃 ${nameOf(index, n.params.peer)}${n.params.down === false ? "을 켜요" : "을 꺼요"}`,
+  route_del: (n, index) =>
+    `${nameOf(index, n.params.target)}에서 ${String(n.params.route ?? "?").replace(" via ", " → ")} 경로를 지워요`,
+  outlet_set: (n, index) =>
+    `${nameOf(index, n.params.target)} ${String(n.params.outlet ?? "?")}번 콘센트를 ${n.params.on === true ? "켜요" : "꺼요"}`,
   agent_task: (n) =>
-    `툴 ${String(n.params.maxToolCalls ?? "?")}회, ${Math.round(Number(n.params.timeLimitSeconds ?? 0) / 60)}분 안에`,
+    `툴 ${String(n.params.maxToolCalls ?? "?")}회, ${minutesText(Number(n.params.timeLimitSeconds ?? 0))} 안에`,
 };
 
 export function summaryOf(node: ScenarioNode, index?: BlueprintIndex): string {
@@ -132,11 +145,13 @@ export function addBlock(
   position: { x: number; y: number },
 ): { doc: ScenarioDoc; nodeId: string } {
   if (!item.available)
-    throw new FlowError(item.reason ?? `${withJosa(item.label, "은")} 지금 쓸 수 없다`);
+    throw new FlowError(item.reason ?? `${withJosa(item.label, "은")} 지금 쓸 수 없어요`);
   const spec = blockSpec(item.type);
   const count = doc.nodes.filter((n) => n.type === item.type).length;
   if (spec?.maxCount !== undefined && count >= spec.maxCount)
-    throw new FlowError(`${withJosa(spec.label, "은")} 시나리오에 ${spec.maxCount}개까지만 둔다`);
+    throw new FlowError(
+      `${withJosa(spec.label, "은")} 시나리오에 ${spec.maxCount}개까지만 둘 수 있어요`,
+    );
   const nodeId = nextOf(
     doc.nodes.map((n) => n.id),
     "n",
@@ -150,17 +165,54 @@ export function addBlock(
   return { doc: { ...doc, nodes: [...doc.nodes, node] }, nodeId };
 }
 
+/**
+ * The last block of the main line: from the start, follow each block's single "next" wire until a block has nothing
+ * after it. A block with several exits (a branch, a wait with a timeout) ends the walk without an answer, because
+ * which exit a new block belongs to is the author's choice.
+ */
+export function lineEnd(doc: ScenarioDoc): ScenarioNode | undefined {
+  let at = doc.nodes.find((n) => n.type === "start");
+  const seen = new Set<string>();
+  while (at && !seen.has(at.id)) {
+    seen.add(at.id);
+    const exits = outputsOf(at);
+    if (exits.length !== 1 || exits[0] === undefined) return undefined;
+    const wire = doc.edges.find((e) => e.from === at?.id && e.port === exits[0]);
+    if (!wire) return at;
+    at = doc.nodes.find((n) => n.id === wire.to);
+  }
+  return undefined;
+}
+
+/**
+ * A block pressed in the palette: it goes under the last block and is wired after the end of the main line, so
+ * pressing 고장, 대기, 에이전트 투입 in turn builds a scenario that already runs. Dragging a block onto the canvas
+ * (addBlock) leaves it unwired, where the author put it.
+ */
+export function appendBlock(
+  doc: ScenarioDoc,
+  item: PaletteItem,
+): { doc: ScenarioDoc; nodeId: string } {
+  const added = addBlock(doc, item, freeSpot(doc));
+  const end = lineEnd(doc);
+  if (!end || blockSpec(item.type)?.hasInput === false) return added;
+  const exit = outputsOf(end)[0];
+  return exit === undefined
+    ? added
+    : { ...added, doc: connect(added.doc, end.id, exit, added.nodeId) };
+}
+
 /** Wire an output port to a block. A port leads to one place: wiring it again moves the wire. */
 export function connect(doc: ScenarioDoc, from: string, port: string, to: string): ScenarioDoc {
   const source = doc.nodes.find((n) => n.id === from);
   const target = doc.nodes.find((n) => n.id === to);
-  if (!source || !target) throw new FlowError("없는 블록이다");
-  if (from === to) throw new FlowError("블록을 자기 자신에 이을 수 없다");
+  if (!source || !target) throw new FlowError("없는 블록이에요");
+  if (from === to) throw new FlowError("블록을 자기 자신에 이을 수 없어요");
   if (!outputsOf(source).includes(port))
-    throw new FlowError(`'${portLabel(port)}' 출구가 없는 블록이다`);
+    throw new FlowError(`'${portLabel(port)}' 출구가 없는 블록이에요`);
   if (blockSpec(target.type)?.hasInput === false)
     throw new FlowError(
-      `${withJosa(blockSpec(target.type)?.label ?? target.type, "으로")}는 들어갈 수 없다`,
+      `${withJosa(blockSpec(target.type)?.label ?? target.type, "으로")}는 들어갈 수 없어요`,
     );
   const kept = doc.edges.filter((e) => !(e.from === from && e.port === port));
   const id = nextOf(
@@ -200,7 +252,16 @@ export const moveNode = (doc: ScenarioDoc, id: string, position: { x: number; y:
     position: { x: Math.round(position.x), y: Math.round(position.y) },
   }));
 
-/** Set (or clear, with undefined) one parameter. A random block with fewer branches loses its extra wires. */
+/** The parameters whose choices depend on `name`, which a change of `name` makes meaningless. */
+const dependentsOf = (node: ScenarioNode, name: string): string[] =>
+  (blockSpec(node.type)?.params ?? [])
+    .filter((p) => p.kind === "net_pick" && p.dependsOn === name)
+    .map((p) => p.name);
+
+/**
+ * Set (or clear, with undefined) one parameter. Choosing another switch clears the port, VLAN or route that was
+ * picked from the old one's list. A random block with fewer branches loses its extra wires.
+ */
 export function setParam(
   doc: ScenarioDoc,
   id: string,
@@ -211,6 +272,7 @@ export function setParam(
     const params = { ...n.params };
     if (value === undefined) delete params[name];
     else params[name] = value;
+    if (params[name] !== n.params[name]) for (const d of dependentsOf(n, name)) delete params[d];
     return { ...n, params };
   });
   const node = next.nodes.find((n) => n.id === id);

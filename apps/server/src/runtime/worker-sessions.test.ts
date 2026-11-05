@@ -6,8 +6,10 @@ import { describe, expect, test } from "vitest";
 import { sampleBlueprint } from "../../../../packages/core/src/world/test-support/sample";
 import type { FromWorker } from "./worker-protocol";
 import { errorOf, WorkerSessions } from "./worker-sessions";
+import { identityOf } from "./world-cache";
 
 const blueprint = sampleBlueprint();
+const world = identityOf(blueprint);
 const scenario = SCENARIO_TEMPLATES[0]?.build(new BlueprintIndex(blueprint), "sample") as never;
 
 describe("what a session worker answers [REQ-032]", () => {
@@ -17,7 +19,9 @@ describe("what a session worker answers [REQ-032]", () => {
     await w.handle({
       kind: "open",
       id: "a",
-      config: { blueprint, scenario, tools: DEFAULT_TOOLSET, seed: 1 },
+      config: { scenario, tools: DEFAULT_TOOLSET, seed: 1 },
+      world,
+      blueprint,
     });
     expect(out[0]).toMatchObject({
       kind: "opened",
@@ -37,17 +41,17 @@ describe("what a session worker answers [REQ-032]", () => {
       kind: "failed",
       id: "zz",
       seq: 3,
-      error: { message: "세션 zz가 이 워커에 없다" },
+      error: { message: "세션 zz가 이 워커에 없어요" },
     });
     await w.handle({
       kind: "open",
       id: "b",
       config: {
-        blueprint,
         scenario: { ...emptyScenario("x", "sample"), nodes: [] },
         tools: [],
         seed: 1,
       },
+      world,
     });
     expect(out[4]).toMatchObject({
       kind: "open_failed",
@@ -58,6 +62,19 @@ describe("what a session worker answers [REQ-032]", () => {
     await w.handle({ kind: "dispose", id: "a" });
     await w.handle({ kind: "dispose", id: "a" });
     expect(w.size).toBe(0);
+  });
+
+  test("a world comes once: later sessions name it by key, and a thread that lacks it says so [REQ-032]", async () => {
+    const out: FromWorker[] = [];
+    const w = new WorkerSessions((m) => out.push(m));
+    const config = { scenario, tools: DEFAULT_TOOLSET, seed: 1 };
+    await w.handle({ kind: "open", id: "x", config, world });
+    expect(out[0]).toMatchObject({ kind: "open_failed", error: { code: "blueprint_needed" } });
+    await w.handle({ kind: "open", id: "x", config, world, blueprint });
+    await w.handle({ kind: "open", id: "y", config: { ...config, seed: 2 }, world });
+    expect(out.slice(1).map((m) => m.kind)).toEqual(["opened", "opened"]);
+    expect(w.worlds.size).toBe(1);
+    expect(w.size).toBe(2);
   });
 
   test("errors keep their kind across the thread boundary", () => {

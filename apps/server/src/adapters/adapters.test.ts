@@ -16,7 +16,7 @@ import { attributeValue, ClickStackTelemetry, logOf, spanOf } from "./clickstack
 import { BUILTIN_HARNESS_ID, loadConfig, parseConfig, secret } from "./config";
 import { GraphSource, type ReadOnlyGraph } from "./falkordb";
 import { SqliteStore } from "./sqlite-store";
-import { FakeFetch, json } from "./test-support/fake-fetch";
+import { FakeFetch } from "./test-support/fake-fetch";
 
 const dir = mkdtempSync(path.join(tmpdir(), "terrarium-adapters-"));
 afterAll(() => rmSync(dir, { recursive: true, force: true }));
@@ -42,13 +42,7 @@ describe("server configuration [REQ-031] [REQ-037]", () => {
         identity: { header: "X-Forwarded-User" },
         harnesses: [
           { kind: "http", id: "remote", name: "원격", url: "https://h.internal" },
-          {
-            kind: "openai",
-            id: "llm",
-            name: "LLM",
-            baseUrl: "https://llm/v1",
-            models: [{ id: "m", model: "m-1" }],
-          },
+          { kind: "a2a", id: "agent", name: "에이전트", url: "https://a.internal" },
         ],
         sources: [
           { kind: "falkordb", id: "kg", name: "운영 KG", url: "falkor://kg.internal:6379" },
@@ -59,14 +53,14 @@ describe("server configuration [REQ-031] [REQ-037]", () => {
     const config = loadConfig({ TERRARIUM_CONFIG: file });
     expect(config.dataDir).toBe(path.join(dir, "state"));
     expect(config.identity.header).toBe("x-forwarded-user");
-    expect(config.harnesses.map((h) => h.id)).toEqual(["builtin", "remote", "llm"]);
+    expect(config.harnesses.map((h) => h.id)).toEqual(["builtin", "remote", "agent"]);
     expect(config.telemetry?.tables).toEqual({ traces: "otel_traces", logs: "otel_logs" });
     expect(config.sources[0]?.graph).toBe("cloud_topology");
   });
 
   test("mistakes are named in Korean, with where they are", () => {
     expect(() => parseConfig({ port: "x" })).toThrow(
-      "설정이 올바르지 않다: port 숫자여야 하는데 문자열이다",
+      "설정이 올바르지 않아요: port 숫자여야 해요 (지금은 문자열이에요)",
     );
     expect(() =>
       parseConfig({
@@ -75,14 +69,14 @@ describe("server configuration [REQ-031] [REQ-037]", () => {
           { kind: "scripted", id: "a" },
         ],
       }),
-    ).toThrow("하네스 id가 겹친다");
-    expect(() => parseConfig({ colour: 1 })).toThrow("(전체) 모르는 항목이 있다: 'colour'");
+    ).toThrow("하네스 id가 겹쳐요");
+    expect(() => parseConfig({ colour: 1 })).toThrow("(전체) 모르는 항목이 있어요: 'colour'");
     expect(
       parseConfig({ harnesses: [{ kind: "scripted", id: "builtin", name: "기준" }] }).harnesses,
     ).toHaveLength(1);
     expect(secret({ KEY: "v" }, "KEY")).toBe("v");
     expect(secret({}, undefined)).toBeUndefined();
-    expect(() => secret({}, "LLM_KEY")).toThrow("환경 변수 LLM_KEY가 비어 있다");
+    expect(() => secret({}, "LLM_KEY")).toThrow("환경 변수 LLM_KEY가 비어 있어요");
   });
 
   test("adapters are built from the config; the sample graph is always there", async () => {
@@ -96,13 +90,7 @@ describe("server configuration [REQ-031] [REQ-037]", () => {
           url: "https://h.internal",
           tokenEnv: "H_TOKEN",
         },
-        {
-          kind: "openai",
-          id: "llm",
-          name: "LLM",
-          baseUrl: "https://llm/v1",
-          models: [{ id: "m", model: "m-1" }],
-        },
+        { kind: "a2a", id: "agent", name: "에이전트", url: "https://a.internal" },
       ],
       sources: [
         {
@@ -116,11 +104,7 @@ describe("server configuration [REQ-031] [REQ-037]", () => {
       telemetry: { kind: "clickstack", url: "http://ch:8123" },
     });
     const adapters = buildAdapters(config, { env: { H_TOKEN: "t", KG_PW: "p" } });
-    expect(adapters.harnesses.map((h) => h.info.kind)).toEqual([
-      "scripted",
-      "http",
-      "openai-compatible",
-    ]);
+    expect(adapters.harnesses.map((h) => h.info.kind)).toEqual(["scripted", "http", "a2a"]);
     expect([...adapters.sources.keys()]).toEqual(["sample", "kg"]);
     expect(adapters.sources.get("kg")?.source.name).toBe(
       "falkordb://kg.internal:6379/cloud_topology",
@@ -129,7 +113,7 @@ describe("server configuration [REQ-031] [REQ-037]", () => {
     expect(adapters.store).toBeInstanceOf(SqliteStore);
     await adapters.close();
     expect(() => buildAdapters(config, { env: { KG_PW: "p" } })).toThrow(
-      "환경 변수 H_TOKEN이 비어 있다",
+      "환경 변수 H_TOKEN이 비어 있어요",
     );
   });
 });
@@ -283,11 +267,11 @@ describe("harness telemetry from ClickStack [REQ-037]", () => {
     expect(await telemetry.trace("'; DROP TABLE x; --")).toBe(NO_TELEMETRY);
     expect(fake.requests).toHaveLength(0);
     await expect(telemetry.trace(traceId)).rejects.toThrow(
-      "ClickStack이 404로 답했다: DB::Exception: no table",
+      "ClickStack이 404로 답했어요: DB::Exception: no table",
     );
     expect(
       () => new ClickStackTelemetry({ ...config, tables: { traces: "x;y", logs: "l" } }, undefined),
-    ).toThrow("ClickStack 테이블 이름 'x;y'이 올바르지 않다");
+    ).toThrow("ClickStack 테이블 이름 'x;y'이 올바르지 않아요");
   });
 
   test("attribute and level conversions", () => {
@@ -336,6 +320,6 @@ describe("the SQLite store keeps its data [REQ-030]", () => {
     const raw = new DatabaseSync(file);
     raw.exec("PRAGMA user_version = 99");
     raw.close();
-    expect(() => new SqliteStore(file)).toThrow("데이터 파일이 더 새 버전(99)이다");
+    expect(() => new SqliteStore(file)).toThrow("데이터 파일이 더 새 버전(99)이에요");
   });
 });

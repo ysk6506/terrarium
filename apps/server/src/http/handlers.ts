@@ -4,6 +4,7 @@
  */
 import { toJsonl } from "@terrarium/core/analysis";
 import type { ParsedBodyOf, ParsedQueryOf, Responses, RouteName } from "@terrarium/core/contract";
+import { NotFoundError } from "@terrarium/core/kernel";
 import type { Platform, ReportFormat, Viewer } from "../runtime";
 
 export interface HandlerInput<N extends RouteName> {
@@ -15,17 +16,42 @@ export interface HandlerInput<N extends RouteName> {
   readonly baseUrl: string;
 }
 
+/** Routes that stay open and push events; app.ts answers them itself. */
+export type StreamRoute = "experimentEvents" | "worldActivity";
+
 export type Handler<N extends RouteName> = (
   platform: Platform,
   input: HandlerInput<N>,
 ) => Promise<Responses[N]>;
 
-type Handlers = { readonly [N in Exclude<RouteName, "experimentEvents">]: Handler<N> };
+type Handlers = { readonly [N in Exclude<RouteName, StreamRoute>]: Handler<N> };
 
 const id = (input: { params: Readonly<Record<string, string>> }) => input.params.id as string;
+const agentId = (input: { params: Readonly<Record<string, string>> }) =>
+  input.params.agentId as string;
+/** A version number in the address; anything else is a version that does not exist. */
+const versionNo = (input: { params: Readonly<Record<string, string>> }) => {
+  const n = Number(input.params.n);
+  if (!Number.isInteger(n) || n < 1) throw new NotFoundError("버전을 찾을 수 없어요");
+  return n;
+};
 
 export const HANDLERS: Handlers = {
   meta: (p, i) => p.meta(i.viewer),
+
+  listConnectors: async (p) => p.connections.specs(),
+  listConnections: (p) => p.connections.views(),
+  checkConnection: (p, i) => p.connections.check(i.viewer, i.body, i.baseUrl),
+  createConnection: (p, i) => p.connections.create(i.viewer, i.body),
+  updateConnection: (p, i) => p.connections.update(i.viewer, id(i), i.body),
+  keepConnection: (p, i) => p.connections.keep(id(i)),
+  recheckConnection: (p, i) => p.connections.recheck(id(i)),
+  deleteConnection: (p, i) => p.connections.remove(i.viewer, id(i)),
+  listAgentVersions: (p, i) => p.agentVersions.history(id(i), agentId(i)),
+  addAgentVersion: (p, i) => p.agentVersions.add(i.viewer, id(i), agentId(i), i.body),
+  editAgentVersion: (p, i) =>
+    p.agentVersions.edit(i.viewer, id(i), agentId(i), versionNo(i), i.body),
+  deleteAgentVersion: (p, i) => p.agentVersions.remove(i.viewer, id(i), agentId(i), versionNo(i)),
 
   listWorlds: (p) => p.worlds.list(),
   getWorld: (p, i) => p.worlds.get(id(i)),
@@ -41,6 +67,7 @@ export const HANDLERS: Handlers = {
   updateScenario: (p, i) => p.scenarios.update(i.viewer, id(i), i.body),
   deleteScenario: (p, i) => p.scenarios.delete(i.viewer, id(i)),
   dryRunScenario: (p, i) => p.scenarios.dryRun(id(i), i.body.seed),
+  calibrateScenario: (p, i) => p.scenarios.calibrate(id(i), i.body.seed),
 
   listExperiments: (p, i) => p.experiments.list(i.query),
   getExperiment: (p, i) => p.experiments.view(i.viewer, id(i)),

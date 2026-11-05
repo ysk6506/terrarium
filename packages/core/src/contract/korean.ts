@@ -31,7 +31,7 @@ const TYPE_NAMES: Readonly<Record<string, string>> = {
 
 const typeName = (t: string) => TYPE_NAMES[t] ?? t;
 /** "문자열이어야" / "숫자여야". */
-const mustBe = (word: string) => `${word}${josa(word, "이다") === "이다" ? "이어야" : "여야"}`;
+const mustBe = (word: string) => `${word}${josa(word, "이에요") === "이에요" ? "이어야" : "여야"}`;
 const list = (xs: readonly unknown[]) => xs.map((x) => `'${String(x)}'`).join(", ");
 
 type SizedIssue = Extract<ZodIssueOptionalMessage, { code: "too_small" | "too_big" }>;
@@ -39,23 +39,23 @@ type SizedIssue = Extract<ZodIssueOptionalMessage, { code: "too_small" | "too_bi
 const SIZE_UNITS: Readonly<Record<string, string>> = { string: "자", array: "개", set: "개" };
 /** [inclusive, exclusive] wording for each direction. */
 const SIZE_RULES = {
-  too_small: [` ${mustBe("이상")} 한다`, "보다 커야 한다"],
-  too_big: [` ${mustBe("이하")} 한다`, "보다 작아야 한다"],
+  too_small: [` ${mustBe("이상")} 해요`, "보다 커야 해요"],
+  too_big: [` ${mustBe("이하")} 해요`, "보다 작아야 해요"],
 } as const;
 
 function sizeMessage(issue: SizedIssue): string {
   const small = issue.code === ZodIssueCode.too_small;
   const limit = Number(small ? issue.minimum : issue.maximum);
   if (issue.type === "string" && small && limit === 1 && issue.inclusive)
-    return "비어 있으면 안 된다";
+    return "비어 있으면 안 돼요";
   const [inclusive, exclusive] = SIZE_RULES[issue.code];
   return `${limit}${SIZE_UNITS[issue.type] ?? ""}${issue.inclusive ? inclusive : exclusive}`;
 }
 
 function typeMessage(issue: Extract<ZodIssueOptionalMessage, { code: "invalid_type" }>): string {
-  if (issue.received === "undefined") return "필요한 값이 없다";
+  if (issue.received === "undefined") return "필요한 값이 없어요";
   const received = typeName(issue.received);
-  return `${mustBe(typeName(issue.expected))} 하는데 ${received}${josa(received, "이다")}`;
+  return `${mustBe(typeName(issue.expected))} 해요 (지금은 ${received}${josa(received, "이에요")})`;
 }
 
 /** Korean messages for every issue zod can raise. */
@@ -68,22 +68,22 @@ export const koreanErrorMap: ZodErrorMap = (issue, ctx) => {
       return { message: sizeMessage(issue) };
     case ZodIssueCode.invalid_enum_value:
       return {
-        message: `${list(issue.options)} 중 하나여야 한다 ('${String(issue.received)}'${josa(String(issue.received), "은")} 없다)`,
+        message: `${list(issue.options)} 중 하나여야 해요 ('${String(issue.received)}'${josa(String(issue.received), "은")} 없어요)`,
       };
     case ZodIssueCode.invalid_union_discriminator:
-      return { message: `종류는 ${list(issue.options)} 중 하나여야 한다` };
+      return { message: `종류는 ${list(issue.options)} 중 하나여야 해요` };
     case ZodIssueCode.invalid_literal:
-      return { message: `'${String(issue.expected)}'만 쓸 수 있다` };
+      return { message: `'${String(issue.expected)}'만 쓸 수 있어요` };
     case ZodIssueCode.unrecognized_keys:
-      return { message: `모르는 항목이 있다: ${list(issue.keys)}` };
+      return { message: `모르는 항목이 있어요: ${list(issue.keys)}` };
     case ZodIssueCode.invalid_string:
-      return { message: "형식이 맞지 않는다" };
+      return { message: "형식이 맞지 않아요" };
     case ZodIssueCode.not_finite:
-      return { message: "유한한 숫자여야 한다" };
+      return { message: "유한한 숫자여야 해요" };
     case ZodIssueCode.not_multiple_of:
-      return { message: `${String(issue.multipleOf)}의 배수여야 한다` };
+      return { message: `${String(issue.multipleOf)}의 배수여야 해요` };
     case ZodIssueCode.invalid_union:
-      return { message: "어느 형식에도 맞지 않는다" };
+      return { message: "어느 형식에도 맞지 않아요" };
     default:
       return { message: ctx.defaultError };
   }

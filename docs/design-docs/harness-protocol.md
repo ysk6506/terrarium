@@ -2,17 +2,21 @@
 title: 하네스 프로토콜 (terrarium.harness/1)
 kind: spec
 status: active
-last_verified: 2026-10-29
+last_verified: 2026-11-04
 covers:
   - apps/server/src/adapters/harness/http.ts
-covers_hash: 10b5c6385dde6730
+covers_hash: addb8d1583b2a90e
 verification_log:
   - "2026-10-29: first version, checked against HttpHarness (start, poll, stop, usage)"
+  - "2026-10-30: 2026-10-30: http.ts의 설정 타입 위치와 ADR 번호만 바뀌었다. 엔드포인트와 필드는 코드와 같다. 화면 연결, 직접 입력한 토큰, 커스텀 헤더 안내를 더했다"
+  - "2026-11-03: 서버·core가 사람에게 돌려주는 안내 문장이 해요체로 바뀐 것만 확인했다. 동작과 본문은 그대로 (ADR-0050)"
+  - "2026-11-04: 2026-11-04: ADR-0073. 연결 오류 문장이 '닿을 수 없어요'에서 '연결할 수 없어요'로 바뀐 것에 맞춰 글을 고쳤다. 프로토콜은 그대로"
 ---
 # 하네스 프로토콜 `terrarium.harness/1`
 
-외부 하네스를 테라리움에 붙이는 방법이다([ADR-0026](adr/0026-harness-adapters.md)). 하네스 앞에 아래 엔드포인트 넷만 만들면 된다.
-테라리움 설정 파일에 `{"kind": "http", "id": "...", "name": "...", "url": "https://하네스", "tokenEnv": "토큰_변수"}`를 넣는다.
+외부 하네스를 테라리움에 붙이는 방법의 하나다(연결 방식 `http`, [ADR-0042](adr/0042-connectors.md)). 하네스 앞에 아래 엔드포인트 넷만 만들면 된다.
+화면의 "연결"에서 방식 `http`를 고르고 주소와 토큰(직접 입력하거나 서버의 환경 변수 이름)을 적는다. 커스텀 헤더가 필요하면 헤더 칸에 더한다. 파일로 하려면 테라리움 설정 파일에
+`{"kind": "http", "id": "...", "name": "...", "url": "https://하네스", "tokenEnv": "토큰_변수"}`를 넣는다. 하네스 프로토콜이 아닌 에이전트(A2A, 평범한 HTTP API, MCP 서버의 툴 …)는 다른 연결 방식으로 붙인다.
 
 ## 큰 그림
 
@@ -31,7 +35,7 @@ verification_log:
 
 ## 엔드포인트
 
-모든 요청에 `Authorization: Bearer <토큰>`이 붙는다(설정했을 때).
+모든 요청에 `Authorization: Bearer <토큰>`이 붙는다(설정했을 때). 연결에 커스텀 헤더를 적었다면 그것도 모든 요청에 붙고, 같은 이름이면 사람이 적은 값이 우선한다.
 
 ### `GET /agents`
 ```json
@@ -66,7 +70,7 @@ verification_log:
   "wallSeconds": 73
 }
 ```
-테라리움은 `pollSeconds`(기본 2초)마다 묻는다. 5번 연속 실패하면 "하네스에 닿을 수 없다"로 실행이 실패한다.
+테라리움은 `pollSeconds`(기본 2초)마다 묻는다. 5번 연속 실패하면 "하네스에 연결할 수 없어요"로 실행이 실패한다.
 
 ### `DELETE /runs/{runId}` — 중지
 사람이 실험을 취소했거나 실행 시간이 다 됐을 때 부른다. 에이전트를 멈추고 2xx(이미 끝났으면 404도 괜찮다). 그 뒤 마지막으로 한 번

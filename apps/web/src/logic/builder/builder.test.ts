@@ -151,34 +151,34 @@ describe("building a world by hand [REQ-006] [REQ-005]", () => {
 
   test("things cannot overlap, leave their space, or be turned into a wall", () => {
     const { bp, room, roomId } = hall();
-    expect(placementProblem(bp, catalog, room, undefined, at(2.4, 3.6))).toBe("랙 1과 겹친다");
+    expect(placementProblem(bp, catalog, room, undefined, at(2.4, 3.6))).toBe("랙 1과 겹쳐요");
     expect(placementProblem(bp, catalog, room, undefined, at(17.8, 3.6))).toBe(
-      "이 자리가 들어갈 자리를 벗어난다",
+      "이 자리가 들어갈 자리를 벗어나요",
     );
     expect(placementProblem(bp, catalog, room, undefined, at(6, 6))).toBeUndefined();
     expect(() => placeRackRow(bp, catalog, roomId, at(0.6, 3.6), 4)).toThrow(
-      "4번째 랙: 랙 1과 겹친다",
+      "4번째 랙: 랙 1과 겹쳐요",
     );
     expect(() => placeRackRow(bp, catalog, roomId, at(6, 6), 0)).toThrow(EditError);
-    expect(() => placeRack(bp, catalog, roomId, at(2.4, 3.6))).toThrow("랙 1과 겹친다");
+    expect(() => placeRack(bp, catalog, roomId, at(2.4, 3.6))).toThrow("랙 1과 겹쳐요");
     expect(() => placeEquipment(bp, catalog, { kind: "site" }, "crah-100kw", at(1, 1))).toThrow(
-      "설비는 건물 안에 둔다",
+      "설비는 건물 안에 둬요",
     );
     expect(() =>
       placeEquipment(bp, catalog, { kind: "floor", id: "fl-1" }, "crah-100kw", at(1, 1)),
-    ).toThrow("냉방기는 서버룸 안에 둔다");
+    ).toThrow("냉방기는 서버룸 안에 둬요");
     expect(() => placeEquipment(bp, catalog, room, "srv-1u-compute", at(6, 6))).toThrow(
-      "바닥에 세우는 설비가 아니다",
+      "바닥에 세우는 설비가 아니에요",
     );
     expect(() => addBuilding(bp, catalog, { x: 20, y: 20, w: 20, d: 20 })).toThrow(
-      "건물 1과 겹친다",
+      "건물 1과 겹쳐요",
     );
     expect(() => addRoom(bp, catalog, "fl-1", { x: 2, y: 2, w: 5, d: 5 })).toThrow(
-      "서버룸 A와 겹친다",
+      "서버룸 A와 겹쳐요",
     );
     expect(() =>
       addBuilding(emptyWorld("w", "w", { w: 10, d: 10 }), catalog, { x: 0, y: 0, w: 50, d: 50 }),
-    ).toThrow("벗어난다");
+    ).toThrow("벗어나요");
   });
 
   test("move, turn, rename, re-model and remove — with everything inside and every cable", () => {
@@ -189,21 +189,21 @@ describe("building a world by hand [REQ-006] [REQ-005]", () => {
       x: 10.2,
       y: 3.6,
     });
-    expect(() => moveTo(bp, catalog, room, rack, 2.4, 3.6)).toThrow("랙 1과 겹친다");
-    expect(() => moveTo(bp, catalog, room, "srv-1", 1, 1)).toThrow("옮길 수 없다");
+    expect(() => moveTo(bp, catalog, room, rack, 2.4, 3.6)).toThrow("랙 1과 겹쳐요");
+    expect(() => moveTo(bp, catalog, room, "srv-1", 1, 1)).toThrow("옮길 수 없어요");
     const turned = rotate(moved.blueprint, catalog, room, rack);
     expect(new BlueprintIndex(turned.blueprint).entity(rack).placement).toMatchObject({
       rotation: 90,
     });
     expect(() => rotate(bp, catalog, room, racks[1] as string)).toThrow("돌리면");
-    expect(() => rotate(bp, catalog, room, roomId)).toThrow("돌릴 수 없다");
+    expect(() => rotate(bp, catalog, room, roomId)).toThrow("돌릴 수 없어요");
     const wide = resizeArea(bp, catalog, roomId, { x: 1.2, y: 1.2, w: 24, d: 12 });
     expect(new BlueprintIndex(wide.blueprint).entity(roomId).placement).toMatchObject({ w: 24 });
     expect(() => resizeArea(bp, catalog, roomId, { x: 1.2, y: 1.2, w: 4, d: 4 })).toThrow(
-      "밖으로 나가게 된다",
+      "밖으로 나가게 돼요",
     );
     expect(() => resizeArea(bp, catalog, rack, { x: 0, y: 0, w: 1, d: 1 })).toThrow(
-      "크기를 바꿀 수 없다",
+      "크기를 바꿀 수 없어요",
     );
     expect(
       moveTo(bp, catalog, { kind: "floor", id: "fl-1" }, roomId, 1.8, 1.2).blueprint,
@@ -211,8 +211,8 @@ describe("building a world by hand [REQ-006] [REQ-005]", () => {
     expect(new BlueprintIndex(rename(bp, rack, " 코어 랙 ").blueprint).entity(rack).name).toBe(
       "코어 랙",
     );
-    expect(() => rename(bp, rack, "  ")).toThrow("이름을 적는다");
-    expect(() => rename(bp, rack, "x".repeat(61))).toThrow("60자까지다");
+    expect(() => rename(bp, rack, "  ")).toThrow("이름을 적어 주세요");
+    expect(() => rename(bp, rack, "x".repeat(61))).toThrow("60자까지예요");
     expect(
       new BlueprintIndex(setProp(bp, rack, "units", 48).blueprint).entity(rack).props.units,
     ).toBe(48);
@@ -221,14 +221,14 @@ describe("building a world by hand [REQ-006] [REQ-005]", () => {
       new BlueprintIndex(setModel(bp, catalog, server, "srv-1u-compute").blueprint).entity(server)
         .modelId,
     ).toBe("srv-1u-compute");
-    expect(() => setModel(bp, catalog, server, "pdu-11kw")).toThrow("서버 모델이 아니다");
+    expect(() => setModel(bp, catalog, server, "pdu-11kw")).toThrow("서버 모델이 아니에요");
     const wired = autoWireRoom(bp, catalog, roomId).blueprint;
     const gone = remove(wired, [rack]).blueprint;
     const index = new BlueprintIndex(gone);
     expect(index.find(rack)).toBeUndefined();
     expect(index.find(server)).toBeUndefined();
     expect(gone.links.some((l) => l.from === server || l.to === rack)).toBe(false);
-    expect(() => remove(bp, ["site-1"])).toThrow("사업장은 지울 수 없다");
+    expect(() => remove(bp, ["site-1"])).toThrow("사업장은 지울 수 없어요");
     expect(remove(bp, ["nope"]).blueprint.entities).toHaveLength(bp.entities.length);
   });
 
@@ -248,7 +248,7 @@ describe("building a world by hand [REQ-006] [REQ-005]", () => {
     );
     expect(() =>
       addContainment(made.blueprint, catalog, roomId, { x: 3, y: 3.6, w: 2.4, d: 2.4 }, "hot"),
-    ).toThrow("겹친다");
+    ).toThrow("겹쳐요");
   });
 });
 
@@ -274,20 +274,22 @@ describe("a rack's front [REQ-006]", () => {
   test("devices go where they fit, and say why when they do not", () => {
     const { bp, racks } = hall();
     const rack = racks[0] as string;
-    expect(() => mountDevice(bp, catalog, rack, "pdu-11kw")).toThrow("둘(A, B)까지다");
+    expect(() => mountDevice(bp, catalog, rack, "pdu-11kw")).toThrow("둘(A, B)까지예요");
     expect(() => mountDevice(bp, catalog, rack, "srv-4u-gpu", 41)).toThrow(
-      "42U 안에 들어가지 않는다",
+      "42U 안에 들어가지 않아요",
     );
     expect(() => mountDevice(bp, catalog, rack, "srv-2u-compute", 2)).toThrow(
-      /^U2에 서버 \d+[이가] 있다$/,
+      /^U2에 서버 \d+[이가] 있어요$/,
     );
-    expect(() => mountDevice(bp, catalog, rack, "crah-100kw")).toThrow("랙에 다는 장비가 아니다");
-    expect(() => mountDevice(bp, catalog, "room-1", "srv-1u-compute")).toThrow("장비는 랙에 단다");
+    expect(() => mountDevice(bp, catalog, rack, "crah-100kw")).toThrow("랙에 다는 장비가 아니에요");
+    expect(() => mountDevice(bp, catalog, "room-1", "srv-1u-compute")).toThrow(
+      "장비는 랙에 달아요",
+    );
     let full = bp;
     for (let i = 0; i < 16; i++)
       full = mountDevice(full, catalog, rack, "srv-2u-compute").blueprint;
     expect(() => mountDevice(full, catalog, rack, "srv-2u-compute")).toThrow(
-      "2U가 비어 있는 곳이 없다",
+      "2U가 비어 있는 곳이 없어요",
     );
     const server = new BlueprintIndex(bp).childrenOf(rack, "server")[0]?.id as string;
     const up = remount(bp, catalog, server, 20);
@@ -295,7 +297,7 @@ describe("a rack's front [REQ-006]", () => {
       type: "unit",
       u: 20,
     });
-    expect(() => remount(bp, catalog, server, 42)).toThrow("42U 안에 들어가지 않는다");
+    expect(() => remount(bp, catalog, server, 42)).toThrow("42U 안에 들어가지 않아요");
     expect(() => remount(bp, catalog, server, 3)).toThrow(/^U3에 서버/);
   });
 });
@@ -310,14 +312,14 @@ describe("cables [REQ-006] [REQ-005]", () => {
     expect(power.map((c) => c.entity.kind)).toContain("power_panel");
     expect(linkKindsFrom("server").sort()).toEqual(["member_of", "network", "power"]);
     expect(linkKindsFrom("rack")).toEqual(["cooling"]);
-    expect(linkProblem(index, "power", server, server)).toBe("자기 자신에게는 연결할 수 없다");
+    expect(linkProblem(index, "power", server, server)).toBe("자기 자신에게는 연결할 수 없어요");
     expect(linkProblem(index, "cooling", server, "cu-1")).toBe(
-      "서버에서 냉방기로는 이 연결을 만들 수 없다",
+      "서버에서 냉방기로는 이 연결을 만들 수 없어요",
     );
-    expect(linkProblem(index, "power", "nope", server)).toBe("없는 장비다");
+    expect(linkProblem(index, "power", "nope", server)).toBe("없는 장비예요");
     const linked = link(bp, "power", "panel-1", "ups-1").blueprint;
     expect(linkProblem(new BlueprintIndex(linked), "power", "panel-1", "ups-1")).toBe(
-      "이미 연결되어 있다",
+      "이미 연결되어 있어요",
     );
     const loop = link(
       link(bp, "power", "pdu-1", "panel-1").blueprint,
@@ -380,7 +382,7 @@ describe("totals and warnings, tycoon style [REQ-006]", () => {
     expect(stats.servers).toBe(16);
     expect(stats.coolingKw).toBe(100);
     expect(stats.costM).toBeGreaterThan(0);
-    expect(stats.warnings).toContain(`전원에 연결되지 않은 장비가 20대 있다`);
+    expect(stats.warnings).toContain(`전원에 연결되지 않은 장비가 20대 있어요`);
     const wired = levelStats(
       new BlueprintIndex(autoWireRoom(bp, catalog, roomId).blueprint),
       catalog,
@@ -389,7 +391,7 @@ describe("totals and warnings, tycoon style [REQ-006]", () => {
     expect(wired.warnings).toEqual([]);
     const noCooling = remove(bp, ["cu-1"]).blueprint;
     expect(levelStats(new BlueprintIndex(noCooling), catalog, room).warnings[0]).toBe(
-      "냉방기가 없어 장비의 열을 식힐 수 없다",
+      "냉방기가 없어 장비의 열을 식힐 수 없어요",
     );
     expect(levelStats(index, catalog, { kind: "site" }).racks).toBe(4);
   });

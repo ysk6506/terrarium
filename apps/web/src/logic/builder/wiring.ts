@@ -65,17 +65,21 @@ export const linkKindsFrom = (kind: EntityKind, entity?: Entity): LinkKind[] =>
 const hasLink = (index: BlueprintIndex, from: string, kind: LinkKind) =>
   index.outgoing(from, kind).length > 0;
 
+interface WiringState {
+  bp: Blueprint;
+  added: number;
+  /** The index of `bp`, kept until a cable is added (most attempts find the cable already there). */
+  index?: BlueprintIndex;
+}
+
 /** Apply `link` where it is allowed and missing; count what was added. */
-function tryLink(
-  state: { bp: Blueprint; added: number },
-  kind: LinkKind,
-  from: string,
-  to: string | undefined,
-): void {
+function tryLink(state: WiringState, kind: LinkKind, from: string, to: string | undefined): void {
   if (!to) return;
-  const index = new BlueprintIndex(state.bp);
+  const index = state.index ?? new BlueprintIndex(state.bp);
+  state.index = index;
   if (linkProblem(index, kind, from, to)) return;
   state.bp = link(state.bp, kind, from, to).blueprint;
+  state.index = undefined;
   state.added++;
 }
 
@@ -110,11 +114,7 @@ function near(index: BlueprintIndex, id: string, kind: EntityKind): Entity[] {
     : [...index.ofKind(kind)];
 }
 
-function wireRackInto(
-  state: { bp: Blueprint; added: number },
-  catalog: Catalog,
-  rackId: string,
-): void {
+function wireRackInto(state: WiringState, catalog: Catalog, rackId: string): void {
   let index = new BlueprintIndex(state.bp);
   const devices = index
     .childrenOf(rackId)
@@ -142,14 +142,14 @@ export interface Wiring extends Edit {
 
 /** Wire everything inside one rack, and the rack to its cooling. */
 export function autoWireRack(bp: Blueprint, catalog: Catalog, rackId: string): Wiring {
-  const state = { bp, added: 0 };
+  const state: WiringState = { bp, added: 0 };
   wireRackInto(state, catalog, rackId);
   return { blueprint: state.bp, select: [rackId], added: state.added };
 }
 
 /** Wire a whole room: every rack, PDUs to panels (A and B apart), cooling to panels, panels to UPS. */
 export function autoWireRoom(bp: Blueprint, catalog: Catalog, roomId: string): Wiring {
-  const state = { bp, added: 0 };
+  const state: WiringState = { bp, added: 0 };
   let index = new BlueprintIndex(bp);
   const racks = index.descendants(roomId).filter((e) => e.kind === "rack");
   for (const rack of racks) wireRackInto(state, catalog, rack.id);

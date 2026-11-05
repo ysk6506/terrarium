@@ -20,7 +20,7 @@ export function Timeline({
   readonly entries: readonly TimelineEntry[];
   readonly limit?: number;
 }) {
-  if (entries.length === 0) return <p className="muted small">기록된 일이 없다.</p>;
+  if (entries.length === 0) return <p className="muted small">기록된 일이 없어요.</p>;
   const shown = entries.slice(0, limit);
   return (
     <>
@@ -43,7 +43,7 @@ export function Timeline({
         ))}
       </ol>
       {entries.length > limit && (
-        <p className="tiny muted">앞의 {limit}건만 보인다. 전체는 보고서에 있다.</p>
+        <p className="tiny muted">앞의 {limit}건만 보여요. 전체는 보고서에 있어요.</p>
       )}
     </>
   );
@@ -109,7 +109,7 @@ export function SeriesGrid({
     return ys.length ? Math.max(...ys) - Math.min(...ys) : 0;
   };
   const shown = [...series].sort((a, b) => spread(b) - spread(a)).slice(0, limit);
-  if (shown.length === 0) return <p className="muted small">기록된 지표가 없다.</p>;
+  if (shown.length === 0) return <p className="muted small">기록된 지표가 없어요.</p>;
   return (
     <div className="charts">
       {shown.map((s) => (

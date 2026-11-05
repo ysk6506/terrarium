@@ -4,235 +4,254 @@
  * their (possibly degraded) capacity. A rack breathes a mix of supply air and room air; containment
  * reduces the room-air share. Servers heat their CPUs above their inlet by load and fan health.
  */
+import type { CoolingModel, ServerModel, UpsModel } from "@terrarium/core/catalog";
 import { approach, clamp } from "@terrarium/core/kernel";
-import type { Entity, World } from "@terrarium/core/world";
+import type { Entity, Fault, StateOf, World } from "@terrarium/core/world";
 import {
-  deviceW,
+  AIR_ONLY,
   liquidCpuTarget,
   type RackLiquid,
-  rackAirHeatW,
+  TANK_SURFACE_W_PER_K,
   updateRackLiquid,
 } from "./liquid";
-import { OUTDOOR_C, plantAvailability } from "./plant";
+import { plantAvailabilityAt } from "./plant";
+import { faultParam, hasFault } from "./power-supply";
+import { faultsAt, type Heat, heatOf } from "./thermal-plan";
 
-export { OUTDOOR_C };
 const ENVELOPE_W_PER_K_M2 = 2;
 /** Air temperature drop across a cooling coil running at full capacity. */
 const COIL_DELTA_C = 12;
 const MASS_J_PER_K_M3 = 1200 * 3;
 const ROOM_HEIGHT_M = 3;
 
-const roomArea = (room: Entity): number =>
-  room.placement?.type === "area" ? room.placement.w * room.placement.d : 100;
-
-const unitsByRoom = new WeakMap<World["index"], Map<string, readonly Entity[]>>();
-
-/** The cooling units standing in a room (the layout never changes, so this is worked out once). */
-function coolingUnitsIn(world: World, roomId: string): readonly Entity[] {
-  let rooms = unitsByRoom.get(world.index);
-  if (!rooms) {
-    rooms = new Map();
-    unitsByRoom.set(world.index, rooms);
-  }
-  let units = rooms.get(roomId);
-  if (!units) {
-    units = world.index.descendants(roomId).filter((e) => e.kind === "cooling_unit");
-    rooms.set(roomId, units);
-  }
-  return units;
-}
-
-const assignedUnits = new WeakMap<Entity, readonly Entity[]>();
-
-/** The cooling units a rack is wired to. */
-function assignedUnitsOf(world: World, rack: Entity): readonly Entity[] {
-  let units = assignedUnits.get(rack);
-  if (!units) {
-    units = world.index
-      .outgoing(rack.id, "cooling")
-      .map((l) => world.index.entity(l.to))
-      .filter((e) => e.kind === "cooling_unit");
-    assignedUnits.set(rack, units);
-  }
-  return units;
-}
-
-const runningOf = (world: World, units: readonly Entity[]): Entity[] =>
-  units.filter((u) => world.stateAs(u.id, "cooling_unit").running);
-
-function effectiveCapacityW(world: World, unit: Entity): number {
-  const model = world.catalog.getOf(unit.modelId ?? "", "cooling_unit");
-  const factor =
-    world.faultsOn(unit.id).find((f) => f.type === "cooling_unit_degraded")?.params.factor ?? 1;
+function effectiveCapacityW(heat: Heat, unit: number): number {
+  const model = heat.plan.models[unit] as CoolingModel;
+  const factor = faultParam(faultsAt(heat, unit), "cooling_unit_degraded", "factor") ?? 1;
   // A chilled-water unit can only move the heat its plant takes from it.
-  const water = model.chilledWater ? plantAvailability(world, unit.id) : 1;
+  const water = model.chilledWater ? plantAvailabilityAt(heat, unit) : 1;
   return model.capacityKw * 1000 * factor * water;
 }
 
-function setpointOf(world: World, unit: Entity): number {
-  const drift =
-    world.faultsOn(unit.id).find((f) => f.type === "setpoint_drift")?.params.deltaC ?? 0;
-  return world.stateAs(unit.id, "cooling_unit").setpointC + drift;
+function setpointOf(heat: Heat, unit: number): number {
+  const drift = faultParam(faultsAt(heat, unit), "setpoint_drift", "deltaC") ?? 0;
+  return (heat.states[unit] as StateOf<"cooling_unit">).setpointC + drift;
+}
+
+/** Electric power of the IT devices in a rack, W (read from the devices, so it is this step's). */
+function deviceWAt(heat: Heat, rack: number): number {
+  if (heat.plan.light[rack]) return (heat.states[rack] as StateOf<"rack">).powerW;
+  const { start, items } = heat.t.devices;
+  let sum = 0;
+  for (let q = start[rack] as number; q < (start[rack + 1] as number); q++)
+    sum += (heat.states[items[q] as number] as StateOf<"server"> | StateOf<"switch">).powerW;
+  return sum;
+}
+
+/**
+ * Air-side heat a rack puts into its room, W: whatever the liquid does not carry, plus what a warm
+ * tank gives off through its walls.
+ */
+function rackAirHeatAt(heat: Heat, rack: number, ambient: number): number {
+  const s = heat.states[rack] as StateOf<"rack">;
+  if (heat.t.cooling[rack] === "immersion")
+    return Math.max(0, s.bathC - ambient) * TANK_SURFACE_W_PER_K;
+  return Math.max(0, deviceWAt(heat, rack) - s.liquidW);
+}
+
+function roomHeatAt(heat: Heat, room: number): number {
+  const ambient = (heat.states[room] as StateOf<"room">).ambientC;
+  const { start, items } = heat.t.roomSources;
+  let sum = 0;
+  for (let q = start[room] as number; q < (start[room + 1] as number); q++) {
+    const i = items[q] as number;
+    const s = heat.states[i];
+    if (s?.kind === "rack") sum += rackAirHeatAt(heat, i, ambient);
+    else if (s?.kind === "ups") sum += s.loadW * (1 - (heat.plan.models[i] as UpsModel).efficiency);
+    else if (s?.kind === "cdu") sum += s.running ? 0.04 * s.loadKw * 1000 : 0;
+  }
+  return sum;
 }
 
 /** Heat released into a room's air, in watts. */
 export function roomHeatW(world: World, roomId: string): number {
-  let heat = 0;
-  for (const entity of world.index.descendants(roomId)) {
-    const state = world.stateOf(entity.id);
-    if (state.kind === "rack")
-      heat += rackAirHeatW(world, entity, world.stateAs(roomId, "room").ambientC);
-    else if (state.kind === "ups")
-      heat += state.loadW * (1 - world.catalog.getOf(entity.modelId ?? "", "ups").efficiency);
-    else if (state.kind === "cdu") heat += state.running ? 0.04 * state.loadKw * 1000 : 0;
-  }
-  return heat;
+  const room = world.index.positionOf(roomId);
+  if (room === undefined) return 0;
+  return roomHeatAt(heatOf(world), room);
 }
 
 /** One explicit Euler step of a room's energy balance; updates cooling units' load and air temperatures. */
-export function updateRoom(world: World, room: Entity, dt: number): void {
-  const state = world.stateAs(room.id, "room");
+function updateRoomAt(heat: Heat, room: number, dt: number): void {
+  const state = heat.states[room] as StateOf<"room">;
   const t = state.ambientC;
-  const units = coolingUnitsIn(world, room.id);
-  const heat = roomHeatW(world, room.id);
+  const { start, items } = heat.t.roomUnits;
+  const sources = roomHeatAt(heat, room);
   let removed = 0;
-  for (const unit of units) {
-    const unitState = world.stateAs(unit.id, "cooling_unit");
-    const capacity = effectiveCapacityW(world, unit);
+  for (let q = start[room] as number; q < (start[room + 1] as number); q++) {
+    const unit = items[q] as number;
+    const unitState = heat.states[unit] as StateOf<"cooling_unit">;
     if (!unitState.running) {
-      world.patch(unit.id, "cooling_unit", { loadKw: 0, capacityKw: 0, supplyC: t, returnC: t });
+      Object.assign(unitState, { loadKw: 0, capacityKw: 0, supplyC: t, returnC: t });
       continue;
     }
-    const setpoint = setpointOf(world, unit);
+    const capacity = effectiveCapacityW(heat, unit);
+    const setpoint = setpointOf(heat, unit);
     const removal = clamp((capacity / 10) * (t - setpoint), 0, capacity);
     // Supply air leaves the coil cooler than the room by the share of capacity in use, never below setpoint.
     const supplyC = Math.max(setpoint, t - COIL_DELTA_C * (removal / Math.max(capacity, 1)));
     removed += removal;
-    world.patch(unit.id, "cooling_unit", {
-      loadKw: removal / 1000,
-      capacityKw: capacity / 1000,
-      supplyC,
-      returnC: t,
-    });
+    unitState.loadKw = removal / 1000;
+    unitState.capacityKw = capacity / 1000;
+    unitState.supplyC = supplyC;
+    unitState.returnC = t;
   }
-  const area = roomArea(room);
-  const envelope = ENVELOPE_W_PER_K_M2 * area * (t - OUTDOOR_C);
+  const area = heat.t.area[room] as number;
+  const envelope = ENVELOPE_W_PER_K_M2 * area * (t - heat.world.outdoorC());
   const mass = MASS_J_PER_K_M3 * area * ROOM_HEIGHT_M;
-  world.patch(room.id, "room", {
-    ambientC: clamp(t + (dt * (heat - removed - envelope)) / mass, 5, 75),
-  });
+  state.ambientC = clamp(t + (dt * (sources - removed - envelope)) / mass, 5, 75);
 }
 
 /** Supply air reaching a rack: its assigned running units, else any running unit in the room. */
-function supplyFor(
-  world: World,
-  rack: Entity,
-  roomId: string,
-): { supplyC: number; extraMix: number } | undefined {
-  const explicit = assignedUnitsOf(world, rack);
-  const assigned = runningOf(world, explicit);
-  const fallback = assigned.length > 0 ? assigned : runningOf(world, coolingUnitsIn(world, roomId));
-  if (fallback.length === 0) return undefined;
-  const supplyC =
-    fallback.reduce((sum, u) => sum + world.stateAs(u.id, "cooling_unit").supplyC, 0) /
-    fallback.length;
-  return { supplyC, extraMix: assigned.length > 0 || explicit.length === 0 ? 0 : 0.25 };
+class AirSupply {
+  supplyC = 0;
+  extraMix = 0;
+
+  /** Work out the supply for `rack`; false when no unit can cool it. */
+  of(heat: Heat, rack: number, room: number): boolean {
+    const explicit = heat.t.assigned;
+    const first = explicit.start[rack] as number;
+    const last = explicit.start[rack + 1] as number;
+    let sum = 0;
+    let count = 0;
+    for (let q = first; q < last; q++) {
+      const s = heat.states[explicit.items[q] as number] as StateOf<"cooling_unit">;
+      if (s.running) {
+        sum += s.supplyC;
+        count++;
+      }
+    }
+    const assigned = count;
+    if (count === 0) {
+      const units = heat.t.roomUnits;
+      for (let q = units.start[room] as number; q < (units.start[room + 1] as number); q++) {
+        const s = heat.states[units.items[q] as number] as StateOf<"cooling_unit">;
+        if (s.running) {
+          sum += s.supplyC;
+          count++;
+        }
+      }
+    }
+    if (count === 0) return false;
+    this.supplyC = sum / count;
+    this.extraMix = assigned > 0 || last === first ? 0 : 0.25;
+    return true;
+  }
 }
 
-export function updateRack(world: World, rack: Entity, dt: number): void {
-  const room = world.index.enclosing(rack.id, "room");
-  if (!room) return;
-  const ambient = world.stateAs(room.id, "room").ambientC;
-  const devices = world.index.childrenOf(rack.id);
-  const powerW = deviceW(world, rack);
-  const contained = world.index.find(rack.parentId ?? "")?.kind === "containment";
-  const supply = supplyFor(world, rack, room.id);
-  const mix = (contained ? 0.12 : 0.3) + (supply?.extraMix ?? 0);
-  const target = supply
-    ? supply.supplyC + mix * (ambient - supply.supplyC) + 0.02 * (powerW / 1000)
+function updateRackAt(heat: Heat, rack: number, air: AirSupply, dt: number): void {
+  const room = heat.t.rackRoom[rack] as number;
+  if (room < 0) return;
+  const { world, states, t } = heat;
+  const ambient = (states[room] as StateOf<"room">).ambientC;
+  const state = states[rack] as StateOf<"rack">;
+  const powerW = deviceWAt(heat, rack);
+  const contained = t.contained[rack] === 1;
+  const cooled = air.of(heat, rack, room);
+  const mix = (contained ? 0.12 : 0.3) + (cooled ? air.extraMix : 0);
+  const target = cooled
+    ? air.supplyC + mix * (ambient - air.supplyC) + 0.02 * (powerW / 1000)
     : ambient;
-  const inletC = approach(world.stateAs(rack.id, "rack").inletC, target, dt, 60);
-  const liquid = updateRackLiquid(world, rack, powerW, ambient, dt);
+  const inletC = approach(state.inletC, target, dt, 60);
+  const entity = heat.plan.ents[rack] as Entity;
+  const liquid =
+    t.cooling[rack] === "air" ? AIR_ONLY : updateRackLiquid(world, entity, powerW, ambient, dt);
   const airW = Math.max(0, powerW - liquid.liquidW);
-  const outletC = inletC + (airW > 0 ? Math.min(8 + 0.4 * (airW / 1000), 25) : 0);
-  world.patch(rack.id, "rack", {
-    inletC,
-    outletC,
-    powerW,
-    liquidW: liquid.liquidW,
-    coolantC: liquid.coolantC,
-    bathC: liquid.bathC,
-  });
-  for (const device of devices) {
-    if (device.kind === "server") updateServerThermal(world, device, inletC, contained, liquid, dt);
-  }
+  state.inletC = inletC;
+  state.outletC = inletC + (airW > 0 ? Math.min(8 + 0.4 * (airW / 1000), 25) : 0);
+  state.powerW = powerW;
+  state.liquidW = liquid.liquidW;
+  state.coolantC = liquid.coolantC;
+  state.bathC = liquid.bathC;
+  const kids = t.servers;
+  for (let q = kids.start[rack] as number; q < (kids.start[rack + 1] as number); q++)
+    updateServerThermal(heat, kids.items[q] as number, { inletC, contained, liquid, dt });
 }
 
 /** Mean cold-side and hot-side air temperature inside each containment. */
-export function updateContainments(world: World): void {
-  for (const pod of world.index.ofKind("containment")) {
-    const racks = world.index.childrenOf(pod.id, "rack");
-    if (racks.length === 0) continue;
+function updateContainmentsAt(heat: Heat): void {
+  const { start, items } = heat.t.podRacks;
+  for (const pod of heat.t.containments) {
+    const first = start[pod] as number;
+    const last = start[pod + 1] as number;
+    if (last === first) continue;
     let cold = 0;
     let hot = 0;
-    for (const rack of racks) {
-      const s = world.stateAs(rack.id, "rack");
+    for (let q = first; q < last; q++) {
+      const s = heat.states[items[q] as number] as StateOf<"rack">;
       cold += s.inletC;
       hot += s.outletC;
     }
-    world.patch(pod.id, "containment", { coldC: cold / racks.length, hotC: hot / racks.length });
+    const state = heat.states[pod] as StateOf<"containment">;
+    state.coldC = cold / (last - first);
+    state.hotC = hot / (last - first);
   }
 }
 
-/** Indexes of the fans a fan_failure fault has stopped. */
-function failedFanSet(world: World, server: Entity): Set<number> {
-  return new Set(
-    world
-      .faultsOn(server.id)
-      .filter((f) => f.type === "fan_failure")
-      .map((f) => f.params.fanIndex ?? 0),
-  );
+/** The thermal passes of one step, in order: rooms, racks (with their servers), containments. */
+export function updateThermal(world: World, dt: number): void {
+  const heat = heatOf(world);
+  for (const room of heat.t.rooms) updateRoomAt(heat, room, dt);
+  const air = new AirSupply();
+  for (const rack of heat.t.racks) updateRackAt(heat, rack, air, dt);
+  updateContainmentsAt(heat);
+}
+
+interface RackAir {
+  readonly inletC: number;
+  readonly contained: boolean;
+  readonly liquid: RackLiquid;
+  readonly dt: number;
+}
+
+const NO_FANS: ReadonlySet<number> = new Set();
+
+/** The fans a fan_failure fault has stopped, by index. */
+function failedFans(faults: readonly Fault[]): ReadonlySet<number> {
+  if (!hasFault(faults, "fan_failure")) return NO_FANS;
+  return new Set(faults.filter((f) => f.type === "fan_failure").map((f) => f.params.fanIndex ?? 0));
 }
 
 /** Fan speeds, rpm: they follow the CPU temperature, faster when a fan is lost; a stopped fan reads 0. */
-function fanSpeeds(input: {
-  fans: number;
-  failed: ReadonlySet<number>;
-  running: boolean;
-  cpuC: number;
-}): number[] {
-  const { fans, failed, running, cpuC } = input;
-  const rpm = clamp(3000 + 120 * (cpuC - 40), 3000, 16000) * (failed.size > 0 ? 1.25 : 1);
-  return Array.from({ length: fans }, (_, i) =>
-    !running || failed.has(i) ? 0 : Math.round(Math.min(rpm, 18000)),
-  );
+function setFanSpeeds(
+  state: StateOf<"server">,
+  fans: number,
+  failed: ReadonlySet<number>,
+  running: boolean,
+): void {
+  const rpm = clamp(3000 + 120 * (state.cpuC - 40), 3000, 16000) * (failed.size > 0 ? 1.25 : 1);
+  const speed = Math.round(Math.min(rpm, 18000));
+  if (state.fanRpm.length !== fans) state.fanRpm = new Array<number>(fans);
+  for (let k = 0; k < fans; k++) state.fanRpm[k] = !running || failed.has(k) ? 0 : speed;
 }
 
-function updateServerThermal(
-  world: World,
-  server: Entity,
-  rackInletC: number,
-  contained: boolean,
-  liquid: RackLiquid,
-  dt: number,
-): void {
-  const model = world.catalog.getOf(server.modelId ?? "", "server");
-  const state = world.stateAs(server.id, "server");
-  const u = server.placement?.type === "unit" ? server.placement.u : 1;
-  const inletC = rackInletC + 0.03 * (u - 1) * (contained ? 0.3 : 1);
-  const failedFans = failedFanSet(world, server);
+function updateServerThermal(heat: Heat, i: number, air: RackAir): void {
+  const model = heat.plan.models[i] as ServerModel;
+  const state = heat.states[i] as StateOf<"server">;
+  const { contained, liquid, dt } = air;
+  const inletC = air.inletC + 0.03 * ((heat.t.unit[i] as number) - 1) * (contained ? 0.3 : 1);
+  const failed = failedFans(faultsAt(heat, i));
   const running = state.powered && state.adminOn;
   const util =
     model.maxPowerW > model.idlePowerW
       ? (state.powerW - model.idlePowerW) / (model.maxPowerW - model.idlePowerW)
       : 0;
-  const fanPenalty = model.fanCount > 0 ? 1 + 0.6 * (failedFans.size / model.fanCount) : 1;
-  const air = inletC + model.thermalRiseC * (0.35 + 0.65 * clamp(util, 0, 1)) * fanPenalty;
+  const fanPenalty = model.fanCount > 0 ? 1 + 0.6 * (failed.size / model.fanCount) : 1;
+  const airC = inletC + model.thermalRiseC * (0.35 + 0.65 * clamp(util, 0, 1)) * fanPenalty;
   const wet = liquidCpuTarget(liquid, model, util, inletC);
-  const target = running ? (wet ?? air) : liquid.cooling === "immersion" ? liquid.bathC : inletC;
+  const target = running ? (wet ?? airC) : liquid.cooling === "immersion" ? liquid.bathC : inletC;
   const cpuC = approach(state.cpuC, target, dt, 30);
-  const fanRpm = fanSpeeds({ fans: model.fanCount, failed: failedFans, running, cpuC });
-  const throttled =
+  state.inletC = inletC;
+  state.cpuC = cpuC;
+  setFanSpeeds(state, model.fanCount, failed, running);
+  state.throttled =
     running && (state.throttled ? cpuC > model.cpuThrottleC - 5 : cpuC > model.cpuThrottleC);
-  world.patch(server.id, "server", { inletC, cpuC, fanRpm, throttled });
 }

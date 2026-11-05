@@ -15,9 +15,9 @@ const NAME = /^[^\p{Cc}\s][^\p{Cc}]{0,39}$/u;
 /** Why a name cannot be used, or undefined when it can. */
 export function nameProblem(raw: string): string | undefined {
   const name = raw.trim();
-  if (name === "") return "이름을 적는다";
-  if (name.length > 40) return "40자 이하로 적는다";
-  if (!NAME.test(name)) return "줄바꿈이나 제어 문자는 쓸 수 없다";
+  if (name === "") return "이름을 적어 주세요";
+  if (name.length > 40) return "40자 이하로 적어 주세요";
+  if (!NAME.test(name)) return "줄바꿈이나 제어 문자는 쓸 수 없어요";
   return undefined;
 }
 

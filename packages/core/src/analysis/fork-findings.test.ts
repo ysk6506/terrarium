@@ -29,6 +29,6 @@ describe("a fork that does worse than its parent [REQ-040]", () => {
     const finding = a.findings.at(-1) as string;
     expect(finding).toMatch(/평균 -\d+(\.\d+)?점, 합격률 -100%p/);
     expect(finding).not.toContain("+");
-    expect(finding).toContain("분명한 차이다");
+    expect(finding).toContain("분명한 차이예요");
   });
 });

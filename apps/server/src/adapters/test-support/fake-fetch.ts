@@ -1,5 +1,5 @@
 /** A scripted stand-in for fetch: routes by method and path, records every request. */
-import type { FetchLike } from "../harness/openai";
+import type { FetchLike } from "../fetch";
 
 export interface Recorded {
   readonly method: string;
@@ -44,6 +44,17 @@ export class FakeFetch {
     if (init.signal?.aborted) throw new DOMException("aborted", "AbortError");
     const route = this.routes.find(([m, p]) => m === req.method && p.test(new URL(url).pathname));
     if (!route) return new Response("not found", { status: 404 });
-    return route[2](req);
+    const answer = Promise.resolve(route[2](req));
+    const { signal } = init;
+    if (!signal) return answer;
+    // A real fetch gives up when its signal aborts; so does this one.
+    return Promise.race([
+      answer,
+      new Promise<never>((_, reject) =>
+        signal.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError")), {
+          once: true,
+        }),
+      ),
+    ]);
   };
 }

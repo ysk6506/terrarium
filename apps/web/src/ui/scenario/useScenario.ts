@@ -10,10 +10,12 @@ import { BlueprintIndex } from "@terrarium/core/world";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { ApiError, builder } from "../../logic";
 import { messageOf, useApp } from "../context";
+import { useCalibration } from "./useCalibration";
 
 export const catalog = new Catalog();
 
-const CONFLICT = "그사이 다른 곳에서 이 시나리오가 바뀌었다. 새로고침하면 바뀐 내용을 볼 수 있다";
+const CONFLICT =
+  "그사이 다른 곳에서 이 시나리오가 바뀌었어요. 새로고침하면 바뀐 내용을 볼 수 있어요";
 
 function useDoc(initial: ScenarioDoc) {
   const { toast } = useApp();
@@ -72,7 +74,7 @@ function useSaving(initial: ScenarioRecord, current: () => ScenarioDoc) {
         });
         setRecord(result.scenario);
         setSaved(doc);
-        toast("저장했다");
+        toast("저장했어요");
         return result.scenario;
       }),
     [api, record, toast, attempt, current],
@@ -85,7 +87,7 @@ function useSaving(initial: ScenarioRecord, current: () => ScenarioDoc) {
           body: { worldId: record.worldId, doc, name: `${record.name} 사본`.slice(0, 80) },
         });
         setSaved(doc);
-        toast("내 사본으로 저장했다");
+        toast("내 사본으로 저장했어요");
         navigate({ name: "scenario", id: result.scenario.id }, { replace: true });
         return undefined;
       }),
@@ -100,7 +102,7 @@ function useSaving(initial: ScenarioRecord, current: () => ScenarioDoc) {
           body: { baseDigest: record.digest, name },
         });
         setRecord(result.scenario);
-        toast("이름을 바꿨다");
+        toast("이름을 바꿨어요");
       });
     },
     [api, record, toast, attempt],
@@ -120,11 +122,16 @@ export function useScenario(initial: ScenarioRecord, world: WorldRecord) {
   const mine = saving.record.owner === (me ?? "anonymous");
   const dirty = edits.doc !== saving.saved;
 
-  /** The dry run plays what is saved, so unsaved changes are saved first (by the owner). */
+  /** The dry run and the exam-paper check play what is saved, so unsaved changes are saved first (by the owner). */
+  const ensureSaved = useCallback(
+    async () => (dirty ? await saving.save() : saving.record),
+    [dirty, saving],
+  );
+  const calibration = useCalibration(ensureSaved);
   const runDry = useCallback(async () => {
     setRunning(true);
     try {
-      const saved = dirty ? await saving.save() : saving.record;
+      const saved = await ensureSaved();
       if (!saved) return;
       setDryRun(await api.call("dryRunScenario", { params: { id: saved.id }, body: { seed: 1 } }));
     } catch (err) {
@@ -132,7 +139,7 @@ export function useScenario(initial: ScenarioRecord, world: WorldRecord) {
     } finally {
       setRunning(false);
     }
-  }, [api, dirty, saving, toast]);
+  }, [api, ensureSaved, toast]);
 
   return {
     doc: edits.doc,
@@ -156,6 +163,7 @@ export function useScenario(initial: ScenarioRecord, world: WorldRecord) {
     dryRun,
     running,
     runDry,
+    calibration,
   };
 }
 

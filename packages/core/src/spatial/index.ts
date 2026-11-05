@@ -40,17 +40,26 @@ export {
   type RoomLayout,
 } from "./layout";
 export {
+  CLEARED_PLOT_KINDS,
   encodeOutline,
+  encodeReserved,
   normalizeOutline,
   type Outline,
   type OutlinePacking,
   outlineArea,
   outlineBounds,
   outlineFromLonLat,
+  PLOT_KINDS,
+  type PlotKind,
   packInOutline,
+  packSpread,
   parseOutline,
+  parseReserved,
   pointInOutline,
+  type ReservedPlot,
   rectInOutline,
+  type SpreadItem,
+  type SpreadOptions,
 } from "./outline";
 export { type PackedItem, packShelves, type SizedItem } from "./packing";
 export { assignSlots, type Slot } from "./slots";

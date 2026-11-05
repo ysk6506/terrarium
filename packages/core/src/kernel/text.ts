@@ -17,6 +17,7 @@ const PAIRS: Readonly<Record<string, Pair>> = {
   으로: ["으로", "로"],
   로: ["으로", "로"],
   이다: ["이다", "다"],
+  이에요: ["이에요", "예요"],
 };
 
 export type Particle = keyof typeof PAIRS;

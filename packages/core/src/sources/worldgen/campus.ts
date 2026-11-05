@@ -1,17 +1,25 @@
 /**
- * generateCampus (REQ-043..047): a deterministic multi-building data-centre campus on a site's real
- * shape. Each building has a ground floor with the electrical rooms, battery rooms, network room and
- * (in the first) the control room, and floors of data halls that differ in size, cooling, containment
- * and makers. Same spec and seed, same world.
+ * generateCampus (REQ-043..047): a deterministic multi-building campus on a site's real shape. Each
+ * building has a ground floor with the electrical rooms, battery rooms, network room and (in the
+ * first) the control room, and floors of data halls that differ in size, cooling, containment and
+ * makers. Data-centre buildings hold halls only; a fab holds a few small server rooms among cleanroom
+ * bays as big as the building. Same spec and seed, same world.
  */
 import { Catalog } from "@terrarium/core/catalog";
 import { InvalidValueError, SeededRng } from "@terrarium/core/kernel";
 import { type AssemblyResult, BlueprintAssembler } from "@terrarium/core/sources";
-import type { EntityKind } from "@terrarium/core/world";
+import type { ReservedPlot } from "@terrarium/core/spatial";
+import { type EntityKind, landMarket } from "@terrarium/core/world";
 import { emitMechanical, emitPlants } from "./campus-cooling";
 import { type CrahPlan, draftHall, emitHall, planCrah } from "./campus-hall";
 import type { HallContainment } from "./campus-plan";
-import { type BuildingPlan, type CampusPlan, type HallMode, planCampus } from "./campus-plan";
+import {
+  type BuildingPlan,
+  type CampusPlan,
+  type HallMode,
+  labLetter,
+  planCampus,
+} from "./campus-plan";
 import { emitPower } from "./campus-power";
 import {
   type CampusSpec,
@@ -21,6 +29,7 @@ import {
 } from "./campus-spec";
 import { emitNetworkRoom, emitRoom, roomCooling } from "./campus-support";
 import type { CampusCtx, HallDraft } from "./campus-types";
+import type { SiteSlot } from "./sites";
 import { type SitePreset, sitePreset } from "./spec";
 
 export interface HallSummary {
@@ -40,13 +49,44 @@ export interface CampusResult extends AssemblyResult {
   readonly halls: readonly HallSummary[];
 }
 
-const levelOf = (floorId: string) => Number(floorId.split("-f").at(-1));
+/**
+ * The building itself: a data centre, a fab or a DSR tower. A building on a map's place carries the name
+ * the map gives it ("17라인", "V1", "HPC센터"); the others are named after their number.
+ */
+function addBuilding(ctx: CampusCtx, building: BuildingPlan): void {
+  const named = {
+    fab: [`FAB${building.index}동`, "fab"],
+    lab: [`DSR동 ${labLetter(building.index)}타워`, "research"],
+    dc: [`DC${building.index}동`, "data_center"],
+  } as const;
+  const [name, purpose] = named[building.kind];
+  ctx.asm.building(
+    building.id,
+    ctx.siteId,
+    building.slot?.name ?? name,
+    { purpose },
+    building.slot,
+  );
+}
 
-/** Floors of a building: the ground floor, and one per level that has data halls. */
+/** Floors of a building: the ground floor, and one per level above it. */
 function addFloors(ctx: CampusCtx, building: BuildingPlan): void {
   ctx.asm.floor(`${building.id}-f1`, building.id, "1F", 1);
-  const floors = [...new Set(building.halls.map((h) => h.floorId))];
-  for (const id of floors) ctx.asm.floor(id, building.id, `${levelOf(id)}F`, levelOf(id));
+  for (const level of building.levels)
+    ctx.asm.floor(`${building.id}-f${level}`, building.id, `${level}F`, level);
+}
+
+/** The cleanroom bay of every fab floor above the ground: a huge room with the line's tools, none of which the world models. */
+function emitBays(ctx: CampusCtx, building: BuildingPlan): void {
+  if (!building.bay) return;
+  const top = building.levels.at(-1);
+  for (const level of building.levels)
+    emitRoom(ctx, `${building.id}-f${level}`, {
+      id: `${building.id}-f${level}-bay`,
+      name: `${level}F 클린룸`,
+      purpose: "cleanroom",
+      size: level === top && building.topBay ? building.topBay : building.bay,
+    });
 }
 
 /** Control room of the first building: cooled and powered like any other room. */
@@ -68,7 +108,7 @@ function buildBuilding(
   backbone: string[],
 ): HallDraft[] {
   const { asm, catalog } = ctx;
-  asm.building(building.id, ctx.siteId, `DC${building.index}동`, { purpose: "data_center" });
+  addBuilding(ctx, building);
   addFloors(ctx, building);
   const drafts = building.halls.map((h) => draftHall(ctx, h, rng.fork(`draft-${h.id}`)));
   const crah = new Map(drafts.map((d) => [d.plan.id, planCrah(catalog, d)]));
@@ -106,6 +146,7 @@ function buildBuilding(
       crah: crah.get(hall.plan.id) as CrahPlan,
       cdus: cdus.get(hall.plan.floorId) ?? [],
     });
+  emitBays(ctx, building);
   return drafts;
 }
 
@@ -122,20 +163,42 @@ function summarize(plan: CampusPlan, drafts: readonly HallDraft[]): HallSummary[
   }));
 }
 
+/**
+ * Where the map shows a building this campus does not build (it asked for fewer fabs than the map has
+ * blue roofs, say), and the other buildings the map shows (offices, plant, substations), which no spec
+ * builds. The ground stays clear: nothing is built or laid out over it. The campus draws the other
+ * buildings where they stand.
+ */
+export function unbuiltPlots(preset: SitePreset, spec: CampusSpec): ReservedPlot[] {
+  const plot = (kind: ReservedPlot["kind"], s: SiteSlot): ReservedPlot => ({
+    kind,
+    x: Math.round(s.x - s.w / 2),
+    y: Math.round(s.y - s.d / 2),
+    w: s.w,
+    d: s.d,
+  });
+  return [
+    ...preset.dcs.slice(spec.buildings).map((s) => plot("dc", s)),
+    ...preset.fabs.slice(spec.fabs).map((s) => plot("fab", s)),
+    ...preset.labs.slice(spec.labs).map((s) => plot("lab", s)),
+    ...preset.places.map((s) => plot(s.kind, s)),
+  ];
+}
+
 export function generateCampus(spec: CampusSpec, catalog: Catalog = new Catalog()): CampusResult {
   const problems = campusProblems(spec);
   if (problems.length > 0)
-    throw new InvalidValueError(`세계를 만들 수 없다: ${problems.join("; ")}`);
+    throw new InvalidValueError(`세계를 만들 수 없어요: ${problems.join("; ")}`);
   const preset = sitePreset(spec.site) as SitePreset;
   const rng = new SeededRng(spec.seed);
-  const plan = planCampus(spec, preset.code, rng.fork("plan"));
+  const plan = planCampus(spec, preset.code, rng.fork("plan"), preset);
   if (plan.racks > MAX_CAMPUS_RACKS)
     throw new InvalidValueError(
-      `세계를 만들 수 없다: 랙이 ${plan.racks}개다. 한 캠퍼스는 ${MAX_CAMPUS_RACKS}개까지 만들 수 있다`,
+      `세계를 만들 수 없어요: 랙이 ${plan.racks}개예요. 한 캠퍼스는 ${MAX_CAMPUS_RACKS}개까지 만들 수 있어요`,
     );
   if (plan.detailedRacks > MAX_DETAILED_RACKS)
     throw new InvalidValueError(
-      `세계를 만들 수 없다: 서버까지 만드는 랙이 ${plan.detailedRacks}개다. ${MAX_DETAILED_RACKS}개까지 만들 수 있으니 상세 모델링 비율을 낮춘다`,
+      `세계를 만들 수 없어요: 서버까지 만드는 랙이 ${plan.detailedRacks}개예요. ${MAX_DETAILED_RACKS}개까지 만들 수 있으니 상세 모델링 비율을 낮춰요`,
     );
   const asm = new BlueprintAssembler(
     `${preset.code}-c${spec.seed}`,
@@ -153,10 +216,17 @@ export function generateCampus(spec: CampusSpec, catalog: Catalog = new Catalog(
     preset.code,
     preset.name,
     preset.land,
-    { preset: preset.id, mapX: preset.map.x, mapY: preset.map.y },
+    {
+      preset: preset.id,
+      mapX: preset.map.x,
+      mapY: preset.map.y,
+      landMarket: preset.id,
+      landPriceM: landMarket(preset.id).perM2M,
+    },
     true,
     preset.outline,
   );
+  asm.reserve(preset.code, unbuiltPlots(preset, spec));
   const ctx: CampusCtx = { asm, catalog, spec, siteId: preset.code, code: preset.code };
   const backbone: string[] = [];
   const drafts = plan.buildings.flatMap((b) => buildBuilding(ctx, rng.fork(b.id), b, backbone));

@@ -12,7 +12,7 @@
  *   - the agent takes longer than the wall-clock limit → scored as out of time.
  */
 
-import type { ExperimentEvent } from "@terrarium/core/contract";
+import type { ActivityEvent, ActivityWho, ExperimentEvent } from "@terrarium/core/contract";
 import {
   type AgentRunOutcome,
   applyRunEvent,
@@ -26,6 +26,9 @@ import {
 } from "@terrarium/core/experiments";
 import { randomToken } from "@terrarium/core/kernel";
 import type { EndReason } from "@terrarium/core/oracle";
+import { callEffect, callTargets } from "@terrarium/core/tools";
+import type { BlueprintCache } from "./blueprint-cache";
+import type { HarnessDirectory } from "./context";
 import type { HostedSession, SessionHost } from "./hosts";
 import type { Stamps } from "./ids";
 
@@ -34,16 +37,24 @@ export interface ToolGateway {
   open(
     runId: string,
     endpoint: Pick<ToolEndpoint, "specs" | "call">,
+    /** The harness's fixed tool address, when it has one: it serves this run's tools meanwhile. */
+    slot?: string,
   ): { readonly url: string; close(): void };
+  /** The fixed address of a slot, for the screen to show. */
+  slotUrl?(slot: string): string;
 }
 
 export interface ExecutorDeps {
   readonly store: ExperimentStore;
-  readonly harnesses: ReadonlyMap<string, HarnessPort>;
+  readonly harnesses: HarnessDirectory;
   readonly host: SessionHost;
   readonly stamps: Stamps;
   readonly gateway?: ToolGateway;
+  /** World versions read lately; without it every run reads its own. */
+  readonly blueprints?: BlueprintCache;
   readonly emit: (experimentId: string, event: ExperimentEvent) => void;
+  /** Who works where, for the live view of a world (REQ-050). */
+  readonly activity?: (worldId: string, event: ActivityEvent) => void;
   /** Wall-clock limit for one agent (default 30 minutes). */
   readonly wallLimitMs?: number;
   /** How long a harness may keep going after the session has ended (default 15 s). */
@@ -82,11 +93,15 @@ async function save(deps: ExecutorDeps, run: RunRecord): Promise<RunRecord> {
 export const newTraceparent = () => `00-${randomToken(16)}-${randomToken(8)}-01`;
 
 async function versions(deps: ExecutorDeps, e: Experiment) {
-  const blueprint = await deps.store.worldVersion(e.recipe.worldId, e.snapshot.worldDigest);
+  const { worldId } = e.recipe;
+  const digest = e.snapshot.worldDigest;
+  const read = () => deps.store.worldVersion(worldId, digest);
+  const key = `${worldId}@${digest}`;
+  const blueprint = await (deps.blueprints ? deps.blueprints.get(key, read) : read());
   const scenario = await deps.store.scenarioVersion(e.recipe.scenarioId, e.snapshot.scenarioDigest);
-  if (!blueprint) throw new Error("실험이 가리키는 세계 버전을 찾을 수 없다");
-  if (!scenario) throw new Error("실험이 가리키는 시나리오 버전을 찾을 수 없다");
-  return { blueprint, scenario };
+  if (!blueprint) throw new Error("실험이 가리키는 세계 버전을 찾을 수 없어요");
+  if (!scenario) throw new Error("실험이 가리키는 시나리오 버전을 찾을 수 없어요");
+  return { blueprint, scenario, world: { key, digest } };
 }
 
 interface Watch {
@@ -149,9 +164,10 @@ async function openSession(
   experiment: Experiment,
 ): Promise<HostedSession | string> {
   try {
-    const { blueprint, scenario } = await versions(deps, experiment);
+    const { blueprint, scenario, world } = await versions(deps, experiment);
     return await deps.host.open({
       blueprint,
+      world,
       scenario,
       tools: experiment.recipe.tools,
       seed: run.seed,
@@ -159,18 +175,46 @@ async function openSession(
       profiles: experiment.recipe.profiles,
     });
   } catch (err) {
-    return `세션을 열 수 없다: ${(err as Error).message}`;
+    return `세션을 열 수 없어요: ${(err as Error).message}`;
   }
 }
 
+/** How long to wait for a harness to name its agent before the run shows under the agent's id. */
+const WHO_WAIT_MS = 1000;
+
+/** Experiment, harness, agent and model of a run, as the live view of a world names them. */
+async function whoIs(experiment: Experiment, harness: HarnessPort): Promise<ActivityWho> {
+  const { agentId } = experiment.recipe;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const wait = new Promise<readonly []>((resolve) => {
+    timer = setTimeout(() => resolve([]), WHO_WAIT_MS);
+  });
+  const listed = Promise.resolve()
+    .then(() => harness.agents())
+    .catch(() => []);
+  const agents = await Promise.race([listed, wait]);
+  clearTimeout(timer);
+  const agent = agents.find((a) => a.id === agentId);
+  return {
+    experimentId: experiment.id,
+    experiment: experiment.name,
+    owner: experiment.owner,
+    harness: harness.info.name,
+    agent: agent?.name ?? agentId,
+    ...(agent?.model ? { model: agent.model } : {}),
+  };
+}
+
 /** The run's tools as the harness reaches them; every call is also announced live. */
-function endpointFor(deps: ExecutorDeps, run: RunRecord, session: HostedSession) {
+function endpointFor(deps: ExecutorDeps, run: RunRecord, session: HostedSession, worldId: string) {
   const counter = { calls: 0 };
   const endpoint = {
     specs: session.specs,
     call: async (name: string, args: Record<string, unknown>): Promise<ToolCallOutcome> => {
       const r = await session.call(name, args);
       counter.calls++;
+      const effect = callEffect(name, args);
+      const targets = callTargets(name, args);
       deps.emit(run.experimentId, {
         type: "call",
         runId: run.id,
@@ -178,6 +222,17 @@ function endpointFor(deps: ExecutorDeps, run: RunRecord, session: HostedSession)
         tool: name,
         ok: r.ok,
         ...(r.error ? { error: r.error } : {}),
+        effect,
+        targets,
+      });
+      deps.activity?.(worldId, {
+        type: "call",
+        runId: run.id,
+        t: r.t,
+        tool: name,
+        ok: r.ok,
+        effect,
+        targets,
       });
       return r;
     },
@@ -206,9 +261,9 @@ async function conclude(deps: ExecutorDeps, e: Ending): Promise<RunRecord> {
     e.session.dispose();
     return save(deps, applyRunEvent(e.run, { type: "fail", at, error, harness: e.info }));
   };
-  if (e.stopped === "shutdown") return failWith("서버가 멈춰 실행이 중단됐다");
+  if (e.stopped === "shutdown") return failWith("서버가 멈춰 실행이 중단됐어요");
   if (e.outcome.status === "error" && e.calls === 0 && !e.session.endedBy)
-    return failWith(`에이전트가 시작하지 못했다: ${e.outcome.message ?? "원인 미상"}`);
+    return failWith(`에이전트가 시작하지 못했어요: ${e.outcome.message ?? "원인 미상"}`);
   const result = await e.session.finish(endReasonOf(e.session, e.outcome, e.timedOut));
   e.session.dispose();
   return save(deps, applyRunEvent(e.run, { type: "complete", at, result, harness: e.info }));
@@ -225,12 +280,17 @@ export async function executeRun(
   const fail = (error: string) =>
     save(deps, applyRunEvent(run, { type: "fail", at: deps.stamps.now(), error }));
   const harness = deps.harnesses.get(experiment.recipe.harnessId);
-  if (!harness) return fail(`하네스 '${experiment.recipe.harnessId}'가 지금 설정에 없다`);
+  if (!harness) return fail(`하네스 '${experiment.recipe.harnessId}'가 지금 설정에 없어요`);
+  const who = whoIs(experiment, harness);
   const session = await openSession(deps, run, experiment);
   if (typeof session === "string") return fail(session);
-  const { endpoint, counter } = endpointFor(deps, run, session);
+  const worldId = experiment.recipe.worldId;
+  deps.activity?.(worldId, { type: "start", runId: run.id, who: await who });
+  const { endpoint, counter } = endpointFor(deps, run, session, worldId);
   const exposed =
-    harness.info.toolTransport === "mcp" ? deps.gateway?.open(run.id, endpoint) : undefined;
+    harness.info.toolTransport === "mcp"
+      ? deps.gateway?.open(run.id, endpoint, harness.info.mcpSlot)
+      : undefined;
   const traceparent = newTraceparent();
   const w = watch(deps, session, outside);
   try {
@@ -266,5 +326,6 @@ export async function executeRun(
   } finally {
     w.stop();
     exposed?.close();
+    deps.activity?.(worldId, { type: "end", runId: run.id });
   }
 }

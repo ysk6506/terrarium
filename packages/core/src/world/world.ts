@@ -5,18 +5,23 @@
  * function of (blueprint, seed, events, time steps), so runs replay and snapshots restore exactly.
  */
 import type { Catalog } from "@terrarium/core/catalog";
-import {
-  ConflictError,
-  InvalidValueError,
-  NotFoundError,
-  ReadOnlyViolationError,
-} from "@terrarium/core/kernel";
+import { InvalidValueError, NotFoundError, ReadOnlyViolationError } from "@terrarium/core/kernel";
 import type { Blueprint, EntityKind } from "./blueprint";
-import { isBulkRack } from "./bulk";
+import { cloneState } from "./clone";
+import { validateCommand } from "./command-check";
 import { type Fault, faultSpec } from "./faults";
-import { BlueprintIndex } from "./graph";
-import { type Alarm, type EntityState, initialState, type StateOf, type WorldState } from "./state";
-import { hasErrors, validateBlueprint } from "./validate";
+import type { BlueprintIndex } from "./graph";
+import { type NetChange, type NetPatch, patchWith } from "./net-config";
+import { setLinkAdmin, setOutlet } from "./operator";
+import { type PreparedWorld, prepareWorld } from "./prepared";
+import {
+  type Alarm,
+  DEFAULT_OUTDOOR_C,
+  type EntityState,
+  initialState,
+  type StateOf,
+  type WorldState,
+} from "./state";
 
 export type WorldCommand =
   | { readonly type: "power.set"; readonly target: string; readonly on: boolean }
@@ -25,6 +30,25 @@ export type WorldCommand =
   | { readonly type: "load.set"; readonly target: string; readonly value: number }
   | { readonly type: "setpoint.set"; readonly target: string; readonly celsius: number }
   | { readonly type: "breaker.reset"; readonly target: string }
+  /** An operator shuts a switch port (`shutdown`) or brings it back (`no shutdown`); `target` is the network link. */
+  | {
+      readonly type: "link.admin";
+      readonly target: string;
+      /** Which end of the link the operator shut: the `from` device or the `to` device. */
+      readonly end: "from" | "to";
+      readonly down: boolean;
+    }
+  /** An operator switches one outlet of a PDU off or on; `outlet` counts from 1 in the order of its cables. */
+  | {
+      readonly type: "outlet.set";
+      readonly target: string;
+      readonly outlet: number;
+      readonly on: boolean;
+    }
+  /** An operator changes the layer-2/3 configuration of a switch (VLAN, port mode, SVI, route); `target` is the switch. */
+  | { readonly type: "net.set"; readonly target: string; readonly change: NetChange }
+  /** Outdoor air changes (a heat wave, a cold snap); the plants' capacity follows it. Scenarios do this, operators cannot. */
+  | { readonly type: "outdoor.set"; readonly celsius: number }
   | { readonly type: "thermal.shutdown"; readonly target: string }
   | { readonly type: "alarm.raise"; readonly alarm: Alarm }
   | { readonly type: "alarm.clear"; readonly alarmId: string }
@@ -55,11 +79,22 @@ export interface WorldReader {
   readonly index: BlueprintIndex;
   readonly catalog: Catalog;
   time(): number;
+  /** Outdoor air, °C: 25 until a scenario changes it. */
+  outdoorC(): number;
   stateOf(id: string): EntityState;
   stateAs<K extends EntityKind>(id: string, kind: K): StateOf<K>;
   linkUp(linkId: string): boolean;
+  /** Whether an operator shut this link (a port `shutdown`), as opposed to a fault cutting it. */
+  linkAdminDown(linkId: string, end?: "from" | "to"): boolean;
+  /** What operators changed on a switch's layer-2/3 configuration, or undefined while it is as designed. */
+  netconf(switchId: string): NetPatch | undefined;
+  /** Whether any switch has been reconfigured since the world began (until then the network is as designed). */
+  hasNetconf(): boolean;
+  /** Counts changes that can alter who reaches whom: configuration commands and links going up or down. */
+  netEpoch(): number;
   faults(): Fault[];
-  faultsOn(target: string): Fault[];
+  /** The faults on one thing; shared with the world, so callers read it and do not change it. */
+  faultsOn(target: string): readonly Fault[];
   alarms(): Alarm[];
   events(sinceSeq?: number): WorldEvent[];
   /** Sequence number of the latest event (0 before any), cheap to read before and after a call. */
@@ -71,13 +106,7 @@ export interface WorldPort extends WorldReader {
   apply(command: WorldCommand, cause: string): WorldEvent;
 }
 
-const POWERABLE: ReadonlySet<EntityKind> = new Set([
-  "server",
-  "switch",
-  "storage",
-  "cooling_unit",
-  "vm",
-]);
+const NO_FAULTS: readonly Fault[] = Object.freeze([]);
 
 export class World implements WorldPort {
   readonly index: BlueprintIndex;
@@ -85,31 +114,38 @@ export class World implements WorldPort {
   private sortedAlarms: Alarm[] | undefined;
   /** Faults grouped by target, kept until a fault starts or ends: physics asks for them per device per step. */
   private faultsByTarget: Map<string, Fault[]> | undefined;
+  /** The same, as arrays in the order of `index.all()`; see `stateList` and `faultList`. */
+  private stateArray: readonly EntityState[] | undefined;
+  private faultArray: ReadonlyArray<readonly Fault[]> | undefined;
+  private anyDown: boolean | undefined;
   private log: WorldEvent[] = [];
   private seq = 0;
+  private netChanges = 0;
 
   private constructor(
-    blueprint: Blueprint,
+    index: BlueprintIndex,
     readonly catalog: Catalog,
   ) {
-    this.index = new BlueprintIndex(blueprint);
+    this.index = index;
     this.state = initialState(this.index, catalog);
   }
 
   /** Build a world; a blueprint with validation errors is refused with every error listed. */
   static fromBlueprint(blueprint: Blueprint, catalog: Catalog): World {
-    const issues = validateBlueprint(blueprint, catalog);
-    if (hasErrors(issues)) {
-      const errors = issues
-        .filter((i) => i.severity === "error")
-        .map((i) => `${i.code} ${i.message}`);
-      throw new InvalidValueError(`blueprint ${blueprint.id} is invalid: ${errors.join("; ")}`);
-    }
-    return new World(blueprint, catalog);
+    return World.fromPrepared(prepareWorld(blueprint, catalog), catalog);
+  }
+
+  /** Build a world on a blueprint that was checked and indexed already (shared with other worlds). */
+  static fromPrepared(prepared: PreparedWorld, catalog: Catalog): World {
+    return new World(prepared.index, catalog);
   }
 
   time(): number {
     return this.state.t;
+  }
+
+  outdoorC(): number {
+    return this.state.outdoorC ?? DEFAULT_OUTDOOR_C;
   }
 
   /** Move simulated time forward (physics calls this once per step). */
@@ -119,6 +155,13 @@ export class World implements WorldPort {
   }
 
   stateOf(id: string): EntityState {
+    const state = this.state.entities[id];
+    if (!state) throw new NotFoundError(`no entity '${id}' in this world`);
+    // The outdoor air is one value for the whole world; a site reports it without it being stored in every snapshot.
+    return state.kind === "site" ? { ...state, outdoorC: this.outdoorC() } : state;
+  }
+
+  private rawState(id: string): EntityState {
     const state = this.state.entities[id];
     if (!state) throw new NotFoundError(`no entity '${id}' in this world`);
     return state;
@@ -136,19 +179,51 @@ export class World implements WorldPort {
     Object.assign(this.stateAs(id, kind), values);
   }
 
+  /** Whether the link carries traffic: not cut by a fault and not shut by an operator. */
   linkUp(linkId: string): boolean {
-    return this.state.links[linkId]?.up ?? true;
+    const link = this.state.links[linkId];
+    return link ? link.up && !link.adminDown : true;
+  }
+
+  /** Whether an operator shut this end of the link (`shutdown` on the switch port); without an end: either end. */
+  linkAdminDown(linkId: string, end?: "from" | "to"): boolean {
+    const shut = this.state.links[linkId]?.adminDown;
+    if (!shut) return false;
+    return end ? shut[end] === true : true;
   }
 
   setLinkUp(linkId: string, up: boolean): void {
-    if (this.state.links[linkId]) this.state.links[linkId] = { up };
+    const link = this.state.links[linkId];
+    if (link) link.up = up;
+    this.anyDown = undefined;
+    this.netChanges++;
+  }
+
+  netconf(switchId: string): NetPatch | undefined {
+    return this.state.netconf?.[switchId];
+  }
+
+  hasNetconf(): boolean {
+    return this.state.netconf !== undefined && Object.keys(this.state.netconf).length > 0;
+  }
+
+  netEpoch(): number {
+    return this.netChanges;
+  }
+
+  /** Whether any network link is down (kept until a link changes), so monitoring can skip a scan of every link. */
+  anyLinkDown(): boolean {
+    this.anyDown ??= Object.values(this.state.links).some(
+      (l) => !l.up || l.adminDown !== undefined,
+    );
+    return this.anyDown;
   }
 
   faults(): Fault[] {
     return Object.values(this.state.faults).sort((a, b) => a.id.localeCompare(b.id));
   }
 
-  faultsOn(target: string): Fault[] {
+  faultsOn(target: string): readonly Fault[] {
     if (!this.faultsByTarget) {
       this.faultsByTarget = new Map();
       for (const fault of this.faults()) {
@@ -157,8 +232,31 @@ export class World implements WorldPort {
         else this.faultsByTarget.set(fault.target, [fault]);
       }
     }
-    const list = this.faultsByTarget.get(target);
-    return list ? [...list] : [];
+    return this.faultsByTarget.get(target) ?? NO_FAULTS;
+  }
+
+  /**
+   * Every entity's state, in the order of `index.all()`. These are the live objects (patching one changes the
+   * world); the list is kept until the whole state is replaced (adopt, restore). Physics walks thousands of
+   * entities every step and does it by position, not by id.
+   */
+  stateList(): readonly EntityState[] {
+    this.stateArray ??= this.index.all().map((e) => this.rawState(e.id));
+    return this.stateArray;
+  }
+
+  /** The faults on each entity, in the order of `index.all()` (an empty list where there are none). */
+  faultList(): ReadonlyArray<readonly Fault[]> {
+    if (!this.faultArray) {
+      const out: Array<readonly Fault[]> = new Array(this.index.all().length).fill(NO_FAULTS);
+      for (const fault of this.faults()) {
+        const at = this.index.positionOf(fault.target);
+        if (at === undefined) continue; // a fault on a cable
+        out[at] = [...(out[at] as readonly Fault[]), fault];
+      }
+      this.faultArray = out;
+    }
+    return this.faultArray;
   }
 
   alarms(): Alarm[] {
@@ -184,7 +282,7 @@ export class World implements WorldPort {
   }
 
   snapshot(): WorldSnapshot {
-    return { seq: this.seq, state: structuredClone(this.state) };
+    return { seq: this.seq, state: cloneState(this.state) };
   }
 
   /** Everything needed to continue from here in another world built from the same blueprint. */
@@ -194,92 +292,41 @@ export class World implements WorldPort {
 
   /** Continue from a checkpoint taken on a world of the same blueprint and catalog. */
   adopt(checkpoint: WorldCheckpoint): void {
-    this.state = structuredClone(checkpoint.state);
+    this.state = cloneState(checkpoint.state);
+    this.stateArray = undefined;
+    this.anyDown = undefined;
     this.sortedAlarms = undefined;
-    this.faultsByTarget = undefined;
+    this.faultsChanged();
+    this.netChanges++;
     this.seq = checkpoint.seq;
     this.log = [...checkpoint.log];
   }
 
   restore(snapshot: WorldSnapshot): void {
-    this.state = structuredClone(snapshot.state);
+    this.state = cloneState(snapshot.state);
+    this.stateArray = undefined;
+    this.anyDown = undefined;
     this.sortedAlarms = undefined;
-    this.faultsByTarget = undefined;
+    this.faultsChanged();
+    this.netChanges++;
     this.seq = snapshot.seq;
     this.log = this.log.filter((e) => e.seq <= snapshot.seq);
   }
 
   private validate(command: WorldCommand): void {
-    switch (command.type) {
-      case "power.set":
-        if (!POWERABLE.has(this.stateOf(command.target).kind))
-          throw new InvalidValueError(`'${command.target}' cannot be powered on or off`);
-        return;
-      case "fault.add":
-        this.validateFault(command.fault);
-        return;
-      case "fault.remove":
-        if (!this.state.faults[command.faultId])
-          throw new NotFoundError(`no active fault '${command.faultId}'`);
-        return;
-      case "load.set":
-        this.validateLoad(command.target, command.value);
-        return;
-      case "setpoint.set":
-        this.validateSetpoint(command.target, command.celsius);
-        return;
-      case "breaker.reset": {
-        const kind = this.stateOf(command.target).kind;
-        if (kind !== "pdu" && kind !== "power_panel")
-          throw new InvalidValueError(`'${command.target}' has no breaker`);
-        return;
-      }
-      case "thermal.shutdown":
-        this.stateAs(command.target, "server");
-        return;
-      default:
-        return;
-    }
-  }
-
-  private validateFault(fault: Omit<Fault, "since">): void {
-    if (this.state.faults[fault.id])
-      throw new ConflictError(`fault '${fault.id}' is already active`);
-    const spec = faultSpec(fault.type);
-    if (!spec) throw new InvalidValueError(`unknown fault type '${fault.type}'`);
-    const isLink = this.state.links[fault.target] !== undefined;
-    const kind = isLink ? "link" : this.stateOf(fault.target).kind;
-    if (!spec.targets.includes(kind))
-      throw new InvalidValueError(`fault '${fault.type}' cannot target a ${kind}`);
-    for (const param of spec.params) {
-      const value = fault.params[param.name];
-      if (value !== undefined && (value < param.min || value > param.max)) {
-        throw new InvalidValueError(`${param.name} must be between ${param.min} and ${param.max}`);
-      }
-    }
-  }
-
-  private validateLoad(target: string, value: number): void {
-    const kind = this.stateOf(target).kind;
-    const light = kind === "rack" && isBulkRack(this.index.entity(target));
-    if (kind !== "server" && kind !== "vm" && !light)
-      throw new InvalidValueError(`load can only be set on servers, VMs and light racks`);
-    if (!(value >= 0 && value <= 1)) throw new InvalidValueError("load must be between 0 and 1");
-  }
-
-  private validateSetpoint(target: string, celsius: number): void {
-    const entity = this.index.entity(target);
-    const model = this.catalog.getOf(entity.modelId ?? "", "cooling_unit");
-    if (!(celsius >= model.minSetpointC && celsius <= model.maxSetpointC)) {
-      throw new InvalidValueError(
-        `setpoint must be between ${model.minSetpointC} and ${model.maxSetpointC} °C`,
-      );
-    }
+    validateCommand(
+      this,
+      {
+        hasFault: (id) => this.state.faults[id] !== undefined,
+        hasLink: (id) => this.state.links[id] !== undefined,
+      },
+      command,
+    );
   }
 
   private reduce(command: WorldCommand): void {
     const s = this.state;
-    if (changesFaults(command)) this.faultsByTarget = undefined;
+    if (changesFaults(command)) this.faultsChanged();
     switch (command.type) {
       case "power.set":
         Object.assign(s.entities[command.target] as object, { adminOn: command.on });
@@ -307,6 +354,33 @@ export class World implements WorldPort {
       case "breaker.reset":
         this.resetBreaker(command.target);
         return;
+      default:
+        this.reduceOther(command);
+    }
+  }
+
+  /** The commands that change one device's setting or the alarm list (and `note`, which only goes into the log). */
+  private reduceOther(command: WorldCommand): void {
+    const s = this.state;
+    switch (command.type) {
+      case "link.admin":
+        setLinkAdmin(s, command.target, command.end, command.down);
+        this.anyDown = undefined;
+        this.netChanges++;
+        return;
+      case "net.set": {
+        const patches = s.netconf ?? {};
+        s.netconf = patches;
+        patches[command.target] = patchWith(patches[command.target], command.change);
+        this.netChanges++;
+        return;
+      }
+      case "outlet.set":
+        setOutlet(this.stateAs(command.target, "pdu"), command.outlet, command.on);
+        return;
+      case "outdoor.set":
+        s.outdoorC = command.celsius;
+        return;
       case "thermal.shutdown":
         this.patch(command.target, "server", { adminOn: false, health: "critical" });
         return;
@@ -318,15 +392,20 @@ export class World implements WorldPort {
         delete s.alarms[command.alarmId];
         this.sortedAlarms = undefined;
         return;
-      case "note":
+      default:
         return;
     }
+  }
+
+  private faultsChanged(): void {
+    this.faultsByTarget = undefined;
+    this.faultArray = undefined;
   }
 
   private resetBreaker(target: string): void {
     for (const fault of this.faultsOn(target).filter((f) => f.type === "breaker_trip"))
       delete this.state.faults[fault.id];
-    this.faultsByTarget = undefined;
+    this.faultsChanged();
     Object.assign(this.state.entities[target] as object, { tripped: false });
   }
 
@@ -373,12 +452,18 @@ export class ReadOnlyWorldPort implements WorldPort {
   }
 
   time = (): number => this.reader.time();
+  outdoorC = (): number => this.reader.outdoorC();
   stateOf = (id: string): EntityState => this.reader.stateOf(id);
   stateAs = <K extends EntityKind>(id: string, kind: K): StateOf<K> =>
     this.reader.stateAs(id, kind);
   linkUp = (linkId: string): boolean => this.reader.linkUp(linkId);
+  linkAdminDown = (linkId: string, end?: "from" | "to"): boolean =>
+    this.reader.linkAdminDown(linkId, end);
+  netconf = (switchId: string): NetPatch | undefined => this.reader.netconf(switchId);
+  hasNetconf = (): boolean => this.reader.hasNetconf();
+  netEpoch = (): number => this.reader.netEpoch();
   faults = (): Fault[] => this.reader.faults();
-  faultsOn = (target: string): Fault[] => this.reader.faultsOn(target);
+  faultsOn = (target: string): readonly Fault[] => this.reader.faultsOn(target);
   alarms = (): Alarm[] => this.reader.alarms();
   events = (sinceSeq?: number): WorldEvent[] => this.reader.events(sinceSeq);
   lastSeq = (): number => this.reader.lastSeq();

@@ -49,7 +49,7 @@ describe("session hosts run the same session the same way [REQ-001] [REQ-032]", 
     const here = await play(local);
     const there = await play(workers);
     expect(there).toEqual(here);
-    expect(here.score.total).toBe(100);
+    expect(here.score.total).toBe(90.9);
     expect(local.openCount).toBe(0);
     expect(workers.openCount).toBe(0);
   }, 60_000);
@@ -65,7 +65,9 @@ describe("session hosts run the same session the same way [REQ-001] [REQ-032]", 
     await expect(new InProcessHost().open(bad)).rejects.toBeInstanceOf(InvalidValueError);
     for (const s of opened) s.dispose();
     expect(workers.openCount).toBe(0);
-    await expect(opened[0]?.call("list_alarms", {})).rejects.toThrow("세션을 돌리던 워커가 멈췄다");
+    await expect(opened[0]?.call("list_alarms", {})).rejects.toThrow(
+      "세션을 돌리던 워커가 멈췄어요",
+    );
   }, 60_000);
 
   test("a realtime session follows the wall clock and ends on its own", async () => {
@@ -86,12 +88,12 @@ describe("session hosts run the same session the same way [REQ-001] [REQ-032]", 
     const slot = (host as unknown as { slots: { worker: { terminate(): Promise<number> } }[] })
       .slots[0];
     await slot?.worker.terminate();
-    await expect(s.call("list_alarms", {})).rejects.toThrow("세션을 돌리던 워커가 멈췄다");
+    await expect(s.call("list_alarms", {})).rejects.toThrow("세션을 돌리던 워커가 멈췄어요");
     const again = await host.open(config());
     expect((await again.call("list_alarms", {})).ok).toBe(true);
     await host.close();
-    await expect(host.open(config())).rejects.toThrow("서버가 멈추는 중이다");
-    expect(() => new WorkerHost({ size: 0 })).toThrow("워커는 하나 이상이어야 한다");
+    await expect(host.open(config())).rejects.toThrow("서버가 멈추는 중이에요");
+    expect(() => new WorkerHost({ size: 0 })).toThrow("워커는 하나 이상이어야 해요");
   }, 60_000);
 
   test("configs crossing threads carry no catalog object", () => {

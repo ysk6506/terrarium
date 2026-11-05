@@ -1,10 +1,10 @@
 {
-  "measuredOn": "2026-10-29",
-  "webHash": "bcca05ca7875d613",
+  "measuredOn": "2026-11-05",
+  "webHash": "ac8dfaeca4b14f6e",
   "scores": {
     "useful": 100,
     "usable": 100,
-    "desirable": 100,
+    "desirable": 98.8,
     "findable": 100,
     "accessible": 100,
     "credible": 100,
@@ -23,6 +23,10 @@
       "design": {
         "ok": true,
         "actions": 6
+      },
+      "author": {
+        "ok": true,
+        "actions": 8
       },
       "run": {
         "ok": true,
@@ -43,27 +47,31 @@
       "compare": {
         "ok": true,
         "actions": 2
+      },
+      "site": {
+        "ok": true,
+        "actions": 6
       }
     },
     "clean": {
-      "tried": 26,
-      "ok": 26
+      "tried": 32,
+      "ok": 32
     },
     "invalid": {
       "tried": 4,
       "ok": 4
     },
     "colors": {
-      "literals": 54,
-      "offToken": 0
+      "literals": 84,
+      "offToken": 5
     },
     "progress": {
       "tried": 3,
       "ok": 3
     },
     "load": {
-      "kb": 544.978515625,
-      "ms": 406,
+      "kb": 700.1396484375,
+      "ms": 307,
       "sceneDrawn": true
     },
     "reach": {
@@ -71,11 +79,11 @@
       "ok": 10
     },
     "orientation": {
-      "tried": 12,
-      "ok": 12
+      "tried": 14,
+      "ok": 14
     },
     "axe": {
-      "pages": 24,
+      "pages": 28,
       "critical": 0,
       "serious": 0,
       "moderate": 0
@@ -85,8 +93,8 @@
       "ok": 5
     },
     "focus": {
-      "tried": 69,
-      "ok": 69
+      "tried": 80,
+      "ok": 80
     },
     "motion": {
       "animated": 0
@@ -106,6 +114,34 @@
     "value": {
       "tried": 7,
       "ok": 7
+    },
+    "voice": {
+      "tried": 749,
+      "ok": 749
+    },
+    "oneThing": {
+      "tried": 13,
+      "ok": 13
+    },
+    "buttons": {
+      "tried": 121,
+      "ok": 121
+    },
+    "targets": {
+      "tried": 297,
+      "ok": 297
+    },
+    "disabledWhy": {
+      "tried": 13,
+      "ok": 13
+    },
+    "units": {
+      "tried": 22,
+      "ok": 22
+    },
+    "hover": {
+      "tried": 25,
+      "ok": 25
     }
   }
 }

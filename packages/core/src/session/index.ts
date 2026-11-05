@@ -1,5 +1,19 @@
 /** core.session: one running simulation — world, physics, scenario, tools and recorder (REQ-001, REQ-007, REQ-014). */
 export {
+  BASELINE_SUMMARY,
+  type BaselineId,
+  type BaselineRun,
+  baselineRun,
+  type Calibration,
+  calibrate,
+  FLOOR_LIMIT,
+  GUESS,
+  IDLE_ROUNDS,
+  IDLE_WAIT_SECONDS,
+  judge,
+  knownAnswer,
+} from "./baselines";
+export {
   DEFAULT_RECORDER,
   MetricRecorder,
   type MetricSeries,

@@ -40,7 +40,13 @@ import {
   type ToolResult,
   type ToolSpec,
 } from "@terrarium/core/tools";
-import { type Blueprint, blueprintDigest, World, type WorldEvent } from "@terrarium/core/world";
+import {
+  type Blueprint,
+  blueprintDigest,
+  type PreparedWorld,
+  World,
+  type WorldEvent,
+} from "@terrarium/core/world";
 import { DEFAULT_RECORDER, MetricRecorder, type MetricSeries, RECORDED_METRICS } from "./recorder";
 import { buildTimeline, type TimelineEntry } from "./timeline";
 import type { WarmStartCache } from "./warm";
@@ -75,6 +81,11 @@ export interface SessionConfig {
    * custom catalog never uses it: the catalog is not part of the cache key.
    */
   readonly warm?: WarmStartCache;
+  /**
+   * The blueprint already checked and indexed (a host keeps one per world and thread, so runs of a world
+   * share it). Must be made from `blueprint` with the built-in catalog; without it the session does that itself.
+   */
+  readonly prepared?: PreparedWorld;
 }
 
 export type SessionStatus = "ready" | "running" | "ended";
@@ -124,6 +135,7 @@ export class Session {
   private task: AgentTask | undefined;
   private diagnosis: Diagnosis | undefined;
   private diagnosedAt: number | undefined;
+  private digestOfWorld: string | undefined;
   private scenarioStart = 0;
   private result: RunResult | undefined;
 
@@ -142,6 +154,7 @@ export class Session {
     this.runner = new ScenarioRunner(config.scenario, world, config.seed, {
       toolCalls: () => this.calls,
       diagnosis: () => this.diagnosis,
+      scenarioStart: () => this.scenarioStart,
     });
     this.ctx = {
       world,
@@ -158,11 +171,14 @@ export class Session {
   /** Build a session; refuses an invalid blueprint or scenario with the reasons. */
   static create(config: SessionConfig): Session {
     const catalog = config.catalog ?? new Catalog();
-    const world = World.fromBlueprint(config.blueprint, catalog);
+    const world =
+      config.prepared && !config.catalog
+        ? World.fromPrepared(config.prepared, catalog)
+        : World.fromBlueprint(config.blueprint, catalog);
     const issues = validateScenario(config.scenario, { index: world.index, catalog });
     if (hasErrors(issues)) {
       const reasons = issues.filter((i) => i.severity === "error").map((i) => i.message);
-      throw new InvalidValueError(`시나리오를 실행할 수 없다: ${reasons.join("; ")}`);
+      throw new InvalidValueError(`시나리오를 실행할 수 없어요: ${reasons.join("; ")}`);
     }
     return new Session(config, world);
   }
@@ -216,14 +232,15 @@ export class Session {
     if (key && cache && recorder) cache.put(key, { world: this.world.checkpoint(), recorder });
   }
 
+  /** The blueprint's digest, worked out once per session (a prepared world already carries it). */
+  private worldDigest(): string {
+    this.digestOfWorld ??= this.config.prepared?.digest ?? blueprintDigest(this.config.blueprint);
+    return this.digestOfWorld;
+  }
+
   private warmKey(warmup: number): string {
     const o = this.recorder.options;
-    return [
-      blueprintDigest(this.config.blueprint),
-      warmup,
-      o.sampleSeconds,
-      o.retentionSeconds,
-    ].join("|");
+    return [this.worldDigest(), warmup, o.sampleSeconds, o.retentionSeconds].join("|");
   }
 
   call(tool: string, args: Args = {}): CallResult {
@@ -247,7 +264,10 @@ export class Session {
     }
     const before = this.world.lastSeq();
     const result = this.toolbox.call(tool, args, this.ctx);
-    const effects = actionsOf(this.world.events(before).filter(byAgent));
+    const effects = actionsOf(this.world.events(before).filter(byAgent), (id, end) => {
+      const link = this.world.index.link(id);
+      return end === "from" ? link.from : link.to;
+    });
     this.calls.push({
       t,
       tool,
@@ -316,6 +336,7 @@ export class Session {
       toolCalls: this.calls,
       endReason: reason,
       agentStartedAt: task.startedAt,
+      scenarioStart: this.scenarioStart,
       ...(this.diagnosis
         ? { diagnosis: this.diagnosis, diagnosedAt: this.diagnosedAt as number }
         : {}),
@@ -334,10 +355,11 @@ export class Session {
         this.world.events(),
         this.calls,
         this.scenarioStart,
+        (id) => this.world.index.find(id)?.name ?? id,
       ),
       series: this.keySeries(),
       digests: {
-        world: blueprintDigest(this.config.blueprint),
+        world: this.worldDigest(),
         scenario: scenarioDigest(this.config.scenario),
         oracle: ORACLE_VERSION,
       },

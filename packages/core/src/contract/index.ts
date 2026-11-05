@@ -1,4 +1,15 @@
 /** core.contract: the HTTP API contract shared by server and web — routes, request schemas, views, errors. */
+
+export type {
+  AgentHistoryView,
+  AgentVersionView,
+  ConnectionCheck,
+  ConnectionHeader,
+  ConnectionView,
+  ConnectorField,
+  ConnectorSpec,
+  FieldType,
+} from "./connections";
 export {
   type ApiError,
   type ErrorReply,
@@ -8,12 +19,19 @@ export {
   invalidInput,
   isApiError,
   toErrorReply,
+  UnauthenticatedError,
   UnavailableError,
 } from "./errors";
 export { type ApiIssue, issuesOf, koreanErrorMap, type Parsed, parseWith, pathOf } from "./korean";
 export {
+  AddAgentVersionBody,
+  type AddAgentVersionRequest,
   AddRunsBody,
   type AddRunsRequest,
+  CheckConnectionBody,
+  type CheckConnectionRequest,
+  CreateConnectionBody,
+  type CreateConnectionRequest,
   CreateExperimentBody,
   type CreateExperimentRequest,
   CreateScenarioBody,
@@ -24,6 +42,8 @@ export {
   type CreateWorldRequest,
   DryRunBody,
   type DryRunRequest,
+  EditAgentVersionBody,
+  type EditAgentVersionRequest,
   EXPERIMENT_STATUSES,
   ExperimentQuery,
   type ExperimentQueryParams,
@@ -31,16 +51,21 @@ export {
   type ForkRequest,
   GenerateWorldBody,
   type GenerateWorldRequest,
+  HeaderBody,
+  type HeaderRequest,
   ImportWorldBody,
   type ImportWorldRequest,
   LeaderboardQuery,
   type LeaderboardQueryParams,
+  MetadataBody,
   RecipeBody,
   type RecipeRequest,
   ReportQuery,
   ScenarioQuery,
   TwinQuery,
   type TwinQueryParams,
+  UpdateConnectionBody,
+  type UpdateConnectionRequest,
   UpdateScenarioBody,
   type UpdateScenarioRequest,
   UpdateWorldBody,
@@ -75,6 +100,9 @@ export {
   WorldgenSpecSchema,
 } from "./schemas";
 export type {
+  ActivityEvent,
+  ActivityWho,
+  CalibrationView,
   DryRunView,
   ExperimentEvent,
   ExperimentSummary,

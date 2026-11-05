@@ -103,7 +103,7 @@ describe("the API client speaks the contract [REQ-030]", () => {
     await expect(createApi({ fetch: plain.fetch }).call("meta")).rejects.toMatchObject({
       status: 502,
       code: "http_error",
-      message: "서버가 502로 답했다",
+      message: "서버가 502로 답했어요",
     });
     const down = fakeFetch(() => {
       throw new TypeError("Failed to fetch");
@@ -152,7 +152,14 @@ describe("every screen has an address [REQ-038]", () => {
   });
 
   test("the rail knows which section a page is in; tabs say where they are", () => {
-    expect(SECTIONS.map((s) => s.label)).toEqual(["홈", "세계", "시나리오", "실험", "벤치마크"]);
+    expect(SECTIONS.map((s) => s.label)).toEqual([
+      "홈",
+      "세계",
+      "시나리오",
+      "실험",
+      "벤치마크",
+      "연결",
+    ]);
     expect(sectionOf({ name: "run", id: "r" })).toBe("experiments");
     expect(sectionOf({ name: "notFound", path: "/" })).toBeUndefined();
     expect(titleOf({ name: "home" })).toBe("테라리움");
@@ -234,9 +241,9 @@ describe("the name people give [REQ-033]", () => {
     expect(new Identity(kv).name).toBe("김연수");
     id.forget();
     expect(new Identity(kv).name).toBeUndefined();
-    expect(() => id.set(" ")).toThrow("이름을 적는다");
-    expect(nameProblem("x".repeat(41))).toBe("40자 이하로 적는다");
-    expect(nameProblem("a\nb")).toBe("줄바꿈이나 제어 문자는 쓸 수 없다");
+    expect(() => id.set(" ")).toThrow("이름을 적어 주세요");
+    expect(nameProblem("x".repeat(41))).toBe("40자 이하로 적어 주세요");
+    expect(nameProblem("a\nb")).toBe("줄바꿈이나 제어 문자는 쓸 수 없어요");
     kv.setItem("terrarium.user", "\u0000bad");
     expect(new Identity(kv).name).toBeUndefined();
   });

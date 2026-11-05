@@ -31,6 +31,20 @@ export type FaultType =
   | "ats_stuck"
   | "utility_outage";
 
+/**
+ * Things people do wrong, as opposed to things that break: a port put in the wrong VLAN, a gateway interface left
+ * shut, a route deleted, a PDU outlet switched off. A scenario makes them with its configuration blocks (they are
+ * ordinary operator commands, which an agent can undo the same way), never with `inject_fault`. They are named
+ * here so a diagnosis can say what kind of mistake it found, the way it names a fault.
+ */
+export type MistakeType =
+  | "port_vlan_mismatch"
+  | "port_shutdown"
+  | "svi_shutdown"
+  | "bgp_neighbor_shutdown"
+  | "route_missing"
+  | "outlet_off";
+
 export interface FaultParamSpec {
   readonly name: string;
   readonly label: string;
@@ -72,7 +86,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "cooling_unit_failure",
     label: "냉방기 정지",
-    description: "항온항습기/인로우 냉방기가 멈춘다",
+    description: "항온항습기/인로우 냉방기가 멈춰요",
     targets: ["cooling_unit"],
     params: [],
     status: "supported",
@@ -81,7 +95,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "cooling_unit_degraded",
     label: "냉방 능력 저하",
-    description: "냉방 용량이 일부만 나온다(필터 막힘, 압축기 고장)",
+    description: "냉방 용량이 일부만 나와요(필터 막힘, 압축기 고장)",
     targets: ["cooling_unit"],
     params: [p("factor", "남은 용량", 0.05, 0.95, 0.4, "비율")],
     status: "supported",
@@ -90,7 +104,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "setpoint_drift",
     label: "설정 온도 틀어짐",
-    description: "제어기가 설정보다 높은 온도로 공급한다",
+    description: "제어기가 설정보다 높은 온도로 공급해요",
     targets: ["cooling_unit"],
     params: [p("deltaC", "상승 폭", 1, 15, 6, "°C")],
     status: "supported",
@@ -99,7 +113,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "breaker_trip",
     label: "차단기 트립",
-    description: "분전반/PDU 차단기가 떨어져 하위 장비 전원이 끊긴다",
+    description: "분전반/PDU 차단기가 떨어져 하위 장비 전원이 끊겨요",
     targets: ["power_panel", "pdu"],
     params: [],
     status: "supported",
@@ -108,7 +122,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "grid_outage",
     label: "한전 정전",
-    description: "UPS 입력 전원이 끊겨 배터리로 버틴다",
+    description: "UPS 입력 전원이 끊겨 배터리로 버텨요",
     targets: ["ups"],
     params: [],
     status: "supported",
@@ -117,7 +131,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "ups_battery_degraded",
     label: "UPS 배터리 열화",
-    description: "배터리 용량이 줄어든다",
+    description: "배터리 용량이 줄어들어요",
     targets: ["ups"],
     params: [p("factor", "남은 용량", 0.05, 0.95, 0.3, "비율")],
     status: "supported",
@@ -127,7 +141,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
     type: "utility_outage",
     label: "수전 중단(한전 정전)",
     description:
-      "한전 인입이 끊긴다. 자동절체반이 있으면 발전기가 기동하고, UPS는 그동안 배터리로 버틴다",
+      "한전 인입이 끊겨요. 자동절체반이 있으면 발전기가 기동하고, UPS는 그동안 배터리로 버텨요",
     targets: ["power_panel"],
     params: [],
     status: "supported",
@@ -136,7 +150,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "chiller_failure",
     label: "냉각 플랜트 정지",
-    description: "칠러·드라이쿨러·냉각탑이 멈춰 냉수 공급이 끊긴다",
+    description: "칠러·드라이쿨러·냉각탑이 멈춰 냉수 공급이 끊겨요",
     targets: ["chiller"],
     params: [],
     status: "supported",
@@ -145,7 +159,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "chiller_degraded",
     label: "냉각 플랜트 능력 저하",
-    description: "외기 조건이나 압축기 문제로 용량이 일부만 나온다",
+    description: "외기 조건이나 압축기 문제로 용량이 일부만 나와요",
     targets: ["chiller"],
     params: [p("factor", "남은 용량", 0.05, 0.95, 0.5, "비율")],
     status: "supported",
@@ -154,7 +168,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "cdu_failure",
     label: "CDU 정지",
-    description: "냉각수 분배 장치가 멈춰 수랭 랙과 액침 탱크의 열이 빠지지 않는다",
+    description: "냉각수 분배 장치가 멈춰 수랭 랙과 액침 탱크의 열이 빠지지 않아요",
     targets: ["cdu"],
     params: [],
     status: "supported",
@@ -163,7 +177,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "cdu_pump_failure",
     label: "CDU 펌프 고장",
-    description: "예비 펌프까지 쓰고 나면 유량이 줄어 용량이 떨어진다",
+    description: "예비 펌프까지 쓰고 나면 유량이 줄어 용량이 떨어져요",
     targets: ["cdu"],
     params: [p("pumps", "고장 펌프 수", 1, 3, 2, "대")],
     status: "supported",
@@ -172,7 +186,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "coolant_leak",
     label: "냉각수 누설",
-    description: "누설이 감지되어 해당 랙·CDU의 냉각수 공급이 곧 차단된다",
+    description: "누설이 감지되어 해당 랙·CDU의 냉각수 공급이 곧 차단돼요",
     targets: ["rack", "cdu"],
     params: [p("shutoffSeconds", "차단까지", 30, 900, 120, "초")],
     status: "supported",
@@ -181,7 +195,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "immersion_circulation_failure",
     label: "액침 순환 정지",
-    description: "탱크 안 유체 순환이 멈춰 열이 열교환기로 가지 않는다",
+    description: "탱크 안 유체 순환이 멈춰 열이 열교환기로 가지 않아요",
     targets: ["rack"],
     params: [],
     status: "supported",
@@ -190,7 +204,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "generator_start_failure",
     label: "발전기 기동 실패",
-    description: "정전 때 발전기가 시동되지 않는다",
+    description: "정전 때 발전기가 시동되지 않아요",
     targets: ["generator"],
     params: [],
     status: "supported",
@@ -199,7 +213,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "ats_stuck",
     label: "자동절체반 고착",
-    description: "ATS가 발전기로 넘어가지 못해 정전된 한전 쪽에 머문다",
+    description: "ATS가 발전기로 넘어가지 못해 정전된 한전 쪽에 머물러요",
     targets: ["power_panel"],
     params: [],
     status: "supported",
@@ -208,7 +222,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "fan_failure",
     label: "서버 팬 고장",
-    description: "서버 팬 하나가 멈춘다",
+    description: "서버 팬 하나가 멈춰요",
     targets: ["server"],
     params: [p("fanIndex", "팬 번호", 0, 9, 0, "번")],
     status: "supported",
@@ -217,7 +231,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "psu_failure",
     label: "PSU 고장",
-    description: "서버 전원 공급 장치 하나가 고장 난다",
+    description: "서버 전원 공급 장치 하나가 고장 나요",
     targets: ["server"],
     params: [p("psuIndex", "PSU 번호", 0, 5, 0, "번")],
     status: "supported",
@@ -226,7 +240,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "sensor_drift",
     label: "온도 센서 오차",
-    description: "흡기 온도 센서가 실제보다 높게(낮게) 보고한다",
+    description: "흡기 온도 센서가 실제보다 높게(낮게) 보고해요",
     targets: ["server"],
     params: [p("deltaC", "오차", -15, 15, 8, "°C")],
     status: "supported",
@@ -235,7 +249,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "cpu_runaway",
     label: "CPU 폭주",
-    description: "프로세스 폭주로 CPU 사용률이 치솟는다",
+    description: "프로세스 폭주로 CPU 사용률이 치솟아요",
     targets: ["server"],
     params: [p("util", "사용률", 0.5, 1, 0.98, "비율")],
     status: "supported",
@@ -244,7 +258,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "bmc_unresponsive",
     label: "BMC 무응답",
-    description: "BMC(Redfish)가 응답하지 않는다",
+    description: "BMC(Redfish)가 응답하지 않아요",
     targets: ["server"],
     params: [],
     status: "supported",
@@ -253,7 +267,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "link_down",
     label: "네트워크 링크 다운",
-    description: "서버-스위치 사이 링크가 끊긴다",
+    description: "서버-스위치 사이 링크가 끊겨요",
     targets: ["link"],
     params: [],
     status: "supported",
@@ -262,7 +276,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "switch_failure",
     label: "스위치 고장",
-    description: "스위치가 멈춰 연결된 링크가 모두 끊긴다",
+    description: "스위치가 멈춰 연결된 링크가 모두 끊겨요",
     targets: ["switch"],
     params: [],
     status: "supported",
@@ -271,7 +285,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "disk_failure",
     label: "디스크 고장",
-    description: "스토리지 디스크가 고장 난다",
+    description: "스토리지 디스크가 고장 나요",
     targets: ["storage"],
     params: [p("disks", "고장 개수", 1, 24, 1, "개")],
     status: "supported",
@@ -280,11 +294,71 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "vm_cpu_spike",
     label: "VM CPU 급증",
-    description: "VM의 CPU 수요가 치솟아 호스트가 과부하된다",
+    description: "VM의 CPU 수요가 치솟아 호스트가 과부하돼요",
     targets: ["vm"],
     params: [p("demand", "수요", 0.5, 1, 1, "비율")],
     status: "supported",
     domain: "virtual",
+  },
+];
+
+/** The mistakes a scenario can make with its configuration blocks, named so a diagnosis can name them. */
+export const MISTAKE_SPECS: ReadonlyArray<
+  Omit<FaultSpec, "type"> & { readonly type: MistakeType }
+> = [
+  {
+    type: "port_vlan_mismatch",
+    label: "포트 VLAN 오설정",
+    description: "서버가 꽂힌 스위치 포트가 다른 VLAN에 들어 있어요",
+    targets: ["switch"],
+    params: [],
+    status: "supported",
+    domain: "network",
+  },
+  {
+    type: "port_shutdown",
+    label: "포트 꺼짐",
+    description: "스위치 포트를 관리자가 꺼 두었어요(shutdown)",
+    targets: ["switch"],
+    params: [],
+    status: "supported",
+    domain: "network",
+  },
+  {
+    type: "svi_shutdown",
+    label: "VLAN 인터페이스 꺼짐",
+    description: "게이트웨이 역할을 하는 VLAN 인터페이스(SVI)가 꺼져 있어요",
+    targets: ["switch"],
+    params: [],
+    status: "supported",
+    domain: "network",
+  },
+  {
+    type: "bgp_neighbor_shutdown",
+    label: "BGP 이웃 꺼짐",
+    description: "스위치가 BGP 이웃 하나를 꺼 두어 그 길로 배운 경로가 사라졌어요",
+    targets: ["switch"],
+    params: [],
+    status: "supported",
+    domain: "network",
+  },
+  {
+    type: "route_missing",
+    label: "경로 지워짐",
+    description: "스위치에서 정적 경로 하나가 지워져 그쪽으로 가는 길을 잃었어요",
+    targets: ["switch"],
+    params: [],
+    status: "supported",
+    domain: "network",
+  },
+  {
+    type: "outlet_off",
+    label: "PDU 콘센트 꺼짐",
+    description: "PDU의 콘센트 하나를 꺼 두어 거기 꽂힌 장비가 전원을 잃었어요",
+    targets: ["pdu"],
+    params: [],
+    status: "supported",
+    domain: "facility",
   },
 ];
 
@@ -294,3 +368,16 @@ export function faultSpec(type: FaultType): FaultSpec {
 
 export const isFaultType = (value: string): value is FaultType =>
   FAULT_SPECS.some((s) => s.type === value);
+
+export const isMistakeType = (value: string): value is MistakeType =>
+  MISTAKE_SPECS.some((s) => s.type === value);
+
+/** What a diagnosis can name as the kind of problem: a fault or a mistake, by id. */
+export const isDiagnosisType = (value: string): value is FaultType | MistakeType =>
+  isFaultType(value) || isMistakeType(value);
+
+/** The label of a fault or mistake type, for comparing a diagnosis written in words with the id. */
+export function diagnosisLabel(type: FaultType | MistakeType): string {
+  return (FAULT_SPECS.find((s) => s.type === type) ?? MISTAKE_SPECS.find((s) => s.type === type))
+    ?.label as string;
+}

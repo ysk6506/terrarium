@@ -131,7 +131,7 @@ export class Dispatcher {
           applyRunEvent(run, {
             type: "fail",
             at: this.stamps.now(),
-            error: "서버가 다시 시작되어 실행이 중단됐다",
+            error: "서버가 다시 시작되어 실행이 중단됐어요",
           }),
         );
         interrupted++;

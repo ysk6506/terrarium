@@ -3,14 +3,76 @@
  * that fits the world or from an empty canvas.
  */
 import type { ScenarioRecord, WorldSummary } from "@terrarium/core/experiments";
-import { SCENARIO_TEMPLATES } from "@terrarium/core/scenario";
+import { TEMPLATE_GROUPS } from "@terrarium/core/scenario";
 import { BlueprintIndex } from "@terrarium/core/world";
-import { useState } from "react";
-import { relativeTime } from "../../logic";
+import { type KeyboardEvent, useRef, useState } from "react";
+import { relativeTime, scenario } from "../../logic";
 import { Go, messageOf, useApp, useAsync, useNow } from "../context";
 import { Button, Dialog, Empty, Failure, Loading, Note, PageHead, SelectField } from "../kit";
 
-const EMPTY = "empty";
+const KEYS: Readonly<Record<string, 1 | -1>> = {
+  ArrowDown: 1,
+  ArrowRight: 1,
+  ArrowUp: -1,
+  ArrowLeft: -1,
+};
+
+/** The template cards: one radio group, grouped, with the cards the world cannot use shown and explained. */
+function StartCards({
+  groups,
+  chosen,
+  onPick,
+}: {
+  readonly groups: readonly scenario.StartGroup[];
+  readonly chosen: string;
+  readonly onPick: (id: string) => void;
+}) {
+  const box = useRef<HTMLDivElement>(null);
+  const move = (ev: KeyboardEvent<HTMLDivElement>) => {
+    const step = KEYS[ev.key];
+    if (!step) return;
+    ev.preventDefault();
+    const next = scenario.stepStart(groups, chosen, step);
+    onPick(next);
+    box.current?.querySelector<HTMLElement>(`[data-start="${next}"]`)?.focus();
+  };
+  return (
+    <div
+      ref={box}
+      className="start-cards"
+      role="radiogroup"
+      aria-label="시작점"
+      tabIndex={-1}
+      onKeyDown={move}
+    >
+      {groups.map((g) => (
+        <section key={g.id} className="start-group">
+          {g.label && <h3 className="start-group-title">{g.label}</h3>}
+          {g.cards.map((c) => (
+            // biome-ignore lint/a11y/useSemanticElements: a card with text is not a bare radio input
+            <button
+              key={c.id}
+              type="button"
+              role="radio"
+              data-start={c.id}
+              className={`start-card${c.id === scenario.EMPTY_START ? " start-card-quiet" : ""}`}
+              aria-checked={c.id === chosen}
+              aria-disabled={c.unavailable ? true : undefined}
+              tabIndex={c.id === chosen ? 0 : -1}
+              onClick={() => !c.unavailable && onPick(c.id)}
+            >
+              <span className="start-card-head">
+                <b>{c.name}</b>
+                {c.difficulty && <span className="tag">{c.difficulty}</span>}
+              </span>
+              <span className="small muted">{c.unavailable ?? c.summary}</span>
+            </button>
+          ))}
+        </section>
+      ))}
+    </div>
+  );
+}
 
 function NewScenarioDialog({
   worlds,
@@ -23,7 +85,7 @@ function NewScenarioDialog({
 }) {
   const { api, navigate } = useApp();
   const [world, setWorld] = useState(worldId ?? worlds[0]?.id);
-  const [start, setStart] = useState<string>(EMPTY);
+  const [picked, setPicked] = useState<string>();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
   const detail = useAsync(
@@ -32,24 +94,17 @@ function NewScenarioDialog({
     [world],
   );
   const index = detail.data ? new BlueprintIndex(detail.data.blueprint) : undefined;
-  const options = [
-    { value: EMPTY, label: "빈 캔버스에서 시작" },
-    ...SCENARIO_TEMPLATES.map((t) => {
-      const why = index ? t.unavailable(index) : undefined;
-      return {
-        value: t.id,
-        label: `${t.name} (${t.difficulty})${why ? `: ${why}` : ""}`,
-        disabled: Boolean(why),
-      };
-    }),
-  ];
-  const template = SCENARIO_TEMPLATES.find((t) => t.id === start);
+  const groups = scenario.startGroups(TEMPLATE_GROUPS, index);
+  const start = scenario.chosenStart(groups, picked);
   const create = async () => {
     if (!world) return;
     setBusy(true);
     try {
       const saved = await api.call("createScenario", {
-        body: start === EMPTY ? { worldId: world } : { worldId: world, templateId: start },
+        body:
+          start === scenario.EMPTY_START
+            ? { worldId: world }
+            : { worldId: world, templateId: start },
       });
       onClose();
       navigate({ name: "scenario", id: saved.scenario.id });
@@ -59,26 +114,36 @@ function NewScenarioDialog({
       setBusy(false);
     }
   };
+  const several = worlds.length > 1;
   return (
     <Dialog
       title="새 시나리오"
       onClose={onClose}
       actions={
-        <Button kind="primary" busy={busy} disabled={!world} onClick={() => void create()}>
+        <Button
+          kind="primary"
+          busy={busy}
+          disabled={!world || !index}
+          why={world ? "세계를 불러오고 있어요" : "시나리오를 만들 세계를 먼저 골라 주세요"}
+          onClick={() => void create()}
+        >
           만들고 편집하기
         </Button>
       }
     >
       <div className="stack">
-        <SelectField
-          label="세계"
-          value={world}
-          options={worlds.map((w) => ({ value: w.id, label: w.name }))}
-          onChange={setWorld}
-          help="시나리오는 한 세계의 장비를 대상으로 한다."
-        />
-        <SelectField label="시작점" value={start} options={options} onChange={setStart} />
-        {template && <p className="small muted">{template.summary}</p>}
+        {several ? (
+          <SelectField
+            label="세계"
+            value={world}
+            options={worlds.map((w) => ({ value: w.id, label: w.name }))}
+            onChange={setWorld}
+            help="시나리오는 한 세계의 장비를 대상으로 해요."
+          />
+        ) : (
+          <p className="small muted">시나리오는 한 세계의 장비를 대상으로 해요.</p>
+        )}
+        <StartCards groups={groups} chosen={start} onPick={setPicked} />
         {error && <Note tone="bad">{error}</Note>}
       </div>
     </Dialog>
@@ -149,23 +214,23 @@ function ScenarioBody({
   if (data.worlds.length === 0)
     return (
       <Empty
-        title="먼저 세계가 있어야 한다"
+        title="먼저 세계가 있어야 해요"
         action={<Go to={{ name: "worlds" }}>세계 만들러 가기</Go>}
       >
-        시나리오는 한 세계의 장비를 대상으로 한다.
+        시나리오는 한 세계의 장비를 대상으로 해요.
       </Empty>
     );
   if (data.scenarios.length === 0)
     return (
       <Empty
-        title="아직 시나리오가 없다"
+        title="아직 시나리오가 없어요"
         action={
           <Button kind="primary" onClick={onMake}>
             첫 시나리오 만들기
           </Button>
         }
       >
-        팬 고장, 냉방 정지 같은 템플릿에서 시작하면 블록과 채점표가 미리 채워진다.
+        팬 고장, 냉방 정지 같은 템플릿에서 시작하면 블록과 채점표가 미리 채워져요.
       </Empty>
     );
   return <ScenarioTable scenarios={data.scenarios} worlds={data.worlds} />;
@@ -217,12 +282,13 @@ export function ScenariosPage() {
     <div className="page">
       <PageHead
         title="시나리오"
-        lede="세계에 일어날 일과, 에이전트가 무엇을 해야 점수를 받는지. 블록을 끌어다 놓아 만든다."
+        lede="세계에 일어날 일과, 에이전트가 무엇을 해야 점수를 받는지. 블록을 끌어다 놓아 만들어요."
         actions={
           <Button
             kind="primary"
             icon="plus"
             disabled={worlds.length === 0}
+            why="세계가 있어야 시나리오를 만들 수 있어요"
             onClick={() => setMaking(true)}
           >
             새 시나리오

@@ -5,16 +5,19 @@
  */
 import type { Browser, Page } from "playwright";
 import { Driver, nav, type Visitor, visitor } from "./driver";
+import { settle } from "./site";
 
 export type JourneyId =
   | "build"
   | "design"
+  | "author"
   | "run"
   | "cancel"
   | "share"
   | "fork"
   | "compare"
-  | "import";
+  | "import"
+  | "site";
 
 export interface Outcome {
   readonly ok: boolean;
@@ -36,7 +39,8 @@ interface Context {
 const SECOND = 1000;
 
 async function home(c: Context): Promise<void> {
-  await c.v.page.goto(c.base, { waitUntil: "networkidle" });
+  await c.v.page.goto(c.base, { waitUntil: "load" });
+  await settle(c.v.page);
 }
 
 async function expectPath(c: Context, pattern: RegExp): Promise<void> {
@@ -106,7 +110,7 @@ async function design(c: Context): Promise<void> {
   await c.d.click(nav(page, "시나리오"));
   await c.d.click(page.getByRole("button", { name: "새 시나리오" }));
   const dialog = page.getByRole("dialog");
-  await c.d.choose(dialog.locator("select").nth(1), "냉방기 정지");
+  await c.d.click(dialog.getByRole("radio", { name: /냉방기 정지/ }));
   await c.d.click(dialog.getByRole("button", { name: "만들고 편집하기" }));
   await expectPath(c, /^\/scenarios\/s-/);
   await page
@@ -126,6 +130,38 @@ async function design(c: Context): Promise<void> {
   await page.getByRole("button", { name: "저장됨" }).waitFor({ timeout: 10 * SECOND });
 }
 
+/** From an empty canvas: one press adds the agent block already wired, then the exam-paper check runs. */
+async function author(c: Context): Promise<void> {
+  const { page } = c.v;
+  await home(c);
+  await c.d.click(nav(page, "시나리오"));
+  await c.d.click(page.getByRole("button", { name: "새 시나리오" }));
+  const dialog = page.getByRole("dialog");
+  await c.d.click(dialog.getByRole("radio", { name: /빈 캔버스/ }));
+  await c.d.click(dialog.getByRole("button", { name: "만들고 편집하기" }));
+  await expectPath(c, /^\/scenarios\/s-/);
+  await page
+    .locator(".react-flow__node")
+    .first()
+    .waitFor({ timeout: 30 * SECOND });
+  await c.d.click(page.getByRole("button", { name: "블록 더하기" }));
+  await page.waitForTimeout(400);
+  const nodes = await page.locator(".react-flow__node").count();
+  const wires = await page.locator(".react-flow__edge").count();
+  if (nodes < 2 || wires < nodes - 1) throw new Error("누른 블록이 줄에 이어지지 않았다");
+  // the new block is selected, so its form is open: say what the agent is asked
+  await c.d.fill(page.getByLabel("상황 설명"), "서버룸 온도 알람이 이어지고 있어요.");
+  // the check lives in the panel for the whole scenario
+  await c.d.click(page.locator(".react-flow__pane"), { x: 60, y: 600 });
+  await c.d.click(page.getByRole("button", { name: "점검하기" }));
+  await page
+    .locator(".baseline")
+    .first()
+    .waitFor({ timeout: 60 * SECOND });
+  if ((await page.locator(".baseline").count()) < 2)
+    throw new Error("변별력 점검이 기준선 점수를 보여 주지 않았다");
+}
+
 async function run(c: Context): Promise<void> {
   const { page } = c.v;
   await home(c);
@@ -142,10 +178,10 @@ async function cancel(c: Context): Promise<void> {
   await c.d.fill(page.getByLabel("실행 횟수"), "20");
   await c.d.click(page.getByRole("button", { name: "실험 시작" }));
   await expectPath(c, /^\/experiments\/e-/);
-  await c.d.click(page.getByRole("button", { name: "취소", exact: true }));
-  await c.d.click(page.getByRole("dialog").getByRole("button", { name: /회 취소$/ }));
+  await c.d.click(page.getByRole("button", { name: "멈추기", exact: true }));
+  await c.d.click(page.getByRole("dialog").getByRole("button", { name: /회 멈추기$/ }));
   await page
-    .getByText(/취소했다|취소됨/)
+    .getByText(/멈췄어요|멈춤|취소됨/)
     .first()
     .waitFor({ timeout: 20 * SECOND });
 }
@@ -167,13 +203,14 @@ async function share(c: Context): Promise<void> {
   await c.d.click(page.getByRole("button", { name: "공유" }));
   await c.d.click(page.getByRole("menuitem", { name: /링크 복사/ }));
   await page
-    .getByText("링크를 복사했다")
+    .getByText("링크를 복사했어요")
     .first()
     .waitFor({ timeout: 10 * SECOND });
   const link = await page.evaluate(() => navigator.clipboard.readText());
   const guest = await visitor(c.browser, { name: null });
   try {
-    const response = await guest.page.goto(link, { waitUntil: "networkidle" });
+    const response = await guest.page.goto(link, { waitUntil: "load" });
+    await settle(guest.page);
     if (!response?.ok()) throw new Error("받은 사람이 링크를 열지 못했다");
     if (!(await guest.page.locator("body").innerText()).includes("합격률"))
       throw new Error("받은 사람의 화면에 결과가 없다");
@@ -224,6 +261,30 @@ async function importWorld(c: Context): Promise<void> {
     .waitFor({ timeout: 30 * SECOND });
 }
 
+/** A new site on bare land: size it, make it, then buy the land beside it and see what it cost. */
+async function site(c: Context): Promise<void> {
+  const { page } = c.v;
+  await home(c);
+  await c.d.click(nav(page, "세계"));
+  await c.d.click(page.getByRole("button", { name: "새 세계" }));
+  await c.d.click(page.getByRole("button", { name: "크기로 정하기" }));
+  await c.d.click(page.getByRole("button", { name: "이 모양으로 만들기" }));
+  await expectPath(c, /^\/worlds\/w-/);
+  await page
+    .locator("canvas")
+    .first()
+    .waitFor({ timeout: 30 * SECOND });
+  const buy = page.getByRole("button", { name: /에 사기$/ });
+  await buy.first().waitFor({ timeout: 15 * SECOND });
+  const before = await hudText(page);
+  await c.d.click(buy.first());
+  await page.waitForTimeout(500);
+  if ((await hudText(page)) === before) throw new Error("땅을 사도 들인 돈이 늘지 않았다");
+  await c.d.press("Control+z");
+  await page.waitForTimeout(400);
+  if ((await hudText(page)) !== before) throw new Error("되돌리기가 산 땅을 물리지 못했다");
+}
+
 /** In the order they depend on each other: later ones use what earlier ones made. */
 export const JOURNEYS: ReadonlyArray<readonly [JourneyId, (c: Context) => Promise<void>]> = [
   ["build", build],
@@ -234,6 +295,9 @@ export const JOURNEYS: ReadonlyArray<readonly [JourneyId, (c: Context) => Promis
   ["fork", fork],
   ["compare", compare],
   ["import", importWorld],
+  ["site", site],
+  // last: it leaves a bare scenario behind, and the journeys above want the default one to be a real scenario
+  ["author", author],
 ];
 
 export async function perform(

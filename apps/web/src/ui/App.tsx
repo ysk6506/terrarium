@@ -15,6 +15,7 @@ import {
 } from "react";
 import {
   type Api,
+  expiringNotice,
   hrefOf,
   type Identity,
   nameProblem,
@@ -24,10 +25,12 @@ import {
   sectionOf,
   titleOf,
 } from "../logic";
-import { AppContext, type AppServices, Go, type ToastTone, useAsync } from "./context";
+import { AppContext, type AppServices, Go, type ToastTone, useApp, useAsync } from "./context";
 import { Icon, Mark } from "./icons";
-import { Button, Dialog, Loading, TextField } from "./kit";
+import { Button, Dialog, Loading, Note, TextField } from "./kit";
+import { AgentVersionsPage } from "./pages/agent-versions";
 import { BenchmarksPage } from "./pages/benchmarks";
+import { ConnectionsPage } from "./pages/connections";
 import { ExperimentPage } from "./pages/experiment";
 import { ExperimentsPage } from "./pages/experiments";
 import { HomePage } from "./pages/home";
@@ -46,6 +49,7 @@ const ICONS: Readonly<Record<string, string>> = {
   scenarios: "scenario",
   experiments: "experiment",
   benchmarks: "benchmark",
+  connections: "plug",
 };
 
 function pageView(page: Page): ReactNode {
@@ -68,21 +72,55 @@ function pageView(page: Page): ReactNode {
       return <ExperimentPage id={page.id} />;
     case "run":
       return <RunPage id={page.id} />;
+    default:
+      return otherView(page);
+  }
+}
+
+/** The rest of the screens: benchmarks, connections, and an address that is nothing. */
+function otherView(
+  page: Extract<Page, { name: "benchmarks" | "connections" | "agentVersions" | "notFound" }>,
+): ReactNode {
+  switch (page.name) {
     case "benchmarks":
       return <BenchmarksPage />;
+    case "connections":
+      return <ConnectionsPage />;
+    case "agentVersions":
+      return <AgentVersionsPage connectionId={page.connectionId} agentId={page.agentId} />;
     case "notFound":
       return <NotFound path={page.path} />;
   }
 }
 
+/** Connections of the viewer's that will be removed soon for lack of use, on every page (REQ-051). */
+function ExpiryBanner() {
+  const { meta, page } = useApp();
+  const text = expiringNotice(meta?.expiring);
+  if (!text || page.name === "world" || page.name === "scenario") return null;
+  return (
+    <div className="expiry-banner">
+      <Note tone="warn">
+        {text}
+        {page.name !== "connections" && (
+          <>
+            {" — "}
+            <Go to={{ name: "connections" }}>연결 화면으로 가기</Go>
+          </>
+        )}
+      </Note>
+    </div>
+  );
+}
+
 function NotFound({ path }: { readonly path: string }) {
   return (
     <div className="page">
-      <h1>없는 화면이다</h1>
+      <h1>없는 화면이에요</h1>
       <p className="lede" style={{ margin: "10px 0 20px" }}>
-        <code>{path}</code>에 해당하는 화면이 없다. 주소가 바뀌었거나 지워진 것일 수 있다.
+        <code>{path}</code>에 해당하는 화면이 없어요. 주소가 바뀌었거나 지워졌을 수 있어요.
       </p>
-      <Go to={{ name: "home" }}>홈으로 간다</Go>
+      <Go to={{ name: "home" }}>홈으로 가기</Go>
     </div>
   );
 }
@@ -104,7 +142,7 @@ function NameDialog({
   };
   return (
     <Dialog
-      title="누구인지 알려 준다"
+      title="누구인지 알려 주세요"
       onClose={onDone}
       actions={
         <>
@@ -131,7 +169,7 @@ function NameDialog({
             setError(undefined);
           }}
           error={error}
-          help="실험과 세계에 만든 사람으로 남고, 벤치마크에 함께 보인다. 이 브라우저에 기억해 둔다."
+          help="실험과 세계에 만든 사람으로 남고, 벤치마크에 함께 보여요. 이 브라우저에 기억해 둬요."
           maxLength={40}
           autoFocus
         />
@@ -259,7 +297,7 @@ export function App({ api, identity }: { readonly api: Api; readonly identity: I
     if (meta.data?.user.source === "anonymous" && !identity.name) setAsking(true);
   }, [meta.data, identity]);
 
-  const proxied = meta.data?.user.source === "proxy";
+  const proxied = meta.data?.user.source === "proxy" || meta.data?.user.source === "sso";
   const me = proxied ? meta.data?.user.name : identity.name;
   const services: AppServices = useMemo(
     () => ({
@@ -297,6 +335,7 @@ export function App({ api, identity }: { readonly api: Api; readonly identity: I
               </div>
             }
           >
+            <ExpiryBanner />
             {pageView(page)}
           </Suspense>
         </main>

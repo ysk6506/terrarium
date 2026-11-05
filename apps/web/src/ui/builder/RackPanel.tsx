@@ -2,8 +2,15 @@
  * A rack's front, drawn top-down like the label on a real rack: devices as dark plates, free units
  * as gaps you can click to mount into. Power demand is shown against what one PDU can carry.
  */
-import { DEFAULT_MODEL_BY_KIND, type RackMountedKind } from "@terrarium/core/catalog";
-import type { Entity } from "@terrarium/core/world";
+import {
+  DEFAULT_MODEL_BY_KIND,
+  gpuOf,
+  mountOfModel,
+  plannedGpus,
+  type RackMountedKind,
+  type RackStandard,
+} from "@terrarium/core/catalog";
+import { type Entity, rackStandardOf } from "@terrarium/core/world";
 import { useState } from "react";
 import { builder, watts, won } from "../../logic";
 import { Button, Meter, SelectField } from "../kit";
@@ -19,13 +26,34 @@ const GROUPS: Readonly<Record<RackMountedKind, string>> = {
   pdu: "수직 PDU (뒤쪽, 0U)",
 };
 
-const MODEL_OPTIONS = MOUNT_KINDS.flatMap((kind) =>
-  catalog.list(kind).map((m) => ({
-    value: m.id,
-    label: `${m.name}${"uHeight" in m && m.uHeight > 0 ? ` ${m.uHeight}U` : ""} (${won(m.costM)})`,
-    group: GROUPS[kind],
-  })),
-);
+const unitName = (standard: RackStandard): string => (standard === "orv3" ? "OU" : "U");
+
+/** What can be mounted in a rack of this standard: models built for it, nothing else fits. */
+const optionsFor = (standard: RackStandard) =>
+  MOUNT_KINDS.flatMap((kind) =>
+    catalog
+      .list(kind)
+      .filter((m) => mountOfModel(m) === standard)
+      .map((m) => ({
+        value: m.id,
+        label: `${m.name}${"uHeight" in m && m.uHeight > 0 ? ` ${m.uHeight}${unitName(standard)}` : ""} (${won(m.costM)})`,
+        group: GROUPS[kind],
+      })),
+  );
+
+/** What the chosen GPU server carries, and which chip is coming but cannot be placed yet. */
+function GpuNote({ modelId }: { readonly modelId: string }) {
+  const model = catalog.get(modelId);
+  const gpu = model.kind === "server" ? gpuOf(model) : undefined;
+  if (!gpu || model.kind !== "server") return null;
+  const next = plannedGpus()[0];
+  return (
+    <p className="tiny muted">
+      {gpu.name} {model.gpus}장 · {gpu.memoryType} {gpu.memoryGiB}GB · 장당 {gpu.tdpW}W
+      {next ? ` · 도입 예정: ${next.name} (${next.year}년)` : ""}
+    </p>
+  );
+}
 
 function SlotButton({
   slot,
@@ -60,7 +88,7 @@ function SlotButton({
       className="u-slot"
       style={{ height: Math.max(slot.height * U_PX, 16) }}
       aria-pressed={at !== undefined && at >= slot.u && at <= top}
-      title={`${label} 비어 있다. 누르면 여기에 단다`}
+      title={`${label} 비어 있어요. 누르면 여기에 달아요`}
       onClick={() => onPick(slot.u)}
     >
       <span className="u-no">{top}</span>
@@ -78,7 +106,7 @@ function PowerLine({ ev }: { readonly ev: builder.Elevation }) {
       </div>
       <Meter ratio={ratio} label="랙 전력 여유" />
       {ev.supplyW === 0 && ev.demandW > 0 && (
-        <div className="tiny muted">수직 PDU를 달아야 장비에 전기가 간다.</div>
+        <div className="tiny muted">수직 PDU를 달아야 장비에 전기가 가요.</div>
       )}
     </div>
   );
@@ -95,8 +123,14 @@ function MountForm({
   readonly at?: number;
   readonly onClear: () => void;
 }) {
-  const [modelId, setModelId] = useState<string>(DEFAULT_MODEL_BY_KIND.server);
-  const pdu = catalog.get(modelId).kind === "pdu";
+  const standard = rackStandardOf(rack, catalog);
+  const options = optionsFor(standard);
+  const [picked, setModelId] = useState<string>(DEFAULT_MODEL_BY_KIND.server);
+  // A model of the other standard cannot be mounted here: fall back to the first one that fits.
+  const modelId = options.some((o) => o.value === picked)
+    ? picked
+    : (options[0]?.value ?? DEFAULT_MODEL_BY_KIND.server);
+  const pdu = catalog.get(modelId).kind === "pdu" && catalog.getOf(modelId, "pdu").uHeight === 0;
   const mount = () =>
     b.apply((bp) => {
       const edit = builder.mountDevice(bp, catalog, rack.id, modelId, pdu ? undefined : at);
@@ -105,14 +139,15 @@ function MountForm({
     }) && onClear();
   return (
     <>
-      <SelectField label="달 장비" value={modelId} options={MODEL_OPTIONS} onChange={setModelId} />
+      <SelectField label="달 장비" value={modelId} options={options} onChange={setModelId} />
+      <GpuNote modelId={modelId} />
       <div className="row">
         <Button kind="primary" size="small" icon="plus" onClick={mount}>
           {at === undefined || pdu ? "빈 곳에 달기" : `U${at}에 달기`}
         </Button>
         {at !== undefined && (
           <Button size="small" kind="quiet" onClick={onClear}>
-            자리 고르기 취소
+            자리 선택 풀기
           </Button>
         )}
       </div>
@@ -126,7 +161,9 @@ export function RackPanel({ rack, b }: { readonly rack: Entity; readonly b: Buil
   return (
     <div className="builder-block stack">
       <h3 style={{ marginBottom: 0 }}>
-        랙 정면 {ev.units}U, 빈 곳 {ev.freeUnits}U
+        랙 정면 {ev.units}
+        {unitName(rackStandardOf(rack, catalog))}, 빈 곳 {ev.freeUnits}
+        {unitName(rackStandardOf(rack, catalog))}
       </h3>
       <PowerLine ev={ev} />
       <ol className="elevation" aria-label={`${rack.name} 정면, 위에서부터`}>

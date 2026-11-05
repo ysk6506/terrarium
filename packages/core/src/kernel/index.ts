@@ -25,6 +25,7 @@ export { formatDuration, josa, type Particle, withJosa } from "./text";
 export {
   approach,
   clamp,
+  OU_HEIGHT_M,
   RACK_DEPTH_M,
   RACK_UNITS_DEFAULT,
   RACK_WIDTH_M,

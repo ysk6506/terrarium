@@ -2,6 +2,8 @@ import { InvalidValueError } from "./errors";
 
 /** One rack unit (1U) in metres. */
 export const U_HEIGHT_M = 0.04445;
+/** One OpenU (OU) of an OCP Open Rack v3 in metres: 48 mm, a little taller than a 1U. */
+export const OU_HEIGHT_M = 0.048;
 export const RACK_UNITS_DEFAULT = 42;
 export const RACK_WIDTH_M = 0.6;
 export const RACK_DEPTH_M = 1.2;

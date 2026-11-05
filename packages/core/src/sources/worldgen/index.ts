@@ -16,9 +16,17 @@ export {
   DEFAULT_CAMPUS,
   MAX_CAMPUS_RACKS,
   MAX_DETAILED_RACKS,
+  SITE_CAMPUS_MIX,
 } from "./campus-spec";
 export { generateWorld, type WorldgenResult } from "./generate";
-export { outlineLand, SITE_SHAPES, type SiteShape, shapeOutline } from "./sites";
+export {
+  outlineLand,
+  SITE_SHAPES,
+  type SitePlace,
+  type SiteShape,
+  type SiteSlot,
+  shapeOutline,
+} from "./sites";
 export {
   CHOICE_FIELD_LABELS,
   CHOICE_LABELS,

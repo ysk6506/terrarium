@@ -5,8 +5,13 @@
  */
 import type { EndReason } from "@terrarium/core/oracle";
 import type { CallResult, RunResult } from "@terrarium/core/session";
-import { blueprintDigest } from "@terrarium/core/world";
-import { type HostedSession, type PlainSessionConfig, raise, type WorkerError } from "../runtime";
+import {
+  type HostedSession,
+  identityOf,
+  type PlainSessionConfig,
+  raise,
+  type WorkerError,
+} from "../runtime";
 import {
   type ErrorReply,
   NEED_BLUEPRINT,
@@ -25,7 +30,7 @@ export class NodeUnreachable extends Error {
     readonly nodeId: string,
     detail: string,
   ) {
-    super(`세션을 돌리던 노드 ${nodeId}가 멈췄다: ${detail}`);
+    super(`세션을 돌리던 노드 ${nodeId}가 멈췄어요: ${detail}`);
     this.name = "NodeUnreachable";
   }
 }
@@ -36,7 +41,7 @@ export class NodeRefused extends Error {
     readonly nodeId: string,
     readonly code: string,
   ) {
-    super(`노드 ${nodeId}가 새 세션을 받지 않는다 (${code})`);
+    super(`노드 ${nodeId}가 새 세션을 받지 않아요 (${code})`);
     this.name = "NodeRefused";
   }
 }
@@ -87,7 +92,7 @@ export class RemoteNode {
     try {
       json = text ? JSON.parse(text) : undefined;
     } catch {
-      throw new NodeUnreachable(o.id, `응답을 읽을 수 없다 (HTTP ${res.status})`);
+      throw new NodeUnreachable(o.id, `응답을 읽을 수 없어요 (HTTP ${res.status})`);
     }
     if (res.ok) return json as T;
     const error = (json as Partial<ErrorReply> | undefined)?.error;
@@ -105,8 +110,8 @@ export class RemoteNode {
 
   /** Open a session here. Throws NodeRefused when the node is full or draining. */
   async open(config: PlainSessionConfig): Promise<RemoteSession> {
-    const { blueprint, ...slim } = config;
-    const digest = blueprintDigest(blueprint);
+    const { blueprint, world, ...slim } = config;
+    const digest = (world ?? identityOf(blueprint)).digest;
     const attempt = (withWorld: boolean) =>
       this.request<OpenReply>("POST", "/sessions", {
         config: slim,

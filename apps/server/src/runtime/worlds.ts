@@ -53,7 +53,7 @@ export class Worlds {
     const issues = validateBlueprint(bp, this.ctx.catalog);
     const errors = blueprintIssues(issues);
     if (errors.length > 0)
-      throw new InvalidInputError(`세계에 고칠 곳이 ${errors.length}군데 있다`, errors);
+      throw new InvalidInputError(`세계에 고칠 곳이 ${errors.length}군데 있어요`, errors);
     const world: WorldRecord = {
       ...base,
       blueprint: bp,
@@ -111,7 +111,9 @@ export class Worlds {
       });
     } catch (err) {
       if (err instanceof TerrariumError) throw err;
-      throw new UnavailableError(`${entry.view.name}에 닿을 수 없다: ${(err as Error).message}`);
+      throw new UnavailableError(
+        `${entry.view.name}에 연결할 수 없어요: ${(err as Error).message}`,
+      );
     }
     const saved = await this.save(
       { ...base, provenance: { source: req.source, report: imported.report } },
@@ -122,10 +124,10 @@ export class Worlds {
 
   async update(viewer: Viewer, id: string, req: UpdateWorldRequest): Promise<SavedWorld> {
     const current = await this.get(id);
-    ownerOnly(viewer, current.owner, "세계 수정");
+    ownerOnly(viewer, current.owner, "세계 고치기");
     if (current.digest !== req.baseDigest)
       throw new ConflictError(
-        "그사이 이 세계가 바뀌었다. 새로고침해서 바뀐 내용을 본 뒤 다시 저장한다",
+        "그사이 이 세계가 바뀌었어요. 새로고침해서 바뀐 내용을 본 뒤 다시 저장해 주세요",
       );
     const { blueprint, digest: _digest, updatedAt: _updatedAt, ...base } = current;
     return this.save({ ...base, name: req.name ?? current.name }, req.blueprint ?? blueprint);
@@ -133,7 +135,7 @@ export class Worlds {
 
   async delete(viewer: Viewer, id: string): Promise<{ deleted: boolean }> {
     const current = await this.get(id);
-    ownerOnly(viewer, current.owner, "세계 삭제");
+    ownerOnly(viewer, current.owner, "세계 지우기");
     return { deleted: await this.ctx.store.deleteWorld(id) };
   }
 }

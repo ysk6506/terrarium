@@ -12,7 +12,6 @@ import {
   type ServerState,
   type WorldReader,
 } from "@terrarium/core/world";
-import { simTimeIso } from "./http";
 
 export interface BmcContext {
   readonly world: WorldReader;
@@ -36,7 +35,7 @@ export const ids = (ctx: BmcContext) => ({
 const state = (ctx: BmcContext): ServerState => ctx.world.stateAs(ctx.server.id, "server");
 const model = (ctx: BmcContext) => ctx.world.catalog.getOf(ctx.server.modelId ?? "", "server");
 
-function status(s: ServerState): { State: string; Health: string; HealthRollup: string } {
+export function status(s: ServerState): { State: string; Health: string; HealthRollup: string } {
   const on = s.powered && s.adminOn;
   return {
     State: on ? "Enabled" : s.powered ? "StandbyOffline" : "Absent",
@@ -61,6 +60,32 @@ export function serviceRoot(ctx: BmcContext): Record<string, unknown> {
     Systems: { "@odata.id": `${ctx.base}/Systems` },
     Chassis: { "@odata.id": `${ctx.base}/Chassis` },
     Managers: { "@odata.id": `${ctx.base}/Managers` },
+    SessionService: { "@odata.id": `${ctx.base}/SessionService` },
+    Links: { Sessions: { "@odata.id": `${ctx.base}/SessionService/Sessions` } },
+  };
+}
+
+/** Sessions are the one thing this BMC leaves out: tools reach it already authenticated, so the list is always empty. */
+export function sessionService(ctx: BmcContext): Record<string, unknown> {
+  return {
+    "@odata.id": `${ctx.base}/SessionService`,
+    "@odata.type": "#SessionService.v1_2_0.SessionService",
+    Id: "SessionService",
+    Name: "Session Service",
+    ServiceEnabled: true,
+    SessionTimeout: 1800,
+    Status: { State: "Enabled", Health: "OK" },
+    Sessions: { "@odata.id": `${ctx.base}/SessionService/Sessions` },
+  };
+}
+
+export function sessions(ctx: BmcContext): Record<string, unknown> {
+  return {
+    "@odata.id": `${ctx.base}/SessionService/Sessions`,
+    "@odata.type": "#SessionCollection.SessionCollection",
+    Name: "Session Collection",
+    Members: [],
+    "Members@odata.count": 0,
   };
 }
 
@@ -117,6 +142,7 @@ export function system(ctx: BmcContext): Record<string, unknown> {
       Status: status(s),
     },
     MemorySummary: { TotalSystemMemoryGiB: m.memoryGiB, Status: status(s) },
+    Processors: { "@odata.id": `${ctx.base}/Systems/${sid}/Processors` },
     Actions: {
       "#ComputerSystem.Reset": {
         target: `${ctx.base}/Systems/${sid}/Actions/ComputerSystem.Reset`,
@@ -243,6 +269,7 @@ export function power(ctx: BmcContext): Record<string, unknown> {
     Name: "Power",
     PowerControl: [
       {
+        "@odata.id": `${ctx.base}/Chassis/${cid}/Power#/PowerControl/0`,
         MemberId: "0",
         Name: "System Power Control",
         PowerConsumedWatts: Math.round(s.powerW),
@@ -250,6 +277,7 @@ export function power(ctx: BmcContext): Record<string, unknown> {
       },
     ],
     PowerSupplies: s.psuOk.map((ok, i) => ({
+      "@odata.id": `${ctx.base}/Chassis/${cid}/Power#/PowerSupplies/${i}`,
       MemberId: String(i),
       Name: `PS${i + 1}`,
       PowerCapacityWatts: Math.round(m.maxPowerW * 1.2),
@@ -343,43 +371,5 @@ export function manager(ctx: BmcContext): Record<string, unknown> {
     FirmwareVersion: ctx.profile.version,
     Status: { State: s.powered ? "Enabled" : "Absent", Health: "OK" },
     Links: { ManagerForServers: [{ "@odata.id": `${ctx.base}/Systems/${sid}` }] },
-  };
-}
-
-const SEVERITY: Record<string, string> = { warning: "Warning", critical: "Critical" };
-
-/** Event log entries: alarms raised or cleared on this server, from the world's event log. */
-export function eventLog(ctx: BmcContext): Record<string, unknown> {
-  const sid = ids(ctx).system;
-  const base = `${ctx.base}/Systems/${sid}/LogServices/EventLog/Entries`;
-  const entries = ctx.world
-    .events()
-    .filter(
-      (e) =>
-        (e.type === "alarm.raise" && e.alarm.entityId === ctx.server.id) ||
-        (e.type === "thermal.shutdown" && e.target === ctx.server.id),
-    )
-    .map((e) => ({
-      "@odata.id": `${base}/${e.seq}`,
-      "@odata.type": "#LogEntry.v1_15_0.LogEntry",
-      Id: String(e.seq),
-      Created: simTimeIso(e.t),
-      EntryType: "Event",
-      Severity: e.type === "alarm.raise" ? (SEVERITY[e.alarm.severity] ?? "OK") : "Critical",
-      Message:
-        e.type === "alarm.raise"
-          ? e.alarm.message
-          : `${ctx.server.name} thermal protection shutdown`,
-      MessageId:
-        e.type === "alarm.raise"
-          ? `Terrarium.1.0.${e.alarm.code}`
-          : "Terrarium.1.0.thermal_shutdown",
-    }));
-  return {
-    "@odata.id": base,
-    "@odata.type": "#LogEntryCollection.LogEntryCollection",
-    Name: "Log Service Collection",
-    Members: entries,
-    "Members@odata.count": entries.length,
   };
 }

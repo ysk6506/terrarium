@@ -3,14 +3,12 @@
  * and live events, over the adapters. The HTTP layer calls this and nothing below it.
  */
 import { Catalog } from "@terrarium/core/catalog";
-import type { HarnessView, MetaView } from "@terrarium/core/contract";
-import {
-  DEFAULT_LIMITS,
-  type HarnessPort,
-  MAX_SEEDS,
-  type SchedulerLimits,
-} from "@terrarium/core/experiments";
-import type { Adapters } from "../adapters";
+import type { ConnectionView, HarnessView, MetaView } from "@terrarium/core/contract";
+import { DEFAULT_LIMITS, MAX_SEEDS, type SchedulerLimits } from "@terrarium/core/experiments";
+import { type Adapters, SecretBox } from "../adapters";
+import { AgentVersions } from "./agent-versions";
+import { BlueprintCache } from "./blueprint-cache";
+import { Connections } from "./connections";
 import type { PlatformContext, Viewer } from "./context";
 import { Dispatcher } from "./dispatcher";
 import { EventBus } from "./events";
@@ -23,7 +21,10 @@ import { Scenarios } from "./scenarios";
 import { Worlds } from "./worlds";
 
 export interface PlatformOptions {
-  readonly adapters: Pick<Adapters, "store" | "harnesses" | "sources" | "telemetry">;
+  readonly adapters: Pick<Adapters, "store" | "harnesses" | "sources" | "telemetry"> &
+    Partial<
+      Pick<Adapters, "harnessConfigs" | "connect" | "allowedHosts" | "secretBox" | "retention">
+    >;
   readonly host: SessionHost;
   readonly gateway?: ToolGateway;
   readonly limits?: Partial<SchedulerLimits>;
@@ -34,9 +35,24 @@ export interface PlatformOptions {
   /** Wall-clock limit per agent run, and the grace after the session ends (tests shorten these). */
   readonly wallLimitMs?: number;
   readonly graceMs?: number;
+  /** How long to wait for a harness to list its agents, ms (tests shorten this). */
+  readonly agentsTimeoutMs?: number;
 }
 
-const AGENTS_TTL_MS = 30_000;
+/** What the meta and the experiment form need of a connection: who it is and which agents it has. */
+function harnessViewOf(v: ConnectionView): HarnessView {
+  return {
+    id: v.id,
+    name: v.name,
+    kind: v.kind,
+    description: v.description,
+    toolTransport: v.toolTransport,
+    telemetry: v.telemetry,
+    agents: v.agents,
+    status: v.status,
+    ...(v.error === undefined ? {} : { error: v.error }),
+  };
+}
 
 /**
  * Limits that follow what the hosts can hold right now (ADR-0032). `maxRunning` is the smaller of the
@@ -63,6 +79,29 @@ export function withCapacity(
   return live;
 }
 
+/** The connections: the config file's harnesses plus the ones people registered. */
+function connectionsOf(options: PlatformOptions, stamps: Stamps): Connections {
+  const { adapters } = options;
+  const configs = new Map((adapters.harnessConfigs ?? []).map((c) => [c.id, c]));
+  return new Connections({
+    store: adapters.store,
+    stamps,
+    fixed: adapters.harnesses.map((port) => {
+      const config = configs.get(port.info.id);
+      return config ? { port, config } : { port };
+    }),
+    connect: adapters.connect ?? { env: process.env, fetch },
+    // Without a key on disk, sealed values live only as long as this process (tests, running without a disk).
+    box: adapters.secretBox ?? SecretBox.ephemeral(),
+    ...(adapters.retention ? { retention: adapters.retention } : {}),
+    ...(adapters.allowedHosts ? { allowedHosts: adapters.allowedHosts } : {}),
+    ...(options.agentsTimeoutMs ? { agentsTimeoutMs: options.agentsTimeoutMs } : {}),
+    ...(options.gateway?.slotUrl
+      ? { slotUrl: (s: string) => options.gateway?.slotUrl?.(s) ?? "" }
+      : {}),
+  });
+}
+
 export class Platform {
   readonly worlds: Worlds;
   readonly scenarios: Scenarios;
@@ -70,14 +109,14 @@ export class Platform {
   readonly results: Results;
   readonly events = new EventBus();
   readonly dispatcher: Dispatcher;
+  readonly connections: Connections;
+  readonly agentVersions: AgentVersions;
   private readonly ctx: PlatformContext;
-  private readonly agentCache = new Map<string, { at: number; view: HarnessView }>();
 
   constructor(private readonly options: PlatformOptions) {
-    const harnesses = new Map<string, HarnessPort>(
-      options.adapters.harnesses.map((h) => [h.info.id, h]),
-    );
     const stamps = options.stamps ?? SYSTEM_STAMPS;
+    const harnesses = connectionsOf(options, stamps);
+    this.connections = harnesses;
     this.ctx = {
       store: options.adapters.store,
       catalog: new Catalog(),
@@ -90,10 +129,13 @@ export class Platform {
     };
     const deps = {
       store: this.ctx.store,
+      blueprints: new BlueprintCache(),
       harnesses,
       host: options.host,
       stamps,
       emit: (id: string, e: Parameters<EventBus["emit"]>[1]) => this.events.emit(id, e),
+      activity: (worldId: string, e: Parameters<EventBus["emitWorld"]>[1]) =>
+        this.events.emitWorld(worldId, e),
       ...(options.gateway ? { gateway: options.gateway } : {}),
       ...(options.wallLimitMs ? { wallLimitMs: options.wallLimitMs } : {}),
       ...(options.graceMs !== undefined ? { graceMs: options.graceMs } : {}),
@@ -109,7 +151,13 @@ export class Platform {
     );
     this.worlds = new Worlds(this.ctx);
     this.scenarios = new Scenarios(this.ctx);
-    this.experiments = new Experiments(this.ctx, this.scenarios, this.dispatcher);
+    this.agentVersions = new AgentVersions(this.ctx);
+    this.experiments = new Experiments(
+      this.ctx,
+      this.scenarios,
+      this.dispatcher,
+      this.agentVersions,
+    );
     this.results = new Results(this.ctx, this.experiments);
   }
 
@@ -122,37 +170,31 @@ export class Platform {
     this.events.emit(experimentId, { type: "experiment", summary });
   }
 
-  private async harnessView(h: HarnessPort): Promise<HarnessView> {
-    const cached = this.agentCache.get(h.info.id);
-    if (cached && Date.now() - cached.at < AGENTS_TTL_MS) return cached.view;
-    let view: HarnessView;
-    try {
-      view = { ...h.info, agents: await h.agents(), status: "ok" };
-    } catch (err) {
-      view = { ...h.info, agents: [], status: "unreachable", error: (err as Error).message };
-    }
-    this.agentCache.set(h.info.id, { at: Date.now(), view });
-    return view;
-  }
-
   async meta(viewer: Viewer): Promise<MetaView> {
     return {
       version: this.options.version ?? "dev",
       user: { name: viewer.name, source: viewer.source },
-      harnesses: await Promise.all(
-        [...this.ctx.harnesses.values()].map((h) => this.harnessView(h)),
-      ),
+      harnesses: (await this.connections.views()).map(harnessViewOf),
       sources: [...this.ctx.sources.values()].map((s) => s.view),
       telemetry: this.ctx.telemetry
         ? { configured: true, name: this.ctx.telemetry.name }
         : { configured: false, name: "ClickStack" },
       limits: { ...this.dispatcher.limits, maxSeeds: MAX_SEEDS },
       queue: this.dispatcher.counts,
+      expiring: await this.connections.expiring(viewer),
     };
   }
 
+  /** Remove connections nobody has used for too long (REQ-051). Run when the server starts and then now and then. */
+  sweepConnections(): Promise<string[]> {
+    return this.connections.sweep();
+  }
+
   /** Pick up runs left from before a restart. */
-  start(): Promise<{ readonly resumed: number; readonly interrupted: number }> {
+  async start(): Promise<{ readonly resumed: number; readonly interrupted: number }> {
+    // Connections first: a run left from before is picked up on the harness it was started on.
+    await this.connections.load();
+    await this.connections.sweep();
     return this.dispatcher.recover();
   }
 

@@ -1,7 +1,7 @@
 /** Finding and liking: can people get to things, does the page tell where they are, does it look and load as designed. */
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { asVisitor, open, pagesOf, record, type Site, type Tally, tally } from "./site";
+import { asVisitor, open, pagesOf, record, type Site, settle, type Tally, tally } from "./site";
 
 // ----------------------------------------------------------------------------- colours
 
@@ -59,7 +59,7 @@ export async function load(site: Site): Promise<{ kb: number; ms: number; sceneD
     await v.page.goto(site.base, { waitUntil: "domcontentloaded" });
     await v.page.locator("h1").first().waitFor({ timeout: 15_000 });
     const ms = Date.now() - started;
-    await v.page.waitForLoadState("networkidle");
+    await settle(v.page);
     await Promise.all(pending);
     // Counted before the world screen opens: the budget is for what home itself downloads.
     const kb = bytes / 1024;

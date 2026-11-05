@@ -12,7 +12,7 @@ const run = (rooms: string[]) =>
 describe("a room filter that matches nothing is an error that names the choices [REQ-010]", () => {
   test("the message says what was asked and which rooms exist", async () => {
     await expect(run(["없는방-zzz"])).rejects.toThrow(
-      /"없는방-zzz"에 맞는 서버룸이 없다.*있는 서버룸: /,
+      /"없는방-zzz"에 맞는 서버룸이 없어요.*있는 서버룸: /,
     );
   });
 

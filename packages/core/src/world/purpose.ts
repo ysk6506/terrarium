@@ -8,6 +8,7 @@ export const ROOM_PURPOSES = [
   "mechanical",
   "battery",
   "noc",
+  "cleanroom",
 ] as const;
 export type RoomPurpose = (typeof ROOM_PURPOSES)[number];
 
@@ -18,10 +19,31 @@ export const ROOM_PURPOSE_LABELS: Readonly<Record<RoomPurpose, string>> = {
   mechanical: "기계실",
   battery: "배터리실",
   noc: "관제실(NOC)",
+  cleanroom: "클린룸",
 };
 
 /** The purpose a room was given; rooms made before purposes existed are data halls. */
 export function roomPurposeOf(room: Entity): RoomPurpose {
   const set = room.props.purpose;
   return ROOM_PURPOSES.find((p) => p === set) ?? "data_hall";
+}
+
+/**
+ * What a building is for (REQ-043): most server rooms of a semiconductor campus sit inside a fab, next
+ * to its cleanrooms, and a few stand in data-centre buildings of their own.
+ */
+export const BUILDING_PURPOSES = ["data_center", "fab", "utility", "research"] as const;
+export type BuildingPurpose = (typeof BUILDING_PURPOSES)[number];
+
+export const BUILDING_PURPOSE_LABELS: Readonly<Record<BuildingPurpose, string>> = {
+  data_center: "데이터센터",
+  fab: "반도체 팹",
+  utility: "유틸리티동",
+  research: "연구동",
+};
+
+/** The purpose a building was given; buildings made before purposes existed are data centres. */
+export function buildingPurposeOf(building: Entity): BuildingPurpose {
+  const set = building.props.purpose;
+  return BUILDING_PURPOSES.find((p) => p === set) ?? "data_center";
 }

@@ -11,6 +11,7 @@ import {
   type FacadeResponse,
   json,
   Router,
+  SIM_EPOCH_MS,
   simTimeMs,
   stableUuid,
 } from "./http";
@@ -24,6 +25,24 @@ const KIND: Partial<Record<Entity["kind"], string>> = {
 };
 
 const LEVEL: Record<string, string> = { warning: "WARNING", critical: "CRITICAL" };
+
+/** A token is good for six hours. */
+const TOKEN_LIFETIME_MS = 6 * 60 * 60 * 1000;
+
+const EXPIRY_FORMAT = new Intl.DateTimeFormat("en-US", {
+  timeZone: "UTC",
+  weekday: "long",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+  second: "2-digit",
+});
+
+/** `expiresAt` the way the reference shows it: "Friday, August 5, 2016 6:22:05 PM UTC". */
+const expiryText = (ms: number): string =>
+  `${EXPIRY_FORMAT.format(new Date(ms)).replace(" at ", " ")} UTC`;
 
 export function vropsError(status: number, message: string): FacadeResponse {
   return json(status, { message, httpStatusCode: status, apiErrorCode: status });
@@ -39,17 +58,35 @@ function resources(world: WorldPort): Entity[] {
     );
 }
 
+/** vROps health colour and its 0 to 100 value (the badge score): green is 100, red 0. */
+const HEALTH = {
+  ok: { colour: "GREEN", value: 100 },
+  warning: { colour: "YELLOW", value: 50 },
+  critical: { colour: "RED", value: 0 },
+} as const;
+
 function resource(world: WorldPort, entity: Entity) {
-  const health = world.stateOf(entity.id).health;
+  const health = HEALTH[world.stateOf(entity.id).health];
   return {
     identifier: stableUuid(entity.id),
+    creationTime: SIM_EPOCH_MS,
     resourceKey: {
       name: entity.name,
       adapterKindKey: "VMWARE",
       resourceKindKey: KIND[entity.kind],
-      resourceIdentifiers: [{ identifierType: { name: "VMEntityObjectID" }, value: entity.id }],
+      resourceIdentifiers: [
+        {
+          identifierType: {
+            name: "VMEntityObjectID",
+            dataType: "STRING",
+            isPartOfUniqueness: true,
+          },
+          value: entity.id,
+        },
+      ],
     },
-    resourceHealth: health === "ok" ? "GREEN" : health === "warning" ? "YELLOW" : "RED",
+    resourceHealth: health.colour,
+    resourceHealthValue: health.value,
     resourceStatusStates: [
       {
         adapterInstanceId: stableUuid("adapter"),
@@ -92,13 +129,15 @@ function routes(world: WorldPort, profile: VropsProfile): Router {
     return found;
   };
   return new Router()
-    .on("POST", "/suite-api/api/auth/token/acquire", () =>
-      json(200, {
+    .on("POST", "/suite-api/api/auth/token/acquire", () => {
+      const expires = simTimeMs(world.time()) + TOKEN_LIFETIME_MS;
+      return json(200, {
         token: `${profile.tokenScheme}-${stableUuid("token")}`,
-        validity: 21_600_000,
-        expiresAt: "never",
-      }),
-    )
+        validity: expires,
+        expiresAt: expiryText(expires),
+        roles: [],
+      });
+    })
     .on("GET", "/suite-api/api/resources", (q) => {
       const kind = q.query.resourceKind;
       const list = resources(world)
@@ -133,6 +172,7 @@ function routes(world: WorldPort, profile: VropsProfile): Router {
           status: "ACTIVE",
           alertDefinitionName: a.message,
           alertDefinitionId: `AlertDefinition-Terrarium-${a.code}`,
+          controlState: "OPEN",
           startTimeUTC: simTimeMs(a.since),
         }));
       return json(200, { pageInfo: { totalCount: alerts.length }, alerts });

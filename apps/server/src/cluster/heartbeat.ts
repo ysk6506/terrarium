@@ -31,7 +31,7 @@ export class Heartbeat {
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(Math.max(1000, o.everyMs)),
     });
-    if (!res.ok) throw new Error(`컨트롤이 ${res.status}로 답했다`);
+    if (!res.ok) throw new Error(`컨트롤이 ${res.status}로 답했어요`);
   }
 
   /** One beat now. Returns whether the control plane heard it. */

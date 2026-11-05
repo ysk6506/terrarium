@@ -9,6 +9,7 @@ import {
   deriveRoomLayout,
   type Outline,
   packShelves,
+  type ReservedPlot,
   type RoomLayout,
 } from "@terrarium/core/spatial";
 import {
@@ -89,6 +90,17 @@ export class BlueprintAssembler {
   }
 
   /**
+   * Ground a map shows a building on that this world does not build. Other buildings and plant keep
+   * off it, and the site keeps the list so what is drawn around the buildings can leave it alone.
+   */
+  reserve(siteId: string, plots: readonly ReservedPlot[]): this {
+    const i = this.sites.findIndex((s) => s.id === siteId);
+    const site = this.sites[i];
+    if (site && plots.length > 0) this.sites[i] = { ...site, reserved: plots };
+    return this;
+  }
+
+  /**
    * Plant standing on the site grounds (generators, chillers, transformers), grouped into yards.
    * With `building`, it stands beside that building.
    */
@@ -97,8 +109,18 @@ export class BlueprintAssembler {
     return this;
   }
 
-  building(id: string, siteId: string, name: string, props: Props = {}): this {
-    this.buildings.push({ id, siteId, name, props });
+  /**
+   * A building. With `at` (its centre in the site's frame, where a map shows it standing) it is put
+   * there if the land and its neighbours allow; without, or when they do not, it is placed by the layout.
+   */
+  building(
+    id: string,
+    siteId: string,
+    name: string,
+    props: Props = {},
+    at?: { readonly x: number; readonly y: number },
+  ): this {
+    this.buildings.push({ id, siteId, name, props, ...(at ? { at } : {}) });
     return this;
   }
 

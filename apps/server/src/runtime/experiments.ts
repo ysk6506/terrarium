@@ -24,6 +24,7 @@ import {
   benchmarkKey,
   DEFAULT_SEEDS,
   type Experiment,
+  type ExperimentFilter,
   experimentStatus,
   forkExperiment,
   isTerminal,
@@ -34,6 +35,7 @@ import {
   type RunRecord,
   recipeProblems,
   type Snapshot,
+  type Subject,
   seedsUpTo,
 } from "@terrarium/core/experiments";
 import { InvalidValueError } from "@terrarium/core/kernel";
@@ -41,10 +43,12 @@ import { ORACLE_VERSION } from "@terrarium/core/oracle";
 import { BUILTIN_PROFILES } from "@terrarium/core/profiles";
 import { hasErrors } from "@terrarium/core/scenario";
 import { DEFAULT_TIME } from "@terrarium/core/session";
+import type { AgentVersions } from "./agent-versions";
 import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
 import type { Dispatcher } from "./dispatcher";
 import { summaryOf } from "./executor";
 import type { Scenarios } from "./scenarios";
+import { present, subjectOf } from "./subject";
 
 const PROFILE_KEYS = {
   vcenter: BUILTIN_PROFILES.filter((p) => p.protocol === "vcenter").map((p) => p.key),
@@ -53,6 +57,16 @@ const PROFILE_KEYS = {
 
 const asIssues = (problems: readonly string[], path = "recipe") =>
   problems.map((message) => ({ path, message }));
+
+const FILTER_KEYS = ["owner", "worldId", "scenarioId", "benchmarkKey", "parentId", "meta"] as const;
+
+/** The parts of a query the store can filter on; the text search is called `q` in an address and `text` in the store. */
+function filterOf(query: ExperimentQueryParams): ExperimentFilter {
+  const filter: Record<string, string> = {};
+  for (const key of FILTER_KEYS) if (query[key]) filter[key] = query[key];
+  if (query.q) filter.text = query.q;
+  return filter;
+}
 
 export function summarize(experiment: Experiment, runs: readonly RunRecord[]): ExperimentSummary {
   const done = runs.filter((r) => r.status === "completed" && r.result);
@@ -76,6 +90,7 @@ export class Experiments {
     private readonly ctx: PlatformContext,
     private readonly scenarios: Scenarios,
     private readonly dispatcher: Dispatcher,
+    private readonly versions: AgentVersions,
   ) {}
 
   async get(id: string): Promise<Experiment> {
@@ -83,7 +98,7 @@ export class Experiments {
   }
 
   /** What a recipe points at, checked: the world, a runnable scenario on it, the harness's agents. */
-  private async resolve(recipe: Recipe): Promise<Snapshot> {
+  private async resolve(recipe: Recipe): Promise<{ snapshot: Snapshot; subject: Subject }> {
     const world = must(await this.ctx.store.getWorld(recipe.worldId), `세계 ${recipe.worldId}`);
     const scenario = must(
       await this.ctx.store.getScenario(recipe.scenarioId),
@@ -91,37 +106,48 @@ export class Experiments {
     );
     if (scenario.worldId !== world.id)
       throw new InvalidValueError(
-        `시나리오 '${scenario.name}'은 다른 세계(${scenario.worldId})의 것이다`,
+        `시나리오 '${scenario.name}'은 다른 세계(${scenario.worldId})의 것이에요`,
       );
     const issues = await this.scenarios.issuesOf(scenario.doc);
     if (hasErrors(issues))
       throw new InvalidInputError(
-        `시나리오 '${scenario.name}'에 고칠 곳이 있어 실행할 수 없다`,
+        `시나리오 '${scenario.name}'에 고칠 곳이 있어 실행할 수 없어요`,
         issues
           .filter((i) => i.severity === "error")
           .map((i) => ({ path: "recipe.scenarioId", message: i.message })),
       );
-    await this.checkRecipe(recipe);
+    const subject = await this.checkRecipe(recipe);
     return {
-      worldDigest: world.digest,
-      worldName: world.name,
-      scenarioDigest: scenario.digest,
-      scenarioName: scenario.name,
-      oracle: ORACLE_VERSION,
+      snapshot: {
+        worldDigest: world.digest,
+        worldName: world.name,
+        scenarioDigest: scenario.digest,
+        scenarioName: scenario.name,
+        oracle: ORACLE_VERSION,
+      },
+      subject,
     };
   }
 
-  private async checkRecipe(recipe: Recipe): Promise<void> {
+  /** The harness answers and has the agent; returns who that is, to keep with the experiment (REQ-052). */
+  private async checkRecipe(recipe: Recipe): Promise<Subject> {
     const harness = must(this.ctx.harnesses.get(recipe.harnessId), `하네스 '${recipe.harnessId}'`);
     const agents = await harness.agents().catch((err: Error) => {
-      throw new UnavailableError(`하네스 '${harness.info.name}'에 닿을 수 없다: ${err.message}`);
+      throw new UnavailableError(
+        `하네스 '${harness.info.name}'에 연결할 수 없어요: ${err.message}`,
+      );
     });
     const problems = recipeProblems(recipe, {
       profiles: PROFILE_KEYS,
       agents: agents.map((a) => a.id),
     });
     if (problems.length > 0)
-      throw new InvalidInputError("실험 조건을 확인한다", asIssues(problems));
+      throw new InvalidInputError("실험 조건을 확인해 주세요", asIssues(problems));
+    return subjectOf(
+      harness.info,
+      agents.find((a) => a.id === recipe.agentId),
+      this.ctx.harnesses.metadata?.(harness.info.id),
+    );
   }
 
   private recipeOf(req: RecipeRequest): Recipe {
@@ -144,6 +170,8 @@ export class Experiments {
     firstIndex = 0,
   ): Promise<void> {
     await this.ctx.store.putExperiment(experiment);
+    // A connection with experiments on it is in use: its removal clock starts over (REQ-051).
+    await this.ctx.harnesses.touch?.(experiment.recipe.harnessId);
     for (const [i, seed] of seeds.entries()) {
       const index = firstIndex + i;
       const run = newRun(
@@ -160,7 +188,7 @@ export class Experiments {
 
   async create(viewer: Viewer, req: CreateExperimentRequest): Promise<ExperimentView> {
     const recipe = this.recipeOf(req.recipe);
-    const snapshot = await this.resolve(recipe);
+    const { snapshot, subject } = await this.resolve(recipe);
     const experiment: Experiment = {
       id: this.ctx.stamps.id("e"),
       name: req.name,
@@ -170,6 +198,9 @@ export class Experiments {
       snapshot,
       benchmarkKey: benchmarkKey(snapshot, recipe),
       ...(req.note ? { note: req.note } : {}),
+      ...(present(req.metadata) ? { metadata: req.metadata } : {}),
+      subject,
+      agentVersion: await this.versions.observe(viewer, subject),
     };
     await this.launch(experiment, recipe.seeds);
     return this.view(viewer, experiment.id);
@@ -185,9 +216,11 @@ export class Experiments {
     // Same world and scenario: the same versions the parent ran. Another one: its current version.
     const sameTask =
       target.worldId === parent.recipe.worldId && target.scenarioId === parent.recipe.scenarioId;
-    const snapshot = sameTask ? parent.snapshot : await this.resolve(target);
-    if (sameTask) await this.checkRecipe(target);
-    const child = forkExperiment(
+    const resolved = sameTask ? undefined : await this.resolve(target);
+    const snapshot = resolved?.snapshot ?? parent.snapshot;
+    // A fork runs the agent as it is now, which may differ from the parent's agent (REQ-053).
+    const subject = resolved?.subject ?? (await this.checkRecipe(target));
+    const forked = forkExperiment(
       parent,
       change,
       {
@@ -196,24 +229,28 @@ export class Experiments {
         createdAt: this.ctx.stamps.now(),
         ...(req.name ? { name: req.name } : {}),
         ...(req.note ? { note: req.note } : {}),
+        ...(req.metadata ? { metadata: req.metadata } : {}),
+        subject,
       },
       snapshot,
     );
+    // Looked at only now: a fork that is refused for changing nothing leaves the agent's versions alone.
+    const child = { ...forked, agentVersion: await this.versions.observe(viewer, subject) };
     await this.launch(child, child.recipe.seeds);
     return this.view(viewer, child.id);
   }
 
   async addRuns(viewer: Viewer, id: string, req: AddRunsRequest): Promise<ExperimentView> {
     const experiment = await this.get(id);
-    ownerOnly(viewer, experiment.owner, "실행 추가");
+    ownerOnly(viewer, experiment.owner, "실행 더하기");
     const runs = await this.ctx.store.listRuns(id);
     const used = new Set(runs.map((r) => r.seed));
     const top = Math.max(0, ...used);
     const seeds = req.seeds ?? Array.from({ length: req.count ?? 1 }, (_, i) => top + i + 1);
     const again = seeds.filter((s) => used.has(s));
     if (again.length > 0)
-      throw new InvalidInputError("이미 돌린 시드다", [
-        { path: "seeds", message: `시드 ${again.join(", ")}는 이미 있다` },
+      throw new InvalidInputError("이미 돌린 시드예요", [
+        { path: "seeds", message: `시드 ${again.join(", ")}는 이미 있어요` },
       ]);
     const updated = {
       ...experiment,
@@ -225,7 +262,7 @@ export class Experiments {
 
   async cancel(viewer: Viewer, id: string): Promise<ExperimentView> {
     const experiment = await this.get(id);
-    ownerOnly(viewer, experiment.owner, "실험 취소");
+    ownerOnly(viewer, experiment.owner, "실험 멈추기");
     const runs = await this.ctx.store.listRuns(id);
     await Promise.all(
       runs.filter((r) => !isTerminal(r.status)).map((r) => this.dispatcher.cancel(r.id)),
@@ -238,14 +275,7 @@ export class Experiments {
   }
 
   async list(query: ExperimentQueryParams): Promise<ExperimentSummary[]> {
-    const found = await this.ctx.store.listExperiments({
-      ...(query.owner ? { owner: query.owner } : {}),
-      ...(query.worldId ? { worldId: query.worldId } : {}),
-      ...(query.scenarioId ? { scenarioId: query.scenarioId } : {}),
-      ...(query.benchmarkKey ? { benchmarkKey: query.benchmarkKey } : {}),
-      ...(query.parentId ? { parentId: query.parentId } : {}),
-      ...(query.q ? { text: query.q } : {}),
-    });
+    const found = await this.ctx.store.listExperiments(filterOf(query));
     const out: ExperimentSummary[] = [];
     for (const e of found) {
       const summary = await this.summaryOf(e);

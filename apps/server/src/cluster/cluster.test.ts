@@ -142,7 +142,7 @@ describe("a worker node runs the same session as a local host [REQ-042] [REQ-001
     const s = await remote.open(config());
     await node.close();
     await expect(s.call("list_alarms", {})).rejects.toBeInstanceOf(NodeUnreachable);
-    await expect(s.call("list_alarms", {})).rejects.toThrow("세션을 돌리던 노드 n1가 멈췄다");
+    await expect(s.call("list_alarms", {})).rejects.toThrow("세션을 돌리던 노드 n1가 멈췄어요");
     s.dispose();
   });
 
@@ -175,7 +175,7 @@ describe("the control plane places sessions on nodes [REQ-042]", () => {
     expect(host.placedOn("a")).toBe(2);
     expect(host.placedOn("b")).toBe(2);
     expect(host.openCount).toBe(4);
-    await expect(host.open(config())).rejects.toThrow("세션을 돌릴 자리가 없다");
+    await expect(host.open(config())).rejects.toThrow("세션을 돌릴 자리가 없어요");
     opened[0]?.dispose();
     opened[0]?.dispose();
     expect(host.openCount).toBe(3);

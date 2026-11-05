@@ -15,7 +15,7 @@ describe("saving scenarios and the smaller requests [REQ-034] [REQ-038] [REQ-039
   test("a scenario save needs its starting version and something to change", () => {
     expect(parseWith(UpdateScenarioBody, { baseDigest: "d1", name: "냉방 고장 2" }).ok).toBe(true);
     expect(messages(parseWith(UpdateScenarioBody, { baseDigest: "d1" }))).toEqual([
-      "바꿀 이름이나 시나리오가 없다",
+      "바꿀 이름이나 시나리오가 없어요",
     ]);
   });
 
@@ -26,14 +26,14 @@ describe("saving scenarios and the smaller requests [REQ-034] [REQ-038] [REQ-039
       value: { minRuns: 5 },
     });
     expect(messages(parseWith(LeaderboardQuery, { minRuns: "0" }))).toEqual([
-      "minRuns: 1 이상이어야 한다",
+      "minRuns: 1 이상이어야 해요",
     ]);
     expect(parseWith(TwinQuery, { agentId: "deep" })).toEqual({
       ok: true,
       value: { agentId: "deep" },
     });
     expect(messages(parseWith(CreateShareBody, { expiresInDays: 400 }))).toEqual([
-      "expiresInDays: 365 이하여야 한다",
+      "expiresInDays: 365 이하여야 해요",
     ]);
   });
 });

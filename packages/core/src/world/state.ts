@@ -4,6 +4,7 @@ import type { EntityKind } from "./blueprint";
 import { bulkOf } from "./bulk";
 import type { Fault } from "./faults";
 import type { BlueprintIndex } from "./graph";
+import type { NetPatch } from "./net-config";
 
 export type Health = "ok" | "warning" | "critical";
 
@@ -42,6 +43,8 @@ export interface PduState extends Base {
   powered: boolean;
   tripped: boolean;
   loadW: number;
+  /** Outlets an operator switched off (`Outlet.PowerControl`), ascending, numbered from 1; absent when none. */
+  outletsOff?: number[];
 }
 export interface PanelState extends Base {
   kind: "power_panel";
@@ -140,7 +143,12 @@ export interface VmState extends Base {
   memUtil: number;
 }
 export interface PlainState extends Base {
-  kind: "site" | "parcel" | "building" | "floor" | "vcenter" | "cluster" | "datastore";
+  kind: "parcel" | "building" | "floor" | "vcenter" | "cluster" | "datastore";
+}
+/** A site; `outdoorC` is filled in when it is read (the outdoor air belongs to the whole world, see World.stateOf). */
+export interface SiteState extends Base {
+  kind: "site";
+  outdoorC?: number;
 }
 
 export type EntityState =
@@ -158,6 +166,7 @@ export type EntityState =
   | ContainmentState
   | RoomState
   | VmState
+  | SiteState
   | PlainState;
 
 export type StateOf<K extends EntityKind> = Extract<EntityState, { kind: K }>;
@@ -174,10 +183,18 @@ export interface Alarm {
 export interface WorldState {
   t: number;
   entities: Record<string, EntityState>;
-  links: Record<string, { up: boolean }>;
+  /** `up` follows faults; `adminDown` names the ends an operator has shut (absent while none is). */
+  links: Record<string, { up: boolean; adminDown?: { from?: true; to?: true } }>;
   faults: Record<string, Fault>;
   alarms: Record<string, Alarm>;
+  /** What operators changed in the layer-2/3 configuration of a switch (REQ-064); absent while nobody has. */
+  netconf?: Record<string, NetPatch>;
+  /** Outdoor air, °C; absent means the default, so worlds that never change it keep their old snapshots and digests. */
+  outdoorC?: number;
 }
+
+/** Outdoor air while no scenario has changed it, °C. */
+export const DEFAULT_OUTDOOR_C = 25;
 
 export const AMBIENT_C = 22;
 
@@ -322,7 +339,7 @@ export function initialState(index: BlueprintIndex, catalog: Catalog): WorldStat
       state.setpointC = entity.props.setpointC;
     entities[entity.id] = state;
   }
-  const links: Record<string, { up: boolean }> = {};
+  const links: WorldState["links"] = {};
   for (const link of index.allLinks()) if (link.kind === "network") links[link.id] = { up: true };
   return { t: 0, entities, links, faults: {}, alarms: {} };
 }

@@ -122,7 +122,7 @@ export class NodeServer {
   private find(id: string, reply: FastifyReply): Held | undefined {
     const h = this.held.get(id);
     if (!h) {
-      this.fail(reply, 404, `세션 ${id}가 이 노드에 없다`, "not_found");
+      this.fail(reply, 404, `세션 ${id}가 이 노드에 없어요`, "not_found");
       return undefined;
     }
     h.touched = wallClockMs();
@@ -140,22 +140,26 @@ export class NodeServer {
   }
 
   private async open(body: OpenRequest, reply: FastifyReply) {
-    if (this.draining) return this.fail(reply, 503, "노드가 비워지는 중이다", NODE_DRAINING);
+    if (this.draining) return this.fail(reply, 503, "노드가 비워지는 중이에요", NODE_DRAINING);
     if (this.held.size >= this.options.slots)
-      return this.fail(reply, 503, "노드에 빈 자리가 없다", NODE_FULL);
+      return this.fail(reply, 503, "노드에 빈 자리가 없어요", NODE_FULL);
     let blueprint = this.blueprints.get(body.digest);
     if (body.blueprint) {
       if (blueprintDigest(body.blueprint) !== body.digest)
-        return this.fail(reply, 400, "월드와 다이제스트가 맞지 않는다", "invalid_value");
+        return this.fail(reply, 400, "세계와 다이제스트가 맞지 않아요", "invalid_value");
       blueprint = body.blueprint;
     }
-    if (!blueprint) return this.fail(reply, 409, "이 노드는 아직 월드를 모른다", NEED_BLUEPRINT);
+    if (!blueprint) return this.fail(reply, 409, "이 노드는 아직 세계를 몰라요", NEED_BLUEPRINT);
     this.remember(body.digest, blueprint);
     const id = randomUUID();
     // Reserve the slot before the await so two simultaneous opens cannot both take the last one.
     this.held.set(id, { session: PENDING, touched: wallClockMs() });
     try {
-      const session = await this.options.host.open({ ...body.config, blueprint });
+      const session = await this.options.host.open({
+        ...body.config,
+        blueprint,
+        world: { key: `${blueprint.id}@${body.digest}`, digest: body.digest },
+      });
       this.held.set(id, { session, touched: wallClockMs() });
       const out: OpenReply = { id, task: session.task, specs: session.specs };
       return reply.code(201).send(out);
@@ -171,7 +175,7 @@ export class NodeServer {
     app.addHook("onRequest", async (req, reply) => {
       if (!req.url.startsWith(NODE_PATH)) return;
       if (!bearerMatches(req.headers.authorization, this.options.token))
-        return this.fail(reply, 401, "토큰이 맞지 않는다", "unauthorized");
+        return this.fail(reply, 401, "토큰이 맞지 않아요", "unauthorized");
     });
     app.get(`${NODE_PATH}/status`, async () => this.report());
     app.post(`${NODE_PATH}/drain`, async () => this.drain());
@@ -218,10 +222,10 @@ const PENDING: HostedSession = {
   specs: [],
   endedBy: undefined,
   call: async () => {
-    throw new Error("세션이 아직 열리는 중이다");
+    throw new Error("세션이 아직 열리는 중이에요");
   },
   finish: async () => {
-    throw new Error("세션이 아직 열리는 중이다");
+    throw new Error("세션이 아직 열리는 중이에요");
   },
   dispose: () => undefined,
 };

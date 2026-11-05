@@ -6,16 +6,22 @@
  */
 import type { ToolResult, ToolSpec } from "@terrarium/core/tools";
 import type { Blueprint, EntityKind } from "@terrarium/core/world";
+import type { AgentHistory } from "./agent-version";
 import type { Experiment, HarnessRunInfo, RunRecord, ScenarioRecord, WorldRecord } from "./model";
 
 export interface HarnessInfo {
   readonly id: string;
   readonly name: string;
-  /** Adapter kind, e.g. "scripted", "openai-compatible", "http", "mcp-agent". */
+  /** Adapter kind, e.g. "scripted", "http", "a2a", "mcp-agent". */
   readonly kind: string;
   readonly description: string;
   /** How the harness reaches Terrarium's tools during a run. */
   readonly toolTransport: "mcp" | "function-calling" | "in-process";
+  /**
+   * For a harness that reads its MCP servers from its own settings, not per request: the name of this
+   * connection's fixed tool address. While one of its runs goes, that address serves the run's tools.
+   */
+  readonly mcpSlot?: string;
   /** Whether its traces, metrics and logs can be read from ClickStack. */
   readonly telemetry: "clickstack" | "none";
 }
@@ -25,6 +31,8 @@ export interface AgentInfo {
   readonly name: string;
   readonly description?: string;
   readonly model?: string;
+  /** Facts the harness reports about the agent, kept with the experiment for comparing (REQ-052). */
+  readonly facts?: Readonly<Record<string, string>>;
 }
 
 export interface ToolCallOutcome extends ToolResult {
@@ -78,6 +86,8 @@ export interface ExperimentFilter {
   readonly scenarioId?: string;
   /** Words that must all appear in the name or note (case-insensitive). */
   readonly text?: string;
+  /** `name=value`, or just `name`: the experiment, or the connection it ran on, carries that metadata (REQ-052). */
+  readonly meta?: string;
   readonly limit?: number;
 }
 
@@ -87,6 +97,34 @@ export interface ShareRecord {
   readonly createdBy: string;
   readonly createdAt: string;
   readonly expiresAt?: string;
+}
+
+/**
+ * A harness or agent connected from the screen or the API (REQ-051): which connector reaches it and how.
+ * Secrets are never in `config` in the clear: the names of the environment variables that hold them, or the
+ * values sealed under `secrets` and `headers`.
+ */
+export interface ConnectionRecord {
+  readonly id: string;
+  readonly name: string;
+  readonly description?: string;
+  /** Kind of the connector that reaches it, e.g. "http", "a2a". */
+  readonly connector: string;
+  readonly config: Readonly<Record<string, unknown>>;
+  /** What the person who connected it attached (REQ-052). */
+  readonly metadata?: Readonly<Record<string, string>>;
+  /** Headers sent with every request. A secret one has `sealed` instead of `value`. */
+  readonly headers?: ReadonlyArray<{
+    readonly name: string;
+    readonly value?: string;
+    readonly sealed?: string;
+  }>;
+  /** Tokens and passwords typed on the screen, sealed, by the connector's field name. */
+  readonly secrets?: Readonly<Record<string, string>>;
+  readonly owner: string;
+  readonly createdAt: string;
+  /** When an experiment was last made on it; used to remove connections nobody uses. */
+  readonly lastUsedAt?: string;
 }
 
 export interface ExperimentStore {
@@ -116,4 +154,15 @@ export interface ExperimentStore {
   putShare(share: ShareRecord): Promise<void>;
   getShare(token: string): Promise<ShareRecord | undefined>;
   deleteShare(token: string): Promise<boolean>;
+  putConnection(connection: ConnectionRecord): Promise<void>;
+  /** In the order they were made. */
+  listConnections(): Promise<ConnectionRecord[]>;
+  deleteConnection(id: string): Promise<boolean>;
+  /** The versions of one agent of one harness (REQ-053). */
+  getAgentHistory(harnessId: string, agentId: string): Promise<AgentHistory | undefined>;
+  putAgentHistory(history: AgentHistory): Promise<void>;
+  /** Every agent of the harness that has versions. */
+  listAgentHistories(harnessId: string): Promise<AgentHistory[]>;
+  /** All the histories of a harness, when its connection is removed. Returns how many. */
+  deleteAgentHistories(harnessId: string): Promise<number>;
 }

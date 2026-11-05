@@ -4,7 +4,7 @@
  */
 
 import type { Outline } from "@terrarium/core/spatial";
-import { outlineLand, SITE_SHAPES, shapeOutline } from "./sites";
+import { outlineLand, SITE_SHAPES, type SitePlace, type SiteSlot, shapeOutline } from "./sites";
 
 export type SiteId = "giheung" | "hwaseong" | "onyang" | "cheonan" | "suwon" | "pyeongtaek";
 
@@ -19,6 +19,14 @@ export interface SitePreset {
   readonly outline: Outline;
   /** Place on the notional map of all sites (0..100, not to scale). */
   readonly map: { readonly x: number; readonly y: number };
+  /** Where this site's fabs stand, in the order a campus fills them (none for sites without a map to read them from). */
+  readonly fabs: readonly SiteSlot[];
+  /** Where this site's data-centre buildings stand, in the order a campus fills them. */
+  readonly dcs: readonly SiteSlot[];
+  /** Where this site's research towers (the DSR towers) stand, in the order a campus fills them. */
+  readonly labs: readonly SiteSlot[];
+  /** The other buildings the map shows (offices, plant, substations): drawn where they stand, never built over. */
+  readonly places: readonly SitePlace[];
 }
 
 const NAMES: ReadonlyArray<readonly [SiteId, string, string]> = [
@@ -33,7 +41,18 @@ const NAMES: ReadonlyArray<readonly [SiteId, string, string]> = [
 export const SITE_PRESETS: readonly SitePreset[] = NAMES.map(([id, code, name]) => {
   const shape = SITE_SHAPES[id];
   const outline = shapeOutline(shape);
-  return { id, code, name, land: outlineLand(outline), outline, map: shape.map };
+  return {
+    id,
+    code,
+    name,
+    land: outlineLand(outline),
+    outline,
+    map: shape.map,
+    fabs: shape.fabs ?? [],
+    dcs: shape.dcs ?? [],
+    labs: shape.labs ?? [],
+    places: shape.places ?? [],
+  };
 });
 
 export function sitePreset(id: string): SitePreset | undefined {
@@ -122,7 +141,7 @@ function fieldProblem(field: NumberField, value: number): string | undefined {
   const inRange = Number.isFinite(value) && value >= field.min && value <= field.max;
   if (inRange && (!field.integer || Number.isInteger(value))) return undefined;
   const kind = field.integer ? " 사이의 정수" : " 사이";
-  return `${field.label}: ${field.min}~${field.max}${kind}여야 한다 (지금 ${value})`;
+  return `${field.label}: ${field.min}~${field.max}${kind}여야 해요 (지금 ${value})`;
 }
 
 function choiceProblems(spec: WorldgenSpec): string[] {
@@ -139,13 +158,13 @@ function choiceProblems(spec: WorldgenSpec): string[] {
 export function specProblems(spec: WorldgenSpec): string[] {
   const out: string[] = [];
   if (!sitePreset(spec.site)) out.push(`알 수 없는 사업장 '${spec.site}'`);
-  if (!Number.isInteger(spec.seed)) out.push("시드는 정수여야 한다");
+  if (!Number.isInteger(spec.seed)) out.push("시드는 정수여야 해요");
   for (const field of WORLDGEN_FIELDS) {
     const problem = fieldProblem(field, spec[field.key]);
     if (problem) out.push(problem);
   }
   out.push(...choiceProblems(spec));
   if (out.length === 0 && rackCount(spec) > MAX_RACKS)
-    out.push(`랙이 ${rackCount(spec)}개다. 한 세계는 ${MAX_RACKS}개까지 만들 수 있다`);
+    out.push(`랙이 ${rackCount(spec)}개예요. 한 세계는 ${MAX_RACKS}개까지 만들 수 있어요`);
   return out;
 }

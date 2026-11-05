@@ -3,17 +3,25 @@ export {
   type Choice,
   COMPARE_OPS,
   CONDITION_KIND_LABELS,
+  DEFAULT_TIMED_SECONDS,
+  EVENT_LABELS,
+  EVENT_TYPES,
   entityChoices,
   type Field,
   fieldsOf,
   type NumberItem,
   newCondition,
   OP_LABELS,
+  RECOVERY_CHOICES,
+  type RecoveryMode,
   readNumber,
+  recoverySeconds,
   stateFields,
+  storedNumber,
 } from "./fields";
 export {
   addBlock,
+  appendBlock,
   connect,
   disconnect,
   type FlowEdge,
@@ -21,6 +29,7 @@ export {
   type FlowNode,
   type FlowPort,
   freeSpot,
+  lineEnd,
   moveNode,
   removeNodes,
   setLabel,
@@ -29,10 +38,29 @@ export {
   toFlow,
 } from "./flow";
 export {
+  conditionLine,
+  type Group,
+  groupSummary,
+  isGroup,
+  OPEN_GROUP_LIMIT,
+  startsCollapsed,
+  valueForField,
+} from "./group";
+export {
   addExpectation,
   EXPECTATION_LABELS,
   expectationText,
   removeExpectation,
   sheetTotal,
+  suggestedAction,
   updateExpectation,
 } from "./sheet";
+export {
+  chosenStart,
+  EDITOR_MIN_WIDTH,
+  EMPTY_START,
+  type StartCard,
+  type StartGroup,
+  startGroups,
+  stepStart,
+} from "./start";

@@ -6,60 +6,40 @@
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { parseWith } from "@terrarium/core/contract";
+import { MetadataBody, parseWith } from "@terrarium/core/contract";
 import { InvalidValueError, josa } from "@terrarium/core/kernel";
 import { z } from "zod";
+import { CONNECTORS, connectorOf } from "./connectors";
+import { EnvName, Id, Url } from "./connectors/fields";
 
-const Id = z.string().regex(/^[A-Za-z0-9._-]{1,64}$/);
-const Url = z.string().url();
-/** Name of an environment variable that holds a secret; the secret itself never sits in the file. */
-const EnvName = z.string().regex(/^[A-Z_][A-Z0-9_]*$/);
-
-const ScriptedHarness = z
-  .object({ kind: z.literal("scripted"), id: Id, name: z.string().default("내장 기준 에이전트") })
-  .strict();
-
-const OpenAiHarness = z
+/**
+ * One harness or agent in the config file: its kind, an id and a name, then what that connector asks for.
+ * The connector of that kind checks the rest (ADR-0042), so a new protocol needs no change here.
+ */
+const HarnessEntry = z
   .object({
-    kind: z.literal("openai"),
+    kind: z.string(),
     id: Id,
-    name: z.string(),
-    description: z.string().default(""),
-    /** OpenAI-compatible endpoint, e.g. an internal LiteLLM or vLLM gateway (…/v1). */
-    baseUrl: Url,
-    apiKeyEnv: EnvName.optional(),
-    models: z
-      .array(
-        z
-          .object({
-            id: Id,
-            model: z.string(),
-            name: z.string().optional(),
-            description: z.string().optional(),
-            temperature: z.number().min(0).max(2).optional(),
-          })
-          .strict(),
-      )
-      .min(1),
-    /** Model turns before the loop gives up (each turn may call several tools). */
-    maxTurns: z.number().int().min(1).max(200).default(40),
-    requestTimeoutSeconds: z.number().int().min(5).max(600).default(120),
+    name: z.string().optional(),
+    metadata: MetadataBody.optional(),
   })
-  .strict();
-
-const HttpHarness = z
-  .object({
-    kind: z.literal("http"),
-    id: Id,
-    name: z.string(),
-    description: z.string().default(""),
-    /** Base URL of a harness speaking the Terrarium harness protocol (docs/design-docs/harness-protocol.md). */
-    url: Url,
-    tokenEnv: EnvName.optional(),
-    telemetry: z.enum(["clickstack", "none"]).default("none"),
-    pollSeconds: z.number().min(0.05).max(60).default(2),
-  })
-  .strict();
+  .passthrough()
+  .transform(({ metadata, ...entry }, ctx) => {
+    const connector = connectorOf(entry.kind);
+    if (!connector) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["kind"],
+        message: `종류는 ${CONNECTORS.map((c) => `'${c.spec.kind}'`).join(", ")} 중 하나여야 해요`,
+      });
+      return z.NEVER;
+    }
+    const parsed = parseWith(connector.schema, entry);
+    if (parsed.ok) return { ...(parsed.value as HarnessConfig), ...(metadata ? { metadata } : {}) };
+    for (const i of parsed.issues)
+      ctx.addIssue({ code: "custom", path: i.path ? i.path.split(".") : [], message: i.message });
+    return z.NEVER;
+  });
 
 const FalkorSource = z
   .object({
@@ -136,19 +116,35 @@ export const ConfigSchema = z
       })
       .strict()
       .default({}),
-    harnesses: z
-      .array(z.discriminatedUnion("kind", [ScriptedHarness, OpenAiHarness, HttpHarness]))
-      .default([]),
+    harnesses: z.array(HarnessEntry).default([]),
+    /** Which hosts people may connect harnesses and agents to from the screen; without it every host but a cloud's metadata address. */
+    connections: z
+      .object({
+        allowedHosts: z.array(z.string().min(1).max(200)).max(200).optional(),
+        /** Days without an experiment after which a connection made on the screen is removed; 0 keeps them all. */
+        retentionDays: z.number().int().min(0).max(3650).default(30),
+        /** Days before removal that its owner is told (a banner on every page). */
+        warnDays: z.number().int().min(1).max(365).default(7),
+      })
+      .strict()
+      .default({}),
     sources: z.array(FalkorSource).default([]),
     telemetry: ClickStack.optional(),
     cluster: Cluster,
   })
   .strict();
 
+/** A harness entry after its connector has checked it: flat, with the connector's own settings. */
+export interface HarnessConfig {
+  readonly kind: string;
+  readonly id: string;
+  readonly name: string;
+  readonly description?: string;
+  readonly [setting: string]: unknown;
+}
+
 export type Config = z.output<typeof ConfigSchema>;
-export type HarnessConfig = Config["harnesses"][number];
-export type OpenAiHarnessConfig = z.output<typeof OpenAiHarness>;
-export type HttpHarnessConfig = z.output<typeof HttpHarness>;
+export type { HttpHarnessConfig } from "./connectors/harness-http";
 export type FalkorSourceConfig = z.output<typeof FalkorSource>;
 export type ClickStackConfig = z.output<typeof ClickStack>;
 
@@ -158,11 +154,11 @@ export const BUILTIN_HARNESS_ID = "builtin";
 /** Why a cluster block cannot work, in words that say what to add. */
 export function clusterProblem(c: Config["cluster"]): string | undefined {
   if (c.role !== "all" && !c.tokenEnv)
-    return `역할 ${c.role}에는 tokenEnv(토큰이 든 환경 변수 이름)가 필요하다`;
-  if (c.role === "worker" && !c.controlUrl) return "역할 worker에는 controlUrl이 필요하다";
-  if (c.role !== "worker" && c.controlUrl) return "controlUrl은 역할 worker에만 쓴다";
+    return `역할 ${c.role}에는 tokenEnv(토큰이 든 환경 변수 이름)가 필요해요`;
+  if (c.role === "worker" && !c.controlUrl) return "역할 worker에는 controlUrl이 필요해요";
+  if (c.role !== "worker" && c.controlUrl) return "controlUrl은 역할 worker에만 써요";
   if (c.nodeTtlSeconds <= c.heartbeatSeconds * 2)
-    return "nodeTtlSeconds는 heartbeatSeconds의 두 배보다 커야 한다 (한 번 놓쳐도 노드가 사라지면 안 된다)";
+    return "nodeTtlSeconds는 heartbeatSeconds의 두 배보다 커야 해요 (한 번 놓쳐도 노드가 사라지면 안 돼요)";
   return undefined;
 }
 
@@ -187,18 +183,18 @@ export function parseConfig(raw: unknown, origin = "설정"): Config {
   const parsed = parseWith(ConfigSchema, raw);
   if (!parsed.ok)
     throw new InvalidValueError(
-      `${origin}${josa(origin, "이")} 올바르지 않다: ${parsed.issues.map((i) => `${i.path || "(전체)"} ${i.message}`).join("; ")}`,
+      `${origin}${josa(origin, "이")} 올바르지 않아요: ${parsed.issues.map((i) => `${i.path || "(전체)"} ${i.message}`).join("; ")}`,
     );
   const config = parsed.value;
   const wrong = clusterProblem(config.cluster);
   if (wrong) throw new InvalidValueError(`${origin}: cluster ${wrong}`);
   const ids = config.harnesses.map((h) => h.id);
   if (new Set(ids).size !== ids.length)
-    throw new InvalidValueError(`${origin}: 하네스 id가 겹친다`);
+    throw new InvalidValueError(`${origin}: 하네스 id가 겹쳐요`);
   const withBuiltin = ids.includes(BUILTIN_HARNESS_ID)
     ? config.harnesses
     : [
-        { kind: "scripted" as const, id: BUILTIN_HARNESS_ID, name: "내장 기준 에이전트" },
+        { kind: "scripted", id: BUILTIN_HARNESS_ID, name: "내장 기준 에이전트", description: "" },
         ...config.harnesses,
       ];
   return { ...config, harnesses: withBuiltin };
@@ -213,13 +209,4 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   return { ...config, dataDir: path.resolve(path.dirname(file), config.dataDir) };
 }
 
-/** A secret from the environment, or an error that says which variable to set. */
-export function secret(env: NodeJS.ProcessEnv, name: string | undefined): string | undefined {
-  if (name === undefined) return undefined;
-  const value = env[name];
-  if (value === undefined || value === "")
-    throw new InvalidValueError(
-      `환경 변수 ${name}${josa(name, "이")} 비어 있다 (설정 파일이 이 이름을 가리킨다)`,
-    );
-  return value;
-}
+export { secret } from "./secret";

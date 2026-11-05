@@ -6,7 +6,7 @@
 import { useMemo, useState } from "react";
 import { builder } from "../../logic";
 import { useApp } from "../context";
-import type { Ghost, PlanPoint, StageEvents } from "./Stage";
+import type { Ghost, PlanPoint, StageEvents } from "../world3d/stage-types";
 import type { Builder } from "./useBuilder";
 import { catalog } from "./useBuilder";
 
@@ -25,7 +25,9 @@ const coarse = (p: PlanPoint): PlanPoint => ({
 const samePoint = (a?: PlanPoint, b?: PlanPoint) => a?.x === b?.x && a?.y === b?.y;
 
 const ENTERABLE = new Set(["building", "floor", "room"]);
-const POINTING_TOOLS = new Set(["rack", "equipment"]);
+const POINTING_TOOLS = new Set(["rack", "equipment", "buy", "plant"]);
+/** Tools that act on one click, wherever the pointer went down: dragging does nothing for them. */
+const CLICK_TOOLS = new Set(["equipment", "buy", "plant"]);
 
 export interface Gestures {
   readonly ghost?: Ghost;
@@ -82,13 +84,15 @@ export function useGestures(b: Builder): Gestures {
     onDrag(phase, from, to, hit) {
       if (phase === "start") {
         if (tool.kind === "select") {
-          if (!hit || !index.find(hit)?.placement || index.find(hit)?.placement?.type === "unit")
+          const thing = hit ? index.find(hit) : undefined;
+          // Land is bought, not moved.
+          if (!thing?.placement || thing.placement.type === "unit" || thing.kind === "parcel")
             return false;
-          b.setSelected([hit]);
-          setDrag({ kind: "move", from, to, id: hit });
+          b.setSelected([thing.id]);
+          setDrag({ kind: "move", from, to, id: thing.id });
           return true;
         }
-        if (tool.kind === "equipment") return false;
+        if (CLICK_TOOLS.has(tool.kind)) return false;
         setDrag({ kind: "tool", from, to });
         return true;
       }

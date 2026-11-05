@@ -38,7 +38,7 @@ async function until(check: () => Promise<boolean>, ms = 40_000): Promise<void> 
     if (await check()) return;
     await new Promise((r) => setTimeout(r, 100));
   }
-  throw new Error("기다리던 일이 일어나지 않았다");
+  throw new Error("기다리던 일이 일어나지 않았어요");
 }
 
 describe("scale out: a control plane with no sessions of its own, and workers that join it [REQ-042]", () => {
@@ -148,13 +148,13 @@ describe("cluster settings fail early and say what to add [REQ-042]", () => {
 
   test("each role names what it needs", () => {
     expect(parse({ role: "worker" })).toThrow("역할 worker에는 tokenEnv");
-    expect(parse({ role: "worker", tokenEnv: "T" })).toThrow("controlUrl이 필요하다");
+    expect(parse({ role: "worker", tokenEnv: "T" })).toThrow("controlUrl이 필요해요");
     expect(parse({ role: "control" })).toThrow("역할 control에는 tokenEnv");
     expect(parse({ role: "all", controlUrl: "http://c:1" })).toThrow(
       "controlUrl은 역할 worker에만",
     );
     expect(parse({ tokenEnv: "T", heartbeatSeconds: 10, nodeTtlSeconds: 15 })).toThrow(
-      "nodeTtlSeconds는 heartbeatSeconds의 두 배보다 커야 한다",
+      "nodeTtlSeconds는 heartbeatSeconds의 두 배보다 커야 해요",
     );
     expect(parseConfig({}).cluster).toMatchObject({ role: "all", sessionsPerThread: 32 });
     expect(

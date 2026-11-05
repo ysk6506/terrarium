@@ -53,6 +53,14 @@ describe("generated worlds at rest [REQ-009] [REQ-005]", () => {
     ] as const,
     ["dense GPU hall", { fill: 0.9, gpuShare: 0.5, vmsPerHost: 0 }] as const,
     ["two rooms on two floors", { floors: 2, roomsPerFloor: 2, rows: 1, racksPerRow: 4 }] as const,
+    [
+      "a large site of 288 racks: panels and UPS grow with the load",
+      { roomsPerFloor: 2, rows: 12, racksPerRow: 12 },
+    ] as const,
+    [
+      "a large single-feed site",
+      { roomsPerFloor: 2, rows: 8, racksPerRow: 8, powerRedundancy: "N" },
+    ] as const,
   ])("%s: no alarms after half an hour", (site, extra) => {
     const preset = SITE_PRESETS.find((p) => p.id === site)?.id ?? "suwon";
     const { world } = warm(small({ site: preset, ...(extra as Partial<WorldgenSpec>) }));

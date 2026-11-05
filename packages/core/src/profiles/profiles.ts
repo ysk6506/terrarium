@@ -4,7 +4,7 @@
  */
 import { NotFoundError } from "@terrarium/core/kernel";
 
-export type Protocol = "redfish" | "vcenter" | "vrops";
+export type Protocol = "redfish" | "vcenter" | "vrops" | "network";
 
 export interface RedfishProfile {
   readonly protocol: "redfish";
@@ -39,7 +39,20 @@ export interface VropsProfile {
   readonly cpuStatKey: string;
 }
 
-export type Profile = RedfishProfile | VcenterProfile | VropsProfile;
+/** The operating system a switch runs: its command line, and which HTTP API (if any) it offers. */
+export interface NetworkProfile {
+  readonly protocol: "network";
+  readonly key: string;
+  readonly product: string;
+  readonly version: string;
+  readonly os: "eos" | "nxos" | "iosxe";
+  /** The release exactly as `show version` prints it (EOS 4.32.2F, NX-OS 10.3(4a), IOS-XE 17.9.4a). */
+  readonly release: string;
+  /** EOS has eAPI, NX-OS has NX-API; IOS-XE has neither here (it has RESTCONF, which is not emulated). */
+  readonly httpApi: "eapi" | "nxapi" | "none";
+}
+
+export type Profile = RedfishProfile | VcenterProfile | VropsProfile | NetworkProfile;
 
 export const BUILTIN_PROFILES: readonly Profile[] = [
   {
@@ -112,12 +125,40 @@ export const BUILTIN_PROFILES: readonly Profile[] = [
     tokenScheme: "OpsToken",
     cpuStatKey: "cpu|usage_average",
   },
+  {
+    protocol: "network",
+    key: "eos/4.32",
+    product: "Arista EOS",
+    version: "4.32",
+    os: "eos",
+    release: "4.32.2F",
+    httpApi: "eapi",
+  },
+  {
+    protocol: "network",
+    key: "nxos/10.3",
+    product: "Cisco NX-OS",
+    version: "10.3",
+    os: "nxos",
+    release: "10.3(4a)",
+    httpApi: "nxapi",
+  },
+  {
+    protocol: "network",
+    key: "ios-xe/17.9",
+    product: "Cisco IOS XE",
+    version: "17.9",
+    os: "iosxe",
+    release: "17.9.4a",
+    httpApi: "none",
+  },
 ] as const; // prettier-ignore
 
 export const DEFAULT_PROFILE: Readonly<Record<Protocol, string>> = {
   redfish: "bmc-gen16/7.10",
   vcenter: "vcenter/8.0",
   vrops: "aria-ops/8.18",
+  network: "nxos/10.3",
 };
 
 type ProfileOf<P extends Protocol> = Extract<Profile, { protocol: P }>;

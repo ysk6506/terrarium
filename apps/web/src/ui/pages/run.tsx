@@ -7,7 +7,7 @@ import type { RunView } from "@terrarium/core/contract";
 import { END_REASON_LABELS } from "@terrarium/core/oracle";
 import { BlueprintIndex } from "@terrarium/core/world";
 import { useMemo, useState } from "react";
-import { formatDuration, scoreText } from "../../logic";
+import { formatDuration, PASS_RULE_TEXT, scoreText } from "../../logic";
 import { Go, useApp, useAsync, usePageTitle } from "../context";
 import { Failure, Figures, Loading, Note, PageHead, Section, Status, Tabs } from "../kit";
 import { SeriesGrid, Timeline } from "../results";
@@ -25,7 +25,7 @@ function Telemetry({ id, has }: { readonly id: string; readonly has: boolean }) 
   if (!has)
     return (
       <Note>
-        이 실행은 하네스의 추적 번호를 알려 주지 않았거나, ClickStack이 연결되어 있지 않다.
+        이 실행은 하네스의 추적 번호를 알려 주지 않았거나, ClickStack이 연결되어 있지 않아요.
       </Note>
     );
   if (t.error) return <Failure error={t.error} retry={t.reload} />;
@@ -57,7 +57,7 @@ function RunHead({ view }: { readonly view: RunView }) {
   const ended = analysis.endReason
     ? END_REASON_LABELS[analysis.endReason]
     : run.status === "running"
-      ? "아직 돌고 있다"
+      ? "아직 돌고 있어요"
       : "";
   return (
     <PageHead
@@ -96,7 +96,7 @@ function RunFigures({ view }: { readonly view: RunView }) {
         {
           label: "합격",
           value: run.result ? (analysis.passed ? "합격" : "불합격") : "—",
-          hint: "70점 이상이면 합격이다",
+          hint: PASS_RULE_TEXT,
         },
         {
           label: "진단까지",

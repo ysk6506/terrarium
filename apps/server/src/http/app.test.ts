@@ -138,8 +138,8 @@ describe("an experiment over HTTP [REQ-030] [REQ-038]", () => {
         error: {
           code: "invalid_input",
           issues: [
-            { path: "name", message: "비어 있으면 안 된다" },
-            { path: "recipe", message: "필요한 값이 없다" },
+            { path: "name", message: "비어 있으면 안 돼요" },
+            { path: "recipe", message: "필요한 값이 없어요" },
           ],
         },
       },
@@ -147,7 +147,7 @@ describe("an experiment over HTTP [REQ-030] [REQ-038]", () => {
     const query = await json(a, "GET", "/api/experiments?limit=0");
     expect(query.body.error).toMatchObject({
       code: "invalid_input",
-      message: "주소의 조건을 확인한다",
+      message: "주소의 조건을 확인해 주세요",
     });
     const broken = await a.inject({
       method: "POST",
@@ -157,7 +157,7 @@ describe("an experiment over HTTP [REQ-030] [REQ-038]", () => {
     });
     expect(broken.statusCode).toBe(400);
     expect(broken.json()).toEqual({
-      error: { code: "invalid_json", message: "본문이 올바른 JSON이 아니다" },
+      error: { code: "invalid_json", message: "본문이 올바른 JSON이 아니에요" },
     });
     const xml = await a.inject({
       method: "POST",
@@ -168,7 +168,7 @@ describe("an experiment over HTTP [REQ-030] [REQ-038]", () => {
     expect(xml.statusCode).toBe(415);
     expect((await json(a, "GET", "/api/worlds/w-404")).body.error).toEqual({
       code: "not_found",
-      message: "세계 w-404를 찾을 수 없다",
+      message: "세계 w-404를 찾을 수 없어요",
     });
     expect((await json(a, "GET", "/api/nothing")).status).toBe(404);
     expect((await a.inject({ url: "/mcp/runs/r/t", method: "POST" })).statusCode).toBe(404);
@@ -266,7 +266,7 @@ describe("the web app is served from the same place [REQ-006]", () => {
     expect(deep.statusCode).toBe(200);
     expect(deep.body).toContain("<title>테라리움</title>");
     expect((await a.inject({ url: "/api/unknown" })).json()).toEqual({
-      error: { code: "not_found", message: "그런 주소는 없다" },
+      error: { code: "not_found", message: "그런 주소는 없어요" },
     });
     const { app: bare } = app();
     expect((await bare.inject({ url: "/" })).statusCode).toBe(404);

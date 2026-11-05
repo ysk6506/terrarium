@@ -31,7 +31,7 @@ describe("sharing results as text, Markdown and HTML [REQ-038]", () => {
       "[테라리움] 실험 e1",
       "샘플 세계 · cooling-failure",
       `하네스 기본 하네스 · 에이전트 triage · 툴 ${mixed().experiment.recipe.tools.length}개 · 실행 4번`,
-      expect.stringMatching(/^합격 1\/3 \(33%\) · 평균 72\.0점 \(±\d+\.\d\)$/),
+      expect.stringMatching(/^합격 1\/3 \(33%\) · 평균 57\.0점 \(±\d+\.\d\)$/),
       expect.stringMatching(/^진단 정확도 33% · 진단까지 .+ · 툴 호출 /),
     ]);
     expect(text).toContain("- 3번 중 1번 합격 (33%)");
@@ -47,7 +47,7 @@ describe("sharing results as text, Markdown and HTML [REQ-038]", () => {
     expect(md).toContain("| # | 시드 | 상태 | 점수 | 판정 | 종료 | 진단 | 툴 호출 | 진단까지 |");
     const rows = md.split("\n").filter((l) => /^\| \d+ \|/.test(l));
     expect(rows).toHaveLength(4);
-    expect(rows[0]).toContain("| 100.0 | 합격 | 진단 제출 | 정답 |");
+    expect(rows[0]).toContain("| 90.9 | 합격 | 진단 제출 | 정답 |");
     expect(rows[1]).toContain("| 오답 |");
     expect(rows[3]).toContain("| 실패 | — | 불합격 | — | 미제출 |");
     expect(md.trimEnd().endsWith("[테라리움에서 보기](https://terrarium.example/e/e1)")).toBe(true);
@@ -123,7 +123,7 @@ describe("diagnosis records and the modelling brief [REQ-015]", () => {
       submitted: { rootCause: "crah-1", faultType: "cooling_unit_failure" },
       correct: { root: true, type: true },
       afterSeconds: 60,
-      score: 100,
+      score: 90.9,
       passed: true,
       endReason: "diagnosed",
       calls: { total: 3, investigation: 2, failed: 0 },
@@ -210,7 +210,7 @@ describe("diagnosis records and the modelling brief [REQ-015]", () => {
           worldName: "평택 P2 가져오기",
           unknownLabels: { Chiller: 4 },
           unknownRelationships: { FEEDS_WATER: 9 },
-          assumptions: ["랙 높이를 42U로 가정했다"],
+          assumptions: ["랙 높이를 42U로 가정했어요"],
         },
       ],
     });
@@ -219,11 +219,11 @@ describe("diagnosis records and the modelling brief [REQ-015]", () => {
     expect(brief).toContain(
       "| cooling_unit_failure | 4 | 2 | 25% | 0% | fan_failure (3), breaker_trip (1) |",
     );
-    expect(brief).toContain("'cooling_unit_failure'는 에이전트 2종에 걸쳐 정답률이 0%에 그친다");
-    expect(brief).toContain("툴 `get_entity`가 같은 오류를 6번 냈다");
+    expect(brief).toContain("'cooling_unit_failure'는 에이전트 2종에 걸쳐 정답률이 0%에 그쳐요");
+    expect(brief).toContain("툴 `get_entity`가 같은 오류를 6번 냈어요");
     expect(brief).toContain("### 평택 P2 가져오기 (`w-kg`)");
     expect(brief).toContain("- 매핑하지 못한 라벨·관계: Chiller 4개, FEEDS_WATER 9개");
-    expect(brief).toContain("- 가정: 랙 높이를 42U로 가정했다");
+    expect(brief).toContain("- 가정: 랙 높이를 42U로 가정했어요");
     expect(brief).toContain(
       "'평택 P2 가져오기'를 가져올 때 매핑하지 못한 것: Chiller, FEEDS_WATER",
     );
@@ -231,13 +231,13 @@ describe("diagnosis records and the modelling brief [REQ-015]", () => {
 
   test("an empty record set still gives a readable brief; easy faults are flagged too", () => {
     const empty = modelingBrief({ records: [] });
-    expect(empty).toContain("진단을 요구한 실행이 아직 없다.");
-    expect(empty).toContain("툴 오류가 없었다.");
-    expect(empty).toContain("- 지금 기록으로는 특별히 손볼 곳이 보이지 않는다.");
+    expect(empty).toContain("진단을 요구한 실행이 아직 없어요.");
+    expect(empty).toContain("툴 오류가 없었어요.");
+    expect(empty).toContain("- 지금 기록으로는 특별히 손볼 곳이 보이지 않아요.");
     expect(empty).not.toContain("가져온 세계의 빈틈");
     const easy = experimentOf({ id: "z", runs: Array.from({ length: 5 }, () => SCRIPTS.good) });
     const brief = modelingBrief({ records: diagnosisRecords(easy.experiment, easy.runs) });
-    expect(brief).toContain("5번 모두 맞혔다. 현실보다 단서가 너무 뚜렷하지 않은지 본다.");
-    expect(play(SCRIPTS.good).score.total).toBe(100);
+    expect(brief).toContain("5번 모두 맞혔어요. 현실보다 단서가 너무 뚜렷하지 않은지 봐요.");
+    expect(play(SCRIPTS.good).score.total).toBe(90.9);
   });
 });

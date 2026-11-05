@@ -12,6 +12,7 @@ import {
   json,
   noContent,
   Router,
+  simTimeIso,
   stableUuid,
 } from "./http";
 
@@ -53,16 +54,38 @@ function vmSummary(world: WorldPort, vm: Entity) {
   };
 }
 
+/**
+ * GET /api/vcenter/vm/{vm}: the fields the API reference marks required. The world does not model a VM's
+ * disks, network cards or other devices, so those maps are empty (a real VM always has some). A VM's host is
+ * not part of this answer in the real API either: it is found with the `hosts` filter of the VM list.
+ */
 function vmDetail(world: WorldPort, vm: Entity) {
   const summary = vmSummary(world, vm);
+  const uuid = stableUuid(vm.id);
   return {
     name: summary.name,
     power_state: summary.power_state,
-    cpu: { count: summary.cpu_count, cores_per_socket: 1 },
-    memory: { size_MiB: summary.memory_size_MiB },
     guest_OS: String(vm.props.guestOs ?? "RHEL_9_64"),
-    identity: { name: vm.name, instance_uuid: stableUuid(vm.id) },
-    placement: { host: hostOf(world, vm) ?? null },
+    identity: { name: vm.name, bios_uuid: uuid, instance_uuid: stableUuid(`${vm.id}:instance`) },
+    instant_clone_frozen: false,
+    hardware: { version: "VMX_19", upgrade_policy: "NEVER", upgrade_status: "NONE" },
+    boot: { type: "BIOS", delay: 0, retry: false, retry_delay: 10000, enter_setup_mode: false },
+    boot_devices: [],
+    cpu: {
+      count: summary.cpu_count,
+      cores_per_socket: 1,
+      hot_add_enabled: false,
+      hot_remove_enabled: false,
+    },
+    memory: { size_MiB: summary.memory_size_MiB, hot_add_enabled: false },
+    disks: {},
+    nics: {},
+    cdroms: {},
+    floppies: {},
+    parallel_ports: {},
+    serial_ports: {},
+    sata_adapters: {},
+    scsi_adapters: {},
   };
 }
 
@@ -122,7 +145,11 @@ function routes(world: WorldPort, profile: VcenterProfile): Router {
       json(201, `vmware-api-session-${stableUuid("session").slice(0, 8)}`),
     )
     .on("GET", "/api/session", () =>
-      json(200, { user: "terrarium@vsphere.local", created_time: "2026-01-01T00:00:00Z" }),
+      json(200, {
+        user: "terrarium@vsphere.local",
+        created_time: simTimeIso(0),
+        last_accessed_time: simTimeIso(world.time()),
+      }),
     )
     .on("GET", "/api/vcenter/vm", (q) => json(200, listVms(world, q.query)))
     .on("GET", "/api/vcenter/vm/:vm", (_q, p) => json(200, vmDetail(world, getVm(p.vm as string))))

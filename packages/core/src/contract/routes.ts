@@ -6,13 +6,23 @@
 
 import type { ScenarioRecord, WorldRecord } from "@terrarium/core/experiments";
 import type { z } from "zod";
+import type {
+  AgentHistoryView,
+  ConnectionCheck,
+  ConnectionView,
+  ConnectorSpec,
+} from "./connections";
 import {
+  AddAgentVersionBody,
   AddRunsBody,
+  CheckConnectionBody,
+  CreateConnectionBody,
   CreateExperimentBody,
   CreateScenarioBody,
   CreateShareBody,
   CreateWorldBody,
   DryRunBody,
+  EditAgentVersionBody,
   ExperimentQuery,
   ForkBody,
   GenerateWorldBody,
@@ -21,10 +31,12 @@ import {
   ReportQuery,
   ScenarioQuery,
   TwinQuery,
+  UpdateConnectionBody,
   UpdateScenarioBody,
   UpdateWorldBody,
 } from "./requests";
 import type {
+  CalibrationView,
   DryRunView,
   ExperimentSummary,
   ExperimentView,
@@ -62,6 +74,84 @@ export const ROUTES = {
     method: "GET",
     path: "/api/meta",
     summary: "누구인지, 하네스·소스·대기열 상태",
+    produces: json,
+  },
+
+  listConnectors: {
+    method: "GET",
+    path: "/api/connectors",
+    summary: "연결할 수 있는 프로토콜(커넥터)과 그 입력 칸",
+    produces: json,
+  },
+  listConnections: {
+    method: "GET",
+    path: "/api/connections",
+    summary: "연결된 하네스·에이전트와 발견된 에이전트",
+    produces: json,
+  },
+  checkConnection: {
+    method: "POST",
+    path: "/api/connections/check",
+    summary: "저장하지 않고 연결해 보기 (발견된 에이전트, 걸린 시간, 실패 이유)",
+    body: CheckConnectionBody,
+    produces: json,
+  },
+  createConnection: {
+    method: "POST",
+    path: "/api/connections",
+    summary: "하네스를 연결하거나 에이전트를 직접 등록",
+    body: CreateConnectionBody,
+    produces: json,
+  },
+  updateConnection: {
+    method: "PUT",
+    path: "/api/connections/:id",
+    summary: "연결 설정 바꾸기 (토큰은 비워 두면 그대로. 만든 사람만)",
+    body: UpdateConnectionBody,
+    produces: json,
+  },
+  keepConnection: {
+    method: "POST",
+    path: "/api/connections/:id/keep",
+    summary: "계속 쓰기 — 자동으로 지워질 때까지의 기간을 처음부터 다시 세어요 (쓰는 사람 누구나)",
+    produces: json,
+  },
+  recheckConnection: {
+    method: "POST",
+    path: "/api/connections/:id/check",
+    summary: "연결된 것을 다시 확인해 에이전트 목록 새로 받기",
+    produces: json,
+  },
+  deleteConnection: {
+    method: "DELETE",
+    path: "/api/connections/:id",
+    summary: "연결 끊기 (만든 사람만. 설정 파일의 연결은 못 지워요)",
+    produces: json,
+  },
+  listAgentVersions: {
+    method: "GET",
+    path: "/api/connections/:id/agents/:agentId/versions",
+    summary: "에이전트의 버전 목록 (바뀐 점·날짜)과, 지금 실험을 만들면 무엇이 달라질지",
+    produces: json,
+  },
+  addAgentVersion: {
+    method: "POST",
+    path: "/api/connections/:id/agents/:agentId/versions",
+    summary: "사람이 버전을 직접 더하기 (이름표·메모·보이지 않는 차이를 속성으로)",
+    body: AddAgentVersionBody,
+    produces: json,
+  },
+  editAgentVersion: {
+    method: "PUT",
+    path: "/api/connections/:id/agents/:agentId/versions/:n",
+    summary: "버전의 이름표·메모·속성 바꾸기",
+    body: EditAgentVersionBody,
+    produces: json,
+  },
+  deleteAgentVersion: {
+    method: "DELETE",
+    path: "/api/connections/:id/agents/:agentId/versions/:n",
+    summary: "버전 지우기 (번호는 다시 쓰이지 않아요)",
     produces: json,
   },
 
@@ -103,7 +193,7 @@ export const ROUTES = {
   deleteWorld: {
     method: "DELETE",
     path: "/api/worlds/:id",
-    summary: "세계 숨기기 (실험이 쓴 버전은 남는다)",
+    summary: "세계 숨기기 (실험이 쓴 버전은 남아요)",
     produces: json,
   },
 
@@ -147,6 +237,13 @@ export const ROUTES = {
     body: DryRunBody,
     produces: json,
   },
+  calibrateScenario: {
+    method: "POST",
+    path: "/api/scenarios/:id/calibrate",
+    summary: "시험지 점검: 아무것도 안 하는·찍는·정답만 아는 에이전트로 점수 재 보기",
+    body: DryRunBody,
+    produces: json,
+  },
 
   listExperiments: {
     method: "GET",
@@ -164,14 +261,14 @@ export const ROUTES = {
   createExperiment: {
     method: "POST",
     path: "/api/experiments",
-    summary: "실험 만들고 대기열에 넣기",
+    summary: "실험 만들고 대기열에 더하기",
     body: CreateExperimentBody,
     produces: json,
   },
   cancelExperiment: {
     method: "POST",
     path: "/api/experiments/:id/cancel",
-    summary: "남은 실행 취소",
+    summary: "남은 실행 멈추기",
     produces: json,
   },
   forkExperiment: {
@@ -184,7 +281,7 @@ export const ROUTES = {
   addRuns: {
     method: "POST",
     path: "/api/experiments/:id/runs",
-    summary: "같은 조건으로 실행 추가",
+    summary: "같은 조건으로 실행 더하기",
     body: AddRunsBody,
     produces: json,
   },
@@ -192,6 +289,12 @@ export const ROUTES = {
     method: "GET",
     path: "/api/experiments/:id/events",
     summary: "진행 상황 실시간 (SSE)",
+    produces: "sse",
+  },
+  worldActivity: {
+    method: "GET",
+    path: "/api/worlds/:id/activity",
+    summary: "이 세계에서 지금 일하는 에이전트들 (SSE)",
     produces: "sse",
   },
   experimentReport: {
@@ -272,6 +375,18 @@ export type RouteName = keyof typeof ROUTES;
 /** JSON response of each route; document routes answer with text. */
 export interface Responses {
   meta: MetaView;
+  listConnectors: ConnectorSpec[];
+  listConnections: ConnectionView[];
+  checkConnection: ConnectionCheck;
+  createConnection: ConnectionView;
+  updateConnection: ConnectionView;
+  keepConnection: ConnectionView;
+  recheckConnection: ConnectionView;
+  deleteConnection: { readonly deleted: boolean };
+  listAgentVersions: AgentHistoryView;
+  addAgentVersion: AgentHistoryView;
+  editAgentVersion: AgentHistoryView;
+  deleteAgentVersion: AgentHistoryView;
   listWorlds: WorldSummary[];
   getWorld: WorldRecord;
   createWorld: SavedWorld;
@@ -285,6 +400,7 @@ export interface Responses {
   updateScenario: SavedScenario;
   deleteScenario: { readonly deleted: boolean };
   dryRunScenario: DryRunView;
+  calibrateScenario: CalibrationView;
   listExperiments: ExperimentSummary[];
   getExperiment: ExperimentView;
   createExperiment: ExperimentView;
@@ -292,6 +408,7 @@ export interface Responses {
   forkExperiment: ExperimentView;
   addRuns: ExperimentView;
   experimentEvents: string;
+  worldActivity: string;
   experimentReport: string;
   experimentDiagnoses: string;
   createShare: ShareView;
@@ -334,7 +451,7 @@ export function pathFor(
   const route = ROUTES[name];
   const path = route.path.replace(/:([A-Za-z]+)/g, (_, key: string) => {
     const value = params[key];
-    if (value === undefined || value === "") throw new Error(`${name}: '${key}' 값이 없다`);
+    if (value === undefined || value === "") throw new Error(`${name}: '${key}' 값이 없어요`);
     return encodeURIComponent(value);
   });
   const entries = Object.entries(query ?? {}).filter(([, v]) => v !== undefined && v !== "");

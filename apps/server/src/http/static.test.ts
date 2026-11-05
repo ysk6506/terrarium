@@ -25,7 +25,7 @@ describe("serving the web app [REQ-041]", () => {
     const missing = await app.inject({ url: "/assets/gone.js" });
     expect(missing.statusCode).toBe(404);
     expect(missing.headers["content-type"]).toContain("application/json");
-    expect(missing.json().error.message).toBe("그런 파일은 없다");
+    expect(missing.json().error.message).toBe("그런 파일은 없어요");
 
     // A page address is still the app.
     expect((await app.inject({ url: "/worlds/w-1" })).statusCode).toBe(200);

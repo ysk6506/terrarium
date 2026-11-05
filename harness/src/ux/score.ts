@@ -30,11 +30,13 @@ export const JOURNEY_BUDGETS = {
   build: 8,
   import: 6,
   design: 8,
+  author: 8,
   run: 6,
   cancel: 8,
   share: 5,
   fork: 6,
   compare: 4,
+  site: 6,
 } as const;
 export type JourneyId = keyof typeof JOURNEY_BUDGETS;
 export const JOURNEY_IDS = Object.keys(JOURNEY_BUDGETS) as JourneyId[];
@@ -43,11 +45,13 @@ export const JOURNEY_LABELS: Readonly<Record<JourneyId, string>> = {
   build: "세계 만들고 랙 놓기",
   import: "현실에서 세계 가져오기",
   design: "시나리오 설계하고 저장",
+  author: "빈 시나리오에서 시작해 시험지 점검까지",
   run: "실험 만들고 결과 보기",
   cancel: "도는 실험 멈추기",
   share: "결과 링크 공유하고 열기",
   fork: "조건 바꿔 다시 돌리기",
   compare: "벤치마크에서 비교하고 가져오기",
+  site: "새 사업장 만들고 땅 사기",
 };
 
 /** Budgets for the load of the home page. */
@@ -99,6 +103,20 @@ export interface Measurements {
   readonly provenance: Tally;
   /** What a decision needs, found on the result screen without hunting. */
   readonly value: Tally;
+  /** Lines of text in the friendly tone (해요체) out of all lines on the screens (REQ-058). */
+  readonly voice: Tally;
+  /** Screens that ask for one main thing at a time. */
+  readonly oneThing: Tally;
+  /** Buttons named for what they do. */
+  readonly buttons: Tally;
+  /** Controls big enough to hit out of all controls (REQ-058). */
+  readonly targets: Tally;
+  /** Switched-off buttons that say why out of all switched-off buttons. */
+  readonly disabledWhy: Tally;
+  /** Lone numbers that say what they count. */
+  readonly units: Tally;
+  /** Buttons whose look answers the pointer. */
+  readonly hover: Tally;
 }
 
 export interface Measure {
@@ -169,6 +187,11 @@ function usable(m: Measurements): Measure[] {
       evidence: over.length === 0 ? "모두 예산 안" : `예산 넘음: ${over.join(", ")}`,
     },
     tally("invalid", "잘못 넣으면 바로 알려 주는 입력", m.invalid),
+    tally("voice", "화면의 글이 한결같이 해요체인가", m.voice),
+    tally("one-thing", "한 화면에 주된 행동이 하나인가", m.oneThing),
+    tally("buttons", "버튼 이름이 할 일을 말하는가", m.buttons),
+    tally("disabled-why", "꺼진 버튼이 이유를 말하는가", m.disabledWhy),
+    tally("hover", "포인터에 반응하는 버튼", m.hover),
   ];
 }
 
@@ -226,6 +249,7 @@ function accessible(m: Measurements): Measure[] {
     },
     tally("keyboard", "키보드만으로 해낸 일", m.keyboard),
     tally("focus", "초점이 보이는 칸", m.focus),
+    tally("targets", "손가락으로 누를 만큼 큰 컨트롤", m.targets),
     {
       id: "motion",
       label: "움직임 줄이기를 지키는가",
@@ -240,6 +264,7 @@ function credible(m: Measurements): Measure[] {
     tally("failures", "원인과 다음 할 일을 말하는 오류 화면", m.failures),
     tally("empties", "이유와 다음 할 일을 말하는 빈 화면", m.empties),
     tally("provenance", "무엇인지 글로 밝힌 수치", m.provenance),
+    tally("units", "단위나 이름이 붙은 숫자", m.units),
   ];
 }
 
@@ -338,5 +363,12 @@ export function parseMeasurements(raw: unknown): Measurements {
     empties: tallyOf(raw.empties, "empties"),
     provenance: tallyOf(raw.provenance, "provenance"),
     value: tallyOf(raw.value, "value"),
+    voice: tallyOf(raw.voice, "voice"),
+    oneThing: tallyOf(raw.oneThing, "oneThing"),
+    buttons: tallyOf(raw.buttons, "buttons"),
+    targets: tallyOf(raw.targets, "targets"),
+    disabledWhy: tallyOf(raw.disabledWhy, "disabledWhy"),
+    units: tallyOf(raw.units, "units"),
+    hover: tallyOf(raw.hover, "hover"),
   };
 }

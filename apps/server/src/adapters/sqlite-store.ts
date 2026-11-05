@@ -8,9 +8,12 @@ import { mkdirSync } from "node:fs";
 import path from "node:path";
 import { DatabaseSync, type StatementSync } from "node:sqlite";
 import {
+  type AgentHistory,
+  type ConnectionRecord,
   type Experiment,
   type ExperimentFilter,
   type ExperimentStore,
+  matchesMetadata,
   matchesText,
   type RunRecord,
   type ScenarioRecord,
@@ -45,6 +48,11 @@ CREATE TABLE IF NOT EXISTS runs (
 CREATE INDEX IF NOT EXISTS runs_experiment ON runs (experiment_id, idx);
 CREATE INDEX IF NOT EXISTS runs_status ON runs (status);
 CREATE TABLE IF NOT EXISTS shares (token TEXT PRIMARY KEY, experiment_id TEXT NOT NULL, record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS connections (
+  id TEXT PRIMARY KEY, created_at TEXT NOT NULL, record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS agent_histories (
+  harness_id TEXT NOT NULL, agent_id TEXT NOT NULL, record TEXT NOT NULL,
+  PRIMARY KEY (harness_id, agent_id));
 `;
 
 type Row = Record<string, unknown>;
@@ -82,7 +90,7 @@ export class SqliteStore implements ExperimentStore {
   private migrate(): void {
     const version = Number((this.db.prepare("PRAGMA user_version").get() as Row).user_version);
     if (version > SCHEMA_VERSION)
-      throw new Error(`데이터 파일이 더 새 버전(${version})이다. 서버를 업데이트한다`);
+      throw new Error(`데이터 파일이 더 새 버전(${version})이에요. 서버를 업데이트해 주세요`);
     this.db.exec(SCHEMA);
     this.db.exec(`PRAGMA user_version = ${SCHEMA_VERSION}`);
   }
@@ -229,7 +237,7 @@ export class SqliteStore implements ExperimentStore {
       .all(...used.map(([key]) => String(filter[key]))) as Row[];
     const found = rows
       .map((r) => parse<Experiment>(r.record))
-      .filter((e) => matchesText(e, filter.text));
+      .filter((e) => matchesText(e, filter.text) && matchesMetadata(e, filter.meta));
     return found.slice(0, filter.limit ?? found.length);
   }
 
@@ -273,5 +281,48 @@ export class SqliteStore implements ExperimentStore {
 
   async deleteShare(token: string): Promise<boolean> {
     return Number(this.sql("DELETE FROM shares WHERE token = ?").run(token).changes) > 0;
+  }
+
+  async putConnection(connection: ConnectionRecord): Promise<void> {
+    this.sql("INSERT OR REPLACE INTO connections (id, created_at, record) VALUES (?, ?, ?)").run(
+      connection.id,
+      connection.createdAt,
+      JSON.stringify(connection),
+    );
+  }
+
+  async listConnections(): Promise<ConnectionRecord[]> {
+    const rows = this.sql("SELECT record FROM connections ORDER BY created_at, id").all() as Row[];
+    return rows.map((r) => parse<ConnectionRecord>(r.record));
+  }
+
+  async deleteConnection(id: string): Promise<boolean> {
+    return Number(this.sql("DELETE FROM connections WHERE id = ?").run(id).changes) > 0;
+  }
+
+  async getAgentHistory(harnessId: string, agentId: string): Promise<AgentHistory | undefined> {
+    const row = this.sql(
+      "SELECT record FROM agent_histories WHERE harness_id = ? AND agent_id = ?",
+    ).get(harnessId, agentId) as Row | undefined;
+    return row && parse<AgentHistory>(row.record);
+  }
+
+  async putAgentHistory(history: AgentHistory): Promise<void> {
+    this.sql(
+      "INSERT OR REPLACE INTO agent_histories (harness_id, agent_id, record) VALUES (?, ?, ?)",
+    ).run(history.harnessId, history.agentId, JSON.stringify(history));
+  }
+
+  async listAgentHistories(harnessId: string): Promise<AgentHistory[]> {
+    const rows = this.sql(
+      "SELECT record FROM agent_histories WHERE harness_id = ? ORDER BY agent_id",
+    ).all(harnessId) as Row[];
+    return rows.map((r) => parse<AgentHistory>(r.record));
+  }
+
+  async deleteAgentHistories(harnessId: string): Promise<number> {
+    return Number(
+      this.sql("DELETE FROM agent_histories WHERE harness_id = ?").run(harnessId).changes,
+    );
   }
 }

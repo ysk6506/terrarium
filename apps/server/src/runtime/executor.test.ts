@@ -72,7 +72,7 @@ describe("how a run ends [REQ-030] [REQ-031]", () => {
     );
     expect(early.run).toMatchObject({
       status: "failed",
-      error: "에이전트가 시작하지 못했다: 모델 503",
+      error: "에이전트가 시작하지 못했어요: 모델 503",
     });
     const late = await runWith(
       new ScriptHarness("h", async (req) => {
@@ -145,14 +145,14 @@ describe("how a run ends [REQ-030] [REQ-031]", () => {
     await settled(t.platform, YEONSU, e.experiment.id);
     expect(await t.store.getRun("again")).toMatchObject({
       status: "failed",
-      error: "하네스 'retired'가 지금 설정에 없다",
+      error: "하네스 'retired'가 지금 설정에 없어요",
     });
     const lost = { ...e.experiment, snapshot: { ...e.experiment.snapshot, worldDigest: "gone" } };
     await t.store.putRun({ ...replay, id: "again2" });
     t.platform.dispatcher.enqueue({ ...replay, id: "again2" }, lost);
     await settled(t.platform, YEONSU, e.experiment.id);
     expect((await t.store.getRun("again2"))?.error).toBe(
-      "세션을 열 수 없다: 실험이 가리키는 세계 버전을 찾을 수 없다",
+      "세션을 열 수 없어요: 실험이 가리키는 세계 버전을 찾을 수 없어요",
     );
   });
 

@@ -17,6 +17,12 @@ export class InvalidInputError extends TerrariumError {
   }
 }
 
+/** Nobody is signed in, and this server only answers people who are (an SSO method that refuses strangers). */
+export class UnauthenticatedError extends TerrariumError {
+  override readonly code = "unauthenticated";
+  override readonly status = 401;
+}
+
 /** The viewer may not do this (e.g. cancel someone else's experiment). */
 export class ForbiddenError extends TerrariumError {
   override readonly code = "forbidden";
@@ -43,19 +49,20 @@ export interface ErrorReply {
 }
 
 const STATUS_MESSAGES: Readonly<Record<number, string>> = {
-  400: "요청이 올바르지 않다",
-  403: "이 작업은 할 수 없다",
-  404: "찾을 수 없다",
-  409: "그사이 다른 변경이 있었다. 새로고침한 뒤 다시 시도한다",
-  413: "요청이 너무 크다",
-  422: "지원하지 않는 작업이다",
-  429: "요청이 너무 많다. 잠시 뒤 다시 시도한다",
-  503: "연결된 서비스에 닿을 수 없다",
+  400: "요청이 올바르지 않아요",
+  401: "로그인이 필요해요",
+  403: "이 작업은 할 수 없어요",
+  404: "찾을 수 없어요",
+  409: "그사이 다른 변경이 있었어요. 새로고침한 뒤 다시 시도해 주세요",
+  413: "요청이 너무 커요",
+  422: "지원하지 않는 작업이에요",
+  429: "요청이 너무 많아요. 잠시 뒤 다시 시도해 주세요",
+  503: "연결된 서비스에 연결할 수 없어요",
 };
 
 export function invalidInput(
   issues: readonly ApiIssue[],
-  message = "입력값을 확인한다",
+  message = "입력값을 확인해 주세요",
 ): ErrorReply {
   return { status: 400, body: { error: { code: "invalid_input", message, issues } } };
 }
@@ -64,7 +71,7 @@ export function errorReply(status: number, code: string, message?: string): Erro
   return {
     status,
     body: {
-      error: { code, message: message ?? STATUS_MESSAGES[status] ?? "서버에서 문제가 생겼다" },
+      error: { code, message: message ?? STATUS_MESSAGES[status] ?? "서버에서 문제가 생겼어요" },
     },
   };
 }
@@ -80,7 +87,7 @@ export function toErrorReply(err: unknown): ErrorReply {
   return errorReply(
     500,
     "internal",
-    "서버에서 문제가 생겼다. 같은 일이 반복되면 관리자에게 알린다",
+    "서버에서 문제가 생겼어요. 같은 일이 반복되면 관리자에게 알려 주세요",
   );
 }
 

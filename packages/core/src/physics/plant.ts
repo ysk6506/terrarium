@@ -4,12 +4,13 @@
  * coolers and cooling towers that carry it away. Heat flows rack -> CDU -> plant; each stage has a
  * capacity and a water temperature that rises when the stage behind it cannot keep up.
  */
+import type { CduModel, ChillerModel, CoolingModel } from "@terrarium/core/catalog";
 import { approach, clamp } from "@terrarium/core/kernel";
-import type { Entity, World } from "@terrarium/core/world";
+import type { Entity, StateOf, World } from "@terrarium/core/world";
 import { isTransferSwitch, type SupplyResolver } from "./power";
+import { faultParam, hasFault } from "./power-supply";
+import { faultsAt, type Heat, heatOf } from "./thermal-plan";
 
-/** Outdoor air, °C: dry coolers and towers lose capacity as it warms. */
-export const OUTDOOR_C = 25;
 /** Specific heat of water, J/(kg·K), for a litre of coolant. */
 const WATER_J_PER_L_K = 4186;
 const MAX_LOOP_C = 60;
@@ -82,33 +83,36 @@ export function updateGenerators(world: World, supply: SupplyResolver, dt: numbe
 
 // ---------- shared helpers ----------
 
-/** Plants a consumer draws water from; empty means "an implicit plant" (older worlds). */
-const plantsOf = (world: World, id: string): Entity[] =>
-  world.index
-    .outgoing(id, "cooling")
-    .map((l) => world.index.entity(l.to))
-    .filter((e) => e.kind === "chiller");
-
 /**
  * How much of its water a consumer gets from the plants behind it: 1 while the water is cold, less as
  * it warms. A stopped plant keeps cooling for a while on the water in its buffer, then fades out.
  */
-export function plantAvailability(world: World, id: string): number {
-  const plants = plantsOf(world, id);
-  if (plants.length === 0) return 1;
+export function plantAvailabilityAt(heat: Heat, i: number): number {
+  const { start, items } = heat.t.plants;
+  const first = start[i] as number;
+  const last = start[i + 1] as number;
+  if (first === last) return 1;
   let sum = 0;
-  for (const plant of plants) {
-    const s = world.stateAs(plant.id, "chiller");
-    const model = world.catalog.getOf(plant.modelId ?? "", "chiller");
+  for (let q = first; q < last; q++) {
+    const plant = items[q] as number;
+    const s = heat.states[plant] as StateOf<"chiller">;
+    const model = heat.plan.models[plant] as ChillerModel;
     sum += clamp(1 - Math.max(0, s.supplyC - model.supplySetpointC - 1) / 8, 0, 1);
   }
-  return sum / plants.length;
+  return sum / (last - first);
 }
 
-function ambientDerate(plant: "chiller" | "dry_cooler" | "cooling_tower"): number {
-  if (plant === "dry_cooler") return clamp(1.1 - 0.01 * (OUTDOOR_C - 15), 0.3, 1);
-  if (plant === "cooling_tower") return clamp(1.04 - 0.004 * (OUTDOOR_C - 15), 0.5, 1);
-  return 1;
+/**
+ * What share of its rated capacity a plant keeps in the outdoor air of the moment: dry coolers and towers lose
+ * it as the air warms, a chiller loses up to 15% between 25 and 40 °C (its condenser runs hotter).
+ */
+export function ambientDerate(
+  plant: "chiller" | "dry_cooler" | "cooling_tower",
+  outdoorC: number,
+): number {
+  if (plant === "dry_cooler") return clamp(1.1 - 0.01 * (outdoorC - 15), 0.3, 1);
+  if (plant === "cooling_tower") return clamp(1.04 - 0.004 * (outdoorC - 15), 0.5, 1);
+  return clamp(1 - (0.15 * (outdoorC - 25)) / 15, 0.85, 1);
 }
 
 // ---------- CDUs ----------
@@ -119,37 +123,41 @@ export function leakIsolated(world: World, id: string): boolean {
   return leak !== undefined && world.time() - leak.since >= (leak.params.shutoffSeconds ?? 120);
 }
 
-/** Heat each running CDU carries away, from the liquid racks linked to it, W. */
-function cduLoadsW(world: World): Map<string, number> {
-  const loads = new Map<string, number>();
-  for (const rack of world.index.ofKind("rack")) {
-    const liquidW = world.stateAs(rack.id, "rack").liquidW;
+/** Heat each running CDU carries away, from the liquid racks linked to it, W (by position). */
+function cduLoadsW(heat: Heat): Float64Array {
+  const loads = new Float64Array(heat.plan.ents.length);
+  const { start, items } = heat.t.rackCdus;
+  for (const rack of heat.t.racks) {
+    const liquidW = (heat.states[rack] as StateOf<"rack">).liquidW;
     if (liquidW <= 0) continue;
-    const serving = world.index
-      .outgoing(rack.id, "cooling")
-      .map((l) => l.to)
-      .filter((id) => world.index.entity(id).kind === "cdu" && world.stateAs(id, "cdu").running);
-    for (const id of serving) loads.set(id, (loads.get(id) ?? 0) + liquidW / serving.length);
+    const first = start[rack] as number;
+    const last = start[rack + 1] as number;
+    let serving = 0;
+    for (let q = first; q < last; q++)
+      if ((heat.states[items[q] as number] as StateOf<"cdu">).running) serving++;
+    for (let q = first; q < last; q++) {
+      const cdu = items[q] as number;
+      if ((heat.states[cdu] as StateOf<"cdu">).running)
+        loads[cdu] = (loads[cdu] as number) + liquidW / serving;
+    }
   }
   return loads;
 }
 
-function updateCdu(world: World, cdu: Entity, loadW: number, dt: number): void {
-  const model = world.catalog.getOf(cdu.modelId ?? "", "cdu");
-  const state = world.stateAs(cdu.id, "cdu");
-  const failedPumps = world
-    .faultsOn(cdu.id)
+function updateCdu(heat: Heat, i: number, loadW: number, dt: number): void {
+  const world = heat.world;
+  const model = heat.plan.models[i] as CduModel;
+  const state = heat.states[i] as StateOf<"cdu">;
+  const id = (heat.plan.ents[i] as Entity).id;
+  const failedPumps = faultsAt(heat, i)
     .filter((f) => f.type === "cdu_pump_failure")
     .reduce((n, f) => n + (f.params.pumps ?? 1), 0);
-  const pumpsOk = Array.from({ length: model.pumps }, (_, i) => i >= failedPumps);
+  const pumpsOk = Array.from({ length: model.pumps }, (_, k) => k >= failedPumps);
   const running =
-    state.powered &&
-    state.adminOn &&
-    !fault(world, cdu.id, "cdu_failure") &&
-    !leakIsolated(world, cdu.id);
+    state.powered && state.adminOn && !fault(world, id, "cdu_failure") && !leakIsolated(world, id);
   const duty = Math.max(1, model.pumps - 1);
   const pumpFactor = running ? Math.min(1, pumpsOk.filter(Boolean).length / duty) : 0;
-  const capacityKw = model.capacityKw * pumpFactor * plantAvailability(world, cdu.id);
+  const capacityKw = model.capacityKw * pumpFactor * plantAvailabilityAt(heat, i);
   const loadKw = running ? loadW / 1000 : 0;
   const loopJPerK = model.loopLitres * WATER_J_PER_L_K;
   let supplyC: number;
@@ -161,7 +169,7 @@ function updateCdu(world: World, cdu: Entity, loadW: number, dt: number): void {
     );
   else supplyC = approach(state.supplyC, state.setpointC, dt, 45);
   const spread = capacityKw > 0 ? 10 * clamp(loadKw / capacityKw, 0, 1.5) : 0;
-  world.patch(cdu.id, "cdu", {
+  Object.assign(state, {
     running,
     pumpsOk,
     loadKw,
@@ -173,31 +181,41 @@ function updateCdu(world: World, cdu: Entity, loadW: number, dt: number): void {
 
 // ---------- chillers ----------
 
-/** Heat each running plant carries away: CDUs, chilled-water cooling units, and rear-door racks wired to it. */
-function plantLoadsKw(world: World): Map<string, number> {
-  const loads = new Map<string, number>();
-  // Water keeps circulating through a stopped plant's loop, so its buffer takes its share of the heat.
-  const share = (consumerId: string, kw: number) => {
-    const serving = plantsOf(world, consumerId);
-    for (const p of serving) loads.set(p.id, (loads.get(p.id) ?? 0) + kw / serving.length);
-  };
-  for (const cdu of world.index.ofKind("cdu")) share(cdu.id, world.stateAs(cdu.id, "cdu").loadKw);
-  for (const unit of world.index.ofKind("cooling_unit")) {
-    const model = world.catalog.getOf(unit.modelId ?? "", "cooling_unit");
-    if (model.chilledWater) share(unit.id, world.stateAs(unit.id, "cooling_unit").loadKw);
+/** Water keeps circulating through a stopped plant's loop, so its buffer takes its share of the heat. */
+function share(heat: Heat, loads: Float64Array, consumer: number, kw: number): void {
+  const { start, items } = heat.t.plants;
+  const first = start[consumer] as number;
+  const last = start[consumer + 1] as number;
+  for (let q = first; q < last; q++) {
+    const plant = items[q] as number;
+    loads[plant] = (loads[plant] as number) + kw / (last - first);
   }
-  for (const rack of world.index.ofKind("rack"))
-    if (plantsOf(world, rack.id).length > 0)
-      share(rack.id, world.stateAs(rack.id, "rack").liquidW / 1000);
+}
+
+/** Heat each running plant carries away: CDUs, chilled-water cooling units, and rear-door racks wired to it. */
+function plantLoadsKw(heat: Heat): Float64Array {
+  const loads = new Float64Array(heat.plan.ents.length);
+  const { start } = heat.t.plants;
+  for (const cdu of heat.t.cdus)
+    share(heat, loads, cdu, (heat.states[cdu] as StateOf<"cdu">).loadKw);
+  for (const unit of heat.t.coolingUnits)
+    if ((heat.plan.models[unit] as CoolingModel).chilledWater)
+      share(heat, loads, unit, (heat.states[unit] as StateOf<"cooling_unit">).loadKw);
+  for (const rack of heat.t.racks)
+    if ((start[rack + 1] as number) > (start[rack] as number))
+      share(heat, loads, rack, (heat.states[rack] as StateOf<"rack">).liquidW / 1000);
   return loads;
 }
 
-function updateChiller(world: World, plant: Entity, loadKw: number, dt: number): void {
-  const model = world.catalog.getOf(plant.modelId ?? "", "chiller");
-  const state = world.stateAs(plant.id, "chiller");
-  const running = state.powered && state.adminOn && !fault(world, plant.id, "chiller_failure");
-  const factor = fault(world, plant.id, "chiller_degraded")?.params.factor ?? 1;
-  const capacityKw = running ? model.capacityKw * factor * ambientDerate(model.plant) : 0;
+function updateChiller(heat: Heat, i: number, loadKw: number, dt: number): void {
+  const model = heat.plan.models[i] as ChillerModel;
+  const state = heat.states[i] as StateOf<"chiller">;
+  const faults = faultsAt(heat, i);
+  const running = state.powered && state.adminOn && !hasFault(faults, "chiller_failure");
+  const factor = faultParam(faults, "chiller_degraded", "factor") ?? 1;
+  const capacityKw = running
+    ? model.capacityKw * factor * ambientDerate(model.plant, heat.world.outdoorC())
+    : 0;
   const bufferJPerK = model.bufferM3 * 1000 * WATER_J_PER_L_K;
   let supplyC: number;
   if (running && loadKw <= capacityKw)
@@ -208,7 +226,7 @@ function updateChiller(world: World, plant: Entity, loadKw: number, dt: number):
       state.supplyC + ((loadKw * 1000 - capacityKw * 1000) / bufferJPerK) * dt,
     );
   const spread = capacityKw > 0 ? 6 * clamp(loadKw / capacityKw, 0, 1.5) : 6;
-  world.patch(plant.id, "chiller", {
+  Object.assign(state, {
     running,
     loadKw,
     capacityKw,
@@ -220,9 +238,9 @@ function updateChiller(world: World, plant: Entity, loadKw: number, dt: number):
 
 /** One step of the plant: heat from the racks reaches the CDUs, then the chillers behind them. */
 export function updatePlant(world: World, dt: number): void {
-  const cduLoads = cduLoadsW(world);
-  for (const cdu of world.index.ofKind("cdu")) updateCdu(world, cdu, cduLoads.get(cdu.id) ?? 0, dt);
-  const loads = plantLoadsKw(world);
-  for (const plant of world.index.ofKind("chiller"))
-    updateChiller(world, plant, loads.get(plant.id) ?? 0, dt);
+  const heat = heatOf(world);
+  const cduLoads = cduLoadsW(heat);
+  for (const cdu of heat.t.cdus) updateCdu(heat, cdu, cduLoads[cdu] as number, dt);
+  const loads = plantLoadsKw(heat);
+  for (const plant of heat.t.chillers) updateChiller(heat, plant, loads[plant] as number, dt);
 }

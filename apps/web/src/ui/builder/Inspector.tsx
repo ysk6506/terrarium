@@ -9,6 +9,8 @@ import { KIND_LABELS, LINK_LABELS, MODELLED_KINDS } from "@terrarium/core/world"
 import { useEffect, useState } from "react";
 import { builder, celsius, count, watts, won } from "../../logic";
 import { Button, Figures, Note, NumberField, Segmented, SelectField } from "../kit";
+import { FillPanel } from "./FillPanel";
+import { LandList, ParcelPanel, PurposeField } from "./LandPanel";
 import { RackPanel } from "./RackPanel";
 import type { Builder } from "./useBuilder";
 import { catalog } from "./useBuilder";
@@ -75,7 +77,7 @@ function LinkKindRow({
       <div className="small" style={{ fontWeight: 600 }}>
         {LINK_LABELS[kind]}
       </div>
-      {links.length === 0 && <div className="tiny muted">아직 없다</div>}
+      {links.length === 0 && <div className="tiny muted">아직 없어요</div>}
       {links.map((l) => (
         <div key={l.id} className="row small" style={{ justifyContent: "space-between" }}>
           <button
@@ -96,7 +98,7 @@ function LinkKindRow({
       ))}
       {options.length > 0 && (
         <SelectField
-          label={`${LINK_LABELS[kind]} 연결 추가`}
+          label={`${LINK_LABELS[kind]} 연결 더하기`}
           value={undefined}
           placeholder="가까운 것부터"
           options={options}
@@ -120,6 +122,7 @@ function EntityFields({ entity, b }: { readonly entity: Entity; readonly b: Buil
   const rack = rackOf(b, entity);
   return (
     <>
+      <PurposeField entity={entity} b={b} />
       {models.length > 1 && (
         <SelectField
           label="모델"
@@ -157,7 +160,7 @@ function EntityFields({ entity, b }: { readonly entity: Entity; readonly b: Buil
 
 function wireRack(b: Builder, rackId: string): void {
   const r = builder.autoWireRack(b.state.blueprint, catalog, rackId);
-  b.apply(() => r, r.added > 0 ? `케이블 ${r.added}개를 이었다` : "더 이을 케이블이 없다");
+  b.apply(() => r, r.added > 0 ? `케이블 ${r.added}개를 이었어요` : "더 이을 케이블이 없어요");
 }
 
 function EntityActions({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
@@ -207,7 +210,7 @@ function RemoveBlock({ entity, b }: { readonly entity: Entity; readonly b: Build
       </Button>
       {inside > 0 && (
         <p className="tiny muted" style={{ marginTop: 6 }}>
-          안에 든 {count(inside)}개와 그 케이블도 함께 지워진다.
+          안에 든 {count(inside)}개와 그 케이블도 함께 지워져요.
         </p>
       )}
     </div>
@@ -226,15 +229,16 @@ function EntityPanel({ entity, b }: { readonly entity: Entity; readonly b: Build
         </div>
         {heat !== undefined && preview && (
           <div className="small">
-            흡기 {celsius(heat)} (가동 {Math.round(preview.seconds / 60)}분 뒤)
+            흡기 {celsius(heat)} ({Math.round(preview.seconds / 60)}분 돌린 뒤)
           </div>
         )}
         <EntityFields entity={entity} b={b} />
         <EntityActions entity={entity} b={b} />
       </div>
       {entity.kind === "rack" && <RackPanel rack={entity} b={b} />}
+      {entity.kind === "parcel" && <ParcelPanel entity={entity} b={b} />}
       <Links entity={entity} b={b} />
-      <RemoveBlock entity={entity} b={b} />
+      {entity.kind !== "parcel" && <RemoveBlock entity={entity} b={b} />}
     </>
   );
 }
@@ -279,7 +283,7 @@ function IssuesBlock({ b }: { readonly b: Builder }) {
 
 function wireRoom(b: Builder, roomId: string): void {
   const r = builder.autoWireRoom(b.state.blueprint, catalog, roomId);
-  b.apply(() => r, r.added > 0 ? `케이블 ${r.added}개를 이었다` : "더 이을 케이블이 없다");
+  b.apply(() => r, r.added > 0 ? `케이블 ${r.added}개를 이었어요` : "더 이을 케이블이 없어요");
 }
 
 function Floors({ b, buildingId }: { readonly b: Builder; readonly buildingId: string }) {
@@ -304,9 +308,9 @@ function Floors({ b, buildingId }: { readonly b: Builder; readonly buildingId: s
         <Button
           size="small"
           icon="plus"
-          onClick={() => b.apply((bp) => builder.addFloor(bp, buildingId), "층을 올렸다")}
+          onClick={() => b.apply((bp) => builder.addFloor(bp, buildingId), "층을 올렸어요")}
         >
-          층 추가
+          층 더하기
         </Button>
       </div>
     </div>
@@ -335,7 +339,7 @@ function LevelTotals({ b }: { readonly b: Builder }) {
       ))}
       {preview?.hottest && (
         <Note tone={preview.hottest.inletC > 27 ? "bad" : "good"}>
-          가동 {Math.round(preview.seconds / 60)}분 뒤 가장 더운 랙은 {preview.hottest.name}, 흡기{" "}
+          {Math.round(preview.seconds / 60)}분 돌린 뒤 가장 더운 랙은 {preview.hottest.name}, 흡기{" "}
           {celsius(preview.hottest.inletC)}. 알람 {preview.alarms.length}건.
         </Note>
       )}
@@ -359,12 +363,14 @@ function LevelPanel({ b }: { readonly b: Builder }) {
             </Button>
             <p className="tiny muted" style={{ marginTop: 6 }}>
               장비는 랙의 PDU A와 B로, 서버는 ToR 스위치로, 랙은 가까운 냉방기로, PDU는 서로 다른
-              분전반으로, 분전반은 UPS로 잇는다.
+              분전반으로, 분전반은 UPS로 이어요.
             </p>
           </div>
         )}
         {building && <Floors b={b} buildingId={building.id} />}
       </div>
+      {level.kind === "room" && <FillPanel roomId={level.id} b={b} />}
+      {level.kind === "site" && <LandList b={b} />}
       <IssuesBlock b={b} />
     </>
   );
@@ -377,7 +383,7 @@ export function Inspector({ b }: { readonly b: Builder }) {
     <aside className="builder-side builder-side-right" aria-label="고른 것">
       {selected.length > 1 ? (
         <div className="builder-block stack">
-          <h2 style={{ fontSize: 18 }}>{selected.length}개를 골랐다</h2>
+          <h2 style={{ fontSize: 18 }}>{selected.length}개를 골랐어요</h2>
           <div className="row">
             <Button
               kind="danger"
@@ -388,7 +394,7 @@ export function Inspector({ b }: { readonly b: Builder }) {
               모두 지우기
             </Button>
             <Button size="small" onClick={() => b.setSelected([])}>
-              고르기 취소
+              선택 풀기
             </Button>
           </div>
         </div>

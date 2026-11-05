@@ -2,16 +2,20 @@
 title: 실험과 결과 분석
 kind: spec
 status: active
-last_verified: 2026-10-29
+last_verified: 2026-11-04
 covers:
+  - packages/core/src/experiments/agent-version.ts
   - packages/core/src/experiments/recipe.ts
   - packages/core/src/experiments/lineage.ts
   - packages/core/src/experiments/scheduler.ts
   - packages/core/src/analysis/leaderboard.ts
   - packages/core/src/analysis/twin.ts
-covers_hash: a3d750760b6d31fb
+covers_hash: b14aca2e8691bad9
 verification_log:
   - "2026-10-29: first version, checked against recipe, lineage, scheduler, leaderboard, twin"
+  - "2026-10-30: 2026-10-30: 에이전트 버전(agent-version.ts)과 lineage.ts의 agentVersion 이어받기를 코드와 대조해 '누가 돌렸나, 어느 버전인가' 항목을 더했다 (REQ-053, ADR-0043)"
+  - "2026-11-03: 서버·core가 사람에게 돌려주는 안내 문장이 해요체로 바뀐 것만 확인했다. 동작과 본문은 그대로 (ADR-0050)"
+  - "2026-11-04: 2026-11-04: ADR-0073. 덮는 코드에서 사람이 읽는 말(알람 해요체, 에이전트 지시문 한다체, 툴·멈춤·상한 등)만 바뀌었고 문서가 말하는 구조와 규칙은 그대로다"
 ---
 # 실험과 결과 분석 (REQ-015, REQ-030~033, REQ-037~040)
 
@@ -28,6 +32,9 @@ verification_log:
 - **포크(REQ-040)**: 실험을 그대로 가져와 조건 일부만 바꾼다. 아무것도 안 바꾸면 거절한다("실행을 추가하라"). 포크는 부모를
   기억하고(`parentId`), 바뀐 점은 `recipeDiff`가 "에이전트 triage → deep" 같은 말로 만든다. 계보는 위(`lineage`)로도
   아래(`forksOf`)로도 따라간다.
+- **누가 돌렸나, 어느 버전인가(REQ-052, REQ-053, [ADR-0043](adr/0043-connection-secrets-retention-versions.md))**: 실험은 만든 때의 하네스·에이전트 정보(`subject`)와 사람이 붙인 메타데이터를 그대로 지닌다.
+  또 에이전트가 스스로 밝힌 정보가 가장 새 버전과 다르면 새 버전(`agent-version.ts`)을 쓰고 실험에 그 번호(`agentVersion`)를 붙인다. 앞 버전과의 차이는 저장하지 않고 견주어 만든다(이름·모델·사실·연결 메타데이터·사람이 붙인 속성).
+  번호는 오르기만 하고 다시 쓰이지 않는다. 포크는 부모의 에이전트가 아니라 지금 에이전트를 본다.
 - **스케줄러(REQ-032)**: [ADR-0024](adr/0024-fair-scheduling.md). 지금 가장 적게 돌리고 있는 사람의 실행부터, 서버·사람·하네스 한도 안에서.
 - **저장소 포트**: `ExperimentStore`. 메모리 구현(`MemoryStore`)은 테스트와 기본값, 서버는 SQLite 구현을 쓴다.
 

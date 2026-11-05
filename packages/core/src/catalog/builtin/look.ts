@@ -29,5 +29,6 @@ export const STYLE = {
   aquantis: (front: ModelLook["front"]) => look("#e9eef0", "#00a3c4", "glossy", front),
   glaciera: (front: ModelLook["front"]) => look("#cdd3d6", "#2b6cb0", "metal", front),
   dynamo: (front: ModelLook["front"]) => look("#394552", "#4cd964", "metal", front),
+  openframe: (front: ModelLook["front"]) => look("#2e3a44", "#f2a900", "matte", front),
   switchyard: (front: ModelLook["front"]) => look("#8c969e", "#d9381e", "metal", front),
 };

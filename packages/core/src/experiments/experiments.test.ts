@@ -76,25 +76,25 @@ describe("recipes [REQ-030] [REQ-031]", () => {
       ),
     ).toEqual([
       "알 수 없는 툴: teleport",
-      "같은 툴이 두 번 들어 있다",
-      "시드는 0 이상의 정수여야 한다",
-      "같은 시드가 두 번 들어 있다",
-      "툴 호출당 시간은 1~600초여야 한다",
+      "같은 툴이 두 번 들어 있어요",
+      "시드는 0 이상의 정수여야 해요",
+      "같은 시드가 두 번 들어 있어요",
+      "툴 호출당 시간은 1~600초여야 해요",
       "알 수 없는 vCenter 버전 'vcenter/9.9'",
       "알 수 없는 vROps 버전 'vrops/1'",
-      "하네스를 골라야 한다",
-      "하네스에 'ghost' 에이전트가 없다",
+      "하네스를 골라야 해요",
+      "하네스에 'ghost' 에이전트가 없어요",
     ]);
     expect(recipeProblems(recipe({ tools: ["submit_diagnosis"], seeds: [] }), ctx)).toEqual([
-      "조사에 쓸 툴을 하나 이상 골라야 한다 (진단 제출은 늘 포함된다)",
-      "시드를 하나 이상 정해야 한다",
+      "조사에 쓸 툴을 하나 이상 골라야 해요 (진단 제출은 늘 포함돼요)",
+      "시드를 하나 이상 정해야 해요",
     ]);
     expect(recipeProblems(recipe({ seeds: seedsUpTo(21), agentId: "" }), ctx)).toEqual([
-      "실행은 한 실험에 20번까지다 (지금 21번)",
-      "에이전트를 골라야 한다",
+      "실행은 한 실험에 20번까지예요 (지금 21번)",
+      "에이전트를 골라야 해요",
     ]);
     expect(recipeProblems(recipe({ time: { kind: "realtime", speed: 0 } }), ctx)).toEqual([
-      "시간 배속은 0보다 크고 100 이하여야 한다",
+      "시간 배속은 0보다 크고 100 이하여야 해요",
     ]);
     expect(
       recipeProblems(recipe({ time: { kind: "warp" } as never }), { profiles: ctx.profiles }),
@@ -239,7 +239,7 @@ describe("forks and lineage [REQ-040]", () => {
   test("a fork that changes nothing is refused; a new scenario version counts as a change", () => {
     const parent = experiment("e1");
     expect(() => forkExperiment(parent, {}, meta, snapshot)).toThrow(
-      /조건을 하나 이상 바꿔야 한다/,
+      /조건을 하나 이상 바꿔야 해요/,
     );
     const rerun = forkExperiment(parent, {}, meta, { ...snapshot, scenarioDigest: "sd2" });
     expect(rerun.benchmarkKey).not.toBe(parent.benchmarkKey);

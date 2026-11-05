@@ -1,0 +1,305 @@
+/**
+ * Connecting something, or changing a connection (REQ-051, REQ-052): pick the protocol, fill what it asks for,
+ * try it, save it. The fields come from the connector's own description, so a new protocol needs no new screen.
+ */
+import type {
+  ConnectionCheck,
+  ConnectionView,
+  ConnectorField,
+  ConnectorSpec,
+} from "@terrarium/core/contract";
+import { useState } from "react";
+import {
+  blankForm,
+  type ConnectionForm,
+  configOf,
+  formOf,
+  formProblems,
+  headersOf,
+  metadataOf,
+  TRANSPORT_LABELS,
+} from "../../logic";
+import { useAction, useApp } from "../context";
+import { Button, Dialog, Note, SelectField, TextField } from "../kit";
+import { ConnectorFieldInput, HeaderEditor, MetaEditor } from "./connection-form";
+
+const emptyForm: ConnectionForm = {
+  name: "",
+  description: "",
+  values: {},
+  cleared: [],
+  headers: [],
+  metadata: [],
+};
+
+export interface ConnectionDialogProps {
+  readonly connectors: readonly ConnectorSpec[];
+  /** The connection being changed; left out for a new one. */
+  readonly existing?: ConnectionView;
+  readonly onClose: () => void;
+  readonly onSaved: (view: ConnectionView) => void;
+}
+
+function ToolGuide({ spec }: { readonly spec: ConnectorSpec }) {
+  return (
+    <Note>
+      <div className="stack" style={{ gap: 6 }}>
+        <strong>{TRANSPORT_LABELS[spec.toolTransport]}</strong>
+        <ol className="list-plain">
+          {spec.toolGuide.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ol>
+      </div>
+    </Note>
+  );
+}
+
+function CheckResult({ check }: { readonly check: ConnectionCheck }) {
+  if (!check.ok) return <Note tone="bad">{check.error ?? "연결하지 못했어요"}</Note>;
+  return (
+    <Note tone="good">
+      <div className="stack" style={{ gap: 4 }}>
+        <span>
+          연결됐어요({check.ms} ms).{" "}
+          {check.agents.length > 0
+            ? `에이전트 ${check.agents.length}개: ${check.agents.map((a) => a.name).join(", ")}`
+            : "이 연결에는 에이전트가 하나 있어요."}
+        </span>
+        {check.notes.map((n) => (
+          <span key={n}>{n}</span>
+        ))}
+      </div>
+    </Note>
+  );
+}
+
+const connectorOptions = (connectors: readonly ConnectorSpec[]) =>
+  connectors.map((c) => ({
+    value: c.kind,
+    label: c.label,
+    group: c.scope === "harness" ? "하네스 — 에이전트를 여러 개 가진 곳" : "에이전트 하나",
+  }));
+
+function Fields({
+  spec,
+  form,
+  problems,
+  kept,
+  patch,
+}: {
+  readonly spec: ConnectorSpec;
+  readonly form: ConnectionForm;
+  readonly problems: Readonly<Record<string, string>>;
+  readonly kept: readonly string[];
+  readonly patch: (change: Partial<ConnectionForm>) => void;
+}) {
+  const draw = (f: ConnectorField) => (
+    <ConnectorFieldInput
+      key={f.key}
+      field={f}
+      form={form}
+      kept={kept.includes(f.key)}
+      error={problems[f.key]}
+      patch={patch}
+    />
+  );
+  const advanced = spec.fields.filter((f) => f.advanced);
+  return (
+    <>
+      {spec.fields.filter((f) => !f.advanced).map(draw)}
+      {advanced.length > 0 && (
+        <details
+          className="fold"
+          open={
+            advanced.some((f) => (form.values[f.key] ?? "") !== String(f.default ?? "")) ||
+            undefined
+          }
+        >
+          <summary>드물게 쓰는 설정 {advanced.length}개</summary>
+          <div className="stack" style={{ marginTop: 12 }}>
+            {advanced.map(draw)}
+          </div>
+        </details>
+      )}
+    </>
+  );
+}
+
+function Extras({
+  form,
+  problems,
+  patch,
+}: {
+  readonly form: ConnectionForm;
+  readonly problems: Readonly<Record<string, string>>;
+  readonly patch: (change: Partial<ConnectionForm>) => void;
+}) {
+  return (
+    <>
+      <details className="fold" open={form.headers.length > 0 || undefined}>
+        <summary>
+          헤더 {form.headers.length > 0 ? `${form.headers.length}개` : "(필요할 때만)"}
+        </summary>
+        <div style={{ marginTop: 12 }}>
+          <HeaderEditor
+            rows={form.headers}
+            problems={problems}
+            onChange={(headers) => patch({ headers })}
+          />
+        </div>
+      </details>
+      <details className="fold" open={form.metadata.length > 0 || undefined}>
+        <summary>
+          실험 메타데이터 {form.metadata.length > 0 ? `${form.metadata.length}개` : "(선택)"}
+        </summary>
+        <div style={{ marginTop: 12 }}>
+          <MetaEditor
+            rows={form.metadata}
+            problems={problems}
+            onChange={(metadata) => patch({ metadata })}
+          />
+        </div>
+      </details>
+    </>
+  );
+}
+
+function useConnectionDialog({ connectors, existing, onSaved }: ConnectionDialogProps) {
+  const { api } = useApp();
+  const { busy, run } = useAction();
+  const [kind, setKind] = useState(existing?.connector ?? "");
+  const spec = connectors.find((c) => c.kind === kind);
+  const [form, setForm] = useState<ConnectionForm>(() => {
+    const first = connectors.find((c) => c.kind === existing?.connector);
+    return existing && first ? formOf(first, existing) : emptyForm;
+  });
+  const [check, setCheck] = useState<ConnectionCheck>();
+  const [shown, setShown] = useState(false);
+  const kept = existing?.secrets ?? [];
+  const problems = spec && shown ? formProblems(spec, form, kept) : {};
+  const patch = (change: Partial<ConnectionForm>) => {
+    setForm((f) => ({ ...f, ...change }));
+    setCheck(undefined);
+  };
+  const pick = (next: string) => {
+    const chosen = connectors.find((c) => c.kind === next);
+    setKind(next);
+    if (chosen)
+      setForm((f) => ({ ...blankForm(chosen), name: f.name, description: f.description }));
+    setCheck(undefined);
+  };
+  /** Show what is wrong, and say whether anything is. */
+  const ready = (): ConnectorSpec | undefined => {
+    setShown(true);
+    return spec && Object.keys(formProblems(spec, form, kept)).length === 0 ? spec : undefined;
+  };
+  const test = async () => {
+    const s = ready();
+    if (!s) return;
+    const body = {
+      connector: s.kind,
+      ...(existing ? { id: existing.id } : {}),
+      config: configOf(s, form),
+      headers: headersOf(form.headers),
+    };
+    const result = await run(() => api.call("checkConnection", { body }));
+    if (result) setCheck(result);
+  };
+  const save = async () => {
+    const s = ready();
+    if (!s) return;
+    const common = {
+      name: form.name.trim(),
+      description: form.description.trim(),
+      config: configOf(s, form),
+      headers: headersOf(form.headers),
+      metadata: metadataOf(form.metadata),
+    };
+    const saved = await run(
+      () =>
+        existing
+          ? api.call("updateConnection", { params: { id: existing.id }, body: common })
+          : api.call("createConnection", { body: { connector: s.kind, ...common } }),
+      existing ? "연결을 고쳤어요" : "연결을 저장했어요",
+    );
+    if (saved) onSaved(saved);
+  };
+  return { busy, kind, spec, form, check, problems, kept, patch, pick, test, save };
+}
+
+/** Add a connection, or change one that exists (the kind of an existing one cannot change). */
+export function ConnectionDialog(props: ConnectionDialogProps) {
+  const { connectors, existing, onClose } = props;
+  const d = useConnectionDialog(props);
+  const { spec, form, problems } = d;
+  return (
+    <Dialog
+      wide
+      title={existing ? `연결 고치기 — ${existing.name}` : "연결 더하기"}
+      onClose={onClose}
+      actions={
+        <>
+          <Button onClick={onClose}>닫기</Button>
+          <Button
+            onClick={d.test}
+            busy={d.busy}
+            disabled={!spec}
+            why="연결 방식을 먼저 골라 주세요"
+          >
+            연결 확인
+          </Button>
+          <Button
+            kind="primary"
+            onClick={d.save}
+            busy={d.busy}
+            disabled={!spec}
+            why="연결 방식을 먼저 골라 주세요"
+          >
+            저장
+          </Button>
+        </>
+      }
+    >
+      <div className="stack">
+        {!existing && (
+          <SelectField
+            label="무엇에 연결할까요?"
+            value={d.kind || undefined}
+            options={connectorOptions(connectors)}
+            onChange={d.pick}
+            placeholder="프로토콜을 골라 주세요"
+            help={spec?.description}
+          />
+        )}
+        {spec && (
+          <>
+            <ToolGuide spec={spec} />
+            <TextField
+              label="이름"
+              value={form.name}
+              onChange={(name) => d.patch({ name })}
+              placeholder="예: 검색팀 OpenCode"
+              error={problems.name}
+            />
+            <TextField
+              label="설명 (선택)"
+              value={form.description}
+              onChange={(description) => d.patch({ description })}
+              maxLength={300}
+            />
+            <Fields spec={spec} form={form} problems={problems} kept={d.kept} patch={d.patch} />
+            <Extras form={form} problems={problems} patch={d.patch} />
+            {d.check && <CheckResult check={d.check} />}
+            {!existing && (
+              <p className="small muted" style={{ margin: 0 }}>
+                화면에서 만든 연결은 한동안 실험에 쓰지 않으면 지워져요. 지워지기 전에 모든 화면
+                위에서 알려 드려요.
+              </p>
+            )}
+          </>
+        )}
+      </div>
+    </Dialog>
+  );
+}

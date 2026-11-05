@@ -10,10 +10,10 @@ import { MemorySource, type RealitySource, sampleGraph } from "@terrarium/core/s
 import { ClickStackTelemetry } from "./clickstack";
 import type { Config, HarnessConfig } from "./config";
 import { secret } from "./config";
+import { type ConnectContext, connectorOf } from "./connectors";
 import { falkorSource } from "./falkordb";
-import { HttpHarness } from "./harness/http";
-import { type FetchLike, OpenAiHarness } from "./harness/openai";
-import { ScriptedHarness } from "./harness/scripted";
+import type { FetchLike } from "./fetch";
+import { SecretBox } from "./secret-box";
 import { SqliteStore } from "./sqlite-store";
 
 export const SAMPLE_SOURCE_ID = "sample";
@@ -26,6 +26,16 @@ export interface SourceEntry {
 export interface Adapters {
   readonly store: ExperimentStore;
   readonly harnesses: readonly HarnessPort[];
+  /** What the config file says about each of those harnesses, to show them (settings only name variables, never hold secrets). */
+  readonly harnessConfigs: readonly HarnessConfig[];
+  /** What connecting a harness or an agent from the screen needs: the server's variables and its way to reach out. */
+  readonly connect: ConnectContext;
+  /** Hosts people may connect to from the screen (the config's `connections.allowedHosts`). */
+  readonly allowedHosts?: readonly string[];
+  /** Seals the tokens and passwords people type on the screen (ADR-0043). */
+  readonly secretBox: SecretBox;
+  /** When unused connections go (the config's `connections.retentionDays` and `warnDays`). */
+  readonly retention: { readonly days: number; readonly warnDays: number };
   readonly sources: ReadonlyMap<string, SourceEntry>;
   readonly telemetry?: { readonly port: TelemetryPort; readonly name: string };
   close(): Promise<void>;
@@ -39,19 +49,15 @@ export interface AdapterOptions {
   readonly store?: ExperimentStore;
 }
 
+/** The port a config entry describes, built by the connector of its kind. */
 export function harnessFor(
   config: HarnessConfig,
   env: NodeJS.ProcessEnv,
   fetchImpl: FetchLike,
 ): HarnessPort {
-  switch (config.kind) {
-    case "scripted":
-      return new ScriptedHarness(config.id, config.name);
-    case "openai":
-      return new OpenAiHarness(config, secret(env, config.apiKeyEnv), fetchImpl);
-    case "http":
-      return new HttpHarness(config, secret(env, config.tokenEnv), fetchImpl);
-  }
+  const connector = connectorOf(config.kind);
+  if (!connector) throw new Error(`연결 방식 '${config.kind}'을 몰라요`);
+  return connector.connect(config, { env, fetch: fetchImpl });
 }
 
 function realitySources(config: Config, env: NodeJS.ProcessEnv) {
@@ -101,6 +107,11 @@ export function buildAdapters(config: Config, options: AdapterOptions = {}): Ada
   return {
     store: options.store ?? (ownStore as SqliteStore),
     harnesses,
+    harnessConfigs: config.harnesses,
+    connect: { env, fetch: fetchImpl },
+    secretBox: SecretBox.forServer(env, config.dataDir),
+    retention: { days: config.connections.retentionDays, warnDays: config.connections.warnDays },
+    ...(config.connections.allowedHosts ? { allowedHosts: config.connections.allowedHosts } : {}),
     sources,
     ...(telemetry ? { telemetry } : {}),
     async close() {

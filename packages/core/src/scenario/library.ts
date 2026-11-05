@@ -18,13 +18,24 @@ import {
   type ScenarioTemplate,
   SUBMIT,
 } from "./library-kit";
+import { NETWORK_TEMPLATES } from "./library-network";
+import type { Condition, Expectation } from "./model";
 
 export { allOf, type ScenarioTemplate };
+
+/** A server is alive when it is on and heat did not shut it down; `powered` stays true for a server someone switched off. */
+const aliveServer = (id: string): Condition => ({
+  kind: "state",
+  entity: id,
+  field: "adminOn",
+  op: "==",
+  value: true,
+});
 
 const coolingFailure: ScenarioTemplate = {
   id: "cooling-failure",
   name: "냉방기 정지",
-  summary: "가장 많은 랙을 맡은 냉방기가 멈춰 서버룸 온도가 오른다.",
+  summary: "가장 많은 랙을 맡은 냉방기가 멈춰 서버룸 온도가 올라요.",
   difficulty: "보통",
   faultTypes: ["cooling_unit_failure"],
   unavailable: (index) => needs(index, ["cooling_unit", "server"]),
@@ -43,6 +54,12 @@ const coolingFailure: ScenarioTemplate = {
         .filter((e) => e.kind === "server")
         .map((e) => e.id),
     );
+    // The other unit in the room can carry more if its setpoint comes down; in the sample campus the room
+    // barely warms either way (two units of 100 kW for a few kW of load), so this is a small share of the sheet.
+    const spare = index
+      .descendants(room.id)
+      .filter((e) => e.kind === "cooling_unit" && e.id !== unit.id)
+      .sort((a, b) => a.id.localeCompare(b.id))[0];
     const flow = new Flow();
     const start = flow.add("start", "start", {});
     const fault = flow.add(
@@ -61,7 +78,7 @@ const coolingFailure: ScenarioTemplate = {
     return doc(
       this,
       worldId,
-      `${withJosa(unit.name, "이")} 멈춘다. 영향 랙 ${racks.length}개.`,
+      `${withJosa(unit.name, "이")} 멈춰요. 영향 랙 ${racks.length}개.`,
       flow,
       [
         {
@@ -76,9 +93,24 @@ const coolingFailure: ScenarioTemplate = {
               {
                 id: "servers-alive",
                 kind: "final_state" as const,
-                label: "냉방 영향권 서버가 모두 살아 있다",
-                condition: allOf(servers.map(powered)),
+                label: "냉방 영향권 서버가 모두 켜져 있고, 열 보호로 꺼진 적이 없어요",
+                condition: allOf([
+                  ...servers.map(aliveServer),
+                  { kind: "event", type: "thermal.shutdown", occurred: false },
+                ]),
                 weight: 20,
+              },
+            ]
+          : []),
+        ...(spare && servers.length > 0
+          ? [
+              {
+                id: "spare-setpoint",
+                kind: "required_action" as const,
+                label: `${spare.name} 설정 온도 낮추기`,
+                action: "setpoint_change" as const,
+                target: spare.id,
+                weight: 10,
               },
             ]
           : []),
@@ -101,7 +133,7 @@ const cascadePdu = (index: BlueprintIndex) =>
 const breakerCascade: ScenarioTemplate = {
   id: "pdu-breaker-cascade",
   name: "PDU 차단기 트립 연쇄",
-  summary: "ToR 스위치를 먹이는 PDU가 트립해 다른 랙 서버까지 네트워크가 끊긴다.",
+  summary: "ToR 스위치를 먹이는 PDU가 트립해 다른 랙 서버까지 네트워크가 끊겨요.",
   difficulty: "어려움",
   faultTypes: ["breaker_trip"],
   unavailable: (index) => needs(index, ["pdu", "server"]),
@@ -126,7 +158,7 @@ const breakerCascade: ScenarioTemplate = {
       agent(`여러 서버에서 전원 상실과 네트워크 단절 알람이 한꺼번에 올라왔다. ${SUBMIT}`),
       wait,
     );
-    return doc(this, worldId, `${pdu.name} 차단기가 트립한다.`, flow, [
+    return doc(this, worldId, `${pdu.name} 차단기가 트립해요.`, flow, [
       {
         id: "diagnosis",
         kind: "diagnosis",
@@ -164,7 +196,7 @@ const breakerCascade: ScenarioTemplate = {
 const sensorDrift: ScenarioTemplate = {
   id: "sensor-drift",
   name: "센서 오차로 인한 허위 알람",
-  summary: "흡기 센서가 실제보다 높게 읽혀 경보가 울리지만 실제 온도는 정상이다.",
+  summary: "흡기 센서가 실제보다 높게 읽혀 알람이 울리지만 실제 온도는 정상이에요.",
   difficulty: "보통",
   faultTypes: ["sensor_drift"],
   unavailable: (index) => needs(index, ["server"]),
@@ -185,13 +217,13 @@ const sensorDrift: ScenarioTemplate = {
       "agent",
       "agent_task",
       agent(
-        `${server.name}의 흡기 온도 경보가 계속 울린다. 실제 상황을 확인하고, ${SUBMIT}`,
+        `${server.name}의 흡기 온도 알람이 계속 울린다. 실제 상황을 확인하고, ${SUBMIT}`,
         30,
         1800,
       ),
       wait,
     );
-    return doc(this, worldId, `${server.name}의 흡기 센서가 +${deltaC}°C 틀린다.`, flow, [
+    return doc(this, worldId, `${server.name}의 흡기 센서가 +${deltaC}°C 틀려요.`, flow, [
       {
         id: "diagnosis",
         kind: "diagnosis",
@@ -223,7 +255,7 @@ const sensorDrift: ScenarioTemplate = {
 const fanFailure: ScenarioTemplate = {
   id: "fan-failure-throttle",
   name: "팬 고장과 CPU 스로틀링",
-  summary: "부하가 높은 서버의 팬 두 개가 멈춰 CPU가 뜨거워진다.",
+  summary: "부하가 높은 서버의 팬 두 개가 멈춰 CPU가 뜨거워져요.",
   difficulty: "쉬움",
   faultTypes: ["fan_failure"],
   unavailable: (index) => needs(index, ["server"]),
@@ -261,7 +293,7 @@ const fanFailure: ScenarioTemplate = {
       agent(`${server.name}에서 성능 저하와 하드웨어 경고가 보고됐다. ${SUBMIT}`, 25, 1800),
       wait,
     );
-    return doc(this, worldId, `${server.name}의 팬 0·1번이 멈춘다.`, flow, [
+    return doc(this, worldId, `${server.name}의 팬 0·1번이 멈춰요.`, flow, [
       {
         id: "diagnosis",
         kind: "diagnosis",
@@ -269,22 +301,79 @@ const fanFailure: ScenarioTemplate = {
         faultType: ["fan_failure"],
         weight: 70,
       },
+      {
+        id: "no-poweroff",
+        kind: "forbidden_action",
+        label: "서버 전원 끄기 (올라간 VM이 같이 죽어요)",
+        action: "power_off",
+        target: server.id,
+        penalty: 15,
+      },
       { id: "time", kind: "time_limit", seconds: 900, weight: 15 },
       { id: "budget", kind: "tool_budget", maxCalls: 20, weight: 15 },
     ]);
   },
 };
 
+/** Diagnosis, then the VM calmed and stopped (physics rewards it), and the hosts left alone. */
+function noisyExpectations(vm: Entity, host: string, stopped: Condition): Expectation[] {
+  return [
+    {
+      id: "diagnosis",
+      kind: "diagnosis",
+      rootCause: [vm.id],
+      faultType: ["vm_cpu_spike"],
+      weight: 45,
+    },
+    {
+      id: "vm-calm",
+      kind: "final_state",
+      label: "폭주한 VM이 멈췄거나 CPU 알람이 풀렸어요",
+      condition: {
+        kind: "any",
+        of: [stopped, { kind: "alarm", active: false, entity: vm.id, code: "vm_cpu_high" }],
+      },
+      weight: 25,
+    },
+    {
+      id: "stop-vm",
+      kind: "required_action",
+      label: `${vm.name} 전원 끄기`,
+      action: "power_off",
+      target: vm.id,
+      weight: 10,
+    },
+    {
+      id: "no-host-poweroff",
+      kind: "forbidden_action",
+      label: "호스트 전원 차단 (다른 VM까지 멈춰요)",
+      action: "power_off",
+      target: host,
+      penalty: 20,
+    },
+    {
+      id: "no-host-restart",
+      kind: "forbidden_action",
+      label: "호스트 재시작 (다른 VM까지 멈춰요)",
+      action: "restart",
+      target: host,
+      penalty: 10,
+    },
+    { id: "time", kind: "time_limit", seconds: 900, weight: 10 },
+    { id: "budget", kind: "tool_budget", maxCalls: 30, weight: 10 },
+  ];
+}
+
 const noisyNeighbour: ScenarioTemplate = {
   id: "vm-cpu-spike-escalation",
   name: "VM CPU 폭주와 확산",
-  summary: "한 VM이 CPU를 독차지한다. 15분 안에 진단하지 못하면 호스트 CPU까지 폭주한다.",
+  summary: "한 VM이 CPU를 독차지해요. 15분 안에 진단하지 못하면 호스트 CPU까지 폭주해요.",
   difficulty: "어려움",
   faultTypes: ["vm_cpu_spike", "cpu_runaway"],
   unavailable: (index) =>
     index.ofKind("vm").some((vm) => index.outgoing(vm.id, "runs_on").length > 0)
       ? undefined
-      : "호스트에 올라간 VM이 없다",
+      : "호스트에 올라간 VM이 없어요",
   build(index, worldId) {
     const vm = index.ofKind("vm").find((v) => index.outgoing(v.id, "runs_on").length > 0) as Entity;
     const host = index.outgoing(vm.id, "runs_on")[0]?.to as string;
@@ -305,10 +394,21 @@ const noisyNeighbour: ScenarioTemplate = {
       agent(`${where}의 서비스 응답이 느리다는 민원이 들어왔다. ${SUBMIT}`),
       wait,
     );
+    // The spread to the host is for an agent that neither stops the VM nor answers; either one ends the wait.
+    const stopped: Condition = {
+      kind: "state",
+      entity: vm.id,
+      field: "running",
+      op: "==",
+      value: false,
+    };
     const deadline = flow.add(
       "deadline",
       "wait_until",
-      { condition: { kind: "diagnosis_submitted" }, timeoutSeconds: 900 },
+      {
+        condition: { kind: "any", of: [stopped, { kind: "diagnosis_submitted" }] },
+        timeoutSeconds: 900,
+      },
       task,
     );
     flow.add(
@@ -322,35 +422,9 @@ const noisyNeighbour: ScenarioTemplate = {
     return doc(
       this,
       worldId,
-      `${vm.name}의 CPU 수요가 치솟고, 늦으면 ${index.entity(host).name}까지 번진다.`,
+      `${vm.name}의 CPU 수요가 치솟고, 늦으면 ${index.entity(host).name}까지 번져요.`,
       flow,
-      [
-        {
-          id: "diagnosis",
-          kind: "diagnosis",
-          rootCause: [vm.id],
-          faultType: ["vm_cpu_spike"],
-          weight: 60,
-        },
-        {
-          id: "no-host-poweroff",
-          kind: "forbidden_action",
-          label: "호스트 전원 차단 (다른 VM까지 멈춘다)",
-          action: "power_off",
-          target: host,
-          penalty: 20,
-        },
-        {
-          id: "no-host-restart",
-          kind: "forbidden_action",
-          label: "호스트 재시작 (다른 VM까지 멈춘다)",
-          action: "restart",
-          target: host,
-          penalty: 10,
-        },
-        { id: "time", kind: "time_limit", seconds: 900, weight: 20 },
-        { id: "budget", kind: "tool_budget", maxCalls: 30, weight: 20 },
-      ],
+      noisyExpectations(vm, host, stopped),
     );
   },
 };
@@ -366,10 +440,24 @@ export const SCENARIO_TEMPLATES: readonly ScenarioTemplate[] = [
 /** Incidents that need a plant, liquid cooling or a generator: only worlds that have them can use these. */
 export { FACILITY_TEMPLATES };
 
-/** Every built-in template, the facility ones last. */
+/** Changes people make to the network and to PDUs (REQ-068): a wrong VLAN, a shut port, a deleted route. */
+export { NETWORK_TEMPLATES };
+
+/** Every built-in template, the facility ones and then the configuration ones last. */
 export const ALL_SCENARIO_TEMPLATES: readonly ScenarioTemplate[] = [
   ...SCENARIO_TEMPLATES,
   ...FACILITY_TEMPLATES,
+  ...NETWORK_TEMPLATES,
+];
+
+/** How the new-scenario picker groups the templates: equipment first, then changes people make to settings. */
+export const TEMPLATE_GROUPS: readonly {
+  readonly id: "facility" | "network";
+  readonly label: string;
+  readonly templates: readonly ScenarioTemplate[];
+}[] = [
+  { id: "facility", label: "설비", templates: [...SCENARIO_TEMPLATES, ...FACILITY_TEMPLATES] },
+  { id: "network", label: "네트워크·전원 설정", templates: NETWORK_TEMPLATES },
 ];
 
 export function scenarioTemplate(id: string): ScenarioTemplate | undefined {

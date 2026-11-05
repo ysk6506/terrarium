@@ -3,6 +3,7 @@ import { josa } from "@terrarium/core/kernel";
 import type { Diagnosis } from "@terrarium/core/tools";
 import type { BlueprintIndex, WorldCommand, WorldReader } from "@terrarium/core/world";
 import { CONDITION_FIELDS } from "./blocks";
+import { EVENT_LABELS, eventTarget, isEventType } from "./events";
 import {
   ACTION_LABELS,
   type ActionKind,
@@ -31,15 +32,42 @@ const SIMPLE_ACTIONS: Partial<Record<WorldCommand["type"], ActionKind>> = {
   "setpoint.set": "setpoint_change",
 };
 
+/** The switch (or server) at one end of a network link, which the session reads off the blueprint. */
+export type LinkEnd = (linkId: string, end: "from" | "to") => string | undefined;
+
+/**
+ * Switch-port, PDU-outlet and switch-configuration commands: one command, one action. The target of an
+ * outlet is its PDU, of a configuration change its switch, of a port its network link (the switch is `device`).
+ */
+function operatorAction(c: WorldCommand, endOf?: LinkEnd): AgentAction | undefined {
+  if (c.type === "link.admin") {
+    const device = endOf?.(c.target, c.end);
+    return {
+      action: c.down ? "port_shutdown" : "port_enable",
+      target: c.target,
+      ...(device ? { device } : {}),
+    };
+  }
+  if (c.type === "outlet.set")
+    return { action: c.on ? "outlet_on" : "outlet_off", target: c.target };
+  if (c.type === "net.set") return { action: "config_change", target: c.target };
+  return undefined;
+}
+
 /**
  * The actions in the world commands one tool call caused. Off then on for the same target within
  * one call is a restart (power_server off/on, Redfish ForceRestart, restart_cooling_unit).
  */
-export function actionsOf(commands: readonly WorldCommand[]): AgentAction[] {
+export function actionsOf(commands: readonly WorldCommand[], endOf?: LinkEnd): AgentAction[] {
   const out: AgentAction[] = [];
   const consumed = new Set<number>();
   commands.forEach((c, i) => {
     if (consumed.has(i)) return;
+    const operator = operatorAction(c, endOf);
+    if (operator) {
+      out.push(operator);
+      return;
+    }
     if (c.type !== "power.set") {
       const action = SIMPLE_ACTIONS[c.type];
       if (action && "target" in c) out.push({ action, target: c.target });
@@ -65,13 +93,21 @@ export function agentActions(calls: readonly ToolCallRecord[]): AgentAction[] {
 }
 
 export function matchesAction(a: AgentAction, action: ActionKind, target?: string): boolean {
-  return a.action === action && (target === undefined || a.target === target);
+  return (
+    a.action === action && (target === undefined || a.target === target || a.device === target)
+  );
 }
+
+/** An alarm code matches the wanted one exactly, or by its first part (`gpu_rail_degraded` matches `gpu_rail_degraded.2-7`). */
+export const codeMatches = (code: string, wanted: string): boolean =>
+  code === wanted || code.startsWith(`${wanted}.`);
 
 /** What the scenario can observe about the agent. */
 export interface AgentSignals {
   toolCalls(): readonly ToolCallRecord[];
   diagnosis(): Diagnosis | undefined;
+  /** When the scenario started, simulated seconds: an `event` condition ignores what happened before (warm-up). */
+  scenarioStart?(): number;
 }
 
 export const NO_AGENT: AgentSignals = { toolCalls: () => [], diagnosis: () => undefined };
@@ -90,7 +126,21 @@ export function compare(op: CompareOp, actual: unknown, expected: unknown): bool
   return actual >= expected;
 }
 
-type Readable = Pick<WorldReader, "stateOf" | "alarms">;
+/** What a condition reads of the world; `events` is optional so a bare stub of state and alarms still serves. */
+type Readable = Pick<WorldReader, "stateOf" | "alarms"> & Partial<Pick<WorldReader, "events">>;
+
+function happened(
+  condition: Extract<Condition, { kind: "event" }>,
+  world: Readable,
+  since: number,
+): boolean {
+  return (world.events?.() ?? []).some(
+    (e) =>
+      e.type === condition.type &&
+      e.t >= since &&
+      (condition.target === undefined || eventTarget(e) === condition.target),
+  );
+}
 
 export function evaluate(condition: Condition, world: Readable, agent: AgentSignals): boolean {
   switch (condition.kind) {
@@ -104,11 +154,15 @@ export function evaluate(condition: Condition, world: Readable, agent: AgentSign
         .some(
           (a) =>
             (condition.entity === undefined || a.entityId === condition.entity) &&
-            (condition.code === undefined || a.code === condition.code) &&
+            (condition.code === undefined || codeMatches(a.code, condition.code)) &&
             (condition.severity === undefined || a.severity === condition.severity),
         );
       return found === condition.active;
     }
+    case "event":
+      return (
+        happened(condition, world, agent.scenarioStart?.() ?? 0) === (condition.occurred ?? true)
+      );
     case "tool_called":
       return agent.toolCalls().some((c) => matchesCall(c, condition.tool, condition.target));
     case "action_taken":
@@ -167,15 +221,19 @@ const DESCRIBERS: Describers = {
     ]
       .filter(Boolean)
       .join(" ");
-    return `${what}이 ${c.active ? "있다" : "없다"}`;
+    return `${what}이 ${c.active ? "있어요" : "없어요"}`;
+  },
+  event: (c, name) => {
+    const what = isEventType(c.type) ? EVENT_LABELS[c.type] : c.type;
+    return `${c.target ? name(c.target) : "어느 장비든"} ${what}${josa(what, "이")} ${c.occurred === false ? "없어요" : "있어요"}`;
   },
   tool_called: (c, name) =>
-    `에이전트가 ${c.tool}${c.target ? `(${name(c.target)})` : ""}${josa(c.tool, "을")} 호출했다`,
+    `에이전트가 ${c.tool}${c.target ? `(${name(c.target)})` : ""}${josa(c.tool, "을")} 호출했어요`,
   action_taken: (c, name) => {
     const label = ACTION_LABELS[c.action];
-    return `에이전트가 ${c.target ? `${name(c.target)} ` : ""}${label}${josa(label, "을")} 했다`;
+    return `에이전트가 ${c.target ? `${name(c.target)} ` : ""}${label}${josa(label, "을")} 했어요`;
   },
-  diagnosis_submitted: () => "에이전트가 진단을 제출했다",
+  diagnosis_submitted: () => "에이전트가 진단을 제출했어요",
   all: (c, _name, index) => c.of.map((inner) => describe(inner, index)).join(" 그리고 "),
   any: (c, _name, index) => c.of.map((inner) => describe(inner, index)).join(" 또는 "),
 };

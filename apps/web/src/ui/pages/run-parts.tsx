@@ -9,10 +9,10 @@ import { formatDuration, simTime } from "../../logic";
 import { Note } from "../kit";
 
 const VERDICTS: Readonly<Record<ScoreItem["verdict"], { label: string; tone: string }>> = {
-  pass: { label: "해냈다", tone: "good" },
-  clean: { label: "깨끗했다", tone: "good" },
+  pass: { label: "해냈어요", tone: "good" },
+  clean: { label: "깨끗했어요", tone: "good" },
   partial: { label: "일부만", tone: "warn" },
-  fail: { label: "못했다", tone: "bad" },
+  fail: { label: "못했어요", tone: "bad" },
   penalty: { label: "감점", tone: "bad" },
 };
 
@@ -36,7 +36,7 @@ export function ScoreSheet({ items }: { readonly items: readonly ScoreItem[] }) 
             <th>항목</th>
             <th>결과</th>
             <th className="num">점수</th>
-            <th>까닭</th>
+            <th>이유</th>
           </tr>
         </thead>
         <tbody>
@@ -71,7 +71,9 @@ export function DiagnosisCompare({ view }: { readonly view: RunView }) {
   if (!result) return null;
   if (!result.diagnosis)
     return (
-      <Note tone="warn">에이전트가 진단을 내지 않고 끝났다. 점수는 그동안 한 일로만 매겼다.</Note>
+      <Note tone="warn">
+        에이전트가 진단을 내지 않고 끝났어요. 점수는 그동안 한 일로만 매겼어요.
+      </Note>
     );
   const d = result.diagnosis;
   return (
@@ -92,13 +94,13 @@ export function DiagnosisCompare({ view }: { readonly view: RunView }) {
             <th scope="row">원인 장비</th>
             <td>{d.rootCause}</td>
             <td>{facts?.rootCause.join(", ") ?? "—"}</td>
-            <td>{a.root ? "맞았다" : "틀렸다"}</td>
+            <td>{a.root ? "맞았어요" : "틀렸어요"}</td>
           </tr>
           <tr>
             <th scope="row">고장 종류</th>
             <td>{d.faultType}</td>
             <td>{facts?.faultType.join(", ") ?? "—"}</td>
-            <td>{a.type ? "맞았다" : "틀렸다"}</td>
+            <td>{a.type ? "맞았어요" : "틀렸어요"}</td>
           </tr>
           <tr>
             <th scope="row">설명</th>
@@ -123,7 +125,7 @@ const compact = (args: Readonly<Record<string, unknown>>) => {
 
 export function CallsTable({ view }: { readonly view: RunView }) {
   const calls = view.run.result?.toolCalls ?? [];
-  if (calls.length === 0) return <p className="muted small">부른 툴이 없다.</p>;
+  if (calls.length === 0) return <p className="muted small">부른 툴이 없어요.</p>;
   return (
     <div className="table-wrap">
       <table className="table">
@@ -184,7 +186,7 @@ function SpanRow({ span, origin }: { readonly span: Span; readonly origin: numbe
 
 export function TelemetryPanel({ telemetry }: { readonly telemetry: Telemetry }) {
   if (telemetry.spans.length === 0 && telemetry.logs.length === 0)
-    return <Note>하네스가 이 실행에 대해 보낸 기록이 없다.</Note>;
+    return <Note>하네스가 이 실행에 대해 보낸 기록이 없어요.</Note>;
   const usage = usageOf(telemetry);
   const origin = Math.min(...telemetry.spans.map((s) => s.start));
   const errorLogs = telemetry.logs.filter((l) => l.level === "error" || l.level === "warn");

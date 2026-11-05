@@ -1,5 +1,5 @@
 /**
- * Any harness that speaks the Terrarium harness protocol over HTTP (REQ-031, ADR-0026). Terrarium
+ * Any harness that speaks the Terrarium harness protocol over HTTP (REQ-031, ADR-0042). Terrarium
  * asks it to start a run and gives it an MCP endpoint with exactly that run's tools; the harness runs
  * its agent however it likes and reports when it is done. A thin shim in front of an internal harness
  * is enough to put it on the leaderboard. Protocol: docs/design-docs/harness-protocol.md.
@@ -12,8 +12,8 @@ import type {
   HarnessPort,
   HarnessRunInfo,
 } from "@terrarium/core/experiments";
-import type { HttpHarnessConfig } from "../config";
-import type { FetchLike } from "./openai";
+import type { HttpHarnessConfig } from "../connectors/harness-http";
+import type { FetchLike } from "../fetch";
 
 export const HARNESS_PROTOCOL = "terrarium.harness/1";
 
@@ -101,7 +101,7 @@ export class HttpHarness implements HarnessPort {
 
   async agents(): Promise<readonly AgentInfo[]> {
     const r = await this.request("GET", "/agents");
-    if (!r.ok) throw new Error(`하네스가 에이전트 목록에 ${r.status}로 답했다`);
+    if (!r.ok) throw new Error(`하네스가 에이전트 목록에 ${r.status}로 답했어요`);
     const body = (await r.json()) as { agents?: AgentInfo[] };
     return (body.agents ?? []).filter(
       (a) => typeof a.id === "string" && typeof a.name === "string",
@@ -109,7 +109,8 @@ export class HttpHarness implements HarnessPort {
   }
 
   private async start(req: AgentRunRequest): Promise<string | undefined> {
-    if (!req.tools.mcpUrl) return "이 하네스는 MCP로 툴을 쓰는데, 이 실행에 MCP 엔드포인트가 없다";
+    if (!req.tools.mcpUrl)
+      return "이 하네스는 MCP로 툴을 쓰는데, 이 실행에 MCP 엔드포인트가 없어요";
     const r = await this.request("POST", "/runs", {
       protocol: HARNESS_PROTOCOL,
       runId: req.runId,
@@ -122,7 +123,7 @@ export class HttpHarness implements HarnessPort {
     });
     return r.ok
       ? undefined
-      : `하네스가 실행 시작에 ${r.status}로 답했다: ${(await r.text()).slice(0, 300)}`;
+      : `하네스가 실행 시작에 ${r.status}로 답했어요: ${(await r.text()).slice(0, 300)}`;
   }
 
   private async status(runId: string): Promise<RemoteRunStatus> {
@@ -140,7 +141,7 @@ export class HttpHarness implements HarnessPort {
   async run(req: AgentRunRequest): Promise<AgentRunOutcome> {
     const traceId = traceIdOf(req.traceparent);
     const refused = await this.start(req).catch(
-      (err: Error) => `하네스에 닿을 수 없다: ${err.message}`,
+      (err: Error) => `하네스에 연결할 수 없어요: ${err.message}`,
     );
     if (refused) return { status: "error", message: refused };
     let failures = 0;
@@ -155,7 +156,7 @@ export class HttpHarness implements HarnessPort {
         if (++failures >= MAX_POLL_FAILURES)
           return {
             status: "error",
-            message: `하네스에 닿을 수 없다: ${(err as Error).message}`,
+            message: `하네스에 연결할 수 없어요: ${(err as Error).message}`,
             harness: harnessInfo(last, traceId),
           };
         continue;

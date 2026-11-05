@@ -40,7 +40,7 @@ describe("generateCampus builds a valid campus [REQ-047]", () => {
         small({ buildings: 6, floors: 4, hallsPerFloor: 4, podsPerHall: 80 }),
         catalog,
       ),
-    ).toThrow(/랙이 .*개다/);
+    ).toThrow(/랙이 .*개예요/);
   });
 });
 

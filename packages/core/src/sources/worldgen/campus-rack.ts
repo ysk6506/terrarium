@@ -117,6 +117,7 @@ function addSwitches(
     modelId: family.tor,
     hint: inUnit(cursor.top + 1),
     rackId: rack.id,
+    props: { fabric: family.fabric },
   });
   rack.powered.push(tor);
   rack.loadW += ctx.catalog.getOf(family.tor, "switch").powerW;
@@ -131,6 +132,7 @@ function addSwitches(
         modelId: family.spine,
         hint: inUnit(cursor.top + 1),
         rackId: rack.id,
+        props: { fabric: family.fabric },
       });
       rack.powered.push(id);
       pod.spines.push(id);

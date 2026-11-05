@@ -42,7 +42,10 @@ interface ExperimentItem {
 /** Find one of each thing that the journeys left behind. */
 export async function findIds(base: string): Promise<Ids> {
   const worlds = await json<Array<{ id: string }>>(base, "/api/worlds");
-  const scenarios = await json<Array<{ id: string }>>(base, "/api/scenarios");
+  const scenarios = await json<Array<{ id: string; doc?: { template?: string } }>>(
+    base,
+    "/api/scenarios",
+  );
   const experiments = await json<ExperimentItem[]>(base, "/api/experiments");
   const root = experiments.find((e) => !e.experiment.parentId && e.status === "completed");
   const forked = experiments.find((e) => e.experiment.parentId && e.status === "completed");
@@ -56,7 +59,8 @@ export async function findIds(base: string): Promise<Ids> {
   if (!run) throw new Error("실험에 실행이 없다");
   return {
     world: worlds[0].id,
-    scenario: scenarios[0].id,
+    // a scenario made from a template has content to look at; the bare one the author journey leaves has none
+    scenario: (scenarios.find((s) => s.doc?.template) ?? scenarios[0]).id,
     experiment: root.experiment.id,
     fork: forked.experiment.id,
     run: run.id,
@@ -82,12 +86,26 @@ export const pagesOf = (ids: Ids): PageSpec[] => [
   { key: "fork", path: `/experiments/${ids.fork}` },
   { key: "run", path: `/runs/${ids.run}` },
   { key: "benchmarks", path: "/benchmarks" },
+  { key: "connections", path: "/connections" },
+  { key: "agentVersions", path: "/connections/builtin/agents/triage/versions" },
   { key: "notFound", path: "/nowhere", missing: true },
 ];
 
+/**
+ * Wait for the network to go quiet, but not forever: a page that keeps a live stream open (the world's
+ * activity, a running experiment) is never idle, and waiting for that would only burn the clock.
+ */
+export async function settle(page: Page): Promise<void> {
+  await page.waitForLoadState("networkidle", { timeout: 4_000 }).catch(() => undefined);
+}
+
 /** Open a page and wait until it has stopped loading. */
 export async function open(page: Page, base: string, path: string): Promise<void> {
-  await page.goto(`${base}${path}`, { waitUntil: "networkidle" });
+  const started = Date.now();
+  await page.goto(`${base}${path}`, { waitUntil: "load" });
+  await settle(page);
+  const seconds = Math.round((Date.now() - started) / 1000);
+  if (seconds >= 8) console.log(`note: 느린 화면 ${path} ${seconds}초`);
   await page
     .locator(".loading")
     .first()

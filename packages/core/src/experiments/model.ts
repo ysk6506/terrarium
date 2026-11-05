@@ -47,6 +47,32 @@ export interface Recipe {
   readonly profiles: { readonly vcenter?: string; readonly vrops?: string };
 }
 
+/** Names and values people attach to tell results apart: team, version, a prompt variant (REQ-052). */
+export type Metadata = Readonly<Record<string, string>>;
+
+/**
+ * Who ran the experiment, as it was when the experiment was made: kept with the experiment so results
+ * stay comparable after the connection is changed or removed (REQ-052).
+ */
+export interface Subject {
+  readonly harness: {
+    readonly id: string;
+    readonly name: string;
+    readonly kind: string;
+    readonly toolTransport: "mcp" | "function-calling" | "in-process";
+    /** What the person who connected it attached. */
+    readonly metadata?: Metadata;
+  };
+  readonly agent: {
+    readonly id: string;
+    readonly name: string;
+    readonly model?: string;
+    readonly description?: string;
+    /** Facts the harness reported about the agent (its graph, its mode …). */
+    readonly facts?: Metadata;
+  };
+}
+
 /** What a recipe pointed at when the experiment was made. */
 export interface Snapshot {
   readonly worldDigest: string;
@@ -68,6 +94,12 @@ export interface Experiment {
   /** The experiment this one was forked from (REQ-040). */
   readonly parentId?: string;
   readonly note?: string;
+  /** What the person who made it attached (REQ-052). */
+  readonly metadata?: Metadata;
+  /** The harness and agent as they were when it was made (REQ-052). Older experiments have none. */
+  readonly subject?: Subject;
+  /** The agent's version (REQ-053) it ran as, found when it was made. Older experiments have none. */
+  readonly agentVersion?: number;
 }
 
 export type RunStatus = "queued" | "running" | "completed" | "failed" | "cancelled";
@@ -78,7 +110,7 @@ export const RUN_STATUS_LABELS: Readonly<Record<RunStatus, string>> = {
   running: "실행 중",
   completed: "완료",
   failed: "실패",
-  cancelled: "취소",
+  cancelled: "멈춤",
 };
 
 /** What the harness side reported about one run. */
@@ -90,6 +122,8 @@ export interface HarnessRunInfo {
   readonly costUsd?: number;
   readonly wallSeconds?: number;
   readonly message?: string;
+  /** The model that really answered, when the harness says (REQ-052). */
+  readonly model?: string;
 }
 
 export interface RunRecord {

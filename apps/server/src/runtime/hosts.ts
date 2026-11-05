@@ -15,9 +15,15 @@ import {
   WarmStartCache,
 } from "@terrarium/core/session";
 import type { ToolSpec } from "@terrarium/core/tools";
+import { identityOf, WorldCache, type WorldIdentity } from "./world-cache";
 
-/** A session config that can cross a thread boundary (no catalog instance or warm cache: the host makes its own). */
-export type PlainSessionConfig = Omit<SessionConfig, "catalog" | "warm">;
+/**
+ * A session config that can cross a thread boundary (no catalog instance, warm cache or prepared world: the host
+ * makes its own). `world` says which version of which world the blueprint is, when the caller knows.
+ */
+export type PlainSessionConfig = Omit<SessionConfig, "catalog" | "warm" | "prepared"> & {
+  readonly world?: WorldIdentity;
+};
 
 export interface HostedSession {
   readonly task: AgentTask;
@@ -99,13 +105,18 @@ export class LocalSession implements HostedSession {
 export class InProcessHost implements SessionHost {
   private count = 0;
   private readonly warm = new WarmStartCache();
+  private readonly worlds = new WorldCache();
 
   get openCount(): number {
     return this.count;
   }
 
   async open(config: PlainSessionConfig): Promise<HostedSession> {
-    const local = new LocalSession(Session.create({ ...config, warm: this.warm }));
+    const { world, ...rest } = config;
+    const identity = world ?? identityOf(config.blueprint);
+    const prepared =
+      this.worlds.get(identity.key) ?? this.worlds.prepare(identity, config.blueprint);
+    const local = new LocalSession(Session.create({ ...rest, warm: this.warm, prepared }));
     this.count++;
     let disposed = false;
     const dispose = () => {
@@ -131,8 +142,8 @@ export class InProcessHost implements SessionHost {
 
 /** Reject configs that would not survive the trip to a worker. */
 export function plainConfig(config: SessionConfig): PlainSessionConfig {
-  const { catalog, ...rest } = config;
-  if (catalog !== undefined)
+  if (config.catalog !== undefined)
     throw new InvalidValueError("hosted sessions use the built-in catalog");
+  const { catalog: _catalog, warm: _warm, prepared: _prepared, ...rest } = config;
   return rest;
 }

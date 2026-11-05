@@ -1,6 +1,7 @@
 import { ForbiddenError, InvalidInputError, UnavailableError } from "@terrarium/core/contract";
 import type { Experiment } from "@terrarium/core/experiments";
 import { ConflictError, InvalidValueError, NotFoundError } from "@terrarium/core/kernel";
+import { ORACLE_VERSION } from "@terrarium/core/oracle";
 import { DEFAULT_TOOLSET } from "@terrarium/core/tools";
 import { describe, expect, test } from "vitest";
 import { sampleBlueprint } from "../../../../packages/core/src/world/test-support/sample";
@@ -33,7 +34,7 @@ describe("an experiment from creation to result [REQ-030] [REQ-037]", () => {
         worldName: "샘플 홀",
         worldDigest: world.digest,
         scenarioDigest: scenario.digest,
-        oracle: "1",
+        oracle: ORACLE_VERSION,
       },
     });
     const done = await settled(p, YEONSU, created.experiment.id);
@@ -45,7 +46,7 @@ describe("an experiment from creation to result [REQ-030] [REQ-037]", () => {
       [2, "completed", true],
       [3, "completed", true],
     ]);
-    expect(done.meanScore).toBe(100);
+    expect(done.meanScore).toBe(90.9);
     expect(done.canCancel).toBe(false);
     expect(seen).toContain("call");
     expect(seen).toContain("run");
@@ -66,13 +67,13 @@ describe("an experiment from creation to result [REQ-030] [REQ-037]", () => {
     const make = (extra: Record<string, unknown>) =>
       p.experiments.create(YEONSU, { name: "x", recipe: recipe(world.id, scenario.id, extra) });
     await expect(make({ agentId: "chef" })).rejects.toMatchObject({
-      issues: [{ path: "recipe", message: "하네스에 'chef' 에이전트가 없다" }],
+      issues: [{ path: "recipe", message: "하네스에 'chef' 에이전트가 없어요" }],
     });
     await expect(make({ tools: ["teleport"] })).rejects.toBeInstanceOf(InvalidInputError);
     await expect(make({ profiles: { vcenter: "vcenter/5.5" } })).rejects.toBeInstanceOf(
       InvalidInputError,
     );
-    await expect(make({ harnessId: "nope" })).rejects.toThrow("하네스 'nope'를 찾을 수 없다");
+    await expect(make({ harnessId: "nope" })).rejects.toThrow("하네스 'nope'를 찾을 수 없어요");
     await expect(make({ harnessId: "down", agentId: "a" })).rejects.toBeInstanceOf(
       UnavailableError,
     );
@@ -81,7 +82,7 @@ describe("an experiment from creation to result [REQ-030] [REQ-037]", () => {
     await expect(make({ worldId: other.world.id })).rejects.toThrow("다른 세계");
     const broken = await p.scenarios.create(YEONSU, { worldId: world.id, name: "빈 시나리오" });
     await expect(make({ scenarioId: broken.scenario.id })).rejects.toThrow(
-      "고칠 곳이 있어 실행할 수 없다",
+      "고칠 곳이 있어 실행할 수 없어요",
     );
     expect(await store.listExperiments()).toEqual([]);
   });
@@ -137,7 +138,7 @@ describe("cancelling and the queue [REQ-030] [REQ-032]", () => {
     const runs = await store.listRuns(id);
     expect(runs[0]).toMatchObject({
       status: "failed",
-      error: "서버가 다시 시작되어 실행이 중단됐다",
+      error: "서버가 다시 시작되어 실행이 중단됐어요",
     });
     await first.platform.stop();
   });
@@ -153,7 +154,7 @@ describe("cancelling and the queue [REQ-030] [REQ-032]", () => {
     await until(() => slow.requests.length === 1);
     await p.stop();
     const [run] = await store.listRuns(e.experiment.id);
-    expect(run).toMatchObject({ status: "failed", error: "서버가 멈춰 실행이 중단됐다" });
+    expect(run).toMatchObject({ status: "failed", error: "서버가 멈춰 실행이 중단됐어요" });
   });
 });
 
@@ -221,7 +222,7 @@ describe("forks, more runs and lineage [REQ-040]", () => {
     await expect(
       p.experiments.addRuns(YEONSU, e.experiment.id, { seeds: [2, 9] }),
     ).rejects.toMatchObject({
-      issues: [{ path: "seeds", message: "시드 2는 이미 있다" }],
+      issues: [{ path: "seeds", message: "시드 2는 이미 있어요" }],
     });
     await expect(
       p.experiments.addRuns(JIMIN, e.experiment.id, { count: 1 }),
@@ -264,7 +265,7 @@ describe("worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034]", 
     expect((await p.worlds.list()).map((w) => w.name)).toEqual(["새 이름"]);
     await expect(p.worlds.delete(JIMIN, "w-1")).rejects.toBeInstanceOf(ForbiddenError);
     expect(await p.worlds.delete(YEONSU, "w-1")).toEqual({ deleted: true });
-    await expect(p.worlds.get("w-1")).rejects.toThrow("세계 w-1을 찾을 수 없다");
+    await expect(p.worlds.get("w-1")).rejects.toThrow("세계 w-1을 찾을 수 없어요");
   });
 
   test("worlds come from presets and from reality, with what was assumed", async () => {
@@ -295,10 +296,10 @@ describe("worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034]", 
     });
     expect(imported.report.assumptions.length).toBeGreaterThan(0);
     await expect(p.worlds.import(YEONSU, { source: "prod-kg" })).rejects.toThrow(
-      "현실 소스 'prod-kg'를 찾을 수 없다",
+      "현실 소스 'prod-kg'를 찾을 수 없어요",
     );
     await expect(p.worlds.import(YEONSU, { source: "sample", maxEntities: 100 })).rejects.toThrow(
-      "너무 많다",
+      "너무 많아요",
     );
   });
 

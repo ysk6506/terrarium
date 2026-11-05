@@ -74,18 +74,18 @@ export function registerControl(app: FastifyInstance, deps: ControlDeps): void {
     if (!bearerMatches(req.headers.authorization, deps.token))
       return reply
         .code(401)
-        .send({ error: { message: "토큰이 맞지 않는다", code: "unauthorized" } });
+        .send({ error: { message: "토큰이 맞지 않아요", code: "unauthorized" } });
     return undefined;
   };
   app.post(`${CLUSTER_PATH}/heartbeat`, { preHandler: guard }, async (req, reply) => {
     if (!isNodeReport(req.body))
       return reply
         .code(400)
-        .send({ error: { message: "노드 보고가 올바르지 않다", code: "invalid_value" } });
+        .send({ error: { message: "노드 보고가 올바르지 않아요", code: "invalid_value" } });
     if (deps.registry.beat(req.body)) return { ok: true };
     return reply
       .code(400)
-      .send({ error: { message: "노드 주소가 올바르지 않다", code: "invalid_value" } });
+      .send({ error: { message: "노드 주소가 올바르지 않아요", code: "invalid_value" } });
   });
   app.post(`${CLUSTER_PATH}/leave`, { preHandler: guard }, async (req) => {
     const id = (req.body as { id?: unknown } | null)?.id;

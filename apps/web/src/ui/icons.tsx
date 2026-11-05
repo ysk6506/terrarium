@@ -27,6 +27,13 @@ const PATHS: Readonly<Record<string, ReactNode>> = {
       <path d="M4 20V11M10 20V5M16 20v-6M22 20H2" />
     </>
   ),
+  plug: (
+    <>
+      <path d="M9 3v5M15 3v5" />
+      <path d="M6 8h12v3a6 6 0 0 1-12 0z" />
+      <path d="M12 17v4" />
+    </>
+  ),
   plus: <path d="M12 5v14M5 12h14" />,
   undo: <path d="M9 7L4 12l5 5M4 12h11a5 5 0 0 1 0 10h-2" />,
   redo: <path d="M15 7l5 5-5 5M20 12H9a5 5 0 0 0 0 10h2" />,

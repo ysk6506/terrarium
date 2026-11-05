@@ -2,21 +2,28 @@
  * Alarms derived from state, like a monitoring system would raise them. Ids are `code:entity`, so
  * the same condition is one alarm for as long as it lasts. Messages are shown to people (Korean).
  */
-import {
-  type Alarm,
-  bulkOf,
-  type CoolingState,
-  type Entity,
-  type PanelState,
-  type PduState,
-  type RackState,
-  reportedInletC,
-  type ServerState,
-  type UpsState,
-  type World,
+import type { ServerModel } from "@terrarium/core/catalog";
+import type {
+  Alarm,
+  BulkLoad,
+  CoolingState,
+  Entity,
+  EntityState,
+  Fault,
+  Link,
+  PanelState,
+  PduState,
+  RackState,
+  ServerState,
+  StateOf,
+  UpsState,
+  World,
 } from "@terrarium/core/world";
+import { type Draft, type Hit, NO_HITS, pushHits, type Scan } from "./alarm-scan";
+import { netAlarms } from "./net-alarms";
 import { plantAlarms } from "./plant-alarms";
-import { capacityW, effectiveUtil } from "./power";
+import { effectiveUtilAt, type Pass, passOf } from "./power";
+import { faultParam, hasFault } from "./power-supply";
 
 export const INLET_WARNING_C = 27;
 export const RACK_CRITICAL_C = 32;
@@ -25,7 +32,6 @@ export const ROOM_CRITICAL_C = 35;
 /** CPU utilisation (0..1) at which monitoring warns, for hosts and VMs. */
 export const CPU_HIGH = 0.9;
 
-type Draft = Omit<Alarm, "id" | "since">;
 type Rule<S> = (
   s: S,
   name: string,
@@ -71,40 +77,34 @@ const SERVER_RULES: ReadonlyArray<Rule<ServerState>> = [
 
 /** A server that is fed, on, cool (as its sensor says), with every PSU and fan running has nothing to report but load. */
 function plainlyHealthy(s: ServerState, sensedInletC: number): boolean {
-  return (
-    s.powered &&
-    s.adminOn &&
-    !s.throttled &&
-    sensedInletC <= INLET_WARNING_C &&
-    s.psuOk.every(Boolean) &&
-    s.fanRpm.every((rpm) => rpm > 0)
-  );
+  if (!s.powered || !s.adminOn || s.throttled || sensedInletC > INLET_WARNING_C) return false;
+  for (const ok of s.psuOk) if (!ok) return false;
+  for (const rpm of s.fanRpm) if (!(rpm > 0)) return false;
+  return true;
 }
 
-function serverAlarms(world: World, entity: Entity): Draft[] {
-  const s = world.stateAs(entity.id, "server");
-  const sensedInletC = reportedInletC(world, entity.id);
-  if (plainlyHealthy(s, sensedInletC) && effectiveUtil(world, entity) < CPU_HIGH) return [];
-  const model = world.catalog.getOf(entity.modelId ?? "", "server");
+function serverAlarms(scan: Scan, i: number, entity: Entity, out: Draft[]): void {
+  const s = scan.states[i] as ServerState;
+  const drift = faultParam(scan.faults[i] as readonly Fault[], "sensor_drift", "deltaC") ?? 0;
+  const sensedInletC = s.inletC + drift;
+  if (plainlyHealthy(s, sensedInletC) && effectiveUtilAt(scan, i) < CPU_HIGH) return;
+  const model = scan.plan.models[i] as ServerModel;
   // Monitoring sees the sensor reading, so a drifting sensor raises (false) inlet alarms.
   const sensed: ServerState = { ...s, inletC: sensedInletC };
-  const util = effectiveUtil(world, entity);
+  const util = effectiveUtilAt(scan, i);
   const busy: Hit | undefined =
     s.powered && s.adminOn && util >= CPU_HIGH
       ? ["cpu_high", "warning", `${entity.name} CPU 사용률 ${Math.round(util * 100)}%`]
       : undefined;
-  return [
+  const hits = [
     ...SERVER_RULES.map((rule) => rule(s, entity.name)),
     inletRule(model.maxInletC)(sensed, entity.name),
     busy,
-  ]
-    .filter((hit) => hit !== undefined)
-    .map(([code, severity, message]) => ({ entityId: entity.id, code, severity, message }));
+  ].filter((hit) => hit !== undefined);
+  pushHits(out, entity, hits);
 }
 
-type Hit = [code: string, severity: Alarm["severity"], message: string];
-
-function coolingHits(s: CoolingState, name: string): Hit[] {
+function coolingHits(s: CoolingState, name: string): readonly Hit[] {
   if (s.adminOn && !s.running) return [["cooling_stopped", "critical", `${name} 정지`]];
   return s.running && s.supplyC > s.setpointC + 2
     ? [
@@ -114,18 +114,18 @@ function coolingHits(s: CoolingState, name: string): Hit[] {
           `${name} 공급 온도 ${s.supplyC.toFixed(1)}°C (설정 ${s.setpointC}°C)`,
         ],
       ]
-    : [];
+    : NO_HITS;
 }
 
-function breakerHits(world: World, id: string, s: PduState | PanelState, name: string): Hit[] {
+function breakerHits(capacity: number, s: PduState | PanelState, name: string): readonly Hit[] {
   if (s.tripped) return [["breaker_tripped", "critical", `${name} 차단기 트립`]];
-  const capacity = capacityW(world, id);
   return s.loadW > 0.8 * capacity
     ? [["load_high", "warning", `${name} 부하 ${Math.round((100 * s.loadW) / capacity)}%`]]
-    : [];
+    : NO_HITS;
 }
 
-function upsHits(s: UpsState, name: string): Hit[] {
+function upsHits(s: UpsState, name: string): readonly Hit[] {
+  if (!s.onBattery && !(s.batteryPct < 20)) return NO_HITS;
   const out: Hit[] = [];
   if (s.onBattery)
     out.push([
@@ -149,7 +149,9 @@ function temperatureHits(
   return value > warnAt ? [[code, "warning", `${label} ${value.toFixed(1)}°C`]] : [];
 }
 
-function rackHits(entity: Entity, s: RackState): Hit[] {
+function rackHits(entity: Entity, s: RackState, light: BulkLoad | undefined): readonly Hit[] {
+  const lost = light !== undefined && light.servers > 0 && !s.powered;
+  if (!lost && !(s.inletC > INLET_WARNING_C)) return NO_HITS;
   const hits = temperatureHits(
     "rack_inlet_high",
     s.inletC,
@@ -158,8 +160,7 @@ function rackHits(entity: Entity, s: RackState): Hit[] {
     `${entity.name} 흡기`,
   );
   // A light rack has no servers of its own to report that they lost power, so the rack does.
-  const light = bulkOf(entity);
-  if (light && light.servers > 0 && !s.powered)
+  if (lost)
     hits.push([
       "rack_power_lost",
       "critical",
@@ -168,15 +169,15 @@ function rackHits(entity: Entity, s: RackState): Hit[] {
   return hits;
 }
 
-function facilityAlarms(world: World, entity: Entity): Draft[] {
-  const s = world.stateOf(entity.id);
-  let hits: Hit[] = [];
+function facilityAlarms(scan: Scan, i: number, entity: Entity, out: Draft[]): void {
+  const s = scan.states[i] as EntityState;
+  let hits: readonly Hit[] = NO_HITS;
   if (s.kind === "cooling_unit") hits = coolingHits(s, entity.name);
   else if (s.kind === "pdu" || s.kind === "power_panel")
-    hits = breakerHits(world, entity.id, s, entity.name);
+    hits = breakerHits(scan.plan.capacity[i] as number, s, entity.name);
   else if (s.kind === "ups") hits = upsHits(s, entity.name);
-  else if (s.kind === "rack") hits = rackHits(entity, s);
-  else if (s.kind === "room")
+  else if (s.kind === "rack") hits = rackHits(entity, s, scan.plan.light[i]);
+  else if (s.kind === "room" && s.ambientC > ROOM_WARNING_C)
     hits = temperatureHits(
       "room_temp_high",
       s.ambientC,
@@ -184,50 +185,73 @@ function facilityAlarms(world: World, entity: Entity): Draft[] {
       ROOM_CRITICAL_C,
       `${entity.name} 실내`,
     );
-  return hits.map(([code, severity, message]) => ({
-    entityId: entity.id,
-    code,
-    severity,
-    message,
-  }));
+  pushHits(out, entity, hits);
 }
 
-function itAlarms(world: World, entity: Entity): Draft[] {
-  const s = world.stateOf(entity.id);
-  const at = (code: string, severity: Alarm["severity"], message: string): Draft => ({
-    entityId: entity.id,
-    code,
-    severity,
-    message,
-  });
+function itAlarms(scan: Scan, i: number, entity: Entity, out: Draft[]): void {
+  const s = scan.states[i] as EntityState;
   if (s.kind === "switch") {
     const down =
-      s.adminOn &&
-      (!s.powered || world.faultsOn(entity.id).some((f) => f.type === "switch_failure"));
-    return down ? [at("switch_down", "critical", `${entity.name} 응답 없음`)] : [];
-  }
-  if (s.kind === "storage")
-    return s.failedDisks > 0
-      ? [at("disk_failed", "warning", `${entity.name} 디스크 ${s.failedDisks}개 고장`)]
-      : [];
-  if (s.kind === "vm") {
+      s.adminOn && (!s.powered || hasFault(scan.faults[i] as readonly Fault[], "switch_failure"));
+    if (down) pushHits(out, entity, [["switch_down", "critical", `${entity.name} 응답 없음`]]);
+  } else if (s.kind === "storage") {
+    if (s.failedDisks > 0)
+      pushHits(out, entity, [
+        ["disk_failed", "warning", `${entity.name} 디스크 ${s.failedDisks}개 고장`],
+      ]);
+  } else if (s.kind === "vm") {
     if (s.adminOn && !s.running)
-      return [at("vm_down", "warning", `${entity.name} 중지됨 (호스트 이상)`)];
-    return s.running && s.cpuUsage >= CPU_HIGH
-      ? [at("vm_cpu_high", "warning", `${entity.name} CPU 사용률 ${Math.round(s.cpuUsage * 100)}%`)]
-      : [];
+      pushHits(out, entity, [["vm_down", "warning", `${entity.name} 중지됨 (호스트 이상)`]]);
+    else if (s.running && s.cpuUsage >= CPU_HIGH)
+      pushHits(out, entity, [
+        ["vm_cpu_high", "warning", `${entity.name} CPU 사용률 ${Math.round(s.cpuUsage * 100)}%`],
+      ]);
   }
-  return [];
 }
 
-function linkAlarms(world: World): Draft[] {
-  const out: Draft[] = [];
-  for (const link of world.index.allLinks().filter((l) => l.kind === "network")) {
+/** The network links and the switches they end on, laid out once per blueprint. */
+interface Network {
+  readonly links: readonly Link[];
+  readonly to: Int32Array;
+  readonly switches: Int32Array;
+}
+
+const networks = new WeakMap<Pass["plan"], Network>();
+
+function networkOf(scan: Scan): Network {
+  const known = networks.get(scan.plan);
+  if (known) return known;
+  const { index } = scan.world;
+  const links = index.allLinks().filter((l) => l.kind === "network");
+  const net: Network = {
+    links,
+    to: Int32Array.from(links, (l) => index.positionOf(l.to) ?? -1),
+    switches: Int32Array.from(scan.plan.ents.flatMap((e, i) => (e.kind === "switch" ? [i] : []))),
+  };
+  networks.set(scan.plan, net);
+  return net;
+}
+
+/** Whether some switch is without power or failed (then links to it are down). */
+function aSwitchIsDown(scan: Scan, net: Network): boolean {
+  for (const i of net.switches) {
+    if (!(scan.states[i] as StateOf<"switch">).powered) return true;
+    if (hasFault(scan.faults[i] as readonly Fault[], "switch_failure")) return true;
+  }
+  return false;
+}
+
+function linkAlarms(scan: Scan, out: Draft[]): void {
+  const net = networkOf(scan);
+  // Almost always every link is up and every switch fine; then there is nothing to look at link by link.
+  if (!scan.world.anyLinkDown() && !aSwitchIsDown(scan, net)) return;
+  net.links.forEach((link, k) => {
+    const to = net.to[k] as number;
     const switchDown =
-      world.faultsOn(link.to).some((f) => f.type === "switch_failure") ||
-      !world.stateAs(link.to, "switch").powered;
-    if (!world.linkUp(link.id) || switchDown) {
-      const name = world.index.entity(link.from).name;
+      hasFault(scan.faults[to] as readonly Fault[], "switch_failure") ||
+      !(scan.states[to] as StateOf<"switch">).powered;
+    if (!scan.world.linkUp(link.id) || switchDown) {
+      const name = scan.world.index.entity(link.from).name;
       out.push({
         entityId: link.from,
         code: `link_down.${link.id}`,
@@ -235,21 +259,24 @@ function linkAlarms(world: World): Draft[] {
         message: `${name} 네트워크 링크 다운 (${String(link.props.fromPort ?? "")})`,
       });
     }
-  }
-  return out;
+  });
 }
 
 /** Every alarm the current state implies. */
 export function desiredAlarms(world: World): Draft[] {
+  const scan: Scan = { world, ...passOf(world) };
   const out: Draft[] = [];
-  for (const entity of world.index.all()) {
-    if (entity.kind === "server") out.push(...serverAlarms(world, entity));
-    else
-      out.push(
-        ...facilityAlarms(world, entity),
-        ...itAlarms(world, entity),
-        ...plantAlarms(world, entity),
-      );
+  const ents = scan.plan.ents;
+  for (let i = 0; i < ents.length; i++) {
+    const entity = ents[i] as Entity;
+    if (entity.kind === "server") serverAlarms(scan, i, entity, out);
+    else {
+      facilityAlarms(scan, i, entity, out);
+      itAlarms(scan, i, entity, out);
+      plantAlarms(scan, i, entity, out);
+    }
   }
-  return [...out, ...linkAlarms(world)];
+  linkAlarms(scan, out);
+  netAlarms(world, out);
+  return out;
 }

@@ -51,7 +51,7 @@ describe("one run, analysed [REQ-037]", () => {
     const a = analyzeRun(runs[0] as (typeof runs)[number]);
     expect(a).toMatchObject({
       status: "completed",
-      score: 100,
+      score: 90.9,
       passed: true,
       endReason: "diagnosed",
       diagnosis: { submitted: true, root: true, type: true, afterSeconds: 60 },
@@ -69,22 +69,22 @@ describe("one run, analysed [REQ-037]", () => {
     });
     const [partial, wrong, silent] = runs.map((r) => analyzeRun(r));
     expect(partial?.diagnosis).toMatchObject({ root: true, type: false });
-    expect(partial?.findings.join("\n")).toContain("진단이 일부만 맞았다");
-    expect(wrong?.findings.join("\n")).toContain("진단이 틀렸다");
+    expect(partial?.findings.join("\n")).toContain("진단이 일부만 맞았어요");
+    expect(wrong?.findings.join("\n")).toContain("진단이 틀렸어요");
     expect(wrong?.efficiency.failedCalls).toBe(2);
     expect(wrong?.findings.join("\n")).toContain(
-      "정답 장비(crah-1)를 한 번도 직접 살펴보지 않았다",
+      "정답 장비(crah-1)를 한 번도 직접 살펴보지 않았어요",
     );
     expect(silent?.diagnosis.submitted).toBe(false);
-    expect(silent?.findings[0]).toBe("진단을 제출하지 않았다 (종료: 진단 없이 종료)");
+    expect(silent?.findings[0]).toBe("진단을 제출하지 않았어요 (종료: 진단 없이 종료)");
   });
 
   test("runs that never finished say why", () => {
     const { runs } = experimentOf({ id: "e1", runs: ["fail", "cancel"] });
     const [failed, cancelled] = runs.map((r) => analyzeRun(r));
     expect(failed).toMatchObject({ status: "failed", score: null, passed: false });
-    expect(failed?.findings).toEqual(["실행이 실패했다: 하네스 연결 끊김"]);
-    expect(cancelled?.findings).toEqual(["실행이 취소됐다"]);
+    expect(failed?.findings).toEqual(["실행이 실패했어요: 하네스 연결 끊김"]);
+    expect(cancelled?.findings).toEqual(["실행이 멈췄어요"]);
   });
 
   test("the harness's trace adds model calls and tokens; what the harness reported wins", () => {
@@ -141,13 +141,13 @@ describe("an experiment across its runs [REQ-037]", () => {
     expect(a.progress).toMatchObject({ total: 4, completed: 3, failed: 1 });
     expect(a.passRate).toBe(0.6667);
     expect(a.diagnosisRate).toBe(0.6667);
-    expect(a.score).toMatchObject({ n: 3, max: 100 });
+    expect(a.score).toMatchObject({ n: 3, max: 90.9 });
     expect(a.score?.ci95).toBeGreaterThan(0);
     expect(a.endReasons).toEqual({ diagnosed: 3 });
     const diagnosis = a.criteria.find((c) => c.kind === "diagnosis");
     expect(diagnosis).toMatchObject({ rate: 0.6667, max: expect.any(Number) });
     expect(a.findings[0]).toBe("3번 중 2번 합격 (67%)");
-    expect(a.findings.some((f) => f.startsWith("실행마다 점수가 크게 다르다"))).toBe(true);
+    expect(a.findings.some((f) => f.startsWith("실행마다 점수가 크게 달라요"))).toBe(true);
     expect(a.findings.some((f) => f.startsWith("진단까지 평균"))).toBe(true);
   });
 
@@ -155,13 +155,13 @@ describe("an experiment across its runs [REQ-037]", () => {
     const a = analyzeExperiment(experimentOf({ id: "e1", runs: [SCRIPTS.silent, SCRIPTS.silent] }));
     expect(a.passRate).toBe(0);
     expect(a.timeToDiagnosis).toBeUndefined();
-    expect(a.findings).toContain("2번은 진단 없이 종료로 끝났다");
-    expect(a.findings.some((f) => /^'.+' 항목을 100%의 실행에서 놓쳤다$/.test(f))).toBe(true);
+    expect(a.findings).toContain("2번은 진단 없이 종료로 끝났어요");
+    expect(a.findings.some((f) => /^'.+' 항목을 100%의 실행에서 놓쳤어요$/.test(f))).toBe(true);
   });
 
   test("an experiment whose runs all failed has one finding, and no made-up numbers", () => {
     const a = analyzeExperiment(experimentOf({ id: "e1", runs: ["fail", "fail"] }));
-    expect(a.findings).toEqual(["실행 2번이 모두 실패했다"]);
+    expect(a.findings).toEqual(["실행 2번이 모두 실패했어요"]);
     expect(a.score).toBeUndefined();
     expect(a.passRate).toBe(0);
     expect(analyzeExperiment(experimentOf({ id: "e2", runs: ["cancel"] })).findings).toEqual([]);
@@ -199,7 +199,7 @@ describe("a fork against its parent [REQ-040]", () => {
     expect(a.parent?.clear).toBe(true);
     const finding = a.findings.at(-1) as string;
     expect(finding).toContain("원본 '실험 p' 대비 평균 +");
-    expect(finding).toContain("분명한 차이다");
+    expect(finding).toContain("분명한 차이예요");
     expect(finding).toContain("에이전트 triage → deep");
   });
 
@@ -210,7 +210,7 @@ describe("a fork against its parent [REQ-040]", () => {
       parent,
     );
     expect(child.parent?.clear).toBe(false);
-    expect(child.findings.at(-1)).toContain("아직 분명한 차이는 아니다");
+    expect(child.findings.at(-1)).toContain("아직 분명한 차이는 아니에요");
     const failedParent = analyzeExperiment(experimentOf({ id: "p", runs: ["fail"] }));
     const c2 = analyzeExperiment(
       experimentOf({ id: "c", runs: [SCRIPTS.good], agentId: "deep" }),

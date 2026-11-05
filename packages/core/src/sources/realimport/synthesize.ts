@@ -126,7 +126,7 @@ function power(plan: Plan, catalog: Catalog, out: Synthesis): void {
     for (const room of rooms) powerRoom(plan, catalog, room, ups);
   }
   out.assumptions.push(
-    "그래프에 전력 정보가 없어 랙마다 A/B PDU, 서버룸마다 A/B 분전반, 층마다 A/B UPS를 부하에 맞춰 가정했다 (synthesized 표시)",
+    "그래프에 전력 정보가 없어 랙마다 A/B PDU, 서버룸마다 A/B 분전반, 층마다 A/B UPS를 부하에 맞춰 가정했어요 (synthesized 표시)",
   );
 }
 
@@ -151,7 +151,7 @@ function cooling(plan: Plan, catalog: Catalog, out: Synthesis): void {
         plan.kinds.set(id, "cooling_unit");
       }
       unitsHere = room.equipment.filter((e) => e.kind === "cooling_unit");
-      out.assumptions.push(`${room.name}: 냉방 설비 정보가 없어 CRAH ${count}대(N+1)를 가정했다`);
+      out.assumptions.push(`${room.name}: 냉방 설비 정보가 없어 CRAH ${count}대(N+1)를 가정했어요`);
     } else {
       const capacity = unitsHere.reduce(
         (sum, u) => sum + catalog.getOf(u.modelId, "cooling_unit").capacityKw * 1000,
@@ -159,7 +159,7 @@ function cooling(plan: Plan, catalog: Catalog, out: Synthesis): void {
       );
       if (capacity < load)
         out.assumptions.push(
-          `${room.name}: 실제 냉방 용량(${Math.round(capacity / 1000)} kW)이 예상 부하(${Math.round(load / 1000)} kW)보다 작다. 실제 장비라 늘리지 않았다`,
+          `${room.name}: 실제 냉방 용량(${Math.round(capacity / 1000)} kW)이 예상 부하(${Math.round(load / 1000)} kW)보다 작아요. 실제 장비라 늘리지 않았어요`,
         );
     }
     const cooled = new Set(plan.links.filter((l) => l.kind === "cooling").map((l) => l.from));
@@ -171,7 +171,7 @@ function cooling(plan: Plan, catalog: Catalog, out: Synthesis): void {
   }
   if (inferred > 0)
     out.assumptions.push(
-      `냉방 관계가 없는 랙 ${inferred}개는 같은 서버룸의 냉방기가 식힌다고 가정했다`,
+      `냉방 관계가 없는 랙 ${inferred}개는 같은 서버룸의 냉방기가 식힌다고 가정했어요`,
     );
 }
 

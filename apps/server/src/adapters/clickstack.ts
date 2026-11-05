@@ -13,7 +13,7 @@ import type {
 } from "@terrarium/core/analysis";
 import { NO_TELEMETRY } from "@terrarium/core/analysis";
 import type { ClickStackConfig } from "./config";
-import type { FetchLike } from "./harness/openai";
+import type { FetchLike } from "./fetch";
 
 const MAX_ROWS = 5000;
 const TABLE = /^[A-Za-z_][A-Za-z0-9_.]*$/;
@@ -86,7 +86,7 @@ export class ClickStackTelemetry implements TelemetryPort {
     private readonly fetchImpl: FetchLike = fetch,
   ) {
     for (const t of Object.values(config.tables))
-      if (!TABLE.test(t)) throw new Error(`ClickStack 테이블 이름 '${t}'이 올바르지 않다`);
+      if (!TABLE.test(t)) throw new Error(`ClickStack 테이블 이름 '${t}'이 올바르지 않아요`);
   }
 
   private async select<T>(sql: string, traceId: string): Promise<T[]> {
@@ -106,7 +106,7 @@ export class ClickStackTelemetry implements TelemetryPort {
       signal: AbortSignal.timeout(15_000),
     });
     if (!r.ok)
-      throw new Error(`ClickStack이 ${r.status}로 답했다: ${(await r.text()).slice(0, 300)}`);
+      throw new Error(`ClickStack이 ${r.status}로 답했어요: ${(await r.text()).slice(0, 300)}`);
     const text = await r.text();
     return text
       .split("\n")

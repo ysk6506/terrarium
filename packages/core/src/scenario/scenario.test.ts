@@ -83,7 +83,6 @@ describe("scenario blocks [REQ-034]", () => {
       if (spec.status === "planned") expect(spec.plannedReason?.length).toBeGreaterThan(20);
     }
     expect(BLOCK_SPECS.filter((b) => b.status === "planned").map((b) => b.type)).toEqual([
-      "set_outdoor_temp",
       "network_degrade",
     ]);
   });
@@ -142,10 +141,10 @@ describe("scenario palette [REQ-034]", () => {
   });
 
   test("blocks the simulator does not support yet are shown disabled, with the reason", () => {
-    const outdoor = paletteFor(index).find((p) => p.key === "set_outdoor_temp");
+    const outdoor = paletteFor(index).find((p) => p.key === "network_degrade");
     expect(outdoor).toMatchObject({
       available: false,
-      reason: expect.stringContaining("아직 시뮬레이터가 지원하지 않는다"),
+      reason: expect.stringContaining("아직 시뮬레이터가 지원하지 않아요"),
     });
   });
 
@@ -157,7 +156,7 @@ describe("scenario palette [REQ-034]", () => {
     expect(palette.find((p) => p.key === "inject_fault:cooling_unit_failure")).toMatchObject({
       available: false,
       candidates: 0,
-      reason: "이 세계에는 대상으로 쓸 장비(냉방기)가 없다",
+      reason: "이 세계에는 대상으로 쓸 장비(냉방기)가 없어요",
     });
     expect(palette.find((p) => p.key === "set_setpoint")?.available).toBe(false);
     expect(palette.find((p) => p.key === "inject_fault:fan_failure")?.available).toBe(true);
@@ -184,7 +183,7 @@ describe("scenario validation [REQ-034]", () => {
       edges: base().edges.slice(0, 1),
     };
     expect(check(noAgent)).toContainEqual(
-      expect.objectContaining({ code: "SC005", message: "「에이전트 투입」 블록이 필요하다" }),
+      expect.objectContaining({ code: "SC005", message: "「에이전트 투입」 블록이 필요해요" }),
     );
     const twoAgents = withNode(base(), node("agent2", "agent_task", { prompt: "x" }));
     expect(check(twoAgents)).toContainEqual(
@@ -194,11 +193,13 @@ describe("scenario validation [REQ-034]", () => {
 
   test("unknown and not-yet-supported blocks are refused with the reason", () => {
     expect(codes(issuesFor(node("x", "teleport")))).toEqual(["SC003"]);
-    const [planned] = issuesFor(node("hot", "set_outdoor_temp", { celsius: 40 }));
+    const [planned] = issuesFor(
+      node("hot", "network_degrade", { target: "tor-a", latencyMs: 200 }),
+    );
     expect(planned).toMatchObject({
       code: "SC004",
       nodeId: "hot",
-      message: expect.stringContaining("외기"),
+      message: expect.stringContaining("링크"),
     });
   });
 
@@ -207,7 +208,7 @@ describe("scenario validation [REQ-034]", () => {
     expect(issue(node("w", "wait", { seconds: 0 }))).toMatchObject({
       code: "SC011",
       param: "seconds",
-      message: "「대기」의 대기 시간: 1~86400 초 사이여야 한다 (지금 0)",
+      message: "「대기」의 대기 시간: 0.1~1440분 사이여야 해요 (지금 0분)",
     });
     expect(issue(node("w", "wait", { seconds: 1.5 }))?.message).toContain("정수");
     expect(issue(node("w", "wait", { seconds: "10" }))?.message).toContain("숫자");
@@ -216,11 +217,11 @@ describe("scenario validation [REQ-034]", () => {
     );
     expect(issue(node("p", "power", {}))).toMatchObject({
       code: "SC011",
-      message: "「전원 켜기/끄기」의 대상을 정해야 한다",
+      message: "「전원 켜기/끄기」의 대상을 정해야 해요",
     });
     expect(issue(node("p", "power", { target: "ghost" }))).toMatchObject({
       code: "SC012",
-      message: expect.stringContaining("이 세계에 'ghost'가 없다"),
+      message: expect.stringContaining("이 세계에 'ghost'가 없어요"),
     });
     expect(issue(node("p", "power", { target: "pdu-a" }))?.message).toContain(
       "서버·스위치·스토리지·냉방기·VM만",
@@ -231,7 +232,7 @@ describe("scenario validation [REQ-034]", () => {
         n.type === "agent_task" ? { ...n, params: { prompt: "  " } } : n,
       ),
     };
-    expect(check(blank)[0]?.message).toBe("「에이전트 투입」의 과제 설명: 비어 있다");
+    expect(check(blank)[0]?.message).toBe("「에이전트 투입」의 상황 설명: 비어 있어요");
     expect(issue(node("n", "note", { text: "x".repeat(501) }))?.message).toContain("500자");
     expect(issuesFor(node("n", "note"))).toEqual([]);
   });
@@ -241,7 +242,7 @@ describe("scenario validation [REQ-034]", () => {
       issuesFor(node("f2", "inject_fault", params))[0];
     expect(fault({ faultType: "breaker_trip", target: "crah-1" })).toMatchObject({
       code: "SC013",
-      message: expect.stringContaining("분전반·PDU에만 줄 수 있다 (crah-1은 냉방기)"),
+      message: expect.stringContaining("분전반·PDU에만 줄 수 있어요 (crah-1은 냉방기)"),
     });
     expect(
       fault({ faultType: "fan_failure", target: "srv-a1", faultParams: { fanIndex: 99 } })?.message,
@@ -250,12 +251,12 @@ describe("scenario validation [REQ-034]", () => {
       fault({ faultType: "fan_failure", target: "srv-a1", faultParams: { rpm: 1 } })?.message,
     ).toContain("'rpm'");
     expect(fault({ faultType: "meteor", target: "srv-a1" })?.message).toContain(
-      "알 수 없는 장애 종류",
+      "모르는 고장 종류예요",
     );
     const link = index.allLinks().find((l) => l.kind === "network")?.id as string;
     expect(fault({ faultType: "link_down", target: link })).toBeUndefined();
     expect(fault({ faultType: "fan_failure", target: link })?.message).toContain(
-      "링크에 줄 수 없다",
+      "링크에 줄 수 없어요",
     );
   });
 
@@ -289,7 +290,7 @@ describe("scenario validation [REQ-034]", () => {
     ).toContain("'~'");
     expect(cond({ kind: "tool_called", tool: "hack" })?.message).toContain("'hack'");
     expect(cond({ kind: "alarm", active: true, entity: "ghost" })?.code).toBe("SC012");
-    expect(cond({ kind: "any", of: [] })?.message).toContain("비었다");
+    expect(cond({ kind: "any", of: [] })?.message).toContain("비었어요");
     const deep: Condition = {
       kind: "all",
       of: [
@@ -301,7 +302,7 @@ describe("scenario validation [REQ-034]", () => {
     };
     expect(cond(deep)?.message).toContain("3단계");
     expect(cond({ kind: "weather" })?.message).toContain("'weather'");
-    expect(cond(undefined)?.message).toContain("정해야 한다");
+    expect(cond(undefined)?.message).toContain("정해야 해요");
   });
 
   test("clear-fault blocks must point at an inject-fault block", () => {
@@ -317,9 +318,9 @@ describe("scenario validation [REQ-034]", () => {
     expect(edge("fault", "yes", "agent")[0]).toMatchObject({
       code: "SC007",
       edgeId: "x",
-      message: expect.stringContaining("'yes' 출구가 없다"),
+      message: expect.stringContaining("'yes' 출구가 없어요"),
     });
-    expect(edge("agent", "next", "start")[0]?.message).toContain("들어오는 연결은 둘 수 없다");
+    expect(edge("agent", "next", "start")[0]?.message).toContain("들어오는 연결은 둘 수 없어요");
     expect(edge("agent", "next", "ghost")[0]?.message).toContain("없는 블록");
     expect(edge("agent", "next", "fault").map((i) => i.code)).toContain("SC008");
     expect(edge("agent", "next", "agent")[0]?.code).toBe("SC008");
@@ -407,7 +408,7 @@ describe("scenario validation [REQ-034]", () => {
     ).toContain("제한 시간은 0보다");
     expect(
       withExpectation({ id: "x", kind: "tool_budget", maxCalls: 10, weight: -1 })[0]?.message,
-    ).toContain("배점");
+    ).toContain("점수");
     expect(
       withExpectation({
         id: "x",
@@ -459,7 +460,7 @@ describe("scenario validation [REQ-034]", () => {
     expect(check({ ...base(), expectations: [] })).toEqual([
       expect.objectContaining({
         code: "SC017",
-        message: expect.stringContaining("점수가 나오지 않는다"),
+        message: expect.stringContaining("점수가 나오지 않아요"),
       }),
     ]);
     expect(
@@ -470,7 +471,7 @@ describe("scenario validation [REQ-034]", () => {
     ).toEqual([
       expect.objectContaining({
         code: "SC017",
-        message: expect.stringContaining("진단은 채점하지 않는다"),
+        message: expect.stringContaining("진단은 채점하지 않아요"),
       }),
     ]);
   });
@@ -537,13 +538,13 @@ describe("condition sentences [REQ-034] [REQ-037]", () => {
         { kind: "alarm", active: false, entity: "crah-1", severity: "critical" },
         index,
       ),
-    ).toBe("crah-1 심각 알람이 없다");
+    ).toBe("crah-1 심각 알람이 없어요");
     expect(describeCondition({ kind: "alarm", active: true, code: "fan_failed" })).toBe(
-      "어느 장비든 'fan_failed' 알람이 있다",
+      "어느 장비든 'fan_failed' 알람이 있어요",
     );
     expect(
       describeCondition({ kind: "tool_called", tool: "reset_breaker", target: "pdu-a" }, index),
-    ).toBe("에이전트가 reset_breaker(pdu-a)를 호출했다");
+    ).toBe("에이전트가 reset_breaker(pdu-a)를 호출했어요");
     expect(
       describeCondition({
         kind: "any",
@@ -552,26 +553,26 @@ describe("condition sentences [REQ-034] [REQ-037]", () => {
           { kind: "state", entity: "x", field: "f", op: "!=", value: false },
         ],
       }),
-    ).toBe("에이전트가 진단을 제출했다 또는 x f ≠ 아니오");
+    ).toBe("에이전트가 진단을 제출했어요 또는 x f ≠ 아니오");
     expect(
       describeCondition({
         kind: "all",
         of: [{ kind: "diagnosis_submitted" }, { kind: "alarm", active: true, severity: "warning" }],
       }),
-    ).toBe("에이전트가 진단을 제출했다 그리고 어느 장비든 경고 알람이 있다");
+    ).toBe("에이전트가 진단을 제출했어요 그리고 어느 장비든 경고 알람이 있어요");
   });
 });
 
 describe("scenario validation edge cases [REQ-034]", () => {
   test("values of the wrong shape are named, not crashed on", () => {
     const first = (n: ScenarioNode) => issuesFor(n)[0]?.message;
-    expect(first(node("p", "power", { target: 5 }))).toContain("이 세계에 '5'가 없다");
-    expect(first(node("n", "note", { text: 5 }))).toContain("글이어야 한다");
+    expect(first(node("p", "power", { target: 5 }))).toContain("이 세계에 '5'가 없어요");
+    expect(first(node("n", "note", { text: 5 }))).toContain("글이어야 해요");
     expect(
       first(node("f", "inject_fault", { faultType: "fan_failure", target: "ghost" })),
-    ).toContain("'ghost'가 없다");
+    ).toContain("'ghost'가 없어요");
     expect(first(node("f", "inject_fault", { faultType: "fan_failure", target: 3 }))).toContain(
-      "'3'가 없다",
+      "'3'가 없어요",
     );
     expect(
       first(
@@ -583,14 +584,14 @@ describe("scenario validation edge cases [REQ-034]", () => {
         node("f", "inject_fault", { faultType: "meteor", target: "srv-a1", faultParams: { x: 1 } }),
       ).map((i) => i.param),
     ).toEqual(["faultType"]);
-    expect(first(node("b", "branch", { condition: 5 as never }))).toContain("조건이 비었다");
+    expect(first(node("b", "branch", { condition: 5 as never }))).toContain("조건이 비었어요");
     expect(
       first(
         node("b", "branch", {
           condition: { kind: "state", entity: "ghost", field: "x", op: "==", value: 1 },
         }),
       ),
-    ).toContain("'ghost'가 없다");
+    ).toContain("'ghost'가 없어요");
     expect(issuesFor(node("b", "branch", { condition: { kind: "alarm", active: true } }))).toEqual(
       [],
     );
@@ -646,7 +647,7 @@ describe("scenario validation edge cases [REQ-034]", () => {
       ),
     ).toBe("srv-a1 상태 ≠ ok");
     expect(describeCondition({ kind: "tool_called", tool: "wait" })).toBe(
-      "에이전트가 wait를 호출했다",
+      "에이전트가 wait를 호출했어요",
     );
     expect(
       evaluate(

@@ -17,12 +17,18 @@ export {
   type HarnessConfig,
   type HttpHarnessConfig,
   loadConfig,
-  type OpenAiHarnessConfig,
   parseConfig,
   secret,
 } from "./config";
+export {
+  CONNECTORS,
+  type ConnectContext,
+  type Connector,
+  connectorOf,
+} from "./connectors";
 export { FalkorGraph, falkorSource, GraphSource, type ReadOnlyGraph } from "./falkordb";
+export type { FetchLike } from "./fetch";
 export { HARNESS_PROTOCOL, HttpHarness, type RemoteRunStatus, traceIdOf } from "./harness/http";
-export { type FetchLike, OpenAiHarness, SYSTEM_PROMPT, toolMessage } from "./harness/openai";
 export { CAUSE_CODES, ScriptedHarness } from "./harness/scripted";
+export { SecretBox } from "./secret-box";
 export { SqliteStore } from "./sqlite-store";

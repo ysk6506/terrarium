@@ -122,7 +122,7 @@ export function fromJsonl(text: string): DiagnosisRecord[] {
     .map((line, i) => {
       const parsed = JSON.parse(line) as Partial<DiagnosisRecord>;
       if (parsed.schema !== DIAGNOSIS_SCHEMA)
-        throw new Error(`${i + 1}번째 줄은 진단 기록(${DIAGNOSIS_SCHEMA})이 아니다`);
+        throw new Error(`${i + 1}번째 줄은 진단 기록(${DIAGNOSIS_SCHEMA})이 아니에요`);
       return parsed as DiagnosisRecord;
     });
 }
@@ -210,9 +210,9 @@ const pct = (r: number) => `${Math.round(r * 100)}%`;
 const LOW_ACCURACY = 0.5;
 
 function faultSection(stats: readonly FaultTypeStats[]): string[] {
-  if (stats.length === 0) return ["진단을 요구한 실행이 아직 없다.", ""];
+  if (stats.length === 0) return ["진단을 요구한 실행이 아직 없어요.", ""];
   const out = [
-    "| 실제 고장 유형 | 실행 | 에이전트 | 원인 장비 정답률 | 고장 유형 정답률 | 자주 헷갈린 답 |",
+    "| 실제 고장 종류 | 실행 | 에이전트 | 원인 장비 정답률 | 고장 종류 정답률 | 자주 헷갈린 답 |",
     "|---|---|---|---|---|---|",
   ];
   for (const s of stats) {
@@ -236,27 +236,27 @@ function suggestions(
   const out: string[] = [];
   for (const s of stats.filter((x) => x.typeRate < LOW_ACCURACY && x.agents >= 2))
     out.push(
-      `'${s.faultType}'${josa(s.faultType, "은")} 에이전트 ${s.agents}종에 걸쳐 정답률이 ${pct(s.typeRate)}에 그친다. 이 고장이 만드는 관측 신호(센서·알람·이벤트)가 다른 고장과 구별되는지 확인한다.`,
+      `'${s.faultType}'${josa(s.faultType, "은")} 에이전트 ${s.agents}종에 걸쳐 정답률이 ${pct(s.typeRate)}에 그쳐요. 이 고장이 만드는 관측 신호(센서·알람·이벤트)가 다른 고장과 구별되는지 확인해 주세요.`,
     );
   for (const s of stats.filter((x) => x.typeRate === 1 && x.runs >= 5))
     out.push(
-      `'${s.faultType}'${josa(s.faultType, "은")} ${s.runs}번 모두 맞혔다. 현실보다 단서가 너무 뚜렷하지 않은지 본다.`,
+      `'${s.faultType}'${josa(s.faultType, "은")} ${s.runs}번 모두 맞혔어요. 현실보다 단서가 너무 뚜렷하지 않은지 봐요.`,
     );
   for (const e of errors.slice(0, 5))
     out.push(
-      `툴 \`${e.tool}\`${josa(e.tool, "이")} 같은 오류를 ${e.count}번 냈다: "${e.example}". 에이전트가 기대한 동작을 시뮬레이터가 지원해야 하는지 판단한다.`,
+      `툴 \`${e.tool}\`${josa(e.tool, "이")} 같은 오류를 ${e.count}번 냈어요: "${e.example}". 에이전트가 기대한 동작을 시뮬레이터가 지원해야 하는지 판단해요.`,
     );
   for (const g of gaps) {
     const labels = Object.keys(g.unknownLabels);
     const rels = Object.keys(g.unknownRelationships);
     if (labels.length + rels.length > 0)
       out.push(
-        `'${g.worldName}'${josa(g.worldName, "을")} 가져올 때 매핑하지 못한 것: ${[...labels, ...rels].join(", ")}. 실제 구성의 일부가 세계에 빠져 있다.`,
+        `'${g.worldName}'${josa(g.worldName, "을")} 가져올 때 매핑하지 못한 것: ${[...labels, ...rels].join(", ")}. 실제 구성의 일부가 세계에 빠져 있어요.`,
       );
   }
   return out.length > 0
     ? out.map((s) => `- ${s}`)
-    : ["- 지금 기록으로는 특별히 손볼 곳이 보이지 않는다."];
+    : ["- 지금 기록으로는 특별히 손볼 곳이 보이지 않아요."];
 }
 
 function gapSection(gaps: readonly WorldGaps[]): string[] {
@@ -293,21 +293,21 @@ export function modelingBrief(input: BriefInput): string {
   const lines = [
     "# 시뮬레이터 모델링 브리프",
     "",
-    "테라리움에서 에이전트들이 고장을 진단한 기록을 모은 것이다. 시뮬레이터를 고치는 쪽에서, 세계가 현실보다 쉽거나 어렵거나 비어 있는 곳을 찾는 데 쓴다.",
+    "테라리움에서 에이전트들이 고장을 진단한 기록을 모은 것이에요. 시뮬레이터를 고치는 쪽에서, 세계가 현실보다 쉽거나 어렵거나 비어 있는 곳을 찾는 데 써요.",
     "",
     `- 실행 ${records.length}번 (진단 요구 ${diagnosed.length}번), 실험 ${new Set(records.map((r) => r.experimentId)).size}개, 에이전트 ${agents}종`,
     `- 세계 ${new Set(records.map((r) => r.world.digest)).size}개 버전, 시나리오 ${new Set(records.map((r) => r.scenario.digest)).size}개 버전`,
     ...(input.generatedAt ? [`- 작성 ${input.generatedAt}`] : []),
     "",
-    "## 고장 유형별 진단 정확도",
+    "## 고장 종류별 진단 정확도",
     "",
-    "정답률이 낮은 순서다. 여러 에이전트가 함께 틀리는 고장은 에이전트보다 시뮬레이터의 단서가 부족한 탓일 수 있다.",
+    "정답률이 낮은 순서예요. 여러 에이전트가 함께 틀리는 고장은 에이전트보다 시뮬레이터의 단서가 부족한 탓일 수 있어요.",
     "",
     ...faultSection(faults),
     "## 툴 오류",
     "",
     ...(errors.length === 0
-      ? ["툴 오류가 없었다.", ""]
+      ? ["툴 오류가 없었어요.", ""]
       : [
           "| 툴 | 오류 형태 | 횟수 | 예 |",
           "|---|---|---|---|",

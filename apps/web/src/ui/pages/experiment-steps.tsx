@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { experiment } from "../../logic";
 import { useApp, useAsync } from "../context";
 import { Check, Note, NumberField, SelectField, TextField } from "../kit";
+import { ExperimentMetadata, NoHarness, VersionPreview } from "./experiment-subject";
 
 type Draft = experiment.Draft;
 interface StepProps {
@@ -63,7 +64,7 @@ export function WhatStep({
   }, [known, first, set]);
   return (
     <section className="wizard-step stack">
-      <StepHead n={1} title="무엇으로 시험하나" problems={problems} />
+      <StepHead n={1} title="무엇으로 시험할까요?" problems={problems} />
       <SelectField
         label="세계"
         value={draft.worldId}
@@ -82,7 +83,7 @@ export function WhatStep({
         }))}
         onChange={(scenarioId) => set({ scenarioId })}
         {...(draft.worldId && scenarios.data && list.length === 0
-          ? { help: "이 세계에는 시나리오가 아직 없다. 시나리오 화면에서 만든다." }
+          ? { help: "이 세계에는 시나리오가 아직 없어요. 시나리오 화면에서 만들어 보세요." }
           : {})}
       />
     </section>
@@ -93,15 +94,22 @@ export function WhoStep({ draft, set, problems }: StepProps) {
   const { meta } = useApp();
   const harnesses = meta?.harnesses ?? [];
   const harness = harnesses.find((h) => h.id === draft.harnessId);
+  if (meta && harnesses.length === 0)
+    return (
+      <section className="wizard-step stack">
+        <StepHead n={2} title="누구를 시험할까요?" problems={problems} />
+        <NoHarness />
+      </section>
+    );
   return (
     <section className="wizard-step stack">
-      <StepHead n={2} title="누구를 시험하나" problems={problems} />
+      <StepHead n={2} title="누구를 시험할까요?" problems={problems} />
       <SelectField
         label="하네스"
         value={draft.harnessId}
         options={harnesses.map((h) => ({
           value: h.id,
-          label: h.status === "ok" ? `${h.name} (${h.kind})` : `${h.name}: 지금 닿지 않는다`,
+          label: h.status === "ok" ? `${h.name} (${h.kind})` : `${h.name}: 지금 연결되지 않아요`,
           disabled: h.status !== "ok",
         }))}
         onChange={(harnessId) => {
@@ -125,6 +133,9 @@ export function WhoStep({ draft, set, problems }: StepProps) {
         />
       )}
       {harness?.error && <Note tone="warn">{harness.error}</Note>}
+      {harness && draft.agentId && (
+        <VersionPreview harnessId={harness.id} agentId={draft.agentId} />
+      )}
     </section>
   );
 }
@@ -176,14 +187,14 @@ export function HowStep({ draft, set, problems }: StepProps) {
   const lockstep = draft.time.kind === "lockstep";
   return (
     <section className="wizard-step stack">
-      <StepHead n={3} title="어떻게 시험하나" problems={problems} />
+      <StepHead n={3} title="어떻게 시험할까요?" problems={problems} />
       <ToolPicker draft={draft} set={set} />
       <div className="grid-2">
         <NumberField
           label="실행 횟수"
           error={
             draft.runs < 1 || draft.runs > MAX_SEEDS
-              ? `실행 횟수는 1~${MAX_SEEDS}번이다`
+              ? `실행 횟수는 1~${MAX_SEEDS}번이에요`
               : undefined
           }
           value={draft.runs}
@@ -192,7 +203,7 @@ export function HowStep({ draft, set, problems }: StepProps) {
           step={1}
           unit="회"
           onChange={(runs) => runs !== undefined && set({ runs: Math.round(runs) })}
-          help="시드 1부터 차례로 쓴다. 3회 이상이어야 벤치마크 순위에 오른다."
+          help="시드 1부터 차례로 써요. 3회 이상이어야 벤치마크 순위에 올라요."
         />
         <NumberField
           label={lockstep ? "툴 호출 한 번에 흐르는 시간" : "시간 배속"}
@@ -214,8 +225,8 @@ export function HowStep({ draft, set, problems }: StepProps) {
           }
           help={
             lockstep
-              ? "기본. 툴을 부를 때만 시간이 흘러 결과가 늘 같다."
-              : "벽시계를 따라 시간이 흐른다."
+              ? "기본. 툴을 부를 때만 시간이 흘러 결과가 늘 같아요."
+              : "벽시계를 따라 시간이 흘러요."
           }
         />
         <SelectField
@@ -232,7 +243,7 @@ export function HowStep({ draft, set, problems }: StepProps) {
         />
       </div>
       <Check
-        label="벽시계 시간으로 돌린다 (재현되지 않는다)"
+        label="벽시계 시간으로 돌려요 (결과가 재현되지 않아요)"
         checked={!lockstep}
         onChange={(on) =>
           set({
@@ -264,8 +275,9 @@ export function NameStep({
         multiline
         maxLength={2000}
         onChange={(note) => set({ note })}
-        help="무엇을 알아보려는 실험인지 적어 두면 비교할 때 쉽다."
+        help="무엇을 알아보려는 실험인지 적어 두면 비교할 때 쉬워요."
       />
+      <ExperimentMetadata draft={draft} set={set} />
     </section>
   );
 }

@@ -5,7 +5,14 @@
 import type { ExperimentAnalysis, ParentComparison } from "@terrarium/core/analysis";
 import type { ExperimentView, RunSummary } from "@terrarium/core/contract";
 import { END_REASON_LABELS } from "@terrarium/core/oracle";
-import { formatDuration, type LiveState, meanText, percent, scoreText } from "../../logic";
+import {
+  formatDuration,
+  type LiveState,
+  meanText,
+  PASS_SHARE_TEXT,
+  percent,
+  scoreText,
+} from "../../logic";
 import { Go } from "../context";
 import { Figures, Note, Section, Status } from "../kit";
 import { RateBar, ScoreBar } from "../results";
@@ -19,12 +26,12 @@ export function ResultFigures({ a }: { readonly a: ExperimentAnalysis }) {
         {
           label: "합격률",
           value: done > 0 ? percent(a.passRate) : "—",
-          hint: "70점 이상을 받은 실행의 비율",
+          hint: PASS_SHARE_TEXT,
         },
         {
           label: "평균 점수",
           value: meanText(a.score, "점"),
-          hint: "오차는 95% 신뢰구간. 실행이 적으면 넓다",
+          hint: "오차는 95% 신뢰구간. 실행이 적으면 넓어요",
         },
         {
           label: "정확한 진단",
@@ -91,11 +98,11 @@ export function ParentCard({
               합격률 {sign(parent.passRateDelta * 100, "%p", 0)}
               {parent.scoreDelta !== undefined && `, 평균 점수 ${sign(parent.scoreDelta, "점")}`}.{" "}
               {parent.clear
-                ? "두 실험의 오차 범위가 겹치지 않아 차이가 분명하다."
-                : "오차 범위가 겹쳐서 아직 차이가 있다고 말하기 어렵다."}
+                ? "두 실험의 오차 범위가 겹치지 않아 차이가 분명해요."
+                : "오차 범위가 겹쳐서 아직 차이가 있다고 말하기 어려워요."}
             </>
           ) : (
-            "끝난 실행이 생기면 원본과 견준다."
+            "끝난 실행이 생기면 원본과 견줘요."
           )}
         </p>
       </div>
@@ -128,10 +135,10 @@ function CallTicker({ calls }: { readonly calls: LiveState["calls"][string] | un
 }
 
 const answerText = (d: { submitted: boolean; root: boolean; type: boolean }) => {
-  if (!d.submitted) return "진단 없이 끝났다";
-  if (d.root && d.type) return "원인과 종류를 모두 맞혔다";
-  if (d.root) return "원인만 맞혔다";
-  return d.type ? "종류만 맞혔다" : "원인과 종류 모두 틀렸다";
+  if (!d.submitted) return "진단 없이 끝났어요";
+  if (d.root && d.type) return "원인과 종류를 모두 맞혔어요";
+  if (d.root) return "원인만 맞혔어요";
+  return d.type ? "종류만 맞혔어요" : "원인과 종류 모두 틀렸어요";
 };
 
 function runNote(run: RunSummary, analysis: ExperimentAnalysis, calls: LiveState["calls"]) {
@@ -204,7 +211,7 @@ export function CriteriaTable({ criteria }: { readonly criteria: ExperimentAnaly
   return (
     <Section
       title="채점 항목별로"
-      aside={<span className="tiny muted">감점 항목은 피한 비율이다</span>}
+      aside={<span className="tiny muted">감점 항목은 피한 비율이에요</span>}
     >
       <div className="table-wrap">
         <table className="table">

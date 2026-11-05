@@ -3,12 +3,27 @@
  * protections (breaker trips, thermal shutdowns), alarms and health, in that order. Every
  * discrete consequence is a world event with cause "physics" (REQ-005, ADR-0006).
  */
+import type { ServerModel } from "@terrarium/core/catalog";
 import { InvalidValueError } from "@terrarium/core/kernel";
-import type { Health, World, WorldEvent } from "@terrarium/core/world";
+import type {
+  Entity,
+  EntityState,
+  Health,
+  StateOf,
+  World,
+  WorldEvent,
+} from "@terrarium/core/world";
 import { desiredAlarms } from "./alarms";
 import { updateGenerators, updatePlant } from "./plant";
-import { aggregateLoads, capacityW, SupplyResolver, updateBatteries, updateDevices } from "./power";
-import { updateContainments, updateRack, updateRoom } from "./thermal";
+import {
+  aggregateLoads,
+  type Pass,
+  passOf,
+  SupplyResolver,
+  updateBatteries,
+  updateDevices,
+} from "./power";
+import { updateThermal } from "./thermal";
 
 export interface PhysicsOptions {
   /** Size of one simulation step in seconds. */
@@ -21,6 +36,7 @@ export const DEFAULT_PHYSICS: PhysicsOptions = { stepSeconds: 10, tripFactor: 1.
 
 const CAUSE = "physics";
 const RANK: Record<Health, number> = { ok: 0, warning: 1, critical: 2 };
+const HEALTHS: readonly Health[] = ["ok", "warning", "critical"];
 
 export class Physics {
   constructor(
@@ -57,9 +73,7 @@ export class Physics {
     updateGenerators(this.world, new SupplyResolver(this.world), dt);
     this.updateElectrical();
     updateBatteries(this.world, dt);
-    for (const room of this.world.index.ofKind("room")) updateRoom(this.world, room, dt);
-    for (const rack of this.world.index.ofKind("rack")) updateRack(this.world, rack, dt);
-    updateContainments(this.world);
+    updateThermal(this.world, dt);
     updatePlant(this.world, dt);
     events.push(...this.protect());
     if (events.length > 0) this.updateElectrical();
@@ -76,34 +90,37 @@ export class Physics {
 
   private protect(): WorldEvent[] {
     const events: WorldEvent[] = [];
+    const pass = passOf(this.world);
+    this.tripBreakers(pass, events);
+    for (const i of pass.plan.servers) {
+      const state = pass.states[i] as StateOf<"server">;
+      const model = pass.plan.models[i] as ServerModel;
+      if (state.adminOn && state.powered && state.cpuC > model.cpuShutdownC) {
+        const target = (pass.plan.ents[i] as Entity).id;
+        events.push(this.world.apply({ type: "thermal.shutdown", target }, CAUSE));
+      }
+    }
+    return events;
+  }
+
+  /** A breaker trips when its load is past what it can carry (by the trip factor). */
+  private tripBreakers(pass: Pass, events: WorldEvent[]): void {
     const now = this.world.time();
-    for (const entity of [
-      ...this.world.index.ofKind("pdu"),
-      ...this.world.index.ofKind("power_panel"),
-    ]) {
-      const state = this.world.stateOf(entity.id);
-      if (
-        (state.kind === "pdu" || state.kind === "power_panel") &&
-        !state.tripped &&
-        state.loadW > capacityW(this.world, entity.id) * this.options.tripFactor
-      ) {
+    for (const group of [pass.plan.pdus, pass.plan.panels]) {
+      for (const i of group) {
+        const state = pass.states[i] as StateOf<"pdu"> | StateOf<"power_panel">;
+        const capacity = pass.plan.capacity[i] as number;
+        if (state.tripped || !(state.loadW > capacity * this.options.tripFactor)) continue;
+        const target = (pass.plan.ents[i] as Entity).id;
         const fault = {
-          id: `trip-${entity.id}-${Math.round(now)}`,
+          id: `trip-${target}-${Math.round(now)}`,
           type: "breaker_trip" as const,
-          target: entity.id,
+          target,
           params: {},
         };
         events.push(this.world.apply({ type: "fault.add", fault }, CAUSE));
       }
     }
-    for (const server of this.world.index.ofKind("server")) {
-      const state = this.world.stateAs(server.id, "server");
-      const model = this.world.catalog.getOf(server.modelId ?? "", "server");
-      if (state.adminOn && state.powered && state.cpuC > model.cpuShutdownC) {
-        events.push(this.world.apply({ type: "thermal.shutdown", target: server.id }, CAUSE));
-      }
-    }
-    return events;
   }
 
   private syncAlarms(): WorldEvent[] {
@@ -131,15 +148,17 @@ export class Physics {
   }
 
   private updateHealth(): void {
-    const worst = new Map<string, Health>();
+    const { plan, states } = passOf(this.world);
+    const worst = new Uint8Array(plan.ents.length);
     for (const alarm of this.world.alarms()) {
-      const current = worst.get(alarm.entityId) ?? "ok";
-      if (RANK[alarm.severity] > RANK[current]) worst.set(alarm.entityId, alarm.severity);
+      const at = this.world.index.positionOf(alarm.entityId);
+      if (at !== undefined && RANK[alarm.severity] > (worst[at] as number))
+        worst[at] = RANK[alarm.severity];
     }
-    for (const entity of this.world.index.all()) {
-      const state = this.world.stateOf(entity.id);
-      const health = worst.get(entity.id) ?? "ok";
-      if (state.health !== health) this.world.patch(entity.id, entity.kind, { health } as never);
+    for (let i = 0; i < states.length; i++) {
+      const state = states[i] as EntityState;
+      const health = HEALTHS[worst[i] as number] as Health;
+      if (state.health !== health) state.health = health;
     }
   }
 }

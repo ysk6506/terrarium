@@ -5,7 +5,7 @@
 import type { ExperimentView } from "@terrarium/core/contract";
 import type { WorldSummary } from "@terrarium/core/experiments";
 import { useCallback, useEffect, useState } from "react";
-import { experiment } from "../../logic";
+import { experiment, metaProblems } from "../../logic";
 import { Go, messageOf, useApp, useAsync } from "../context";
 import { Button, Failure, Loading, Note, PageHead } from "../kit";
 import { HowStep, NameStep, WhatStep, WhoStep } from "./experiment-steps";
@@ -53,7 +53,7 @@ function ForkChanges({
 }) {
   const changes = experiment.forkChanges(parent.experiment, draft);
   if (changes.length === 0)
-    return <p className="small muted">아직 원본과 같다. 바꿀 조건을 고른다.</p>;
+    return <p className="small muted">아직 원본과 같아요. 바꿀 조건을 골라 보세요.</p>;
   return (
     <div className="stack" style={{ gap: 6 }}>
       <ul className="list-plain small">
@@ -65,10 +65,45 @@ function ForkChanges({
       </ul>
       {experiment.leavesBenchmarkSet(changes) && (
         <Note tone="warn">
-          과제가 바뀌어 원본과 다른 벤치마크 세트가 된다. 순위표에서 원본과 나란히 비교되지 않는다.
+          과제가 바뀌어 원본과 다른 벤치마크 세트가 돼요. 순위표에서 원본과 나란히 비교되지 않아요.
         </Note>
       )}
     </div>
+  );
+}
+
+function RunLine({ draft }: { readonly draft: Draft }) {
+  return (
+    <p className="small">
+      {draft.runs}회 실행. 툴 {draft.tools.length}개
+      {draft.time.kind === "lockstep" ? ", 결과가 재현돼요" : ", 벽시계 시간"}.
+    </p>
+  );
+}
+
+function Remaining({ items }: { readonly items: readonly string[] }) {
+  if (items.length === 0) return null;
+  return (
+    <ul className="list-plain small" aria-label="남은 것">
+      {items.map((p) => (
+        <li key={p} style={{ color: "var(--ink-2)" }}>
+          {p}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function QueueNote({
+  queue,
+}: {
+  readonly queue?: { readonly running: number; readonly queued: number };
+}) {
+  if (!queue || (queue.running === 0 && queue.queued === 0)) return null;
+  return (
+    <p className="tiny muted">
+      지금 {queue.running}회 실행 중, {queue.queued}회 대기. 사람마다 공평하게 차례가 돌아가요.
+    </p>
   );
 }
 
@@ -86,7 +121,13 @@ function SummaryCard({
   const { meta } = useApp();
   const agents = meta?.harnesses.find((h) => h.id === draft.harnessId)?.agents.map((a) => a.id);
   const problems = experiment.draftProblems(draft, agents);
-  const all = [...problems.what, ...problems.who, ...problems.how];
+  const metaBad = Object.keys(metaProblems(draft.metadata)).length > 0;
+  const all = [
+    ...problems.what,
+    ...problems.who,
+    ...problems.how,
+    ...(metaBad ? ["메타데이터의 이름과 값을 고쳐 주세요"] : []),
+  ];
   const queue = meta?.queue;
   // A fork that changes nothing would only repeat the original, so it waits for a change.
   const same =
@@ -96,35 +137,19 @@ function SummaryCard({
     <aside className="summary-card stack" aria-label="실행할 것">
       <h2 style={{ fontSize: 18 }}>{start.parent ? "원본에서 바꾼 것" : "실행할 것"}</h2>
       {start.parent && <ForkChanges parent={start.parent} draft={draft} />}
-      {!start.parent && (
-        <p className="small">
-          {draft.runs}회 실행. 툴 {draft.tools.length}개
-          {draft.time.kind === "lockstep" ? ", 결과가 재현된다" : ", 벽시계 시간"}.
-        </p>
-      )}
-      {all.length > 0 && (
-        <ul className="list-plain small" aria-label="남은 것">
-          {all.map((p) => (
-            <li key={p} style={{ color: "var(--ink-2)" }}>
-              {p}
-            </li>
-          ))}
-        </ul>
-      )}
+      {!start.parent && <RunLine draft={draft} />}
+      <Remaining items={all} />
       <Button
         kind="primary"
         icon="play"
         busy={busy}
-        disabled={!experiment.isReady(problems) || same}
+        disabled={!experiment.isReady(problems) || metaBad || same}
+        why={all[0] ?? "원본과 같은 조건이에요. 바꿀 조건을 골라 주세요"}
         onClick={onStart}
       >
         {start.parent ? "조건 바꿔 다시 돌리기" : "실험 시작"}
       </Button>
-      {queue && (queue.running > 0 || queue.queued > 0) && (
-        <p className="tiny muted">
-          지금 {queue.running}회 실행 중, {queue.queued}회 대기. 사람마다 공평하게 차례가 돌아간다.
-        </p>
-      )}
+      <QueueNote queue={queue} />
     </aside>
   );
 }
@@ -192,12 +217,13 @@ function Lede({ forkOf, parent }: { readonly forkOf?: string; readonly parent?: 
     return (
       <>
         <Go to={{ name: "experiment", id: forkOf }}>{parent.experiment.name}</Go>의 조건을 그대로
-        가져왔다. 바꾸고 싶은 것만 바꾼다.
+        가져왔어요. 바꾸고 싶은 것만 바꾸세요.
       </>
     );
   return (
     <>
-      세계와 시나리오, 하네스와 에이전트, 쓸 툴을 정한다. 정하는 대로 오른쪽에 무엇이 돌지 보인다.
+      세계와 시나리오, 하네스와 에이전트, 쓸 툴을 정해 주세요. 정하는 대로 오른쪽에 무엇이 돌지
+      보여요.
     </>
   );
 }
@@ -206,7 +232,7 @@ function StartBody({ start, formKey }: { readonly start: Start; readonly formKey
   if (start.worlds.length === 0)
     return (
       <Note tone="warn">
-        세계가 없다. <Go to={{ name: "worlds" }}>세계를 먼저 만든다</Go>.
+        세계가 없어요. <Go to={{ name: "worlds" }}>세계를 먼저 만들어 주세요</Go>.
       </Note>
     );
   return <Wizard key={formKey} start={start} />;

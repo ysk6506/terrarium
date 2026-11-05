@@ -3,6 +3,7 @@
  * Flow only holds positions while a block is being dragged, and every change goes back through
  * logic.scenario (connect, disconnect, move, remove) so the rules live in one tested place.
  */
+import { CATEGORY_LABELS } from "@terrarium/core/scenario";
 import {
   applyNodeChanges,
   Background,
@@ -29,11 +30,18 @@ type BlockNode = Node<BlockData, "block">;
 
 function Block({ data, selected }: NodeProps<BlockNode>) {
   const flag = data.errors.length > 0 ? "고칠 곳" : data.warnings.length > 0 ? "주의" : undefined;
+  const caption =
+    data.type === "start" || data.type === "note" || data.category === "unknown"
+      ? undefined
+      : CATEGORY_LABELS[data.category];
   return (
     <div className="block" data-category={data.category} data-selected={selected}>
       {data.hasInput && <Handle type="target" position={Position.Top} />}
       <div className="block-head">
-        <span>{data.title}</span>
+        <span>
+          {caption && <span className="block-cap">{caption}</span>}
+          {data.title}
+        </span>
         {flag && (
           <span
             className="block-flag"
@@ -150,7 +158,7 @@ function Flow({ e }: { readonly e: ScenarioEditor }) {
       fitViewOptions={{ padding: 0.2, maxZoom: 1 }}
       minZoom={0.2}
       proOptions={{ hideAttribution: true }}
-      aria-label="시나리오 흐름. 블록을 끌어 옮기고, 아래쪽 점에서 다음 블록 위쪽 점으로 끌어 잇는다."
+      aria-label="시나리오 흐름. 블록을 끌어 옮기고, 아래쪽 점에서 다음 블록 위쪽 점으로 끌어 이어요."
     >
       <Background gap={24} size={1} />
       <Controls showInteractive={false} position="bottom-right" />

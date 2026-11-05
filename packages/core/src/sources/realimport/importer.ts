@@ -84,8 +84,9 @@ function split(
 function noRoomMatches(asked: readonly string[], names: readonly string[]): string {
   const shown = names.slice(0, 8).join(", ");
   const more = names.length > 8 ? ` 외 ${names.length - 8}곳` : "";
-  const known = names.length > 0 ? ` 있는 서버룸: ${shown}${more}` : " 가져올 서버룸이 소스에 없다";
-  return `"${asked.join(", ")}"에 맞는 서버룸이 없다. 이름이나 id의 일부를 다시 확인한다.${known}`;
+  const known =
+    names.length > 0 ? ` 있는 서버룸: ${shown}${more}` : " 가져올 서버룸이 소스에 없어요";
+  return `"${asked.join(", ")}"에 맞는 서버룸이 없어요. 이름이나 id의 일부를 다시 확인해 주세요.${known}`;
 }
 
 /** Drop rooms outside the scope, then whatever no longer connects to anything kept. */
@@ -211,7 +212,7 @@ export async function importReality(
   const max = options.maxEntities ?? DEFAULT_MAX_ENTITIES;
   if (size > max)
     throw new InvalidValueError(
-      `가져올 대상이 ${size}개로 너무 많다 (최대 ${max}개). 가져올 서버룸 범위를 좁혀라`,
+      `가져올 대상이 ${size}개로 너무 많아요 (최대 ${max}개). 가져올 서버룸 범위를 좁혀 주세요`,
     );
   const synthesis = synthesize(plan, catalog, {
     power: options.assume?.power ?? true,

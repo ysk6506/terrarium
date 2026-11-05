@@ -16,7 +16,12 @@ export interface ClusterHostOptions {
   readonly fetch?: Fetch;
   readonly timeoutMs?: number;
   readonly pollMs?: number;
+  /** How long a session may wait for a place when every one is momentarily full (default 30 s). */
+  readonly placeWaitMs?: number;
 }
+
+const DEFAULT_PLACE_WAIT_MS = 30_000;
+const RETRY_MS = 100;
 
 interface Place {
   readonly id: string;
@@ -81,9 +86,14 @@ export class ClusterHost implements SessionHost {
         slots: n.slots,
         open: () => this.placedOn(n.id),
         start: async (config) => {
-          const session = await node.open(config);
+          // The slot is held from the moment this open begins, so openings in flight at once do not all pick the same node.
           this.placed.set(n.id, this.placedOn(n.id) + 1);
-          return this.release(n.id, session);
+          try {
+            return this.release(n.id, await node.open(config));
+          } catch (err) {
+            this.placed.set(n.id, Math.max(0, this.placedOn(n.id) - 1));
+            throw err;
+          }
         },
       });
     }
@@ -117,19 +127,26 @@ export class ClusterHost implements SessionHost {
   }
 
   async open(config: PlainSessionConfig): Promise<HostedSession> {
-    let last: unknown;
-    for (const place of this.places()) {
-      try {
-        return await place.start(config);
-      } catch (err) {
-        // A full, draining or silent node is not this run's fault: try the next place.
-        if (!(err instanceof NodeRefused || err instanceof NodeUnreachable)) throw err;
-        last = err;
+    const until = Date.now() + (this.options.placeWaitMs ?? DEFAULT_PLACE_WAIT_MS);
+    for (;;) {
+      let last: unknown;
+      for (const place of this.places()) {
+        try {
+          return await place.start(config);
+        } catch (err) {
+          // A full, draining or silent node is not this run's fault: try the next place.
+          if (!(err instanceof NodeRefused || err instanceof NodeUnreachable)) throw err;
+          last = err;
+        }
       }
+      // A node said no though this side counted a free slot: usually a moment (the node has not yet heard
+      // that a session ended), so wait a little for it before telling the run there is no room.
+      if (last === undefined || Date.now() >= until)
+        throw new ConflictError(
+          `세션을 돌릴 자리가 없어요${last instanceof Error ? ` (${last.message})` : ""}`,
+        );
+      await new Promise((r) => setTimeout(r, RETRY_MS));
     }
-    throw new ConflictError(
-      `세션을 돌릴 자리가 없다${last instanceof Error ? ` (${last.message})` : ""}`,
-    );
   }
 
   async close(): Promise<void> {

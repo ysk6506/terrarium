@@ -116,7 +116,7 @@ function TwinExports() {
     <Section title="시뮬레이터를 더 현실에 가깝게">
       <p className="small muted" style={{ maxWidth: 640 }}>
         모든 실험에서 에이전트가 무엇을 물었고 어디서 막혔는지 모아, 시뮬레이터에 무엇이 모자란지
-        알려 준다. 현실 장비는 건드리지 않고 이 기록만 읽는다.
+        알려 줘요. 현실 장비는 건드리지 않고 이 기록만 읽어요.
       </p>
       <div className="row" style={{ marginTop: 12 }}>
         <a className="btn" href={api.url("twinBrief")} download="terrarium-modeling-brief.md">
@@ -140,7 +140,7 @@ export function BenchmarksPage() {
     <div className="page">
       <PageHead
         title="벤치마크"
-        lede="같은 세계, 같은 시나리오, 같은 채점 기준에서 돌린 실험끼리만 순위를 매긴다. 오차 범위가 겹치면 차이가 있다고 하지 않는다."
+        lede="같은 세계, 같은 시나리오, 같은 채점표에서 돌린 실험끼리만 순위를 매겨요. 오차 범위가 겹치면 차이가 있다고 하지 않아요."
         actions={
           <Go to={{ name: "newExperiment" }} className="btn btn-primary">
             새 실험
@@ -166,15 +166,15 @@ export function BenchmarksPage() {
       {!data.data && !data.error && <Loading lines={5} />}
       {data.data && boards.length === 0 && (
         <Empty
-          title="아직 순위를 매길 실험이 없다"
+          title="아직 순위를 매길 실험이 없어요"
           action={
             <Go to={{ name: "newExperiment" }} className="btn btn-primary">
               첫 실험 만들기
             </Go>
           }
         >
-          실험이 끝나면 여기에 세트별로 모인다. 같은 조건을 {MIN_RUNS_TO_RANK}회 이상 돌려야 순위에
-          오른다.
+          실험이 끝나면 여기에 세트별로 모여요. 같은 조건을 {MIN_RUNS_TO_RANK}회 이상 돌려야 순위에
+          올라요.
         </Empty>
       )}
       {shown.map((b) => (

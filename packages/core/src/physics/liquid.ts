@@ -16,7 +16,7 @@ const SERVER_J_PER_K = 6000;
 /** Tank bath temperature rise over the coolant at full design load, K. */
 const TANK_DELTA_K = 12;
 /** Passive loss from a tank to the room, W per K above room temperature. */
-const TANK_SURFACE_W_PER_K = 40;
+export const TANK_SURFACE_W_PER_K = 40;
 const FLUID_MAX_C = 95;
 
 export const rackCooling = (world: World, rack: Entity): RackCooling => {
@@ -57,7 +57,13 @@ export interface RackLiquid {
   readonly bathC: number;
 }
 
-const AIR_ONLY: RackLiquid = { cooling: "air", ok: false, liquidW: 0, coolantC: 0, bathC: 0 };
+export const AIR_ONLY: RackLiquid = {
+  cooling: "air",
+  ok: false,
+  liquidW: 0,
+  coolantC: 0,
+  bathC: 0,
+};
 
 /** Heat the servers of a rack give to liquid when it flows, W. */
 function directLiquidW(world: World, rack: Entity): number {
@@ -142,31 +148,6 @@ export function updateRackLiquid(
 function stagnantTargetC(world: World, rack: Entity, ambient: number): number {
   const designW = world.catalog.getOf(rack.modelId ?? "", "rack").maxKw * 800;
   return ambient + 33 * clamp(directLiquidW(world, rack) / Math.max(designW, 1), 0, 1);
-}
-
-/**
- * Air-side heat a rack puts into its room, W: whatever the liquid does not carry, plus what a warm
- * tank gives off through its walls.
- */
-export function rackAirHeatW(world: World, rack: Entity, ambient: number): number {
-  const s = world.stateAs(rack.id, "rack");
-  if (rackCooling(world, rack) === "immersion")
-    return Math.max(0, s.bathC - ambient) * TANK_SURFACE_W_PER_K;
-  return Math.max(0, deviceW(world, rack) - s.liquidW);
-}
-
-/**
- * Electric power of the IT devices in a rack, W (read from the devices, so it is this step's). A light
- * rack has no devices to read; the electrical update has already written what it draws.
- */
-export function deviceW(world: World, rack: Entity): number {
-  if (bulkOf(rack)) return world.stateAs(rack.id, "rack").powerW;
-  let sum = 0;
-  for (const d of world.index.childrenOf(rack.id)) {
-    const s = world.stateOf(d.id);
-    if (s.kind === "server" || s.kind === "switch" || s.kind === "storage") sum += s.powerW;
-  }
-  return sum;
 }
 
 /** CPU temperature target for a server on liquid, °C; undefined for air-cooled servers in air racks. */

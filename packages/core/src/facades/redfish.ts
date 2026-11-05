@@ -4,7 +4,7 @@
  */
 import { InvalidValueError, NotFoundError } from "@terrarium/core/kernel";
 import type { ProfileRegistry } from "@terrarium/core/profiles";
-import type { WorldPort } from "@terrarium/core/world";
+import type { Entity, WorldPort } from "@terrarium/core/world";
 import {
   dispatch,
   type FacadeRequest,
@@ -15,25 +15,16 @@ import {
   type Params,
   Router,
 } from "./http";
+import { noService, speaks } from "./protocols";
+import { redfishError } from "./redfish-common";
+import { handleFacility } from "./redfish-facility";
+import * as log from "./redfish-log";
+import { processor, processorCollection } from "./redfish-processors";
 import * as r from "./redfish-resources";
 
-const BASE = "/redfish/v1";
+export { redfishError };
 
-export function redfishError(status: number, message: string): FacadeResponse {
-  const code =
-    status === 404
-      ? "Base.1.18.ResourceMissingAtURI"
-      : status === 400
-        ? "Base.1.18.ActionParameterValueNotInList"
-        : "Base.1.18.GeneralError";
-  return json(status, {
-    error: {
-      code,
-      message,
-      "@Message.ExtendedInfo": [{ MessageId: code, Message: message, Severity: "Critical" }],
-    },
-  });
-}
+const BASE = "/redfish/v1";
 
 type Ctx = r.BmcContext;
 
@@ -67,6 +58,7 @@ function powerSupplies(ctx: Ctx, index?: number): FacadeResponse {
   if (index === undefined) {
     return json(200, {
       "@odata.id": base,
+      "@odata.type": "#PowerSupplyCollection.PowerSupplyCollection",
       Name: "Power Supplies",
       Members: s.psuOk.map((_, i) => ({ "@odata.id": `${base}/${i}` })),
       "Members@odata.count": s.psuOk.length,
@@ -76,6 +68,7 @@ function powerSupplies(ctx: Ctx, index?: number): FacadeResponse {
   if (ok === undefined) throw new NotFoundError(`no power supply ${index}`);
   return json(200, {
     "@odata.id": `${base}/${index}`,
+    "@odata.type": "#PowerSupply.v1_8_0.PowerSupply",
     Id: String(index),
     Name: `PS${index + 1}`,
     Status: { State: ok && s.powered ? "Enabled" : "Absent", Health: ok ? "OK" : "Critical" },
@@ -154,6 +147,36 @@ function subsystemRoutes(router: Router, ctx: Ctx): void {
     );
 }
 
+function logRoutes(router: Router, ctx: Ctx): void {
+  const sid = r.ids(ctx).system;
+  const logs = `${BASE}/Systems/:id/LogServices`;
+  router
+    .on(
+      "GET",
+      logs,
+      guarded(sid, "system", () => json(200, log.logServices(ctx))),
+    )
+    .on(
+      "GET",
+      `${logs}/EventLog`,
+      guarded(sid, "system", () => json(200, log.logService(ctx))),
+    )
+    .on(
+      "GET",
+      `${logs}/EventLog/Entries`,
+      guarded(sid, "system", () => json(200, log.eventLog(ctx))),
+    )
+    .on(
+      "GET",
+      `${logs}/EventLog/Entries/:entry`,
+      guarded(sid, "system", (_q, p) => {
+        const entry = log.eventLogEntry(ctx, p.entry as string);
+        if (!entry) throw new NotFoundError(`no log entry ${p.entry}`);
+        return json(200, entry);
+      }),
+    );
+}
+
 function routes(world: WorldPort, ctx: Ctx): Router {
   const { system: sid, chassis: cid, manager: mid } = r.ids(ctx);
   const router = new Router()
@@ -161,10 +184,26 @@ function routes(world: WorldPort, ctx: Ctx): Router {
     .on("GET", `${BASE}/Systems`, () => json(200, r.collection(ctx, "Systems")))
     .on("GET", `${BASE}/Chassis`, () => json(200, r.collection(ctx, "Chassis")))
     .on("GET", `${BASE}/Managers`, () => json(200, r.collection(ctx, "Managers")))
+    .on("GET", `${BASE}/SessionService`, () => json(200, r.sessionService(ctx)))
+    .on("GET", `${BASE}/SessionService/Sessions`, () => json(200, r.sessions(ctx)))
     .on(
       "GET",
       `${BASE}/Systems/:id`,
       guarded(sid, "system", () => json(200, r.system(ctx))),
+    )
+    .on(
+      "GET",
+      `${BASE}/Systems/:id/Processors`,
+      guarded(sid, "system", () => json(200, processorCollection(ctx))),
+    )
+    .on(
+      "GET",
+      `${BASE}/Systems/:id/Processors/:cpu`,
+      guarded(sid, "system", (_q, p) => {
+        const body = processor(ctx, p.cpu as string);
+        if (!body) throw new NotFoundError(`no processor ${p.cpu}`);
+        return json(200, body);
+      }),
     )
     .on(
       "POST",
@@ -183,13 +222,7 @@ function routes(world: WorldPort, ctx: Ctx): Router {
     );
   if (ctx.profile.thermalSchema !== "subsystem") legacyRoutes(router, ctx);
   if (ctx.profile.thermalSchema !== "legacy") subsystemRoutes(router, ctx);
-  if (ctx.profile.supportsEventLog) {
-    router.on(
-      "GET",
-      `${BASE}/Systems/:id/LogServices/EventLog/Entries`,
-      guarded(sid, "system", () => json(200, r.eventLog(ctx))),
-    );
-  }
+  if (ctx.profile.supportsEventLog) logRoutes(router, ctx);
   return router;
 }
 
@@ -199,10 +232,18 @@ export class RedfishFacade {
     private readonly profiles: ProfileRegistry,
   ) {}
 
-  /** Handle a request to the BMC of `serverId`. */
-  handle(serverId: string, req: FacadeRequest): FacadeResponse {
-    const server = this.world.index.find(serverId);
-    if (!server || server.kind !== "server") return redfishError(404, `no BMC for '${serverId}'`);
+  /** Handle a request to the Redfish service of `id`: a server's BMC, or the controller of power or cooling equipment. */
+  handle(id: string, req: FacadeRequest): FacadeResponse {
+    const entity = this.world.index.find(id);
+    if (!entity || !speaks(entity.kind, "redfish"))
+      return redfishError(404, noService(entity, id, "redfish"));
+    return entity.kind === "server"
+      ? this.bmc(entity, req)
+      : handleFacility(this.world, entity, req);
+  }
+
+  private bmc(server: Entity, req: FacadeRequest): FacadeResponse {
+    const serverId = server.id;
     if (this.world.faultsOn(serverId).some((f) => f.type === "bmc_unresponsive")) {
       return redfishError(504, `BMC of ${server.name} did not respond`);
     }

@@ -79,7 +79,7 @@ function WorldgenFields({
         min={0}
         step={1}
         onChange={(v) => v !== undefined && set("seed", Math.round(v))}
-        help="같은 시드면 같은 세계가 나온다."
+        help="같은 시드면 같은 세계가 나와요."
       />
     </div>
   );
@@ -101,7 +101,7 @@ export function GenerateForm({ onDone }: { readonly onDone: () => void }) {
     submit(async () => {
       const saved = await api.call("generateWorld", { body: { spec } });
       toast(
-        `${saved.world.name}: 랙 ${count(saved.stats.rack ?? 0)}개, 서버 ${count(saved.stats.server ?? 0)}대를 만들었다`,
+        `${saved.world.name}: 랙 ${count(saved.stats.rack ?? 0)}개, 서버 ${count(saved.stats.server ?? 0)}대를 만들었어요`,
       );
       onDone();
       navigate({ name: "world", id: saved.world.id });
@@ -131,7 +131,13 @@ export function GenerateForm({ onDone }: { readonly onDone: () => void }) {
       ))}
       {error && <Note tone="bad">{error}</Note>}
       <div className="dialog-actions">
-        <Button kind="primary" type="submit" busy={busy} disabled={problems.length > 0}>
+        <Button
+          kind="primary"
+          type="submit"
+          busy={busy}
+          disabled={problems.length > 0}
+          why={problems[0]}
+        >
           생성하기
         </Button>
       </div>
@@ -143,9 +149,9 @@ function reportText(report: ImportReport): string {
   const n = (k: keyof ImportReport["entities"]) => count(report.entities[k] ?? 0);
   const assumed =
     report.assumptions.length > 0
-      ? ` 가정한 것 ${report.assumptions.length}가지는 세계 정보에 남는다`
+      ? ` 가정한 것 ${report.assumptions.length}가지는 세계 정보에 남아요`
       : "";
-  return `랙 ${n("rack")}개, 서버 ${n("server")}대, VM ${n("vm")}개를 읽었다.${assumed}`;
+  return `랙 ${n("rack")}개, 서버 ${n("server")}대, VM ${n("vm")}개를 읽었어요.${assumed}`;
 }
 
 export function ImportForm({ onDone }: { readonly onDone: () => void }) {
@@ -171,14 +177,14 @@ export function ImportForm({ onDone }: { readonly onDone: () => void }) {
           assume,
         },
       });
-      toast(`${withJosa(saved.world.name, "을")} 가져왔다. ${reportText(saved.report)}`);
+      toast(`${withJosa(saved.world.name, "을")} 가져왔어요. ${reportText(saved.report)}`);
       onDone();
       navigate({ name: "world", id: saved.world.id });
     });
   if (sources.length === 0)
     return (
       <Note tone="warn">
-        설정된 현실 소스가 없다. 서버 설정의 sources에 FalkorDB 같은 소스를 더하면 여기에 나온다.
+        설정된 현실 소스가 없어요. 서버 설정의 sources에 FalkorDB 같은 소스를 더하면 여기에 나와요.
       </Note>
     );
   return (
@@ -189,7 +195,9 @@ export function ImportForm({ onDone }: { readonly onDone: () => void }) {
         void go();
       }}
     >
-      <Note>현실은 읽기만 한다. 가져온 세계는 사본이라 무엇을 해도 실제 장비에는 닿지 않는다.</Note>
+      <Note>
+        현실은 읽기만 해요. 가져온 세계는 사본이라 무엇을 해도 실제 장비에는 영향이 없어요.
+      </Note>
       <SelectField
         label="소스"
         value={source}
@@ -201,15 +209,15 @@ export function ImportForm({ onDone }: { readonly onDone: () => void }) {
         label="가져올 서버룸 (선택, 쉼표로 구분)"
         value={rooms}
         onChange={setRooms}
-        help="비워 두면 전부 가져온다. 큰 그래프는 서버룸을 골라야 빠르다."
+        help="비워 두면 전부 가져와요. 큰 그래프는 서버룸을 골라야 빨라요."
       />
       <Check
-        label="전원 계통이 없으면 가정해서 채운다"
+        label="전원 계통이 없으면 가정해서 채워요"
         checked={assume.power}
         onChange={(power) => setAssume((a) => ({ ...a, power }))}
       />
       <Check
-        label="냉방 설비가 없으면 가정해서 채운다"
+        label="냉방 설비가 없으면 가정해서 채워요"
         checked={assume.cooling}
         onChange={(cooling) => setAssume((a) => ({ ...a, cooling }))}
       />

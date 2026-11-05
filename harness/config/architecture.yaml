@@ -44,7 +44,7 @@ third_party:
   zod: ["core.*", "server.*", "web.*"]
   fastify: [server.http, server.cluster]
   "@fastify/static": [server.http]
-  "@modelcontextprotocol/sdk": [server.mcp]
+  "@modelcontextprotocol/sdk": [server.mcp, server.adapters]
   falkordb: [server.adapters]
   react: [web.ui, web.main]
   react-dom: [web.ui, web.main]
@@ -54,6 +54,8 @@ third_party:
   yaml: [harness]
   playwright: [tests.e2e, harness]
   "@axe-core/playwright": [tests.e2e, harness]
+  ajv: [tests.spec]
+  ajv-formats: [tests.spec]
 
 # Packages only test code (*.test.ts, test-support/) may import.
 test_only: [vitest, fast-check]

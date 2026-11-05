@@ -7,7 +7,6 @@ import { describe, expect, test } from "vitest";
 import { sampleBlueprint } from "../../../../packages/core/src/world/test-support/sample";
 import { parseConfig } from "./config";
 import { HttpHarness, traceIdOf } from "./harness/http";
-import { OpenAiHarness, toolMessage } from "./harness/openai";
 import { ScriptedHarness } from "./harness/scripted";
 import { FakeFetch, json } from "./test-support/fake-fetch";
 
@@ -70,7 +69,7 @@ describe("built-in reference agents use only the tools [REQ-008] [REQ-031]", () 
     const harness = new ScriptedHarness("builtin", "내장");
     expect(await harness.run(request(s, "idle"))).toEqual({
       status: "finished",
-      message: "알람만 확인했다",
+      message: "알람만 확인했어요",
     });
     expect(s.finish().endReason).toBe("agent_finished");
     expect((await harness.run(request(s, "chef"))).status).toBe("error");
@@ -82,154 +81,6 @@ describe("built-in reference agents use only the tools [REQ-008] [REQ-031]", () 
     const { s } = session("fan-failure-throttle", 1, ["list_alarms", "wait"]);
     await new ScriptedHarness("builtin", "내장").run(request(s, "triage"));
     expect(s.finish().diagnosis?.faultType).toBe("fan_failure");
-  });
-});
-
-const openaiConfig = parseConfig({
-  harnesses: [
-    {
-      kind: "openai",
-      id: "llm",
-      name: "사내 LLM",
-      baseUrl: "https://llm.internal/v1",
-      apiKeyEnv: "LLM_KEY",
-      models: [{ id: "gauss", model: "gauss-2-32b", temperature: 0 }],
-      maxTurns: 4,
-    },
-  ],
-}).harnesses.find((h) => h.kind === "openai") as never;
-
-const toolCall = (id: string, name: string, args: unknown) => ({
-  id,
-  type: "function",
-  function: { name, arguments: typeof args === "string" ? args : JSON.stringify(args) },
-});
-const reply = (message: unknown, usage = { prompt_tokens: 100, completion_tokens: 20 }) =>
-  json({ choices: [{ message }], usage });
-
-describe("an OpenAI-compatible model as a harness [REQ-031]", () => {
-  test("the model calls tools as functions until it submits; tokens are counted", async () => {
-    const fake = new FakeFetch();
-    const replies = [
-      reply({
-        role: "assistant",
-        content: null,
-        tool_calls: [toolCall("c1", "list_alarms", {}), toolCall("c2", "get_impact", "{bad")],
-      }),
-      reply({
-        role: "assistant",
-        content: null,
-        tool_calls: [
-          toolCall("c3", "submit_diagnosis", {
-            rootCause: "crah-1",
-            faultType: "cooling_unit_failure",
-            summary: "정지",
-          }),
-        ],
-      }),
-    ];
-    fake.on("POST", /\/v1\/chat\/completions$/, () => replies.shift() as Response);
-    const { s } = session("cooling-failure");
-    const harness = new OpenAiHarness(openaiConfig, "sk-test", fake.fetch);
-    const outcome = await harness.run(
-      request(s, "gauss", {
-        traceparent: "00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01",
-      }),
-    );
-    expect(outcome).toEqual({
-      status: "finished",
-      harness: { inputTokens: 200, outputTokens: 40 },
-    });
-    expect(s.finish().score.passed).toBe(true);
-    const first = fake.requests[0];
-    expect(first?.headers.authorization).toBe("Bearer sk-test");
-    expect(first?.headers.traceparent).toContain("0af7651916cd43dd8448eb211c80319c");
-    expect(first?.body).toMatchObject({
-      model: "gauss-2-32b",
-      temperature: 0,
-      tool_choice: "auto",
-    });
-    const tools = (first?.body as { tools: { function: { name: string } }[] }).tools.map(
-      (t) => t.function.name,
-    );
-    expect(tools).toContain("submit_diagnosis");
-    const second = fake.requests[1]?.body as { messages: { role: string; content: string }[] };
-    const toolReplies = second.messages
-      .filter((m) => m.role === "tool")
-      .map((m) => JSON.parse(m.content));
-    expect(toolReplies[0]).toMatchObject({ ok: true });
-    expect(toolReplies[1]).toEqual({ ok: false, error: "arguments are not valid JSON" });
-    expect(await harness.agents()).toEqual([
-      { id: "gauss", name: "gauss-2-32b", model: "gauss-2-32b" },
-    ]);
-  });
-
-  test("a model that stops talking, runs out of turns, or errors is reported as such", async () => {
-    const chatty = new FakeFetch().on("POST", /chat/, () =>
-      reply({ role: "assistant", content: "모르겠다" }),
-    );
-    const { s } = session("cooling-failure");
-    expect(
-      await new OpenAiHarness(openaiConfig, undefined, chatty.fetch).run(request(s, "gauss")),
-    ).toMatchObject({
-      status: "finished",
-      message: "모델이 툴 호출 없이 답을 끝냈다",
-    });
-    expect(chatty.requests[0]?.headers.authorization).toBeUndefined();
-
-    const looping = new FakeFetch().on("POST", /chat/, () =>
-      reply({ role: "assistant", content: null, tool_calls: [toolCall("c", "list_alarms", {})] }),
-    );
-    const out = await new OpenAiHarness(openaiConfig, undefined, looping.fetch).run(
-      request(session("cooling-failure").s, "gauss"),
-    );
-    expect(out).toMatchObject({ status: "finished", message: "4턴 안에 끝내지 못했다" });
-    expect(looping.requests).toHaveLength(4);
-
-    const broken = new FakeFetch().on(
-      "POST",
-      /chat/,
-      () => new Response("overloaded", { status: 503 }),
-    );
-    const failed = await new OpenAiHarness(openaiConfig, undefined, broken.fetch).run(
-      request(session("cooling-failure").s, "gauss"),
-    );
-    expect(failed).toMatchObject({
-      status: "error",
-      message: "모델 엔드포인트가 503로 답했다: overloaded",
-    });
-
-    const empty = new FakeFetch().on("POST", /chat/, () => json({ choices: [] }));
-    expect(
-      (
-        await new OpenAiHarness(openaiConfig, undefined, empty.fetch).run(
-          request(session("cooling-failure").s, "gauss"),
-        )
-      ).message,
-    ).toBe("모델이 빈 응답을 보냈다");
-    const unknown = await new OpenAiHarness(openaiConfig, undefined, empty.fetch).run(
-      request(session("cooling-failure").s, "nope"),
-    );
-    expect(unknown.message).toBe("'nope' 모델이 설정에 없다");
-  });
-
-  test("cancelling stops the loop", async () => {
-    const controller = new AbortController();
-    controller.abort();
-    const fake = new FakeFetch();
-    const out = await new OpenAiHarness(openaiConfig, undefined, fake.fetch).run(
-      request(session("cooling-failure").s, "gauss", { signal: controller.signal }),
-    );
-    expect(out.status).toBe("cancelled");
-    expect(fake.requests).toHaveLength(0);
-  });
-
-  test("tool replies are JSON the model can read, cut when huge", () => {
-    expect(toolMessage({ ok: true, data: [1] })).toBe('{"ok":true,"data":[1]}');
-    expect(toolMessage({ ok: false, error: "없다" })).toBe('{"ok":false,"error":"없다"}');
-    expect(toolMessage({ ok: true, data: "x".repeat(70_000) }).endsWith("… (truncated)")).toBe(
-      true,
-    );
   });
 });
 
@@ -293,7 +144,7 @@ describe("a remote harness over the Terrarium harness protocol [REQ-031]", () =>
     const { s } = session("cooling-failure");
     const harness = (fake: FakeFetch) => new HttpHarness(httpConfig, undefined, fake.fetch);
     const noMcp = await harness(new FakeFetch()).run(request(s, "a1"));
-    expect(noMcp.message).toBe("이 하네스는 MCP로 툴을 쓰는데, 이 실행에 MCP 엔드포인트가 없다");
+    expect(noMcp.message).toBe("이 하네스는 MCP로 툴을 쓰는데, 이 실행에 MCP 엔드포인트가 없어요");
     const tools = endpoint(s, "https://terrarium/mcp/runs/r1/t");
     const refused = new FakeFetch().on(
       "POST",
@@ -301,20 +152,20 @@ describe("a remote harness over the Terrarium harness protocol [REQ-031]", () =>
       () => new Response("busy", { status: 429 }),
     );
     expect((await harness(refused).run(request(s, "a1", { tools }))).message).toBe(
-      "하네스가 실행 시작에 429로 답했다: busy",
+      "하네스가 실행 시작에 429로 답했어요: busy",
     );
     const down = new FakeFetch().on("POST", /\/runs$/, () => {
       throw new TypeError("fetch failed");
     });
     expect((await harness(down).run(request(s, "a1", { tools }))).message).toBe(
-      "하네스에 닿을 수 없다: fetch failed",
+      "하네스에 연결할 수 없어요: fetch failed",
     );
     const flaky = new FakeFetch()
       .on("POST", /\/runs$/, () => json({}))
       .on("GET", /\/runs\//, () => new Response("", { status: 500 }));
     expect(await harness(flaky).run(request(s, "a1", { tools }))).toMatchObject({
       status: "error",
-      message: "하네스에 닿을 수 없다: 상태 조회에 500",
+      message: "하네스에 연결할 수 없어요: 상태 조회에 500",
     });
     const noAgents = new FakeFetch().on(
       "GET",
@@ -322,7 +173,7 @@ describe("a remote harness over the Terrarium harness protocol [REQ-031]", () =>
       () => new Response("", { status: 401 }),
     );
     await expect(harness(noAgents).agents()).rejects.toThrow(
-      "하네스가 에이전트 목록에 401로 답했다",
+      "하네스가 에이전트 목록에 401로 답했어요",
     );
   });
 

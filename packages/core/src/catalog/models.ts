@@ -6,6 +6,22 @@ export type FloorStandingKind = "cooling_unit" | "power_panel" | "ups" | "cdu";
 export type PlantKind = "chiller" | "generator";
 export type ModelKind = RackMountedKind | FloorStandingKind | PlantKind | "rack";
 
+/**
+ * What a rack is built to hold (REQ-063): the 19-inch EIA-310 rack every older world uses, or an OCP Open
+ * Rack v3 (21-inch equipment, 48 mm OpenU, 48 V busbar fed by power shelves). Equipment of one standard does
+ * not mount in a rack of the other.
+ */
+export type RackStandard = "eia310" | "orv3";
+
+export const RACK_STANDARD_LABELS: Readonly<Record<RackStandard, string>> = {
+  eia310: "EIA-310 19인치",
+  orv3: "OCP ORv3 21인치",
+};
+
+/** The standard rack-mounted equipment is built for; models without a `mount` are 19-inch. */
+export const mountOf = (model: { readonly mount?: RackStandard }): RackStandard =>
+  model.mount ?? "eia310";
+
 /** How a server (or the rack that holds it) gets rid of heat (REQ-044). */
 export type CoolingMethod = "air" | "dlc" | "immersion";
 /** How a rack is cooled: air, air with a rear-door heat exchanger, direct liquid, or a tank of fluid. */
@@ -38,6 +54,8 @@ interface BaseModel {
 export interface ServerModel extends BaseModel {
   readonly kind: "server";
   readonly uHeight: number;
+  /** The rack standard it mounts in (absent: EIA-310). In OpenU for ORv3. */
+  readonly mount?: RackStandard;
   readonly idlePowerW: number;
   readonly maxPowerW: number;
   readonly psuCount: number;
@@ -46,6 +64,8 @@ export interface ServerModel extends BaseModel {
   readonly coresPerSocket: number;
   readonly memoryGiB: number;
   readonly gpus: number;
+  /** The accelerator (a `GpuModel` id) when the model names one; absent for GPU servers with an unspecified one. */
+  readonly gpuModel?: string;
   /** Highest allowed inlet temperature (ASHRAE class), °C. */
   readonly maxInletC: number;
   /** CPU temperature above inlet at full load with all fans working, °C. */
@@ -63,6 +83,8 @@ export interface ServerModel extends BaseModel {
 export interface SwitchModel extends BaseModel {
   readonly kind: "switch";
   readonly uHeight: number;
+  /** The rack standard it mounts in (absent: EIA-310). In OpenU for ORv3. */
+  readonly mount?: RackStandard;
   readonly ports: number;
   readonly portSpeedGbps: number;
   readonly powerW: number;
@@ -72,6 +94,8 @@ export interface SwitchModel extends BaseModel {
 export interface StorageModel extends BaseModel {
   readonly kind: "storage";
   readonly uHeight: number;
+  /** The rack standard it mounts in (absent: EIA-310). In OpenU for ORv3. */
+  readonly mount?: RackStandard;
   readonly capacityTiB: number;
   readonly disks: number;
   readonly powerW: number;
@@ -83,6 +107,10 @@ export interface PduModel extends BaseModel {
   readonly uHeight: number;
   readonly capacityW: number;
   readonly outlets: number;
+  /** The rack standard it mounts in (absent: EIA-310). */
+  readonly mount?: RackStandard;
+  /** A power shelf feeding an ORv3 busbar: the devices on it are not switched one outlet at a time. */
+  readonly shelf?: boolean;
 }
 
 export interface CoolingModel extends BaseModel {
@@ -108,6 +136,8 @@ export interface RackModel extends BaseModel {
   readonly form: "rack" | "tank";
   /** Fluid in a tank, litres (0 for racks). */
   readonly fluidLitres: number;
+  /** What it is built to hold (absent: EIA-310); `uHeight` counts OpenU in an ORv3 rack. */
+  readonly standard?: RackStandard;
 }
 
 /** Coolant distribution unit: moves heat from the rack loop to the facility water. */
@@ -204,6 +234,10 @@ export function panelCapacityW(model: PanelModel): number {
 /** The vendor name a protocol shows (Redfish `Manufacturer`): the built-in baseline models are "Terrarium Systems". */
 export const manufacturerOf = (model: EquipmentModel): string =>
   model.vendor === GENERIC_VENDOR ? "Terrarium Systems" : model.vendor;
+
+/** The standard a model mounts in: the one it says, 19-inch for rack-mounted models that say nothing, and for the rest (they are not mounted). */
+export const mountOfModel = (model: EquipmentModel): RackStandard =>
+  "mount" in model ? mountOf(model) : "eia310";
 
 /** Vendor of the baseline models older worlds use. */
 export const GENERIC_VENDOR = "범용(기본)";

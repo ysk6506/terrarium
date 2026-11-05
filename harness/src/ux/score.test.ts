@@ -128,3 +128,76 @@ describe("reading a measurement file [REQ-041]", () => {
     expect(() => parseMeasurements(make())).toThrow(where);
   });
 });
+
+describe("the screens speak in one friendly tone and ask for one thing at a time [REQ-058]", () => {
+  test("the voice, the one main action and the button names are measured under 사용성", () => {
+    const ids = scoreAll(perfect()).usable.measures.map((m) => m.id);
+    expect(ids).toEqual(expect.arrayContaining(["voice", "one-thing", "buttons"]));
+  });
+
+  test("plain-form sentences lower the score, and say how many of how many", () => {
+    const report = scoreAll(withChange({ voice: { tried: 200, ok: 150 } }));
+    const voice = report.usable.measures.find((m) => m.id === "voice");
+    expect(voice?.score).toBe(0.75);
+    expect(voice?.evidence).toBe("150 / 200");
+    expect(report.usable.score).toBeLessThan(100);
+  });
+
+  test("a screen with two main buttons is not 'one thing'", () => {
+    const report = scoreAll(withChange({ oneThing: { tried: 10, ok: 8 } }));
+    expect(report.usable.measures.find((m) => m.id === "one-thing")?.score).toBe(0.8);
+  });
+
+  test("a run that measured none of it scores nothing for it, never full marks", () => {
+    const report = scoreAll(
+      withChange({
+        voice: { tried: 0, ok: 0 },
+        oneThing: { tried: 0, ok: 0 },
+        buttons: { tried: 0, ok: 0 },
+      }),
+    );
+    for (const id of ["voice", "one-thing", "buttons"])
+      expect(report.usable.measures.find((m) => m.id === id)?.score).toBe(0);
+  });
+
+  test("a measurement file without them is refused and says which part is missing", () => {
+    const { voice: _voice, ...rest } = perfect();
+    expect(() => parseMeasurements(rest)).toThrow("voice");
+  });
+});
+
+describe("the small details are measured one by one [REQ-058]", () => {
+  const find = (
+    report: ReturnType<typeof scoreAll>,
+    facet: "usable" | "accessible" | "credible",
+    id: string,
+  ) => report[facet].measures.find((m) => m.id === id);
+
+  test("each detail sits under the face it belongs to", () => {
+    const report = scoreAll(perfect());
+    expect(find(report, "usable", "disabled-why")).toBeDefined();
+    expect(find(report, "usable", "hover")).toBeDefined();
+    expect(find(report, "accessible", "targets")).toBeDefined();
+    expect(find(report, "credible", "units")).toBeDefined();
+  });
+
+  test("small controls, silent switched-off buttons, bare numbers and dead buttons each cost points", () => {
+    const report = scoreAll(
+      withChange({
+        targets: { tried: 400, ok: 300 },
+        disabledWhy: { tried: 10, ok: 5 },
+        units: { tried: 80, ok: 60 },
+        hover: { tried: 40, ok: 30 },
+      }),
+    );
+    expect(find(report, "accessible", "targets")?.score).toBe(0.75);
+    expect(find(report, "usable", "disabled-why")?.evidence).toBe("5 / 10");
+    expect(find(report, "credible", "units")?.score).toBe(0.75);
+    expect(find(report, "usable", "hover")?.score).toBe(0.75);
+  });
+
+  test("a measurement file without a detail is refused", () => {
+    const { targets: _targets, ...rest } = perfect();
+    expect(() => parseMeasurements(rest)).toThrow("targets");
+  });
+});

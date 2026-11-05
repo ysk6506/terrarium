@@ -1,5 +1,11 @@
 /** Tool implementations over a world port and the protocol facades. */
-import type { FacadeRequest, Facades, Method } from "@terrarium/core/facades";
+import type {
+  BacnetRequest,
+  FacadeRequest,
+  Facades,
+  Method,
+  SnmpRequest,
+} from "@terrarium/core/facades";
 import { InvalidValueError, NotFoundError, round } from "@terrarium/core/kernel";
 import {
   bulkOf,
@@ -337,6 +343,30 @@ const vcenterRequest: Handler = (ctx, args) =>
 const vropsRequest: Handler = (ctx, args) =>
   ctx.facades.vrops.handle(facadeRequest(args, str(args, "path")));
 
+const snmpRequest: Handler = (ctx, args) =>
+  ctx.facades.snmp.handle(str(args, "device"), args as unknown as SnmpRequest);
+const bacnetRequest: Handler = (ctx, args) => {
+  const { value, relinquish, ...rest } = args;
+  return ctx.facades.bacnet.handle(typeof args.device === "string" ? args.device : undefined, {
+    ...rest,
+    ...(relinquish === true ? { value: null } : value === undefined ? {} : { value }),
+  } as unknown as BacnetRequest);
+};
+
+const networkCli: Handler = (ctx, args) => {
+  const commands = args.commands;
+  if (!Array.isArray(commands) || !commands.every((c) => typeof c === "string"))
+    throw new InvalidValueError("'commands' must be a list of CLI lines");
+  return ctx.facades.network.cli(str(args, "device"), {
+    commands,
+    configure: args.configure === true,
+  });
+};
+const eapiRequest: Handler = (ctx, args) =>
+  ctx.facades.network.eapi(str(args, "device"), args.body);
+const nxapiRequest: Handler = (ctx, args) =>
+  ctx.facades.network.nxapi(str(args, "device"), args.body);
+
 const setSetpoint: Handler = (ctx, args) => {
   ctx.world.apply(
     { type: "setpoint.set", target: str(args, "unitId"), celsius: Number(args.celsius) },
@@ -403,6 +433,11 @@ export const HANDLERS: Readonly<Record<string, Handler>> = {
   redfish_request: redfishRequest,
   vcenter_request: vcenterRequest,
   vrops_request: vropsRequest,
+  snmp_request: snmpRequest,
+  bacnet_request: bacnetRequest,
+  network_cli: networkCli,
+  eapi_request: eapiRequest,
+  nxapi_request: nxapiRequest,
   set_cooling_setpoint: setSetpoint,
   restart_cooling_unit: restartCooling,
   reset_breaker: resetBreaker,

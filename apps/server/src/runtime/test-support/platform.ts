@@ -74,18 +74,28 @@ export interface TestPlatform {
   readonly events: ExperimentEvent[];
 }
 
+export type TestOptions = Omit<Partial<PlatformOptions>, "adapters"> & {
+  /** Parts of the adapters to swap, e.g. how connections reach out (`connect`). */
+  readonly adapters?: Partial<PlatformOptions["adapters"]>;
+};
+
 export function testPlatform(
   extra: readonly HarnessPort[] = [],
-  options: Partial<PlatformOptions> = {},
+  options: TestOptions = {},
   store: ExperimentStore = new MemoryStore(),
 ): TestPlatform {
   const adapters = buildAdapters(parseConfig({}), { store, env: {} });
+  const { adapters: swap, ...rest } = options;
   const platform = new Platform({
-    adapters: { ...adapters, harnesses: [new ScriptedHarness("builtin", "내장"), ...extra] },
+    adapters: {
+      ...adapters,
+      harnesses: [new ScriptedHarness("builtin", "내장"), ...extra],
+      ...swap,
+    },
     host: new InProcessHost(),
     stamps: sequentialStamps(),
     graceMs: 50,
-    ...options,
+    ...rest,
   });
   return { platform, store, events: [] };
 }

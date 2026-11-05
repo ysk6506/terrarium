@@ -2,7 +2,12 @@
  * One rack's front, unit by unit (the elevation panel): what sits where, what is free, and how much
  * power the devices ask for against what the rack's PDUs can give.
  */
-import type { Catalog, EquipmentModel } from "@terrarium/core/catalog";
+import {
+  type Catalog,
+  type EquipmentModel,
+  mountOfModel,
+  RACK_STANDARD_LABELS,
+} from "@terrarium/core/catalog";
 import { withJosa } from "@terrarium/core/kernel";
 import {
   type Blueprint,
@@ -10,6 +15,7 @@ import {
   type Entity,
   heightU,
   isRackMountedKind,
+  rackStandardOf,
   rackUnits,
 } from "@terrarium/core/world";
 import { type Edit, EditError, nextId } from "./edit";
@@ -71,6 +77,10 @@ export function elevation(index: BlueprintIndex, catalog: Catalog, rackId: strin
     const m = model(p);
     return m && "capacityW" in m ? m.capacityW : 0;
   });
+  // Power shelves of an ORv3 rack share one busbar: what they can give adds up.
+  const shelfW = mounted
+    .map((m) => model(m.device))
+    .reduce((sum, m) => sum + (m?.kind === "pdu" ? m.capacityW : 0), 0);
   return {
     rack,
     units,
@@ -79,7 +89,8 @@ export function elevation(index: BlueprintIndex, catalog: Catalog, rackId: strin
     freeUnits: slots.filter((s) => !s.device).reduce((sum, s) => sum + s.height, 0),
     demandW: mounted.reduce((sum, m) => sum + maxPowerW(model(m.device)), 0),
     // With two PDUs fed from A and B, either one must carry the whole rack.
-    supplyW: capacities.length >= 2 ? Math.min(...capacities) : (capacities[0] ?? 0),
+    supplyW:
+      shelfW > 0 ? shelfW : capacities.length >= 2 ? Math.min(...capacities) : (capacities[0] ?? 0),
   };
 }
 
@@ -111,17 +122,29 @@ function unitFor(
   u?: number,
 ): number {
   if (height === 0) {
-    if (ev.pdus.length >= 2) throw new EditError("수직 PDU는 랙마다 둘(A, B)까지다");
+    if (ev.pdus.length >= 2) throw new EditError("수직 PDU는 랙마다 둘(A, B)까지예요");
     return 1;
   }
   const at = u ?? firstFreeU(index, catalog, ev.rack.id, height);
-  if (at === undefined) throw new EditError(`${height}U가 비어 있는 곳이 없다`);
+  if (at === undefined) throw new EditError(`${height}U가 비어 있는 곳이 없어요`);
   if (at < 1 || at + height - 1 > ev.units)
-    throw new EditError(`${ev.units}U 안에 들어가지 않는다`);
+    throw new EditError(`${ev.units}U 안에 들어가지 않아요`);
   const top = at + height - 1;
   const blocked = ev.slots.find((s) => s.device && s.u <= top && s.u + s.height - 1 >= at);
-  if (blocked?.device) throw new EditError(`U${at}에 ${withJosa(blocked.device.name, "이")} 있다`);
+  if (blocked?.device)
+    throw new EditError(`U${at}에 ${withJosa(blocked.device.name, "이")} 있어요`);
   return at;
+}
+
+function deviceName(
+  index: BlueprintIndex,
+  model: EquipmentModel,
+  shelf: boolean,
+  feed: string,
+): string {
+  if (shelf) return `파워 셸프 ${index.ofKind("pdu").length + 1}`;
+  if (model.kind === "pdu") return `PDU ${feed}`;
+  return `${DEVICE_NAMES[model.kind] ?? model.kind} ${index.ofKind(model.kind).length + 1}`;
 }
 
 /** Mount a device at unit `u` (or at the lowest free place). Vertical PDUs go at the back, two at most. */
@@ -134,18 +157,22 @@ export function mountDevice(
 ): Edit {
   const index = new BlueprintIndex(bp);
   const rack = index.entity(rackId);
-  if (rack.kind !== "rack") throw new EditError("장비는 랙에 단다");
+  if (rack.kind !== "rack") throw new EditError("장비는 랙에 달아요");
   const model = catalog.get(modelId);
   if (!("uHeight" in model))
-    throw new EditError(`${withJosa(model.name, "은")} 랙에 다는 장비가 아니다`);
+    throw new EditError(`${withJosa(model.name, "은")} 랙에 다는 장비가 아니에요`);
+  const wants = mountOfModel(model);
+  const has = rackStandardOf(rack, catalog);
+  if (wants !== has)
+    throw new EditError(
+      `${withJosa(model.name, "은")} ${RACK_STANDARD_LABELS[wants]}용이라 ${RACK_STANDARD_LABELS[has]} 랙에는 달 수 없어요`,
+    );
   const ev = elevation(index, catalog, rackId);
   const at = unitFor(index, catalog, ev, model.uHeight, u);
   const id = nextId(index, model.kind);
   const feed = ev.pdus.length === 0 ? "A" : "B";
-  const name =
-    model.kind === "pdu"
-      ? `PDU ${feed}`
-      : `${DEVICE_NAMES[model.kind] ?? model.kind} ${index.ofKind(model.kind).length + 1}`;
+  const shelf = model.kind === "pdu" && model.shelf === true;
+  const name = deviceName(index, model, shelf, feed);
   const device: Entity = {
     id,
     kind: model.kind,
@@ -153,7 +180,7 @@ export function mountDevice(
     parentId: rackId,
     modelId,
     placement: { type: "unit", u: at },
-    props: model.kind === "pdu" ? { feed } : {},
+    props: model.kind === "pdu" && !shelf ? { feed } : {},
   };
   return { blueprint: { ...bp, entities: [...bp.entities, device] }, select: [id] };
 }
@@ -170,11 +197,11 @@ export function remount(bp: Blueprint, catalog: Catalog, deviceId: string, u: nu
     rackId,
   );
   if (u < 1 || u + height - 1 > others.units)
-    throw new EditError(`${others.units}U 안에 들어가지 않는다`);
+    throw new EditError(`${others.units}U 안에 들어가지 않아요`);
   const blocked = others.slots.find(
     (s) => s.device && s.u <= u + height - 1 && s.u + s.height - 1 >= u,
   );
-  if (blocked?.device) throw new EditError(`U${u}에 ${withJosa(blocked.device.name, "이")} 있다`);
+  if (blocked?.device) throw new EditError(`U${u}에 ${withJosa(blocked.device.name, "이")} 있어요`);
   return {
     blueprint: {
       ...bp,

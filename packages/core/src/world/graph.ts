@@ -47,6 +47,7 @@ export class BlueprintIndex {
   private readonly enclosingOf = new Map<EntityKind, Map<string, Entity | null>>();
   private everyEntity?: readonly Entity[];
   private everyLink?: readonly Link[];
+  private positions?: ReadonlyMap<string, number>;
 
   constructor(readonly blueprint: Blueprint) {
     for (const entity of [...blueprint.entities].sort(byId)) {
@@ -85,6 +86,15 @@ export class BlueprintIndex {
     return this.everyEntity;
   }
 
+  /**
+   * Where an entity stands in `all()`. Hot loops that walk every entity every step (physics) keep their data
+   * in arrays by this position instead of looking each id up again and again.
+   */
+  positionOf(id: string): number | undefined {
+    this.positions ??= new Map(this.all().map((e, i) => [e.id, i]));
+    return this.positions.get(id);
+  }
+
   allLinks(): readonly Link[] {
     this.everyLink ??= [...this.links.values()];
     return this.everyLink;
@@ -116,6 +126,18 @@ export class BlueprintIndex {
     return out;
   }
 
+  /** True when following parents from `id` leads back to `id`. */
+  inParentLoop(id: string): boolean {
+    const seen = new Set<string>();
+    let current = this.find(id)?.parentId;
+    while (current !== undefined && !seen.has(current)) {
+      if (current === id) return true;
+      seen.add(current);
+      current = this.find(current)?.parentId;
+    }
+    return false;
+  }
+
   /** The nearest ancestor (or the entity itself) of the given kind. */
   enclosing(id: string, kind: EntityKind): Entity | undefined {
     let known = this.enclosingOf.get(kind);
@@ -139,9 +161,13 @@ export class BlueprintIndex {
     const kept = this.descendantsOf.get(id);
     if (kept) return kept;
     const out: Entity[] = [];
+    // A blueprint whose parents loop back on themselves is invalid, but it must still be walkable to say so.
+    const seen = new Set<string>([id]);
     const stack = [...this.childrenOf(id)].reverse();
     while (stack.length > 0) {
       const next = stack.pop() as Entity;
+      if (seen.has(next.id)) continue;
+      seen.add(next.id);
       out.push(next);
       stack.push(...[...this.childrenOf(next.id)].reverse());
     }

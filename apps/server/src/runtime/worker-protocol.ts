@@ -3,10 +3,22 @@ import type { EndReason } from "@terrarium/core/oracle";
 import type { AgentTask } from "@terrarium/core/scenario";
 import type { CallResult, RunResult } from "@terrarium/core/session";
 import type { ToolSpec } from "@terrarium/core/tools";
+import type { Blueprint } from "@terrarium/core/world";
 import type { PlainSessionConfig } from "./hosts";
+import type { WorldIdentity } from "./world-cache";
+
+/** The worker was asked to open a session on a world it does not hold, and the message carried no blueprint. */
+export const NEED_BLUEPRINT = "blueprint_needed";
 
 export type ToWorker =
-  | { readonly kind: "open"; readonly id: string; readonly config: PlainSessionConfig }
+  | {
+      readonly kind: "open";
+      readonly id: string;
+      /** The session's config without its blueprint: the world comes by `world`, or in `blueprint` the first time. */
+      readonly config: Omit<PlainSessionConfig, "blueprint" | "world">;
+      readonly world: WorldIdentity;
+      readonly blueprint?: Blueprint;
+    }
   | {
       readonly kind: "call";
       readonly id: string;

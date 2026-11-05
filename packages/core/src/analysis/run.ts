@@ -177,8 +177,8 @@ function runFindings(
   run: RunRecord,
   answers: readonly string[],
 ): string[] {
-  if (run.status === "failed") return [`실행이 실패했다: ${run.error ?? "원인 미상"}`];
-  if (run.status === "cancelled") return ["실행이 취소됐다"];
+  if (run.status === "failed") return [`실행이 실패했어요: ${run.error ?? "원인 미상"}`];
+  if (run.status === "cancelled") return ["실행이 멈췄어요"];
   if (!run.result) return [];
   return [
     ...diagnosisFindings(a, run.result),
@@ -190,10 +190,10 @@ function runFindings(
 
 function diagnosisFindings(a: Omit<RunAnalysis, "findings">, result: RunResultOf): string[] {
   if (!a.diagnosis.submitted)
-    return [`진단을 제출하지 않았다 (종료: ${END_REASON_LABELS[result.endReason]})`];
+    return [`진단을 제출하지 않았어요 (종료: ${END_REASON_LABELS[result.endReason]})`];
   if (a.diagnosis.root && a.diagnosis.type) return [];
   const item = result.score.items.find((i) => i.kind === "diagnosis");
-  const how = a.diagnosis.root || a.diagnosis.type ? "일부만 맞았다" : "틀렸다";
+  const how = a.diagnosis.root || a.diagnosis.type ? "일부만 맞았어요" : "틀렸어요";
   return item ? [`진단이 ${how}: ${item.detail}`] : [];
 }
 
@@ -206,21 +206,21 @@ function attentionFindings(
   const first = a.behaviour.firstTouchSeconds;
   if (first === undefined)
     return answers.length > 0
-      ? [`정답 장비(${answers.join(", ")})를 한 번도 직접 살펴보지 않았다`]
+      ? [`정답 장비(${answers.join(", ")})를 한 번도 직접 살펴보지 않았어요`]
       : [];
   return first > limit / 2
-    ? [`정답 장비(${answers.join(", ")})를 처음 살펴본 것은 ${formatDuration(first)} 뒤였다`]
+    ? [`정답 장비(${answers.join(", ")})를 처음 살펴본 것은 ${formatDuration(first)} 뒤였어요`]
     : [];
 }
 
 function habitFindings(a: Omit<RunAnalysis, "findings">): string[] {
   const out: string[] = [];
-  if (a.behaviour.repeated >= 3) out.push(`같은 호출을 ${a.behaviour.repeated}번 되풀이했다`);
+  if (a.behaviour.repeated >= 3) out.push(`같은 호출을 ${a.behaviour.repeated}번 되풀이했어요`);
   if (a.efficiency.failedCalls >= 3)
-    out.push(`툴 호출 ${a.efficiency.failedCalls}번이 실패했다 (잘못된 인자, 없는 장비 등)`);
+    out.push(`툴 호출 ${a.efficiency.failedCalls}번이 실패했어요 (잘못된 인자, 없는 장비 등)`);
   const changed = Object.entries(a.behaviour.actions).map(
     ([k, n]) => `${withJosa(ACTION_LABELS[k as ActionKind], "을")} ${n}번`,
   );
-  if (changed.length > 0) out.push(`세계를 바꾼 조치: ${changed.join(", ")} 했다`);
+  if (changed.length > 0) out.push(`세계를 바꾼 조치: ${changed.join(", ")} 했어요`);
   return out;
 }

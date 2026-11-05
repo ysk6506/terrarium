@@ -1,267 +1,221 @@
 /**
  * Electrical model: which equipment has power, how much each draws, and how load adds up the chain
  * UPS -> panel -> PDU -> device. Devices with two feeds stay up while either supplier has power.
+ *
+ * Every step walks every device, so the walks go by position in the blueprint's entity list (see
+ * power-plan.ts) over the world's state list, not by id. The arithmetic and the order of the sums are
+ * the same as when this was written by id; `tests/spec/physics-golden.test.ts` holds the results bit for bit.
  */
-import { panelCapacityW } from "@terrarium/core/catalog";
-import { clamp } from "@terrarium/core/kernel";
-import { bulkOf, bulkPowerW, type Entity, type StateOf, type World } from "@terrarium/core/world";
+import type {
+  CduModel,
+  CoolingModel,
+  PanelModel,
+  ServerModel,
+  StorageModel,
+  SwitchModel,
+  UpsModel,
+} from "@terrarium/core/catalog";
+import { clamp, NotFoundError } from "@terrarium/core/kernel";
+import {
+  bulkPowerW,
+  type Entity,
+  type EntityState,
+  type Fault,
+  type StateOf,
+  type World,
+} from "@terrarium/core/world";
+import { type PowerPlan, powerPlanOf, SLOT, SUPPLIER_KINDS } from "./power-plan";
+import { faultParam, hasFault, isTransferSwitch, SupplyResolver } from "./power-supply";
+
+export { isTransferSwitch, SupplyResolver };
 
 export const POWER_FACTOR = 0.95;
 
-const hasFault = (world: World, id: string, type: string) =>
-  world.faultsOn(id).some((f) => f.type === type);
-
-/** Whether a supplier delivers power to what is connected to it. Memoised per step, cycle-safe. */
-export class SupplyResolver {
-  private readonly memo = new Map<string, boolean>();
-  private readonly feeds = new Map<string, readonly string[]>();
-  private readonly visiting = new Set<string>();
-
-  constructor(private readonly world: World) {}
-
-  /** A consumer is fed when it has no power links (assumed utility) or any supplier delivers. */
-  fed(id: string): boolean {
-    const links = this.world.index.outgoing(id, "power");
-    if (links.length === 0) return !hasFault(this.world, id, "utility_outage");
-    return links.some((l) => this.delivers(l.to));
-  }
-
-  delivers(id: string): boolean {
-    const known = this.memo.get(id);
-    if (known !== undefined) return known;
-    if (this.visiting.has(id)) return false;
-    this.visiting.add(id);
-    const result = this.compute(id);
-    this.visiting.delete(id);
-    this.memo.set(id, result);
-    return result;
-  }
-
-  /** Whether the utility side of a transfer switch (its non-generator source) is live. */
-  utilityOk(id: string): boolean {
-    if (hasFault(this.world, id, "utility_outage")) return false;
-    const upstream = this.world.index
-      .outgoing(id, "power")
-      .filter((l) => this.world.index.entity(l.to).kind !== "generator");
-    return upstream.length === 0 || upstream.some((l) => this.delivers(l.to));
-  }
-
-  /** The suppliers that actually carry a consumer's load right now: a transfer switch uses one source. */
-  activeFeeds(id: string): readonly string[] {
-    const known = this.feeds.get(id);
-    if (known) return known;
-    const feeds = this.computeFeeds(id);
-    this.feeds.set(id, feeds);
-    return feeds;
-  }
-
-  private computeFeeds(id: string): string[] {
-    const links = this.world.index.outgoing(id, "power");
-    if (!isTransferSwitch(this.world, id)) {
-      const live: string[] = [];
-      for (const link of links) if (this.delivers(link.to)) live.push(link.to);
-      return live;
-    }
-    if (this.utilityOk(id)) {
-      const upstream = links.filter((l) => this.world.index.entity(l.to).kind !== "generator");
-      return upstream.length === 0
-        ? []
-        : upstream.filter((l) => this.delivers(l.to)).map((l) => l.to);
-    }
-    if (hasFault(this.world, id, "ats_stuck")) return [];
-    const backup = links.find(
-      (l) => this.world.index.entity(l.to).kind === "generator" && this.delivers(l.to),
-    );
-    return backup ? [backup.to] : [];
-  }
-
-  private compute(id: string): boolean {
-    const state = this.world.stateOf(id);
-    if (state.kind === "ups")
-      return (this.fed(id) && !hasFault(this.world, id, "grid_outage")) || state.batteryPct > 0;
-    if (state.kind === "generator") return state.phase === "running";
-    if (state.kind === "pdu") return !state.tripped && this.fed(id);
-    if (state.kind === "power_panel") return !state.tripped && this.panelFed(id);
-    return false;
-  }
-
-  private panelFed(id: string): boolean {
-    if (!isTransferSwitch(this.world, id)) return this.fed(id);
-    if (this.utilityOk(id)) return true;
-    if (hasFault(this.world, id, "ats_stuck")) return false;
-    return this.world.index
-      .outgoing(id, "power")
-      .some((l) => this.world.index.entity(l.to).kind === "generator" && this.delivers(l.to));
-  }
+/** The world as the electrical passes read it. */
+export interface Pass {
+  readonly plan: PowerPlan;
+  readonly states: readonly EntityState[];
+  readonly faults: ReadonlyArray<readonly Fault[]>;
 }
 
-const transferSwitches = new WeakMap<World, ReadonlySet<string>>();
+export const passOf = (world: World): Pass => ({
+  plan: powerPlanOf(world.index, world.catalog),
+  states: world.stateList(),
+  faults: world.faultList(),
+});
 
-/** A power panel of style "ats": it picks the utility side, else a generator. */
-export function isTransferSwitch(world: World, id: string): boolean {
-  const cached = transferSwitches.get(world);
-  if (cached) return cached.has(id);
-  const ids = new Set<string>();
-  for (const entity of world.index.ofKind("power_panel")) {
-    const model =
-      entity.modelId && world.catalog.has(entity.modelId)
-        ? world.catalog.get(entity.modelId)
-        : undefined;
-    if (model?.kind === "power_panel" && model.style === "ats") ids.add(entity.id);
-  }
-  transferSwitches.set(world, ids);
-  return ids.has(id);
-}
+const positionOf = (world: World, id: string): number => {
+  const at = world.index.positionOf(id);
+  if (at === undefined) throw new NotFoundError(`no entity '${id}' in this world`);
+  return at;
+};
+
+// ---------- servers and VMs ----------
 
 /** A VM's CPU demand (0..1 of its vCPUs), including a vm_cpu_spike. */
+function vmDemandAt(pass: Pass, v: number): number {
+  const spike = faultParam(pass.faults[v] as readonly Fault[], "vm_cpu_spike", "demand") ?? 0;
+  return Math.max((pass.states[v] as StateOf<"vm">).cpuDemand, spike);
+}
+
 export function vmDemand(world: World, vmId: string): number {
-  const spike = world.faultsOn(vmId).find((f) => f.type === "vm_cpu_spike")?.params.demand ?? 0;
-  return Math.max(world.stateAs(vmId, "vm").cpuDemand, spike);
+  return vmDemandAt(passOf(world), positionOf(world, vmId));
+}
+
+export function effectiveUtilAt(pass: Pass, i: number): number {
+  const { plan, states, faults } = pass;
+  const state = states[i] as StateOf<"server">;
+  let vmLoad = 0;
+  const to = plan.vmStart[i + 1] as number;
+  for (let q = plan.vmStart[i] as number; q < to; q++) {
+    const v = plan.vmOn[q] as number;
+    if ((states[v] as StateOf<"vm">).running)
+      vmLoad += vmDemandAt(pass, v) * (plan.vcpus[v] as number);
+  }
+  const runaway = faultParam(faults[i] as readonly Fault[], "cpu_runaway", "util") ?? 0;
+  const util = Math.max(state.cpuUtil + vmLoad / (plan.cores[i] as number), runaway);
+  return clamp(state.throttled ? Math.min(util, 0.7) : util, 0, 1);
 }
 
 /** Effective CPU utilisation of a server: its own load, its VMs' demand and any runaway process. */
 export function effectiveUtil(world: World, server: Entity): number {
-  const state = world.stateAs(server.id, "server");
-  const model = world.catalog.getOf(server.modelId ?? "", "server");
-  const cores = model.cpuSockets * model.coresPerSocket;
-  let vmLoad = 0;
-  for (const link of world.index.incoming(server.id, "runs_on")) {
-    const vcpus = Number(world.index.entity(link.from).props.cpuCount ?? 4);
-    if (world.stateAs(link.from, "vm").running) vmLoad += vmDemand(world, link.from) * vcpus;
-  }
-  const runaway = world.faultsOn(server.id).find((f) => f.type === "cpu_runaway")?.params.util ?? 0;
-  const util = Math.max(state.cpuUtil + vmLoad / cores, runaway);
-  return clamp(state.throttled ? Math.min(util, 0.7) : util, 0, 1);
+  return effectiveUtilAt(passOf(world), positionOf(world, server.id));
 }
 
-type Updater = (world: World, entity: Entity, supply: SupplyResolver) => void;
+// ---------- device updates ----------
 
-const updateServer: Updater = (world, entity, supply) => {
-  const id = entity.id;
-  const model = world.catalog.getOf(entity.modelId ?? "", "server");
-  const psuFaults = world.faultsOn(id).filter((f) => f.type === "psu_failure");
-  const psuOk = Array.from(
-    { length: model.psuCount },
-    (_, i) => !psuFaults.some((f) => (f.params.psuIndex ?? 0) === i),
-  );
-  const powered = supply.fed(id) && psuOk.some(Boolean);
-  const running = powered && world.stateAs(id, "server").adminOn;
-  const util = effectiveUtil(world, entity);
-  world.patch(id, "server", {
-    powered,
-    psuOk,
-    powerW: running ? model.idlePowerW + (model.maxPowerW - model.idlePowerW) * util : 0,
-  });
+type Updater = (sup: SupplyResolver, i: number) => void;
+
+const psuFailed = (list: readonly Fault[], k: number): boolean => {
+  for (const f of list) if (f.type === "psu_failure" && (f.params.psuIndex ?? 0) === k) return true;
+  return false;
+};
+
+/** The per-PSU state of a server, reusing the list it had when nothing changed. */
+function psuStates(list: readonly Fault[], count: number, before: boolean[]): boolean[] {
+  let same = before.length === count;
+  for (let k = 0; same && k < count; k++) same = before[k] === !psuFailed(list, k);
+  return same ? before : Array.from({ length: count }, (_, k) => !psuFailed(list, k));
+}
+
+const updateServer: Updater = (sup, i) => {
+  const { plan, states, faults } = sup;
+  const model = plan.models[i] as ServerModel;
+  const state = states[i] as StateOf<"server">;
+  const psuOk = psuStates(faults[i] as readonly Fault[], model.psuCount, state.psuOk);
+  const powered = sup.fedAt(i) && psuOk.some(Boolean);
+  const running = powered && state.adminOn;
+  const util = effectiveUtilAt(sup, i);
+  state.powered = powered;
+  state.psuOk = psuOk;
+  state.powerW = running ? model.idlePowerW + (model.maxPowerW - model.idlePowerW) * util : 0;
 };
 
 /** A light rack draws what its servers add up to while it is fed; losing its feeds darkens all of them. */
-const updateLightRack: Updater = (world, entity, supply) => {
-  const light = bulkOf(entity);
+const updateLightRack: Updater = (sup, i) => {
+  const light = sup.plan.light[i];
   if (!light) return;
-  const state = world.stateAs(entity.id, "rack");
-  const powered = supply.fed(entity.id);
-  const model = world.catalog.getOf(light.modelId, "server");
-  world.patch(entity.id, "rack", {
-    powered,
-    powerW: powered ? bulkPowerW(light, model, state.util) : 0,
-  });
+  const state = sup.states[i] as StateOf<"rack">;
+  const powered = sup.fedAt(i);
+  state.powered = powered;
+  state.powerW = powered ? bulkPowerW(light, sup.plan.models[i] as ServerModel, state.util) : 0;
 };
 
-const updateSwitch: Updater = (world, entity, supply) => {
-  const model = world.catalog.getOf(entity.modelId ?? "", "switch");
-  const powered = supply.fed(entity.id);
+const updateSwitch: Updater = (sup, i) => {
+  const model = sup.plan.models[i] as SwitchModel;
+  const state = sup.states[i] as StateOf<"switch">;
+  const powered = sup.fedAt(i);
   const running =
-    powered &&
-    world.stateAs(entity.id, "switch").adminOn &&
-    !hasFault(world, entity.id, "switch_failure");
-  world.patch(entity.id, "switch", { powered, powerW: running ? model.powerW : 0 });
+    powered && state.adminOn && !hasFault(sup.faults[i] as readonly Fault[], "switch_failure");
+  state.powered = powered;
+  state.powerW = running ? model.powerW : 0;
 };
 
-const updateStorage: Updater = (world, entity, supply) => {
-  const model = world.catalog.getOf(entity.modelId ?? "", "storage");
-  const powered = supply.fed(entity.id);
-  const failed = world
-    .faultsOn(entity.id)
-    .filter((f) => f.type === "disk_failure")
-    .reduce((n, f) => n + (f.params.disks ?? 1), 0);
-  const on = powered && world.stateAs(entity.id, "storage").adminOn;
-  world.patch(entity.id, "storage", {
-    powered,
-    failedDisks: Math.min(failed, model.disks),
-    powerW: on ? model.powerW : 0,
-  });
+const updateStorage: Updater = (sup, i) => {
+  const model = sup.plan.models[i] as StorageModel;
+  const state = sup.states[i] as StateOf<"storage">;
+  const powered = sup.fedAt(i);
+  let failed = 0;
+  for (const f of sup.faults[i] as readonly Fault[])
+    if (f.type === "disk_failure") failed += f.params.disks ?? 1;
+  state.powered = powered;
+  state.failedDisks = Math.min(failed, model.disks);
+  state.powerW = powered && state.adminOn ? model.powerW : 0;
 };
 
-const updateCooling: Updater = (world, entity, supply) => {
-  const powered = supply.fed(entity.id);
-  const running =
+const updateCooling: Updater = (sup, i) => {
+  const state = sup.states[i] as StateOf<"cooling_unit">;
+  const powered = sup.fedAt(i);
+  state.powered = powered;
+  state.running =
     powered &&
-    world.stateAs(entity.id, "cooling_unit").adminOn &&
-    !hasFault(world, entity.id, "cooling_unit_failure");
-  world.patch(entity.id, "cooling_unit", { powered, running });
+    state.adminOn &&
+    !hasFault(sup.faults[i] as readonly Fault[], "cooling_unit_failure");
 };
 
 /** Mains reach the UPS only through whatever feeds it; a grid_outage fault cuts them too. */
-const updateUps: Updater = (world, entity, supply) => {
-  const inputOk = supply.fed(entity.id) && !hasFault(world, entity.id, "grid_outage");
-  world.patch(entity.id, "ups", { inputOk });
+const updateUps: Updater = (sup, i) => {
+  const state = sup.states[i] as StateOf<"ups">;
+  state.inputOk = sup.fedAt(i) && !hasFault(sup.faults[i] as readonly Fault[], "grid_outage");
 };
 
 /** Pumps and compressors only need to be fed; whether they run is the plant model's call. */
-const updatePlantFeed: Updater = (world, entity, supply) => {
-  if (entity.kind === "cdu" || entity.kind === "chiller")
-    world.patch(entity.id, entity.kind, { powered: supply.fed(entity.id) });
+const updatePlantFeed: Updater = (sup, i) => {
+  (sup.states[i] as StateOf<"cdu"> | StateOf<"chiller">).powered = sup.fedAt(i);
 };
 
-const updateDistribution: Updater = (world, entity, supply) => {
-  if (entity.kind === "pdu" || entity.kind === "power_panel")
-    world.patch(entity.id, entity.kind, { powered: supply.delivers(entity.id) });
+const updateDistribution: Updater = (sup, i) => {
+  (sup.states[i] as StateOf<"pdu"> | StateOf<"power_panel">).powered = sup.deliversAt(i);
 };
 
-const UPDATERS: Partial<Record<Entity["kind"], Updater>> = {
-  server: updateServer,
-  rack: updateLightRack,
-  switch: updateSwitch,
-  storage: updateStorage,
-  cooling_unit: updateCooling,
-  pdu: updateDistribution,
-  power_panel: updateDistribution,
-  ups: updateUps,
-  cdu: updatePlantFeed,
-  chiller: updatePlantFeed,
-};
+const BY_SLOT: Updater[] = [];
+BY_SLOT[SLOT.server] = updateServer;
+BY_SLOT[SLOT.rack] = updateLightRack;
+BY_SLOT[SLOT.switch] = updateSwitch;
+BY_SLOT[SLOT.storage] = updateStorage;
+BY_SLOT[SLOT.cooling] = updateCooling;
+BY_SLOT[SLOT.ups] = updateUps;
+BY_SLOT[SLOT.plantFeed] = updatePlantFeed;
+BY_SLOT[SLOT.distribution] = updateDistribution;
 
-/** Update `powered`, running flags and the power each device draws; then VMs follow their hosts. */
-export function updateDevices(world: World, supply: SupplyResolver): void {
-  for (const entity of world.index.all()) UPDATERS[entity.kind]?.(world, entity, supply);
-  for (const vm of world.index.ofKind("vm")) {
-    const host = world.index.outgoing(vm.id, "runs_on")[0];
-    const hostState = host ? world.stateAs(host.to, "server") : undefined;
+function updateVms(sup: SupplyResolver): void {
+  const { plan, states } = sup;
+  for (const v of plan.vms) {
+    const host = plan.vmHost[v] as number;
+    const hostState = host >= 0 ? (states[host] as StateOf<"server">) : undefined;
     const hostUp = hostState ? hostState.powered && hostState.adminOn : true;
-    const running = world.stateAs(vm.id, "vm").adminOn && hostUp;
+    const state = states[v] as StateOf<"vm">;
+    const running = state.adminOn && hostUp;
     // A throttled host caps what its VMs get, as it caps the host itself (see effectiveUtil).
-    const demand = vmDemand(world, vm.id);
-    const cpuUsage = running ? (hostState?.throttled ? Math.min(demand, 0.7) : demand) : 0;
-    world.patch(vm.id, "vm", { running, cpuUsage });
+    const demand = vmDemandAt(sup, v);
+    state.running = running;
+    state.cpuUsage = running ? (hostState?.throttled ? Math.min(demand, 0.7) : demand) : 0;
   }
 }
 
+/** Update `powered`, running flags and the power each device draws; then VMs follow their hosts. */
+export function updateDevices(_world: World, supply: SupplyResolver): void {
+  const { plan } = supply;
+  for (const i of plan.active) (BY_SLOT[plan.slot[i] as number] as Updater)(supply, i);
+  updateVms(supply);
+}
+
+// ---------- loads ----------
+
 /** Power drawn by a cooling unit: its fans plus compressor work (a chilled-water unit has none: the plant pays). */
-function coolingDrawW(world: World, id: string, state: StateOf<"cooling_unit">): number {
-  const model = world.catalog.getOf(world.index.entity(id).modelId ?? "", "cooling_unit");
+function coolingDrawW(model: CoolingModel, state: StateOf<"cooling_unit">): number {
   const work = model.chilledWater ? 0 : (state.loadKw * 1000) / 3;
   return state.running ? model.fanPowerW + work : 0;
 }
 
 /** Power drawn by a CDU: one pump's worth for each pump that runs. */
-function cduDrawW(world: World, id: string, state: StateOf<"cdu">): number {
-  const model = world.catalog.getOf(world.index.entity(id).modelId ?? "", "cdu");
+function cduDrawW(model: CduModel, state: StateOf<"cdu">): number {
   return state.running ? model.pumpPowerW * state.pumpsOk.filter(Boolean).length : 0;
 }
 
-/** Power drawn by a consumer, in watts. */
-export function drawW(world: World, id: string): number {
-  const state = world.stateOf(id);
+function drawAt(pass: Pass, i: number): number {
+  const state = pass.states[i] as EntityState;
+  const model = pass.plan.models[i];
   switch (state.kind) {
     case "server":
     case "switch":
@@ -270,9 +224,9 @@ export function drawW(world: World, id: string): number {
     case "chiller":
       return state.powerW;
     case "cooling_unit":
-      return coolingDrawW(world, id, state);
+      return coolingDrawW(model as CoolingModel, state);
     case "cdu":
-      return cduDrawW(world, id, state);
+      return cduDrawW(model as CduModel, state);
     case "pdu":
     case "power_panel":
       return state.loadW;
@@ -281,76 +235,88 @@ export function drawW(world: World, id: string): number {
   }
 }
 
-/** What a supplier takes from its own upstream: a UPS also pays for its losses. */
-function upstreamW(world: World, id: string, loadW: number): number {
-  const entity = world.index.entity(id);
-  if (entity.kind !== "ups") return loadW;
-  return loadW / world.catalog.getOf(entity.modelId ?? "", "ups").efficiency;
+/** Power drawn by a consumer, in watts. */
+export function drawW(world: World, id: string): number {
+  return drawAt(passOf(world), positionOf(world, id));
 }
 
-const SUPPLIER_KINDS = ["pdu", "power_panel", "ups", "generator"] as const;
+/** Adds up what each supplier carries, from the devices up the chain. */
+class Loads {
+  private readonly done: Uint8Array;
+  private readonly load: Float64Array;
+  private readonly pass: Pass;
+
+  constructor(private readonly supply: SupplyResolver) {
+    const n = supply.plan.ents.length;
+    this.done = new Uint8Array(n);
+    this.load = new Float64Array(n);
+    this.pass = supply;
+  }
+
+  /** What supplier `i` carries; a consumer with two live feeds splits its draw between them. */
+  on(i: number): number {
+    if (this.done[i] === 1) return this.load[i] as number;
+    this.done[i] = 1; // cycle guard
+    const { supply } = this;
+    const { plan } = supply;
+    let load = 0;
+    const to = plan.inStart[i + 1] as number;
+    for (let q = plan.inStart[i] as number; q < to; q++) {
+      const from = plan.inFrom[q] as number;
+      if (!supply.feeds(from, i)) continue;
+      load += this.demandOf(from) / supply.feedCount(from);
+    }
+    this.load[i] = load;
+    return load;
+  }
+
+  private demandOf(from: number): number {
+    const kind = (this.supply.plan.ents[from] as Entity).kind;
+    if (!SUPPLIER_KINDS.has(kind)) return drawAt(this.pass, from);
+    const load = this.on(from);
+    // A UPS also pays for its losses.
+    return kind === "ups" ? load / (this.supply.plan.models[from] as UpsModel).efficiency : load;
+  }
+}
+
+function patchLoad(pass: Pass, i: number, load: number): void {
+  const state = pass.states[i] as EntityState;
+  if (state.kind === "ups" || state.kind === "pdu") state.loadW = load;
+  else if (state.kind === "generator") state.loadKw = load / 1000;
+  else if (state.kind === "power_panel") {
+    const model = pass.plan.models[i] as PanelModel;
+    state.loadW = load;
+    state.loadA = load / (Math.sqrt(3) * model.voltage * POWER_FACTOR);
+  }
+}
 
 /**
  * Add up loads supplier by supplier, from the devices up the chain; a consumer with two live feeds
  * splits its draw between them, and a transfer switch loads only the source it is on.
  */
-export function aggregateLoads(world: World, supply: SupplyResolver): void {
-  const memo = new Map<string, number>();
-  const loadOn = (id: string): number => {
-    const known = memo.get(id);
-    if (known !== undefined) return known;
-    memo.set(id, 0); // cycle guard
-    let load = 0;
-    for (const link of world.index.incoming(id, "power")) {
-      const feeds = supply.activeFeeds(link.from);
-      if (!feeds.includes(id)) continue;
-      const kind = world.index.entity(link.from).kind;
-      const demand = (SUPPLIER_KINDS as readonly string[]).includes(kind)
-        ? upstreamW(world, link.from, loadOn(link.from))
-        : drawW(world, link.from);
-      load += demand / feeds.length;
-    }
-    memo.set(id, load);
-    return load;
-  };
-  for (const kind of SUPPLIER_KINDS)
-    for (const supplier of world.index.ofKind(kind))
-      patchLoad(world, supplier, loadOn(supplier.id));
-}
-
-function patchLoad(world: World, supplier: Entity, load: number): void {
-  if (supplier.kind === "ups") world.patch(supplier.id, "ups", { loadW: load });
-  else if (supplier.kind === "pdu") world.patch(supplier.id, "pdu", { loadW: load });
-  else if (supplier.kind === "generator")
-    world.patch(supplier.id, "generator", { loadKw: load / 1000 });
-  else {
-    const model = world.catalog.getOf(supplier.modelId ?? "", "power_panel");
-    world.patch(supplier.id, "power_panel", {
-      loadW: load,
-      loadA: load / (Math.sqrt(3) * model.voltage * POWER_FACTOR),
-    });
-  }
+export function aggregateLoads(_world: World, supply: SupplyResolver): void {
+  const loads = new Loads(supply);
+  const { plan } = supply;
+  for (const group of [plan.pdus, plan.panels, plan.upses, plan.generators])
+    for (const i of group) patchLoad(supply, i, loads.on(i));
 }
 
 /** Capacity of a breaker-protected supplier in watts. */
 export function capacityW(world: World, id: string): number {
-  const entity = world.index.entity(id);
-  if (entity.kind === "pdu") return world.catalog.getOf(entity.modelId ?? "", "pdu").capacityW;
-  return panelCapacityW(world.catalog.getOf(entity.modelId ?? "", "power_panel"));
+  return powerPlanOf(world.index, world.catalog).capacity[positionOf(world, id)] as number;
 }
 
 /** Drain or recharge UPS batteries. */
 export function updateBatteries(world: World, dt: number): void {
-  for (const ups of world.index.ofKind("ups")) {
-    const state = world.stateAs(ups.id, "ups");
-    const model = world.catalog.getOf(ups.modelId ?? "", "ups");
+  const pass = passOf(world);
+  for (const i of pass.plan.upses) {
+    const state = pass.states[i] as StateOf<"ups">;
+    const model = pass.plan.models[i] as UpsModel;
     const factor =
-      world.faultsOn(ups.id).find((f) => f.type === "ups_battery_degraded")?.params.factor ?? 1;
+      faultParam(pass.faults[i] as readonly Fault[], "ups_battery_degraded", "factor") ?? 1;
     const capacityWs = model.batteryKwh * 1000 * 3600 * factor;
     const delta = state.inputOk ? 0.05 * dt : -((state.loadW * dt) / capacityWs) * 100;
-    world.patch(ups.id, "ups", {
-      onBattery: !state.inputOk,
-      batteryPct: clamp(state.batteryPct + delta, 0, 100),
-    });
+    state.onBattery = !state.inputOk;
+    state.batteryPct = clamp(state.batteryPct + delta, 0, 100);
   }
 }

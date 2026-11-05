@@ -14,6 +14,8 @@ export type Page =
   | { readonly name: "experiment"; readonly id: string }
   | { readonly name: "run"; readonly id: string }
   | { readonly name: "benchmarks"; readonly set?: string }
+  | { readonly name: "connections" }
+  | { readonly name: "agentVersions"; readonly connectionId: string; readonly agentId: string }
   | { readonly name: "notFound"; readonly path: string };
 
 export type PageName = Page["name"];
@@ -40,6 +42,12 @@ export const SECTIONS: ReadonlyArray<{
     owns: ["experiments", "newExperiment", "experiment", "run"],
   },
   { key: "benchmarks", label: "벤치마크", page: { name: "benchmarks" }, owns: ["benchmarks"] },
+  {
+    key: "connections",
+    label: "연결",
+    page: { name: "connections" },
+    owns: ["connections", "agentVersions"],
+  },
 ];
 
 export const sectionOf = (page: Page) => SECTIONS.find((s) => s.owns.includes(page.name))?.key;
@@ -77,6 +85,15 @@ const PATTERNS: ReadonlyArray<[RegExp, (m: RegExpExecArray, q: URLSearchParams) 
     (_, q) =>
       q.get("set") ? { name: "benchmarks", set: q.get("set") as string } : { name: "benchmarks" },
   ],
+  [/^\/connections\/?$/, () => ({ name: "connections" })],
+  [
+    new RegExp(`^/connections/${ID}/agents/${ID}/versions$`),
+    (m) => ({
+      name: "agentVersions",
+      connectionId: m[1] as string,
+      agentId: m[2] as string,
+    }),
+  ],
 ];
 
 export function parseLocation(pathname: string, search = ""): Page {
@@ -108,6 +125,8 @@ const HREFS: { readonly [N in PageName]: (page: Of<N>) => string } = {
   experiment: (p) => `/experiments/${enc(p.id)}`,
   run: (p) => `/runs/${enc(p.id)}`,
   benchmarks: (p) => withQuery("/benchmarks", { set: p.set }),
+  connections: () => "/connections",
+  agentVersions: (p) => `/connections/${enc(p.connectionId)}/agents/${enc(p.agentId)}/versions`,
   notFound: (p) => p.path,
 };
 

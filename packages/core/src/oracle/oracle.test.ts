@@ -131,7 +131,7 @@ describe("oracle: diagnosis [REQ-007] [REQ-037]", () => {
     expect(result.items[0]).toMatchObject({
       verdict: "fail",
       points: 0,
-      detail: "진단을 제출하지 않았다 (정답: crah-1 / cooling_unit_failure)",
+      detail: "진단을 제출하지 않았어요 (정답: crah-1 / cooling_unit_failure)",
     });
     expect(result.summary).toBe("0점 불합격 · 진단 오답 · 제한 시간 초과");
   });
@@ -195,10 +195,10 @@ describe("oracle: state, actions and efficiency [REQ-007] [REQ-037]", () => {
       ["no-off", "penalty", -30],
       ["d", "pass", 80],
     ]);
-    expect(run.items[0]?.detail).toBe("pdu-a 차단기 리셋을 했다 (reset_breaker)");
+    expect(run.items[0]?.detail).toBe("pdu-a 차단기 리셋을 했어요 (reset_breaker)");
     expect(run.items[1]).toMatchObject({
       label: "멀쩡한 서버 끄기",
-      detail: "2회 했다 (−30점)",
+      detail: "2회 했어요 (−30점)",
       max: 0,
     });
     expect(run).toMatchObject({ earned: 100, penalty: 30, possible: 100, total: 70, passed: true });
@@ -209,7 +209,7 @@ describe("oracle: state, actions and efficiency [REQ-007] [REQ-037]", () => {
       }),
     );
     expect(restartOnly.items.map((i) => i.verdict)).toEqual(["fail", "clean", "fail"]);
-    expect(restartOnly.items[0]?.detail).toBe("pdu-a 차단기 리셋을 하지 않았다");
+    expect(restartOnly.items[0]?.detail).toBe("pdu-a 차단기 리셋을 하지 않았어요");
   });
 
   test("penalties cannot push the total below zero", () => {
@@ -230,8 +230,8 @@ describe("oracle: state, actions and efficiency [REQ-007] [REQ-037]", () => {
     ]);
     const idle = score(outcome(doc, { endReason: "agent_finished" }));
     expect(idle.items.map((i) => i.detail)).toEqual([
-      "진단을 제출하지 않아 시간 점수가 없다",
-      "진단을 제출하지 않아 효율 점수가 없다 (툴 호출 0회)",
+      "진단을 제출하지 않아 시간 점수가 없어요",
+      "진단을 제출하지 않아 효율 점수가 없어요 (툴 호출 0회)",
     ]);
     expect(idle.total).toBe(0);
     const calls = ["list_alarms", "get_entity", "get_impact", "submit_diagnosis"].map((t) =>
@@ -242,7 +242,7 @@ describe("oracle: state, actions and efficiency [REQ-007] [REQ-037]", () => {
     );
     expect(quick.items.map((i) => [i.verdict, i.detail])).toEqual([
       ["pass", "진단까지 8분 20초 (제한 10분)"],
-      ["pass", "툴 호출 3회 (한도 3회)"],
+      ["pass", "툴 호출 3회 (상한 3회)"],
     ]);
     const slow = score(
       outcome(doc, {
@@ -261,7 +261,7 @@ describe("oracle: state, actions and efficiency [REQ-007] [REQ-037]", () => {
       total: null,
       passed: false,
       possible: 0,
-      summary: "채점 기준 없음 · 취소됨",
+      summary: "채점표 없음 · 멈춤",
     });
   });
 });

@@ -24,8 +24,9 @@ import {
   isFloorStandingKind,
   KIND_LABELS,
   type Link,
+  type RoomPurpose,
 } from "@terrarium/core/world";
-import { floorsOf, type Level, levelArea, levelEntities, levelParent, siteOf } from "./levels";
+import { floorsOf, type Level, levelArea, levelEntities, levelParent } from "./levels";
 
 export class EditError extends Error {}
 
@@ -86,7 +87,7 @@ const NAME_BASE: Readonly<Partial<Record<EntityKind, string>>> = {
 };
 
 /** "랙 7": the kind's word and the next number among its siblings of the same kind. */
-function nextName(
+export function nextName(
   index: BlueprintIndex,
   kind: EntityKind,
   parentId: string | undefined,
@@ -100,7 +101,7 @@ function nextName(
 
 const ROOM_LETTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ";
 
-function withEntities(
+export function withEntities(
   bp: Blueprint,
   add: readonly Entity[],
   links: readonly Link[] = [],
@@ -158,45 +159,12 @@ export function assertFree(
   others: readonly Entity[],
   what: string,
 ): void {
-  if (!contains(area, rect)) throw new EditError(`${withJosa(what, "이")} 들어갈 자리를 벗어난다`);
+  if (!contains(area, rect)) throw new EditError(`${withJosa(what, "이")} 들어갈 자리를 벗어나요`);
   const hit = others.find((o) => {
     const r = footprint(o, catalog);
     return r !== undefined && overlaps(r, rect);
   });
-  if (hit) throw new EditError(`${withJosa(hit.name, "과")} 겹친다`);
-}
-
-export function addBuilding(bp: Blueprint, catalog: Catalog, rect: Rect): Edit {
-  const index = new BlueprintIndex(bp);
-  const site = siteOf(index);
-  if (!site) throw new EditError("사업장이 없는 세계다");
-  const r = snapRect(rect, GRID.site, 10);
-  assertFree(
-    index,
-    catalog,
-    levelArea(index, catalog, { kind: "site" }),
-    r,
-    index.childrenOf(site.id, "building"),
-    "건물",
-  );
-  const id = nextId(index, "building");
-  const building: Entity = {
-    id,
-    kind: "building",
-    name: nextName(index, "building", site.id),
-    parentId: site.id,
-    placement: { type: "area", ...r },
-    props: {},
-  };
-  const floor: Entity = {
-    id: nextId(index, "floor"),
-    kind: "floor",
-    name: "1층",
-    parentId: id,
-    placement: { type: "level", level: 1, height: DEFAULT_FLOOR_HEIGHT_M },
-    props: {},
-  };
-  return { blueprint: withEntities(bp, [building, floor]), select: [id] };
+  if (hit) throw new EditError(`${withJosa(hit.name, "과")} 겹쳐요`);
 }
 
 /** A floor on top of the building's highest one. */
@@ -217,8 +185,26 @@ export function addFloor(bp: Blueprint, buildingId: string): Edit {
   return { blueprint: withEntities(bp, [floor]), select: [id] };
 }
 
-export function addRoom(bp: Blueprint, catalog: Catalog, floorId: string, rect: Rect): Edit {
+/** The word a room is called by, per purpose: "통신실 A". A data hall stays "서버룸". */
+export const ROOM_WORDS: Readonly<Record<RoomPurpose, string>> = {
+  data_hall: "서버룸",
+  network: "통신실",
+  electrical: "전기실",
+  mechanical: "기계실",
+  battery: "배터리실",
+  noc: "관제실",
+  cleanroom: "클린룸",
+};
+
+export function addRoom(
+  bp: Blueprint,
+  catalog: Catalog,
+  floorId: string,
+  rect: Rect,
+  purpose: RoomPurpose = "data_hall",
+): Edit {
   const index = new BlueprintIndex(bp);
+  const word = ROOM_WORDS[purpose];
   const r = snapRect(rect, GRID.floor, 3);
   const level: Level = { kind: "floor", id: floorId };
   assertFree(
@@ -227,18 +213,18 @@ export function addRoom(bp: Blueprint, catalog: Catalog, floorId: string, rect: 
     levelArea(index, catalog, level),
     r,
     index.childrenOf(floorId, "room"),
-    "서버룸",
+    word,
   );
   const used = new Set(index.ofKind("room").map((x) => x.name));
-  const letter = [...ROOM_LETTERS].find((l) => !used.has(`서버룸 ${l}`)) ?? String(used.size + 1);
+  const letter = [...ROOM_LETTERS].find((l) => !used.has(`${word} ${l}`)) ?? String(used.size + 1);
   const id = nextId(index, "room");
   const room: Entity = {
     id,
     kind: "room",
-    name: `서버룸 ${letter}`,
+    name: `${word} ${letter}`,
     parentId: floorId,
     placement: { type: "area", ...r },
-    props: {},
+    props: purpose === "data_hall" ? {} : { purpose },
   };
   return { blueprint: withEntities(bp, [room]), select: [id] };
 }
@@ -290,8 +276,23 @@ export function addContainment(
 
 // ── things standing on the floor ───────────────────────────────────────────────────────────
 
+/** Plant that stands on the ground beside the buildings. */
+export const PLANT_KINDS = new Set(["chiller", "generator", "power_panel"]);
+
+/** What takes ground at the site level: the buildings and the plant beside them (none of it may overlap). */
+export function groundTakers(index: BlueprintIndex, siteId: string, except?: string): Entity[] {
+  return [
+    ...index.childrenOf(siteId, "building"),
+    ...index.childrenOf(siteId).filter((e) => PLANT_KINDS.has(e.kind)),
+  ].filter((e) => e.id !== except);
+}
+
 /** Things that take floor space at a level (they must not overlap). */
 function floorItems(index: BlueprintIndex, level: Level): Entity[] {
+  if (level.kind === "site") {
+    const site = index.ofKind("site")[0];
+    return site ? groundTakers(index, site.id) : [];
+  }
   return levelEntities(index, level).filter(
     (e) => e.kind === "rack" || isFloorStandingKind(e.kind),
   );
@@ -373,7 +374,7 @@ export function placeRackRow(
   spot: Spot,
   count: number,
 ): Edit {
-  if (count < 1 || count > 60) throw new EditError("한 줄에 랙은 1~60개다");
+  if (count < 1 || count > 60) throw new EditError("한 줄에 랙은 1~60개예요");
   let blueprint = bp;
   const made: string[] = [];
   const alongX = spot.rotation === 0 || spot.rotation === 180;
@@ -419,12 +420,12 @@ export function placeEquipment(
   modelId: string,
   spot: Spot,
 ): Edit {
-  if (level.kind === "site") throw new EditError("설비는 건물 안에 둔다");
+  if (level.kind === "site") throw new EditError("설비는 건물 안에 둬요");
   const model = catalog.get(modelId);
   if (!isFloorStandingKind(model.kind))
-    throw new EditError(`${withJosa(model.name, "은")} 바닥에 세우는 설비가 아니다`);
+    throw new EditError(`${withJosa(model.name, "은")} 바닥에 세우는 설비가 아니에요`);
   if (level.kind === "floor" && model.kind === "cooling_unit")
-    throw new EditError("냉방기는 서버룸 안에 둔다");
+    throw new EditError("냉방기는 서버룸 안에 둬요");
   const problem = placementProblem(bp, catalog, level, modelId, spot);
   if (problem) throw new EditError(problem);
   const index = new BlueprintIndex(bp);

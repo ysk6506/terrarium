@@ -6,7 +6,7 @@ import { Catalog } from "@terrarium/core/catalog";
 import { InvalidValueError, SeededRng } from "@terrarium/core/kernel";
 import { type AssemblyResult, BlueprintAssembler } from "@terrarium/core/sources";
 import type { EntityKind } from "@terrarium/core/world";
-import { buildRoom } from "./room";
+import { buildRoom, type RoomPower, unitsFor } from "./room";
 import { type SitePreset, sitePreset, specProblems, type WorldgenSpec } from "./spec";
 
 export interface WorldgenResult extends AssemblyResult {
@@ -22,7 +22,7 @@ export function generateWorld(
 ): WorldgenResult {
   const problems = specProblems(spec);
   if (problems.length > 0)
-    throw new InvalidValueError(`세계를 만들 수 없다: ${problems.join("; ")}`);
+    throw new InvalidValueError(`세계를 만들 수 없어요: ${problems.join("; ")}`);
   const preset = sitePreset(spec.site) as SitePreset;
   const rng = new SeededRng(spec.seed);
   const id = `${preset.code}-${spec.seed}`;
@@ -60,30 +60,54 @@ function addFloor(site: SiteContext, buildingId: string, b: number, f: number): 
   const { asm, catalog, rng, spec, preset, vcenter } = site;
   const floorId = `${buildingId}-f${f}`;
   asm.floor(floorId, buildingId, `${f}F`, f);
-  const ups = {
-    a: `${floorId}-ups-a`,
-    b: spec.powerRedundancy === "2N" ? `${floorId}-ups-b` : `${floorId}-ups-a`,
-  };
-  for (const side of new Set([ups.a, ups.b]))
-    asm.floorItem(floorId, {
-      id: side,
-      kind: "ups",
-      name: `UPS-DC${b}-${f}F-${side.endsWith("-b") ? "B" : "A"}`,
-      modelId: UPS_MODEL,
-    });
+  const rooms: RoomPower[] = [];
   for (let r = 0; r < spec.roomsPerFloor; r++) {
     const letter = ROOM_LETTERS[r] as string;
-    buildRoom({
-      asm,
-      catalog,
-      rng: rng.fork(`${floorId}-${letter}`),
-      spec,
-      floorId,
-      roomId: `${floorId}-${letter.toLowerCase()}`,
-      roomName: `${f}F-${letter} 서버룸`,
-      host: `${preset.code}${b}-${f}${letter.toLowerCase()}`,
-      ups,
-      vcenter,
+    rooms.push(
+      buildRoom({
+        asm,
+        catalog,
+        rng: rng.fork(`${floorId}-${letter}`),
+        spec,
+        floorId,
+        roomId: `${floorId}-${letter.toLowerCase()}`,
+        roomName: `${f}F-${letter} 서버룸`,
+        host: `${preset.code}${b}-${f}${letter.toLowerCase()}`,
+        vcenter,
+      }),
+    );
+  }
+  powerFloor({ asm, catalog, spec }, { floorId, b, f }, rooms);
+}
+
+/**
+ * The UPS of a floor: enough per side that one side alone could carry every room of the floor, and
+ * every room panel hangs on one of them (spread evenly). A small floor has one UPS per side.
+ */
+function powerFloor(
+  site: Pick<SiteContext, "asm" | "catalog" | "spec">,
+  where: { readonly floorId: string; readonly b: number; readonly f: number },
+  rooms: readonly RoomPower[],
+): void {
+  const { asm, catalog, spec } = site;
+  const load = rooms.reduce((sum, room) => sum + room.loadW, 0);
+  const perSide = unitsFor(load, catalog.getOf(UPS_MODEL, "ups").capacityKw * 1000);
+  const sides = spec.powerRedundancy === "2N" ? (["a", "b"] as const) : (["a"] as const);
+  for (const side of sides) {
+    const ids = Array.from({ length: perSide }, (_, i) => {
+      const id = `${where.floorId}-ups-${side}${i === 0 ? "" : i + 1}`;
+      asm.floorItem(where.floorId, {
+        id,
+        kind: "ups",
+        name: `UPS-DC${where.b}-${where.f}F-${side.toUpperCase()}${i === 0 ? "" : i + 1}`,
+        modelId: UPS_MODEL,
+      });
+      return id;
     });
+    rooms
+      .flatMap((room) => room.panels[side])
+      .forEach((panel, i) => {
+        asm.link("power", panel, ids[i % ids.length] as string);
+      });
   }
 }

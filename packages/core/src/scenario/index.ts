@@ -7,6 +7,7 @@ export {
   CATEGORY_LABELS,
   CONDITION_FIELDS,
   type FieldSpec,
+  type NetPick,
   outputsOf,
   type ParamSpec,
   PORT_LABELS,
@@ -24,13 +25,26 @@ export {
   NO_AGENT,
   type ToolCallRecord,
 } from "./conditions";
+export {
+  type AgentRoute,
+  CONTROL_ROWS,
+  type ControlRow,
+  FAULT_RESPONSES,
+  type FaultResponse,
+  NOT_OPERATOR,
+  type OperatorCommand,
+  type Remedy,
+} from "./controls";
 export { scenarioDigest } from "./digest";
+export { EVENT_LABELS, EVENT_TYPES, type EventType, eventTarget, isEventType } from "./events";
 export {
   ALL_SCENARIO_TEMPLATES,
   FACILITY_TEMPLATES,
+  NETWORK_TEMPLATES,
   SCENARIO_TEMPLATES,
   type ScenarioTemplate,
   scenarioTemplate,
+  TEMPLATE_GROUPS,
 } from "./library";
 export {
   ACTION_KINDS,
@@ -57,8 +71,10 @@ export {
   type TimeLimitExpectation,
   type ToolBudgetExpectation,
 } from "./model";
+export { builtinCatalog, type NetChoice, netChoices, netEmptyText } from "./net-blocks";
 export { defaultParams, FAULT_DOMAIN_LABELS, type PaletteItem, paletteFor } from "./palette";
 export { type AgentTask, ScenarioRunner, type TraceEntry } from "./runner";
+export { minutesText, toMinutes, toSeconds } from "./units";
 export {
   hasErrors,
   MAX_NODES,

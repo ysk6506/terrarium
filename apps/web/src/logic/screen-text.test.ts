@@ -26,6 +26,6 @@ describe("what the pointer says when a rack will not fit [REQ-035]", () => {
       level: { kind: "room", id: roomId } as const,
     };
     const plan = planFor(where, { kind: "rack" }, 0, { x: 40, y: 40 });
-    expect(plan?.problem).toBe("여기는 놓을 수 있는 공간 밖이다");
+    expect(plan?.problem).toBe("여기는 놓을 수 있는 공간 밖이에요");
   });
 });

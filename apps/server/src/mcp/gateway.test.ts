@@ -92,8 +92,8 @@ describe("each run's tools over MCP [REQ-008] [REQ-031]", () => {
       content: [{ type: "text", text: '{"a":1}' }],
     });
     expect(mcpResult({ ok: true })).toEqual({ content: [{ type: "text", text: "null" }] });
-    expect(mcpResult({ ok: false, error: "없다" })).toEqual({
-      content: [{ type: "text", text: '{"error":"없다"}' }],
+    expect(mcpResult({ ok: false, error: "없어요" })).toEqual({
+      content: [{ type: "text", text: '{"error":"없어요"}' }],
       isError: true,
     });
   });

@@ -52,8 +52,8 @@ export function checkParcels(index: BlueprintIndex, catalog: Catalog): Issue[] {
           out.push(
             error(
               "W040",
-              `${withJosa((parcels[i] as Entity).name, "과")} ${withJosa((parcels[j] as Entity).name, "이")} 겹친다`,
-              "부지를 겹치지 않게 나눈다.",
+              `${withJosa((parcels[i] as Entity).name, "과")} ${withJosa((parcels[j] as Entity).name, "이")} 겹쳐요`,
+              "부지를 겹치지 않게 나눠요.",
               (parcels[j] as Entity).id,
             ),
           );
@@ -67,14 +67,41 @@ export function checkParcels(index: BlueprintIndex, catalog: Catalog): Issue[] {
         out.push(
           error(
             "W041",
-            `${withJosa(building.name, "은")} 확보한 부지 밖에 있다`,
-            "부지를 더 확보하거나 건물을 확보한 부지 안으로 옮긴다.",
+            `${withJosa(building.name, "은")} 확보한 부지 밖에 있어요`,
+            "부지를 더 확보하거나 건물을 확보한 부지 안으로 옮겨요.",
             building.id,
           ),
         );
     }
   }
   return out;
+}
+
+/**
+ * Why a building cannot stand at this place (REQ-043, REQ-048): the land is not the owner's yet. Says which
+ * parcel for sale covers the place, so the builder can offer to buy it. Undefined when it can stand there.
+ */
+export function landProblem(
+  index: BlueprintIndex,
+  catalog: Catalog,
+  rect: Rect,
+): { readonly message: string; readonly parcelId?: string } | undefined {
+  const site = index.ofKind("site")[0];
+  if (!site) return undefined;
+  const parcels = index.childrenOf(site.id, "parcel");
+  const outline = parseOutline(site.props.outline);
+  if (parcels.length === 0 && !outline) return undefined;
+  const owned = parcels.filter(isOwned).flatMap((p) => rectOf(p, catalog) ?? []);
+  if (landCovers({ owned, outline }, rect)) return undefined;
+  const forSale = parcels.find((p) => {
+    const r = rectOf(p, catalog);
+    return !isOwned(p) && r !== undefined && overlaps(r, rect);
+  });
+  if (!forSale) return { message: "이 땅은 내 땅이 아니에요. 사업장 안쪽에 지어 주세요" };
+  return {
+    message: `${withJosa(forSale.name, "은")} 아직 사지 않은 땅이에요. 먼저 사 주세요`,
+    parcelId: forSale.id,
+  };
 }
 
 /** Land a site holds: the shape it was founded with, and any parcels bought later. */
@@ -131,7 +158,7 @@ export function checkCoolingFit(index: BlueprintIndex, catalog: Catalog): Issue[
           error(
             "W030",
             `${withJosa(server.name, "은")} ${problem}`,
-            "냉각 방식이 맞는 랙에 둔다.",
+            "냉각 방식이 맞는 랙에 둬요.",
             server.id,
           ),
         );
@@ -142,10 +169,10 @@ export function checkCoolingFit(index: BlueprintIndex, catalog: Catalog): Issue[
 
 export function fitProblem(server: string, rack: string): string | undefined {
   if (server === "immersion" && rack !== "immersion")
-    return "액침 전용이라 액침 탱크에만 둘 수 있다";
+    return "액침 전용이라 액침 탱크에만 둘 수 있어요";
   if (rack === "immersion" && server !== "immersion")
-    return "액침용이 아니라 액침 탱크에 둘 수 없다";
-  if (server === "dlc" && rack !== "dlc") return "수랭 서버라 수랭 랙에만 둘 수 있다";
+    return "액침용이 아니라 액침 탱크에 둘 수 없어요";
+  if (server === "dlc" && rack !== "dlc") return "수랭 서버라 수랭 랙에만 둘 수 있어요";
   return undefined;
 }
 
@@ -161,8 +188,8 @@ function rackLoopIssues(index: BlueprintIndex, catalog: Catalog, cooledBy: Coole
       out.push(
         warning(
           "W031",
-          `${withJosa(rack.name, "은")} ${model.cooling === "immersion" ? "액침 탱크" : "수랭 랙"}인데 냉각수를 받을 CDU가 연결되지 않았다`,
-          "냉방 연결로 CDU를 잇는다.",
+          `${withJosa(rack.name, "은")} ${model.cooling === "immersion" ? "액침 탱크" : "수랭 랙"}인데 냉각수를 받을 CDU가 연결되지 않았어요`,
+          "냉방 연결로 CDU를 이어요.",
           rack.id,
         ),
       );
@@ -177,8 +204,8 @@ function plantLoopIssues(index: BlueprintIndex, catalog: Catalog, cooledBy: Cool
       out.push(
         warning(
           "W032",
-          `${withJosa(cdu.name, "은")} 열을 내보낼 냉각 플랜트가 연결되지 않았다`,
-          "칠러·드라이쿨러·냉각탑을 잇는다.",
+          `${withJosa(cdu.name, "은")} 열을 내보낼 냉각 플랜트가 연결되지 않았어요`,
+          "칠러·드라이쿨러·냉각탑을 이어요.",
           cdu.id,
         ),
       );
@@ -188,8 +215,8 @@ function plantLoopIssues(index: BlueprintIndex, catalog: Catalog, cooledBy: Cool
       out.push(
         warning(
           "W033",
-          `${withJosa(unit.name, "은")} 냉수식인데 냉수를 줄 냉각 플랜트가 연결되지 않았다`,
-          "칠러를 잇는다.",
+          `${withJosa(unit.name, "은")} 냉수식인데 냉수를 줄 냉각 플랜트가 연결되지 않았어요`,
+          "칠러를 이어요.",
           unit.id,
         ),
       );

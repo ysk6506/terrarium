@@ -72,7 +72,9 @@ export function crumbs(index: BlueprintIndex, level: Level): Crumb[] {
 export function levelEntities(index: BlueprintIndex, level: Level): Entity[] {
   if (level.kind === "site") {
     const site = siteOf(index);
-    return site ? [...index.childrenOf(site.id, "building")] : [];
+    return site
+      ? [...index.childrenOf(site.id, "building"), ...index.childrenOf(site.id, "parcel")]
+      : [];
   }
   if (level.kind === "floor") return index.childrenOf(level.id).filter((e) => e.kind !== "floor");
   const direct = index.childrenOf(level.id);

@@ -10,6 +10,8 @@ export interface Family {
   readonly rack: string;
   readonly tor: string;
   readonly spine: string;
+  /** How the pod's network is built (REQ-065): VLANs and spanning tree, or a routed leaf-spine running BGP. */
+  readonly fabric: "legacy" | "cloud";
   readonly pdu: string;
   readonly storage: string;
 }
@@ -22,6 +24,7 @@ export const FAMILIES: readonly Family[] = [
     rack: "rack-42u-std",
     tor: "sw-tor-48x25g",
     spine: "sw-spine-32x100g",
+    fabric: "legacy",
     pdu: "pdu-17kw",
     storage: "stor-2u-24bay",
   },
@@ -32,6 +35,7 @@ export const FAMILIES: readonly Family[] = [
     rack: "rw-42u-wide",
     tor: "nf-tor-48x10g",
     spine: "nf-spine-64x100g",
+    fabric: "cloud",
     pdu: "vp-22kw-metered",
     storage: "ok-2u-unified",
   },
@@ -42,6 +46,7 @@ export const FAMILIES: readonly Family[] = [
     rack: "rw-48u-std",
     tor: "al-tor-32x100g",
     spine: "al-spine-32x400g",
+    fabric: "cloud",
     pdu: "pdu-17kw",
     storage: "fs-2u-nvme",
   },
@@ -52,6 +57,7 @@ export const FAMILIES: readonly Family[] = [
     rack: "rw-42u-wide",
     tor: "al-tor-32x100g",
     spine: "nf-spine-64x100g",
+    fabric: "legacy",
     pdu: "vp-22kw-metered",
     storage: "ok-2u-unified",
   },

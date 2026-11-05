@@ -149,17 +149,26 @@ export async function progress(site: Site, notes: string[]): Promise<Tally> {
     await page.getByLabel("실행 횟수").fill("20");
     await page.getByRole("button", { name: "실험 시작" }).click();
     await page.waitForURL(/\/experiments\/e-/, { timeout: 15_000 });
-    await page.waitForTimeout(1500);
-    const meter = await page.locator("[role=meter], [role=progressbar], progress").count();
-    const counted = /\d+\s*\/\s*\d+|\d+번째|\d+회 (중|끝)/.test(await mainText(page));
-    check("실험이 도는 동안", meter > 0 || counted);
-    await page.getByRole("button", { name: "취소", exact: true }).click();
+    // A small experiment can finish in a second or two, so look for the progress while it runs, not after.
+    let shown = false;
+    for (let waited = 0; !shown && waited < 1500; waited += 100) {
+      await page.waitForTimeout(100);
+      const meter = await page.locator("[role=meter], [role=progressbar], progress").count();
+      shown = meter > 0 || /\d+\s*\/\s*\d+|\d+번째|\d+회 (중|끝)/.test(await mainText(page));
+    }
+    check("실험이 도는 동안", shown);
+    const stop = page.getByRole("button", { name: "멈추기", exact: true });
+    if (await stop.isVisible()) {
+      await stop.click({ timeout: 3_000 }).catch(() => undefined);
+      await page
+        .getByRole("dialog")
+        .getByRole("button", { name: /회 멈추기$/ })
+        .click({ timeout: 3_000 })
+        .catch(() => undefined);
+    }
+    // stopped, or it had already finished by itself
     await page
-      .getByRole("dialog")
-      .getByRole("button", { name: /회 취소$/ })
-      .click();
-    await page
-      .getByText(/취소했다|취소됨/)
+      .getByText(/멈췄어요|멈춤|취소됨|완료/)
       .first()
       .waitFor({ timeout: 20_000 });
   });

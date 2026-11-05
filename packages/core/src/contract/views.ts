@@ -23,9 +23,10 @@ import type {
   WorldSummary,
 } from "@terrarium/core/experiments";
 import type { ScenarioIssue } from "@terrarium/core/scenario";
-import type { MetricSeries, TimelineEntry } from "@terrarium/core/session";
+import type { Calibration, MetricSeries, TimelineEntry } from "@terrarium/core/session";
 import type { ImportReport } from "@terrarium/core/sources/realimport";
 import type { WorldgenResult } from "@terrarium/core/sources/worldgen";
+import type { CallEffect } from "@terrarium/core/tools";
 import type { Issue } from "@terrarium/core/world";
 
 export interface HarnessView extends HarnessInfo {
@@ -46,12 +47,18 @@ export interface SourceView {
 
 export interface MetaView {
   readonly version: string;
-  readonly user: { readonly name: string; readonly source: "proxy" | "self" | "anonymous" };
+  readonly user: { readonly name: string; readonly source: "proxy" | "sso" | "self" | "anonymous" };
   readonly harnesses: readonly HarnessView[];
   readonly sources: readonly SourceView[];
   readonly telemetry: { readonly configured: boolean; readonly name: string };
   readonly limits: SchedulerLimits & { readonly maxSeeds: number };
   readonly queue: { readonly running: number; readonly queued: number };
+  /** Connections of the viewer's that will be removed soon for lack of use (REQ-051). */
+  readonly expiring: readonly {
+    readonly id: string;
+    readonly name: string;
+    readonly daysLeft: number;
+  }[];
 }
 
 export interface SavedWorld {
@@ -78,6 +85,14 @@ export interface DryRunView {
   readonly series: readonly MetricSeries[];
   /** Simulated seconds until the agent would be handed the task, if it ever is. */
   readonly agentTaskAt?: number;
+  readonly issues: readonly ScenarioIssue[];
+}
+
+/**
+ * What the three reference agents (idle, guess, knows) score on a scenario, and what that means. With problems
+ * left in the scenario nothing is run, `runs` is empty and `issues` says why.
+ */
+export interface CalibrationView extends Calibration {
   readonly issues: readonly ScenarioIssue[];
 }
 
@@ -147,6 +162,36 @@ export type ExperimentEvent =
       readonly tool: string;
       readonly ok: boolean;
       readonly error?: string;
+      /** What the call does to the world, and the equipment it names (REQ-050); absent from older servers. */
+      readonly effect?: CallEffect;
+      readonly targets?: readonly string[];
     };
+
+/** Who is working in a world: the experiment, harness, agent and model behind a run (REQ-050). */
+export interface ActivityWho {
+  readonly experimentId: string;
+  readonly experiment: string;
+  readonly owner: string;
+  readonly harness: string;
+  readonly agent: string;
+  readonly model?: string;
+}
+
+/**
+ * Server-sent events on /api/worlds/:id/activity: every run on this world, from every experiment, as it
+ * works (REQ-050). A viewer who arrives late first gets a `start` for each run still going.
+ */
+export type ActivityEvent =
+  | { readonly type: "start"; readonly runId: string; readonly who: ActivityWho }
+  | {
+      readonly type: "call";
+      readonly runId: string;
+      readonly t: number;
+      readonly tool: string;
+      readonly ok: boolean;
+      readonly effect: CallEffect;
+      readonly targets: readonly string[];
+    }
+  | { readonly type: "end"; readonly runId: string };
 
 export type { WorldSummary };

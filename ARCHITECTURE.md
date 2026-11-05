@@ -2,15 +2,16 @@
 title: ARCHITECTURE — 단위와 의존 방향
 kind: reference
 status: active
-last_verified: 2026-10-29
+last_verified: 2026-11-04
 covers:
   - harness/config/architecture.yaml
-covers_hash: a042792c336d0c57
+covers_hash: d54d2fd2cbf5801a
 verification_log:
-  - "2026-10-28: rewritten for units v2"
   - "2026-10-29: unit table and diagram updated for ADR-0022"
   - "2026-10-29: server unit rows describe stage 5 (ADR-0025..0028)"
   - "2026-10-29: server.cluster 단위 행과 fastify 허용 단위를 architecture.yaml과 대조했다 (ADR-0032)"
+  - "2026-10-30: 2026-10-30: server.adapters 행(커넥터·봉인), runtime 행(연결 레지스트리·버전), http 행(식별 자리), 외부 라이브러리 줄(MCP SDK는 server.mcp와 server.adapters)을 architecture.yaml과 대조했다 (ADR-0042~0044)"
+  - "2026-11-04: architecture.yaml 대조: 시험 전용 의존성 ajv와 ajv-formats가 tests.spec 단위에만 허용된 것(ADR-0057)을 외부 라이브러리 줄에, 파사드 단위 설명에 SNMP·BACnet을 반영했다"
 ---
 # 아키텍처
 
@@ -42,7 +43,7 @@ contract ─► analysis ─► experiments ─► oracle ─► scenario ─►
 | `world` | 청사진(부지~장비), 엔티티 상태, 이벤트 로그, 스냅샷 | kernel, spatial, catalog |
 | `profiles` | **제품 버전**별 동작 변형 | kernel, catalog |
 | `physics` | 열·전력·공조 동역학 | kernel, spatial, catalog, world |
-| `facades` | Redfish/vCenter/vROps ↔ 월드 포트 번역. 웹을 모른다 | kernel, catalog, profiles, world |
+| `facades` | Redfish/SNMP/BACnet/스위치 CLI·eAPI·NX-API/vCenter/vROps ↔ 월드 포트 번역. 웹을 모른다 | kernel, catalog, profiles, world |
 | `tools` | 에이전트용 툴 카탈로그와 디스패처 | kernel, catalog, world, facades |
 | `scenario` | 워크플로 시나리오, 지원 기능 목록, 실행기 | kernel, catalog, world, physics, tools |
 | `oracle` | 시나리오 정답 기준 채점 | kernel, world, scenario |
@@ -56,11 +57,11 @@ contract ─► analysis ─► experiments ─► oracle ─► scenario ─►
 
 | 단위 | 책임 | 쓸 수 있는 단위 |
 |---|---|---|
-| `server.adapters` | 설정, 저장소(SQLite, ADR-0025), 하네스 어댑터(내장·OpenAI 호환·하네스 프로토콜, ADR-0026), ClickStack, FalkorDB | core 전부 |
-| `server.runtime` | 워커 스레드 세션 호스트, 실행기, 스케줄러 루프(ADR-0027), 세계·시나리오·실험·결과 서비스 | core, adapters |
+| `server.adapters` | 설정, 저장소(SQLite, ADR-0025), 연결 방식(커넥터: 내장·하네스 프로토콜·A2A·범용 HTTP·MCP 에이전트·OpenClaw·OpenCode·LangGraph·명령, ADR-0042), 비밀 값 봉인(ADR-0043), ClickStack, FalkorDB | core 전부 |
+| `server.runtime` | 워커 스레드 세션 호스트, 실행기, 스케줄러 루프(ADR-0027), 연결 레지스트리와 에이전트 버전(ADR-0042, 0043), 세계·시나리오·실험·결과 서비스 | core, adapters |
 | `server.cluster` | 스케일 아웃: 워커 노드 서버, 노드 등록부, 배치(`ClusterHost`), 자동 확장 지표(ADR-0032) | core, runtime |
 | `server.mcp` | 실행마다 하나인 MCP 툴 엔드포인트 | core, runtime |
-| `server.http` | 계약의 경로 표 그대로의 Fastify 라우트, SSE, 공유 링크, 정적 웹, 사용자 식별(ADR-0028) | core, adapters, runtime, mcp |
+| `server.http` | 계약의 경로 표 그대로의 Fastify 라우트, SSE, 공유 링크, 정적 웹, 사용자 식별 자리(ADR-0028, 0044) | core, adapters, runtime, mcp |
 | `web.logic` | 화면 상태와 계산(DOM 없이 테스트) | core |
 | `web.ui` | React 화면, 3D 빌더, 시나리오 편집기 | core, web.logic |
 
@@ -68,7 +69,7 @@ contract ─► analysis ─► experiments ─► oracle ─► scenario ─►
 
 - **공개 API**: 다른 단위는 그 단위의 `index.ts`만 import한다. core는 `@terrarium/core/<경로>` 별칭으로 가져온다 (`ARCH011`).
 - **형제 격리**: `worldgen`과 `realimport`는 서로를 import하지 않는다. 공유할 것은 `sources` 또는 `spatial`로 내린다 (`ARCH012`).
-- **외부 라이브러리 가두기**: 모든 패키지는 계약에 선언되어야 하고, 허용된 단위에서만 쓴다 (`ARCH020`). 예: `fastify`는 `server.http`와 `server.cluster`, `three`는 `web.ui`.
+- **외부 라이브러리 가두기**: 모든 패키지는 계약에 선언되어야 하고, 허용된 단위에서만 쓴다 (`ARCH020`). 예: `fastify`는 `server.http`와 `server.cluster`, `three`는 `web.ui`, Redfish 스키마 검사기(`ajv`)는 시험 단위 `tests.spec`, MCP SDK는 `server.mcp`와 MCP 서버의 툴로 에이전트를 부르는 커넥터가 있는 `server.adapters`(ADR-0042).
 - **테스트 도구**: `vitest`, `fast-check`는 테스트 파일에서만 (`ARCH022`). 운영 코드는 `test-support/`를 import하지 않는다 (`ARCH013`).
 - **순환 금지** (`ARCH030`, 타입 전용 import는 제외).
 
@@ -82,7 +83,7 @@ contract ─► analysis ─► experiments ─► oracle ─► scenario ─►
 | 새 물리 현상, 새 장애 효과 | `physics` |
 | 시나리오 블록 | `scenario` (지원 기능 목록에 등록) |
 | 에이전트에게 줄 새 툴 | `tools` |
-| 새 하네스 연결 | `server.adapters`의 하네스 어댑터 (포트는 `experiments`) |
+| 새 하네스·에이전트 연결 방식 | `server.adapters/connectors`에 커넥터 하나 (포트는 `experiments`, 화면 폼은 커넥터의 설명에서 만들어진다) |
 | 새 화면 | 계산은 `web.logic`, 그리는 것은 `web.ui` |
 | 여러 단위에 걸친 동작의 테스트 (예: 장애 → 물리 → 알람 → 툴 응답) | `tests/spec/` |
 

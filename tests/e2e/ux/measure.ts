@@ -7,8 +7,10 @@ import { writeFileSync } from "node:fs";
 import { launch } from "./driver";
 import { JOURNEYS, perform } from "./journeys";
 import { axe, keyboard, motion } from "./probes-a11y";
+import { detail } from "./probes-detail";
 import { colors, load, orientation, reach } from "./probes-find";
 import { empties, failures, invalid, progress, provenance, value } from "./probes-trust";
+import { voice } from "./probes-voice";
 import { buildWeb, startServer } from "./server";
 import { findIds, type Site } from "./site";
 
@@ -84,6 +86,17 @@ try {
     empties: emptyScreens,
     provenance: await step("수치 설명", () => provenance(site, notes), none),
     value: await step("결정에 쓸모", () => value(site, notes), none),
+    ...(await step("말투와 한 가지 행동", () => voice(site, notes), {
+      voice: none,
+      oneThing: none,
+      buttons: none,
+    })),
+    ...(await step("작은 부분", () => detail(site, notes), {
+      targets: none,
+      disabledWhy: none,
+      units: none,
+      hover: none,
+    })),
   };
   writeFileSync(out, JSON.stringify(result, null, 2));
   for (const n of notes) log(`note: ${n}`);

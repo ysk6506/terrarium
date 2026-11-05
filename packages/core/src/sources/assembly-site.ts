@@ -6,22 +6,26 @@
 import type { Catalog } from "@terrarium/core/catalog";
 import {
   encodeOutline,
+  encodeReserved,
   type Outline,
-  outlineBounds,
-  packInOutline,
   packShelves,
+  type ReservedPlot,
 } from "@terrarium/core/spatial";
-import type { Entity } from "@terrarium/core/world";
+import { type Entity, parcelPriceM } from "@terrarium/core/world";
+import { type BuildingSpot, outlineLayout } from "./assembly-layout";
 import type { Props, YardSpec } from "./assembly-types";
 
 const SITE_MARGIN_M = 20;
 const YARD_GAP_M = 8;
+/** A yard of hundreds of items (the plant of a hall of thousands of racks) stands closer together, metres. */
+const DENSE_YARD_GAP_M = 3;
+const DENSE_YARD_ITEMS = 150;
+const gapOf = (items: number): number => (items > DENSE_YARD_ITEMS ? DENSE_YARD_GAP_M : YARD_GAP_M);
 /** Smallest piece of land worth putting up for sale, metres. */
 const MIN_PARCEL_M = 70;
 /** Longest side of a parcel for sale, metres. */
 const MAX_PARCEL_M = 320;
-/** Land price, millions of KRW per square metre (illustrative). */
-const LAND_PRICE_M_PER_M2 = 1.2;
+/** Margin between the land in use and the edge of a parcel, metres. */
 const PARCEL_EDGE_M = 4;
 
 export interface SitePlan {
@@ -33,6 +37,11 @@ export interface SitePlan {
   readonly parcels: boolean;
   /** The shape of the land (REQ-048), from (0, 0); buildings stand inside it. Rectangular land when omitted. */
   readonly outline?: Outline;
+  /**
+   * Ground the map shows a building on that this world does not build. Other buildings keep off it,
+   * and the site keeps the list so what is drawn around the buildings can leave it alone.
+   */
+  readonly reserved?: readonly ReservedPlot[];
 }
 
 export interface BuildingPlan {
@@ -40,6 +49,8 @@ export interface BuildingPlan {
   readonly siteId: string;
   readonly name: string;
   readonly props: Props;
+  /** Where the building's centre should stand, when a map says so. */
+  readonly at?: { readonly x: number; readonly y: number };
 }
 
 export interface YardEntry {
@@ -61,24 +72,38 @@ interface YardBlock {
   readonly d: number;
 }
 
+/**
+ * How wide a building's yard is laid out: as wide as the building, unless that would make a strip more
+ * than one and a half times as deep as it is wide (the plant of a very big hall), which no ground holds.
+ */
+function yardWidth(catalog: Catalog, entries: readonly YardEntry[], floor: number): number {
+  const gap = gapOf(entries.length);
+  const area = entries.reduce((sum, e) => {
+    const s = sizeOf(catalog, e.spec.modelId);
+    return sum + (s.w + gap) * (s.d + gap);
+  }, 0);
+  return area / floor > 1.5 * floor ? Math.ceil(Math.sqrt(area * 1.6)) : floor;
+}
+
 /** Yard equipment in groups, each group a block of shelves; the blocks are packed side by side. */
 function packYard(catalog: Catalog, entries: readonly YardEntry[], maxWidth: number): YardBlock {
+  const gap = gapOf(entries.length);
   const groups = [...new Set(entries.map((e) => e.group))];
   const blocks = groups.map((group) => {
     const items = entries.filter((e) => e.group === group);
     const packed = packShelves(
       items.map((e) => ({ id: e.spec.id, ...sizeOf(catalog, e.spec.modelId) })),
       maxWidth,
-      YARD_GAP_M,
+      gap,
     );
-    const w = Math.max(...packed.map((p) => p.x + p.w)) + YARD_GAP_M;
-    const d = Math.max(...packed.map((p) => p.y + p.d)) + YARD_GAP_M;
+    const w = Math.max(...packed.map((p) => p.x + p.w)) + gap;
+    const d = Math.max(...packed.map((p) => p.y + p.d)) + gap;
     return { group, items, packed, w, d };
   });
   const origin = packShelves(
     blocks.map((b) => ({ id: b.group, w: b.w, d: b.d })),
     maxWidth,
-    YARD_GAP_M,
+    gap,
   );
   const items: Array<{ entry: YardEntry; x: number; y: number }> = [];
   for (const block of blocks) {
@@ -137,7 +162,7 @@ function parcelEntities(site: SitePlan, land: Size, used: Size): Entity[] {
       : {
           owned: false,
           areaM2: Math.round(r.w * r.d),
-          priceM: Math.round(r.w * r.d * LAND_PRICE_M_PER_M2),
+          priceM: parcelPriceM(r.w, r.d, Number(site.props.landPriceM) || undefined),
         },
   });
   // Land inside a site's own shape is the owner's without a parcel; only land bought later becomes one.
@@ -173,6 +198,8 @@ function parcelEntities(site: SitePlan, land: Size, used: Size): Entity[] {
 /** Where things stand on one site: buildings (with the plant beside them), the common yard, and the land used. */
 interface SiteLayout {
   readonly at: ReadonlyMap<string, { x: number; y: number }>;
+  /** Where each building's own plant yard stands; below the building when not given. */
+  readonly yardAt?: ReadonlyMap<string, { x: number; y: number }>;
   readonly commonAt?: { x: number; y: number };
   readonly used: Size;
 }
@@ -205,46 +232,6 @@ function shelfLayout(
   };
 }
 
-const COMMON_ID = "~common";
-
-/**
- * Clusters placed inside the land's shape. What does not fit is stacked below the shape (the site
- * grows) so the world still builds, and the note says so; validation then flags those buildings.
- */
-function outlineLayout(
-  site: SitePlan,
-  clusters: readonly Cluster[],
-  common: YardBlock | undefined,
-  notes: string[],
-): SiteLayout {
-  const outline = site.outline as Outline;
-  const box = outlineBounds(outline);
-  const items = [...clusters, ...(common ? [{ id: COMMON_ID, w: common.w, d: common.d }] : [])];
-  const { placed, unplaced } = packInOutline(items, outline, SITE_MARGIN_M);
-  const at = new Map<string, { x: number; y: number }>(
-    placed.map((p) => [p.id, { x: p.x, y: p.y }]),
-  );
-  let usedW = box.x + box.w;
-  let usedD = box.y + box.d;
-  if (unplaced.length > 0) {
-    notes.push(
-      `${site.name}: 부지 모양 안에 ${unplaced.length}곳이 들어가지 않아 부지 밖에 두었다`,
-    );
-    let x = SITE_MARGIN_M;
-    for (const id of unplaced) {
-      const item = items.find((i) => i.id === id) as Cluster;
-      at.set(id, { x, y: usedD + SITE_MARGIN_M });
-      x += item.w + SITE_MARGIN_M;
-      usedW = Math.max(usedW, x);
-    }
-    usedD +=
-      SITE_MARGIN_M +
-      Math.max(...unplaced.map((id) => (items.find((i) => i.id === id) as Cluster).d));
-  }
-  const commonAt = at.get(COMMON_ID);
-  return { at, ...(commonAt ? { commonAt } : {}), used: { w: usedW, d: usedD } };
-}
-
 /** Extra land around a shaped site that can be bought, metres. */
 function forSalePad(used: Size): number {
   return Math.min(300, Math.max(100, 0.2 * Math.min(used.w, used.d)));
@@ -275,7 +262,9 @@ function siteParts(
     own.flatMap((b) => {
       const mine = entries.filter((e) => e.building === b.id);
       const width = Math.max((all.sizes.get(b.id) as Size).w, 60);
-      return mine.length > 0 ? [[b.id, packYard(catalog, mine, width)] as const] : [];
+      return mine.length > 0
+        ? [[b.id, packYard(catalog, mine, yardWidth(catalog, mine, width))] as const]
+        : [];
     }),
   );
   const clusters = own.map((b): Cluster => {
@@ -307,12 +296,15 @@ function landOf(site: SitePlan, used: Size): Size {
 }
 
 function siteEntity(site: SitePlan, land: Size): Entity {
+  const props: Record<string, string | number | boolean> = { ...site.props };
+  if (site.outline) props.outline = encodeOutline(site.outline);
+  if (site.reserved) props.reserved = encodeReserved(site.reserved);
   return {
     id: site.id,
     kind: "site",
     name: site.name,
     placement: { type: "land", ...land },
-    props: site.outline ? { ...site.props, outline: encodeOutline(site.outline) } : site.props,
+    props,
   };
 }
 
@@ -342,12 +334,44 @@ function plantEntities(
   for (const b of parts.own) {
     const plant = parts.beside.get(b.id);
     const p = layout.at.get(b.id) as { x: number; y: number };
-    if (plant)
-      out.push(...yardEntities(plant, p.x, p.y + (sizes.get(b.id) as Size).d + YARD_GAP_M));
+    const own = layout.yardAt?.get(b.id) ?? {
+      x: p.x,
+      y: p.y + (sizes.get(b.id) as Size).d + YARD_GAP_M,
+    };
+    if (plant) out.push(...yardEntities(plant, own.x, own.y));
   }
   if (parts.common && layout.commonAt)
     out.push(...yardEntities(parts.common, layout.commonAt.x, layout.commonAt.y));
   return out;
+}
+
+/** Land with a shape: buildings where the map puts them or spread over it, yards beside their buildings. */
+function shapedLayout(
+  site: SitePlan,
+  parts: SiteParts,
+  sizes: ReadonlyMap<string, Size>,
+  notes: string[],
+): SiteLayout {
+  const buildings = parts.own.map(
+    (b): BuildingSpot => ({
+      id: b.id,
+      ...(sizes.get(b.id) as Size),
+      ...(b.at ? { at: b.at } : {}),
+    }),
+  );
+  const yards = new Map([...parts.beside].map(([id, block]) => [id, { w: block.w, d: block.d }]));
+  const layout = outlineLayout(
+    site.outline as Outline,
+    buildings,
+    yards,
+    parts.common ? { w: parts.common.w, d: parts.common.d } : undefined,
+    site.reserved ?? [],
+  );
+  if (layout.outside > 0)
+    notes.push(
+      `${site.name}: 부지 모양 안에 ${layout.outside}곳이 들어가지 않아 부지 밖에 두었어요`,
+    );
+  return layout;
 }
 
 export function siteEntities(
@@ -362,13 +386,13 @@ export function siteEntities(
   for (const site of sites) {
     const parts = siteParts(catalog, site, { buildings, sizes: buildingSize, yard });
     const layout = site.outline
-      ? outlineLayout(site, parts.clusters, parts.common, notes)
+      ? shapedLayout(site, parts, buildingSize, notes)
       : shelfLayout(parts.clusters, parts.common, site.land?.w ?? 200);
     out.push(...plantEntities(parts, layout, buildingSize));
     const land = landOf(site, layout.used);
     if (site.land && !site.outline && (land.w > site.land.w || land.d > site.land.d))
       notes.push(
-        `${site.name}: 건물이 부지에 다 들어가지 않아 부지를 ${Math.round(land.w)}×${Math.round(land.d)} m로 넓혔다`,
+        `${site.name}: 건물이 부지에 다 들어가지 않아 부지를 ${Math.round(land.w)}×${Math.round(land.d)} m로 넓혔어요`,
       );
     out.push(siteEntity(site, land));
     if (site.parcels) out.push(...parcelEntities(site, land, layout.used));

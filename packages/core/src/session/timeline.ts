@@ -5,6 +5,7 @@
 import {
   ACTION_LABELS,
   blockSpec,
+  minutesText,
   type ScenarioDoc,
   type ToolCallRecord,
   type TraceEntry,
@@ -24,26 +25,34 @@ export interface TimelineEntry {
 
 const WHAT: Readonly<Record<TraceEntry["what"], string>> = {
   ran: "",
-  waiting: "대기 시작",
-  resumed: "대기 끝",
+  waiting: "시작",
+  resumed: "끝",
   met: "조건 충족",
   timeout: "시간 초과",
   chose: "선택",
-  expired: "장애 자동 해제",
+  expired: "고장 자동 복구",
   error: "실행 못 함",
 };
 
-function scenarioText(doc: ScenarioDoc, entry: TraceEntry): string {
+/** How an entity is named on screen; without a lookup, by its id. */
+export type NameOf = (id: string) => string;
+
+function scenarioText(doc: ScenarioDoc, entry: TraceEntry, nameOf: NameOf): string {
   const node = doc.nodes.find((n) => n.id === entry.nodeId);
   const label = node?.label ?? blockSpec(node?.type ?? "")?.label ?? entry.nodeId;
-  const target = typeof node?.params.target === "string" ? node.params.target : undefined;
+  const target = typeof node?.params.target === "string" ? nameOf(node.params.target) : undefined;
   const fault = node?.params.faultType;
   const head =
     node?.type === "inject_fault" && typeof fault === "string" && isFaultType(fault)
-      ? `${faultSpec(fault as FaultType).label} 주입`
+      ? `${faultSpec(fault as FaultType).label} 발생`
       : label;
   const base = [head, target ? `(${target})` : "", WHAT[entry.what]].filter(Boolean).join(" ");
-  const detail = entry.what === "chose" ? choiceText(node?.type, entry.detail) : entry.detail;
+  const detail =
+    entry.what === "chose"
+      ? choiceText(node?.type, entry.detail)
+      : entry.what === "expired"
+        ? undefined // the detail is the fault's internal id
+        : entry.detail;
   return detail ? `${base}: ${detail}` : base;
 }
 
@@ -53,6 +62,8 @@ function choiceText(type: string | undefined, detail: string | undefined): strin
 }
 
 function callText(call: ToolCallRecord): string {
+  const waited = call.tool === "wait" ? call.args.seconds : undefined;
+  if (call.ok && typeof waited === "number") return `${minutesText(waited)} 기다려요`;
   const effects = (call.effects ?? []).map((e) => `${e.target} ${ACTION_LABELS[e.action]}`);
   const head = `${call.tool}${Object.keys(call.args).length > 0 ? ` ${JSON.stringify(call.args)}` : ""}`;
   if (!call.ok) return `${head} — 실패: ${call.error ?? "알 수 없음"}`;
@@ -67,11 +78,12 @@ export function buildTimeline(
   events: readonly WorldEvent[],
   calls: readonly ToolCallRecord[],
   sinceT: number,
+  nameOf: NameOf = (id) => id,
 ): TimelineEntry[] {
   const out: TimelineEntry[] = trace.map((entry) => ({
     t: entry.t,
     source: "scenario",
-    text: scenarioText(doc, entry),
+    text: scenarioText(doc, entry, nameOf),
     nodeId: entry.nodeId,
   }));
   const messages = new Map<string, string>();
@@ -87,7 +99,7 @@ export function buildTimeline(
           entityId: e.alarm.entityId,
         });
     } else if (e.type === "alarm.clear" && e.t >= sinceT) {
-      out.push({ t: e.t, source: "alarm", text: `해제: ${messages.get(e.alarmId) ?? e.alarmId}` });
+      out.push({ t: e.t, source: "alarm", text: `복구: ${messages.get(e.alarmId) ?? e.alarmId}` });
     }
   }
   for (const call of calls) out.push({ t: call.t, source: "agent", text: callText(call) });

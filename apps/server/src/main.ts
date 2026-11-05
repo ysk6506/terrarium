@@ -8,11 +8,13 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { randomToken, wallClockMs } from "@terrarium/core/kernel";
 import { buildAdapters, type Config, loadConfig, secret } from "./adapters";
 import { ClusterHost, Heartbeat, NodeRegistry, NodeServer, registerControl } from "./cluster";
-import { buildApp } from "./http";
+import { authenticatorOf, buildApp } from "./http";
 import { McpGateway } from "./mcp";
 import { Platform, type SessionHost, WorkerHost } from "./runtime";
 
 const VERSION = process.env.npm_package_version ?? "dev";
+/** How often connections nobody uses are looked for. */
+const CONNECTION_SWEEP_MS = 6 * 60 * 60 * 1000;
 const WEB_DIST = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../web/dist");
 
 export interface Running {
@@ -65,7 +67,8 @@ function placementOf(config: Config, token: string | undefined): Placement {
     hooks,
   };
   if (!token) {
-    if (!local) throw new Error("세션을 돌릴 곳이 없다: workers를 켜거나 워커 노드를 붙여라");
+    if (!local)
+      throw new Error("세션을 돌릴 곳이 없어요: workers를 켜거나 워커 노드를 붙여 주세요");
     return placement;
   }
   const registry = new NodeRegistry(c.nodeTtlSeconds * 1000, { joined: () => hooks.onJoin() });
@@ -87,7 +90,11 @@ async function runControl(
   const adapters = buildAdapters(config, { env });
   const c = config.cluster;
   const placement = placementOf(config, token);
-  const gateway = new McpGateway(config.publicUrl ?? `http://localhost:${config.port}`, VERSION);
+  const gateway = new McpGateway(
+    config.publicUrl ?? `http://localhost:${config.port}`,
+    VERSION,
+    (slot) => adapters.secretBox.derive(`slot:${slot}`),
+  );
   const platform = new Platform({
     adapters,
     host: placement.sessions,
@@ -100,7 +107,7 @@ async function runControl(
   const app = buildApp({
     platform,
     gateway,
-    ...(config.identity.header ? { identityHeader: config.identity.header } : {}),
+    authenticator: authenticatorOf(config.identity),
     ...(config.publicUrl ? { publicUrl: config.publicUrl } : {}),
     webDist: WEB_DIST,
     logger,
@@ -120,6 +127,9 @@ async function runControl(
   const sweep = registry && setInterval(() => registry.sweep(), (c.nodeTtlSeconds * 1000) / 4);
   sweep?.unref();
   const recovered = await platform.start();
+  // Connections nobody has used for a month are removed (REQ-051); once at start, then every few hours.
+  const unused = setInterval(() => void platform.sweepConnections(), CONNECTION_SWEEP_MS);
+  unused.unref();
   const url = await app.listen({ port: config.port, host: config.host });
   app.log.info(
     {
@@ -128,12 +138,13 @@ async function runControl(
       capacity: placement.localSlots,
       harnesses: adapters.harnesses.map((h) => h.info.id),
     },
-    "테라리움이 시작됐다",
+    "테라리움이 시작됐어요",
   );
   return {
     url,
     async stop() {
       if (sweep) clearInterval(sweep);
+      clearInterval(unused);
       await app.close();
       await platform.stop();
       await placement.sessions.close();
@@ -165,7 +176,7 @@ async function runWorker(config: Config, token: string): Promise<Running> {
     report: () => node.report(),
     everyMs: c.heartbeatSeconds * 1000,
     onTrouble: (m) =>
-      process.stderr.write(`${m ? `컨트롤에 닿지 않는다: ${m}` : "컨트롤과 다시 닿았다"}\n`),
+      process.stderr.write(`${m ? `컨트롤에 닿지 않아요: ${m}` : "컨트롤과 다시 닿았어요"}\n`),
   });
   const url = await node.app.listen({ port: config.port, host: config.host });
   beat.start();

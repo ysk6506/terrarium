@@ -74,7 +74,7 @@ export class Results {
       return await this.ctx.telemetry.port.trace(traceId);
     } catch (err) {
       throw new UnavailableError(
-        `${this.ctx.telemetry.name}에 닿을 수 없다: ${(err as Error).message}`,
+        `${this.ctx.telemetry.name}에 연결할 수 없어요: ${(err as Error).message}`,
       );
     }
   }
@@ -153,7 +153,7 @@ export class Results {
   async shared(token: string, format: ReportFormat, url: string): Promise<string> {
     const share = await this.ctx.store.getShare(token);
     if (!share || (share.expiresAt && share.expiresAt < this.ctx.stamps.now()))
-      throw new NotFoundError("공유 링크가 없거나 만료됐다");
+      throw new NotFoundError("공유 링크가 없거나 만료됐어요");
     return this.report(share.experimentId, format, url);
   }
 

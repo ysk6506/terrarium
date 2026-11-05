@@ -6,7 +6,7 @@
  * The room must be healthy at rest: racks are filled only within 80% of PDU capacity, cooling and
  * panels are sized for the expected load, and VM demand is capped so hosts idle below CPU_REST.
  */
-import type { Catalog, ServerModel } from "@terrarium/core/catalog";
+import { type Catalog, panelCapacityW, type ServerModel } from "@terrarium/core/catalog";
 import { type SeededRng, slug } from "@terrarium/core/kernel";
 import type {
   BlueprintAssembler,
@@ -26,6 +26,13 @@ const COOLING_MODEL = "crah-100kw";
 const PANEL_MODEL = "panel-400a";
 /** Expected utilisation used to size cooling and panels. */
 const SIZING_UTIL = 0.6;
+/** A panel or UPS is sized so that the expected load takes at most this much of it (the rest is margin for failover). */
+export const POWER_HEADROOM = 0.8;
+type Side = "a" | "b";
+
+/** How many units of `capacityW` carry `loadW` within the headroom (at least one). */
+export const unitsFor = (loadW: number, capacityW: number): number =>
+  Math.max(1, Math.ceil(loadW / (POWER_HEADROOM * capacityW)));
 /** Highest CPU utilisation a host should have at rest. */
 const CPU_REST = 0.6;
 const BMC_MIX: ReadonlyArray<readonly [string, number]> = [
@@ -44,7 +51,6 @@ export interface RoomContext {
   readonly roomName: string;
   /** Host-name prefix, e.g. "gh1-3a". */
   readonly host: string;
-  readonly ups: { readonly a: string; readonly b: string };
   readonly vcenter: string;
 }
 
@@ -75,14 +81,26 @@ interface Built {
   readonly arrays: string[];
   /** Expected room load in watts, for sizing. */
   loadW: number;
+  /** Each rack PDU and the side it hangs on; they are wired to panels once the panels are counted. */
+  readonly feeds: Array<{ readonly pdu: string; readonly side: Side; readonly rack: number }>;
 }
 
-export function buildRoom(ctx: RoomContext): void {
-  const built: Built = { racks: [], devices: [], hosts: [], arrays: [], loadW: 0 };
+/** What a built room asks of the electrical room: its load and its panels, by side. */
+export interface RoomPower {
+  readonly loadW: number;
+  readonly panels: Readonly<Record<Side, readonly string[]>>;
+}
+
+export function buildRoom(ctx: RoomContext): RoomPower {
+  const built: Built = { racks: [], devices: [], hosts: [], arrays: [], loadW: 0, feeds: [] };
   const spines = [`${ctx.roomId}-spine1`, `${ctx.roomId}-spine2`];
   for (let row = 1; row <= ctx.spec.rows; row++)
     for (let col = 1; col <= ctx.spec.racksPerRow; col++) addRack(ctx, built, row, col, spines);
-  const equipment = [...coolingUnits(ctx, built.loadW), ...panels(ctx, built.loadW)];
+  const cooling = coolingUnits(ctx, built.loadW);
+  const loadW = built.loadW + cooling.length * fanPowerW(ctx);
+  const perSide = unitsFor(loadW, panelCapacityW(ctx.catalog.getOf(PANEL_MODEL, "power_panel")));
+  const panelSpecs = panels(ctx, built.loadW, perSide);
+  const equipment = [...cooling, ...panelSpecs];
   const room: RoomSpec = {
     id: ctx.roomId,
     name: ctx.roomName,
@@ -93,9 +111,42 @@ export function buildRoom(ctx: RoomContext): void {
   };
   ctx.asm.room(ctx.floorId, room);
   for (const rack of built.racks)
-    for (const unit of equipment.filter((e) => e.kind === "cooling_unit"))
-      ctx.asm.link("cooling", rack.id, unit.id);
+    for (const unit of cooling) ctx.asm.link("cooling", rack.id, unit.id);
+  wirePanels(ctx, built, cooling, perSide);
   if (ctx.spec.vmsPerHost > 0) virtualisation(ctx, built);
+  return { loadW, panels: panelsBySide(ctx, perSide) };
+}
+
+const sidesOf = (ctx: RoomContext): readonly Side[] =>
+  ctx.spec.powerRedundancy === "2N" ? ["a", "b"] : ["a"];
+const panelId = (ctx: RoomContext, side: Side, n: number): string =>
+  `${ctx.roomId}-pnl-${side}${n}`;
+const fanPowerW = (ctx: RoomContext): number =>
+  ctx.catalog.getOf(COOLING_MODEL, "cooling_unit").fanPowerW;
+
+function panelsBySide(ctx: RoomContext, perSide: number): Record<Side, readonly string[]> {
+  const ids = (side: Side) => Array.from({ length: perSide }, (_, i) => panelId(ctx, side, i + 1));
+  return { a: ids("a"), b: sidesOf(ctx).includes("b") ? ids("b") : [] };
+}
+
+/** Hang every rack PDU and cooling unit on a panel of its side, spreading them evenly over the panels. */
+function wirePanels(
+  ctx: RoomContext,
+  built: Built,
+  cooling: readonly EquipmentSpec[],
+  perSide: number,
+): void {
+  for (const f of built.feeds)
+    ctx.asm.link("power", f.pdu, panelId(ctx, f.side, (f.rack % perSide) + 1));
+  const sides = sidesOf(ctx);
+  cooling.forEach((unit, i) => {
+    const side = sides[i % sides.length] as Side;
+    ctx.asm.link(
+      "power",
+      unit.id,
+      panelId(ctx, side, (Math.floor(i / sides.length) % perSide) + 1),
+    );
+  });
 }
 
 function addRack(ctx: RoomContext, built: Built, row: number, col: number, spines: string[]): void {
@@ -128,8 +179,7 @@ function powerFrom(ctx: RoomContext, id: string, pdus: readonly string[]): void 
 }
 
 function pduPair(ctx: RoomContext, built: Built, rackId: string, label: string): string[] {
-  const sides = ctx.spec.powerRedundancy === "2N" ? ["a", "b"] : ["a"];
-  return sides.map((side) => {
+  return sidesOf(ctx).map((side) => {
     const id = device(built, {
       id: `${rackId}-pdu-${side}`,
       kind: "pdu",
@@ -138,7 +188,7 @@ function pduPair(ctx: RoomContext, built: Built, rackId: string, label: string):
       hint: inUnit(1),
       rackId,
     });
-    ctx.asm.link("power", id, `${ctx.roomId}-pnl-${side}1`);
+    built.feeds.push({ pdu: id, side, rack: built.racks.length - 1 });
     return id;
   });
 }
@@ -228,37 +278,26 @@ function coolingUnits(ctx: RoomContext, loadW: number): EquipmentSpec[] {
   const needed = Math.max(1, Math.ceil(loadW / (0.8 * capacityW)));
   const count = { N: needed, "N+1": needed + 1, "2N": needed * 2 }[ctx.spec.coolingRedundancy];
   const tag = ctx.roomName.split(" ")[0];
-  return Array.from({ length: count }, (_, i) => {
-    const id = `${ctx.roomId}-crah${i + 1}`;
-    ctx.asm.link(
-      "power",
-      id,
-      `${ctx.roomId}-pnl-${ctx.spec.powerRedundancy === "2N" && i % 2 === 1 ? "b" : "a"}1`,
-    );
-    return {
-      id,
-      kind: "cooling_unit" as const,
-      name: `CRAH-${tag}-${i + 1}`,
-      modelId: COOLING_MODEL,
-    };
-  });
+  return Array.from({ length: count }, (_, i) => ({
+    id: `${ctx.roomId}-crah${i + 1}`,
+    kind: "cooling_unit" as const,
+    name: `CRAH-${tag}-${i + 1}`,
+    modelId: COOLING_MODEL,
+  }));
 }
 
-/** One panel per side (A, and B with 2N), each able to carry the whole room. */
-function panels(ctx: RoomContext, loadW: number): EquipmentSpec[] {
-  const sides = ctx.spec.powerRedundancy === "2N" ? (["a", "b"] as const) : (["a"] as const);
+/** Panels on each side, enough that each side alone could carry the whole room (with the headroom). */
+function panels(ctx: RoomContext, loadW: number, perSide: number): EquipmentSpec[] {
   const tag = ctx.roomName.split(" ")[0];
-  return sides.map((side) => {
-    const id = `${ctx.roomId}-pnl-${side}1`;
-    ctx.asm.link("power", id, ctx.ups[side]);
-    return {
-      id,
+  return sidesOf(ctx).flatMap((side) =>
+    Array.from({ length: perSide }, (_, i) => ({
+      id: panelId(ctx, side, i + 1),
       kind: "power_panel" as const,
-      name: `PNL-${tag}-${side.toUpperCase()}`,
+      name: `PNL-${tag}-${side.toUpperCase()}${perSide > 1 ? i + 1 : ""}`,
       modelId: PANEL_MODEL,
-      props: { designLoadKw: Math.round(loadW / 1000) },
-    };
-  });
+      props: { designLoadKw: Math.round(loadW / perSide / 1000) },
+    })),
+  );
 }
 
 /** A cluster of the room's hosts, VMs sized so hosts stay below CPU_REST, datastores on the arrays. */

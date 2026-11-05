@@ -195,10 +195,10 @@ describe("importing the sample graph [REQ-010] [REQ-012] [REQ-013]", () => {
     const { blueprint, report } = await run();
     const index = new BlueprintIndex(blueprint);
     expect(report.assumptions).toEqual([
-      "3F_B_Datacenter: 냉방 설비 정보가 없어 CRAH 2대(N+1)를 가정했다",
-      "미분류 서버룸: 냉방 설비 정보가 없어 CRAH 2대(N+1)를 가정했다",
-      "냉방 관계가 없는 랙 7개는 같은 서버룸의 냉방기가 식힌다고 가정했다",
-      "그래프에 전력 정보가 없어 랙마다 A/B PDU, 서버룸마다 A/B 분전반, 층마다 A/B UPS를 부하에 맞춰 가정했다 (synthesized 표시)",
+      "3F_B_Datacenter: 냉방 설비 정보가 없어 CRAH 2대(N+1)를 가정했어요",
+      "미분류 서버룸: 냉방 설비 정보가 없어 CRAH 2대(N+1)를 가정했어요",
+      "냉방 관계가 없는 랙 7개는 같은 서버룸의 냉방기가 식힌다고 가정했어요",
+      "그래프에 전력 정보가 없어 랙마다 A/B PDU, 서버룸마다 A/B 분전반, 층마다 A/B UPS를 부하에 맞춰 가정했어요 (synthesized 표시)",
     ]);
     for (const kind of ["pdu", "power_panel", "ups"] as const)
       for (const e of index.ofKind(kind)) expect(e.props.synthesized).toBe(true);
@@ -226,7 +226,7 @@ describe("importing the sample graph [REQ-010] [REQ-012] [REQ-013]", () => {
     });
     expect(report.assumptions).toContainEqual(
       expect.stringMatching(
-        /^3F_A_Datacenter: 실제 냉방 용량\(30 kW\)이 예상 부하\(\d+ kW\)보다 작다. 실제 장비라 늘리지 않았다$/,
+        /^3F_A_Datacenter: 실제 냉방 용량\(30 kW\)이 예상 부하\(\d+ kW\)보다 작아요. 실제 장비라 늘리지 않았어요$/,
       ),
     );
     const units = new BlueprintIndex(blueprint)
@@ -256,7 +256,7 @@ describe("importing the sample graph [REQ-010] [REQ-012] [REQ-013]", () => {
 
   test("an import that is too big asks for a narrower scope", async () => {
     await expect(run({ maxEntities: 50 })).rejects.toThrow(
-      /가져올 대상이 \d+개로 너무 많다 \(최대 50개\). 가져올 서버룸 범위를 좁혀라/,
+      /가져올 대상이 \d+개로 너무 많아요 \(최대 50개\). 가져올 서버룸 범위를 좁혀 주세요/,
     );
   });
 

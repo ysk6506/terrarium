@@ -24,6 +24,13 @@ export function perfect(): Measurements {
     empties: all(4),
     provenance: all(14),
     value: all(6),
+    voice: all(300),
+    oneThing: all(13),
+    buttons: all(60),
+    targets: all(400),
+    disabledWhy: all(10),
+    units: all(80),
+    hover: all(39),
   };
 }
 

@@ -3,7 +3,13 @@
  * against what its cooling and power can give, and plain-language warnings when they do not match.
  */
 import type { Catalog, EquipmentModel } from "@terrarium/core/catalog";
-import { type BlueprintIndex, type Entity, isRackMountedKind } from "@terrarium/core/world";
+import {
+  type BlueprintIndex,
+  type Entity,
+  isRackMountedKind,
+  structureCostM,
+} from "@terrarium/core/world";
+import { landCostM } from "./edit-site";
 import type { Level } from "./levels";
 
 export interface LevelStats {
@@ -37,10 +43,11 @@ function draw(model: EquipmentModel | undefined, util: number): { max: number; t
   return { max: 0, typical: 0 };
 }
 
-/** Everything a level contains, however deep. */
+/** Everything a level contains, however deep, and the floor or room itself, whose walls and fit-out are paid for. */
 function scope(index: BlueprintIndex, level: Level): readonly Entity[] {
   if (level.kind === "site") return index.all();
-  return index.descendants(level.id);
+  const self = index.find(level.id);
+  return self ? [self, ...index.descendants(level.id)] : index.descendants(level.id);
 }
 
 interface Totals {
@@ -51,11 +58,11 @@ interface Totals {
   pduW: number;
 }
 
-function totalsOf(all: readonly Entity[], catalog: Catalog): Totals {
+function totalsOf(index: BlueprintIndex, all: readonly Entity[], catalog: Catalog): Totals {
   const t: Totals = { costM: 0, itMaxW: 0, itTypicalW: 0, coolingKw: 0, pduW: 0 };
   for (const e of all) {
     const model = modelOf(catalog, e);
-    t.costM += model?.costM ?? 0;
+    t.costM += (model?.costM ?? 0) + structureCostM(index, catalog, e);
     if (isRackMountedKind(e.kind) && e.kind !== "pdu") {
       const d = draw(model, TYPICAL_UTIL);
       t.itMaxW += d.max;
@@ -69,11 +76,11 @@ function totalsOf(all: readonly Entity[], catalog: Catalog): Totals {
 
 function coolingWarning(itTypicalW: number, coolingKw: number): string | undefined {
   const heatKw = itTypicalW / 1000;
-  if (itTypicalW > 0 && coolingKw === 0) return "냉방기가 없어 장비의 열을 식힐 수 없다";
+  if (itTypicalW > 0 && coolingKw === 0) return "냉방기가 없어 장비의 열을 식힐 수 없어요";
   if (heatKw > coolingKw)
-    return `평소 발열(${heatKw.toFixed(1)} kW)이 냉방 용량(${coolingKw} kW)보다 크다`;
+    return `평소 발열(${heatKw.toFixed(1)} kW)이 냉방 용량(${coolingKw} kW)보다 커요`;
   if (coolingKw > 0 && heatKw > coolingKw * 0.8)
-    return "냉방 용량의 80%를 넘게 쓴다. 냉방기 하나가 멈추면 버티지 못한다";
+    return "냉방 용량의 80%를 넘게 써요. 냉방기 하나가 멈추면 버티지 못해요";
   return undefined;
 }
 
@@ -87,17 +94,19 @@ function wiringWarnings(
     (e) =>
       isRackMountedKind(e.kind) && e.kind !== "pdu" && index.outgoing(e.id, "power").length === 0,
   ).length;
-  if (unpowered > 0) out.push(`전원에 연결되지 않은 장비가 ${unpowered}대 있다`);
+  if (unpowered > 0) out.push(`전원에 연결되지 않은 장비가 ${unpowered}대 있어요`);
   const uncooled = all.filter(
     (e) => e.kind === "rack" && index.outgoing(e.id, "cooling").length === 0,
   ).length;
-  if (uncooled > 0 && coolingKw > 0) out.push(`냉방기에 연결되지 않은 랙이 ${uncooled}개 있다`);
+  if (uncooled > 0 && coolingKw > 0) out.push(`냉방기에 연결되지 않은 랙이 ${uncooled}개 있어요`);
   return out;
 }
 
 export function levelStats(index: BlueprintIndex, catalog: Catalog, level: Level): LevelStats {
   const all = scope(index, level);
-  const t = totalsOf(all, catalog);
+  const t = totalsOf(index, all, catalog);
+  // Land bought through the builder counts where the whole site is looked at.
+  if (level.kind === "site") t.costM += landCostM(index);
   const cooling = coolingWarning(t.itTypicalW, t.coolingKw);
   return {
     ...t,

@@ -1,20 +1,21 @@
 /**
  * The block palette (REQ-034): every block the simulator knows, by category. Blocks that cannot be used
  * — not supported yet, or nothing in this world to act on — stay visible, greyed, with the reason.
- * Drag a block onto the canvas, or press it to drop it under the last block.
+ * Press a block to add it after the end of the main line, or drag it onto the canvas to put it where you like.
  */
 import { CATEGORY_LABELS, type PaletteItem, paletteFor } from "@terrarium/core/scenario";
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { scenario } from "../../logic";
 import type { ScenarioEditor } from "./useScenario";
 
 export const DRAG_TYPE = "application/x-terrarium-block";
 
 function Item({ item, e }: { readonly item: PaletteItem; readonly e: ScenarioEditor }) {
+  const reasonId = useId();
   const add = () => {
     let added: string | undefined;
     const ok = e.change((d) => {
-      const r = scenario.addBlock(d, item, scenario.freeSpot(d));
+      const r = scenario.appendBlock(d, item);
       added = r.nodeId;
       return r.doc;
     });
@@ -26,6 +27,7 @@ function Item({ item, e }: { readonly item: PaletteItem; readonly e: ScenarioEdi
       className="palette-item"
       draggable={item.available}
       aria-disabled={!item.available}
+      aria-describedby={item.available ? undefined : reasonId}
       onDragStart={(ev) => {
         ev.dataTransfer.setData(DRAG_TYPE, item.key);
         ev.dataTransfer.effectAllowed = "copy";
@@ -33,12 +35,12 @@ function Item({ item, e }: { readonly item: PaletteItem; readonly e: ScenarioEdi
       onClick={add}
     >
       <span>{item.label}</span>
-      <small>{item.available ? item.description : item.reason}</small>
+      <small id={reasonId}>{item.available ? item.description : item.reason}</small>
     </button>
   );
 }
 
-const GROUP_ORDER = ["flow", "fault", "operation", "agent"] as const;
+const GROUP_ORDER = ["fault", "operation", "flow", "agent"] as const;
 
 export function Palette({ e }: { readonly e: ScenarioEditor }) {
   const items = useMemo(() => paletteFor(e.index), [e.index]);
@@ -58,7 +60,8 @@ export function Palette({ e }: { readonly e: ScenarioEditor }) {
           onChange={(ev) => setQuery(ev.target.value)}
         />
         <p className="tiny muted" style={{ marginTop: 8 }}>
-          캔버스로 끌어 놓거나 눌러서 더한다. 흐린 블록은 이유를 읽어 본다.
+          누르면 마지막 블록 뒤에 이어져요. 끌어다 놓으면 놓은 자리에 들어가요. 흐린 블록은 왜 못
+          쓰는지 적혀 있어요.
         </p>
       </div>
       {GROUP_ORDER.map((category) => {

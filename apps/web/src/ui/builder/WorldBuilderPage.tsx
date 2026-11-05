@@ -3,13 +3,14 @@
  * equipment, with running totals, a heat preview and saving. Opened lazily: three.js loads here.
  */
 import type { WorldRecord } from "@terrarium/core/experiments";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { builder, celsius, count, watts, won } from "../../logic";
 import { useApp, useAsync, useLeaveGuard, usePageTitle } from "../context";
 import { Failure, Loading } from "../kit";
+import { useActivity } from "../world3d/useActivity";
+import { WorldStage } from "../world3d/WorldStage";
 import { BuilderBar } from "./BuilderBar";
 import { Inspector } from "./Inspector";
-import { Stage } from "./Stage";
 import { Toolbox } from "./Toolbox";
 import { type Builder, catalog, useBuilder } from "./useBuilder";
 import { useBuilderKeys } from "./useBuilderKeys";
@@ -40,7 +41,7 @@ function Hud({ b }: { readonly b: Builder }) {
         </div>
       </section>
       {preview && (
-        <div className="heat-scale" title="랙 흡기 온도: 파랑은 차갑고 빨강은 너무 덥다">
+        <div className="heat-scale" title="랙 흡기 온도: 파랑은 차갑고 빨강은 너무 더워요">
           <span>18°C</span>
           <span className="heat-bar" />
           <span>32°C</span>
@@ -55,45 +56,88 @@ function Hud({ b }: { readonly b: Builder }) {
   );
 }
 
+/** Putting something down on the site (land, a building, plant) needs the whole land in view. */
+function needsWholeLand(b: Builder): boolean {
+  const { index, level, selected } = b.state;
+  const tool = b.state.tool.kind;
+  return (
+    level.kind === "site" &&
+    (tool === "buy" ||
+      tool === "building" ||
+      tool === "plant" ||
+      selected.some((id) => index.find(id)?.kind === "parcel"))
+  );
+}
+
+/** What the stage needs for the airflow map of the room being built (REQ-072). */
+function airInput(
+  b: Builder,
+  roomId: string,
+  on: boolean,
+  setMapRoom: (id: string | undefined) => void,
+) {
+  return {
+    roomId,
+    on,
+    onToggle: (next: boolean) => setMapRoom(next ? roomId : undefined),
+    preview: b.state.preview,
+    previewing: b.state.previewing,
+    onRun: b.runPreview,
+    onToggleUnit: b.toggleUnit,
+    selected: b.state.selected,
+  };
+}
+
 function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
   const b = useBuilder(initial);
   const { index, level, preview, selected, dirty } = b.state;
+  // The map mode (REQ-072): the picture takes the page, the palette and the numbers fold away.
+  const [mapRoom, setMapRoom] = useState<string>();
+  const map = level.kind === "room" && mapRoom === level.id;
   usePageTitle(initial.name);
   useBuilderKeys(b);
-  useLeaveGuard(dirty ? "저장하지 않고 나가면 고친 것이 사라진다. 그래도 나갈까?" : undefined);
+  useLeaveGuard(dirty ? "저장하지 않고 나가면 고친 것이 사라져요. 그래도 나갈까요?" : undefined);
   const gestures = useGestures(b);
-  const scene = useMemo(
-    () =>
-      builder.sceneOf(
-        index,
-        catalog,
-        level,
-        preview ? { heat: preview.heat, alarmed: preview.alarmed } : {},
-      ),
-    [index, level, preview],
+  const { activity, now } = useActivity(initial.id);
+  const overlay = useMemo(
+    () => (preview ? { heat: preview.heat, alarmed: preview.alarmed } : undefined),
+    [preview],
   );
-  const fitKey = level.kind === "site" ? "site" : level.id;
+  const wide = needsWholeLand(b);
+  const scene = useMemo(
+    () => builder.sceneOf(index, catalog, level, overlay ?? {}),
+    [index, level, overlay],
+  );
   return (
     <div className="page-wide">
-      <BuilderBar b={b} />
-      <div className="builder">
-        <Toolbox b={b} />
+      <BuilderBar b={b} map={map} onLeaveMap={() => setMapRoom(undefined)} />
+      <div className={`builder${map ? " builder-map" : ""}`}>
+        {!map && <Toolbox b={b} />}
         <div className="stage">
-          <Stage
+          <WorldStage
+            index={index}
+            catalog={catalog}
+            level={level}
+            wide={wide}
             scene={scene}
-            grid={builder.gridOf(level)}
             selected={selected}
             {...(gestures.ghost ? { ghost: gestures.ghost } : {})}
-            fitKey={fitKey}
+            {...(overlay ? { overlay } : {})}
             {...gestures.events}
+            {...(level.kind === "room" ? { air: airInput(b, level.id, map, setMapRoom) } : {})}
+            activity={activity}
+            now={now}
+            onWatch={(id) => b.go(builder.levelOf(index, id))}
           >
-            <Hud b={b} />
-            <output className={`stage-hint${gestures.bad ? " stage-hint-bad" : ""}`}>
-              {gestures.hint}
-            </output>
-          </Stage>
+            {!map && <Hud b={b} />}
+            {!map && (
+              <output className={`stage-hint${gestures.bad ? " stage-hint-bad" : ""}`}>
+                {gestures.hint}
+              </output>
+            )}
+          </WorldStage>
         </div>
-        <Inspector b={b} />
+        {!map && <Inspector b={b} />}
       </div>
     </div>
   );

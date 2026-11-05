@@ -136,7 +136,7 @@ describe("sharing results [REQ-038]", () => {
     ).rejects.toBeInstanceOf(ForbiddenError);
     expect(await p.results.deleteShare(YEONSU, share.token)).toEqual({ deleted: true });
     await expect(p.results.shared(share.token, "html", "x")).rejects.toThrow(
-      "공유 링크가 없거나 만료됐다",
+      "공유 링크가 없거나 만료됐어요",
     );
     const expiring = await p.results.createShare(YEONSU, id, { expiresInDays: 1 }, "https://t");
     expect(Date.parse(expiring.expiresAt as string) - Date.parse(expiring.createdAt)).toBe(

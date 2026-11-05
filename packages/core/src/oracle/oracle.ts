@@ -10,6 +10,10 @@
  *   time_limit       all or nothing; only when a diagnosis was submitted
  *   tool_budget      all or nothing; only when a diagnosis was submitted
  *
+ * Time and tool budget say how well the task was done, so they count in proportion to how much of it was
+ * done: the share of the diagnosis points earned (or, when the sheet asks for no diagnosis, of its final-state
+ * and required-action points). A quick wrong answer earns nothing for being quick (ADR-0067).
+ *
  * total = 100 × max(0, earned − penalties) / possible, one decimal. Pass: total ≥ 60 and, if the
  * sheet asks for a diagnosis, a fully correct one.
  */
@@ -26,10 +30,10 @@ import {
   type ScenarioDoc,
   type ToolCallRecord,
 } from "@terrarium/core/scenario";
-import { faultSpec, isFaultType, type WorldReader } from "@terrarium/core/world";
+import { diagnosisLabel, isDiagnosisType, type WorldReader } from "@terrarium/core/world";
 
 /** Bump when scoring rules change; it is part of the benchmark key (REQ-039). */
-export const ORACLE_VERSION = "1";
+export const ORACLE_VERSION = "2";
 export const PASS_MARK = 60;
 const ROOT_SHARE = 0.6;
 
@@ -44,20 +48,22 @@ export type EndReason =
 export const END_REASON_LABELS: Readonly<Record<EndReason, string>> = {
   diagnosed: "진단 제출",
   time_limit: "제한 시간 초과",
-  tool_budget: "툴 호출 한도 도달",
+  tool_budget: "툴 호출 상한 도달",
   agent_finished: "진단 없이 종료",
   agent_error: "에이전트 오류",
-  cancelled: "취소됨",
+  cancelled: "멈춤",
 };
 
 export interface RunOutcome {
   readonly doc: ScenarioDoc;
   /** The world when the run ended: true state, not sensor readings. */
-  readonly world: Pick<WorldReader, "stateOf" | "alarms" | "index">;
+  readonly world: Pick<WorldReader, "stateOf" | "alarms" | "events" | "index">;
   readonly toolCalls: readonly ToolCallRecord[];
   readonly diagnosis?: Diagnosis;
   readonly diagnosedAt?: number;
   readonly agentStartedAt?: number;
+  /** When the scenario started; `event` conditions ignore what happened before it. */
+  readonly scenarioStart?: number;
   readonly endReason: EndReason;
 }
 
@@ -106,10 +112,10 @@ function sameEntity(outcome: RunOutcome, submitted: string, expected: string): b
   return entity !== undefined && norm(entity.name) === norm(submitted);
 }
 
-/** A fault type by id ("cooling_unit_failure") or by its Korean label ("냉방기 정지"). */
+/** A fault or mistake type by id ("cooling_unit_failure") or by its Korean label ("냉방기 정지"). */
 function sameFault(submitted: string, expected: string): boolean {
   if (norm(submitted) === norm(expected)) return true;
-  return isFaultType(expected) && norm(faultSpec(expected).label) === norm(submitted);
+  return isDiagnosisType(expected) && norm(diagnosisLabel(expected)) === norm(submitted);
 }
 
 type Scored = Pick<ScoreItem, "verdict" | "points" | "detail" | "facts"> & { label?: string };
@@ -125,7 +131,7 @@ function scoreDiagnosis(e: Extract<Expectation, { kind: "diagnosis" }>, o: RunOu
     return {
       verdict: "fail",
       points: 0,
-      detail: `진단을 제출하지 않았다 (${answer})`,
+      detail: `진단을 제출하지 않았어요 (${answer})`,
       facts: { root: false, type: false, rootCause: e.rootCause, faultType: e.faultType },
     };
   const root = e.rootCause.some((r) => sameEntity(o, d.rootCause, r));
@@ -143,7 +149,11 @@ function scoreDiagnosis(e: Extract<Expectation, { kind: "diagnosis" }>, o: RunOu
 }
 
 function signals(o: RunOutcome): AgentSignals {
-  return { toolCalls: () => o.toolCalls, diagnosis: () => o.diagnosis };
+  return {
+    toolCalls: () => o.toolCalls,
+    diagnosis: () => o.diagnosis,
+    scenarioStart: () => o.scenarioStart ?? 0,
+  };
 }
 
 const scoreFinalState: Scorer<"final_state"> = (e, o) => {
@@ -169,13 +179,13 @@ const scoreRequired: Scorer<"required_action"> = (e, o) => {
     ? {
         verdict: "pass",
         points: e.weight,
-        detail: `${withJosa(what, "을")} 했다 (${call.tool})`,
+        detail: `${withJosa(what, "을")} 했어요 (${call.tool})`,
         label: e.label ?? what,
       }
     : {
         verdict: "fail",
         points: 0,
-        detail: `${withJosa(what, "을")} 하지 않았다`,
+        detail: `${withJosa(what, "을")} 하지 않았어요`,
         label: e.label ?? what,
       };
 };
@@ -189,15 +199,15 @@ const scoreForbidden: Scorer<"forbidden_action"> = (e, o) => {
     ? {
         verdict: "penalty",
         points: -e.penalty * times,
-        detail: `${times}회 했다 (−${e.penalty * times}점)`,
+        detail: `${times}회 했어요 (−${e.penalty * times}점)`,
         label: e.label ?? what,
       }
-    : { verdict: "clean", points: 0, detail: "하지 않았다", label: e.label ?? what };
+    : { verdict: "clean", points: 0, detail: "하지 않았어요", label: e.label ?? what };
 };
 
 const scoreTime: Scorer<"time_limit"> = (e, o) => {
   if (o.diagnosedAt === undefined || o.agentStartedAt === undefined)
-    return { verdict: "fail", points: 0, detail: "진단을 제출하지 않아 시간 점수가 없다" };
+    return { verdict: "fail", points: 0, detail: "진단을 제출하지 않아 시간 점수가 없어요" };
   const took = o.diagnosedAt - o.agentStartedAt;
   const ok = took <= e.seconds;
   return {
@@ -217,13 +227,13 @@ const scoreBudget: Scorer<"tool_budget"> = (e, o) => {
     return {
       verdict: "fail",
       points: 0,
-      detail: `진단을 제출하지 않아 효율 점수가 없다 (툴 호출 ${used}회)`,
+      detail: `진단을 제출하지 않아 효율 점수가 없어요 (툴 호출 ${used}회)`,
     };
   const ok = used <= e.maxCalls;
   return {
     verdict: ok ? "pass" : "fail",
     points: ok ? e.weight : 0,
-    detail: `툴 호출 ${used}회 (한도 ${e.maxCalls}회)`,
+    detail: `툴 호출 ${used}회 (상한 ${e.maxCalls}회)`,
   };
 };
 
@@ -249,8 +259,38 @@ function possibleOf(e: Expectation): number {
   return e.kind === "forbidden_action" ? 0 : e.weight;
 }
 
+const EFFICIENCY: ReadonlySet<Expectation["kind"]> = new Set(["time_limit", "tool_budget"]);
+
+/**
+ * How much of the task was done, 0 to 1: the points earned over the points possible among the diagnosis
+ * items, or among the final-state and required-action items when the sheet asks for no diagnosis. A sheet with
+ * only efficiency and prohibitions has nothing to be done, so nothing to scale.
+ */
+export function taskShare(items: readonly ScoreItem[]): number {
+  const diagnosis = items.filter((i) => i.kind === "diagnosis");
+  const task =
+    diagnosis.length > 0
+      ? diagnosis
+      : items.filter((i) => i.kind === "final_state" || i.kind === "required_action");
+  const possible = task.reduce((sum, i) => sum + i.max, 0);
+  if (possible === 0) return 1;
+  return task.reduce((sum, i) => sum + Math.max(0, i.points), 0) / possible;
+}
+
+/** Efficiency counts as much as the task was done; what it loses, the detail says. */
+function scaleEfficiency(item: ScoreItem, share: number): ScoreItem {
+  if (!EFFICIENCY.has(item.kind) || item.points <= 0 || share >= 1) return item;
+  const percent = Math.round(share * 100);
+  return {
+    ...item,
+    points: round(item.points * share, 2),
+    verdict: share > 0 ? "partial" : "fail",
+    detail: `${item.detail} — 과제를 푼 만큼(${percent}%)만 인정해요`,
+  };
+}
+
 export function score(outcome: RunOutcome): Score {
-  const items: ScoreItem[] = outcome.doc.expectations.map((e) => {
+  const raw: ScoreItem[] = outcome.doc.expectations.map((e) => {
     const scored = (SCORERS[e.kind] as Scorer<typeof e.kind>)(e as never, outcome);
     return {
       id: e.id,
@@ -263,6 +303,8 @@ export function score(outcome: RunOutcome): Score {
       ...(scored.facts ? { facts: scored.facts } : {}),
     };
   });
+  const share = taskShare(raw);
+  const items = raw.map((i) => scaleEfficiency(i, share));
   const possible = items.reduce((sum, i) => sum + i.max, 0);
   const earned = round(
     items.reduce((sum, i) => sum + Math.max(0, i.points), 0),
@@ -291,7 +333,7 @@ function summarize(
   items: readonly ScoreItem[],
   o: RunOutcome,
 ): string {
-  if (total === null) return `채점 기준 없음 · ${END_REASON_LABELS[o.endReason]}`;
+  if (total === null) return `채점표 없음 · ${END_REASON_LABELS[o.endReason]}`;
   const parts = [`${total}점 ${passed ? "합격" : "불합격"}`];
   const diagnosis = items.find((i) => i.kind === "diagnosis");
   if (diagnosis)

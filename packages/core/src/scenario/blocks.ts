@@ -4,14 +4,15 @@
  * honour yet is listed with `status: "planned"` and the reason, so people see it but cannot use it.
  */
 import type { EntityKind } from "@terrarium/core/world";
+import { NET_BLOCK_SPECS } from "./blocks-net";
 import type { ScenarioNode } from "./model";
 
 export type BlockCategory = "flow" | "fault" | "operation" | "agent";
 
 export const CATEGORY_LABELS: Readonly<Record<BlockCategory, string>> = {
+  fault: "고장",
+  operation: "설정 바꾸기",
   flow: "흐름",
-  fault: "장애",
-  operation: "운영 환경",
   agent: "에이전트",
 };
 
@@ -22,6 +23,9 @@ interface ParamBase {
   readonly help?: string;
 }
 
+/** What a parameter that depends on the chosen switch or PDU offers to pick from, read off the network the cables design. */
+export type NetPick = "cabled_peer" | "svi_vlan" | "bgp_peer" | "static_route" | "outlet";
+
 export type ParamSpec = ParamBase &
   (
     | {
@@ -31,6 +35,8 @@ export type ParamSpec = ParamBase &
         readonly unit: string;
         readonly default: number;
         readonly integer?: boolean;
+        /** Stored as 0 for "until it is fixed"; the form offers that as a choice beside "after n minutes". */
+        readonly recovery?: boolean;
       }
     | { readonly kind: "entity"; readonly kinds: readonly EntityKind[] }
     | { readonly kind: "fault_type" }
@@ -46,6 +52,8 @@ export type ParamSpec = ParamBase &
       }
     | { readonly kind: "boolean"; readonly default: boolean }
     | { readonly kind: "condition" }
+    /** One of the things `dependsOn` (another parameter, a switch or PDU) has: a cabled device, a VLAN interface, a route... */
+    | { readonly kind: "net_pick"; readonly pick: NetPick; readonly dependsOn: string }
     /** The id of another block of `nodeType`. */
     | { readonly kind: "node_ref"; readonly nodeType: string }
   );
@@ -78,12 +86,14 @@ export const PORT_LABELS: Readonly<Record<string, string>> = {
   timeout: "시간 초과",
 };
 
+/** A duration stored in seconds. People read and type it in minutes (see `toMinutes`). */
 const seconds = (
   name: string,
   label: string,
   min: number,
   max: number,
   def: number,
+  extra: { readonly recovery?: boolean } = {},
 ): ParamSpec => ({
   name,
   label,
@@ -93,14 +103,15 @@ const seconds = (
   unit: "초",
   default: def,
   integer: true,
+  ...extra,
 });
 
-export const BLOCK_SPECS: readonly BlockSpec[] = [
+const CORE_BLOCK_SPECS: readonly BlockSpec[] = [
   {
     type: "start",
     category: "flow",
     label: "시작",
-    description: "시나리오가 여기서 시작한다. 세계는 정상 운영 상태에서 출발한다.",
+    description: "시나리오가 여기서 시작해요. 세계는 정상 운영 상태에서 출발해요.",
     hasInput: false,
     outputs: ["next"],
     params: [],
@@ -112,7 +123,7 @@ export const BLOCK_SPECS: readonly BlockSpec[] = [
     type: "wait",
     category: "flow",
     label: "대기",
-    description: "시뮬레이션 시간이 정해진 만큼 흐른 뒤 다음으로 간다.",
+    description: "시뮬레이션 시간이 정해진 만큼 흐른 뒤 다음으로 가요.",
     hasInput: true,
     outputs: ["next"],
     params: [seconds("seconds", "대기 시간", 1, 86_400, 300)],
@@ -122,7 +133,7 @@ export const BLOCK_SPECS: readonly BlockSpec[] = [
     type: "wait_until",
     category: "flow",
     label: "조건 대기",
-    description: "조건이 참이 되면 '충족'으로, 제한 시간이 지나면 '시간 초과'로 간다.",
+    description: "조건이 맞으면 '충족'으로, 제한 시간이 지나면 '시간 초과'로 가요.",
     hasInput: true,
     outputs: ["met", "timeout"],
     params: [
@@ -135,7 +146,7 @@ export const BLOCK_SPECS: readonly BlockSpec[] = [
     type: "branch",
     category: "flow",
     label: "분기",
-    description: "지금 조건이 참이면 '예', 아니면 '아니오'로 간다.",
+    description: "지금 조건이 맞으면 '예', 아니면 '아니오'로 가요.",
     hasInput: true,
     outputs: ["yes", "no"],
     params: [{ name: "condition", label: "조건", kind: "condition" }],
@@ -146,7 +157,7 @@ export const BLOCK_SPECS: readonly BlockSpec[] = [
     category: "flow",
     label: "무작위 선택",
     description:
-      "갈래 중 하나를 고른다. 실험의 시드가 같으면 늘 같은 갈래를 고르므로 결과를 재현할 수 있다.",
+      "갈래 중 하나를 골라요. 실험의 시드가 같으면 늘 같은 갈래를 고르므로 결과를 재현할 수 있어요.",
     hasInput: true,
     outputs: [],
     params: [
@@ -167,7 +178,7 @@ export const BLOCK_SPECS: readonly BlockSpec[] = [
     type: "note",
     category: "flow",
     label: "메모",
-    description: "설명을 남긴다. 실행에는 영향이 없다.",
+    description: "설명을 남겨요. 실행에는 영향이 없어요.",
     hasInput: true,
     outputs: ["next"],
     params: [
@@ -185,28 +196,28 @@ export const BLOCK_SPECS: readonly BlockSpec[] = [
   {
     type: "inject_fault",
     category: "fault",
-    label: "장애 주입",
+    label: "고장 발생",
     description:
-      "대상에 장애를 일으킨다. 유지 시간이 0이면 해제 블록이나 에이전트의 조치가 있을 때까지 계속된다.",
+      "대상에 고장을 일으켜요. '고쳐질 때까지'를 고르면 고장 복구 블록이나 에이전트의 조치가 있을 때까지 계속돼요.",
     hasInput: true,
     outputs: ["next"],
     params: [
-      { name: "faultType", label: "장애 종류", kind: "fault_type" },
+      { name: "faultType", label: "고장 종류", kind: "fault_type" },
       { name: "target", label: "대상", kind: "fault_target" },
-      { name: "faultParams", label: "장애 세부값", kind: "fault_params", optional: true },
-      seconds("durationSeconds", "유지 시간", 0, 86_400, 0),
+      { name: "faultParams", label: "세부 설정", kind: "fault_params", optional: true },
+      seconds("durationSeconds", "복구 방식", 0, 86_400, 0, { recovery: true }),
     ],
     status: "supported",
   },
   {
     type: "clear_fault",
     category: "fault",
-    label: "장애 해제",
-    description: "앞에서 주입한 장애를 없앤다 (자연 복구, 현장 기사 조치 등).",
+    label: "고장 복구",
+    description: "앞에서 일으킨 고장을 없애요 (자연 복구, 현장 기사 조치 등).",
     hasInput: true,
     outputs: ["next"],
     params: [
-      { name: "ref", label: "해제할 장애 주입 블록", kind: "node_ref", nodeType: "inject_fault" },
+      { name: "ref", label: "복구할 고장 발생 블록", kind: "node_ref", nodeType: "inject_fault" },
     ],
     status: "supported",
   },
@@ -214,7 +225,7 @@ export const BLOCK_SPECS: readonly BlockSpec[] = [
     type: "set_load",
     category: "operation",
     label: "부하 변경",
-    description: "서버나 VM의 CPU 부하를 바꾼다 (배치 작업 시작, 트래픽 급증 등).",
+    description: "서버나 VM의 CPU 부하를 바꿔요 (배치 작업 시작, 트래픽 급증 등).",
     hasInput: true,
     outputs: ["next"],
     params: [
@@ -228,7 +239,7 @@ export const BLOCK_SPECS: readonly BlockSpec[] = [
     type: "set_setpoint",
     category: "operation",
     label: "냉방 설정 온도",
-    description: "냉방기의 급기 설정 온도를 바꾼다 (운영자의 설정 변경).",
+    description: "냉방기의 급기 설정 온도를 바꿔요 (운영자의 설정 변경).",
     hasInput: true,
     outputs: ["next"],
     params: [
@@ -241,7 +252,7 @@ export const BLOCK_SPECS: readonly BlockSpec[] = [
         max: 35,
         unit: "°C",
         default: 18,
-        help: "실제 허용 범위는 냉방기 모델에 따라 다르다.",
+        help: "실제 허용 범위는 냉방기 모델에 따라 달라요.",
       },
     ],
     status: "supported",
@@ -251,7 +262,7 @@ export const BLOCK_SPECS: readonly BlockSpec[] = [
     type: "power",
     category: "operation",
     label: "전원 켜기/끄기",
-    description: "장비나 VM의 전원을 켜거나 끈다 (작업자의 계획 정지 등).",
+    description: "장비나 VM의 전원을 켜거나 꺼요 (작업자의 계획 정지 등).",
     hasInput: true,
     outputs: ["next"],
     params: [
@@ -270,7 +281,8 @@ export const BLOCK_SPECS: readonly BlockSpec[] = [
     type: "set_outdoor_temp",
     category: "operation",
     label: "외기 온도 변경",
-    description: "폭염·한파처럼 바깥 온도가 바뀐다.",
+    description:
+      "폭염·한파처럼 바깥 온도가 바뀌어요. 칠러·드라이쿨러·냉각탑의 냉각 용량이 따라 줄고 늘어요.",
     hasInput: true,
     outputs: ["next"],
     params: [
@@ -284,15 +296,14 @@ export const BLOCK_SPECS: readonly BlockSpec[] = [
         default: 35,
       },
     ],
-    status: "planned",
-    plannedReason:
-      "외기와 건물 외피의 열교환 모델이 아직 없다. 지금은 서버룸 열 수지를 냉방기와 외피 손실로만 계산한다.",
+    status: "supported",
+    needsAnyOf: ["site", "room"],
   },
   {
     type: "network_degrade",
     category: "operation",
     label: "네트워크 품질 저하",
-    description: "링크에 지연이나 패킷 손실을 준다.",
+    description: "링크에 지연이나 패킷 손실을 줘요.",
     hasInput: true,
     outputs: ["next"],
     params: [
@@ -308,28 +319,29 @@ export const BLOCK_SPECS: readonly BlockSpec[] = [
       },
     ],
     status: "planned",
-    plannedReason: "네트워크 링크는 연결/끊김만 시뮬레이션한다. 지연·손실 모델은 계획 단계다.",
+    plannedReason:
+      "링크 지연·손실 모델과 경로의 링크 id가 아직 없어요. 네트워크 링크는 연결/끊김만 시뮬레이션하고, 경로의 홉은 링크를 가리키지 않아요.",
   },
   {
     type: "agent_task",
     category: "agent",
     label: "에이전트 투입",
     description:
-      "여기서 에이전트에게 과제를 준다. 이후 블록은 에이전트가 일하는 동안에도 계속 진행된다 (장애 확산 등).",
+      "여기서 에이전트에게 과제를 줘요. 이후 블록은 에이전트가 일하는 동안에도 계속 진행돼요 (고장 확산 등).",
     hasInput: true,
     outputs: ["next"],
     params: [
       {
         name: "prompt",
-        label: "과제 설명",
+        label: "상황 설명",
         kind: "text",
         maxLength: 4000,
         multiline: true,
-        help: "에이전트가 받는 장애 티켓·지시문. 정답을 적지 않는다.",
+        help: "에이전트가 받는 상황 설명이에요. 정답은 적지 않아요.",
       },
       {
         name: "maxToolCalls",
-        label: "툴 호출 한도",
+        label: "툴 호출 상한",
         kind: "number",
         min: 1,
         max: 500,
@@ -337,12 +349,19 @@ export const BLOCK_SPECS: readonly BlockSpec[] = [
         default: 40,
         integer: true,
       },
-      seconds("timeLimitSeconds", "제한 시간 (시뮬레이션)", 60, 86_400, 3600),
+      seconds("timeLimitSeconds", "제한 시간", 60, 86_400, 3600),
     ],
     status: "supported",
     minCount: 1,
     maxCount: 1,
   },
+];
+
+/** Every block, the configuration blocks (REQ-068) before the agent's. */
+export const BLOCK_SPECS: readonly BlockSpec[] = [
+  ...CORE_BLOCK_SPECS.filter((b) => b.type !== "agent_task"),
+  ...NET_BLOCK_SPECS,
+  ...CORE_BLOCK_SPECS.filter((b) => b.type === "agent_task"),
 ];
 
 export function blockSpec(type: string): BlockSpec | undefined {
@@ -372,7 +391,7 @@ const HEALTH: FieldSpec = { label: "상태", type: "enum", values: ["ok", "warni
 
 /** Condition fields per entity kind. A test checks every one exists in the world state. */
 export const CONDITION_FIELDS: Readonly<Record<EntityKind, Readonly<Record<string, FieldSpec>>>> = {
-  site: { health: HEALTH },
+  site: { health: HEALTH, outdoorC: num("외기 온도", "°C") },
   parcel: { health: HEALTH },
   building: { health: HEALTH },
   floor: { health: HEALTH },

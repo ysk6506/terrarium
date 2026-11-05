@@ -2,7 +2,7 @@
  * Blueprint validation. Errors make a blueprint unusable; warnings are what a tycoon game would show
  * as advice ("this rack has no cooling"). Messages are for people using the builder, in Korean.
  */
-import type { Catalog } from "@terrarium/core/catalog";
+import { type Catalog, RACK_STANDARD_LABELS } from "@terrarium/core/catalog";
 import { isEntityId, josa, withJosa } from "@terrarium/core/kernel";
 import { contains, overlaps, type Rect } from "@terrarium/core/spatial";
 import {
@@ -16,7 +16,7 @@ import {
   MODELLED_KINDS,
   PLACEMENT_OF,
 } from "./blueprint";
-import { footprint, heightU, rackUnits } from "./geometry";
+import { footprint, heightU, mountStandardOf, rackStandardOf, rackUnits } from "./geometry";
 import { BlueprintIndex } from "./graph";
 import { KIND_LABELS, kindList, LINK_LABELS } from "./labels";
 import { checkLightRacks } from "./validate-bulk";
@@ -52,8 +52,8 @@ function checkIds(bp: Blueprint): Issue[] {
       out.push(
         error(
           "W002",
-          `'${item.id}'${josa(item.id, "은")} 쓸 수 없는 ID다`,
-          "영문·숫자·_ . : - 만 쓴다.",
+          `'${item.id}'${josa(item.id, "은")} 쓸 수 없는 ID예요`,
+          "영문·숫자·_ . : - 만 써요.",
           {
             entityId: item.id,
           },
@@ -61,7 +61,7 @@ function checkIds(bp: Blueprint): Issue[] {
       );
     if (seen.has(item.id))
       out.push(
-        error("W001", `ID '${item.id}'${josa(item.id, "이")} 두 번 있다`, "ID를 하나씩만 쓴다.", {
+        error("W001", `ID '${item.id}'${josa(item.id, "이")} 두 번 있어요`, "ID를 하나씩만 써요.", {
           entityId: item.id,
         }),
       );
@@ -79,8 +79,8 @@ function checkParent(index: BlueprintIndex, entity: Entity): Issue[] {
       : [
           error(
             "W004",
-            `${entity.name}에 상위 공간이 없다`,
-            `${allowed.map((k) => KIND_LABELS[k]).join(" 또는 ")} 안에 둔다.`,
+            `${entity.name}에 상위 공간이 없어요`,
+            `${allowed.map((k) => KIND_LABELS[k]).join(" 또는 ")} 안에 둬요.`,
             at,
           ),
         ];
@@ -90,8 +90,8 @@ function checkParent(index: BlueprintIndex, entity: Entity): Issue[] {
     return [
       error(
         "W003",
-        `${entity.name}의 상위 '${entity.parentId}'${josa(entity.parentId, "이")} 없다`,
-        "있는 공간 안에 둔다.",
+        `${entity.name}의 상위 '${entity.parentId}'${josa(entity.parentId, "이")} 없어요`,
+        "있는 공간 안에 둬요.",
         at,
       ),
     ];
@@ -99,10 +99,10 @@ function checkParent(index: BlueprintIndex, entity: Entity): Issue[] {
     return [
       error(
         "W004",
-        `${withJosa(KIND_LABELS[entity.kind], "은")} ${KIND_LABELS[parent.kind]} 안에 둘 수 없다`,
+        `${withJosa(KIND_LABELS[entity.kind], "은")} ${KIND_LABELS[parent.kind]} 안에 둘 수 없어요`,
         allowed.length > 0
-          ? `${allowed.map((k) => KIND_LABELS[k]).join(" 또는 ")} 안에 둔다.`
-          : "상위 공간 없이 둔다.",
+          ? `${allowed.map((k) => KIND_LABELS[k]).join(" 또는 ")} 안에 둬요.`
+          : "상위 공간 없이 둬요.",
         at,
       ),
     ];
@@ -118,8 +118,8 @@ function checkPlacementAndModel(catalog: Catalog, entity: Entity): Issue[] {
     out.push(
       error(
         "W005",
-        `${entity.name}의 위치 정보가 없거나 형식이 다르다`,
-        `'${expected}' 형식의 위치를 정한다.`,
+        `${entity.name}의 위치 정보가 없거나 형식이 달라요`,
+        `'${expected}' 형식의 위치를 정해요.`,
         at,
       ),
     );
@@ -129,8 +129,8 @@ function checkPlacementAndModel(catalog: Catalog, entity: Entity): Issue[] {
       out.push(
         error(
           "W006",
-          `${entity.name}의 장비 모델 '${entity.modelId ?? ""}'${josa(entity.modelId ?? "", "을")} 찾을 수 없다`,
-          "카탈로그에 있는 모델을 고른다.",
+          `${entity.name}의 장비 모델 '${entity.modelId ?? ""}'${josa(entity.modelId ?? "", "을")} 찾을 수 없어요`,
+          "카탈로그에 있는 모델을 골라요.",
           at,
         ),
       );
@@ -138,8 +138,8 @@ function checkPlacementAndModel(catalog: Catalog, entity: Entity): Issue[] {
       out.push(
         error(
           "W006",
-          `${entity.name}의 모델은 ${KIND_LABELS[catalog.get(entity.modelId).kind]}용이다`,
-          `${KIND_LABELS[entity.kind]}용 모델을 고른다.`,
+          `${entity.name}의 모델은 ${KIND_LABELS[catalog.get(entity.modelId).kind]}용이에요`,
+          `${KIND_LABELS[entity.kind]}용 모델을 골라요.`,
           at,
         ),
       );
@@ -167,7 +167,7 @@ function checkBounds(index: BlueprintIndex, catalog: Catalog, entity: Entity): I
   if (!rect) return [];
   if (rect.w <= 0 || rect.d <= 0)
     return [
-      error("W007", `${entity.name}의 크기가 0 이하다`, "폭과 깊이를 양수로 정한다.", {
+      error("W007", `${entity.name}의 크기가 0 이하예요`, "폭과 깊이를 양수로 정해요.", {
         entityId: entity.id,
       }),
     ];
@@ -176,8 +176,8 @@ function checkBounds(index: BlueprintIndex, catalog: Catalog, entity: Entity): I
     return [
       error(
         "W007",
-        `${withJosa(entity.name, "이")} 상위 공간 밖으로 나간다`,
-        "안쪽으로 옮기거나 공간을 넓힌다.",
+        `${withJosa(entity.name, "이")} 상위 공간 밖으로 나가요`,
+        "안쪽으로 옮기거나 공간을 넓혀요.",
         { entityId: entity.id },
       ),
     ];
@@ -219,8 +219,8 @@ function checkOverlaps(index: BlueprintIndex, catalog: Catalog): Issue[] {
           out.push(
             error(
               "W008",
-              `${withJosa(a.entity.name, "과")} ${withJosa(b.entity.name, "이")} 겹친다`,
-              "둘 중 하나를 옮긴다.",
+              `${withJosa(a.entity.name, "과")} ${withJosa(b.entity.name, "이")} 겹쳐요`,
+              "둘 중 하나를 옮겨요.",
               { entityId: b.entity.id },
             ),
           );
@@ -229,6 +229,19 @@ function checkOverlaps(index: BlueprintIndex, catalog: Catalog): Issue[] {
     }
   }
   return out;
+}
+
+/** A device built for the other rack standard does not mount: 21-inch sleds in a 19-inch rack, or the reverse. */
+function standardIssue(device: Entity, rack: Entity, catalog: Catalog): Issue | undefined {
+  const wants = mountStandardOf(device, catalog);
+  const has = rackStandardOf(rack, catalog);
+  if (wants === has) return undefined;
+  return error(
+    "W034",
+    `${withJosa(device.name, "은")} ${RACK_STANDARD_LABELS[wants]}용이라 ${RACK_STANDARD_LABELS[has]} 랙 ${rack.name}에 들어가지 않아요`,
+    "같은 규격의 장비나 랙으로 바꿔요.",
+    { entityId: device.id },
+  );
 }
 
 function checkRackUnits(index: BlueprintIndex, catalog: Catalog): Issue[] {
@@ -240,12 +253,17 @@ function checkRackUnits(index: BlueprintIndex, catalog: Catalog): Issue[] {
       const height = heightU(device, catalog);
       const u = device.placement?.type === "unit" ? device.placement.u : 0;
       if (height === 0) continue;
+      const mismatch = standardIssue(device, rack, catalog);
+      if (mismatch) {
+        out.push(mismatch);
+        continue;
+      }
       if (u < 1 || u + height - 1 > units) {
         out.push(
           error(
             "W009",
-            `${withJosa(device.name, "이")} 랙 범위(1~${units}U)를 벗어난다`,
-            "빈 U 위치로 옮긴다.",
+            `${withJosa(device.name, "이")} 랙 범위(1~${units}U)를 벗어나요`,
+            "빈 U 위치로 옮겨요.",
             { entityId: device.id },
           ),
         );
@@ -257,8 +275,8 @@ function checkRackUnits(index: BlueprintIndex, catalog: Catalog): Issue[] {
           out.push(
             error(
               "W009",
-              `${withJosa(device.name, "이")} U${unit}에서 ${withJosa(other, "과")} 겹친다`,
-              "빈 U 위치로 옮긴다.",
+              `${withJosa(device.name, "이")} U${unit}에서 ${withJosa(other, "과")} 겹쳐요`,
+              "빈 U 위치로 옮겨요.",
               { entityId: device.id },
             ),
           );
@@ -278,7 +296,7 @@ function checkLinks(index: BlueprintIndex): Issue[] {
     const from = index.find(link.from);
     const to = index.find(link.to);
     if (!from || !to) {
-      out.push(error("W010", `연결 ${link.id}의 끝점이 없다`, "있는 장비끼리 연결한다.", at));
+      out.push(error("W010", `연결 ${link.id}의 끝점이 없어요`, "있는 장비끼리 연결해요.", at));
       continue;
     }
     const rule = LINK_RULES[link.kind];
@@ -286,8 +304,8 @@ function checkLinks(index: BlueprintIndex): Issue[] {
       out.push(
         error(
           "W010",
-          `${KIND_LABELS[from.kind]} → ${KIND_LABELS[to.kind]}에는 ${LINK_LABELS[link.kind]} 연결을 둘 수 없다`,
-          `${kindList(rule.from)} → ${kindList(rule.to)} 사이만 된다.`,
+          `${KIND_LABELS[from.kind]} → ${KIND_LABELS[to.kind]}에는 ${LINK_LABELS[link.kind]} 연결을 둘 수 없어요`,
+          `${kindList(rule.from)} → ${kindList(rule.to)} 사이만 돼요.`,
           at,
         ),
       );
@@ -298,8 +316,8 @@ function checkLinks(index: BlueprintIndex): Issue[] {
       out.push(
         error(
           "W011",
-          `${entity.name}의 전원 경로가 자기 자신으로 돌아온다`,
-          "전원 연결의 순환을 끊는다.",
+          `${entity.name}의 전원 경로가 자기 자신으로 돌아와요`,
+          "전원 연결의 순환을 끊어요.",
           { entityId: entity.id },
         ),
       );
@@ -317,15 +335,15 @@ function adviceWarnings(index: BlueprintIndex): Issue[] {
       out.push(
         warning(
           "W020",
-          `${entity.name}에 전원이 연결되지 않았다`,
-          "PDU나 분전반에 전원 케이블을 연결한다.",
+          `${entity.name}에 전원이 연결되지 않았어요`,
+          "PDU나 분전반에 전원 케이블을 연결해요.",
           at,
         ),
       );
     }
     if (entity.kind === "pdu" && index.outgoing(entity.id, "power").length === 0) {
       out.push(
-        warning("W021", `${entity.name}의 상위 전원(분전반)이 없다`, "분전반에 연결한다.", at),
+        warning("W021", `${entity.name}의 상위 전원(분전반)이 없어요`, "분전반에 연결해요.", at),
       );
     }
   }
@@ -334,7 +352,7 @@ function adviceWarnings(index: BlueprintIndex): Issue[] {
     const hasCooling = index.descendants(room.id).some((e) => e.kind === "cooling_unit");
     if (hasRacks && !hasCooling) {
       out.push(
-        warning("W022", `${room.name}에 냉방 설비가 없다`, "항온항습기나 인로우 냉방기를 둔다.", {
+        warning("W022", `${room.name}에 냉방 설비가 없어요`, "항온항습기나 인로우 냉방기를 둬요.", {
           entityId: room.id,
         }),
       );
@@ -343,8 +361,25 @@ function adviceWarnings(index: BlueprintIndex): Issue[] {
   return out;
 }
 
+/** Parents that lead back to themselves: nothing below them can be placed, so the rest is not checked. */
+function checkParentLoops(index: BlueprintIndex): Issue[] {
+  return index
+    .all()
+    .filter((entity) => index.inParentLoop(entity.id))
+    .map((entity) =>
+      error(
+        "W012",
+        `${entity.name}의 상위 공간을 따라가면 다시 ${entity.name}${josa(entity.name, "이")} 나와요`,
+        "상위 공간을 한 방향으로만 이어요. 돌고 도는 연결 하나를 끊어요.",
+        { entityId: entity.id },
+      ),
+    );
+}
+
 export function validateBlueprint(bp: Blueprint, catalog: Catalog): Issue[] {
   const index = new BlueprintIndex(bp);
+  const loops = checkParentLoops(index);
+  if (loops.length > 0) return [...checkIds(bp), ...loops];
   const perEntity = index
     .all()
     .flatMap((entity) => [

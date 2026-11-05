@@ -1,7 +1,14 @@
 /** An ExperimentStore in memory, for tests and for running without a database. Values are copied in and out. */
 import type { Blueprint, EntityKind } from "@terrarium/core/world";
+import type { AgentHistory } from "./agent-version";
 import type { Experiment, RunRecord, ScenarioRecord, WorldRecord } from "./model";
-import type { ExperimentFilter, ExperimentStore, ShareRecord, WorldSummary } from "./ports";
+import type {
+  ConnectionRecord,
+  ExperimentFilter,
+  ExperimentStore,
+  ShareRecord,
+  WorldSummary,
+} from "./ports";
 
 const copy = <T>(value: T): T => structuredClone(value);
 
@@ -25,9 +32,24 @@ export function matchesText(
     .every((word) => hay.includes(word));
 }
 
+/** The experiment, or the connection it ran on, carries `name=value` (or just `name`) as metadata. */
+export function matchesMetadata(
+  e: Pick<Experiment, "metadata" | "subject">,
+  meta: string | undefined,
+): boolean {
+  if (meta === undefined) return true;
+  const at = meta.indexOf("=");
+  const key = (at < 0 ? meta : meta.slice(0, at)).trim();
+  const value = at < 0 ? undefined : meta.slice(at + 1).trim();
+  return [e.metadata, e.subject?.harness.metadata].some(
+    (m) => m !== undefined && key in m && (value === undefined || m[key] === value),
+  );
+}
+
 function matches(e: Experiment, f: ExperimentFilter): boolean {
   return (
     matchesText(e, f.text) &&
+    matchesMetadata(e, f.meta) &&
     (f.owner === undefined || e.owner === f.owner) &&
     (f.benchmarkKey === undefined || e.benchmarkKey === f.benchmarkKey) &&
     (f.parentId === undefined || e.parentId === f.parentId) &&
@@ -44,6 +66,8 @@ export class MemoryStore implements ExperimentStore {
   private readonly experiments = new Map<string, Experiment>();
   private readonly runs = new Map<string, RunRecord>();
   private readonly shares = new Map<string, ShareRecord>();
+  private readonly connections = new Map<string, ConnectionRecord>();
+  private readonly histories = new Map<string, AgentHistory>();
 
   async putWorld(world: WorldRecord): Promise<void> {
     this.worlds.set(world.id, copy(world));
@@ -146,5 +170,45 @@ export class MemoryStore implements ExperimentStore {
 
   async deleteShare(token: string): Promise<boolean> {
     return this.shares.delete(token);
+  }
+
+  async putConnection(connection: ConnectionRecord): Promise<void> {
+    this.connections.set(connection.id, copy(connection));
+  }
+
+  async listConnections(): Promise<ConnectionRecord[]> {
+    return [...this.connections.values()]
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id))
+      .map(copy);
+  }
+
+  async deleteConnection(id: string): Promise<boolean> {
+    return this.connections.delete(id);
+  }
+
+  async getAgentHistory(harnessId: string, agentId: string): Promise<AgentHistory | undefined> {
+    const h = this.histories.get(JSON.stringify([harnessId, agentId]));
+    return h && copy(h);
+  }
+
+  async putAgentHistory(history: AgentHistory): Promise<void> {
+    this.histories.set(JSON.stringify([history.harnessId, history.agentId]), copy(history));
+  }
+
+  async listAgentHistories(harnessId: string): Promise<AgentHistory[]> {
+    return [...this.histories.values()]
+      .filter((h) => h.harnessId === harnessId)
+      .sort((a, b) => a.agentId.localeCompare(b.agentId))
+      .map(copy);
+  }
+
+  async deleteAgentHistories(harnessId: string): Promise<number> {
+    let removed = 0;
+    for (const [key, h] of this.histories)
+      if (h.harnessId === harnessId) {
+        this.histories.delete(key);
+        removed++;
+      }
+    return removed;
   }
 }

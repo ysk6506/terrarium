@@ -12,6 +12,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { monitorEventLoopDelay } from "node:perf_hooks";
 import type { AgentRunOutcome, AgentRunRequest, HarnessPort } from "@terrarium/core/experiments";
+import { DEFAULT_CAMPUS, generateCampus, SITE_CAMPUS_MIX } from "@terrarium/core/sources/worldgen";
 import { DEFAULT_TOOLSET } from "@terrarium/core/tools";
 import { buildAdapters, parseConfig, ScriptedHarness } from "../../apps/server/src/adapters";
 import { Platform, WorkerHost } from "../../apps/server/src/runtime";
@@ -27,6 +28,13 @@ const total = arg("total", concurrency * 2);
 const users = arg("users", 8);
 /** A generated world with about N racks (real sites have hundreds); the default is a small one. */
 const racks = arg("racks", 8);
+/** A generated campus of this site (cheonan, suwon, giheung, hwaseong, ...) instead of a hall of racks. */
+const campusSite = (() => {
+  const i = process.argv.indexOf("--campus");
+  return i > 0 ? (process.argv[i + 1] as keyof typeof SITE_CAMPUS_MIX) : undefined;
+})();
+/** How many different worlds the runs are spread over (each has its own warm-up and its own memory). */
+const worldCount = arg("worlds", 1);
 
 /** The built-in agent, but every tool call waits first, as a model's turn would. */
 class ThinkingHarness implements HarnessPort {
@@ -82,44 +90,71 @@ async function main() {
   const viewerOf = (i: number) => ({ name: `user${i % users}`, source: "proxy" as const });
   const first = viewerOf(0);
   const side = Math.ceil(Math.sqrt(racks / 2));
-  const { world } = await platform.worlds.generate(first, {
-    spec: {
-      site: "cheonan",
-      seed: 1,
-      buildings: 1,
-      floors: 1,
-      roomsPerFloor: 2,
-      rows: side,
-      racksPerRow: side,
-      fill: 0.6,
-      gpuShare: 0.1,
-      containment: "hot",
-      coolingRedundancy: "N+1",
-      powerRedundancy: "2N",
-      vmsPerHost: 2,
-    },
-  });
-  const { scenario } = await platform.scenarios.create(first, {
-    worldId: world.id,
-    templateId: "cooling-failure",
-  });
+  const targets: Array<{ worldId: string; scenarioId: string }> = [];
+  for (let w = 0; w < worldCount; w++) {
+    const { world } = campusSite
+      ? await platform.worlds.create(first, {
+          name: `부하 캠퍼스 ${w}`,
+          blueprint: generateCampus({
+            ...DEFAULT_CAMPUS,
+            ...SITE_CAMPUS_MIX[campusSite],
+            site: campusSite,
+            seed: w + 1,
+          }).blueprint,
+        })
+      : await platform.worlds.generate(first, {
+          spec: {
+            site: "cheonan",
+            seed: w + 1,
+            buildings: 1,
+            floors: 1,
+            roomsPerFloor: 2,
+            rows: side,
+            racksPerRow: side,
+            fill: 0.6,
+            gpuShare: 0.1,
+            containment: "hot",
+            coolingRedundancy: "N+1",
+            powerRedundancy: "2N",
+            vmsPerHost: 2,
+          },
+        });
+    const { scenario } = await platform.scenarios.create(first, {
+      worldId: world.id,
+      templateId: "cooling-failure",
+    });
+    targets.push({ worldId: world.id, scenarioId: scenario.id });
+  }
   let peakRunning = 0;
   let peakRss = 0;
+  let peakMainHeap = 0;
+  let peakWorkerHeap = 0;
   const sampler = setInterval(() => {
     peakRunning = Math.max(peakRunning, platform.dispatcher.counts.running);
-    peakRss = Math.max(peakRss, process.memoryUsage().rss);
+    const m = process.memoryUsage();
+    peakRss = Math.max(peakRss, m.rss);
+    peakMainHeap = Math.max(peakMainHeap, m.heapUsed);
   }, 50);
+  const heapSampler = setInterval(() => {
+    void host.threadHeapMb().then((mb) => {
+      peakWorkerHeap = Math.max(
+        peakWorkerHeap,
+        mb.reduce((a, b) => a + b, 0),
+      );
+    });
+  }, 500);
 
   const started = performance.now();
   const ids: Array<{ viewer: ReturnType<typeof viewerOf>; id: string }> = [];
   for (let i = 0, left = total; left > 0; i++, left -= 20) {
     const count = Math.min(20, left);
     const viewer = viewerOf(i);
+    const target = targets[i % targets.length] as { worldId: string; scenarioId: string };
     const made = await platform.experiments.create(viewer, {
       name: `부하 ${i}`,
       recipe: {
-        worldId: world.id,
-        scenarioId: scenario.id,
+        worldId: target.worldId,
+        scenarioId: target.scenarioId,
         harnessId: "slow",
         agentId: "triage",
         tools: [...DEFAULT_TOOLSET],
@@ -143,6 +178,7 @@ async function main() {
   }
   const seconds = (performance.now() - started) / 1000;
   clearInterval(sampler);
+  clearInterval(heapSampler);
   lag.disable();
   const dbBytes = (() => {
     try {
@@ -153,7 +189,8 @@ async function main() {
   })();
   const out = {
     concurrency,
-    racks,
+    worlds: worldCount,
+    ...(campusSite ? { campus: campusSite } : { racks }),
     thinkMs,
     threads,
     total,
@@ -171,6 +208,8 @@ async function main() {
       max: Number((lag.max / 1e6).toFixed(1)),
     },
     peakRssMb: Math.round(peakRss / 1048576),
+    peakMainHeapMb: Math.round(peakMainHeap / 1048576),
+    peakWorkerHeapMb: peakWorkerHeap,
     dbKb: Math.round(dbBytes / 1024),
   };
   process.stdout.write(`${JSON.stringify(out)}\n`);

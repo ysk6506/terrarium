@@ -14,7 +14,6 @@ function NumbersControl({
   readonly field: Extract<Field, { control: "numbers" }>;
   readonly set: (v: ParamValue) => void;
 }) {
-  if (field.items.length === 0) return <p className="tiny muted">이 장애에는 정할 값이 없다.</p>;
   const values = Object.fromEntries(field.items.map((i) => [i.name, i.value]));
   return (
     <div className="stack" style={{ gap: 8 }}>
@@ -33,6 +32,76 @@ function NumbersControl({
         />
       ))}
     </div>
+  );
+}
+
+function ConditionControl({
+  label,
+  value,
+  e,
+  set,
+  error,
+}: {
+  readonly label: string;
+  readonly value: Condition | undefined;
+  readonly e: ScenarioEditor;
+  readonly set: (v: ParamValue | undefined) => void;
+  readonly error?: string;
+}) {
+  return (
+    <div className="field">
+      <span className="field-label">{label}</span>
+      <ConditionEditor
+        value={value ?? scenario.newCondition("alarm", e.index)}
+        onChange={(c: Condition) => set(c)}
+        index={e.index}
+      />
+      {error && <span className="field-error">{error}</span>}
+    </div>
+  );
+}
+
+/** How long a fault lasts: a choice, and the minutes only when it mends by itself. */
+function Recovery({
+  field,
+  common,
+  set,
+}: {
+  readonly field: Extract<Field, { control: "recovery" }>;
+  readonly common: { readonly label: string; readonly help?: string; readonly error?: string };
+  readonly set: (v: ParamValue | undefined) => void;
+}) {
+  const { minutes } = field;
+  return (
+    <>
+      <SelectField
+        {...common}
+        value={field.mode}
+        options={field.choices}
+        onChange={(mode) =>
+          set(
+            scenario.recoverySeconds(
+              mode as scenario.RecoveryMode,
+              field.mode === "timed" ? Math.round(minutes.value * 60) : undefined,
+            ),
+          )
+        }
+      />
+      {field.mode === "timed" && (
+        <NumberField
+          label="복구까지 걸리는 시간"
+          value={minutes.value}
+          min={minutes.min}
+          max={minutes.max}
+          step={minutes.step}
+          unit="분"
+          onChange={(n) => {
+            const m = n === undefined ? undefined : scenario.readNumber(String(n), minutes);
+            if (m !== undefined) set(scenario.storedNumber({ stored: "seconds" }, m));
+          }}
+        />
+      )}
+    </>
   );
 }
 
@@ -65,9 +134,17 @@ function Control({
           max={field.max}
           step={field.step}
           unit={field.unit}
-          onChange={(n) => set(n === undefined ? undefined : scenario.readNumber(String(n), field))}
+          onChange={(n) =>
+            set(
+              n === undefined
+                ? undefined
+                : scenario.storedNumber(field, scenario.readNumber(String(n), field)),
+            )
+          }
         />
       );
+    case "recovery":
+      return <Recovery field={field} common={common} set={set} />;
     case "choice":
       return (
         <SelectField
@@ -91,15 +168,13 @@ function Control({
       return <Check label={common.label} checked={field.value} onChange={(v) => set(v)} />;
     case "condition":
       return (
-        <div className="field">
-          <span className="field-label">{common.label}</span>
-          <ConditionEditor
-            value={field.value ?? scenario.newCondition("alarm", e.index)}
-            onChange={(c: Condition) => set(c)}
-            index={e.index}
-          />
-          {error && <span className="field-error">{error}</span>}
-        </div>
+        <ConditionControl
+          label={common.label}
+          value={field.value}
+          e={e}
+          set={set}
+          {...(error ? { error } : {})}
+        />
       );
     case "numbers":
       return (

@@ -313,7 +313,7 @@ describe("Redfish facade [REQ-002] [REQ-003]", () => {
 });
 
 describe("vCenter facade [REQ-003] [REQ-004]", () => {
-  test("lists VMs with filters and shows details with placement", () => {
+  test("lists VMs with filters and shows details; a VM's host is found by the hosts filter", () => {
     const vc = new VcenterFacade(boot().world, profiles);
     const vms = body(vc.handle(get("/api/vcenter/vm"))) as unknown as any[];
     expect(vms.map((v) => v.vm)).toEqual(["vm-db", "vm-web"]);
@@ -328,10 +328,13 @@ describe("vCenter facade [REQ-003] [REQ-004]", () => {
       ),
     ).toEqual(["vm-web"]);
     expect(body(vc.handle(get("/api/vcenter/vm", { names: "nope" })))).toEqual([]);
-    expect(body(vc.handle(get("/api/vcenter/vm/vm-db")))).toMatchObject({
-      placement: { host: "srv-a2" },
-      cpu: { count: 16 },
-    });
+    expect(
+      (body(vc.handle(get("/api/vcenter/vm", { hosts: "srv-a2" }))) as unknown as any[]).map(
+        (v) => v.vm,
+      ),
+    ).toEqual(["vm-db"]);
+    expect(body(vc.handle(get("/api/vcenter/vm/vm-db")))).toMatchObject({ cpu: { count: 16 } });
+    expect(body(vc.handle(get("/api/vcenter/vm/vm-db")))).not.toHaveProperty("placement");
     expect(vc.handle(get("/api/vcenter/vm/ghost")).status).toBe(404);
   });
 

@@ -30,7 +30,8 @@ export class ApiError extends Error {
   }
 }
 
-export const NETWORK_MESSAGE = "서버에 닿을 수 없다. 네트워크와 서버가 켜져 있는지 확인한다";
+export const NETWORK_MESSAGE =
+  "서버에 연결할 수 없어요. 네트워크와 서버가 켜져 있는지 확인해 주세요";
 
 export type FetchLike = (url: string, init: RequestInit) => Promise<Response>;
 
@@ -72,7 +73,7 @@ async function errorOf(response: Response): Promise<ApiError> {
   } catch {
     // not JSON: fall through
   }
-  return new ApiError(response.status, "http_error", `서버가 ${response.status}로 답했다`);
+  return new ApiError(response.status, "http_error", `서버가 ${response.status}로 답했어요`);
 }
 
 export function createApi(options: ApiOptions = {}): Api {

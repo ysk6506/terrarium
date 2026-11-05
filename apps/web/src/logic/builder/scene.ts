@@ -13,6 +13,7 @@ import { elevation } from "./rack";
 
 export type GroupKey =
   | "building"
+  | "parcel"
   | "room"
   | "containment-cold"
   | "containment-hot"
@@ -49,7 +50,7 @@ export interface Scene {
 
 /** What the view adds on top of the plain world. */
 export interface Overlay {
-  /** Inlet temperature per rack (°C), after "가동해 보기". */
+  /** Inlet temperature per rack (°C), after "돌려 보기". */
   readonly heat?: ReadonlyMap<string, number>;
   /** Entities with an active critical alarm. */
   readonly alarmed?: ReadonlySet<string>;
@@ -64,6 +65,7 @@ export const hex = (h: string): Rgb => {
 
 export const COLORS = {
   building: hex("#9FB3AB"),
+  parcel: hex("#FF5A1F"),
   room: hex("#D6E0DB"),
   cold: hex("#3A86C9"),
   hot: hex("#C9821A"),
@@ -123,6 +125,7 @@ class GroupBuilder {
 
 const OPACITY: Readonly<Record<GroupKey, number>> = {
   building: 1,
+  parcel: 0.3,
   room: 1,
   "containment-cold": 0.18,
   "containment-hot": 0.18,
@@ -180,6 +183,8 @@ function drawThing(ctx: Ctx, e: Entity): void {
       y: floors * 4.5 + 1,
       z: rect.y + rect.d / 2,
     });
+  } else if (e.kind === "parcel") {
+    put(ctx, "parcel", e, rect, { height: HEIGHTS.roomSlab, color: COLORS.parcel });
   } else if (e.kind === "room") {
     put(ctx, "room", e, rect, { height: HEIGHTS.roomSlab, color: COLORS.room });
     ctx.labels.push({

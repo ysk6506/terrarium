@@ -8,6 +8,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import fastifyStatic from "@fastify/static";
 import {
+  type ActivityEvent,
   type ExperimentEvent,
   errorReply,
   invalidInput,
@@ -20,15 +21,17 @@ import {
 } from "@terrarium/core/contract";
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from "fastify";
 import type { McpGateway } from "../mcp";
-import type { Platform } from "../runtime";
+import { ANONYMOUS, type Platform } from "../runtime";
 import { compressWeb } from "./compress";
-import { HANDLERS, type HandlerInput } from "./handlers";
-import { viewerOf } from "./viewer";
+import { HANDLERS, type HandlerInput, type StreamRoute } from "./handlers";
+import { type Authenticator, headerAuthenticator } from "./identity";
 
 export interface AppOptions {
   readonly platform: Platform;
   readonly gateway?: McpGateway;
-  /** Header set by a trusted SSO proxy with the signed-in user. */
+  /** Who is asking (ADR-0044). Left out: `identityHeader` decides, as before. */
+  readonly authenticator?: Authenticator;
+  /** Header set by a trusted SSO proxy with the signed-in user. Ignored when `authenticator` is given. */
   readonly identityHeader?: string;
   /** How people reach the server; derived from each request when absent. */
   readonly publicUrl?: string;
@@ -72,7 +75,7 @@ function parseInput(route: RouteSpec, req: FastifyRequest, reply: FastifyReply) 
     ? parseWith(route.query, req.query ?? {})
     : { ok: true as const, value: undefined };
   if (!query.ok) {
-    const { status, body } = invalidInput(query.issues, "주소의 조건을 확인한다");
+    const { status, body } = invalidInput(query.issues, "주소의 조건을 확인해 주세요");
     void reply.status(status).send(body);
     return undefined;
   }
@@ -96,8 +99,9 @@ function contentTypeFor(name: RouteName, route: RouteSpec, query: unknown): stri
 
 function registerRoute(
   app: FastifyInstance,
-  name: Exclude<RouteName, "experimentEvents">,
+  name: Exclude<RouteName, StreamRoute>,
   options: AppOptions,
+  auth: Authenticator,
 ): void {
   const route: RouteSpec = ROUTES[name];
   app.route({
@@ -106,14 +110,15 @@ function registerRoute(
     handler: async (req, reply) => {
       const parsed = parseInput(route, req, reply);
       if (!parsed) return reply;
-      const input = {
-        params: req.params as Record<string, string>,
-        query: parsed.query,
-        body: parsed.body,
-        viewer: viewerOf(req.headers, options.identityHeader),
-        baseUrl: baseUrlOf(req, options.publicUrl),
-      } as HandlerInput<typeof name>;
       try {
+        const input = {
+          params: req.params as Record<string, string>,
+          query: parsed.query,
+          body: parsed.body,
+          // A link with its secret in the address is open to people with no sign-in (REQ-038).
+          viewer: route.public ? ANONYMOUS : await auth.authenticate(req),
+          baseUrl: baseUrlOf(req, options.publicUrl),
+        } as HandlerInput<typeof name>;
         const result = await (HANDLERS[name] as (p: Platform, i: typeof input) => Promise<unknown>)(
           options.platform,
           input,
@@ -135,13 +140,36 @@ function registerRoute(
   });
 }
 
+/** Open a server-sent-event stream on a reply; `write` sends one event, `close` stops the heartbeat. */
+function openStream<E extends { readonly type: string }>(
+  req: FastifyRequest,
+  reply: FastifyReply,
+  options: AppOptions,
+  onClose: () => void,
+): (e: E) => void {
+  reply.hijack();
+  const raw = reply.raw;
+  raw.writeHead(200, {
+    "content-type": "text/event-stream; charset=utf-8",
+    "cache-control": "no-cache, no-transform",
+    connection: "keep-alive",
+    "x-accel-buffering": "no",
+  });
+  const beat = setInterval(() => raw.write(": ping\n\n"), (options.heartbeatSeconds ?? 15) * 1000);
+  req.raw.on("close", () => {
+    clearInterval(beat);
+    onClose();
+  });
+  return (e) => raw.write(`event: ${e.type}\ndata: ${JSON.stringify(e)}\n\n`);
+}
+
 /** Live progress of one experiment: a summary now, then every change as it happens. */
-function registerEvents(app: FastifyInstance, options: AppOptions): void {
+function registerEvents(app: FastifyInstance, options: AppOptions, auth: Authenticator): void {
   app.get(ROUTES.experimentEvents.path, async (req, reply) => {
     const id = (req.params as { id: string }).id;
-    const viewer = viewerOf(req.headers, options.identityHeader);
     let first: ExperimentEvent;
     try {
+      const viewer = await auth.authenticate(req);
       const view = await options.platform.experiments.view(viewer, id);
       first = {
         type: "experiment",
@@ -155,30 +183,44 @@ function registerEvents(app: FastifyInstance, options: AppOptions): void {
     } catch (err) {
       return sendError(reply, err);
     }
-    reply.hijack();
-    const raw = reply.raw;
-    raw.writeHead(200, {
-      "content-type": "text/event-stream; charset=utf-8",
-      "cache-control": "no-cache, no-transform",
-      connection: "keep-alive",
-      "x-accel-buffering": "no",
-    });
-    const write = (e: ExperimentEvent) =>
-      raw.write(`event: ${e.type}\ndata: ${JSON.stringify(e)}\n\n`);
+    let off = () => {};
+    const write = openStream<ExperimentEvent>(req, reply, options, () => off());
     write(first);
-    const off = options.platform.events.subscribe(id, write);
-    const beat = setInterval(
-      () => raw.write(": ping\n\n"),
-      (options.heartbeatSeconds ?? 15) * 1000,
-    );
-    req.raw.on("close", () => {
-      clearInterval(beat);
-      off();
-    });
+    off = options.platform.events.subscribe(id, write);
+  });
+}
+
+/** Who is working in one world now (REQ-050): the runs already going, then every call as it happens. */
+function registerActivity(app: FastifyInstance, options: AppOptions): void {
+  app.get(ROUTES.worldActivity.path, async (req, reply) => {
+    const id = (req.params as { id: string }).id;
+    try {
+      await options.platform.worlds.get(id);
+    } catch (err) {
+      return sendError(reply, err);
+    }
+    let off = () => {};
+    const write = openStream<ActivityEvent>(req, reply, options, () => off());
+    for (const e of options.platform.events.workingIn(id)) write(e);
+    off = options.platform.events.subscribeWorld(id, write);
   });
 }
 
 function registerMcp(app: FastifyInstance, gateway: McpGateway): void {
+  app.route({
+    method: ["GET", "POST", "DELETE"],
+    url: "/mcp/slots/:slot/:token",
+    handler: async (req, reply) => {
+      const { slot, token } = req.params as { slot: string; token: string };
+      if (!gateway.hasSlot(slot, token))
+        return reply
+          .status(404)
+          .send(errorReply(404, "not_found", "이 연결의 고정 툴 주소가 아니에요").body);
+      reply.hijack();
+      await gateway.handleSlot(slot, token, req.raw, reply.raw, req.body);
+      return reply;
+    },
+  });
   app.route({
     method: ["GET", "POST", "DELETE"],
     url: "/mcp/runs/:runId/:token",
@@ -188,7 +230,7 @@ function registerMcp(app: FastifyInstance, gateway: McpGateway): void {
         return reply
           .status(404)
           .send(
-            errorReply(404, "not_found", "이 실행의 툴 엔드포인트가 없거나 실행이 끝났다").body,
+            errorReply(404, "not_found", "이 실행의 툴 엔드포인트가 없거나 실행이 끝났어요").body,
           );
       reply.hijack();
       await gateway.handle(runId, token, req.raw, reply.raw, req.body);
@@ -216,10 +258,10 @@ function registerWeb(app: FastifyInstance, webDist: string | undefined): void {
       !hasWeb ||
       req.method !== "GET"
     )
-      return reply.status(404).send(errorReply(404, "not_found", "그런 주소는 없다").body);
+      return reply.status(404).send(errorReply(404, "not_found", "그런 주소는 없어요").body);
     // A missing file is a 404, not the app: a script that answers with HTML only hides the real problem.
     if (/\.[A-Za-z0-9]{1,8}$/.test(url))
-      return reply.status(404).send(errorReply(404, "not_found", "그런 파일은 없다").body);
+      return reply.status(404).send(errorReply(404, "not_found", "그런 파일은 없어요").body);
     // The web app routes in the browser: every other page is the app.
     return reply.type("text/html; charset=utf-8").sendFile("index.html");
   });
@@ -231,18 +273,22 @@ export function buildApp(options: AppOptions): FastifyInstance {
     if (err.code === "FST_ERR_CTP_INVALID_JSON_BODY" || err.code === "FST_ERR_CTP_EMPTY_JSON_BODY")
       return reply
         .status(400)
-        .send(errorReply(400, "invalid_json", "본문이 올바른 JSON이 아니다").body);
+        .send(errorReply(400, "invalid_json", "본문이 올바른 JSON이 아니에요").body);
     if (err.statusCode === 413) return reply.status(413).send(errorReply(413, "too_large").body);
     if (err.statusCode === 415)
       return reply
         .status(415)
-        .send(errorReply(415, "unsupported_media", "본문은 JSON이어야 한다").body);
+        .send(errorReply(415, "unsupported_media", "본문은 JSON이어야 해요").body);
     return sendError(reply, err);
   });
   app.get("/healthz", async () => ({ ok: true }));
+  const auth = options.authenticator ?? headerAuthenticator(options.identityHeader);
+  auth.mount?.(app);
   for (const name of Object.keys(ROUTES) as RouteName[])
-    if (name !== "experimentEvents") registerRoute(app, name, options);
-  registerEvents(app, options);
+    if (name !== "experimentEvents" && name !== "worldActivity")
+      registerRoute(app, name, options, auth);
+  registerEvents(app, options, auth);
+  registerActivity(app, options);
   if (options.gateway) registerMcp(app, options.gateway);
   registerWeb(app, options.webDist);
   return app;

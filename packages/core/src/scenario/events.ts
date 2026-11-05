@@ -1,0 +1,46 @@
+/**
+ * The world events a condition can ask about (`event` condition, ADR-0075): what each is called in the editor, the
+ * clause that reads in a sentence ("열 보호로 꺼진 적이 있어요"), and which entity or link an event is about.
+ */
+import type { WorldCommand, WorldEvent } from "@terrarium/core/world";
+
+export type EventType = WorldCommand["type"];
+
+/** The events worth asking about. `note` only goes into the log, so it is not among them. */
+export const EVENT_LABELS: Readonly<Record<Exclude<EventType, "note">, string>> = {
+  "thermal.shutdown": "열 보호로 꺼진 적",
+  "fault.add": "고장이 난 적",
+  "fault.remove": "고장이 풀린 적",
+  "alarm.raise": "알람이 울린 적",
+  "alarm.clear": "알람이 풀린 적",
+  "power.set": "전원이 바뀐 적",
+  "load.set": "부하가 바뀐 적",
+  "setpoint.set": "냉방 설정 온도가 바뀐 적",
+  "breaker.reset": "차단기를 리셋한 적",
+  "link.admin": "포트를 끄거나 켠 적",
+  "outlet.set": "콘센트를 끄거나 켠 적",
+  "net.set": "스위치 설정이 바뀐 적",
+  "outdoor.set": "외기 온도가 바뀐 적",
+};
+
+export const EVENT_TYPES = Object.keys(EVENT_LABELS) as (keyof typeof EVENT_LABELS)[];
+
+export const isEventType = (type: string): type is keyof typeof EVENT_LABELS =>
+  Object.hasOwn(EVENT_LABELS, type);
+
+/** The entity or link an event is about; undefined when it is about none (outdoor air, a log note). */
+export function eventTarget(e: WorldEvent): string | undefined {
+  switch (e.type) {
+    case "fault.add":
+      return e.fault.target;
+    case "alarm.raise":
+      return e.alarm.entityId;
+    case "fault.remove":
+    case "alarm.clear":
+    case "outdoor.set":
+    case "note":
+      return undefined;
+    default:
+      return e.target;
+  }
+}

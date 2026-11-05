@@ -2,15 +2,18 @@
 title: 규모 키우기 — 스케일 업과 스케일 아웃
 kind: guide
 status: active
-last_verified: 2026-10-29
+last_verified: 2026-11-04
 covers:
   - apps/server/src/cluster/protocol.ts
   - apps/server/src/cluster/control-routes.ts
-covers_hash: 3615385ac26172a2
+  - apps/server/src/cluster/cluster-host.ts
+covers_hash: c4d3826d8f776edb
 verification_log:
   - "2026-10-29: first version, checked against the cluster code and deploy/ (ADR-0032)"
   - "2026-10-29: 역할, 지표 이름, 하트비트·비우기 동작을 protocol.ts, control-routes.ts, main.ts와 대조했다"
   - "2026-10-29: 용량 문서 링크 추가"
+  - "2026-11-03: 서버·core가 사람에게 돌려주는 안내 문장이 해요체로 바뀐 것만 확인했다. 동작과 본문은 그대로 (ADR-0050)"
+  - "2026-11-04: 2026-11-04: 자리 잡기와 재시도, 메모리 약속 설명을 cluster-host.ts, admission.ts와 대조했다 (ADR-0056)"
 ---
 # 규모 키우기 (REQ-042, [ADR-0032](adr/0032-scale-out-workers.md))
 
@@ -49,6 +52,8 @@ verification_log:
 (컨트롤이 이 노드에 닿는 주소), `TERRARIUM_NODE_ID`, `TERRARIUM_CLUSTER_TOKEN_ENV`. 토큰 자체는 `tokenEnv`가 가리키는
 환경 변수에 둔다. 컨트롤과 모든 워커가 같은 값을 쓴다.
 
+스레드 하나가 쓸 메모리(MB)는 `TERRARIUM_WORKER_HEAP_MB`로 정한다. 정하지 않으면 기계(컨테이너) 메모리에서 메인 스레드 몫을 빼고 스레드 수로 나눈 값이다([용량](capacity.md)).
+
 기타 설정(`cluster` 안): `sessionsPerThread`(32), `heartbeatSeconds`(5), `nodeTtlSeconds`(20, 하트비트의 두 배보다 커야 한다),
 `drainSeconds`(10분), `idleSeconds`(1시간), `nodeSlots`(자동 확장 계산용 힌트).
 
@@ -61,8 +66,9 @@ verification_log:
 
 1. 사람이 실험을 만든다. 실행이 줄에 선다(컨트롤).
 2. 스케줄러가 자리가 있고 공정한 차례인 실행을 고른다(ADR-0024).
-3. `ClusterHost`가 가장 한가한 곳(자기 스레드 또는 노드)을 고른다. 노드가 가득 찼거나 비우는 중이거나 응답이 없으면 다음 곳.
-4. 세션은 그 노드에서 열린다. 세계는 노드가 모를 때만 한 번 보낸다. 에이전트의 툴 호출은 컨트롤을 거쳐 그 노드의 세션으로 간다.
+3. `ClusterHost`가 가장 한가한 곳(자기 스레드 또는 노드)을 고르고, 열기를 시작하는 순간 그 자리를 잡는다(동시에 열리는 세션들이 한 노드로 몰리지 않게). 노드가 가득 찼거나 비우는 중이거나 응답이 없으면 다음 곳.
+   컨트롤은 자리가 있다고 세는데 노드가 가득 찼다고 거절하면(노드가 방금 끝난 세션을 아직 모르는 잠깐) 30초까지 다시 시도하고, 그래도 없으면 "세션을 돌릴 자리가 없어요"로 알린다.
+4. 세션은 그 노드에서 열린다. 한 스레드 안에서는 [메모리 약속](capacity.md)이 입장을 다시 한 번 거른다(모자라면 줄을 선다). 세계는 노드가 모를 때만 한 번 보낸다. 에이전트의 툴 호출은 컨트롤을 거쳐 그 노드의 세션으로 간다.
 5. 끝나면 결과가 컨트롤로 돌아와 저장된다.
 
 ## 노드가 사라지면
@@ -103,6 +109,7 @@ CPU 사용률로 늘리지 마라. 실행이 기다리는 동안 CPU는 한가�
 
 - **컨트롤은 하나다.** 저장소가 SQLite 한 파일이라 컨트롤을 여러 대로 만들 수 없다. 죽으면 다시 뜰 때까지 화면과 새 실행이 멈춘다
   (돌던 노드의 세션은 정리된다). 이중화는 저장소 교체와 함께 정할 일이다.
+- **여러 대로 늘렸을 때 몇 대까지 선형으로 는지는 재지 못했다.** 컨트롤 하나와 노드 둘을 같은 기계의 프로세스 셋으로 띄워 부하를 줬고(`tests/spec/cluster-load.ts`), 골고루 차고 실패가 없었다는 것까지다.
 - **실행을 노드 사이로 옮기지 않는다.** 노드가 죽으면 그 노드의 실행은 실패하고 다시 돌려야 한다.
 - 컨트롤과 노드 사이는 토큰 인증이지만 기본은 평문 HTTP다. 신뢰망 밖이면 https 주소와 TLS를 쓴다.
 - 컨트롤이 모든 툴 호출의 길목이라 컨트롤의 CPU와 네트워크가 마지막 한계다. 한 컨트롤이 몇 개까지 감당하는지는 용량 측정(REQ-032)으로 잰다.

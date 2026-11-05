@@ -8,10 +8,10 @@ import {
   type ActionKind,
   type CompareOp,
   type Condition,
-  describeCondition,
 } from "@terrarium/core/scenario";
 import { TOOL_SPECS } from "@terrarium/core/tools";
 import type { BlueprintIndex } from "@terrarium/core/world";
+import { useState } from "react";
 import { scenario } from "../../logic";
 import { Button, NumberField, SelectField, TextField } from "../kit";
 
@@ -21,13 +21,21 @@ const KIND_OPTIONS = (Object.keys(scenario.CONDITION_KIND_LABELS) as Condition["
     label: scenario.CONDITION_KIND_LABELS[k],
   }),
 );
+const EVENT_OPTIONS = scenario.EVENT_TYPES.map((t) => ({
+  value: t,
+  label: scenario.EVENT_LABELS[t],
+}));
 const ACTION_OPTIONS = ACTION_KINDS.map((a) => ({ value: a, label: ACTION_LABELS[a] }));
 const TOOL_OPTIONS = TOOL_SPECS.map((t) => ({ value: t.name, label: t.title }));
 const OP_OPTIONS = scenario.COMPARE_OPS.map((op) => ({
   value: op,
-  label: `${op} (${scenario.OP_LABELS[op]})`,
+  label: scenario.OP_LABELS[op],
 }));
 const ANY_ENTITY = "";
+const YES_NO = [
+  { value: "yes", label: "예" },
+  { value: "no", label: "아니요" },
+];
 
 interface Props {
   readonly value: Condition;
@@ -60,6 +68,7 @@ function StateFields({
 }: Props & { readonly value: Extract<Condition, { kind: "state" }> }) {
   const fields = scenario.stateFields(index, value.entity);
   const numeric = typeof value.value === "number";
+  const yesNo = typeof value.value === "boolean";
   return (
     <>
       <SelectField
@@ -89,7 +98,13 @@ function StateFields({
         label="값"
         value={value.field}
         options={fields}
-        onChange={(field) => onChange({ ...value, field })}
+        onChange={(field) =>
+          onChange({
+            ...value,
+            field,
+            value: scenario.valueForField(index, value.entity, field, value.value),
+          })
+        }
       />
       <SelectField
         label="비교"
@@ -103,13 +118,18 @@ function StateFields({
           value={value.value as number}
           onChange={(n) => n !== undefined && onChange({ ...value, value: n })}
         />
+      ) : yesNo ? (
+        <SelectField
+          label="기준"
+          value={value.value ? "yes" : "no"}
+          options={YES_NO}
+          onChange={(v) => onChange({ ...value, value: v === "yes" })}
+        />
       ) : (
         <TextField
           label="기준"
           value={String(value.value)}
-          onChange={(v) =>
-            onChange({ ...value, value: v === "true" ? true : v === "false" ? false : v })
-          }
+          onChange={(v) => onChange({ ...value, value: v })}
         />
       )}
     </>
@@ -127,8 +147,8 @@ function AlarmFields({
         label="있는가, 없는가"
         value={value.active ? "on" : "off"}
         options={[
-          { value: "on", label: "울리고 있다" },
-          { value: "off", label: "울리지 않는다" },
+          { value: "on", label: "울리고 있어요" },
+          { value: "off", label: "울리지 않아요" },
         ]}
         onChange={(v) => onChange({ ...value, active: v === "on" })}
       />
@@ -137,8 +157,8 @@ function AlarmFields({
         value={value.severity ?? ""}
         options={[
           { value: "", label: "아무거나" },
-          { value: "critical", label: "위험" },
-          { value: "warning", label: "주의" },
+          { value: "critical", label: "심각" },
+          { value: "warning", label: "경고" },
         ]}
         onChange={(v) => {
           const { severity: _s, ...rest } = value;
@@ -201,19 +221,74 @@ function AgentFields({ value, onChange, index }: Props) {
   return null;
 }
 
+function EventFields({
+  value,
+  onChange,
+  index,
+}: Props & { readonly value: Extract<Condition, { kind: "event" }> }) {
+  return (
+    <>
+      <SelectField
+        label="있었나, 없었나"
+        value={value.occurred === false ? "never" : "ever"}
+        options={[
+          { value: "ever", label: "있어요" },
+          { value: "never", label: "없어요" },
+        ]}
+        onChange={(v) => onChange({ ...value, occurred: v !== "never" })}
+      />
+      <SelectField
+        label="어떤 일"
+        value={value.type}
+        options={EVENT_OPTIONS}
+        onChange={(type) => onChange({ ...value, type })}
+      />
+      <SelectField
+        label="대상"
+        value={value.target ?? ANY_ENTITY}
+        options={targetChoices(index)}
+        onChange={(t) => onChange(withTarget(value, t))}
+      />
+    </>
+  );
+}
+
 function GroupFields({
   value,
   onChange,
   index,
   depth = 0,
 }: Props & { readonly value: Extract<Condition, { kind: "all" | "any" }> }) {
+  // A big group starts folded: dozens of forms (one per server) are a wall, one line in words is not.
+  const [open, setOpen] = useState(!scenario.startsCollapsed(value));
   const set = (i: number, c: Condition) =>
     onChange({ ...value, of: value.of.map((x, j) => (j === i ? c : x)) });
+  const big = value.of.length > scenario.OPEN_GROUP_LIMIT;
+  if (big && !open)
+    return (
+      <div
+        className="stack"
+        style={{ gap: 6, paddingLeft: 10, borderLeft: "2px solid var(--line)" }}
+      >
+        <p className="small">{scenario.groupSummary(value, index)}</p>
+        <div className="row" style={{ gap: 8 }}>
+          <span className="tiny muted">조건 {value.of.length}개</span>
+          <Button size="small" kind="quiet" onClick={() => setOpen(true)}>
+            펼치기
+          </Button>
+        </div>
+      </div>
+    );
   return (
     <div
       className="stack"
       style={{ gap: 10, paddingLeft: 10, borderLeft: "2px solid var(--line)" }}
     >
+      {big && (
+        <Button size="small" kind="quiet" onClick={() => setOpen(false)}>
+          접기
+        </Button>
+      )}
       {value.of.map((c, i) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: sub-conditions have no ids; their place is their identity
         <div key={i} className="stack" style={{ gap: 6 }}>
@@ -251,6 +326,7 @@ function GroupFields({
 export function ConditionEditor({ value, onChange, index, depth = 0 }: Props) {
   const kinds =
     depth >= 2 ? KIND_OPTIONS.filter((k) => k.value !== "all" && k.value !== "any") : KIND_OPTIONS;
+  const line = scenario.conditionLine(value, index);
   return (
     <div className="stack" style={{ gap: 8 }}>
       <SelectField
@@ -261,11 +337,12 @@ export function ConditionEditor({ value, onChange, index, depth = 0 }: Props) {
       />
       {value.kind === "state" && <StateFields value={value} onChange={onChange} index={index} />}
       {value.kind === "alarm" && <AlarmFields value={value} onChange={onChange} index={index} />}
+      {value.kind === "event" && <EventFields value={value} onChange={onChange} index={index} />}
       <AgentFields value={value} onChange={onChange} index={index} />
       {(value.kind === "all" || value.kind === "any") && (
         <GroupFields value={value} onChange={onChange} index={index} depth={depth} />
       )}
-      {depth === 0 && <p className="tiny muted">{describeCondition(value, index)}</p>}
+      {depth === 0 && line && <p className="tiny muted">{line}</p>}
     </div>
   );
 }

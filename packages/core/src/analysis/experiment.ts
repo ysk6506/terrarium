@@ -157,19 +157,19 @@ const pct = (r: number) => `${Math.round(r * 100)}%`;
 function experimentFindings(a: Omit<ExperimentAnalysis, "findings">): string[] {
   const done = a.runs.filter((r) => r.status === "completed");
   if (done.length === 0)
-    return a.progress.failed > 0 ? [`실행 ${a.progress.failed}번이 모두 실패했다`] : [];
+    return a.progress.failed > 0 ? [`실행 ${a.progress.failed}번이 모두 실패했어요`] : [];
   const out = [
     `${done.length}번 중 ${done.filter((r) => r.passed).length}번 합격 (${pct(a.passRate)})`,
   ];
   if (a.score && a.score.n > 1 && a.score.stdev >= 15)
     out.push(
-      `실행마다 점수가 크게 다르다 (표준편차 ${a.score.stdev}점) — 실행을 늘려 보는 것이 좋다`,
+      `실행마다 점수가 크게 달라요 (표준편차 ${a.score.stdev}점) — 실행을 늘려 보는 것이 좋아요`,
     );
   for (const c of a.criteria.filter((x) => x.rate < 0.5))
-    out.push(`'${c.label}' 항목을 ${pct(1 - c.rate)}의 실행에서 놓쳤다`);
+    out.push(`'${c.label}' 항목을 ${pct(1 - c.rate)}의 실행에서 놓쳤어요`);
   const reasons = Object.entries(a.endReasons).filter(([r]) => r !== "diagnosed");
   for (const [reason, n] of reasons)
-    out.push(`${n}번은 ${END_REASON_LABELS[reason as EndReason]}로 끝났다`);
+    out.push(`${n}번은 ${END_REASON_LABELS[reason as EndReason]}로 끝났어요`);
   if (a.timeToDiagnosis)
     out.push(`진단까지 평균 ${formatDuration(a.timeToDiagnosis.mean)} (시뮬레이션 시간)`);
   if (a.parent) out.push(...parentFindings(a.parent));
@@ -180,7 +180,7 @@ function parentFindings(p: ParentComparison): string[] {
   const what = p.changes.map((c) => `${c.label} ${c.before} → ${c.after}`).join("; ");
   if (p.scoreDelta === undefined) return [`원본 '${p.name}'에서 바꾼 것: ${what}`];
   const signed = (n: number) => `${n > 0 ? "+" : ""}${n}`;
-  const verdict = p.clear ? "분명한 차이다" : "실행 수에 비해 아직 분명한 차이는 아니다";
+  const verdict = p.clear ? "분명한 차이예요" : "실행 수에 비해 아직 분명한 차이는 아니에요";
   return [
     `원본 '${p.name}' 대비 평균 ${signed(p.scoreDelta)}점, 합격률 ${signed(Math.round(p.passRateDelta * 100))}%p. ${verdict} (바꾼 것: ${what})`,
   ];

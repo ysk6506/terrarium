@@ -5,6 +5,7 @@
 import type { SeededRng } from "@terrarium/core/kernel";
 import { DLC_RACKS, FAMILIES, type Family, RDHX_RACK, TANKS } from "./campus-families";
 import type { CampusProfile, CampusSpec } from "./campus-spec";
+import type { SiteSlot } from "./sites";
 
 export type HallMode = "air" | "hybrid" | "dlc" | "immersion";
 export type PodKind = "air" | "rdhx" | "dlc" | "tank";
@@ -52,9 +53,27 @@ export interface HallPlan {
 }
 
 export interface BuildingPlan {
+  /** Number among buildings of its kind: DC1, DC2, …, FAB1, FAB2, … */
   readonly index: number;
   readonly id: string;
+  /** A data-centre building, a fab, or a research (DSR) tower. */
+  readonly kind: "dc" | "fab" | "lab";
   readonly halls: readonly HallPlan[];
+  /** Floors above the ground floor that this building has, lowest first (a fab has one more than its halls need). */
+  readonly levels: readonly number[];
+  /** The cleanroom bay of each fab floor, metres; fabs only. */
+  readonly bay?: { readonly w: number; readonly d: number };
+  /** The bay of the top floor, which has no server rooms and no plant beside it, so it fills the building; fabs only. */
+  readonly topBay?: { readonly w: number; readonly d: number };
+  /** Where a map shows this building standing on the site, when it does. */
+  readonly slot?: SiteSlot;
+}
+
+/** Where a site's buildings stand on its map, in the order the campus fills them. */
+export interface CampusSlots {
+  readonly dcs: readonly SiteSlot[];
+  readonly fabs: readonly SiteSlot[];
+  readonly labs?: readonly SiteSlot[];
 }
 
 export interface CampusPlan {
@@ -67,6 +86,29 @@ export interface CampusPlan {
 const HALL_LETTERS = "ABCD";
 /** Hall size relative to the typical one: halls are never all the same size. */
 const SIZE_FACTORS = [0.5, 0.75, 1, 1, 1.5, 2];
+/** The server rooms inside a fab or a research tower are small next to a data-centre hall, yet hold a few dozen containments. */
+const FAB_SIZE_FACTORS = [0.4, 0.55, 0.7, 0.85];
+/** Racks in one row of such a room's containment: ten to twenty racks to a containment. */
+const ROOM_ROW_LENGTHS = [5, 6, 7, 8, 9, 10];
+/** The floor a fab keeps its server rooms on differs from fab to fab. */
+const FAB_ROOM_FLOORS = [2, 3, 4];
+/** Floors above the ground of a DSR tower (the 2014 article gives 27). */
+const LAB_FLOORS = 27;
+/**
+ * The floors that hold server rooms in each DSR tower, as the owner described them: tower C has two
+ * on 3F and tower B one on 5F. Tower A's single room on 4F is a guess.
+ */
+const LAB_ROOM_FLOORS: ReadonlyArray<readonly number[]> = [[4], [5], [3, 3]];
+const LAB_NAMES = "ABC";
+/** Cleanroom bays of a fab with no place on a map: long and wide floors, metres. */
+const BAY_WIDTHS = [140, 170, 200, 240];
+const BAY_DEPTHS = [60, 70, 80];
+/** Walls and the strip beside the bay take this much of a fab's footprint, metres. */
+const FAB_SHELL_M = 12;
+/** A fab drawn from a map keeps to this size range, metres. */
+const FAB_LIMITS = { minW: 90, maxW: 700, minD: 60, maxD: 200 } as const;
+/** The floors below the top leave this share of the depth to the bay; server rooms stand in the rest. */
+const LOWER_BAY_SHARE = 0.62;
 const MODE_ROTATION: readonly HallMode[] = ["air", "hybrid", "dlc", "immersion"];
 
 function hallMode(
@@ -179,11 +221,17 @@ function podPlan(rng: SeededRng, c: PodShapeChoice): PodPlan {
 
 type HallBase = Omit<HallPlan, "pods" | "containment" | "aspect">;
 
-function planHall(spec: CampusSpec, rng: SeededRng, hall: HallBase): HallPlan {
-  const count = Math.max(1, Math.round(spec.podsPerHall * rng.pick(SIZE_FACTORS)));
+function planHall(
+  spec: CampusSpec,
+  rng: SeededRng,
+  hall: HallBase,
+  factors: readonly number[] = SIZE_FACTORS,
+  rows: readonly number[] = ROW_LENGTHS,
+): HallPlan {
+  const count = Math.max(1, Math.round(spec.podsPerHall * rng.pick(factors)));
   const single = rng.pick(FAMILIES);
   const containment = pickWeighted(rng, CONTAINMENT_MIX[hall.mode]);
-  const airRow = rng.pick(ROW_LENGTHS);
+  const airRow = rng.pick(rows);
   const pods = Array.from({ length: count }, (_, i) =>
     podPlan(rng, {
       kind: pickKind(rng, hall.mode),
@@ -198,32 +246,170 @@ function planHall(spec: CampusSpec, rng: SeededRng, hall: HallBase): HallPlan {
   return { ...hall, containment: sealed ? containment : "none", aspect: rng.pick(ASPECTS), pods };
 }
 
-export function planCampus(spec: CampusSpec, code: string, rng: SeededRng): CampusPlan {
-  let racks = 0;
-  let detailedRacks = 0;
-  const buildings: BuildingPlan[] = [];
-  for (let b = 1; b <= spec.buildings; b++) {
-    const id = `${code}-dc${b}`;
-    const halls: HallPlan[] = [];
-    for (let level = 2; level <= spec.floors + 1; level++)
-      for (let h = 0; h < spec.hallsPerFloor; h++) {
-        const letter = HALL_LETTERS[h] as string;
-        const index = (level - 2) * spec.hallsPerFloor + h;
-        const total = spec.floors * spec.hallsPerFloor;
-        const mode = hallMode(spec.profile, b, index, total, spec.buildings);
-        const plan = planHall(spec, rng.fork(`${id}-${level}-${letter}`), {
-          id: `${id}-f${level}-${letter.toLowerCase()}`,
-          name: `${level}F-${letter} 데이터 홀`,
-          building: b,
-          floorId: `${id}-f${level}`,
-          letter,
-          mode,
-        });
-        racks += plan.pods.reduce((n, p) => n + 2 * p.perRow, 0);
-        detailedRacks += plan.pods.reduce((n, p) => n + (p.light ? 0 : 2 * p.perRow), 0);
-        halls.push(plan);
-      }
-    buildings.push({ index: b, id, halls });
+/** The cooling of a fab's server rooms: older rooms are mostly air, one may carry liquid. */
+function fabHallMode(profile: CampusProfile, hall: number): HallMode {
+  if (profile === "air") return "air";
+  if (profile === "hybrid") return "hybrid";
+  if (profile === "ai-liquid") return hall === 0 ? "dlc" : "air";
+  return hall % 2 === 0 ? "air" : "hybrid";
+}
+
+interface Tally {
+  racks: number;
+  detailedRacks: number;
+}
+
+function count(tally: Tally, plan: HallPlan): void {
+  tally.racks += plan.pods.reduce((n, p) => n + 2 * p.perRow, 0);
+  tally.detailedRacks += plan.pods.reduce((n, p) => n + (p.light ? 0 : 2 * p.perRow), 0);
+}
+
+function planDataCentre(
+  spec: CampusSpec,
+  code: string,
+  rng: SeededRng,
+  b: number,
+  tally: Tally,
+  slot?: SiteSlot,
+) {
+  const id = `${code}-dc${b}`;
+  const halls: HallPlan[] = [];
+  for (let level = 2; level <= spec.floors + 1; level++)
+    for (let h = 0; h < spec.hallsPerFloor; h++) {
+      const letter = HALL_LETTERS[h] as string;
+      const index = (level - 2) * spec.hallsPerFloor + h;
+      const total = spec.floors * spec.hallsPerFloor;
+      const plan = planHall(spec, rng.fork(`${id}-${level}-${letter}`), {
+        id: `${id}-f${level}-${letter.toLowerCase()}`,
+        name: `${level}F-${letter} 데이터 홀`,
+        building: b,
+        floorId: `${id}-f${level}`,
+        letter,
+        mode: hallMode(spec.profile, b, index, total, spec.buildings),
+      });
+      count(tally, plan);
+      halls.push(plan);
+    }
+  const levels = Array.from({ length: spec.floors }, (_, i) => i + 2);
+  return { index: b, id, kind: "dc" as const, halls, levels, ...(slot ? { slot } : {}) };
+}
+
+/** A fab: server rooms two to a floor, a cleanroom bay on every floor above the ground, one more floor of bay on top. */
+function planFab(
+  spec: CampusSpec,
+  code: string,
+  rng: SeededRng,
+  f: number,
+  tally: Tally,
+  place?: SiteSlot,
+): BuildingPlan {
+  const id = `${code}-fab${f}`;
+  const slot = spec.buildings + f;
+  const halls: HallPlan[] = [];
+  const first = rng.fork(`${id}-floor`).pick(FAB_ROOM_FLOORS);
+  for (let h = 0; h < spec.hallsPerFab; h++) {
+    const level = first + Math.floor(h / 2);
+    const letter = HALL_LETTERS[h % 2] as string;
+    const plan = planHall(
+      spec,
+      rng.fork(`${id}-${level}-${letter}`),
+      {
+        id: `${id}-f${level}-${letter.toLowerCase()}`,
+        name: `${level}F-${letter} 서버룸`,
+        building: slot,
+        floorId: `${id}-f${level}`,
+        letter,
+        mode: fabHallMode(spec.profile, h),
+      },
+      FAB_SIZE_FACTORS,
+      ROOM_ROW_LENGTHS,
+    );
+    count(tally, plan);
+    halls.push(plan);
   }
-  return { buildings, racks, detailedRacks };
+  const top = first + Math.ceil(spec.hallsPerFab / 2);
+  const levels = Array.from({ length: top - 1 }, (_, i) => i + 2);
+  const { bay, topBay } = fabBays(rng.fork(`${id}-bay`), place);
+  return {
+    index: f,
+    id,
+    kind: "fab",
+    halls,
+    levels,
+    bay,
+    topBay,
+    ...(place ? { slot: place } : {}),
+  };
+}
+
+/** A DSR tower: a tall office and lab tower with a few small server rooms on floors of their own. */
+function planLab(
+  spec: CampusSpec,
+  code: string,
+  rng: SeededRng,
+  l: number,
+  tally: Tally,
+  place?: SiteSlot,
+): BuildingPlan {
+  const id = `${code}-lab${l}`;
+  const building = spec.buildings + spec.fabs + l;
+  const floors = LAB_ROOM_FLOORS[(l - 1) % LAB_ROOM_FLOORS.length] as readonly number[];
+  const halls = floors.map((level, h) => {
+    const letter = HALL_LETTERS[floors.slice(0, h).filter((x) => x === level).length] as string;
+    const plan = planHall(
+      spec,
+      rng.fork(`${id}-${level}-${letter}`),
+      {
+        id: `${id}-f${level}-${letter.toLowerCase()}`,
+        name: `${level}F-${letter} 서버룸`,
+        building,
+        floorId: `${id}-f${level}`,
+        letter,
+        mode: fabHallMode(spec.profile, h),
+      },
+      FAB_SIZE_FACTORS,
+      ROOM_ROW_LENGTHS,
+    );
+    count(tally, plan);
+    return plan;
+  });
+  const levels = Array.from({ length: LAB_FLOORS - 1 }, (_, i) => i + 2);
+  return { index: l, id, kind: "lab", halls, levels, ...(place ? { slot: place } : {}) };
+}
+
+/** The letter a research tower goes by: DSR A, B and C. */
+export const labLetter = (index: number): string =>
+  LAB_NAMES[(index - 1) % LAB_NAMES.length] as string;
+
+const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+
+/**
+ * The cleanroom bays of a fab. One drawn from a map is as big as the blue roof the map shows (within
+ * limits): the top floor takes the whole depth, the lower floors leave the rest for server rooms.
+ */
+function fabBays(shape: SeededRng, slot?: SiteSlot) {
+  if (!slot) {
+    const bay = { w: shape.pick(BAY_WIDTHS), d: shape.pick(BAY_DEPTHS) };
+    return { bay, topBay: { w: bay.w, d: Math.round(bay.d * 1.6) } };
+  }
+  const w = clamp(slot.w - FAB_SHELL_M, FAB_LIMITS.minW, FAB_LIMITS.maxW);
+  const d = clamp(slot.d - FAB_SHELL_M, FAB_LIMITS.minD, FAB_LIMITS.maxD);
+  return { bay: { w, d: Math.round(d * LOWER_BAY_SHARE) }, topBay: { w, d } };
+}
+
+export function planCampus(
+  spec: CampusSpec,
+  code: string,
+  rng: SeededRng,
+  slots: CampusSlots = { dcs: [], fabs: [] },
+): CampusPlan {
+  const tally: Tally = { racks: 0, detailedRacks: 0 };
+  const buildings: BuildingPlan[] = [];
+  for (let b = 1; b <= spec.buildings; b++)
+    buildings.push(planDataCentre(spec, code, rng, b, tally, slots.dcs[b - 1]));
+  for (let f = 1; f <= spec.fabs; f++)
+    buildings.push(planFab(spec, code, rng, f, tally, slots.fabs[f - 1]));
+  for (let l = 1; l <= spec.labs; l++)
+    buildings.push(planLab(spec, code, rng, l, tally, slots.labs?.[l - 1]));
+  return { buildings, ...tally };
 }

@@ -2,7 +2,14 @@
  * What every built-in scenario template is made of: the template shape, the flow builder that lays
  * blocks out, and the small pieces (a "powered" condition, an agent task, a document) they share.
  */
-import type { BlueprintIndex, Entity, EntityKind, FaultType } from "@terrarium/core/world";
+import type { Catalog } from "@terrarium/core/catalog";
+import type {
+  BlueprintIndex,
+  Entity,
+  EntityKind,
+  FaultType,
+  MistakeType,
+} from "@terrarium/core/world";
 import { kindList } from "@terrarium/core/world";
 import type { Condition, Expectation, ScenarioDoc, ScenarioEdge, ScenarioNode } from "./model";
 import { SCENARIO_SCHEMA_VERSION } from "./model";
@@ -13,9 +20,14 @@ export interface ScenarioTemplate {
   readonly summary: string;
   readonly difficulty: "쉬움" | "보통" | "어려움";
   readonly faultTypes: readonly FaultType[];
-  /** Why this template cannot be built for the world, or undefined when it can. */
-  unavailable(index: BlueprintIndex): string | undefined;
-  build(index: BlueprintIndex, worldId: string): ScenarioDoc;
+  /** The mistakes (a wrong VLAN, a shut port) it makes with configuration blocks instead of faults. */
+  readonly mistakeTypes?: readonly MistakeType[];
+  /**
+   * Why this template cannot be built for the world, or undefined when it can. Templates that read the network
+   * design need the equipment catalog; without one they use the built-in models.
+   */
+  unavailable(index: BlueprintIndex, catalog?: Catalog): string | undefined;
+  build(index: BlueprintIndex, worldId: string, catalog?: Catalog): ScenarioDoc;
 }
 
 /** Lays blocks out top to bottom, as the editor does; `row` > 0 places a side branch to the right. */
@@ -85,7 +97,7 @@ export function doc(
 export const needs = (index: BlueprintIndex, kinds: EntityKind[]) =>
   kinds.every((k) => index.ofKind(k).length > 0)
     ? undefined
-    : `이 세계에 필요한 장비(${kindList(kinds)})가 없다`;
+    : `이 세계에 필요한 장비(${kindList(kinds)})가 없어요`;
 
 export const agent = (prompt: string, maxToolCalls = 40, timeLimitSeconds = 3600) => ({
   prompt,

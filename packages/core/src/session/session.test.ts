@@ -1,4 +1,5 @@
 import { Catalog } from "@terrarium/core/catalog";
+import { ORACLE_VERSION } from "@terrarium/core/oracle";
 import {
   emptyScenario,
   SCENARIO_TEMPLATES,
@@ -78,13 +79,13 @@ describe("session lifecycle [REQ-007] [REQ-030]", () => {
     expect(done).toMatchObject({ ok: true, t: 960, ended: "diagnosed" });
     expect(session.status).toBe("ended");
     const result = session.finish();
-    expect(result.score).toMatchObject({ total: 100, passed: true });
+    expect(result.score).toMatchObject({ total: 90.9, passed: true });
     expect(result).toMatchObject({
       endReason: "diagnosed",
       diagnosedAt: 960,
       seed: 7,
       simTime: { scenarioStart: 600, agentStart: 900, end: 960 },
-      digests: { oracle: "1" },
+      digests: { oracle: ORACLE_VERSION },
     });
     expect(result.toolCalls.map((c) => c.tool)).toEqual([
       "list_alarms",
@@ -126,7 +127,7 @@ describe("session lifecycle [REQ-007] [REQ-030]", () => {
   test("an invalid scenario is refused before anything runs, with the reasons in Korean", () => {
     const broken = { ...simple(), nodes: simple().nodes.filter((n) => n.type !== "agent_task") };
     expect(() => Session.create(config(broken))).toThrow(
-      /시나리오를 실행할 수 없다: 「에이전트 투입」 블록이 필요하다/,
+      /시나리오를 실행할 수 없어요: 「에이전트 투입」 블록이 필요해요/,
     );
   });
 
@@ -259,7 +260,7 @@ describe("session records [REQ-037] [REQ-039]", () => {
     expect(timeline).toContainEqual({
       t: 600,
       source: "scenario",
-      text: "차단기 트립 주입 (pdu-a)",
+      text: "차단기 트립 발생 (pdu-a)",
       nodeId: "fault",
     });
     expect(timeline).toContainEqual(
@@ -281,7 +282,7 @@ describe("session records [REQ-037] [REQ-039]", () => {
       text: expect.stringMatching(/^get_entity \{"id":"ghost"\} — 실패: .*ghost/),
     });
     expect(
-      timeline.some((e) => e.source === "alarm" && e.text.startsWith("해제: pdu-a 차단기 트립")),
+      timeline.some((e) => e.source === "alarm" && e.text.startsWith("복구: pdu-a 차단기 트립")),
     ).toBe(true);
     const times = timeline.map((e) => e.t);
     expect([...times].sort((a, b) => a - b)).toEqual(times);

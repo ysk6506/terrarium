@@ -18,7 +18,17 @@ export type CompareOp = "<" | "<=" | ">" | ">=" | "==" | "!=";
  * through a Redfish ComputerSystem.Reset are the same action). Scoring judges actions, not tool names,
  * so experiments with different toolsets stay comparable (ADR-0019).
  */
-export type ActionKind = "power_off" | "power_on" | "restart" | "breaker_reset" | "setpoint_change";
+export type ActionKind =
+  | "power_off"
+  | "power_on"
+  | "restart"
+  | "breaker_reset"
+  | "setpoint_change"
+  | "port_shutdown"
+  | "port_enable"
+  | "outlet_off"
+  | "outlet_on"
+  | "config_change";
 
 export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   power_off: "전원 끄기",
@@ -26,13 +36,21 @@ export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   restart: "재시작",
   breaker_reset: "차단기 리셋",
   setpoint_change: "냉방 설정 변경",
+  port_shutdown: "포트 끄기",
+  port_enable: "포트 켜기",
+  outlet_off: "콘센트 끄기",
+  outlet_on: "콘센트 켜기",
+  config_change: "스위치 설정 변경",
 };
 
 export const ACTION_KINDS = Object.keys(ACTION_LABELS) as ActionKind[];
 
 export interface AgentAction {
   readonly action: ActionKind;
+  /** What the command named: a switch or PDU, or the network link of a port. */
   readonly target: string;
+  /** For a port: the switch it belongs to, so scoring can say "no port of the core switch" without link ids. */
+  readonly device?: string;
 }
 export const COMPARE_OPS: readonly CompareOp[] = ["<", "<=", ">", ">=", "==", "!="];
 
@@ -58,6 +76,17 @@ export type Condition =
   | { readonly kind: "tool_called"; readonly tool: string; readonly target?: string }
   /** Whether the agent has done something to the world (optionally to a given target), by any tool. */
   | { readonly kind: "action_taken"; readonly action: ActionKind; readonly target?: string }
+  /**
+   * Whether something happened in the world at least once since the scenario started (`occurred: false` asks for
+   * "never"). `type` is a world event ("thermal.shutdown": a server shut itself down on heat); `target` narrows it
+   * to one entity or link. It looks at the history, not at the state now, so it answers "was ever" questions.
+   */
+  | {
+      readonly kind: "event";
+      readonly type: string;
+      readonly target?: string;
+      readonly occurred?: boolean;
+    }
   /** Whether the agent has submitted its diagnosis. */
   | { readonly kind: "diagnosis_submitted" }
   | { readonly kind: "all"; readonly of: readonly Condition[] }

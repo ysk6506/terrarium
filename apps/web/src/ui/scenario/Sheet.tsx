@@ -32,7 +32,7 @@ function MultiPick(props: {
       <SelectField
         label={props.label}
         value={undefined}
-        placeholder="더할 것을 고른다"
+        placeholder="더할 것을 골라요"
         options={props.options.filter((o) => !props.values.includes(o.value))}
         onChange={(v) => props.onChange([...props.values, v])}
       />
@@ -191,6 +191,7 @@ function Card({ x, e }: { readonly x: Expectation; readonly e: ScenarioEditor })
   const set = (change: Partial<Expectation>) =>
     e.change((d) => scenario.updateExpectation(d, x.id, change));
   const issues = e.issues.filter((i) => i.expectationId === x.id);
+  const text = scenario.expectationText(x, e.index);
   return (
     <section className="panel panel-pad stack" aria-label={scenario.EXPECTATION_LABELS[x.kind]}>
       <div className="row" style={{ justifyContent: "space-between" }}>
@@ -223,7 +224,7 @@ function Card({ x, e }: { readonly x: Expectation; readonly e: ScenarioEditor })
           onChange={(p) => p !== undefined && set({ penalty: p } as Partial<Expectation>)}
         />
       )}
-      <p className="tiny muted">{scenario.expectationText(x)}</p>
+      {text && <p className="tiny muted">{text}</p>}
       {issues.map((i) => (
         <p key={i.message} className="field-error">
           {i.message}
@@ -244,7 +245,7 @@ export function Sheet({ e }: { readonly e: ScenarioEditor }) {
             <h2>채점표</h2>
             <p className="small muted">
               모두 더해 {total.points}점.{" "}
-              {total.note ?? "에이전트가 무엇을 하면 점수를 얻고 잃는지 정한다."}
+              {total.note ?? "에이전트가 무엇을 하면 점수를 얻고 잃는지 정해요."}
             </p>
           </div>
           <MenuButton
@@ -258,7 +259,7 @@ export function Sheet({ e }: { readonly e: ScenarioEditor }) {
         </div>
         <div className="stack" style={{ gap: 14 }}>
           {e.doc.expectations.length === 0 && (
-            <p className="muted">아직 채점 항목이 없다. 오른쪽 위에서 더한다.</p>
+            <p className="muted">아직 채점 항목이 없어요. 오른쪽 위에서 더해 보세요.</p>
           )}
           {e.doc.expectations.map((x) => (
             <Card key={x.id} x={x} e={e} />

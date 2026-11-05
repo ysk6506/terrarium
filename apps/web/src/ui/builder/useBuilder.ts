@@ -40,31 +40,51 @@ export interface BuilderState {
 
 type History = MutableRefObject<builder.History<Blueprint>>;
 
-/** "가동해 보기": the physics run in the browser, on demand, cleared by any edit. */
+/** "돌려 보기": the physics run in the browser, on demand, cleared by any edit. */
 function usePreview(history: History) {
   const { toast } = useApp();
   const [preview, setPreview] = useState<builder.Preview>();
   const [previewing, setPreviewing] = useState(false);
+  const run = useCallback(
+    (stopped: ReadonlySet<string>) => {
+      setPreviewing(true);
+      // Let the button show it is working before the physics runs.
+      setTimeout(() => {
+        const result = builder.preview(
+          history.current.current,
+          catalog,
+          builder.PREVIEW_SECONDS,
+          stopped,
+        );
+        setPreviewing(false);
+        if ("problems" in result) {
+          const more = result.problems.length > 1 ? ` 외 ${result.problems.length - 1}건` : "";
+          toast(`돌릴 수 없어요: ${result.problems[0] ?? ""}${more}`, "bad");
+          return;
+        }
+        setPreview(result);
+      }, 30);
+    },
+    [toast, history],
+  );
   const runPreview = useCallback(() => {
     if (preview) return setPreview(undefined);
-    setPreviewing(true);
-    // Let the button show it is working before the physics runs.
-    setTimeout(() => {
-      const result = builder.preview(history.current.current, catalog);
-      setPreviewing(false);
-      if ("problems" in result) {
-        const more = result.problems.length > 1 ? ` 외 ${result.problems.length - 1}건` : "";
-        toast(`가동할 수 없다: ${result.problems[0] ?? ""}${more}`, "bad");
-        return;
-      }
-      setPreview(result);
-    }, 30);
-  }, [preview, toast, history]);
+    run(new Set());
+  }, [preview, run]);
+  /** Run again with one cooling unit stopped, or started again ("멈춰 보기"). */
+  const toggleUnit = useCallback(
+    (id: string) => {
+      const next = new Set(preview?.stopped ?? []);
+      if (!next.delete(id)) next.add(id);
+      run(next);
+    },
+    [preview, run],
+  );
   const clearPreview = useCallback(() => setPreview(undefined), []);
-  return { preview, previewing, runPreview, clearPreview };
+  return { preview, previewing, runPreview, toggleUnit, clearPreview };
 }
 
-const CONFLICT = "그사이 다른 곳에서 이 세계가 바뀌었다. 새로고침하면 바뀐 내용을 볼 수 있다";
+const CONFLICT = "그사이 다른 곳에서 이 세계가 바뀌었어요. 새로고침하면 바뀐 내용을 볼 수 있어요";
 
 /** Saving over the world (owner), as a copy (anyone else), and renaming it. */
 function useSaving(initial: WorldRecord, history: History) {
@@ -95,7 +115,7 @@ function useSaving(initial: WorldRecord, history: History) {
         });
         setWorld(result.world);
         setSaved(blueprint);
-        toast("저장했다");
+        toast("저장했어요");
       }),
     [api, world, toast, attempt, history],
   );
@@ -107,7 +127,7 @@ function useSaving(initial: WorldRecord, history: History) {
           body: { name: `${world.name} 사본`.slice(0, 80), blueprint },
         });
         setSaved(blueprint);
-        toast("내 사본으로 저장했다");
+        toast("내 사본으로 저장했어요");
         navigate({ name: "world", id: result.world.id }, { replace: true });
       }),
     [api, world, toast, navigate, attempt, history],
@@ -121,7 +141,7 @@ function useSaving(initial: WorldRecord, history: History) {
           body: { baseDigest: world.digest, name },
         });
         setWorld(result.world);
-        toast("이름을 바꿨다");
+        toast("이름을 바꿨어요");
       });
     },
     [api, world, toast, attempt],
@@ -171,7 +191,7 @@ export function useBuilder(initial: WorldRecord) {
   const { me } = useApp();
   const clear = useRef<() => void>(() => undefined);
   const edits = useEdits(initial.blueprint, () => clear.current());
-  const { preview, previewing, runPreview, clearPreview } = usePreview(edits.history);
+  const { preview, previewing, runPreview, toggleUnit, clearPreview } = usePreview(edits.history);
   clear.current = clearPreview;
   const saving = useSaving(initial, edits.history);
   const index = useMemo(() => new BlueprintIndex(edits.blueprint), [edits.blueprint]);
@@ -219,6 +239,7 @@ export function useBuilder(initial: WorldRecord) {
     setTool,
     setRotation,
     runPreview,
+    toggleUnit,
     save,
     saveCopy,
     renameWorld,

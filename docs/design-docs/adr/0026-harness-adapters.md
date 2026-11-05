@@ -1,8 +1,9 @@
 ---
 title: ADR-0026 하네스 연결은 세 가지 — 내장, OpenAI 호환, 하네스 프로토콜(HTTP + MCP)
 kind: decision
-status: active
-last_verified: 2026-10-29
+status: superseded
+superseded_by: 0042-connectors.md
+last_verified: 2026-10-30
 enforced_by:
   - apps/server/src/adapters/harness.test.ts
 touches_protected: []
