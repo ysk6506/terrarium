@@ -12,7 +12,7 @@
  * SC021 answer not caused by any block (warn)
  */
 import { josa, type Particle, withJosa } from "@terrarium/core/kernel";
-import { diagnosisLabel, isDiagnosisType } from "@terrarium/core/world";
+import { diagnosisLabel, isDiagnosisType, isTaskType } from "@terrarium/core/world";
 import { BLOCK_SPECS, blockSpec, outputsOf, type ParamSpec } from "./blocks";
 import { MISTAKE_OF_BLOCK } from "./blocks-net";
 import {
@@ -325,7 +325,8 @@ function scoringWarnings(doc: ScenarioDoc): ScenarioIssue[] {
     ...doc.nodes.flatMap((n) => MISTAKE_OF_BLOCK[n.type] ?? []),
   ]);
   for (const d of diagnosis) {
-    if (!d.faultType.some((t) => injected.has(t)))
+    // A report of work (firmware_update) has no fault to inject.
+    if (!d.faultType.some((t) => injected.has(t) || isTaskType(t)))
       out.push(
         warning(
           "SC021",

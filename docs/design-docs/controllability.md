@@ -2,18 +2,18 @@
 title: 제어 가능 요소표 — 실험이 무엇을 바꿀 수 있고, 에이전트가 무엇을 할 수 있는가
 kind: spec
 status: active
-last_verified: 2026-11-04
+last_verified: 2026-11-05
 covers:
   - packages/core/src/scenario/controls.ts
   - packages/core/src/facades/bacnet-points.ts
   - packages/core/src/world/command-check.ts
 verification_log:
-  - "2026-11-04: 처음 썼다: 표, 장애별 대응, 아직 없는 것을 controls.ts와 대조. 냉각 플랜트·발전기 Unit-Enable을 반영 (REQ-069, ADR-0066)"
   - "2026-11-04: 표, 장애별 대응, 아직 없는 것을 controls.ts·bacnet-points.ts·command-check.ts와 대조"
   - "2026-11-04: controls.ts의 note 문장(따옴표 없앤 것)과 문서 표를 다시 대조했다. 표 내용은 그대로"
   - "2026-11-04: 2026-11-04: 편집기의 말을 용어집에 맞추고(고장 발생·복구, 상황 설명, 툴 호출 상한), 시간을 분으로 보이게 하고, 복구 방식 선택과 조치 항목 더하기를 더한 것에 맞춰 글을 고쳤다 (ADR-0072)"
   - "2026-11-04: outdoor.set 줄(에이전트 없음), 남은 없는 것, 피해를 줄이는 시험 범위를 controls.ts·bacnet-points.ts·command-check.ts와 대조 (REQ-073)"
-covers_hash: afa44a9e414f408f
+  - "2026-11-05: ADR-0101: controls.ts의 firmware.update 줄(Redfish UpdateService, 펌웨어 올리기)을 표에 더했다"
+covers_hash: f4879ab86724ca2f
 ---
 # 제어 가능 요소표 (REQ-069, ADR-0066)
 
@@ -39,6 +39,7 @@ covers_hash: afa44a9e414f408f
 | 냉방 설정 온도 | 냉방기 | 냉방 설정 온도 | 냉방 설정 온도 변경, BACnet 요청 | 냉방 설정 변경 |
 | 차단기 리셋 | PDU, 분전반 | 고장 발생(차단기 트립) | 차단기 리셋, Redfish 요청 | 차단기 리셋 |
 | PDU 콘센트 | PDU | PDU 콘센트 끄기/켜기 | Redfish 요청 | 콘센트 끄기, 콘센트 켜기 |
+| 서버 펌웨어(BMC·BIOS) 올리기 | 서버 | 없음 — 시나리오는 올리기를 시키지 않고, 실패만 고장 발생 블록(펌웨어 올리기 실패)으로 만든다. | Redfish 요청(UpdateService의 SimpleUpdate) | 펌웨어 올리기 |
 | 스위치 포트 끄기/켜기 | 네트워크 케이블 | 스위치 포트 끄기/켜기 | 스위치 CLI, Arista eAPI 요청, Cisco NX-API 요청, SNMP 요청 | 포트 끄기, 포트 켜기 |
 | 스위치 설정 (VLAN, SVI, 경로, BGP) | 스위치 | 포트 VLAN 바꾸기, VLAN 인터페이스 끄기/켜기, 정적 경로 지우기, BGP 이웃 끄기/켜기 | 스위치 CLI, Arista eAPI 요청, Cisco NX-API 요청 | 스위치 설정 변경 |
 | 외기 온도 | 사업장 | 외기 온도 바꾸기 | 없음 — 날씨는 운영자가 바꿀 수 없다. 시나리오가 폭염이나 한파를 만들 뿐이고, 에이전트는 BACnet 외기 온도 입력으로 읽기만 한다. | — |

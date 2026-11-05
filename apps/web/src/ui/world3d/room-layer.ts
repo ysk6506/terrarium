@@ -205,32 +205,52 @@ function podFloors(k: Kit, s: RoomScene): void {
   }
 }
 
+/** Which pods to draw: all but one (the aisle being looked into), or one alone. Posts are drawn only with the others. */
+export interface PodPick {
+  readonly except?: string;
+  readonly only?: string;
+}
+
 /** Containment: a roof over each aisle, end doors and posts. */
-function podCover(k: Kit, s: RoomScene): void {
+function podCover(k: Kit, s: RoomScene, pick: PodPick = {}): void {
   const { b, m } = k;
   for (const pod of s.pods) {
+    if (pick.only !== undefined && pod.id !== pick.only) continue;
     const e = pod.enclosure;
     const at = aisleBox(e);
-    b.box(pod.aisle === "cold" ? m.cold : m.hot, {
-      ...at,
-      h: 0.05,
-      y: RAISED_FLOOR_M + POD_H_M,
-      shadow: false,
-    });
-    for (const ex of [e.x0, e.x1]) {
-      b.box(m.ghost, {
-        x: ex,
-        z: at.z,
-        w: 0.04,
-        d: at.d,
-        h: POD_H_M - 0.1,
-        y: RAISED_FLOOR_M,
+    if (pod.id !== pick.except) {
+      b.box(pod.aisle === "cold" ? m.cold : m.hot, {
+        ...at,
+        h: 0.05,
+        y: RAISED_FLOOR_M + POD_H_M,
         shadow: false,
       });
-      for (const ez of [e.z0, e.z1])
-        b.box(m.dark, { x: ex, z: ez, w: 0.07, d: 0.07, h: POD_H_M, y: RAISED_FLOOR_M });
+      for (const ex of [e.x0, e.x1])
+        b.box(m.ghost, {
+          x: ex,
+          z: at.z,
+          w: 0.04,
+          d: at.d,
+          h: POD_H_M - 0.1,
+          y: RAISED_FLOOR_M,
+          shadow: false,
+        });
     }
+    if (pick.only === undefined)
+      for (const ex of [e.x0, e.x1])
+        for (const ez of [e.z0, e.z1])
+          b.box(m.dark, { x: ex, z: ez, w: 0.07, d: 0.07, h: POD_H_M, y: RAISED_FLOOR_M });
   }
+}
+
+/** The roofs, doors and posts of the containments of some rooms, in the floor's frame, baked into one group. */
+export function bakePods(
+  k: Kit,
+  rooms: readonly PlacedRoom[],
+  pick: PodPick = {},
+): ReturnType<Kit["b"]["bake"]> {
+  for (const room of rooms) k.b.frame(room.x, room.z, 0, () => podCover(k, room.scene, pick));
+  return k.b.bake();
 }
 
 /** Busway over each row of racks, with a cable tray beside it, hung from the slab above. */
@@ -285,10 +305,7 @@ function sprinkler(k: Kit, s: RoomScene): void {
 export function buildRoom(ctx: FloorCtx, room: PlacedRoom): void {
   const { k, cover, fleet } = ctx;
   const s = room.scene;
-  cover.b.frame(room.x, room.z, 0, () => {
-    walls(cover, s);
-    podCover(cover, s);
-  });
+  cover.b.frame(room.x, room.z, 0, () => walls(cover, s));
   k.b.frame(room.x, room.z, 0, () => {
     floor(k, s);
     trim(k, s);

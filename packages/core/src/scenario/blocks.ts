@@ -387,6 +387,7 @@ export interface FieldSpec {
 
 const num = (label: string, unit: string): FieldSpec => ({ label, type: "number", unit });
 const bool = (label: string): FieldSpec => ({ label, type: "boolean" });
+const version = (label: string): FieldSpec => ({ label, type: "enum" });
 const HEALTH: FieldSpec = { label: "상태", type: "enum", values: ["ok", "warning", "critical"] };
 
 /** Condition fields per entity kind. A test checks every one exists in the world state. */
@@ -409,6 +410,7 @@ export const CONDITION_FIELDS: Readonly<Record<EntityKind, Readonly<Record<strin
     liquidW: num("수랭 열량", "W"),
     coolantC: num("냉각수 온도", "°C"),
     bathC: num("액침 유체 온도", "°C"),
+    rebootPeak: num("펌웨어 때문에 한꺼번에 재부팅한 서버 수(가장 많았을 때)", "대"),
   },
   cdu: {
     health: HEALTH,
@@ -445,6 +447,9 @@ export const CONDITION_FIELDS: Readonly<Record<EntityKind, Readonly<Record<strin
     cpuC: num("CPU 온도", "°C"),
     cpuUtil: num("CPU 사용률", "비율"),
     powerW: num("소비 전력", "W"),
+    bmcVersion: version("BMC 펌웨어 버전"),
+    biosVersion: version("BIOS 펌웨어 버전"),
+    rebooting: bool("펌웨어 때문에 재부팅 중"),
   },
   switch: { health: HEALTH, powered: bool("전원 공급"), adminOn: bool("전원 켜짐") },
   storage: {

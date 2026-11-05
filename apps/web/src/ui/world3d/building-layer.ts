@@ -11,7 +11,7 @@ import type { Engine } from "./engine";
 import { proxyBox } from "./layer";
 import type { Kit } from "./parts";
 import { RackFleet } from "./racks-layer";
-import { buildRoom } from "./room-layer";
+import { bakePods, buildRoom } from "./room-layer";
 import { roomPicks } from "./room-picks";
 import { tween } from "./tween";
 
@@ -20,6 +20,8 @@ type BuildingScene = world3d.BuildingScene;
 type FloorScene = world3d.FloorScene;
 
 const { ROOM_HEIGHT_M } = world3d;
+/** The camera walks into an aisle in this long, and the roof clears in step, ms. */
+const WALK_IN_MS = world3d.WALK_IN_S * 1000;
 const CURB_M = 1;
 const EDGE_M = 0.35;
 
@@ -36,6 +38,10 @@ export interface BuildingLayer {
   setPickFloor(index: number | undefined): void;
   /** Show or take away the walls, glass and containment around the racks (a rack is looked at without them). */
   showContainment(on: boolean): void;
+  /** Look into a containment: its roof and doors go clear while the camera walks in; false if no floor has it. */
+  enterPod(roomId: string, podId: string): boolean;
+  /** The roof and doors of the containment that was looked into come back. */
+  leavePod(): void;
   /** The room whose volume should not catch clicks (the one being looked into). */
   setOpenRoom(roomId: string | undefined): void;
   recolor(layer: world3d.Layer, overlay: world3d.Overlay): void;
@@ -56,8 +62,10 @@ interface Floor {
   readonly scene: FloorScene;
   readonly group: THREE.Group;
   readonly fleet: RackFleet;
-  /** Perimeter, room walls and containment. */
+  /** Perimeter and room walls. */
   readonly cover: THREE.Object3D;
+  /** Roofs, doors and posts of the containments; made again when one is looked into. */
+  pods: THREE.Object3D;
   /** One unseen box to click for each rectangle of the room. */
   readonly rooms: ReadonlyMap<string, readonly THREE.Object3D[]>;
 }
@@ -135,8 +143,9 @@ function buildFloor(engine: Engine, scene: BuildingScene, f: FloorScene): Floor 
   }
   fleet.build();
   const roofs = covers.bake();
-  group.add(b.bake(), roofs, fleet.group);
-  return { scene: f, group, fleet, cover: roofs, rooms };
+  const pods = bakePods({ b: new Baker(), m: engine.mats }, f.rooms);
+  group.add(b.bake(), roofs, pods, fleet.group);
+  return { scene: f, group, fleet, cover: roofs, pods, rooms };
 }
 
 /** The floors of one building, stacked or spread apart. */
@@ -149,6 +158,14 @@ class Stack implements BuildingLayer {
   /** The containments and equipment of the open room, as unseen boxes to click. */
   private inner: THREE.Object3D | undefined;
   private stopTween = () => {};
+  /** Whether walls and containment are shown, and the containment being looked into. */
+  private coverOn = true;
+  private entered?: {
+    readonly floor: Floor;
+    readonly mine: THREE.Object3D;
+    readonly faded: THREE.MeshStandardMaterial[];
+    readonly stop: () => void;
+  };
 
   constructor(
     private readonly engine: Engine,
@@ -208,7 +225,58 @@ class Stack implements BuildingLayer {
   }
 
   showContainment(on: boolean): void {
-    for (const f of this.floors) f.cover.visible = on;
+    this.coverOn = on;
+    for (const f of this.floors) f.cover.visible = f.pods.visible = on;
+    if (this.entered) this.entered.mine.visible = on;
+    this.engine.invalidate();
+  }
+
+  /** The roofs and doors of a floor's containments, made again without the one being looked into. */
+  private remakePods(f: Floor, except?: string): void {
+    f.pods.removeFromParent();
+    f.pods.traverse((o) => (o as THREE.Mesh).geometry?.dispose());
+    f.pods = bakePods({ b: new Baker(), m: this.engine.mats }, f.scene.rooms, { except });
+    f.pods.visible = this.coverOn;
+    f.group.add(f.pods);
+  }
+
+  enterPod(roomId: string, podId: string): boolean {
+    const f = this.floors.find((x) => x.scene.rooms.some((r) => r.id === roomId));
+    if (!f) return false;
+    this.leavePod();
+    this.remakePods(f, podId);
+    const rooms = f.scene.rooms.filter((r) => r.id === roomId);
+    const mine = bakePods({ b: new Baker(), m: this.engine.mats }, rooms, { only: podId });
+    const faded: THREE.MeshStandardMaterial[] = [];
+    const base: number[] = [];
+    mine.traverse((o) => {
+      const mesh = o as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const own = (mesh.material as THREE.MeshStandardMaterial).clone();
+      mesh.material = own;
+      faded.push(own);
+      base.push(own.opacity);
+    });
+    mine.visible = this.coverOn;
+    f.group.add(mine);
+    const stop = tween(this.engine, 1, 0.2, WALK_IN_MS, (v) =>
+      faded.forEach((m, i) => {
+        m.opacity = (base[i] as number) * v;
+      }),
+    );
+    this.entered = { floor: f, mine, faded, stop };
+    return true;
+  }
+
+  leavePod(): void {
+    const e = this.entered;
+    if (!e) return;
+    this.entered = undefined;
+    e.stop();
+    e.mine.removeFromParent();
+    e.mine.traverse((o) => (o as THREE.Mesh).geometry?.dispose());
+    for (const m of e.faded) m.dispose();
+    this.remakePods(e.floor);
     this.engine.invalidate();
   }
 

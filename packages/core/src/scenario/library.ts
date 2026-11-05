@@ -6,6 +6,7 @@
 import { withJosa } from "@terrarium/core/kernel";
 import type { BlueprintIndex, Entity } from "@terrarium/core/world";
 import { FACILITY_TEMPLATES } from "./library-facility";
+import { FIRMWARE_TEMPLATES } from "./library-firmware";
 import {
   agent,
   allOf,
@@ -443,21 +444,26 @@ export { FACILITY_TEMPLATES };
 /** Changes people make to the network and to PDUs (REQ-068): a wrong VLAN, a shut port, a deleted route. */
 export { NETWORK_TEMPLATES };
 
+/** Work an operator does in a maintenance window (REQ-071): raising the firmware of servers. */
+export { FIRMWARE_TEMPLATES };
+
 /** Every built-in template, the facility ones and then the configuration ones last. */
 export const ALL_SCENARIO_TEMPLATES: readonly ScenarioTemplate[] = [
   ...SCENARIO_TEMPLATES,
   ...FACILITY_TEMPLATES,
   ...NETWORK_TEMPLATES,
+  ...FIRMWARE_TEMPLATES,
 ];
 
 /** How the new-scenario picker groups the templates: equipment first, then changes people make to settings. */
 export const TEMPLATE_GROUPS: readonly {
-  readonly id: "facility" | "network";
+  readonly id: "facility" | "network" | "firmware";
   readonly label: string;
   readonly templates: readonly ScenarioTemplate[];
 }[] = [
   { id: "facility", label: "설비", templates: [...SCENARIO_TEMPLATES, ...FACILITY_TEMPLATES] },
   { id: "network", label: "네트워크·전원 설정", templates: NETWORK_TEMPLATES },
+  { id: "firmware", label: "펌웨어 작업", templates: FIRMWARE_TEMPLATES },
 ];
 
 export function scenarioTemplate(id: string): ScenarioTemplate | undefined {

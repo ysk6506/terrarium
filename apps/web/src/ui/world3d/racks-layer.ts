@@ -26,9 +26,15 @@ interface Built {
 }
 
 const ZERO = new THREE.Matrix4().makeScale(0, 0, 0);
-/** How wide and how far in front of a rack the view is cleared when it is looked at. */
-const FRONT_HALF_M = 3.8;
-const FRONT_REACH_M = 6;
+/** Racks of the same row this close to the one looked at stay as faint shapes; every other rack is cleared, metres between centres. */
+const BESIDE_M = 3.4;
+/** The racks beside the one looked at stay as faint shapes, so the row is still a row (feedback 6). */
+const GHOST = new THREE.MeshStandardMaterial({
+  color: 0x39424b,
+  transparent: true,
+  opacity: 0.28,
+  depthWrite: false,
+});
 const UP = new THREE.Vector3(0, 1, 0);
 
 function bodyGeometry(kind: world3d.RackSet["kind"]): THREE.BufferGeometry {
@@ -181,13 +187,14 @@ export class RackFleet {
     return undefined;
   }
 
-  /** Take the racks standing in front of one out of the picture, so its face can be seen; returns how to put them back. */
+  /** Clear the racks round one so its face can be seen: its row neighbours stay as faint shapes. Returns how to put them back. */
   hideInFront(id: string): () => void {
     const at = this.placement(id);
     if (!at) return () => {};
     const cos = Math.cos(at.rot);
     const sin = Math.sin(at.rot);
     const saved: Array<[THREE.InstancedMesh, number, THREE.Matrix4]> = [];
+    const aside: Array<[THREE.BufferGeometry, THREE.Matrix4[]]> = [];
     const m = new THREE.Matrix4();
     const p = new THREE.Vector3();
     for (const b of this.built)
@@ -199,13 +206,27 @@ export class RackFleet {
         const dz = p.z - at.position.z;
         const lx = dx * cos - dz * sin;
         const lz = dx * sin + dz * cos;
-        if (Math.abs(lx) > FRONT_HALF_M || lz < 0.7 || lz > FRONT_REACH_M) return;
+        // The racks in front, and the one on either side, so the rack stands clear to be read (feedback 6).
+        const beside = Math.abs(lz) < 0.7 && Math.abs(lx) < BESIDE_M;
         if (Math.abs(p.y - at.position.y) > 1.5) return;
         saved.push([b.body, i, m.clone()]);
+        if (beside) {
+          const entry = aside.find(([g]) => g === b.body.geometry);
+          if (entry) entry[1].push(m.clone());
+          else aside.push([b.body.geometry, [m.clone()]]);
+        }
         b.body.setMatrixAt(i, ZERO);
         b.body.instanceMatrix.needsUpdate = true;
       });
+    const ghosts = aside.map(([geometry, list]) => {
+      const mesh = new THREE.InstancedMesh(geometry, GHOST, list.length);
+      for (const [i, matrix] of list.entries()) mesh.setMatrixAt(i, matrix);
+      mesh.frustumCulled = false;
+      this.group.add(mesh);
+      return mesh;
+    });
     return () => {
+      for (const mesh of ghosts) mesh.removeFromParent();
       for (const [mesh, i, matrix] of saved) {
         mesh.setMatrixAt(i, matrix);
         mesh.instanceMatrix.needsUpdate = true;

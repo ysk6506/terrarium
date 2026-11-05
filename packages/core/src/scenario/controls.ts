@@ -35,7 +35,15 @@ export interface ControlRow {
 
 export type OperatorCommand = Exclude<
   WorldCommand["type"],
-  "fault.add" | "fault.remove" | "thermal.shutdown" | "alarm.raise" | "alarm.clear" | "note"
+  | "fault.add"
+  | "fault.remove"
+  | "thermal.shutdown"
+  | "alarm.raise"
+  | "alarm.clear"
+  | "note"
+  | "firmware.reboot"
+  | "firmware.finish"
+  | "firmware.fail"
 >;
 
 const REDFISH = "redfish_request";
@@ -172,6 +180,21 @@ export const CONTROL_ROWS: readonly ControlRow[] = [
     actions: ["config_change"],
   },
   {
+    id: "firmware.update",
+    label: "서버 펌웨어(BMC·BIOS) 올리기",
+    command: "firmware.update",
+    targets: ["server"],
+    blocks: [],
+    agent: [
+      {
+        tool: REDFISH,
+        via: "UpdateService/Actions/UpdateService.SimpleUpdate (ImageURI: bios-2.4.1.bin 같은 이미지 이름)",
+      },
+    ],
+    actions: ["firmware_update"],
+    note: "시나리오는 올리기를 시키지 않는다. 실패만 고장 발생 블록(펌웨어 올리기 실패)으로 만든다. 재부팅과 버전 바뀜은 물리 엔진이 시간에 맞춰 한다.",
+  },
+  {
     id: "outdoor.set",
     label: "외기 온도",
     command: "outdoor.set",
@@ -200,6 +223,9 @@ export const NOT_OPERATOR: Readonly<
   "fault.add": "시나리오의 고장 발생 블록",
   "fault.remove": "시나리오의 고장 복구 블록",
   "thermal.shutdown": "물리 엔진 (CPU가 한계 온도를 넘으면 스스로 꺼진다)",
+  "firmware.reboot": "물리 엔진 (펌웨어 올리기가 시작되고 2분이 지나면 서버가 재부팅한다)",
+  "firmware.finish": "물리 엔진 (재부팅이 끝나면 새 버전으로 돈다)",
+  "firmware.fail": "물리 엔진 (올리기가 실패하게 정해진 서버는 이전 버전으로 돌아온다)",
   "alarm.raise": "모니터링",
   "alarm.clear": "모니터링",
   note: "기록 전용",
@@ -243,6 +269,7 @@ export const FAULT_RESPONSES: Readonly<Record<FaultType, FaultResponse>> = {
   sensor_drift: { remedy: "diagnose", via: [] },
   cpu_runaway: { remedy: "mitigate", via: SHED },
   bmc_unresponsive: { remedy: "diagnose", via: [] },
+  firmware_update_failure: { remedy: "fix", via: ["firmware.update"] },
   link_down: { remedy: "diagnose", via: [] },
   switch_failure: { remedy: "diagnose", via: [] },
   disk_failure: { remedy: "diagnose", via: [] },

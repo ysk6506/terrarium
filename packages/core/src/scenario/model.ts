@@ -28,7 +28,8 @@ export type ActionKind =
   | "port_enable"
   | "outlet_off"
   | "outlet_on"
-  | "config_change";
+  | "config_change"
+  | "firmware_update";
 
 export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   power_off: "전원 끄기",
@@ -41,6 +42,7 @@ export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   outlet_off: "콘센트 끄기",
   outlet_on: "콘센트 켜기",
   config_change: "스위치 설정 변경",
+  firmware_update: "펌웨어 올리기",
 };
 
 export const ACTION_KINDS = Object.keys(ACTION_LABELS) as ActionKind[];

@@ -7,6 +7,7 @@
  * clears. They are scenery: nothing here changes the world. This file makes the people of a room; what
  * they do is in `crew-plan.ts`.
  */
+import { aisleLine } from "./aisle";
 import {
   type Aisle,
   aislesOf,
@@ -123,6 +124,10 @@ function people(
   return out.slice(0, MAX_PEOPLE);
 }
 
+/** Whether two lines are the same walk (a stored aisle line may come out a little different). */
+const sameLine = (p: Aisle, q: Aisle): boolean =>
+  Math.hypot(p.a.x - q.a.x, p.a.z - q.a.z) < 1.2 && Math.hypot(p.b.x - q.b.x, p.b.z - q.b.z) < 1.2;
+
 function devicesOf(scene: RoomScene): Map<string, Dev> {
   const out = new Map<string, Dev>();
   for (const set of scene.sets)
@@ -141,9 +146,16 @@ function devicesOf(scene: RoomScene): Map<string, Dev> {
   return out;
 }
 
-/** The people of a room: at most four, and the same people every time for the same room and seed. */
-export function crewOf(scene: RoomScene, seed = 7): Crew {
-  const grid = new Grid(scene, [...rackBlocks(scene), ...equipBlocks(scene), ...podBlocks(scene)]);
+/**
+ * The people of a room: at most four, and the same people every time for the same room and seed. With `inside`
+ * (a containment being looked into, feedback 8) its aisle is walkable and the first engineer patrols it.
+ */
+export function crewOf(scene: RoomScene, seed = 7, inside?: string): Crew {
+  const grid = new Grid(scene, [
+    ...rackBlocks(scene),
+    ...equipBlocks(scene),
+    ...podBlocks(scene, inside),
+  ]);
   const desk = deskOf(scene, grid);
   if (desk)
     grid.block({
@@ -152,7 +164,11 @@ export function crewOf(scene: RoomScene, seed = 7): Crew {
       x1: desk.x + desk.w / 2,
       z1: desk.z + desk.d / 2,
     });
-  const aisles = aislesOf(scene, grid, rackBlocks(scene));
+  const pod = inside ? scene.pods.find((p) => p.id === inside) : undefined;
+  const walked = aislesOf(scene, grid, rackBlocks(scene));
+  const aisles = pod
+    ? [aisleLine(pod), ...walked.filter((a) => !sameLine(a, aisleLine(pod)))]
+    : walked;
   return {
     scene,
     people: people(scene, grid, aisles, seed),

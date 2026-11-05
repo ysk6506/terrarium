@@ -1265,6 +1265,13 @@ button.tag {
   pointer-events: none;
 }
 
+.stage-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 48%, transparent 45%, rgb(30 38 48 / 0.55) 100%);
+  pointer-events: none;
+}
+
 .stage-hint {
   position: absolute;
   left: 50%;
@@ -2929,4 +2936,27 @@ ol.elevation li:first-child .u-slot {
 }
 .how-runs .tag-recommend {
   margin-inline-start: 0;
+}
+
+.stage-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100% - 32px);
+  padding: 6px 8px 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--glass-92);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  font-size: 13px;
+  transform: translateX(-50%);
+}
+
+.stage-hint:not(:has(button)) {
+  padding-right: 14px;
 }

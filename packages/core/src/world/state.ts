@@ -1,8 +1,9 @@
 /** Dynamic state of the world: JSON-serialisable so it can be snapshotted and sent between threads. */
 import type { Catalog, EquipmentModel } from "@terrarium/core/catalog";
-import type { EntityKind } from "./blueprint";
+import type { Entity, EntityKind } from "./blueprint";
 import { bulkOf } from "./bulk";
 import type { Fault } from "./faults";
+import { type FirmwareJob, SHIPPED_FIRMWARE } from "./firmware";
 import type { BlueprintIndex } from "./graph";
 import type { NetPatch } from "./net-config";
 
@@ -23,6 +24,15 @@ export interface ServerState extends Base {
   psuOk: boolean[];
   powerW: number;
   throttled: boolean;
+  /** Firmware versions; the BMC says "shipped" until it is updated (the profile's own version shows then). */
+  bmcVersion: string;
+  biosVersion: string;
+  /** Whether a firmware update has the server down for its reboot. */
+  rebooting: boolean;
+  /** The update under way, absent otherwise. */
+  fw?: FirmwareJob;
+  /** What the last update tried when it failed ("BIOS 2.4.1"); absent once an update has worked. */
+  fwFailed?: string;
 }
 export interface SwitchState extends Base {
   kind: "switch";
@@ -86,6 +96,8 @@ export interface RackState extends Base {
   coolantC: number;
   /** Fluid temperature in an immersion tank, °C; 0 for a rack. */
   bathC: number;
+  /** The most servers of this rack that were rebooting for firmware at the same time. */
+  rebootPeak: number;
 }
 export interface CduState extends Base {
   kind: "cdu";
@@ -216,6 +228,9 @@ const FACTORIES: Partial<Record<EntityKind, Factory>> = {
       psuOk: Array(psus).fill(true),
       powerW: 0,
       throttled: false,
+      bmcVersion: SHIPPED_FIRMWARE.bmc,
+      biosVersion: SHIPPED_FIRMWARE.bios,
+      rebooting: false,
     };
   },
   switch: () => ({ kind: "switch", health: "ok", adminOn: true, powered: true, powerW: 0 }),
@@ -268,6 +283,7 @@ const FACTORIES: Partial<Record<EntityKind, Factory>> = {
     liquidW: 0,
     coolantC: 0,
     bathC: 0,
+    rebootPeak: 0,
   }),
   cdu: (model) => ({
     kind: "cdu",
@@ -321,6 +337,13 @@ const FACTORIES: Partial<Record<EntityKind, Factory>> = {
   }),
 };
 
+/** A blueprint can say how loaded a server is and which firmware versions it was built with. */
+function applyServerProps(state: StateOf<"server">, props: Entity["props"]): void {
+  if (typeof props.cpuUtil === "number") state.cpuUtil = props.cpuUtil;
+  if (typeof props.bmcVersion === "string") state.bmcVersion = props.bmcVersion;
+  if (typeof props.biosVersion === "string") state.biosVersion = props.biosVersion;
+}
+
 function initial(kind: EntityKind, modelId: string | undefined, catalog: Catalog): EntityState {
   const model = modelId && catalog.has(modelId) ? catalog.get(modelId) : undefined;
   return FACTORIES[kind]?.(model) ?? ({ kind, health: "ok" } as EntityState);
@@ -332,8 +355,7 @@ export function initialState(index: BlueprintIndex, catalog: Catalog): WorldStat
     const state = initial(entity.kind, entity.modelId, catalog);
     if (state.kind === "vm" && typeof entity.props.cpuDemand === "number")
       state.cpuDemand = entity.props.cpuDemand;
-    if (state.kind === "server" && typeof entity.props.cpuUtil === "number")
-      state.cpuUtil = entity.props.cpuUtil;
+    if (state.kind === "server") applyServerProps(state, entity.props);
     if (state.kind === "rack") state.util = bulkOf(entity)?.util ?? 0;
     if (state.kind === "cooling_unit" && typeof entity.props.setpointC === "number")
       state.setpointC = entity.props.setpointC;

@@ -6,6 +6,7 @@ import { ConflictError, InvalidValueError, NotFoundError } from "@terrarium/core
 import type { EntityKind } from "./blueprint";
 import { isBulkRack } from "./bulk";
 import { type Fault, faultSpec } from "./faults";
+import { FIRMWARE_COMPONENTS, type FirmwareComponent } from "./firmware";
 import { checkNetChange } from "./net-check";
 import { outletCount } from "./outlets";
 import type { WorldCommand, WorldReader } from "./world";
@@ -97,6 +98,29 @@ function checkOutlet(world: WorldReader, target: string, outlet: number): void {
     throw new NotFoundError(`'${target}' has no outlet ${outlet} (1..${count})`);
 }
 
+function checkFirmware(
+  world: WorldReader,
+  target: string,
+  component: FirmwareComponent,
+  version: string,
+): void {
+  const server = world.stateAs(target, "server");
+  if (!FIRMWARE_COMPONENTS.includes(component))
+    throw new InvalidValueError(`'${component}' is not a firmware part (bmc or bios)`);
+  if (!/^\d+(\.\d+){1,3}$/.test(version))
+    throw new InvalidValueError(`firmware version '${version}' must look like 2.4.1`);
+  if (server.fw)
+    throw new ConflictError(`'${target}' is already updating its ${server.fw.component}`);
+}
+
+/** The firmware commands: an operator's `firmware.update`, and the physics' three steps of it. */
+function checkFirmwareCommand(world: WorldReader, command: WorldCommand): void {
+  if (command.type === "firmware.update")
+    checkFirmware(world, command.target, command.component, command.version);
+  else if (command.type.startsWith("firmware."))
+    world.stateAs((command as { target: string }).target, "server");
+}
+
 export function validateCommand(world: WorldReader, has: Lookups, command: WorldCommand): void {
   switch (command.type) {
     case "power.set":
@@ -133,6 +157,6 @@ export function validateCommand(world: WorldReader, has: Lookups, command: World
       checkNetChange(world, command.target, command.change);
       return;
     default:
-      return;
+      checkFirmwareCommand(world, command);
   }
 }

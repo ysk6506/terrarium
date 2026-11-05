@@ -40,6 +40,7 @@ export { EVENT_LABELS, EVENT_TYPES, type EventType, eventTarget, isEventType } f
 export {
   ALL_SCENARIO_TEMPLATES,
   FACILITY_TEMPLATES,
+  FIRMWARE_TEMPLATES,
   NETWORK_TEMPLATES,
   SCENARIO_TEMPLATES,
   type ScenarioTemplate,

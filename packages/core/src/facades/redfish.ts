@@ -21,6 +21,7 @@ import { handleFacility } from "./redfish-facility";
 import * as log from "./redfish-log";
 import { processor, processorCollection } from "./redfish-processors";
 import * as r from "./redfish-resources";
+import * as u from "./redfish-update";
 
 export { redfishError };
 
@@ -177,6 +178,24 @@ function logRoutes(router: Router, ctx: Ctx): void {
     );
 }
 
+function updateRoutes(router: Router, world: WorldPort, ctx: Ctx): void {
+  const update = `${BASE}/UpdateService`;
+  router
+    .on("GET", update, () => json(200, u.updateService(ctx)))
+    .on("GET", `${update}/FirmwareInventory`, () => json(200, u.inventory(ctx)))
+    .on("GET", `${update}/FirmwareInventory/:part`, (_q, p) =>
+      json(200, u.inventoryItem(ctx, p.part as string)),
+    )
+    .on("POST", `${update}/Actions/UpdateService.SimpleUpdate`, (q) =>
+      u.simpleUpdate(world, ctx, q.body),
+    )
+    .on("GET", `${BASE}/TaskService`, () => json(200, u.taskService(ctx)))
+    .on("GET", `${BASE}/TaskService/Tasks`, () => json(200, u.taskCollection(ctx)))
+    .on("GET", `${BASE}/TaskService/Tasks/:task`, (_q, p) =>
+      json(200, u.task(ctx, p.task as string)),
+    );
+}
+
 function routes(world: WorldPort, ctx: Ctx): Router {
   const { system: sid, chassis: cid, manager: mid } = r.ids(ctx);
   const router = new Router()
@@ -223,6 +242,7 @@ function routes(world: WorldPort, ctx: Ctx): Router {
   if (ctx.profile.thermalSchema !== "subsystem") legacyRoutes(router, ctx);
   if (ctx.profile.thermalSchema !== "legacy") subsystemRoutes(router, ctx);
   if (ctx.profile.supportsEventLog) logRoutes(router, ctx);
+  updateRoutes(router, world, ctx);
   return router;
 }
 
@@ -247,8 +267,10 @@ export class RedfishFacade {
     if (this.world.faultsOn(serverId).some((f) => f.type === "bmc_unresponsive")) {
       return redfishError(504, `BMC of ${server.name} did not respond`);
     }
-    if (!this.world.stateAs(serverId, "server").powered)
-      return redfishError(503, `BMC of ${server.name} has no power`);
+    const state = this.world.stateAs(serverId, "server");
+    if (!state.powered) return redfishError(503, `BMC of ${server.name} has no power`);
+    if (state.rebooting && state.fw?.component === "bmc")
+      return redfishError(503, `BMC of ${server.name} is restarting to finish a firmware update`);
     const profileKey =
       typeof server.props.bmcProfile === "string" ? server.props.bmcProfile : undefined;
     const ctx: Ctx = {

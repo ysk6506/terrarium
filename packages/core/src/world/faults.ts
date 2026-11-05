@@ -21,6 +21,7 @@ export type FaultType =
   | "cpu_runaway"
   | "vm_cpu_spike"
   | "bmc_unresponsive"
+  | "firmware_update_failure"
   | "chiller_failure"
   | "chiller_degraded"
   | "cdu_failure"
@@ -265,6 +266,15 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
     domain: "server",
   },
   {
+    type: "firmware_update_failure",
+    label: "펌웨어 올리기 실패",
+    description: "서버의 펌웨어 올리기가 끝에서 실패해요. 정해진 횟수만큼 실패한 뒤에는 성공해요",
+    targets: ["server"],
+    params: [p("failures", "실패하는 횟수", 1, 3, 1, "번")],
+    status: "supported",
+    domain: "server",
+  },
+  {
     type: "link_down",
     label: "네트워크 링크 다운",
     description: "서버-스위치 사이 링크가 끊겨요",
@@ -372,12 +382,28 @@ export const isFaultType = (value: string): value is FaultType =>
 export const isMistakeType = (value: string): value is MistakeType =>
   MISTAKE_SPECS.some((s) => s.type === value);
 
-/** What a diagnosis can name as the kind of problem: a fault or a mistake, by id. */
-export const isDiagnosisType = (value: string): value is FaultType | MistakeType =>
-  isFaultType(value) || isMistakeType(value);
+/**
+ * Work a scenario can ask an agent to do. There is nothing broken to find, so the report of the work names
+ * the kind of work where a diagnosis names the kind of problem.
+ */
+export type TaskType = "firmware_update";
 
-/** The label of a fault or mistake type, for comparing a diagnosis written in words with the id. */
-export function diagnosisLabel(type: FaultType | MistakeType): string {
-  return (FAULT_SPECS.find((s) => s.type === type) ?? MISTAKE_SPECS.find((s) => s.type === type))
-    ?.label as string;
+export const TASK_SPECS: ReadonlyArray<{ readonly type: TaskType; readonly label: string }> = [
+  { type: "firmware_update", label: "펌웨어 올리기" },
+];
+
+export const isTaskType = (value: string): value is TaskType =>
+  TASK_SPECS.some((s) => s.type === value);
+
+/** What a diagnosis can name as the kind of problem: a fault or a mistake, or the kind of work, by id. */
+export const isDiagnosisType = (value: string): value is FaultType | MistakeType | TaskType =>
+  isFaultType(value) || isMistakeType(value) || isTaskType(value);
+
+/** The label of a fault, mistake or kind of work, for comparing a diagnosis written in words with the id. */
+export function diagnosisLabel(type: FaultType | MistakeType | TaskType): string {
+  return (
+    FAULT_SPECS.find((s) => s.type === type) ??
+    MISTAKE_SPECS.find((s) => s.type === type) ??
+    TASK_SPECS.find((s) => s.type === type)
+  )?.label as string;
 }

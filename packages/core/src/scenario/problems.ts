@@ -11,6 +11,7 @@ import {
   FAULT_SPECS,
   type FaultSpec,
   isMistakeType,
+  isTaskType,
   KIND_LABELS,
   kindList,
 } from "@terrarium/core/world";
@@ -280,7 +281,9 @@ function stateConditionProblem(
       ? typeof c.value === "number"
       : field.type === "boolean"
         ? typeof c.value === "boolean"
-        : field.values?.includes(String(c.value));
+        : field.values === undefined
+          ? typeof c.value === "string"
+          : field.values.includes(String(c.value));
   return okValue ? undefined : bad(`${field.label}에 맞지 않는 값 '${String(c.value)}'`, "SC014");
 }
 
@@ -294,7 +297,10 @@ function diagnosisProblem(
   if (e.rootCause.length === 0) return bad("정답 원인을 하나 이상 골라야 해요", "SC016");
   const missing = e.rootCause.find((id) => !isLinkId(env, id) && !env.index.find(id));
   if (missing !== undefined) return bad(`이 세계에 '${missing}'가 없어요`, "SC012");
-  if (e.faultType.length === 0 || !e.faultType.every((t) => specOf(env, t) || isMistakeType(t)))
+  if (
+    e.faultType.length === 0 ||
+    !e.faultType.every((t) => specOf(env, t) || isMistakeType(t) || isTaskType(t))
+  )
     return bad("정답 고장 종류가 올바르지 않아요", "SC016");
   return positive(e.weight, "점수");
 }

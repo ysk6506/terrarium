@@ -2,12 +2,13 @@
 import type { BlueprintIndex } from "@terrarium/core/world";
 import { world3d } from "../../logic";
 import { Segmented } from "../fields";
-import type { WorldView } from "./view";
+import type { Aisle, WorldView } from "./view";
 
 export function WorldBar({
   view,
   index,
   focus,
+  aisle,
   layer,
   onLayer,
   life,
@@ -16,12 +17,13 @@ export function WorldBar({
   readonly view: WorldView;
   readonly index: BlueprintIndex;
   readonly focus: world3d.Focus;
+  readonly aisle?: Aisle;
   readonly layer: world3d.Layer;
   readonly onLayer: (layer: world3d.Layer) => void;
   readonly life: boolean;
   readonly onLife: (on: boolean) => void;
 }) {
-  const crumbs = world3d.crumbsOf(index, focus);
+  const crumbs = world3d.crumbsOf(index, focus, aisle?.name);
   return (
     <div className="stage-top">
       <nav className="crumbs stage-bar" aria-label="보고 있는 곳">

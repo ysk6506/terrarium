@@ -12,6 +12,7 @@ import {
   type ServerState,
   type WorldReader,
 } from "@terrarium/core/world";
+import { versionOf } from "./redfish-update";
 
 export interface BmcContext {
   readonly world: WorldReader;
@@ -61,6 +62,8 @@ export function serviceRoot(ctx: BmcContext): Record<string, unknown> {
     Chassis: { "@odata.id": `${ctx.base}/Chassis` },
     Managers: { "@odata.id": `${ctx.base}/Managers` },
     SessionService: { "@odata.id": `${ctx.base}/SessionService` },
+    UpdateService: { "@odata.id": `${ctx.base}/UpdateService` },
+    Tasks: { "@odata.id": `${ctx.base}/TaskService` },
     Links: { Sessions: { "@odata.id": `${ctx.base}/SessionService/Sessions` } },
   };
 }
@@ -136,6 +139,7 @@ export function system(ctx: BmcContext): Record<string, unknown> {
     UUID: uuidOf(ctx.server.id),
     PowerState: s.powered && s.adminOn ? "On" : "Off",
     Status: status(s),
+    BiosVersion: versionOf(ctx, "bios"),
     ProcessorSummary: {
       Count: m.cpuSockets,
       CoreCount: m.cpuSockets * m.coresPerSocket,
@@ -368,7 +372,7 @@ export function manager(ctx: BmcContext): Record<string, unknown> {
     Id: mid,
     Name: `${ctx.profile.product} BMC`,
     ManagerType: "BMC",
-    FirmwareVersion: ctx.profile.version,
+    FirmwareVersion: versionOf(ctx, "bmc"),
     Status: { State: s.powered ? "Enabled" : "Absent", Health: "OK" },
     Links: { ManagerForServers: [{ "@odata.id": `${ctx.base}/Systems/${sid}` }] },
   };
