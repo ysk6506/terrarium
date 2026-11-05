@@ -12,6 +12,7 @@ import { Button, Figures, Note, NumberField, Segmented, SelectField } from "../k
 import { FillPanel } from "./FillPanel";
 import { LandList, ParcelPanel, PurposeField } from "./LandPanel";
 import { RackPanel } from "./RackPanel";
+import { SizePanel } from "./SizePanel";
 import type { Builder } from "./useBuilder";
 import { catalog } from "./useBuilder";
 
@@ -236,6 +237,9 @@ function EntityPanel({ entity, b }: { readonly entity: Entity; readonly b: Build
         <EntityActions entity={entity} b={b} />
       </div>
       {entity.kind === "rack" && <RackPanel rack={entity} b={b} />}
+      {builder.handlesFit(b.state.index, b.state.level, entity) && (
+        <SizePanel entity={entity} b={b} />
+      )}
       {entity.kind === "parcel" && <ParcelPanel entity={entity} b={b} />}
       <Links entity={entity} b={b} />
       {entity.kind !== "parcel" && <RemoveBlock entity={entity} b={b} />}
@@ -369,6 +373,8 @@ function LevelPanel({ b }: { readonly b: Builder }) {
         )}
         {building && <Floors b={b} buildingId={building.id} />}
       </div>
+      {level.kind === "room" && <SizePanel entity={index.entity(level.id)} b={b} />}
+      {building && <SizePanel entity={building} b={b} />}
       {level.kind === "room" && <FillPanel roomId={level.id} b={b} />}
       {level.kind === "site" && <LandList b={b} />}
       <IssuesBlock b={b} />

@@ -29,6 +29,8 @@ export interface AirInput {
   readonly onToggleUnit: (id: string) => void;
   /** What the page has selected: a rack that is picked there is picked here. */
   readonly selected: readonly string[];
+  /** Told which moment of the run is shown (the people in the room follow it), and undefined when the map closes. */
+  readonly onFrame?: (index: number | undefined) => void;
 }
 
 /** How much of the picture the card covers when it is open, pixels. */
@@ -57,7 +59,9 @@ function useRackPointer(
         last = now;
         set.hover(rackAt(x, y));
       }),
-      view.rig.onClick((x, y) => set.pick(rackAt(x, y))),
+      view.rig.onClick((x, y) => {
+        if (view.crew.hit(x, y) === undefined) set.pick(rackAt(x, y));
+      }),
     ];
     return () => {
       for (const off of offs) off();
@@ -152,6 +156,11 @@ function AirMapOn({ view, index, input, scene }: MapProps) {
   );
   const nameOf = useMemo(() => (id: string) => index.find(id)?.name ?? id, [index]);
   const calm = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const { onFrame } = input;
+  useEffect(() => {
+    onFrame?.(frames ? frame : undefined);
+    return () => onFrame?.(undefined);
+  }, [onFrame, frames, frame]);
   const pointer = useMemo(() => ({ hover: setHovered, pick: setPicked }), []);
   useRackPointer(view, true, pointer);
   const selectedRack = input.selected.length === 1 ? input.selected[0] : undefined;

@@ -7,7 +7,13 @@
  */
 import type { Catalog } from "@terrarium/core/catalog";
 import type { Rect } from "@terrarium/core/spatial";
-import { type BlueprintIndex, type Entity, footprint } from "@terrarium/core/world";
+import {
+  type BlueprintIndex,
+  type Entity,
+  footprint,
+  roomOutline,
+  roomRects,
+} from "@terrarium/core/world";
 import { floorsOf, type Level, levelArea, levelEntities } from "./levels";
 import { elevation } from "./rack";
 
@@ -46,6 +52,14 @@ export interface Scene {
   readonly labels: readonly SceneLabel[];
   /** Entity id → where it is drawn (for selection outlines and focusing the camera). */
   readonly where: ReadonlyMap<string, { readonly group: GroupKey; readonly index: number }>;
+  /** A room's outline in the level's plan, corners in order (a room made of pieces is not a box). */
+  readonly outlines: ReadonlyMap<string, readonly Corner[]>;
+}
+
+/** A corner of an outline on the plan. */
+export interface Corner {
+  readonly x: number;
+  readonly y: number;
 }
 
 /** What the view adds on top of the plain world. */
@@ -142,6 +156,7 @@ interface Ctx {
   readonly groups: Map<GroupKey, GroupBuilder>;
   readonly labels: SceneLabel[];
   readonly where: Map<string, { group: GroupKey; index: number }>;
+  readonly outlines: Map<string, readonly Corner[]>;
 }
 
 /** How a thing is drawn: its height above the floor and its colour. */
@@ -150,11 +165,12 @@ interface Look {
   readonly color: Rgb;
 }
 
-function put(ctx: Ctx, key: GroupKey, e: Entity, rect: Rect, look: Look): void {
+function put(ctx: Ctx, key: GroupKey, e: Entity, rect: Rect, look: Look, find = true): void {
   const g = ctx.groups.get(key) ?? new GroupBuilder();
   ctx.groups.set(key, g);
   const tinted = ctx.overlay.alarmed?.has(e.id) ? COLORS.critical : look.color;
-  ctx.where.set(e.id, { group: key, index: g.add(e.id, rect, 0, look.height, tinted) });
+  const at = g.add(e.id, rect, 0, look.height, tinted);
+  if (find) ctx.where.set(e.id, { group: key, index: at });
 }
 
 function rackColor(ctx: Ctx, rack: Entity): Rgb {
@@ -186,7 +202,12 @@ function drawThing(ctx: Ctx, e: Entity): void {
   } else if (e.kind === "parcel") {
     put(ctx, "parcel", e, rect, { height: HEIGHTS.roomSlab, color: COLORS.parcel });
   } else if (e.kind === "room") {
+    // Every piece of the room is a slab of its own; the first is where the room is found.
+    for (const r of roomRects(e).slice(1))
+      put(ctx, "room", e, r, { height: HEIGHTS.roomSlab, color: COLORS.room }, false);
     put(ctx, "room", e, rect, { height: HEIGHTS.roomSlab, color: COLORS.room });
+    // A plain room is outlined as a box; only one made of pieces needs its real outline.
+    if (roomRects(e).length > 1) ctx.outlines.set(e.id, roomOutline(e));
     ctx.labels.push({
       id: e.id,
       text: e.name,
@@ -214,7 +235,15 @@ export function sceneOf(
   level: Level,
   overlay: Overlay = {},
 ): Scene {
-  const ctx: Ctx = { index, catalog, overlay, groups: new Map(), labels: [], where: new Map() };
+  const ctx: Ctx = {
+    index,
+    catalog,
+    overlay,
+    groups: new Map(),
+    labels: [],
+    where: new Map(),
+    outlines: new Map(),
+  };
   for (const e of levelEntities(index, level)) drawThing(ctx, e);
   const groups = [...ctx.groups].map(([key, g]) => ({
     key,
@@ -223,5 +252,11 @@ export function sceneOf(
     ids: g.ids,
     opacity: OPACITY[key],
   }));
-  return { area: levelArea(index, catalog, level), groups, labels: ctx.labels, where: ctx.where };
+  return {
+    area: levelArea(index, catalog, level),
+    groups,
+    labels: ctx.labels,
+    where: ctx.where,
+    outlines: ctx.outlines,
+  };
 }

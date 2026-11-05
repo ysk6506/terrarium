@@ -33,6 +33,7 @@ const OUTLINE_HEIGHT: Readonly<Record<string, number>> = { room: ROOM_HEIGHT_M, 
 export function outlinesOf(scene: Scene, ids: readonly string[]): PlanBox[] {
   const out: PlanBox[] = [];
   for (const id of ids) {
+    if (scene.outlines.has(id)) continue;
     const at = scene.where.get(id);
     const group = at && scene.groups.find((g) => g.key === at.group);
     if (!at || !group) continue;
@@ -60,3 +61,29 @@ export const ghostBox = (g: PlanGhost): PlanBox => ({
   h: g.h,
   d: g.d,
 });
+
+/** A closed outline on the plan, drawn as a wall of this height: a room, whatever its shape. */
+export interface PlanShape {
+  readonly points: ReadonlyArray<{ readonly x: number; readonly z: number }>;
+  readonly h: number;
+}
+
+/** The outlines to draw for a selection: the rooms in it, along their real walls. */
+export function shapesOf(scene: Scene, ids: readonly string[]): PlanShape[] {
+  const out: PlanShape[] = [];
+  for (const id of ids) {
+    const corners = scene.outlines.get(id);
+    if (corners) out.push({ points: corners.map((c) => ({ x: c.x, z: c.y })), h: ROOM_HEIGHT_M });
+  }
+  return out;
+}
+
+/** A handle on the plan: where it sits, how big it is drawn, and what it does when dragged. */
+export interface PlanHandle {
+  readonly x: number;
+  readonly z: number;
+  readonly size: number;
+  readonly kind: "edge" | "attach";
+  /** Which way the side faces, for the plus. */
+  readonly side: "left" | "right" | "top" | "bottom";
+}

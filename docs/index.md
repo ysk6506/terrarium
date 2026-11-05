@@ -2,9 +2,10 @@
 title: 문서 색인
 kind: reference
 status: active
-last_verified: 2026-10-29
+last_verified: 2026-11-05
+verification_log:
+  - "2026-11-05: harness-e2e.md 링크를 더했다"
 ---
-
 # 문서 색인
 
 모든 문서는 여기서 도달 가능해야 한다 (`DOC040`). 새 문서를 만들면 여기에 링크한다.
@@ -26,6 +27,7 @@ last_verified: 2026-10-29
 - [실험과 결과 분석](design-docs/experiments-and-analysis.md)
 - [HTTP API 계약](design-docs/http-api.md)
 - [하네스 프로토콜](design-docs/harness-protocol.md)
+- [진짜 하네스로 끝까지 — LangGraph, OpenCode, OpenClaw 실측과 재현 절차](design-docs/harness-e2e.md)
 - [서버 운영 — 설치와 사내 시스템 연결](design-docs/operations.md)
 - [규모 키우기 — 스케일 업과 스케일 아웃](design-docs/scaling.md)
 - [용량 — 한 프로세스가 동시에 몇 개를 들고 있나](design-docs/capacity.md)
@@ -125,6 +127,9 @@ last_verified: 2026-10-29
 - [0075 운영 채점은 물리가 보상하는 곳에만 넣고, 채점표는 사실만 말한다](design-docs/adr/0075-operation-scoring.md)
 - [0076 운영 채점으로 채점표와 기대값이 달라진 시험 열네 개의 기대값을 고친다](design-docs/adr/0076-operation-scoring-amend-tests.md)
 - [0077 공기 흐름 지도의 말도 용어집 점검에 넣고, 그 점검이 읽는 목록을 고친다](design-docs/adr/0077-airflow-words-amend-tests.md)
+- [0078 서버룸의 사람은 꾸밈이지만 세계를 읽는다 — 고장이 나면 걸어가서 일한다](design-docs/adr/0078-people-in-the-hall.md)
+- [0079 서버룸과 건물은 직사각형 안에서 자유롭게 넓히고, 꽉 차면 길을 보여 준다](design-docs/adr/0079-room-resize.md)
+- [0080 방은 직사각형 조각을 붙인 하나의 공간이다 — L자와 육각형 윤곽을 그대로 만든다](design-docs/adr/0080-room-pieces.md)
 
 ## 계획과 부채
 

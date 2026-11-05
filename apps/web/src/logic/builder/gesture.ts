@@ -14,6 +14,8 @@ import {
   footprint,
   KIND_LABELS,
   type RoomPurpose,
+  roomBounds,
+  roomRects,
 } from "@terrarium/core/world";
 import { count, won } from "../format";
 import { moveTo } from "./change";
@@ -34,6 +36,7 @@ import {
 } from "./edit";
 import { addBuilding, buyParcel, ownParcelAt, parcelForSaleAt, placePlant } from "./edit-site";
 import type { Level } from "./levels";
+import type { Refusal } from "./reshape";
 import { HEIGHTS } from "./scene";
 
 export type Tool =
@@ -59,6 +62,8 @@ export interface Plan {
   readonly label: string;
   /** Why it cannot go there; undefined when it can. */
   readonly problem?: string;
+  /** The way on from a refusal, when there is one. */
+  readonly way?: Refusal["way"];
   readonly edit?: Edit;
 }
 
@@ -264,7 +269,12 @@ export function movePlan(where: Where, id: string, from: Point, to: Point): Plan
   const x = snap(rect.x + (to.x - from.x), step);
   const y = snap(rect.y + (to.y - from.y), step);
   const height = LIFTED[entity.kind] ?? HEIGHTS.equipment;
-  return attempt({ ...rect, x, y }, height, `${withJosa(entity.name, "을")} 옮겼어요`, () =>
+  // A room made of pieces moves as a whole: its ghost is the box round all of them.
+  const around = entity.kind === "room" ? roomBounds(roomRects(entity)) : undefined;
+  const shown = around
+    ? { ...around, x: around.x + x - rect.x, y: around.y + y - rect.y }
+    : { ...rect, x, y };
+  return attempt(shown, height, `${withJosa(entity.name, "을")} 옮겼어요`, () =>
     moveTo(bp, catalog, level, id, x, y),
   );
 }

@@ -9,7 +9,7 @@
  * Links point in the *dependency* direction (consumer -> supplier), like the cloud_topology graph:
  * a server is POWERED by a PDU, a rack is COOLED by a cooling unit, a VM RUNS ON a host.
  */
-import type { Rotation } from "@terrarium/core/spatial";
+import type { Rect, Rotation } from "@terrarium/core/spatial";
 
 export const BLUEPRINT_SCHEMA_VERSION = 1;
 
@@ -98,6 +98,8 @@ export type Placement =
       readonly y: number;
       readonly w: number;
       readonly d: number;
+      /** A room only (ADR-0080): rectangles attached edge to edge to the body, in the same frame. Absent = a plain rectangle. */
+      readonly pieces?: readonly Rect[];
     }
   | { readonly type: "level"; readonly level: number; readonly height: number }
   | { readonly type: "spot"; readonly x: number; readonly y: number; readonly rotation: Rotation }

@@ -25,19 +25,78 @@ export interface FloorCtx {
   readonly fleet: RackFleet;
 }
 
+/** The floor: one slab for each rectangle of the room, tiles running on across the seam (there is no wall or line there). */
 function floor(k: Kit, s: RoomScene): void {
   const { b, m } = k;
   const raised = s.purpose === "data_hall";
   const clean = s.purpose === "cleanroom";
-  b.box(raised ? m.raisedFloor : clean ? m.cleanFloor : m.concrete, {
-    x: s.w / 2,
-    z: s.d / 2,
-    w: s.w,
-    d: s.d,
-    h: raised ? RAISED_FLOOR_M : 0.12,
-    tile: raised || clean ? 0.6 : 6,
-    shadow: false,
-  });
+  for (const r of world3d.rectsOfScene(s))
+    b.box(raised ? m.raisedFloor : clean ? m.cleanFloor : m.concrete, {
+      x: (r.x0 + r.x1) / 2,
+      z: (r.z0 + r.z1) / 2,
+      w: r.x1 - r.x0,
+      d: r.z1 - r.z0,
+      h: raised ? RAISED_FLOOR_M : 0.12,
+      tile: raised || clean ? 0.6 : 6,
+      shadow: false,
+    });
+}
+
+type Pt = { readonly x: number; readonly z: number };
+
+/** One side of the outline: its ends, which way the room lies from it, and whether its ends are convex corners. */
+interface Side {
+  readonly a: Pt;
+  readonly b: Pt;
+  readonly len: number;
+  readonly lengthwise: boolean;
+  /** The unit step from the line into the room. */
+  readonly inward: Pt;
+  readonly startConvex: boolean;
+  readonly endConvex: boolean;
+}
+
+/** The sides of the room's outline (counter-clockwise, the room on the left of each). */
+function sidesOf(outline: readonly Pt[]): Side[] {
+  const n = outline.length;
+  const out: Side[] = [];
+  const turn = (p: Pt, q: Pt, r: Pt) => (q.x - p.x) * (r.z - q.z) - (q.z - p.z) * (r.x - q.x);
+  for (let i = 0; i < n; i++) {
+    const a = outline[i] as Pt;
+    const b = outline[(i + 1) % n] as Pt;
+    const dx = b.x - a.x;
+    const dz = b.z - a.z;
+    const len = Math.hypot(dx, dz);
+    if (len < 1e-6) continue;
+    out.push({
+      a,
+      b,
+      len,
+      lengthwise: Math.abs(dx) > Math.abs(dz),
+      inward: { x: -dz / len, z: dx / len },
+      startConvex: turn(outline[(i + n - 1) % n] as Pt, a, b) > 0,
+      endConvex: turn(a, b, outline[(i + 2) % n] as Pt) > 0,
+    });
+  }
+  return out;
+}
+
+/** A side as the box that lies along it, `thick` wide, on the room's side (+1) or outside it (-1); horizontal sides reach `reach` past convex corners. */
+function band(side: Side, thick: number, toward: 1 | -1, reach = 0) {
+  const lo = side.lengthwise ? Math.min(side.a.x, side.b.x) : Math.min(side.a.z, side.b.z);
+  const hi = side.lengthwise ? Math.max(side.a.x, side.b.x) : Math.max(side.a.z, side.b.z);
+  const startIsLo = side.lengthwise ? side.a.x < side.b.x : side.a.z < side.b.z;
+  const loConvex = startIsLo ? side.startConvex : side.endConvex;
+  const hiConvex = startIsLo ? side.endConvex : side.startConvex;
+  const from = lo - (side.lengthwise && loConvex ? reach : 0);
+  const to = hi + (side.lengthwise && hiConvex ? reach : 0);
+  const middle = (from + to) / 2;
+  const length = to - from;
+  const offX = side.inward.x * toward * (thick / 2);
+  const offZ = side.inward.z * toward * (thick / 2);
+  return side.lengthwise
+    ? { x: middle, z: side.a.z + offZ, w: length, d: thick }
+    : { x: side.a.x + offX, z: middle, w: thick, d: length };
 }
 
 /** A cleanroom's process tools in their bays and the hoist rail down every aisle: scenery, the world does not model them. */
@@ -96,26 +155,17 @@ function trim(k: Kit, s: RoomScene): void {
   const { b, m } = k;
   const colour = s.mode ? world3d.MODE_COLORS[s.mode] : world3d.PURPOSE_COLORS[s.purpose];
   const mat = m.solid(colour ?? "#9a8f7c", 0.7, 0);
-  const y = s.floorY;
   const t = 0.16;
-  for (const [x, z, w, d] of [
-    [s.w / 2, t / 2, s.w, t],
-    [s.w / 2, s.d - t / 2, s.w, t],
-    [t / 2, s.d / 2, t, s.d],
-    [s.w - t / 2, s.d / 2, t, s.d],
-  ] as const)
-    b.box(mat, { x, z, w, d, h: 0.03, y, shadow: false });
+  // A moulding lies just inside every side of the outline.
+  for (const side of sidesOf(world3d.outlineOfScene(s)))
+    b.box(mat, { ...band(side, t, 1), h: 0.03, y: s.floorY, shadow: false });
 }
 
+/** The walls follow the outline: a curb with a glass band above, outside each side, closing the convex corners. */
 function walls(k: Kit, s: RoomScene): void {
   const { b, m } = k;
-  const runs: ReadonlyArray<readonly [number, number, number, number]> = [
-    [s.w / 2, -WALL_M / 2, s.w + WALL_M * 2, WALL_M],
-    [s.w / 2, s.d + WALL_M / 2, s.w + WALL_M * 2, WALL_M],
-    [-WALL_M / 2, s.d / 2, WALL_M, s.d],
-    [s.w + WALL_M / 2, s.d / 2, WALL_M, s.d],
-  ];
-  for (const [x, z, w, d] of runs) {
+  for (const side of sidesOf(world3d.outlineOfScene(s))) {
+    const { x, z, w, d } = band(side, WALL_M, -1, WALL_M);
     b.box(m.wall, { x, z, w, d, h: CURB_M, tile: 16 });
     b.box(m.trim, { x, z, w: w + 0.04, d: d + 0.04, h: 0.06, y: CURB_M });
     b.box(m.glassPane, {
@@ -209,11 +259,26 @@ function overhead(k: Kit, s: RoomScene): void {
 function sprinkler(k: Kit, s: RoomScene): void {
   const { b, m } = k;
   const red = m.solid("#d9433a", 0.5, 0.1);
-  b.pipe(red, [0.3, ROOM_HEIGHT_M - 0.3, 0.4], [s.w - 0.3, ROOM_HEIGHT_M - 0.3, 0.4], 0.06, {
-    shadow: false,
-  });
-  for (let x = 3; x < s.w - 1; x += 6)
-    b.cyl(red, { x, z: 0.4, r: 0.04, h: 0.25, y: ROOM_HEIGHT_M - 0.55, seg: 6, shadow: false });
+  const wall = world3d.backWall(s);
+  b.pipe(
+    red,
+    [wall.x0 + 0.3, ROOM_HEIGHT_M - 0.3, wall.z + 0.4],
+    [wall.x1 - 0.3, ROOM_HEIGHT_M - 0.3, wall.z + 0.4],
+    0.06,
+    {
+      shadow: false,
+    },
+  );
+  for (let x = wall.x0 + 3; x < wall.x1 - 1; x += 6)
+    b.cyl(red, {
+      x,
+      z: wall.z + 0.4,
+      r: 0.04,
+      h: 0.25,
+      y: ROOM_HEIGHT_M - 0.55,
+      seg: 6,
+      shadow: false,
+    });
 }
 
 /** Build one room into the floor, in the room's own place. */

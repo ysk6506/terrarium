@@ -6,19 +6,33 @@
  */
 import type { Catalog } from "@terrarium/core/catalog";
 import type { BlueprintIndex } from "@terrarium/core/world";
-import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import {
+  lazy,
+  type ReactNode,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { type ActivityState, type builder, noActivity, world3d } from "../../logic";
 import { ActivityPanel } from "./ActivityPanel";
 import { ActivityPins } from "./ActivityPins";
-import { type AirInput, AirMap } from "./AirMap";
+import type { AirInput } from "./AirMap";
+import { CrewBubble } from "./CrewBubble";
 import type { LifeMode } from "./life-layer";
 import { PlanLabels } from "./PlanLabels";
 import type { Ghost, StageEvents } from "./stage-types";
+import { useCrew } from "./useCrew";
 import { useLatest, useStageEvents, useWorldContent, useWorldView } from "./useWorldView";
 import type { WorldView } from "./view";
 import { WorldBar } from "./WorldBar";
 
 type Focus = world3d.Focus;
+
+/** The airflow map is only for a room being built: the first screen does not carry it. */
+const AirMap = lazy(() => import("./AirMap").then((m) => ({ default: m.AirMap })));
 
 export interface WorldStageProps extends StageEvents {
   readonly index: BlueprintIndex;
@@ -31,6 +45,8 @@ export interface WorldStageProps extends StageEvents {
   readonly scene?: builder.Scene;
   readonly selected?: readonly string[];
   readonly ghost?: Ghost;
+  /** Handles on the selected room or building, in the level's plan. */
+  readonly handles?: readonly world3d.PlanHandle[];
   /** Live facts to colour by (temperatures, alarms), after "돌려 보기". */
   readonly overlay?: world3d.Overlay;
   readonly readOnly?: boolean;
@@ -226,7 +242,9 @@ function StageOverlays({ view, props, around, layer, onLayer, life, onLife }: Ov
         />
       )}
       {view && props.air && (
-        <AirMap view={view} index={props.index} catalog={props.catalog} input={props.air} />
+        <Suspense fallback={null}>
+          <AirMap view={view} index={props.index} catalog={props.catalog} input={props.air} />
+        </Suspense>
       )}
       {around.tip && (
         <span className="stage-tip" style={{ left: around.tip.x + 14, top: around.tip.y + 14 }}>
@@ -235,6 +253,12 @@ function StageOverlays({ view, props, around, layer, onLayer, life, onLife }: Ov
       )}
     </>
   );
+}
+
+/** The room the camera is in: the builder's level, or where the viewer has gone. */
+function roomInView(level: builder.Level | undefined, focus: Focus): string | undefined {
+  if (level) return level.kind === "room" ? level.id : undefined;
+  return focus.kind === "room" ? focus.id : undefined;
 }
 
 export function WorldStage(props: WorldStageProps) {
@@ -250,6 +274,21 @@ export function WorldStage(props: WorldStageProps) {
   const back = useStepBack(view, props.index, props.level !== undefined);
   const activity = props.activity ?? noActivity;
   const markers = useMarkers(view, props.index, activity);
+  const [airFrame, setAirFrame] = useState<number>();
+  const room = roomInView(props.level, around.focus);
+  const air = useMemo(
+    () => (props.air ? { ...props.air, onFrame: setAirFrame } : undefined),
+    [props.air],
+  );
+  useCrew(view, {
+    index: props.index,
+    catalog: props.catalog,
+    roomId: room,
+    preview: props.air?.preview,
+    frame: airFrame,
+    activity,
+    now: props.now ?? 0,
+  });
   const watch = useWatch(view, props.index, activity, props.onWatch);
   return (
     <div ref={hostRef} style={{ position: "absolute", inset: 0 }}>
@@ -270,13 +309,14 @@ export function WorldStage(props: WorldStageProps) {
       />
       <StageOverlays
         view={view}
-        props={props}
+        props={{ ...props, air }}
         around={around}
         layer={chosen}
         onLayer={setChosen}
         life={lifeOn && !around.lifeOff}
         onLife={setLifeOn}
       />
+      {view && <CrewBubble view={view} />}
       {props.children}
     </div>
   );

@@ -31,7 +31,12 @@ export {
   WARN_C,
   workBounds,
 } from "./airflow";
-export { type BuildingScene, buildingScene, type FloorScene, type PlacedRoom } from "./building";
+export {
+  type BuildingScene,
+  buildingScene,
+  type FloorScene,
+  type PlacedRoom,
+} from "./building";
 export {
   type Box3,
   type Crumb,
@@ -60,6 +65,20 @@ export {
   type Street,
 } from "./campus";
 export { GROUNDS } from "./campus-layouts";
+export type {
+  Crew,
+  CrewActivity,
+  CrewAlarm,
+  CrewOptions,
+  CrewPerson,
+  CrewPose,
+  CrewRole,
+  CrewSituation,
+  CrewState,
+  CrewWorld,
+  Desk,
+} from "./crew";
+export { CREW_LINES, lineFor } from "./crew-lines";
 export { type EquipBox, equipOf, styleOf } from "./equip";
 export { type BayDecor, bayDecor, type ProcessTool, type Rail } from "./fab";
 export { focusOfLevel, type PlanFrame, type PlanPt, planFrame, toPlan, toSite } from "./frame";
@@ -124,12 +143,18 @@ export {
 } from "./racks";
 export {
   BUSWAY_Y,
+  backWall,
+  boundsOfScene,
+  insetOutline,
+  insideScene,
+  outlineOfScene,
   type Pipe,
   type Pod,
   RAISED_FLOOR_M,
   ROOM_HEIGHT_M,
   type RoomScene,
   type Row,
+  rectsOfScene,
   roomScene,
 } from "./room";
 export {
@@ -141,7 +166,15 @@ export {
   type Routes,
 } from "./routes";
 export type { Car, ParkingLot, Tree } from "./scatter";
-export { ghostBox, outlinesOf, type PlanBox, type PlanGhost } from "./select";
+export {
+  ghostBox,
+  outlinesOf,
+  type PlanBox,
+  type PlanGhost,
+  type PlanHandle,
+  type PlanShape,
+  shapesOf,
+} from "./select";
 export {
   type BuildingInfo,
   type ParcelInfo,

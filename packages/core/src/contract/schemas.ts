@@ -55,6 +55,12 @@ const PlacementSchema = z.discriminatedUnion("type", [
       y: Metres,
       w: Metres.positive(),
       d: Metres.positive(),
+      pieces: z
+        .array(
+          z.object({ x: Metres, y: Metres, w: Metres.positive(), d: Metres.positive() }).strict(),
+        )
+        .max(32)
+        .optional(),
     })
     .strict(),
   z

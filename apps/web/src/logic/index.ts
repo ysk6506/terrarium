@@ -53,6 +53,7 @@ export {
   metaProblems,
   TRANSPORT_LABELS,
 } from "./connections";
+export * as hallCrew from "./crew";
 export * as experiment from "./experiment";
 export {
   celsius,

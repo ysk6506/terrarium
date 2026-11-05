@@ -36,6 +36,16 @@ export interface BuilderState {
   readonly canRedo: boolean;
   /** Whether the viewer made this world (only they can save over it). */
   readonly mine: boolean;
+  /** Which piece of the selected room is chosen: none is the body, 0 the first piece (ADR-0080). */
+  readonly piece?: number;
+  /** The last edit that was refused, with the way on when there is one (a bigger building, more land). */
+  readonly refusal?: Refused;
+}
+
+/** An edit that was not accepted: what to tell, and where to go from there. */
+export interface Refused {
+  readonly message: string;
+  readonly way?: builder.Refusal["way"];
 }
 
 type History = MutableRefObject<builder.History<Blueprint>>;
@@ -155,6 +165,14 @@ function useEdits(initial: Blueprint, clearPreview: () => void) {
   const history = useRef(new builder.History<Blueprint>(initial));
   const [blueprint, setBlueprint] = useState(initial);
   const [selected, setSelected] = useState<readonly string[]>([]);
+  const [refusal, setRefusal] = useState<Refused>();
+  const refuse = useCallback(
+    (message: string, way?: Refused["way"]) => {
+      setRefusal({ message, ...(way ? { way } : {}) });
+      toast(message, "bad");
+    },
+    [toast],
+  );
   const apply = useCallback(
     (make: (bp: Blueprint) => builder.Edit, done?: string): boolean => {
       try {
@@ -162,15 +180,16 @@ function useEdits(initial: Blueprint, clearPreview: () => void) {
         history.current.push(edit.blueprint);
         setBlueprint(edit.blueprint);
         setSelected(edit.select);
+        setRefusal(undefined);
         clearPreview();
         if (done) toast(done);
         return true;
       } catch (err) {
-        toast(messageOf(err), "bad");
+        refuse(messageOf(err), err instanceof builder.Refusal ? err.way : undefined);
         return false;
       }
     },
-    [toast, clearPreview],
+    [toast, clearPreview, refuse],
   );
   const step = (to: () => Blueprint) => {
     setBlueprint(to());
@@ -181,6 +200,9 @@ function useEdits(initial: Blueprint, clearPreview: () => void) {
     blueprint,
     selected,
     setSelected,
+    refusal,
+    refuse,
+    clearRefusal: () => setRefusal(undefined),
     apply,
     undo: () => step(() => history.current.undo()),
     redo: () => step(() => history.current.redo()),
@@ -201,7 +223,16 @@ export function useBuilder(initial: WorldRecord) {
   );
   const [tool, setTool] = useState<Tool>({ kind: "select" });
   const [rotation, setRotation] = useState<Rotation>(0);
-  const { setSelected } = edits;
+  const [piece, setPiece] = useState<number>();
+  const { clearRefusal } = edits;
+  const setSelected = useCallback(
+    (ids: readonly string[]) => {
+      edits.setSelected(ids);
+      setPiece(undefined);
+      clearRefusal();
+    },
+    [edits.setSelected, clearRefusal],
+  );
   const go = useCallback(
     (next: builder.Level) => {
       setLevel(next);
@@ -226,6 +257,8 @@ export function useBuilder(initial: WorldRecord) {
     canUndo: edits.history.current.canUndo,
     canRedo: edits.history.current.canRedo,
     mine: saving.world.owner === (me ?? "anonymous"),
+    ...(piece !== undefined ? { piece } : {}),
+    ...(edits.refusal ? { refusal: edits.refusal } : {}),
   };
   const { apply, undo, redo } = edits;
   const { save, saveCopy, renameWorld } = saving;
@@ -236,6 +269,8 @@ export function useBuilder(initial: WorldRecord) {
     redo,
     go,
     setSelected,
+    setPiece,
+    refuse: edits.refuse,
     setTool,
     setRotation,
     runPreview,

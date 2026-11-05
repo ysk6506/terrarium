@@ -30,6 +30,8 @@ export interface PreviewFrame {
   >;
   /** Room air temperature (°C). */
   readonly rooms: ReadonlyMap<string, number>;
+  /** The alarms active at that moment: the people in the room go to them (REQ-074). */
+  readonly alarms: ReadonlyArray<Pick<Alarm, "entityId" | "severity" | "since">>;
 }
 
 export interface Preview {
@@ -80,7 +82,10 @@ function frameOf(world: World, t: number): PreviewFrame {
   const rooms = new Map<string, number>();
   for (const room of world.index.ofKind("room"))
     rooms.set(room.id, world.stateAs(room.id, "room").ambientC);
-  return { t, racks, units, rooms };
+  const alarms = world
+    .alarms()
+    .map((a) => ({ entityId: a.entityId, severity: a.severity, since: a.since }));
+  return { t, racks, units, rooms, alarms };
 }
 
 /** Run the world for `seconds`; the cooling units named in `stopped` fail right after the start. */

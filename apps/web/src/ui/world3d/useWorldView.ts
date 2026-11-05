@@ -50,6 +50,8 @@ export interface Content {
   readonly scene?: builder.Scene;
   readonly selected?: readonly string[];
   readonly ghost?: Ghost;
+  /** The handles of the selected room or building, where they sit on the plan. */
+  readonly handles?: readonly world3d.PlanHandle[];
   readonly layer: world3d.Layer;
   readonly overlay?: world3d.Overlay;
 }
@@ -76,7 +78,11 @@ export function useWorldContent(view: WorldView | undefined, c: Content): void {
   }, [view, c.layer, c.overlay]);
   useEffect(() => {
     view?.setSelection(c.scene && c.selected ? world3d.outlinesOf(c.scene, c.selected) : []);
+    view?.overlay.setShapes(c.scene && c.selected ? world3d.shapesOf(c.scene, c.selected) : []);
   }, [view, c.scene, c.selected]);
+  useEffect(() => {
+    view?.overlay.setHandles(c.handles ?? []);
+  }, [view, c.handles]);
   useEffect(() => {
     view?.setGhost(c.ghost ? { ...world3d.ghostBox(c.ghost), ok: c.ghost.ok } : undefined);
   }, [view, c.ghost]);
@@ -118,6 +124,7 @@ function dragTool(
   return {
     start(x, y) {
       const p = props.current;
+      if (view.crew.hit(x, y) !== undefined) return false;
       const from = view.planPointAt(x, y);
       if (p.readOnly || !p.onDrag || !from) return false;
       const hit = hitAt(view, p.index, x, y);
@@ -145,6 +152,8 @@ export function useStageEvents(
   useEffect(() => {
     if (!view) return;
     const here = (x: number, y: number) => {
+      // A person stands in front of what is behind them: a click on them is theirs alone.
+      if (view.crew.hit(x, y) !== undefined) return undefined;
       const at = view.planPointAt(x, y);
       return at ? { at, hit: hitAt(view, props.current.index, x, y) } : undefined;
     };

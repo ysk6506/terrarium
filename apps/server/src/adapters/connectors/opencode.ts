@@ -4,7 +4,8 @@
  * tools are added to the server as a remote MCP server named for the run (`POST /mcp`), which is the way
  * the server documents for adding one.
  *
- * Read from OpenCode's server page: `GET /agent`, `POST /session`, `POST /session/:id/prompt_async`,
+ * Run against a real `opencode serve` 1.19.5 (docs/design-docs/harness-e2e.md): every call below worked as
+ * written, with the two fixes noted at `detach` and in `agents`. Read from OpenCode's server page: `GET /agent`, `POST /session`, `POST /session/:id/prompt_async`,
  * `GET /session/status`, `POST /session/:id/abort`, `POST /mcp` with `{ name, config }`, basic auth from
  * OPENCODE_SERVER_PASSWORD. The shapes of a message part, of the model, of an MCP config and of the
  * messages that come back are from memory of OpenCode's SDK, not from a page that was read.
@@ -49,6 +50,8 @@ interface AgentEntry {
   readonly name?: string;
   readonly description?: string;
   readonly mode?: string;
+  /** OpenCode's own helper agents (title, summary, compaction) are marked hidden. */
+  readonly hidden?: boolean;
 }
 interface MessageEntry {
   readonly info?: {
@@ -96,7 +99,7 @@ export class OpenCodeHarness implements HarnessPort {
     );
     return list
       .filter((a): a is AgentEntry & { name: string } => typeof a.name === "string")
-      .filter((a) => a.mode !== "subagent")
+      .filter((a) => a.mode !== "subagent" && a.hidden !== true)
       .map((a) => ({
         id: a.name,
         name: a.name,
@@ -113,11 +116,14 @@ export class OpenCodeHarness implements HarnessPort {
     ]);
     const t0 = performance.now();
     let session: string | undefined;
+    const server = `terrarium-${req.runId}`;
+    let added = false;
     try {
       if (!req.tools.mcpUrl)
         return { status: "error", message: "이 실행에는 MCP 엔드포인트가 없어요" };
+      added = true;
       await this.rest.json("툴 서버 더하기", "POST", "/mcp", wall, {
-        name: `terrarium-${req.runId}`,
+        name: server,
         config: { type: "remote", url: req.tools.mcpUrl, enabled: true },
       });
       const made = await this.rest.json<{ id: string }>("세션 만들기", "POST", "/session", wall, {
@@ -145,7 +151,19 @@ export class OpenCodeHarness implements HarnessPort {
         status: "error",
         message: `OpenCode 서버에 연결하지 못했어요: ${(err as Error).message}`,
       };
+    } finally {
+      if (added) await this.detach(server);
     }
+  }
+
+  /**
+   * The server keeps a remote MCP server after the run, and offers its (now dead) tools to every later
+   * session. Seen against opencode 1.19.5: the second run saw both runs' tools and called the first run's.
+   */
+  private async detach(server: string): Promise<void> {
+    await this.rest
+      .send("POST", `/mcp/${encodeURIComponent(server)}/disconnect`, AbortSignal.timeout(10_000))
+      .catch(() => undefined);
   }
 
   /** Ask for the sessions' states until this one has worked and is idle again. */

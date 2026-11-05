@@ -58,7 +58,8 @@ interface Floor {
   readonly fleet: RackFleet;
   /** Perimeter, room walls and containment. */
   readonly cover: THREE.Object3D;
-  readonly rooms: ReadonlyMap<string, THREE.Object3D>;
+  /** One unseen box to click for each rectangle of the room. */
+  readonly rooms: ReadonlyMap<string, readonly THREE.Object3D[]>;
 }
 
 /** The slab a floor stands on. */
@@ -106,17 +107,22 @@ function buildFloor(engine: Engine, scene: BuildingScene, f: FloorScene): Floor 
   slab(k, scene.w, scene.d);
   shell(cover, scene.w, scene.d, f.height);
   const group = new THREE.Group();
-  const rooms = new Map<string, THREE.Object3D>();
+  const rooms = new Map<string, THREE.Object3D[]>();
   for (const room of f.rooms) {
     buildRoom({ k, cover, fleet }, room);
     const s = room.scene;
-    const proxy = proxyBox(
-      { kind: "room", id: room.id },
-      [room.x + s.w / 2, ROOM_HEIGHT_M / 2, room.z + s.d / 2],
-      [s.w, ROOM_HEIGHT_M, s.d],
-    );
-    rooms.set(room.id, proxy);
-    group.add(proxy);
+    // A room made of pieces is clicked on any of them.
+    const proxies = world3d
+      .rectsOfScene(s)
+      .map((r) =>
+        proxyBox(
+          { kind: "room", id: room.id },
+          [room.x + (r.x0 + r.x1) / 2, ROOM_HEIGHT_M / 2, room.z + (r.z0 + r.z1) / 2],
+          [r.x1 - r.x0, ROOM_HEIGHT_M, r.z1 - r.z0],
+        ),
+      );
+    rooms.set(room.id, proxies);
+    for (const proxy of proxies) group.add(proxy);
   }
   fleet.build();
   const roofs = covers.bake();
@@ -164,7 +170,7 @@ class Stack implements BuildingLayer {
         .flatMap((f) => [
           ...f.fleet.pickables,
           ...(f.group.visible
-            ? [...f.rooms].filter(([id]) => id !== this.openRoom).map(([, o]) => o)
+            ? [...f.rooms].filter(([id]) => id !== this.openRoom).flatMap(([, o]) => o)
             : []),
         ]),
       ...(this.inner?.children ?? []),

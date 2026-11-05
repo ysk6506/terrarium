@@ -20,7 +20,7 @@ export interface Model {
   readonly tones: readonly THREE.Color[];
 }
 
-class Parts {
+export class Parts {
   readonly tint: THREE.BufferGeometry[] = [];
   readonly fixed: THREE.BufferGeometry[] = [];
 
@@ -92,7 +92,7 @@ class Parts {
 }
 
 /** Two small dark eyes, `gap` apart, at height y on the face plane z. */
-function eyes(p: Parts, at: { y: number; z: number; gap: number; size: number }): void {
+export function eyes(p: Parts, at: { y: number; z: number; gap: number; size: number }): void {
   for (const s of [-1, 1]) p.box(at.size, at.size, 0.03, [(s * at.gap) / 2, at.y, at.z], "#2b2b2b");
 }
 
@@ -155,8 +155,8 @@ function tanker(): Model {
     .build(1.15, ["#e5446d", "#2f5c9a", "#e9ecef", "#f2a516"]);
 }
 
-const SKIN = "#f0c8a0";
-const HAIR = "#3a2e28";
+export const SKIN = "#f0c8a0";
+export const HAIR = "#3a2e28";
 
 function person(): Model {
   const p = new Parts();

@@ -2,7 +2,7 @@
 title: 현실의 가격 — 땅, 건물, 장비값의 근거와 믿을 만한 정도
 kind: spec
 status: active
-last_verified: 2026-11-04
+last_verified: 2026-11-05
 covers:
   - packages/core/src/world/land.ts
   - packages/core/src/world/construction.ts
@@ -14,12 +14,12 @@ covers:
   - packages/core/src/catalog/builtin/orv3.ts
   - apps/web/src/logic/builder/stats.ts
 verification_log:
-  - "2026-11-04: ORv3 랙·파워 셸프·콘센트 제어(REQ-063, ADR-0060)를 코드와 대조해 반영했다"
   - "2026-11-04: GPU 서버 5종(gpu-servers.ts)의 값과 근거를 더하고, 장당 값의 상한을 B300에 맞춘 것(ADR-0063)을 반영"
   - "2026-11-04: GPU 서버 5종의 값과 근거, 장당 값 상한 130백만 원을 gpu-servers.ts·construction.test.ts와 대조"
   - "2026-11-04: GPU 백엔드 leaf·스파인 2종(it.ts)의 값과 근거를 더하고 it.ts와 대조 (REQ-067, ADR-0064)"
   - "2026-11-04: it.ts의 rail leaf·스파인 값 180백만 원을 문서와 대조"
-covers_hash: 8fbf7b8fde3badb9
+  - "2026-11-05: REQ-075: construction.ts의 방 마감이 조각 넓이의 합(roomArea)을 쓰는 것을 적었다. 단가는 그대로"
+covers_hash: c1795f7a2fd9afe2
 ---
 # 현실의 가격 (REQ-059)
 
@@ -53,6 +53,7 @@ covers_hash: 8fbf7b8fde3badb9
 
 장비(UPS, 냉각기, 랙, 서버)는 **자기 값**이 있으므로 여기서는 **건물 자체**만 센다: 뼈대, 바닥, 벽, 방 안의 마감.
 층마다 건물 바닥 넓이에 단가를 곱한다(층을 더하면 한 층 값이 더 든다). 방은 용도별 마감을 더하고, 컨테인먼트는 틀 값을 더한다.
+방이 조각을 붙인 모양이면(ADR-0080) 마감은 **조각들의 넓이를 모두 더한 바닥**에 같은 단가를 곱한다(`roomArea`). 서버룸을 넓히면 넓힌 만큼만 값이 늘고, 끄는 동안 빌더가 그 차이를 "건설비 +N"으로 보여 준다(REQ-075).
 
 | 항목 | ㎡당 | 평당 | 믿을 정도 |
 |---|---|---|---|

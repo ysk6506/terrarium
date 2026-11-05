@@ -15,24 +15,27 @@ import {
   type UnitSpot,
 } from "./airflow-model";
 import type { Bounds } from "./plan";
-import type { RoomScene } from "./room";
+import { boundsOfScene, type RoomScene } from "./room";
 
 export interface Field {
   readonly cols: number;
   readonly rows: number;
   /** Size of one cell, metres. */
   readonly cell: number;
-  /** Room size, metres. */
+  /** Size of the grid, metres: the box round the room's floor. */
   readonly w: number;
   readonly d: number;
-  /** °C at each cell centre, row by row from z = 0. */
+  /** Where the grid starts in the room's frame (below zero when a piece lies left of or above the body). */
+  readonly x0?: number;
+  readonly z0?: number;
+  /** °C at each cell centre, row by row from the grid's first row. */
   readonly values: Float32Array;
 }
 
 /** The temperature of the field at a point of the room, metres. */
 export function fieldAt(field: Field, x: number, z: number): number {
-  const i = clamp(Math.floor(x / field.cell), 0, field.cols - 1);
-  const j = clamp(Math.floor(z / field.cell), 0, field.rows - 1);
+  const i = clamp(Math.floor((x - (field.x0 ?? 0)) / field.cell), 0, field.cols - 1);
+  const j = clamp(Math.floor((z - (field.z0 ?? 0)) / field.cell), 0, field.rows - 1);
   return field.values[j * field.cols + i] as number;
 }
 
@@ -186,18 +189,45 @@ export function fieldOf(
   ambientC: number,
   view: AirView,
 ): Field {
-  const cell = Math.max(MIN_CELL_M, Math.max(scene.w, scene.d) / MAX_CELLS);
-  const cols = Math.max(1, Math.ceil(scene.w / cell));
-  const rows = Math.max(1, Math.ceil(scene.d / cell));
+  const box = boundsOfScene(scene);
+  const w = box.x1 - box.x0;
+  const d = box.z1 - box.z0;
+  const cell = Math.max(MIN_CELL_M, Math.max(w, d) / MAX_CELLS);
+  const cols = Math.max(1, Math.ceil(w / cell));
+  const rows = Math.max(1, Math.ceil(d / cell));
   const refs = referencesOf(racks, units, ambientC, view);
-  const bins = binsOf(sourcesOf(scene, racks, units, refs, view), scene.w, scene.d);
+  // The bins start at zero, so the sources are moved by the grid's corner and looked up at the moved points.
+  const bins = binsOf(
+    sourcesOf(scene, racks, units, refs, view).map((s) => moved(s, box.x0, box.z0)),
+    w,
+    d,
+  );
   const values = new Float32Array(cols * rows);
   for (let j = 0; j < rows; j++)
     for (let i = 0; i < cols; i++) {
-      const x = (i + 0.5) * cell;
-      const z = (j + 0.5) * cell;
+      const x = box.x0 + (i + 0.5) * cell;
+      const z = box.z0 + (j + 0.5) * cell;
       const base = refs.warm + (refs.cold - refs.warm) * reachAt(units, x, z);
-      values[j * cols + i] = blend(bins, base, x, z);
+      values[j * cols + i] = blend(bins, base, x - box.x0, z - box.z0);
     }
-  return { cols, rows, cell, w: scene.w, d: scene.d, values };
+  return { cols, rows, cell, w, d, x0: box.x0, z0: box.z0, values };
 }
+
+const moved = (s: Source, dx: number, dz: number): Source =>
+  dx === 0 && dz === 0
+    ? s
+    : {
+        ...s,
+        x: s.x - dx,
+        z: s.z - dz,
+        ...(s.rect
+          ? {
+              rect: {
+                x0: s.rect.x0 - dx,
+                z0: s.rect.z0 - dz,
+                x1: s.rect.x1 - dx,
+                z1: s.rect.z1 - dz,
+              },
+            }
+          : {}),
+      };

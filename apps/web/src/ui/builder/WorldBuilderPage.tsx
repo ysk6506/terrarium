@@ -4,7 +4,7 @@
  */
 import type { WorldRecord } from "@terrarium/core/experiments";
 import { useMemo, useState } from "react";
-import { builder, celsius, count, watts, won } from "../../logic";
+import { builder, celsius, count, watts, won, type world3d } from "../../logic";
 import { useApp, useAsync, useLeaveGuard, usePageTitle } from "../context";
 import { Failure, Loading } from "../kit";
 import { useActivity } from "../world3d/useActivity";
@@ -88,6 +88,12 @@ function airInput(
   };
 }
 
+const NO_HANDLES: readonly world3d.PlanHandle[] = [];
+
+/** The map mode is for looking: no handles on it. */
+const shownHandles = (map: boolean, g: { readonly handles: readonly world3d.PlanHandle[] }) =>
+  map ? NO_HANDLES : g.handles;
+
 function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
   const b = useBuilder(initial);
   const { index, level, preview, selected, dirty } = b.state;
@@ -122,6 +128,7 @@ function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
             scene={scene}
             selected={selected}
             {...(gestures.ghost ? { ghost: gestures.ghost } : {})}
+            handles={shownHandles(map, gestures)}
             {...(overlay ? { overlay } : {})}
             {...gestures.events}
             {...(level.kind === "room" ? { air: airInput(b, level.id, map, setMapRoom) } : {})}

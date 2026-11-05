@@ -30,6 +30,26 @@ const rgb255 = (
   Math.round(c[2] * 255),
 ];
 
+/**
+ * The wash covers exactly the room's floor: the outline (every piece, joined) pulled in from the walls, cut out of
+ * the texture that spans the box round it. The texture starts at the box's corner, row by row.
+ */
+function floorShape(scene: RoomScene): THREE.BufferGeometry {
+  const box = world3d.boundsOfScene(scene);
+  const inner = world3d.insetOutline(world3d.outlineOfScene(scene), WALL_M);
+  // The shape is drawn flat in (x, -z) so that turning it onto the floor puts z where it belongs.
+  const shape = new THREE.Shape(inner.map((p) => new THREE.Vector2(p.x, -p.z)));
+  const geometry = new THREE.ShapeGeometry(shape);
+  const at = geometry.getAttribute("position");
+  const uv = new Float32Array(at.count * 2);
+  for (let i = 0; i < at.count; i++) {
+    uv[i * 2] = (at.getX(i) - box.x0) / (box.x1 - box.x0);
+    uv[i * 2 + 1] = 1 - (-at.getY(i) - box.z0) / (box.z1 - box.z0);
+  }
+  geometry.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
+  return geometry;
+}
+
 /** The temperature of the floor as a plane lying a hair above the raised floor. */
 export class HeatPlane {
   readonly mesh: THREE.Mesh;
@@ -54,12 +74,9 @@ export class HeatPlane {
       polygonOffsetUnits: -1,
     });
     // It ends at the walls, not under them: a hand's width of floor stays bare along each one.
-    this.mesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(scene.w - 2 * WALL_M, scene.d - 2 * WALL_M),
-      this.material,
-    );
+    this.mesh = new THREE.Mesh(floorShape(scene), this.material);
     this.mesh.rotation.x = -Math.PI / 2;
-    this.mesh.position.set(scene.w / 2, scene.floorY + LIFT_M, scene.d / 2);
+    this.mesh.position.set(0, scene.floorY + LIFT_M, 0);
     this.mesh.renderOrder = ORDER.floor;
   }
 
@@ -144,6 +161,8 @@ export class AisleTiles {
           const z0 = e.z0 + j * sz + 0.02;
           const x1 = e.x0 + (i + 1) * sx - 0.02;
           const z1 = e.z0 + (j + 1) * sz - 0.02;
+          // The glow ends where the floor does: a tile off the room's outline (a notch of an L) is left out.
+          if (!world3d.insideScene(scene, (x0 + x1) / 2, (z0 + z1) / 2)) continue;
           // A quad a little larger than its tile, so the round glows of neighbours run into each other.
           const px = (x1 - x0) * 0.15;
           const pz = (z1 - z0) * 0.15;

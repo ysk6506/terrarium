@@ -9,27 +9,24 @@ import {
   RACK_STANDARD_LABELS,
 } from "@terrarium/core/catalog";
 import { withJosa } from "@terrarium/core/kernel";
-import { contains, type Rect, type Rotation } from "@terrarium/core/spatial";
+import type { Rect, Rotation } from "@terrarium/core/spatial";
 import {
   type Blueprint,
   BlueprintIndex,
   type Entity,
-  footprint,
   KIND_LABELS,
   LINK_RULES,
   type Link,
   type LinkKind,
-  type Placement,
   type PropValue,
   rackStandardOf,
+  roomRects,
 } from "@terrarium/core/world";
 import {
-  assertFree,
   type Edit,
   EditError,
   footprintAt,
   GRID,
-  groundTakers,
   nextId,
   placementProblem,
   replaceEntity,
@@ -38,7 +35,8 @@ import {
   TILE_M,
 } from "./edit";
 import { landReason } from "./edit-site";
-import { type Level, levelArea } from "./levels";
+import type { Level } from "./levels";
+import { reshape } from "./reshape";
 
 // ── moving, turning, renaming, removing ────────────────────────────────────────────────────
 
@@ -102,49 +100,7 @@ export function rotate(bp: Blueprint, catalog: Catalog, level: Level, id: string
   };
 }
 
-/**
- * What would stick out of `entity` if it were `r`: its rooms and equipment, or a building's, which stand on
- * its floors (a floor has no outline of its own, it is the building's).
- */
-function spilledOut(
-  index: BlueprintIndex,
-  catalog: Catalog,
-  entity: { readonly id: string; readonly kind: string },
-  r: Rect,
-) {
-  const inner: Rect = { x: 0, y: 0, w: r.w, d: r.d };
-  const holders = entity.kind === "building" ? index.childrenOf(entity.id, "floor") : [entity];
-  return holders
-    .flatMap((h) => index.childrenOf(h.id))
-    .find((c) => {
-      const cr = footprint(c, catalog);
-      return cr !== undefined && !contains(inner, cr);
-    });
-}
-
-/** The ground an area stands in and what else stands there: the site and its buildings and plant, a floor or a room. */
-function surroundings(
-  index: BlueprintIndex,
-  catalog: Catalog,
-  entity: Entity,
-  fallback: Rect,
-): { readonly area: Rect; readonly siblings: readonly Entity[] } {
-  const parent = entity.parentId ? index.find(entity.parentId) : undefined;
-  if (entity.kind === "building")
-    return {
-      area: levelArea(index, catalog, { kind: "site" }),
-      siblings: parent ? groundTakers(index, parent.id, entity.id) : [],
-    };
-  if (!parent) return { area: fallback, siblings: [] };
-  const level: Level =
-    parent.kind === "floor" ? { kind: "floor", id: parent.id } : { kind: "room", id: parent.id };
-  return {
-    area: levelArea(index, catalog, level),
-    siblings: index.childrenOf(parent.id, entity.kind).filter((e) => e.id !== entity.id),
-  };
-}
-
-/** Move or resize a building, room or containment; what is inside must still fit. */
+/** Move or resize a building, room or containment; what is inside must still fit. A room's pieces go with it when it moves. */
 export function resizeArea(bp: Blueprint, catalog: Catalog, id: string, rect: Rect): Edit {
   const index = new BlueprintIndex(bp);
   const entity = index.entity(id);
@@ -152,19 +108,12 @@ export function resizeArea(bp: Blueprint, catalog: Catalog, id: string, rect: Re
     throw new EditError(`${withJosa(entity.name, "은")} 옮기거나 크기를 바꿀 수 없어요`);
   const step = entity.kind === "building" ? GRID.site : TILE_M;
   const r = snapRect(rect, step, step);
-  const { area, siblings } = surroundings(index, catalog, entity, r);
-  assertFree(index, catalog, area, r, siblings, entity.name);
-  if (entity.kind === "building") {
-    const reason = landReason(index, catalog, r);
-    if (reason) throw new EditError(reason);
-  }
-  if (entity.kind !== "containment") {
-    const outside = spilledOut(index, catalog, entity, r);
-    if (outside)
-      throw new EditError(`${withJosa(outside.name, "이")} 밖으로 나가게 돼요. 먼저 옮겨 주세요`);
-  }
-  const placement: Placement = { type: "area", ...r };
-  return { blueprint: replaceEntity(bp, id, (e) => ({ ...e, placement })), select: [id] };
+  const [body, ...pieces] = roomRects(entity) as [Rect, ...Rect[]];
+  const same = r.w === body.w && r.d === body.d;
+  const carried = same
+    ? pieces.map((p) => ({ ...p, x: p.x + r.x - body.x, y: p.y + r.y - body.y }))
+    : pieces;
+  return reshape(bp, catalog, id, [r, ...carried], false);
 }
 
 export function rename(bp: Blueprint, id: string, name: string): Edit {

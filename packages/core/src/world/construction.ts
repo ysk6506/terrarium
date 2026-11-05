@@ -18,6 +18,7 @@ import {
   type RoomPurpose,
   roomPurposeOf,
 } from "./purpose";
+import { roomArea } from "./room-shape";
 
 /** Shell and core of a building, per ㎡ of every floor. A fab's includes the sub-fab and its heavy frame. */
 export const BUILD_RATE_M_PER_M2: Readonly<Record<BuildingPurpose, number>> = {
@@ -41,7 +42,9 @@ export const FIT_OUT_RATE_M_PER_M2: Readonly<Record<RoomPurpose, number>> = {
 /** Sealing an aisle (frame, doors, roof panels), per ㎡ of floor it covers: about 1,500 dollars a rack. */
 export const CONTAINMENT_RATE_M_PER_M2 = 0.9;
 
+/** Floor area of a thing: a room's is the sum of its pieces (ADR-0080). */
 const area = (e: Entity, catalog: Catalog): number => {
+  if (e.placement?.type === "area") return roomArea(e);
   const r = footprint(e, catalog);
   return r ? r.w * r.d : 0;
 };

@@ -19,8 +19,10 @@ import {
 import { footprint, heightU, mountStandardOf, rackStandardOf, rackUnits } from "./geometry";
 import { BlueprintIndex } from "./graph";
 import { KIND_LABELS, kindList, LINK_LABELS } from "./labels";
+import { insideRoomLocal, roomRects } from "./room-shape";
 import { checkLightRacks } from "./validate-bulk";
 import { checkCoolingFit, checkLoops, checkParcels } from "./validate-campus";
+import { checkRoomShapes } from "./validate-room";
 
 export interface Issue {
   readonly severity: "error" | "warning";
@@ -162,6 +164,17 @@ function parentArea(index: BlueprintIndex, catalog: Catalog, entity: Entity): Re
   return area ? { x: 0, y: 0, w: area.w, d: area.d } : undefined;
 }
 
+/** The room with pieces whose floor an entity stands on: what it must fit is the union, not the body. */
+function pieceRoomOf(index: BlueprintIndex, entity: Entity): Entity | undefined {
+  if (entity.parentId === undefined) return undefined;
+  if (entity.kind !== "rack" && entity.kind !== "containment" && !isFloorStandingKind(entity.kind))
+    return undefined;
+  const room = index.enclosing(entity.parentId, "room") ?? index.find(entity.parentId);
+  return room?.kind === "room" && room.placement?.type === "area" && room.placement.pieces?.length
+    ? room
+    : undefined;
+}
+
 function checkBounds(index: BlueprintIndex, catalog: Catalog, entity: Entity): Issue[] {
   const rect = entity.placement?.type === "land" ? undefined : footprint(entity, catalog);
   if (!rect) return [];
@@ -172,7 +185,9 @@ function checkBounds(index: BlueprintIndex, catalog: Catalog, entity: Entity): I
       }),
     ];
   const area = parentArea(index, catalog, entity);
-  if (area && !contains(area, rect)) {
+  const room = pieceRoomOf(index, entity);
+  const fits = room ? insideRoomLocal(room, rect) : area && contains(area, rect);
+  if (area && !fits) {
     return [
       error(
         "W007",
@@ -185,6 +200,14 @@ function checkBounds(index: BlueprintIndex, catalog: Catalog, entity: Entity): I
   return [];
 }
 
+/** The things an entity must not overlap: equipment in its room, plant and buildings in the yard, others of its kind. */
+function occupantGroup(index: BlueprintIndex, entity: Entity, parentId: string): string {
+  if (entity.kind === "rack" || isFloorStandingKind(entity.kind))
+    return `equip:${index.enclosing(parentId, "room")?.id ?? parentId}`;
+  const yard = entity.kind !== "parcel" && index.find(parentId)?.kind === "site";
+  return yard || isPlantKind(entity.kind) ? `yard:${parentId}` : `${entity.kind}:${parentId}`;
+}
+
 /** Things that take floor space and must not overlap, grouped by the area they stand in. */
 function occupants(
   index: BlueprintIndex,
@@ -194,19 +217,17 @@ function occupants(
   for (const entity of index.all()) {
     const rect = footprint(entity, catalog);
     if (!rect || entity.placement?.type === "land" || !entity.parentId) continue;
-    const isEquipment = entity.kind === "rack" || isFloorStandingKind(entity.kind);
-    const yard = entity.kind !== "parcel" && index.find(entity.parentId)?.kind === "site";
-    const group = isEquipment
-      ? `equip:${index.enclosing(entity.parentId, "room")?.id ?? entity.parentId}`
-      : yard || isPlantKind(entity.kind)
-        ? `yard:${entity.parentId}`
-        : `${entity.kind}:${entity.parentId}`;
+    const group = occupantGroup(index, entity, entity.parentId);
     const list = groups.get(group) ?? [];
-    list.push({ entity, rect });
+    for (const r of floorOf(entity, rect)) list.push({ entity, rect: r });
     groups.set(group, list);
   }
   return groups;
 }
+
+/** The floor a thing takes: its rectangle, or every piece of a room made of pieces. */
+const floorOf = (entity: Entity, rect: Rect): Rect[] =>
+  entity.kind === "room" ? roomRects(entity) : [rect];
 
 function checkOverlaps(index: BlueprintIndex, catalog: Catalog): Issue[] {
   const out: Issue[] = [];
@@ -215,7 +236,7 @@ function checkOverlaps(index: BlueprintIndex, catalog: Catalog): Issue[] {
       for (let j = i + 1; j < members.length; j++) {
         const a = members[i] as { entity: Entity; rect: Rect };
         const b = members[j] as { entity: Entity; rect: Rect };
-        if (overlaps(a.rect, b.rect)) {
+        if (a.entity.id !== b.entity.id && overlaps(a.rect, b.rect)) {
           out.push(
             error(
               "W008",
@@ -391,6 +412,7 @@ export function validateBlueprint(bp: Blueprint, catalog: Catalog): Issue[] {
     ...checkIds(bp),
     ...perEntity,
     ...checkOverlaps(index, catalog),
+    ...checkRoomShapes(index, catalog),
     ...checkRackUnits(index, catalog),
     ...checkLinks(index),
     ...checkParcels(index, catalog),

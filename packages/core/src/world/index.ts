@@ -128,6 +128,21 @@ export {
   type RoomPurpose,
   roomPurposeOf,
 } from "./purpose";
+export {
+  coveredBy,
+  insideRoom,
+  insideRoomLocal,
+  outlineOf,
+  roomArea,
+  roomBounds,
+  roomLocalRects,
+  roomOutline,
+  roomRects,
+  type ShapeProblem,
+  shapeProblem,
+  shapesOverlap,
+  sharedEdge,
+} from "./room-shape";
 export { reportedInletC } from "./sensors";
 export {
   type Alarm,

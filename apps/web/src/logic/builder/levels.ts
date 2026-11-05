@@ -8,7 +8,13 @@
  */
 import type { Catalog } from "@terrarium/core/catalog";
 import type { Rect } from "@terrarium/core/spatial";
-import { type BlueprintIndex, type Entity, footprint } from "@terrarium/core/world";
+import {
+  type BlueprintIndex,
+  type Entity,
+  footprint,
+  roomBounds,
+  roomLocalRects,
+} from "@terrarium/core/world";
 
 export type Level =
   | { readonly kind: "site" }
@@ -84,8 +90,26 @@ export function levelEntities(index: BlueprintIndex, level: Level): Entity[] {
   return [...direct, ...inContainment];
 }
 
-/** The level's own area in its frame (origin at 0,0). */
+/**
+ * The floor a level offers, as rectangles in its frame (origin at the space's corner): one for a site, a floor
+ * or a plain room, the pieces' for a room made of pieces (ADR-0080).
+ */
+export function levelShape(index: BlueprintIndex, catalog: Catalog, level: Level): Rect[] {
+  const space = level.kind === "room" ? index.find(level.id) : undefined;
+  if (space?.placement?.type === "area" && space.placement.pieces?.length)
+    return roomLocalRects(space);
+  return [levelArea(index, catalog, level)];
+}
+
+/** The level's own area in its frame (origin at 0,0); a room with pieces gives the box round all of them. */
 export function levelArea(index: BlueprintIndex, catalog: Catalog, level: Level): Rect {
+  if (level.kind === "room") {
+    const room = index.find(level.id);
+    if (room?.placement?.type === "area" && room.placement.pieces?.length) {
+      const bounds = roomBounds(roomLocalRects(room));
+      if (bounds) return bounds;
+    }
+  }
   if (level.kind === "site") {
     const site = siteOf(index);
     const p = site?.placement;

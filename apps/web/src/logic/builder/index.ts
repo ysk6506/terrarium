@@ -66,6 +66,17 @@ export {
   toolFits,
   type Where,
 } from "./gesture";
+export {
+  draggedRect,
+  frameOffset,
+  type Handle,
+  handleAt,
+  handlePlan,
+  handleSize,
+  handlesFit,
+  handlesFor,
+  pieceAt,
+} from "./handles";
 export { History } from "./history";
 export {
   type Crumb,
@@ -76,6 +87,7 @@ export {
   levelEntities,
   levelOf,
   levelParent,
+  levelShape,
   sameLevel,
   siteOf,
   startLevel,
@@ -93,6 +105,18 @@ export {
   SITE_LIMITS,
   type SiteSpec,
 } from "./new-site";
+export {
+  addPiece,
+  costDeltaM,
+  type PieceOptions,
+  type PieceSize,
+  pieceRect,
+  removePiece,
+  resizeBody,
+  resizePiece,
+  structureOfM,
+  tileCount,
+} from "./pieces";
 export { PREVIEW_SECONDS, type Preview, type PreviewFrame, preview } from "./preview";
 export {
   type Elevation,
@@ -103,6 +127,8 @@ export {
   type Slot,
   unitsOf,
 } from "./rack";
+export { Refusal, SIDE_LABELS, SIDES, type Side, shapeOf } from "./reshape";
+export { roomFull, WIDEN_ROOM } from "./room-space";
 export {
   COLORS,
   type GroupKey,

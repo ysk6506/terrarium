@@ -17,6 +17,7 @@ import {
   BLUEPRINT_SCHEMA_VERSION,
   type Blueprint,
   BlueprintIndex,
+  coveredBy,
   DEFAULT_FLOOR_HEIGHT_M,
   type Entity,
   type EntityKind,
@@ -25,8 +26,11 @@ import {
   KIND_LABELS,
   type Link,
   type RoomPurpose,
+  roomRects,
 } from "@terrarium/core/world";
-import { floorsOf, type Level, levelArea, levelEntities, levelParent } from "./levels";
+import { GRID, TILE_M } from "./grid";
+import { floorsOf, type Level, levelArea, levelEntities, levelParent, levelShape } from "./levels";
+import { roomFull, WIDEN_ROOM } from "./room-space";
 
 export class EditError extends Error {}
 
@@ -40,9 +44,7 @@ export interface Edit {
 const mm = (v: number) => Math.round(v * 1000) / 1000;
 export const snap = (value: number, step: number) => Math.round(snapRaw(value, step) * 1000) / 1000;
 
-/** Grid steps: buildings on 5 m, everything indoors on raised-floor tiles (0.6 m). */
-export const GRID = { site: 5, floor: 0.6, room: 0.6 } as const;
-export const TILE_M = 0.6;
+export { GRID, TILE_M };
 
 const ID_PREFIX: Readonly<Partial<Record<EntityKind, string>>> = {
   building: "bld",
@@ -151,19 +153,25 @@ export function snapRect(rect: Rect, step: number, min = step): Rect {
   return { x, y, w, d };
 }
 
+/** The floor a thing takes: its footprint, or every piece of a room made of pieces. */
+export function floorRects(entity: Entity, catalog: Catalog): Rect[] {
+  if (entity.kind === "room") return roomRects(entity);
+  const r = footprint(entity, catalog);
+  return r ? [r] : [];
+}
+
+/** `area` is the floor that is there to stand on: one rectangle, or the pieces of a room joined edge to edge. */
 export function assertFree(
   _index: BlueprintIndex,
   catalog: Catalog,
-  area: Rect,
+  area: Rect | readonly Rect[],
   rect: Rect,
   others: readonly Entity[],
   what: string,
 ): void {
-  if (!contains(area, rect)) throw new EditError(`${withJosa(what, "이")} 들어갈 자리를 벗어나요`);
-  const hit = others.find((o) => {
-    const r = footprint(o, catalog);
-    return r !== undefined && overlaps(r, rect);
-  });
+  if (!coveredBy(Array.isArray(area) ? area : [area as Rect], rect))
+    throw new EditError(`${withJosa(what, "이")} 들어갈 자리를 벗어나요`);
+  const hit = others.find((o) => floorRects(o, catalog).some((r) => overlaps(r, rect)));
   if (hit) throw new EditError(`${withJosa(hit.name, "과")} 겹쳐요`);
 }
 
@@ -243,7 +251,7 @@ export function addContainment(
   assertFree(
     index,
     catalog,
-    levelArea(index, catalog, level),
+    levelShape(index, catalog, level),
     r,
     index.childrenOf(roomId, "containment"),
     "컨테인먼트",
@@ -342,7 +350,7 @@ export function placementProblem(
     assertFree(
       index,
       catalog,
-      levelArea(index, catalog, level),
+      levelShape(index, catalog, level),
       footprintAt(catalog, modelId, spot),
       others,
       "이 자리",
@@ -389,7 +397,14 @@ export function placeRackRow(
       undefined,
       at,
     );
-    if (problem) throw new EditError(count > 1 ? `${i + 1}번째 랙: ${problem}` : problem);
+    if (problem) {
+      const lead = count > 1 ? `${i + 1}번째 랙: ${problem}` : problem;
+      throw new EditError(
+        roomFull(blueprint, catalog, roomId)
+          ? `${lead}. 서버룸이 꽉 찼어요. "${WIDEN_ROOM}"로 넓혀요`
+          : lead,
+      );
+    }
     const index = new BlueprintIndex(blueprint);
     const rect = footprintAt(catalog, undefined, at);
     const id = nextId(index, "rack");

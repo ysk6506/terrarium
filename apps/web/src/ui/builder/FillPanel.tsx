@@ -22,10 +22,18 @@ function whyNot(b: Builder, roomId: string): string | undefined {
     : undefined;
 }
 
+/** The way on from a full room: take the cursor to the size boxes of the room. */
+function widen(): void {
+  const box = document.querySelector<HTMLInputElement>('[data-testid="size-w"]');
+  box?.scrollIntoView({ block: "center" });
+  box?.focus();
+}
+
 export function FillPanel({ roomId, b }: { readonly roomId: string; readonly b: Builder }) {
   const [load, setLoad] = useState<builder.FillLoad>("half");
   const [aisle, setAisle] = useState<builder.FillAisle>("cold");
   const blocked = whyNot(b, roomId);
+  const full = builder.roomFull(b.state.blueprint, catalog, roomId);
   if (roomPurposeOf(b.state.index.entity(roomId)) !== "data_hall") return null;
   const fill = () =>
     b.apply(
@@ -57,6 +65,18 @@ export function FillPanel({ roomId, b }: { readonly roomId: string; readonly b: 
       >
         서버룸 채우기
       </Button>
+      {(blocked || full) && (
+        <div className="stack" style={{ gap: 6 }}>
+          <Button size="small" icon="plus" onClick={widen}>
+            {builder.WIDEN_ROOM}
+          </Button>
+          <p className="tiny muted">
+            {full
+              ? "랙을 놓을 자리가 없어요. 방을 넓히면 더 놓을 수 있어요."
+              : "더 놓을 자리가 필요하면 방을 넓혀요."}
+          </p>
+        </div>
+      )}
       {blocked ? (
         <p className="tiny muted">{blocked}</p>
       ) : (

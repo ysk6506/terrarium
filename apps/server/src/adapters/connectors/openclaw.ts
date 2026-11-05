@@ -6,7 +6,9 @@
  * the diagnosis is submitted. The endpoint is switched off in the gateway until
  * `gateway.http.endpoints.chatCompletions.enabled` is set.
  *
- * All of this is from OpenClaw's own page on the endpoint. It has no call to stop a run that was seen in
+ * Run against a real gateway (openclaw 2026.10.10, see docs/design-docs/harness-e2e.md): the endpoint and the
+ * tool loop work as described; the gateway flattens the history into one user message, so a model sees tool
+ * results as text. All of this is from OpenClaw's own page on the endpoint. It has no call to stop a run that was seen in
  * the docs, so stopping one only stops waiting for it.
  */
 import type {
@@ -205,6 +207,9 @@ export const openClawConnector = defineConnector({
       "이 실행의 툴은 요청의 함수 호출(tools)로 직접 넘겨요. 툴 목록은 테라리움이 정하고, 호출 결과도 테라리움이 돌려줘요.",
       "OpenClaw 게이트웨이에서 /v1/chat/completions 를 켜 두어야 해요(gateway.http.endpoints.chatCompletions.enabled).",
       "에이전트가 함수 호출을 쓸 수 있는 모델을 쓰고 있어야 해요.",
+      "게이트웨이 설정에서 tools.toolSearch 를 false 로 두어야 테라리움 툴이 에이전트에게 바로 보여요. 켜 두면 툴이 검색 뒤에 숨어 있어요.",
+      "OpenClaw 에이전트에는 exec, write 같은 자체 툴도 같이 보여요. 공정하게 재려면 tools.profile 과 tools.deny 로 줄여 주세요.",
+      "프롬프트와 툴 스키마만 5만 토큰 가까이 돼요. 컨텍스트 창이 6만 토큰 이상인 모델을 써 주세요.",
     ],
     fromScreen: true,
     fields: [

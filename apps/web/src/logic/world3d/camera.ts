@@ -4,7 +4,13 @@
  * without a browser.
  */
 import type { Catalog } from "@terrarium/core/catalog";
-import { type BlueprintIndex, DEFAULT_FLOOR_HEIGHT_M, footprint } from "@terrarium/core/world";
+import {
+  type BlueprintIndex,
+  DEFAULT_FLOOR_HEIGHT_M,
+  footprint,
+  roomBounds,
+  roomRects,
+} from "@terrarium/core/world";
 import { boxOf } from "./plan";
 import { ROOM_HEIGHT_M } from "./room";
 import type { SiteScene } from "./site";
@@ -161,11 +167,27 @@ function floorBox(index: BlueprintIndex, catalog: Catalog, id: string): Box3 | u
   return { ...outer, y0: y, y1: y + height };
 }
 
-function roomBox(index: BlueprintIndex, catalog: Catalog, id: string): Box3 | undefined {
+/** Where the room's own frame starts (its body's corner) in the site's frame, and the height of its floor slab. */
+function roomCorner(
+  index: BlueprintIndex,
+  catalog: Catalog,
+  id: string,
+): { readonly x: number; readonly y: number; readonly z: number } | undefined {
   const room = index.find(id);
   const floor = room && index.enclosing(room.id, "floor");
   const building = floor && index.enclosing(floor.id, "building");
   const rect = room && footprint(room, catalog);
+  const outer = building && buildingBox(index, catalog, building.id);
+  if (!floor || !outer || !rect) return undefined;
+  return { x: outer.x0 + rect.x, y: floorY(index, floor.id), z: outer.z0 + rect.y };
+}
+
+function roomBox(index: BlueprintIndex, catalog: Catalog, id: string): Box3 | undefined {
+  const room = index.find(id);
+  const floor = room && index.enclosing(room.id, "floor");
+  const building = floor && index.enclosing(floor.id, "building");
+  // Every piece of the room counts: the box round the whole floor.
+  const rect = room && roomBounds(roomRects(room));
   const outer = building && buildingBox(index, catalog, building.id);
   if (!room || !floor || !outer || !rect) return undefined;
   const y = floorY(index, floor.id);
@@ -195,16 +217,16 @@ export function focusBox(
   if (focus.kind === "room") return roomBox(index, catalog, focus.id);
   const rack = index.find(focus.id);
   const room = rack && index.enclosing(rack.id, "room");
-  const outer = room && roomBox(index, catalog, room.id);
+  const outer = room && roomCorner(index, catalog, room.id);
   const rect = rack && footprint(rack, catalog);
   if (!rack || !outer || !rect) return undefined;
   return {
-    x0: outer.x0 + rect.x - 0.9,
-    y0: outer.y0 + 0.6,
-    z0: outer.z0 + rect.y - 0.3,
-    x1: outer.x0 + rect.x + rect.w + 0.9,
-    y1: outer.y0 + 0.6 + 2.3,
-    z1: outer.z0 + rect.y + rect.d + 0.3,
+    x0: outer.x + rect.x - 0.9,
+    y0: outer.y + 0.6,
+    z0: outer.z + rect.y - 0.3,
+    x1: outer.x + rect.x + rect.w + 0.9,
+    y1: outer.y + 0.6 + 2.3,
+    z1: outer.z + rect.y + rect.d + 0.3,
   };
 }
 

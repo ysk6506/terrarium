@@ -8,13 +8,23 @@ import type { Catalog } from "@terrarium/core/catalog";
 import {
   type BlueprintIndex,
   type Entity,
+  outlineOf,
   type RoomPurpose,
+  roomLocalRects,
   roomPurposeOf,
 } from "@terrarium/core/world";
 import { type EquipBox, equipOf } from "./equip";
 import { type BayDecor, bayDecor } from "./fab";
 import { type CoolingMode, hallMode, racksIn } from "./modes";
-import { type Bounds, type Box, boundsOfBox, boxOf, overlapBounds } from "./plan";
+import {
+  type Bounds,
+  type Box,
+  boundsOf,
+  boundsOfBox,
+  boxOf,
+  overlapBounds,
+  type Pt,
+} from "./plan";
 import { type RackPlace, type RackSet, rackSets } from "./racks";
 
 /** Height of the raised floor in a data hall, metres. */
@@ -47,8 +57,15 @@ export interface RoomScene {
   readonly name: string;
   readonly purpose: RoomPurpose;
   readonly mode?: CoolingMode;
+  /** The body of the room: its first rectangle. A room with pieces is larger; see `rects`. */
   readonly w: number;
   readonly d: number;
+  /** The floor as rectangles in the room's frame (the body's corner is 0, 0): one for a plain room (ADR-0080). */
+  readonly rects?: readonly Bounds[];
+  /** The walls' line: the outline of the floor, corners in order, counter-clockwise with z down. */
+  readonly outline?: readonly Pt[];
+  /** The box round the whole floor; it reaches below zero when a piece lies left of or above the body. */
+  readonly bounds?: Bounds;
   readonly floorY: number;
   readonly sets: readonly RackSet[];
   readonly pods: readonly Pod[];
@@ -176,19 +193,79 @@ function pipesOf(
   return pipes;
 }
 
-/** Building columns on a grid, left out where they would stand in a rack or a machine. */
+type Floor = Pick<RoomScene, "w" | "d" | "rects" | "outline" | "bounds">;
+
+/** The floor's rectangles; a scene made without pieces is its body. */
+export const rectsOfScene = (s: Floor): readonly Bounds[] =>
+  s.rects ?? [{ x0: 0, z0: 0, x1: s.w, z1: s.d }];
+
+/** The floor's outline, corners in order. */
+export const outlineOfScene = (s: Floor): readonly Pt[] =>
+  s.outline ?? [
+    { x: 0, z: 0 },
+    { x: s.w, z: 0 },
+    { x: s.w, z: s.d },
+    { x: 0, z: s.d },
+  ];
+
+/** The box round the whole floor. */
+export const boundsOfScene = (s: Floor): Bounds => s.bounds ?? { x0: 0, z0: 0, x1: s.w, z1: s.d };
+
+/** Whether a point lies on the floor of the room (any piece, edge included). */
+export function insideScene(scene: Floor, x: number, z: number): boolean {
+  return rectsOfScene(scene).some((r) => x >= r.x0 && x <= r.x1 && z >= r.z0 && z <= r.z1);
+}
+
+/** Building columns on a grid, left out where they would stand in a rack or a machine or off the floor. */
 function columnsOf(
-  w: number,
-  d: number,
+  floor: readonly Bounds[],
   taken: readonly Bounds[],
 ): Array<{ x: number; z: number }> {
   const out: Array<{ x: number; z: number }> = [];
-  for (let x = COLUMN_PITCH_M / 2; x < w; x += COLUMN_PITCH_M)
-    for (let z = COLUMN_PITCH_M / 2; z < d; z += COLUMN_PITCH_M) {
+  const box = unionOfBounds(floor);
+  const x0 =
+    Math.ceil((box.x0 - COLUMN_PITCH_M / 2) / COLUMN_PITCH_M) * COLUMN_PITCH_M + COLUMN_PITCH_M / 2;
+  const z0 =
+    Math.ceil((box.z0 - COLUMN_PITCH_M / 2) / COLUMN_PITCH_M) * COLUMN_PITCH_M + COLUMN_PITCH_M / 2;
+  for (let x = x0; x < box.x1; x += COLUMN_PITCH_M)
+    for (let z = z0; z < box.z1; z += COLUMN_PITCH_M) {
       const c = { x0: x - 0.4, z0: z - 0.4, x1: x + 0.4, z1: z + 0.4 };
-      if (!taken.some((t) => overlapBounds(t, c))) out.push({ x, z });
+      const onFloor = floor.some((r) => x >= r.x0 && x <= r.x1 && z >= r.z0 && z <= r.z1);
+      if (onFloor && !taken.some((t) => overlapBounds(t, c))) out.push({ x, z });
     }
   return out;
+}
+
+function unionOfBounds(list: readonly Bounds[]): Bounds {
+  return boundsOf(
+    list.flatMap((b) => [
+      { x: b.x0, z: b.z0 },
+      { x: b.x1, z: b.z1 },
+    ]),
+  );
+}
+
+/** The back wall's longest stretch: where the sprinkler main runs. */
+export function backWall(scene: Floor): {
+  readonly x0: number;
+  readonly x1: number;
+  readonly z: number;
+} {
+  const outline = outlineOfScene(scene);
+  const bounds = boundsOfScene(scene);
+  let best = { x0: bounds.x0, x1: bounds.x1, z: bounds.z0 };
+  let length = -1;
+  for (let i = 0; i < outline.length; i++) {
+    const a = outline[i] as Pt;
+    const b = outline[(i + 1) % outline.length] as Pt;
+    if (Math.abs(a.z - bounds.z0) > 1e-6 || Math.abs(b.z - bounds.z0) > 1e-6) continue;
+    const len = Math.abs(b.x - a.x);
+    if (len > length) {
+      length = len;
+      best = { x0: Math.min(a.x, b.x), x1: Math.max(a.x, b.x), z: bounds.z0 };
+    }
+  }
+  return best;
 }
 
 function equipmentIn(index: BlueprintIndex, catalog: Catalog, room: Entity, y: number): EquipBox[] {
@@ -231,6 +308,9 @@ export function roomScene(
     ),
   ];
   const mode = purpose === "data_hall" ? hallMode(index, catalog, room) : undefined;
+  const local = roomLocalRects(room);
+  const rects = local.map((r) => ({ x0: r.x, z0: r.y, x1: r.x + r.w, z1: r.y + r.d }));
+  const outline = outlineOf(local).map((p) => ({ x: p.x, z: p.y }));
   return {
     id: room.id,
     name: room.name,
@@ -238,15 +318,37 @@ export function roomScene(
     ...(mode ? { mode } : {}),
     w: box.w,
     d: box.d,
+    rects,
+    outline,
+    bounds: unionOfBounds(rects),
     floorY,
     sets,
     pods,
     equipment,
     rows: purpose === "data_hall" ? rowsOf(sets) : [],
     pipes: pipesOf(equipment, pods, sets),
-    columns: columnsOf(box.w, box.d, taken),
+    columns: columnsOf(rects, taken),
     ...(purpose === "cleanroom" ? { bay: bayDecor(room.id, box.w, box.d) } : {}),
     racks: racks.length,
     servers: sets.reduce((n, s) => n + s.servers.reduce((a, b) => a + b, 0), 0),
   };
+}
+
+/**
+ * The outline pulled in by `margin` metres all round: where the heat wash and the glow of the floor end, a hand's
+ * width short of the walls. Rectilinear outlines only, counter-clockwise (the room on the left of each side).
+ */
+export function insetOutline(outline: readonly Pt[], margin: number): Pt[] {
+  const n = outline.length;
+  return outline.map((p, i) => {
+    const before = outline[(i + n - 1) % n] as Pt;
+    const after = outline[(i + 1) % n] as Pt;
+    const inward = (a: Pt, b: Pt): Pt => {
+      const len = Math.hypot(b.x - a.x, b.z - a.z) || 1;
+      return { x: -(b.z - a.z) / len, z: (b.x - a.x) / len };
+    };
+    const n1 = inward(before, p);
+    const n2 = inward(p, after);
+    return { x: p.x + (n1.x + n2.x) * margin, z: p.z + (n1.z + n2.z) * margin };
+  });
 }

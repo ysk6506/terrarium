@@ -12,6 +12,7 @@ import { ActivityLayer } from "./activity-layer";
 import { type AirConfig, AirStage } from "./air-stage";
 import type { AirMode } from "./airflow-layer";
 import { type BuildingLayer, buildBuildingLayer } from "./building-layer";
+import { CrewStage } from "./crew-stage";
 import { createEngine, type Engine } from "./engine";
 import { type PickTag, pickOf } from "./layer";
 import { buildLifeLayer, type LifeLayer, type LifeMode } from "./life-layer";
@@ -19,8 +20,8 @@ import { PlanOverlay } from "./plan-overlay";
 import { buildRackLayer, type RackLayer } from "./rack-layer";
 import { createRig, type DragTool, type Rig } from "./rig";
 import { buildSiteLayer, type SiteLayer } from "./site-layer";
-import { Strain } from "./strain";
-import { calm, FILL, SPIN_STEP_S, TILT } from "./view-look";
+import { calm, FILL, TILT } from "./view-look";
+import { startSpin } from "./view-spin";
 
 type Focus = world3d.Focus;
 
@@ -40,9 +41,12 @@ export class WorldView {
   readonly rig: Rig;
   /** Whether a click on a building, a room or a rack takes the camera there. The builder turns it off, since a click selects. */
   navigate = true;
-  private readonly overlay: PlanOverlay;
+  /** What the builder draws over the plan: outlines, handles, the ghost. */
+  readonly overlay: PlanOverlay;
   private readonly activity: ActivityLayer;
   private readonly air: AirStage;
+  /** The people of the room in view (REQ-074). */
+  readonly crew: CrewStage;
   private stopSpin?: () => void;
   private level?: builder.Level;
   private plan?: world3d.PlanFrame;
@@ -89,6 +93,17 @@ export class WorldView {
       refocus: () => this.focusOn(this.current),
       slow: () => this.air.settle(),
     });
+    this.crew = new CrewStage(this.engine, {
+      building: () => this.building?.layer,
+      focus: () => this.current,
+      ray: (x, y) => {
+        this.aim(x, y);
+        return this.ray;
+      },
+      size: () => this.size,
+      camera: () => this.engine.view,
+    });
+    this.crew.setStill(calm());
     this.offs.push(
       this.rig.onClick((x, y) => this.click(x, y)),
       this.rig.onHover((x, y) => {
@@ -157,6 +172,7 @@ export class WorldView {
     this.openBuildingFor(focus, animate);
     this.openRackFor(focus);
     this.air.sync();
+    this.crew.sync();
   }
 
   /** Look at a level, gliding there unless told otherwise. */
@@ -254,6 +270,7 @@ export class WorldView {
 
   private leaveBuilding(): void {
     this.air.dispose();
+    this.crew.release();
     this.rack?.layer.dispose();
     this.rack = undefined;
     if (!this.building) return;
@@ -449,21 +466,7 @@ export class WorldView {
     this.stopSpin?.();
     this.stopSpin = undefined;
     if (degPerSecond === 0 || calm()) return;
-    let since = 0;
-    const strain = new Strain();
-    const off = this.engine.onFrame((dt) => {
-      since += dt;
-      if (strain.frame(dt)) return this.setSpin(0);
-      if (since < SPIN_STEP_S) return;
-      const pose = this.rig.pose();
-      this.rig.set({ ...pose, yaw: pose.yaw + (degPerSecond * Math.PI * since) / 180 });
-      since = 0;
-    });
-    const stopOnTouch = this.rig.onUserMove(() => this.setSpin(0));
-    this.stopSpin = () => {
-      off();
-      stopOnTouch();
-    };
+    this.stopSpin = startSpin(this.engine, this.rig, degPerSecond, () => this.setSpin(0));
   }
 
   /** Let a tool take the left-button drag from the camera. */
@@ -472,6 +475,8 @@ export class WorldView {
   }
 
   private click(x: number, y: number): void {
+    // A person stands in front of whatever is behind them: the click is theirs.
+    if (this.crew.click(x, y)) return;
     const tag = this.pickAt(x, y);
     if (!tag) return;
     this.events.onPick?.(tag);
@@ -484,6 +489,7 @@ export class WorldView {
     this.stopSpin?.();
     this.overlay.dispose();
     this.activity.dispose();
+    this.crew.dispose();
     this.rig.dispose();
     this.leaveBuilding();
     this.life?.dispose();

@@ -22,7 +22,7 @@ import {
 import { type FlowPath, pathsOf } from "./airflow-paths";
 import type { Rgb } from "./palette";
 import { type Bounds, inflate, unionOf } from "./plan";
-import type { RoomScene } from "./room";
+import { boundsOfScene, type RoomScene } from "./room";
 
 export type { Field } from "./airflow-field";
 export { fieldAt } from "./airflow-field";
@@ -128,7 +128,7 @@ export function aisleReach(scene: RoomScene, air: Pick<Airflow, "units">): Map<s
  * metres around them, kept inside the walls. The camera of the map fits this, not the empty rest of a big room.
  */
 export function workBounds(
-  scene: Pick<RoomScene, "w" | "d">,
+  scene: Pick<RoomScene, "w" | "d" | "bounds">,
   air: Pick<Airflow, "racks" | "units">,
   margin: number,
 ): Bounds | undefined {
@@ -139,10 +139,11 @@ export function workBounds(
   const all = unionOf(around);
   if (!all) return undefined;
   const g = inflate(all, margin);
+  const room = boundsOfScene(scene);
   return {
-    x0: Math.max(0, g.x0),
-    z0: Math.max(0, g.z0),
-    x1: Math.min(scene.w, g.x1),
-    z1: Math.min(scene.d, g.z1),
+    x0: Math.max(room.x0, g.x0),
+    z0: Math.max(room.z0, g.z0),
+    x1: Math.min(room.x1, g.x1),
+    z1: Math.min(room.z1, g.z1),
   };
 }

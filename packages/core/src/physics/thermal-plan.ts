@@ -4,7 +4,13 @@
  * once per blueprint; every step then reads arrays instead of walking the blueprint and looking ids up.
  */
 import type { Catalog, RackCooling } from "@terrarium/core/catalog";
-import type { BlueprintIndex, Entity, Fault, World } from "@terrarium/core/world";
+import {
+  type BlueprintIndex,
+  type Entity,
+  type Fault,
+  roomArea,
+  type World,
+} from "@terrarium/core/world";
 import { type Pass, passOf } from "./power";
 import type { PowerPlan } from "./power-plan";
 
@@ -115,9 +121,7 @@ function roomPart(ents: readonly Entity[], index: BlueprintIndex, catalog: Catal
       e.kind === "rack" && index.find(e.parentId ?? "")?.kind === "containment" ? 1 : 0,
     ),
     cooling: ents.map((e) => (e.kind === "rack" ? rackCoolingOf(e, catalog) : "air")),
-    area: Float64Array.from(ents, (e) =>
-      e.placement?.type === "area" ? e.placement.w * e.placement.d : 100,
-    ),
+    area: Float64Array.from(ents, (e) => (e.placement?.type === "area" ? roomArea(e) : 100)),
     assigned: lists(n, (i) =>
       (ents[i] as Entity).kind !== "rack"
         ? []
