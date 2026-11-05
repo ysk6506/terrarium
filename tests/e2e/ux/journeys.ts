@@ -3,6 +3,8 @@
  * through the screen's own buttons. Each journey throws when it cannot be finished; the runner turns
  * that into "not ok" and counts the actions it took.
  */
+import { Catalog } from "@terrarium/core/catalog";
+import { DEFAULT_CAMPUS, generateCampus, SITE_CAMPUS_MIX } from "@terrarium/core/sources/worldgen";
 import type { Browser, Page } from "playwright";
 import { Driver, nav, type Visitor, visitor } from "./driver";
 import { settle } from "./site";
@@ -17,7 +19,8 @@ export type JourneyId =
   | "fork"
   | "compare"
   | "import"
-  | "site";
+  | "site"
+  | "topology";
 
 export interface Outcome {
   readonly ok: boolean;
@@ -285,6 +288,80 @@ async function site(c: Context): Promise<void> {
   if ((await hudText(page)) !== before) throw new Error("되돌리기가 산 땅을 물리지 못했다");
 }
 
+/** Most tiles the topology view may draw (ADR-0084), and the longest a person waits for the first picture. */
+const MAX_TILES = 150;
+const FIRST_PICTURE_MS = 3 * SECOND;
+
+const HWASEONG = "화성 실제 그대로";
+
+const asViewer = { "content-type": "application/json", "x-terrarium-user": "%EC%97%B0%EC%88%98" };
+
+/** Hwaseong as it really is, made the way a person who had built it earlier would have it: it is in the list. */
+async function makeHwaseong(c: Context): Promise<string> {
+  const blueprint = generateCampus(
+    { ...DEFAULT_CAMPUS, ...SITE_CAMPUS_MIX.hwaseong, site: "hwaseong", seed: 1, name: HWASEONG },
+    new Catalog(),
+  ).blueprint;
+  const response = await fetch(`${c.base}/api/worlds`, {
+    method: "POST",
+    headers: asViewer,
+    body: JSON.stringify({ name: HWASEONG, blueprint }),
+  });
+  if (!response.ok) throw new Error(`화성 세계를 올리지 못했다 (${response.status})`);
+  return ((await response.json()) as { world: { id: string } }).world.id;
+}
+
+/** The topology view of the whole of Hwaseong: open it, change the layer, open a folded group (REQ-078). */
+async function topology(c: Context): Promise<void> {
+  const id = await makeHwaseong(c);
+  try {
+    await openTopology(c);
+  } finally {
+    // The probes that follow take the first world in the list: that must not be the biggest one.
+    await fetch(`${c.base}/api/worlds/${id}`, { method: "DELETE", headers: asViewer }).catch(
+      () => undefined,
+    );
+  }
+}
+
+async function openTopology(c: Context): Promise<void> {
+  const { page } = c.v;
+  await home(c);
+  await c.d.click(nav(page, "세계"));
+  await c.d.click(page.getByRole("link", { name: HWASEONG, exact: true }).first());
+  await expectPath(c, /^\/worlds\/w-/);
+  const open = page.getByRole("button", { name: "토폴로지", exact: true });
+  await open.waitFor({ timeout: 60 * SECOND });
+  const started = Date.now();
+  await c.d.click(open);
+  const board = page.locator(".topo-board svg");
+  await board.waitFor({ timeout: 60 * SECOND });
+  const waited = Date.now() - started;
+  if (waited > FIRST_PICTURE_MS)
+    throw new Error(`첫 그림까지 ${Math.round(waited / 100) / 10}초 걸렸다`);
+  const tiles = await page.locator(".topo-hits li").count();
+  if (tiles === 0 || tiles > MAX_TILES)
+    throw new Error(`타일이 ${tiles}개다 (1~${MAX_TILES}개여야 한다)`);
+  const before = await page.locator(".topo-board").innerText();
+  await c.d.click(page.getByRole("button", { name: "전원", exact: true }));
+  await page.waitForFunction(
+    (text) => document.querySelector(".topo-board")?.textContent !== text,
+    before,
+    { timeout: 10 * SECOND },
+  );
+  const group = page.locator(".topo-hits button[aria-label*='누르면']").first();
+  await group.waitFor({ timeout: 10 * SECOND });
+  const crumbs = await page.locator(".topo-crumbs button").count();
+  await c.d.click(group);
+  await page.waitForFunction(
+    (n) => document.querySelectorAll(".topo-crumbs button").length > n,
+    crumbs,
+    { timeout: 10 * SECOND },
+  );
+  const after = await page.locator(".topo-hits li").count();
+  if (after > MAX_TILES) throw new Error(`펼치고 나서 타일이 ${after}개다`);
+}
+
 /** In the order they depend on each other: later ones use what earlier ones made. */
 export const JOURNEYS: ReadonlyArray<readonly [JourneyId, (c: Context) => Promise<void>]> = [
   ["build", build],
@@ -298,6 +375,8 @@ export const JOURNEYS: ReadonlyArray<readonly [JourneyId, (c: Context) => Promis
   ["site", site],
   // last: it leaves a bare scenario behind, and the journeys above want the default one to be a real scenario
   ["author", author],
+  // after it: it uses no scenario, and its world is the biggest one in the list
+  ["topology", topology],
 ];
 
 export async function perform(

@@ -2,18 +2,18 @@
 title: UX Honeycomb 측정
 kind: guide
 status: active
-last_verified: 2026-11-04
+last_verified: 2026-11-05
 covers:
   - harness/src/ux/score.ts
   - tests/e2e/ux/probes-voice.ts
   - tests/e2e/ux/probes-detail.ts
-covers_hash: 6eac166f9d31eeb6
+covers_hash: 4ee98af53a237f3d
 verification_log:
-  - "2026-10-29: 측정 항목 표와 여정 예산을 score.ts, 여정 코드와 대조했다. 첫 화면 크기는 전송량(압축 후)으로 잰다"
   - "2026-11-03: 측정 항목 표를 score.ts와 대조해 voice·one-thing·buttons·disabled-why·hover·targets·units를 더했고, probes-voice/probes-detail을 covers에 넣었다 (REQ-058, ADR-0050)"
   - "2026-11-03: targets 행을 높이 32 px·너비 24 px 기준으로 고쳤다 (REQ-058, ADR-0050)"
   - "2026-11-04: 여정 표에 site(새 사업장 만들고 땅 사기, 예산 6)를 더하고 score.ts의 JOURNEY_BUDGETS·JOURNEY_LABELS와 journeys.ts를 대조했다"
   - "2026-11-04: 여정 표에 author(빈 캔버스에서 시험지 점검까지, 예산 8)를 더하고 score.ts의 JOURNEY_BUDGETS·JOURNEY_LABELS, journeys.ts와 대조했다. 여정 수는 열 개"
+  - "2026-11-05: 여정 표에 topology(예산 5, 화성 실제 크기에서 타일 150개 이하·첫 그림 3초)를 더하고 score.ts의 JOURNEY_BUDGETS·JOURNEY_LABELS, journeys.ts와 대조했다. 여정 수는 열한 개"
 ---
 # UX를 숫자로 재는 법 (REQ-041, [ADR-0031](adr/0031-ux-honeycomb-measurement.md))
 
@@ -37,7 +37,7 @@ UI를 바꿨다면 `pnpm ux`를 한 번 돌려야 `pnpm check`가 통과한다(�
 
 | 면 | 항목 | 어떻게 재나 |
 |---|---|---|
-| 유용함 (useful) | 여정 완수 | 아래 여정 10개를 끝까지 해냈는가 |
+| 유용함 (useful) | 여정 완수 | 아래 여정 11개를 끝까지 해냈는가 |
 | | 오류 없는 화면 | 여정 중 지난 화면에서 콘솔 오류, 잡히지 않은 오류, 실패한 요청이 없었는가 |
 | 사용성 (usable) | 손 수 | 여정마다 클릭, 입력, 선택, 키, 끌기 횟수가 예산(`JOURNEY_BUDGETS`) 안인가. 예산의 두 배면 0점 |
 | | 잘못된 입력 | 말이 안 되는 크기, 없는 서버룸, 너무 많은 실행 횟수, 빈 이름을 넣으면 바로 이유가 뜨고 막히는가 |
@@ -79,6 +79,7 @@ UI를 바꿨다면 `pnpm ux`를 한 번 돌려야 `pnpm check`가 통과한다(�
 | compare | 4 | 벤치마크에서 줄을 골라 조건을 바꿔 해 보는 화면까지 간다 |
 | import | 6 | 현실(샘플 소스)에서 세계를 가져온다 |
 | site | 6 | 새 세계에서 크기로 정해 빈 사업장을 만들고, 팔고 있는 땅을 사서 들인 돈이 느는 것을 보고, 되돌린다 |
+| topology | 5 | 화성을 실제 크기로 올려 두고 세계 목록에서 열어 토폴로지를 누른다. **타일이 150개 이하**이고 **첫 그림이 3초 안에** 나오는지 재고, 층(전원)을 바꾸고, 접힌 묶음 하나를 펼친다 (REQ-078). 끝나면 그 세계를 숨긴다. 맨 뒤 여정이다 |
 
 ## 코드 위치와 고치는 법
 

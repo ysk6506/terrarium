@@ -40,6 +40,7 @@ verification_log:
 - [vCenter와 Aria Operations 응답 — 참고서와 맞춘 것, 못 맞춘 것](design-docs/vmware-api-conformance.md)
 - [웹 화면 — 디자인 원칙과 구조](design-docs/web-ui.md)
 - [온도와 공기 흐름 지도 — 서버룸 안의 바람을 그리는 법](design-docs/airflow-map.md)
+- [토폴로지 보기 — 무엇에 기대고 있나를 층별로 그리고, 같은 것은 접는다](design-docs/topology.md)
 - [현실의 가격 — 땅, 건물, 장비값의 근거와 믿을 만한 정도](design-docs/real-prices.md)
 - [GPU 카탈로그 — H100부터 B300까지, 베라 루빈은 도입 예정](design-docs/gpu-catalog.md)
 - [GPU 백엔드 네트워크 — 서버마다 NIC 8개가 rail로 꽂히고, rail 하나를 잃으면 느려진다](design-docs/gpu-fabric.md)
@@ -145,6 +146,7 @@ verification_log:
 - [0095 현실의 쌍둥이는 네 단계로 가고, 세계의 모델은 플러그인으로 바꿀 수 있다](design-docs/adr/0095-digital-twin-and-model-plugins.md)
 - [0096 파워 캐핑 — 전기요금을 아끼면서 서비스를 지키는 줄다리기를 잰다](design-docs/adr/0096-power-capping.md)
 - [0082 느린 기계에서는 멈추지 않고 줄인다 — 품질·부하 시험 기대값을 고친다](design-docs/adr/0082-quality-degrade-amend-tests.md)
+- [0097 토폴로지 보기 ①이 건드리는 보호 경로 — 새 코어 단위, UX 여정, 두 문서의 앞부분](design-docs/adr/0097-topology-amend-tests.md)
 
 ## 계획과 부채
 

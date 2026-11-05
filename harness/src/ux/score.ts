@@ -37,6 +37,7 @@ export const JOURNEY_BUDGETS = {
   fork: 6,
   compare: 4,
   site: 6,
+  topology: 5,
 } as const;
 export type JourneyId = keyof typeof JOURNEY_BUDGETS;
 export const JOURNEY_IDS = Object.keys(JOURNEY_BUDGETS) as JourneyId[];
@@ -52,6 +53,7 @@ export const JOURNEY_LABELS: Readonly<Record<JourneyId, string>> = {
   fork: "조건 바꿔 다시 돌리기",
   compare: "벤치마크에서 비교하고 가져오기",
   site: "새 사업장 만들고 땅 사기",
+  topology: "화성 실제 그대로 세계에서 토폴로지 열기",
 };
 
 /** Budgets for the load of the home page. */

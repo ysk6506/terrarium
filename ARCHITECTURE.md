@@ -2,16 +2,16 @@
 title: ARCHITECTURE — 단위와 의존 방향
 kind: reference
 status: active
-last_verified: 2026-11-04
+last_verified: 2026-11-05
 covers:
   - harness/config/architecture.yaml
-covers_hash: d54d2fd2cbf5801a
+covers_hash: d0ab48c09ab589b4
 verification_log:
-  - "2026-10-29: unit table and diagram updated for ADR-0022"
   - "2026-10-29: server unit rows describe stage 5 (ADR-0025..0028)"
   - "2026-10-29: server.cluster 단위 행과 fastify 허용 단위를 architecture.yaml과 대조했다 (ADR-0032)"
   - "2026-10-30: 2026-10-30: server.adapters 행(커넥터·봉인), runtime 행(연결 레지스트리·버전), http 행(식별 자리), 외부 라이브러리 줄(MCP SDK는 server.mcp와 server.adapters)을 architecture.yaml과 대조했다 (ADR-0042~0044)"
   - "2026-11-04: architecture.yaml 대조: 시험 전용 의존성 ajv와 ajv-formats가 tests.spec 단위에만 허용된 것(ADR-0057)을 외부 라이브러리 줄에, 파사드 단위 설명에 SNMP·BACnet을 반영했다"
+  - "2026-11-05: architecture.yaml에 core.topology 단위(kernel, catalog, world, physics)가 늘었다. 단위 표와 그림에 한 줄씩 더했다"
 ---
 # 아키텍처
 
@@ -33,6 +33,7 @@ verification_log:
 contract ─► analysis ─► experiments ─► oracle ─► scenario ─► tools ─► facades ─► world ─► spatial ─► kernel
                 │            │                       │            └──────────► profiles ─► catalog ─┘
                 └────────────┴─► session (조립) ─► physics ─► world        sources(worldgen | realimport) ─► world
+                                                   topology ─► physics, world  (화면·채점이 읽는다)
 ```
 
 | 단위 | 책임 | 쓸 수 있는 단위 |
@@ -43,6 +44,7 @@ contract ─► analysis ─► experiments ─► oracle ─► scenario ─►
 | `world` | 청사진(부지~장비), 엔티티 상태, 이벤트 로그, 스냅샷 | kernel, spatial, catalog |
 | `profiles` | **제품 버전**별 동작 변형 | kernel, catalog |
 | `physics` | 열·전력·공조 동역학 | kernel, spatial, catalog, world |
+| `topology` | 월드를 읽어 전원·냉방·네트워크 층의 보드로 접고(타일 150개 이하), 고장의 영향 범위를 계산한다. 화면과 채점용이고 에이전트 툴이 아니다 (ADR-0084, 0097) | kernel, catalog, world, physics |
 | `facades` | Redfish/SNMP/BACnet/스위치 CLI·eAPI·NX-API/vCenter/vROps ↔ 월드 포트 번역. 웹을 모른다 | kernel, catalog, profiles, world |
 | `tools` | 에이전트용 툴 카탈로그와 디스패처 | kernel, catalog, world, facades |
 | `scenario` | 워크플로 시나리오, 지원 기능 목록, 실행기 | kernel, catalog, world, physics, tools |

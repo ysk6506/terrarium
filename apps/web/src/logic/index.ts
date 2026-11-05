@@ -142,5 +142,6 @@ export {
   type Settings,
   saveSetting,
 } from "./settings";
+export * as hallTopology from "./topology";
 export { DEFAULT_QUESTION, type Fact, traceAdvice, tryDetail, tryFacts } from "./try-talk";
 export * as world3d from "./world3d";

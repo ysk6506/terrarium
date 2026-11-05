@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { builder } from "../../logic";
 import { Go } from "../context";
+import { Segmented } from "../fields";
 import { Icon } from "../icons";
 import { Button } from "../kit";
 import type { Builder } from "./useBuilder";
@@ -103,14 +104,40 @@ function MapBar({ b, onLeave }: { readonly b: Builder; readonly onLeave: () => v
   );
 }
 
+/** The two eyes on one world: the 3D picture, or the topology of what leans on what (REQ-078). */
+function ViewToggle(props: {
+  readonly topology: boolean;
+  readonly onChange: (on: boolean) => void;
+  readonly warm: () => void;
+}) {
+  return (
+    <Segmented
+      label="보는 방법"
+      value={props.topology ? "topology" : "3d"}
+      options={[
+        { value: "3d", label: "3D" },
+        { value: "topology", label: "토폴로지" },
+      ]}
+      onChange={(v) => props.onChange(v === "topology")}
+      onWarm={props.warm}
+    />
+  );
+}
+
 export function BuilderBar({
   b,
   map,
   onLeaveMap,
+  topology,
+  onTopology,
+  warm,
 }: {
   readonly b: Builder;
   readonly map: boolean;
   readonly onLeaveMap: () => void;
+  readonly topology: boolean;
+  readonly onTopology: (on: boolean) => void;
+  readonly warm: () => void;
 }) {
   if (map) return <MapBar b={b} onLeave={onLeaveMap} />;
   const { world, preview, previewing, canUndo, canRedo, mine } = b.state;
@@ -127,6 +154,7 @@ export function BuilderBar({
           {!mine && <span>{world.owner}의 세계예요. 보고 고쳐 볼 수 있어요</span>}
         </div>
       </div>
+      <ViewToggle topology={topology} onChange={onTopology} warm={warm} />
       <Button
         kind="quiet"
         icon="undo"

@@ -3,8 +3,8 @@
  * equipment, with running totals, a heat preview and saving. Opened lazily: three.js loads here.
  */
 import type { WorldRecord } from "@terrarium/core/experiments";
-import { useMemo, useState } from "react";
-import { builder, celsius, count, watts, won, type world3d } from "../../logic";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { builder, celsius, count, hallTopology, watts, won, type world3d } from "../../logic";
 import { useApp, useAsync, useLeaveGuard, usePageTitle } from "../context";
 import { Failure, Loading } from "../kit";
 import { useActivity } from "../world3d/useActivity";
@@ -75,6 +75,8 @@ function airInput(
   roomId: string,
   on: boolean,
   setMapRoom: (id: string | undefined) => void,
+  at: number | undefined,
+  setAt: (i: number) => void,
 ) {
   return {
     roomId,
@@ -85,66 +87,149 @@ function airInput(
     onRun: b.runPreview,
     onToggleUnit: b.toggleUnit,
     selected: b.state.selected,
+    at,
+    onAt: setAt,
   };
 }
 
 const NO_HANDLES: readonly world3d.PlanHandle[] = [];
 
+/** The topology view is a bundle of its own (REQ-078): it comes down when it is pointed at or opened. */
+const loadTopology = () => import("../topology/TopologyView");
+const TopologyView = lazy(loadTopology);
+const warmTopology = () => void loadTopology();
+
+/** Where the topology view starts: around the picked equipment, or folded all the way when nothing is picked. */
+function topologyStart(b: Builder): readonly string[] {
+  return hallTopology.pathFor(b.state.index, b.state.selected[0]);
+}
+
 /** The map mode is for looking: no handles on it. */
 const shownHandles = (map: boolean, g: { readonly handles: readonly world3d.PlanHandle[] }) =>
   map ? NO_HANDLES : g.handles;
 
-function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
-  const b = useBuilder(initial);
-  const { index, level, preview, selected, dirty } = b.state;
-  // The map mode (REQ-072): the picture takes the page, the palette and the numbers fold away.
-  const [mapRoom, setMapRoom] = useState<string>();
-  const map = level.kind === "room" && mapRoom === level.id;
-  usePageTitle(initial.name);
-  useBuilderKeys(b);
-  useLeaveGuard(dirty ? "저장하지 않고 나가면 고친 것이 사라져요. 그래도 나갈까요?" : undefined);
+interface StageProps {
+  readonly b: Builder;
+  /** The moment of the "돌려 보기" run that is shown, shared by the airflow map and the topology view. */
+  readonly at: number | undefined;
+  readonly setAt: (i: number) => void;
+}
+
+/** The 3D eye: the picture of the level, with what the builder draws over it. */
+function Stage3D(
+  props: StageProps & {
+    readonly map: boolean;
+    readonly worldId: string;
+    readonly setMapRoom: (id: string | undefined) => void;
+  },
+) {
+  const { b, map, at, setAt } = props;
+  const { index, level, preview, selected } = b.state;
   const gestures = useGestures(b);
-  const { activity, now } = useActivity(initial.id);
+  const { activity, now } = useActivity(props.worldId);
   const overlay = useMemo(
     () => (preview ? { heat: preview.heat, alarmed: preview.alarmed } : undefined),
     [preview],
   );
-  const wide = needsWholeLand(b);
   const scene = useMemo(
     () => builder.sceneOf(index, catalog, level, overlay ?? {}),
     [index, level, overlay],
   );
   return (
+    <WorldStage
+      index={index}
+      catalog={catalog}
+      level={level}
+      wide={needsWholeLand(b)}
+      scene={scene}
+      selected={selected}
+      {...(gestures.ghost ? { ghost: gestures.ghost } : {})}
+      handles={shownHandles(map, gestures)}
+      {...(overlay ? { overlay } : {})}
+      {...gestures.events}
+      {...(level.kind === "room"
+        ? { air: airInput(b, level.id, map, props.setMapRoom, at, setAt) }
+        : {})}
+      activity={activity}
+      now={now}
+      onWatch={(id) => b.go(builder.levelOf(index, id))}
+    >
+      {!map && <Hud b={b} />}
+      {!map && (
+        <output className={`stage-hint${gestures.bad ? " stage-hint-bad" : ""}`}>
+          {gestures.hint}
+        </output>
+      )}
+    </WorldStage>
+  );
+}
+
+/** The topology eye (REQ-078): the same world, the same picks, the same moment of the run. */
+function TopologyStage({ b, at, setAt }: StageProps) {
+  const { index, preview, selected, previewing } = b.state;
+  return (
+    <Suspense fallback={<Loading />}>
+      <TopologyView
+        index={index}
+        catalog={catalog}
+        preview={preview}
+        previewing={previewing}
+        selected={selected}
+        onSelect={b.setSelected}
+        at={at}
+        onAt={setAt}
+        onToggleUnit={b.toggleUnit}
+        start={topologyStart(b)}
+      />
+    </Suspense>
+  );
+}
+
+/** The moment of the run that is shown: the last one until it is dragged, and none once the run is gone. */
+function useRunMoment(run: builder.Preview | undefined) {
+  const [at, setAt] = useState<number>();
+  useEffect(() => {
+    if (run === undefined) setAt(undefined);
+  }, [run]);
+  return { at, setAt };
+}
+
+function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
+  const b = useBuilder(initial);
+  const { level, preview, dirty } = b.state;
+  // The map mode (REQ-072): the picture takes the page, the palette and the numbers fold away.
+  const [mapRoom, setMapRoom] = useState<string>();
+  const map = level.kind === "room" && mapRoom === level.id;
+  // The two eyes (REQ-078): the 3D picture or the topology.
+  const [topology, setTopology] = useState(false);
+  const moment = useRunMoment(preview);
+  usePageTitle(initial.name);
+  useBuilderKeys(b);
+  useLeaveGuard(dirty ? "저장하지 않고 나가면 고친 것이 사라져요. 그래도 나갈까요?" : undefined);
+  const folded = map || topology;
+  return (
     <div className="page-wide">
-      <BuilderBar b={b} map={map} onLeaveMap={() => setMapRoom(undefined)} />
-      <div className={`builder${map ? " builder-map" : ""}`}>
-        {!map && <Toolbox b={b} />}
+      <BuilderBar
+        b={b}
+        map={map}
+        onLeaveMap={() => setMapRoom(undefined)}
+        topology={topology}
+        onTopology={(on) => {
+          setTopology(on);
+          if (on) setMapRoom(undefined);
+        }}
+        warm={warmTopology}
+      />
+      <div className={`builder${folded ? " builder-map" : ""}`}>
+        {!folded && <Toolbox b={b} />}
         <div className="stage">
-          <WorldStage
-            index={index}
-            catalog={catalog}
-            level={level}
-            wide={wide}
-            scene={scene}
-            selected={selected}
-            {...(gestures.ghost ? { ghost: gestures.ghost } : {})}
-            handles={shownHandles(map, gestures)}
-            {...(overlay ? { overlay } : {})}
-            {...gestures.events}
-            {...(level.kind === "room" ? { air: airInput(b, level.id, map, setMapRoom) } : {})}
-            activity={activity}
-            now={now}
-            onWatch={(id) => b.go(builder.levelOf(index, id))}
-          >
-            {!map && <Hud b={b} />}
-            {!map && (
-              <output className={`stage-hint${gestures.bad ? " stage-hint-bad" : ""}`}>
-                {gestures.hint}
-              </output>
-            )}
-          </WorldStage>
+          {topology ? (
+            <TopologyStage b={b} {...moment} />
+          ) : (
+            <Stage3D b={b} map={map} worldId={initial.id} setMapRoom={setMapRoom} {...moment} />
+          )}
         </div>
-        {!map && <Inspector b={b} />}
+        {!folded && <Inspector b={b} />}
       </div>
     </div>
   );
