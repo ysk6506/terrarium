@@ -63,6 +63,7 @@ describe("the list of what can be controlled is made of real things [REQ-069]", 
       expect(onList.has(command as never)).toBe(false);
     expect([...onList].sort()).toEqual([
       "breaker.reset",
+      "firmware.update",
       "link.admin",
       "load.set",
       "net.set",
@@ -315,6 +316,18 @@ const DRIVES: Readonly<Record<string, Drive>> = {
     },
     changed: (w) => (w.stateAs("pdu-a", "pdu").outletsOff ?? []).includes(1),
     action: { kind: "outlet_off", target: "pdu-a" },
+  },
+  "firmware.update|redfish_request": {
+    world: campusBlueprint,
+    tool: "redfish_request",
+    args: {
+      server: "srv-a1",
+      method: "POST",
+      path: "/redfish/v1/UpdateService/Actions/UpdateService.SimpleUpdate",
+      body: { ImageURI: "http://repo/fw/bios-2.4.1.bin" },
+    },
+    changed: (w) => w.stateAs("srv-a1", "server").fw?.version === "2.4.1",
+    action: { kind: "firmware_update", target: "srv-a1" },
   },
   "network.port|network_cli": {
     world: networkLab,

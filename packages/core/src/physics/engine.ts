@@ -14,6 +14,7 @@ import type {
   WorldEvent,
 } from "@terrarium/core/world";
 import { desiredAlarms } from "./alarms";
+import { advanceFirmware } from "./firmware";
 import { updateGenerators, updatePlant } from "./plant";
 import {
   aggregateLoads,
@@ -69,7 +70,7 @@ export class Physics {
   }
 
   private compute(dt: number): WorldEvent[] {
-    const events: WorldEvent[] = [];
+    const events: WorldEvent[] = advanceFirmware(this.world);
     updateGenerators(this.world, new SupplyResolver(this.world), dt);
     this.updateElectrical();
     updateBatteries(this.world, dt);

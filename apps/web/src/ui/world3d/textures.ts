@@ -283,6 +283,26 @@ function paintFront(
 }
 
 /** A soft round sprite, for glows and plumes. */
+/** The U numbers down a rack's rails: unit 1 at the bottom, every fifth mark heavier and its number bold. */
+export function ruler(
+  units: number,
+  ticks: ReadonlyArray<{ u: number; bold: boolean }>,
+): THREE.CanvasTexture {
+  const row = 24;
+  const [c, g] = canvas(48, row * units);
+  g.fillStyle = "#e8e3d6";
+  g.fillRect(0, 0, 48, row * units);
+  g.textBaseline = "middle";
+  for (const t of ticks) {
+    const y = (units - t.u) * row;
+    g.fillStyle = t.bold ? "#2b2f35" : "#8c8f94";
+    g.fillRect(0, y, t.bold ? 22 : 12, t.bold ? 3 : 2);
+    g.font = `${t.bold ? "700" : "500"} ${t.bold ? 15 : 12}px system-ui, sans-serif`;
+    g.fillText(String(t.u), t.bold ? 24 : 16, y + row / 2 + 1);
+  }
+  return wrap(c, 1, 1);
+}
+
 export function glow(color: string): THREE.CanvasTexture {
   const [c, g] = canvas(64, 64);
   const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);

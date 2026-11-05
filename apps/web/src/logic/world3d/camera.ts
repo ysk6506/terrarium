@@ -11,8 +11,10 @@ import {
   roomBounds,
   roomRects,
 } from "@terrarium/core/world";
+import { insideLabel } from "./aisle";
 import { boxOf } from "./plan";
-import { ROOM_HEIGHT_M } from "./room";
+import { rackKindOf } from "./racks";
+import { RAISED_FLOOR_M, ROOM_HEIGHT_M } from "./room";
 import type { SiteScene } from "./site";
 
 export type Focus =
@@ -58,7 +60,7 @@ export const DEFAULT_ANGLES: Readonly<Record<Focus["kind"], { yaw: number; pitch
   building: { yaw: deg(-38), pitch: deg(34) },
   floor: { yaw: deg(-36), pitch: deg(40) },
   room: { yaw: deg(-34), pitch: deg(38) },
-  rack: { yaw: deg(-26), pitch: deg(13) },
+  rack: { yaw: deg(-20), pitch: deg(10) },
 };
 
 /** How far apart the floors of an opened building are drawn, metres, so each can be seen into. */
@@ -70,7 +72,7 @@ const MARGIN: Readonly<Record<Focus["kind"], number>> = {
   building: 1.18,
   floor: 1.12,
   room: 1.1,
-  rack: 1.4,
+  rack: 1.18,
 };
 
 /** Distance at which the whole box is in view from the given angle. */
@@ -201,6 +203,26 @@ function roomBox(index: BlueprintIndex, catalog: Catalog, id: string): Box3 | un
   };
 }
 
+/** The air of an aisle (a rectangle in its room's frame) as a box in the site's frame, standing on the raised floor. */
+export function aisleBox(
+  index: BlueprintIndex,
+  catalog: Catalog,
+  roomId: string,
+  enclosure: { readonly x0: number; readonly z0: number; readonly x1: number; readonly z1: number },
+): Box3 | undefined {
+  const at = roomCorner(index, catalog, roomId);
+  if (!at) return undefined;
+  const y0 = at.y + RAISED_FLOOR_M;
+  return {
+    x0: at.x + enclosure.x0,
+    y0,
+    z0: at.z + enclosure.z0,
+    x1: at.x + enclosure.x1,
+    y1: y0 + 2.3,
+    z1: at.z + enclosure.z1,
+  };
+}
+
 /** The box a focus covers, in the site's frame. */
 export function focusBox(
   index: BlueprintIndex,
@@ -221,12 +243,12 @@ export function focusBox(
   const rect = rack && footprint(rack, catalog);
   if (!rack || !outer || !rect) return undefined;
   return {
-    x0: outer.x + rect.x - 0.9,
+    x0: outer.x + rect.x - 0.3,
     y0: outer.y + 0.6,
-    z0: outer.z + rect.y - 0.3,
-    x1: outer.x + rect.x + rect.w + 0.9,
-    y1: outer.y + 0.6 + 2.3,
-    z1: outer.z + rect.y + rect.d + 0.3,
+    z0: outer.z + rect.y + rect.d * 0.5,
+    x1: outer.x + rect.x + rect.w + 0.3,
+    y1: outer.y + 0.6 + Math.max(2.2, rackKindOf(catalog, rack).h),
+    z1: outer.z + rect.y + rect.d,
   };
 }
 
@@ -251,8 +273,14 @@ export interface Crumb {
   readonly focus: Focus;
 }
 
-/** 사업장 › 건물 › 층 › 서버룸 › 랙, each a way back up. */
-export function crumbsOf(index: BlueprintIndex, focus: Focus): Crumb[] {
+/** 사업장 › 건물 › 층 › 서버룸 › 랙, each a way back up; inside a containment the last crumb says so. */
+export function crumbsOf(index: BlueprintIndex, focus: Focus, insideName?: string): Crumb[] {
+  const out = levelCrumbs(index, focus);
+  if (insideName && focus.kind === "room") out.push({ label: insideLabel(insideName), focus });
+  return out;
+}
+
+function levelCrumbs(index: BlueprintIndex, focus: Focus): Crumb[] {
   const site = index.ofKind("site")[0];
   const out: Crumb[] = [{ label: site?.name ?? "사업장", focus: { kind: "site" } }];
   if (focus.kind === "site") return out;

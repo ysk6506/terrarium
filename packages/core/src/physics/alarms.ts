@@ -73,11 +73,16 @@ const SERVER_RULES: ReadonlyArray<Rule<ServerState>> = [
     !s.adminOn && s.health === "critical"
       ? ["thermal_shutdown", "critical", `${name} 과열 보호 차단`]
       : undefined,
+  (s, name) =>
+    s.fwFailed
+      ? ["firmware_update_failed", "warning", `${name} 펌웨어 올리기 실패 (${s.fwFailed})`]
+      : undefined,
 ];
 
 /** A server that is fed, on, cool (as its sensor says), with every PSU and fan running has nothing to report but load. */
 function plainlyHealthy(s: ServerState, sensedInletC: number): boolean {
   if (!s.powered || !s.adminOn || s.throttled || sensedInletC > INLET_WARNING_C) return false;
+  if (s.fwFailed) return false;
   for (const ok of s.psuOk) if (!ok) return false;
   for (const rpm of s.fanRpm) if (!(rpm > 0)) return false;
   return true;

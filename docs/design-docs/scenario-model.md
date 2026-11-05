@@ -2,19 +2,19 @@
 title: 시나리오 모델
 kind: spec
 status: active
-last_verified: 2026-11-04
+last_verified: 2026-11-05
 covers:
   - packages/core/src/scenario/model.ts
   - packages/core/src/scenario/blocks.ts
   - packages/core/src/scenario/runner.ts
   - packages/core/src/scenario/library-facility.ts
 verification_log:
-  - "2026-11-04: net_pick 매개변수 종류, 조작 블록 여섯 개, config_change 행동, 알람 코드 접두사 맞춤을 blocks.ts·blocks-net.ts·conditions.ts와 대조해 본문에 더했다"
   - "2026-11-04: 2026-11-04: 편집기의 말을 용어집에 맞추고(고장 발생·복구, 상황 설명, 툴 호출 상한), 시간을 분으로 보이게 하고, 복구 방식 선택과 조치 항목 더하기를 더한 것에 맞춰 글을 고쳤다 (ADR-0072)"
   - "2026-11-04: 2026-11-04: ADR-0073. 덮는 코드에서 사람이 읽는 말(알람 해요체, 에이전트 지시문 한다체, 툴·멈춤·상한 등)만 바뀌었고 문서가 말하는 구조와 규칙은 그대로다"
   - "2026-11-04: event 이력 조건, set_outdoor_temp 지원, 채점표 사실 규칙, 운영 채점 시나리오를 model.ts·blocks.ts·runner.ts·library와 대조해 더함 (REQ-073, ADR-0075)"
   - "2026-11-04: library.ts·library-facility.ts는 채점 코드를 도우미 함수로 나눴을 뿐이고 문서 내용은 그대로임을 대조"
-covers_hash: 9bbe839a99b9c725
+  - "2026-11-05: ADR-0101: 행동 종류에 펌웨어 올리기, 펌웨어 올리기와 작업 보고 절을 model.ts, conditions.ts, library-firmware.ts와 대조해 더했다"
+covers_hash: ea946d80cbfab340
 ---
 # 시나리오 모델 (REQ-033, REQ-034)
 
@@ -56,7 +56,7 @@ covers_hash: 9bbe839a99b9c725
 
 채점은 `core.oracle`이 한다. 채점표는 사실만 말한다(REQ-073, ADR-0075): "서버가 살아 있다"는 켜져 있음(`adminOn`)과 열 보호 차단 없음으로 보고(전원 공급 `powered`는 에이전트가 끈 서버에도 참이다), 유일한 완화를 벌하는 금지 항목은 없고, 상황 설명은 그 세계에서 일어나는 일만 말한다. 조건은 흐름과 채점표가 같은 `Condition` 형식을 쓴다.
 
-조치는 **툴 이름이 아니라 세계에 끼친 효과**로 적는다(전원 끄기·켜기, 재시작, 차단기 리셋, 냉방 설정 변경, 포트 끄기·켜기, 콘센트 끄기·켜기 — ADR-0019, ADR-0059, ADR-0060).
+조치는 **툴 이름이 아니라 세계에 끼친 효과**로 적는다(전원 끄기·켜기, 재시작, 차단기 리셋, 냉방 설정 변경, 포트 끄기·켜기, 콘센트 끄기·켜기, 펌웨어 올리기 — ADR-0019, ADR-0059, ADR-0060, ADR-0101).
 `power_server`로 껐든 Redfish `ComputerSystem.Reset`으로 껐든 같은 "전원 끄기"다. 그래야 툴 조합이 다른 실험끼리 공정하게 비교된다.
 세션이 툴 호출마다 그 호출이 일으킨 월드 명령을 행동(`effects`)으로 묶어 기록한다.
 
@@ -96,6 +96,11 @@ VM 폭주). `FACILITY_TEMPLATES`는 플랜트·수랭·발전기가 있는 세�
 조건의 `event`는 지금 상태가 아니라 **한 번이라도 있었나**를 묻는다. `{kind: "event", type, target?, occurred?}`: 세계 사건 기록에 그 사건 종류(`thermal.shutdown`, `fault.add`, `setpoint.set` 등 `events.ts`의 목록)가 있었는가, 대상이 있으면 그 장비나 링크에 대해서만. `occurred: false`면 "없었다"를 묻는다. 시나리오 시작 전(데움)에 있던 사건은 세지 않는다. 오라클, 검증(알 수 없는 사건 종류는 문제), 편집기("무엇을 묻나"에 이력 조건이 있고 "어떤 일", "대상", "있었나, 없었나"를 고른다)에 모두 들어 있다. 쓰임: "열 보호로 꺼진 적 없음". 시각 조건("N분 안에")은 없다.
 
 `set_outdoor_temp`(외기 온도 바꾸기)는 이제 지원 블록이다. 명령 `outdoor.set`(−30~50°C)이 세계의 외기 온도(`WorldState.outdoorC`, 기본 25)를 바꾸고, 조건에서는 `site.outdoorC`로 읽는다. 팔레트에 남은 "아직 지원하지 않음"은 네트워크 품질 저하 하나다.
+
+## 펌웨어 올리기와 작업 보고 (REQ-002, REQ-071, [ADR-0101](adr/0101-rack-containment-firmware-amend-tests.md))
+
+서버에는 BMC와 BIOS의 버전이 있고(조건 필드 `bmcVersion`, `biosVersion`, 글자 비교), Redfish `UpdateService`의 `SimpleUpdate`로 올린다. 올리기는 **시간이 가는 일**이다: 2분 뒤 서버가 꺼지고(`rebooting`), BIOS는 4분, BMC는 2분 뒤에 새 버전으로 돌아온다. 고장 "펌웨어 올리기 실패"를 걸어 둔 서버는 정해진 횟수만큼 끝에서 실패하고 이전 버전과 경고 알람(`firmware_update_failed`)으로 돌아온다.
+채점은 이 일을 사건(`firmware.update`·`reboot`·`finish`·`fail`)과 상태로 읽는다. 올릴 것이 있고 찾을 고장은 없으므로 진단의 "고장 종류"에는 일 종류 `firmware_update`를 쓸 수 있고(작업 보고), 시험지 점검은 이것을 고장이 없어도 올바른 정답으로 받아들인다. 템플릿 셋은 [설정 변경 시나리오](config-scenarios.md#펌웨어-작업-템플릿-셋)에 있다.
 
 ## 운영을 채점하는 내장 시나리오
 

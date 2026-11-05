@@ -16,7 +16,7 @@ export const TILT: Readonly<Record<Focus["kind"], number>> = {
   building: 1.6,
   floor: 1.3,
   room: 1.0,
-  rack: 0.4,
+  rack: 0.25,
 };
 
 /** The lamp that rides with the camera: off outdoors, a little in a room, strong beside a rack so its devices can be read. */
@@ -27,3 +27,6 @@ export const FILL: Readonly<Record<Focus["kind"], number>> = {
   room: 10,
   rack: 30,
 };
+
+/** The wall behind a rack in view: a soft grey-blue, so the devices stand out and nothing of the yard shows. */
+export const ROOM_WALL = "#aab3bc";

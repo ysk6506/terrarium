@@ -48,6 +48,8 @@ export interface Engine {
   /** Aim the shadow camera at a region. */
   fitShadow(center: THREE.Vector3, radius: number): void;
   setFog(near: number, far: number): void;
+  /** Close the sky off with a flat room colour (fog takes it too), or give the sky back. */
+  setBackdrop(colour: string | undefined): void;
   setTilt(amount: number, centre?: number): void;
   /** Draw a plan: an orthographic camera looking straight down from where `camera` is, no ambient occlusion, no blur. */
   setTopDown(on: boolean): void;
@@ -338,6 +340,15 @@ class StageEngine implements Engine {
     cam.near = 1;
     cam.far = radius * 5;
     cam.updateProjectionMatrix();
+    this.dirty = true;
+  }
+
+  setBackdrop(colour: string | undefined): void {
+    const fog = this.scene.fog as THREE.Fog;
+    this.sky.visible = colour === undefined;
+    this.scene.background = colour === undefined ? null : new THREE.Color(colour);
+    fog.color.set(colour ?? THEME.sky[1]);
+    this.renderer.domElement.dataset.room = colour === undefined ? "" : "1";
     this.dirty = true;
   }
 

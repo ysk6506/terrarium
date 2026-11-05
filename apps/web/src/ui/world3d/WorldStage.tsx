@@ -15,10 +15,12 @@ import type { AirInput } from "./AirMap";
 import { CrewBubble } from "./CrewBubble";
 import type { LifeMode } from "./life-layer";
 import { PlanLabels } from "./PlanLabels";
+import type { RackState } from "./rack-layer";
+import { StageHint } from "./StageHint";
 import type { Ghost, StageEvents } from "./stage-types";
 import { useCrew } from "./useCrew";
 import { useLatest, useStageEvents, useWorldContent, useWorldView } from "./useWorldView";
-import type { WorldView } from "./view";
+import type { Aisle, WorldView } from "./view";
 import { WorldBar } from "./WorldBar";
 
 type Focus = world3d.Focus;
@@ -66,7 +68,7 @@ const KEY_TURN = Math.PI / 4;
 
 /** Read after the canvas's name, for anyone who cannot drag: the keys that move the view. An attribute, not text on the page: words drawn on the first screen cost a font file. */
 const STAGE_HELP =
-  "끌어서 돌리고 휠로 확대해요. 키보드로는 Q와 E로 45도씩 돌리고, 더하기와 빼기로 확대하고 줄이고, Esc로 한 단계 나와요.";
+  "끌어서 돌리고 휠로 확대해요. 키보드로는 Q와 E로 45도씩 돌리고, 더하기와 빼기로 확대하고 줄이고, Esc로 한 단계 나와요. 랙에서 서버를 누르면 랙이 돌아 뒷면이 보이고, 컨테인먼트를 누르면 복도 안으로 들어가요.";
 
 /** Q and E turn the view, + and - move in and out, Escape steps back out of a level. */
 function keysFor(view: WorldView, back: () => void) {
@@ -86,10 +88,17 @@ function keysFor(view: WorldView, back: () => void) {
 function useLookingAround(view: WorldView | undefined, index: BlueprintIndex, on: boolean) {
   const [focus, setFocus] = useState<Focus>({ kind: "site" });
   const [tip, setTip] = useState<Tip>();
+  const [rack, setRack] = useState<RackState>();
+  const [aisle, setAisle] = useState<Aisle>();
   useEffect(() => {
     if (!view || !on) return;
     view.setEvents({
-      onFocus: setFocus,
+      onFocus: (f) => {
+        setFocus(f);
+        setRack(undefined);
+      },
+      onRack: setRack,
+      onAisle: setAisle,
       onHover: (tag, x, y) => {
         const name = tag ? index.find(tag.id)?.name : undefined;
         setTip((prev) => {
@@ -101,13 +110,15 @@ function useLookingAround(view: WorldView | undefined, index: BlueprintIndex, on
       },
     });
   }, [view, index, on]);
-  return { focus, tip };
+  return { focus, tip, rack, aisle };
 }
 
 /** Escape goes one level up while looking around (a builder keeps its level). */
 function useStepBack(view: WorldView | undefined, index: BlueprintIndex, building: boolean) {
   return useCallback(() => {
     if (!view || building) return;
+    // First the smallest thing: a server put back, the aisle left, then a level up.
+    if (view.rack.clear() || view.leaveAisle()) return;
     const up = world3d.crumbsOf(index, view.focus).at(-2);
     if (up) view.focusOn(up.focus);
   }, [view, index, building]);
@@ -229,11 +240,15 @@ function StageOverlays({ view, props, around, layer, onLayer, life, onLife }: Ov
           view={view}
           index={props.index}
           focus={around.focus}
+          aisle={around.aisle}
           layer={layer}
           onLayer={onLayer}
           life={life}
           onLife={onLife}
         />
+      )}
+      {props.explore && view && (
+        <StageHint view={view} focus={around.focus} rack={around.rack} aisle={around.aisle} />
       )}
       {view && props.air && (
         <AirDoor view={view} index={props.index} catalog={props.catalog} input={props.air} />
@@ -280,6 +295,7 @@ export function WorldStage(props: WorldStageProps) {
     frame: airFrame,
     activity,
     now: props.now ?? 0,
+    aisle: around.aisle?.id,
   });
   const watch = useWatch(view, props.index, activity, props.onWatch);
   return (

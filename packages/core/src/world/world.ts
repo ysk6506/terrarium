@@ -10,6 +10,8 @@ import type { Blueprint, EntityKind } from "./blueprint";
 import { cloneState } from "./clone";
 import { validateCommand } from "./command-check";
 import { type Fault, faultSpec } from "./faults";
+import type { FirmwareCommand } from "./firmware";
+import { reduceFirmware } from "./firmware-reduce";
 import type { BlueprintIndex } from "./graph";
 import { type NetChange, type NetPatch, patchWith } from "./net-config";
 import { setLinkAdmin, setOutlet } from "./operator";
@@ -47,6 +49,7 @@ export type WorldCommand =
     }
   /** An operator changes the layer-2/3 configuration of a switch (VLAN, port mode, SVI, route); `target` is the switch. */
   | { readonly type: "net.set"; readonly target: string; readonly change: NetChange }
+  | FirmwareCommand
   /** Outdoor air changes (a heat wave, a cold snap); the plants' capacity follows it. Scenarios do this, operators cannot. */
   | { readonly type: "outdoor.set"; readonly celsius: number }
   | { readonly type: "thermal.shutdown"; readonly target: string }
@@ -118,6 +121,7 @@ export class World implements WorldPort {
   private stateArray: readonly EntityState[] | undefined;
   private faultArray: ReadonlyArray<readonly Fault[]> | undefined;
   private anyDown: boolean | undefined;
+  private updating: Set<string> | undefined;
   private log: WorldEvent[] = [];
   private seq = 0;
   private netChanges = 0;
@@ -294,6 +298,7 @@ export class World implements WorldPort {
   adopt(checkpoint: WorldCheckpoint): void {
     this.state = cloneState(checkpoint.state);
     this.stateArray = undefined;
+    this.updating = undefined;
     this.anyDown = undefined;
     this.sortedAlarms = undefined;
     this.faultsChanged();
@@ -305,6 +310,7 @@ export class World implements WorldPort {
   restore(snapshot: WorldSnapshot): void {
     this.state = cloneState(snapshot.state);
     this.stateArray = undefined;
+    this.updating = undefined;
     this.anyDown = undefined;
     this.sortedAlarms = undefined;
     this.faultsChanged();
@@ -393,8 +399,26 @@ export class World implements WorldPort {
         this.sortedAlarms = undefined;
         return;
       default:
-        return;
+        this.reduceFirmware(command);
     }
+  }
+
+  /** The firmware commands change one server's state (`note` ends up here and does nothing). */
+  private reduceFirmware(command: WorldCommand): void {
+    if (!command.type.startsWith("firmware.")) return;
+    const target = (command as FirmwareCommand).target;
+    const server = this.stateAs(target, "server");
+    reduceFirmware(server, command as FirmwareCommand, this.state.t);
+    if (server.fw) this.updatingServers().add(target);
+    else this.updatingServers().delete(target);
+  }
+
+  /** The servers with a firmware update running (physics walks only these). */
+  updatingServers(): Set<string> {
+    this.updating ??= new Set(
+      this.index.ofKind("server").flatMap((e) => (this.stateAs(e.id, "server").fw ? [e.id] : [])),
+    );
+    return this.updating;
   }
 
   private faultsChanged(): void {

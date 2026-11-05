@@ -21,6 +21,10 @@ export const EVENT_LABELS: Readonly<Record<Exclude<EventType, "note">, string>> 
   "outlet.set": "콘센트를 끄거나 켠 적",
   "net.set": "스위치 설정이 바뀐 적",
   "outdoor.set": "외기 온도가 바뀐 적",
+  "firmware.update": "펌웨어 올리기를 시작한 적",
+  "firmware.reboot": "펌웨어 때문에 재부팅한 적",
+  "firmware.finish": "펌웨어 올리기를 마친 적",
+  "firmware.fail": "펌웨어 올리기에 실패한 적",
 };
 
 export const EVENT_TYPES = Object.keys(EVENT_LABELS) as (keyof typeof EVENT_LABELS)[];

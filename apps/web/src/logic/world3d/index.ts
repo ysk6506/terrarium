@@ -21,12 +21,22 @@ export {
   marginText,
 } from "./airflow-words";
 export {
+  aisleLine,
+  aislePose,
+  EYE_M,
+  insideLabel,
+  LEAVE_HINT,
+  runsAlongX,
+  WALK_IN_S,
+} from "./aisle";
+export {
   type BuildingScene,
   buildingScene,
   type FloorScene,
   type PlacedRoom,
 } from "./building";
 export {
+  aisleBox,
   type Box3,
   type Crumb,
   crumbsOf,
@@ -128,6 +138,27 @@ export {
   WARMUP_FRAMES,
 } from "./quality";
 export { type Device, type RackScene, rackScene, rowOf } from "./rack";
+export {
+  BLINK_S,
+  blinkPhase,
+  busyDevices,
+  type Condition,
+  classOf,
+  type FrontClass,
+  type FrontSpec,
+  frontOf,
+  type Gap,
+  gapsOf,
+  hasTor,
+  type PowerLight,
+  phaseLit,
+  powerLight,
+  RACK_DRAW_BUDGET,
+  type RearSpec,
+  rearOf,
+  rulerTicks,
+  type Tick,
+} from "./rack-front";
 export {
   OU_M,
   RACK_BASE_M,

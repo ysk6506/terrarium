@@ -170,6 +170,17 @@ export class Materials {
     return m;
   }
 
+  /** The U ruler of a rack with this many units (feedback 6). */
+  rulerPlate(units: number): THREE.MeshStandardMaterial {
+    const key = `ruler:${units}`;
+    let m = this.cache.get(key) as THREE.MeshStandardMaterial | undefined;
+    if (!m) {
+      m = std("#ffffff", 0.6, 0.1, { map: tex.ruler(units, world3d.rulerTicks(units)) });
+      this.cache.set(key, m);
+    }
+    return m;
+  }
+
   /** A solid colour, shared by value. */
   solid(color: string, roughness = 0.7, metalness = 0.1): THREE.MeshStandardMaterial {
     const key = `solid:${color}:${roughness}:${metalness}`;

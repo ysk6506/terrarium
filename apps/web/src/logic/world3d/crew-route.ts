@@ -71,8 +71,9 @@ export function rackBlocks(scene: RoomScene): Bounds[] {
   return out;
 }
 
-/** The closed-in aisles (containments): a person in one is hidden by its roof and glass, so they are not walked. */
-export const podBlocks = (scene: RoomScene): Bounds[] => scene.pods.map((p) => p.enclosure);
+/** The closed-in aisles (containments): a person in one is hidden by its roof and glass, so they are not walked, except in the one being looked into (feedback 8). */
+export const podBlocks = (scene: RoomScene, except?: string): Bounds[] =>
+  scene.pods.filter((p) => except === undefined || p.id !== except).map((p) => p.enclosure);
 
 /** The footprints of the machines that stand on the floor (an overhead busway does not). */
 export const equipBlocks = (scene: RoomScene): Bounds[] =>

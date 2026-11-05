@@ -51,6 +51,7 @@ function operatorAction(c: WorldCommand, endOf?: LinkEnd): AgentAction | undefin
   if (c.type === "outlet.set")
     return { action: c.on ? "outlet_on" : "outlet_off", target: c.target };
   if (c.type === "net.set") return { action: "config_change", target: c.target };
+  if (c.type === "firmware.update") return { action: "firmware_update", target: c.target };
   return undefined;
 }
 

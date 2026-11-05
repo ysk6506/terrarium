@@ -10,19 +10,23 @@ import * as THREE from "three";
 import { builder, world3d } from "../../logic";
 import { ActivityLayer } from "./activity-layer";
 import { type AirConfig, type AirMaker, type AirPort, idleAir } from "./air-port";
+import { type Aisle, AisleStage } from "./aisle-stage";
 import { type BuildingLayer, buildBuildingLayer } from "./building-layer";
 import { CrewStage } from "./crew-stage";
 import { createEngine, type Engine } from "./engine";
 import { type PickTag, pickOf } from "./layer";
 import { buildLifeLayer, type LifeLayer, type LifeMode } from "./life-layer";
 import { PlanOverlay } from "./plan-overlay";
-import { buildRackLayer, type RackLayer } from "./rack-layer";
+import type { RackState } from "./rack-layer";
+import { RackStage } from "./rack-stage";
 import { createRig, type DragTool, type Rig } from "./rig";
 import { buildSiteLayer, type SiteLayer } from "./site-layer";
-import { calm, FILL, TILT } from "./view-look";
+import { calm, FILL, ROOM_WALL, TILT } from "./view-look";
 import { startSpin } from "./view-spin";
 
 type Focus = world3d.Focus;
+
+export type { Aisle };
 
 export interface ViewEvents {
   /** The viewer clicked something that has a level of its own. */
@@ -31,6 +35,10 @@ export interface ViewEvents {
   readonly onHover?: (tag: PickTag | undefined, x: number, y: number) => void;
   /** The camera moved to a new focus on its own (a click or a jump). */
   readonly onFocus?: (focus: Focus) => void;
+  /** A device of the rack in view was pulled out or put back, or the rack turned about. */
+  readonly onRack?: (state: RackState) => void;
+  /** The camera walked into a containment (its id and name), or out of it (none). */
+  readonly onAisle?: (aisle: Aisle | undefined) => void;
 }
 
 export class WorldView {
@@ -54,13 +62,10 @@ export class WorldView {
   private siteLayer?: SiteLayer;
   private life?: LifeLayer;
   private lifeMode: LifeMode = calm() ? "still" : "auto";
-  private rack?: {
-    readonly id: string;
-    readonly layer: RackLayer;
-    readonly facing: number;
-    readonly restore: () => void;
-  };
+  /** The rack in view, and the containment looked into (REQ-006, ADR-0101). */
+  readonly rack: RackStage;
   private building?: { readonly id: string; readonly layer: BuildingLayer };
+  readonly aisle: AisleStage;
   private shown: { layer: world3d.Layer; overlay: world3d.Overlay } = {
     layer: "plain",
     overlay: {},
@@ -85,6 +90,23 @@ export class WorldView {
       () => performance.now(),
     );
     this.engine.overlay.add(this.activity.group);
+    this.rack = new RackStage({
+      engine: this.engine,
+      world: () =>
+        this.index && this.catalog ? { index: this.index, catalog: this.catalog } : undefined,
+      building: () => this.building?.layer,
+      condition: () => this.shown.overlay,
+      changed: (s) => this.events.onRack?.(s),
+    });
+    this.aisle = new AisleStage({
+      engine: this.engine,
+      rig: this.rig,
+      world: () =>
+        this.index && this.catalog ? { index: this.index, catalog: this.catalog } : undefined,
+      building: () => this.building?.layer,
+      focus: () => this.current,
+      changed: (a) => this.events.onAisle?.(a),
+    });
     this.crew = new CrewStage(this.engine, {
       building: () => this.building?.layer,
       focus: () => this.current,
@@ -159,14 +181,22 @@ export class WorldView {
   private open(focus: Focus, animate: boolean): void {
     this.current = focus;
     this.life?.setShown(focus.kind === "site" || focus.kind === "building");
+    this.inRoomOnly(focus.kind === "rack");
     this.openBuildingFor(focus, animate);
-    this.openRackFor(focus);
+    this.rack.sync(focus);
     this.air.sync();
     this.crew.sync();
   }
 
+  /** At a rack only the server room is drawn: no yard, no outer wall, a flat wall colour behind and a vignette (feedback 6). */
+  private inRoomOnly(on: boolean): void {
+    if (this.siteLayer) this.siteLayer.group.visible = !on;
+    this.engine.setBackdrop(on ? ROOM_WALL : undefined);
+  }
+
   /** Look at a level, gliding there unless told otherwise. */
   focusOn(focus: Focus, animate = true): void {
+    this.aisle.drop();
     const box = this.boxOf(focus);
     if (!box) {
       if (focus.kind !== "site" && this.site) this.focusOn({ kind: "site" }, animate);
@@ -178,7 +208,7 @@ export class WorldView {
       aspect: this.engine.camera.aspect,
     };
     const base = this.air.poseOf(box, focus, lens, this.size);
-    const pose = this.rack ? { ...base, yaw: base.yaw + this.rack.facing } : base;
+    const pose = this.rack.facing === 0 ? base : { ...base, yaw: base.yaw + this.rack.facing };
     const size = Math.max(box.x1 - box.x0, box.z1 - box.z0);
     this.rig.setLimits({
       minDistance: Math.max(1.5, size * 0.04),
@@ -238,6 +268,7 @@ export class WorldView {
   private setHaze(kind: Focus["kind"], distance: number): void {
     if (kind === "site" || kind === "building") this.engine.setFog(distance * 0.8, distance * 1.9);
     else if (kind === "room") this.engine.setFog(distance * 3 + 30, distance * 9 + 200);
+    else if (kind === "rack") this.engine.setFog(distance * 1.0, distance * 2.4);
     else this.engine.setFog(120, 600);
   }
 
@@ -245,6 +276,7 @@ export class WorldView {
   showLayer(layer: world3d.Layer, overlay: world3d.Overlay = {}): void {
     this.shown = { layer, overlay };
     this.building?.layer.recolor(layer, overlay);
+    this.rack.setCondition(overlay);
   }
 
   /** The building a focus is inside, if it is inside one. */
@@ -262,10 +294,10 @@ export class WorldView {
   }
 
   private leaveBuilding(): void {
+    this.aisle.drop();
     this.air.dispose();
     this.crew.release();
-    this.rack?.layer.dispose();
-    this.rack = undefined;
+    this.rack.close();
     if (!this.building) return;
     this.siteLayer?.setBuildingHidden(this.building.id, false);
     this.building.layer.dispose();
@@ -303,29 +335,11 @@ export class WorldView {
     layer.showContainment(focus.kind !== "rack" && !this.engine.topDown);
   }
 
-  /** Draw the focused rack in detail where it stands; take the last one away. */
-  private openRackFor(focus: Focus): void {
-    const wanted = focus.kind === "rack" ? focus.id : undefined;
-    if (wanted === this.rack?.id) return;
-    if (this.rack) {
-      this.rack.restore();
-      this.building?.layer.setRackHidden(this.rack.id, false);
-      this.rack.layer.dispose();
-      this.rack = undefined;
-    }
-    const scene =
-      wanted && this.index && this.catalog
-        ? world3d.rackScene(this.index, this.catalog, wanted)
-        : undefined;
-    if (!wanted || !scene || !this.building) return;
-    const layer = buildRackLayer(this.engine, scene);
-    const facing = this.building.layer.mountOnRack(wanted, layer.group);
-    if (facing === undefined) {
-      layer.dispose();
-      return;
-    }
-    this.building.layer.setRackHidden(wanted, true);
-    this.rack = { id: wanted, layer, facing, restore: this.building.layer.clearFrontOf(wanted) };
+  /** Step out of the containment and look at the room again; false if the camera was not in one. */
+  leaveAisle(animate = true): boolean {
+    if (!this.aisle.drop()) return false;
+    this.focusOn(this.current, animate);
+    return true;
   }
 
   private roomOf(focus: Focus): string | undefined {
@@ -351,11 +365,8 @@ export class WorldView {
   private pickables(): THREE.Object3D[] {
     // Working inside a building, the other buildings and the yards are not what a click means.
     const inside = this.level !== undefined && this.level.kind !== "site";
-    return [
-      ...(inside ? [] : (this.siteLayer?.pickables ?? [])),
-      ...(this.building?.layer.pickables ?? []),
-      ...(this.rack?.layer.pickables ?? []),
-    ];
+    const room = this.rack.roomPicks(this.building?.layer.pickables ?? []);
+    return [...(inside ? [] : (this.siteLayer?.pickables ?? [])), ...room, ...this.rack.pickables];
   }
 
   /** Aim the ray at a pixel of the canvas. */
@@ -473,7 +484,11 @@ export class WorldView {
     const tag = this.pickAt(x, y);
     if (!tag) return;
     this.events.onPick?.(tag);
-    if (this.navigate && (tag.kind === "building" || tag.kind === "room" || tag.kind === "rack"))
+    if (tag.kind === "device") this.rack.pick(tag.id);
+    else if (!this.navigate) return;
+    else if (tag.kind === "containment") {
+      if (this.current.kind === "room") this.aisle.enter(tag.id);
+    } else if (tag.kind === "building" || tag.kind === "room" || tag.kind === "rack")
       this.focusOn({ kind: tag.kind, id: tag.id });
   }
 

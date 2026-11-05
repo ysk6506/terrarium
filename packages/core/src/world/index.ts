@@ -51,9 +51,25 @@ export {
   isDiagnosisType,
   isFaultType,
   isMistakeType,
+  isTaskType,
   MISTAKE_SPECS,
   type MistakeType,
+  TASK_SPECS,
+  type TaskType,
 } from "./faults";
+export {
+  FIRMWARE_COMPONENTS,
+  FIRMWARE_LABELS,
+  type FirmwareComponent,
+  type FirmwareJob,
+  imageName,
+  parseImage,
+  REBOOT_SECONDS,
+  SHIPPED_FIRMWARE,
+  STAGE_SECONDS,
+  updateSeconds,
+  willFail,
+} from "./firmware";
 export {
   bareRects,
   buildingFloorSpaces,

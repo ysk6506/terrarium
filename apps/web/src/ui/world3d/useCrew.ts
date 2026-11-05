@@ -19,6 +19,8 @@ export interface CrewInput {
   readonly frame: number | undefined;
   readonly activity: ActivityState;
   readonly now: number;
+  /** The containment the camera is in: its aisle is walked too. */
+  readonly aisle?: string;
 }
 
 const NONE: Pick<world3d.CrewWorld, "alarms" | "activity"> = { alarms: [], activity: [] };
@@ -38,12 +40,12 @@ function useKit(wanted: boolean): typeof import("./crew-lazy") | undefined {
 }
 
 export function useCrew(view: WorldView | undefined, input: CrewInput): void {
-  const { index, catalog, roomId, preview, activity, now } = input;
+  const { index, catalog, roomId, preview, activity, now, aisle } = input;
   const lazy = useKit(roomId !== undefined);
   const crew = useMemo(() => {
     const scene = roomId && lazy ? world3d.roomScene(index, catalog, roomId) : undefined;
-    return scene && lazy ? lazy.crewOf(scene) : undefined;
-  }, [index, catalog, roomId, lazy]);
+    return scene && lazy ? lazy.crewOf(scene, undefined, aisle) : undefined;
+  }, [index, catalog, roomId, lazy, aisle]);
   const frames = preview?.frames;
   const shown = frames
     ? frames[Math.min(input.frame ?? frames.length - 1, frames.length - 1)]
