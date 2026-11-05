@@ -135,6 +135,26 @@ export function PresetForm({
   );
 }
 
+/** The tool's form, drawn by the same input as a connector's field, on a form of its own. */
+const ownForm = (traces: TracesForm): ConnectionForm => ({
+  name: "",
+  description: "",
+  values: traces.values,
+  cleared: traces.cleared,
+  headers: [],
+  metadata: [],
+});
+
+/** What a change in the tool's fields does to the traces answer. */
+const tracesPatch =
+  (traces: TracesForm, onChange: (next: TracesForm) => void): Patch =>
+  (change) =>
+    onChange({
+      ...traces,
+      ...(change.values ? { values: change.values } : {}),
+      ...(change.cleared ? { cleared: change.cleared } : {}),
+    });
+
 /** "이 하네스의 트레이스는 어디에 쌓이나요?": none, ClickStack, Langfuse, and the server's own default. */
 export function TracesChooser({
   list,
@@ -151,21 +171,8 @@ export function TracesChooser({
 }) {
   if (!list) return null;
   const spec = adapterSpecOf(list, traces.kind);
-  // The tool's form is drawn by the same input as a connector's field, on a form of its own.
-  const own: ConnectionForm = {
-    name: "",
-    description: "",
-    values: traces.values,
-    cleared: traces.cleared,
-    headers: [],
-    metadata: [],
-  };
-  const patch: Patch = (change) =>
-    onChange({
-      ...traces,
-      ...(change.values ? { values: change.values } : {}),
-      ...(change.cleared ? { cleared: change.cleared } : {}),
-    });
+  const own = ownForm(traces);
+  const patch = tracesPatch(traces, onChange);
   const main = spec?.fields.filter((f) => !f.advanced) ?? [];
   const rest = spec?.fields.filter((f) => f.advanced) ?? [];
   return (

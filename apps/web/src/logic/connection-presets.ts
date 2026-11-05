@@ -40,16 +40,23 @@ export function splitAddress(
   return { url: parsed.origin, path: `${path === "" ? "/" : path}${parsed.search}` };
 }
 
-/** The settings a preset and its answers stand for. */
-export function presetSettings(preset: ConnectorPreset, typed: Typed): Settings {
+/** The answers that go into the settings as typed (not secrets, and not the address that is split in two). */
+function typedAnswers(preset: ConnectorPreset, typed: Typed): Settings {
   const out: Settings = {};
-  for (const [key, value] of Object.entries(preset.fixed))
-    out[key] = typeof value === "string" ? fill(value, typed) : value;
   for (const field of preset.fields) {
     const raw = (typed[field.key] ?? "").trim();
     const splitLater = preset.urlPath !== undefined && field.key === "url";
     if (raw !== "" && field.type !== "secret" && !splitLater) out[field.key] = raw;
   }
+  return out;
+}
+
+/** The settings a preset and its answers stand for. */
+export function presetSettings(preset: ConnectorPreset, typed: Typed): Settings {
+  const out: Settings = {};
+  for (const [key, value] of Object.entries(preset.fixed))
+    out[key] = typeof value === "string" ? fill(value, typed) : value;
+  Object.assign(out, typedAnswers(preset, typed));
   const split = preset.urlPath ? splitAddress(typed.url ?? "", preset.urlPath) : undefined;
   if (preset.urlPath && split) {
     out.url = split.url;

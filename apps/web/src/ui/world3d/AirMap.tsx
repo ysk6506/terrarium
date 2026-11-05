@@ -28,6 +28,9 @@ export interface AirInput {
   readonly onToggleUnit: (id: string) => void;
   /** What the page has selected: a rack that is picked there is picked here. */
   readonly selected: readonly string[];
+  /** The moment of the run that is shown, when the page keeps it (so the topology view shows the same one). */
+  readonly at?: number;
+  readonly onAt?: (i: number) => void;
   /** Told which moment of the run is shown (the people in the room follow it), and undefined when the map closes. */
   readonly onFrame?: (index: number | undefined) => void;
 }
@@ -118,7 +121,9 @@ function AirMapOn({ view, index, input, scene }: MapProps) {
   const { roomId, preview } = input;
   const [dim, setDim] = useState<Dim>("flat");
   const [kind, setKind] = useState<AirView>("inlet");
-  const [at, setAt] = useState<number>();
+  const [localAt, setLocalAt] = useState<number>();
+  const at = input.onAt ? input.at : localAt;
+  const setAt = input.onAt ?? setLocalAt;
   const [picked, setPicked] = useState<string>();
   const [hovered, setHovered] = useState<string>();
   const [open, setOpen] = useState(() => view.canvasSize.w >= ROOMY_PX);

@@ -19,16 +19,9 @@ import {
   UnavailableError,
   type UpdateConnectionRequest,
 } from "@terrarium/core/contract";
-import type { ConnectionRecord, ExperimentStore, HarnessPort } from "@terrarium/core/experiments";
+import type { ConnectionRecord, HarnessPort } from "@terrarium/core/experiments";
 import { ConflictError } from "@terrarium/core/kernel";
-import {
-  CONNECTORS,
-  type ConnectContext,
-  type Connector,
-  connectorOf,
-  type HarnessConfig,
-  type SecretBox,
-} from "../adapters";
+import { CONNECTORS, type Connector, connectorOf } from "../adapters";
 import {
   checkFields,
   compose,
@@ -44,43 +37,13 @@ import {
   toolsNotes,
   withHeaders,
 } from "./connection-form";
+import type { ConnectionsOptions } from "./connection-options";
 import { adapterList, adapterOf, composeTraces, reachNote, type Traces } from "./connection-traces";
-import { type TryOptions, tryTalk } from "./connection-try";
+import { tryTalk } from "./connection-try";
 import { discover, type Entry, expiryOf, viewOf } from "./connection-view";
 import { type HarnessDirectory, must, ownerOnly, type Viewer } from "./context";
-import type { Stamps } from "./ids";
 
-/** A harness the config file names: built at start, read-only from the screen. */
-export interface FixedConnection {
-  readonly port: HarnessPort;
-  /** What the file says (settings only name environment variables, never hold secrets). */
-  readonly config?: HarnessConfig;
-}
-
-export interface ConnectionsOptions {
-  readonly store: ExperimentStore;
-  readonly stamps: Stamps;
-  readonly fixed: readonly FixedConnection[];
-  readonly connect: ConnectContext;
-  /** Seals the tokens, passwords and secret headers people type (ADR-0043). */
-  readonly box: SecretBox;
-  /**
-   * A connection made on the screen that no experiment has used for `days` days is removed, and its owner is
-   * told `warnDays` days before (REQ-051). `days: 0` keeps everything. Defaults: 30 and 7.
-   */
-  readonly retention?: { readonly days?: number; readonly warnDays?: number };
-  /** Hosts people may connect to from the screen. Without it, every host but a cloud's metadata address. */
-  readonly allowedHosts?: readonly string[];
-  /** How long to wait for a harness to list its agents, ms. */
-  readonly agentsTimeoutMs?: number;
-  /** How long a harness's agent list is kept before asking again, ms. */
-  readonly agentsTtlMs?: number;
-  readonly slotUrl?: (slot: string) => string; // the fixed tool address of a harness with a slot
-  /** How "말 걸어 보기" waits (tests shorten it). */
-  readonly tryOptions?: TryOptions;
-  /** The server's own telemetry (its config file's `telemetry`): what a connection that says "default" reads from. */
-  readonly defaultTelemetry?: TelemetryAdapter;
-}
+export type { ConnectionsOptions, FixedConnection } from "./connection-options";
 
 const AGENTS_TIMEOUT_MS = 10_000;
 const AGENTS_TTL_MS = 30_000;

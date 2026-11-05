@@ -290,38 +290,92 @@ function useConnectionDialog({ connectors, existing, onSaved }: ConnectionDialog
   return { busy, kind, spec, form, check, problems, kept, patch, pick, test, save, list, traces };
 }
 
+type DialogState = ReturnType<typeof useConnectionDialog>;
+
+/** The buttons under the dialog: close, check the connection, save. */
+function DialogActions({ d, onClose }: { readonly d: DialogState; readonly onClose: () => void }) {
+  return (
+    <>
+      <Button onClick={onClose}>닫기</Button>
+      <Button onClick={d.test} busy={d.busy} disabled={!d.spec} why="연결 방식을 먼저 골라 주세요">
+        연결 확인
+      </Button>
+      <Button
+        kind="primary"
+        onClick={d.save}
+        busy={d.busy}
+        disabled={!d.spec}
+        why="연결 방식을 먼저 골라 주세요"
+      >
+        저장
+      </Button>
+    </>
+  );
+}
+
+/** What is asked once a kind of connection is picked. */
+function DialogFields({
+  d,
+  spec,
+  existing,
+}: {
+  readonly d: DialogState;
+  readonly spec: ConnectorSpec;
+  readonly existing: ConnectionDialogProps["existing"];
+}) {
+  const { form, problems } = d;
+  return (
+    <>
+      <ToolGuide spec={spec} />
+      <TextField
+        label="이름"
+        value={form.name}
+        onChange={(name) => d.patch({ name })}
+        placeholder="예: 검색팀 OpenCode"
+        error={problems.name}
+      />
+      <TextField
+        label="설명 (선택)"
+        value={form.description}
+        onChange={(description) => d.patch({ description })}
+        maxLength={300}
+      />
+      {spec.presets ? (
+        <PresetForm spec={spec} form={form} problems={problems} kept={d.kept} patch={d.patch} />
+      ) : null}
+      {(!spec.presets || !form.preset) && (
+        <Fields spec={spec} form={form} problems={problems} kept={d.kept} patch={d.patch} />
+      )}
+      <TracesChooser
+        list={d.list}
+        traces={d.traces}
+        problems={problems}
+        kept={existing?.traces.secrets ?? []}
+        onChange={(traces) => d.patch({ traces })}
+      />
+      <Extras form={form} problems={problems} patch={d.patch} />
+      {d.check && <CheckResult check={d.check} />}
+      {!existing && (
+        <p className="small muted" style={{ margin: 0 }}>
+          화면에서 만든 연결은 한동안 실험에 쓰지 않으면 지워져요. 지워지기 전에 모든 화면 위에서
+          알려 드려요.
+        </p>
+      )}
+    </>
+  );
+}
+
 /** Add a connection, or change one that exists (the kind of an existing one cannot change). */
 export function ConnectionDialog(props: ConnectionDialogProps) {
   const { connectors, existing, onClose } = props;
   const d = useConnectionDialog(props);
-  const { spec, form, problems } = d;
+  const { spec } = d;
   return (
     <Dialog
       wide
       title={existing ? `연결 고치기 — ${existing.name}` : "연결 더하기"}
       onClose={onClose}
-      actions={
-        <>
-          <Button onClick={onClose}>닫기</Button>
-          <Button
-            onClick={d.test}
-            busy={d.busy}
-            disabled={!spec}
-            why="연결 방식을 먼저 골라 주세요"
-          >
-            연결 확인
-          </Button>
-          <Button
-            kind="primary"
-            onClick={d.save}
-            busy={d.busy}
-            disabled={!spec}
-            why="연결 방식을 먼저 골라 주세요"
-          >
-            저장
-          </Button>
-        </>
-      }
+      actions={<DialogActions d={d} onClose={onClose} />}
     >
       <div className="stack">
         {!existing && (
@@ -334,51 +388,7 @@ export function ConnectionDialog(props: ConnectionDialogProps) {
             help={spec?.description}
           />
         )}
-        {spec && (
-          <>
-            <ToolGuide spec={spec} />
-            <TextField
-              label="이름"
-              value={form.name}
-              onChange={(name) => d.patch({ name })}
-              placeholder="예: 검색팀 OpenCode"
-              error={problems.name}
-            />
-            <TextField
-              label="설명 (선택)"
-              value={form.description}
-              onChange={(description) => d.patch({ description })}
-              maxLength={300}
-            />
-            {spec.presets ? (
-              <PresetForm
-                spec={spec}
-                form={form}
-                problems={problems}
-                kept={d.kept}
-                patch={d.patch}
-              />
-            ) : null}
-            {(!spec.presets || !form.preset) && (
-              <Fields spec={spec} form={form} problems={problems} kept={d.kept} patch={d.patch} />
-            )}
-            <TracesChooser
-              list={d.list}
-              traces={d.traces}
-              problems={problems}
-              kept={existing?.traces.secrets ?? []}
-              onChange={(traces) => d.patch({ traces })}
-            />
-            <Extras form={form} problems={problems} patch={d.patch} />
-            {d.check && <CheckResult check={d.check} />}
-            {!existing && (
-              <p className="small muted" style={{ margin: 0 }}>
-                화면에서 만든 연결은 한동안 실험에 쓰지 않으면 지워져요. 지워지기 전에 모든 화면
-                위에서 알려 드려요.
-              </p>
-            )}
-          </>
-        )}
+        {spec && <DialogFields d={d} spec={spec} existing={existing} />}
       </div>
     </Dialog>
   );

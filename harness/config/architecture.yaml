@@ -11,6 +11,7 @@ units:
   core.world:               {path: packages/core/src/world, may_import: [core.kernel, core.spatial, core.catalog]}
   core.profiles:            {path: packages/core/src/profiles, may_import: [core.kernel, core.catalog]}
   core.physics:             {path: packages/core/src/physics, may_import: [core.kernel, core.spatial, core.catalog, core.world]}
+  core.topology:            {path: packages/core/src/topology, may_import: [core.kernel, core.catalog, core.world, core.physics]}
   core.facades:             {path: packages/core/src/facades, may_import: [core.kernel, core.catalog, core.profiles, core.world]}
   core.tools:               {path: packages/core/src/tools, may_import: [core.kernel, core.catalog, core.world, core.facades]}
   core.scenario:            {path: packages/core/src/scenario, may_import: [core.kernel, core.catalog, core.world, core.physics, core.tools]}

@@ -48,6 +48,8 @@ export interface Preview {
   readonly frames: readonly PreviewFrame[];
   /** Cooling units that were stopped for the run ("멈춰 보기"). */
   readonly stopped: ReadonlySet<string>;
+  /** The world as the run left it: the topology view reads its faults, alarms and states from here. */
+  readonly world: World;
 }
 
 /** Ten simulated minutes: long enough for rooms to settle, short enough to feel instant. */
@@ -139,5 +141,6 @@ export function preview(
     seconds,
     frames,
     stopped,
+    world,
   };
 }

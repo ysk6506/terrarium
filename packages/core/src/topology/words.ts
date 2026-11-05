@@ -1,0 +1,78 @@
+/**
+ * The words of the board that come from the core: what a folded tile is called, and the two sentences of the
+ * impact box. Glossary rules: 해요체, Arabic numerals with units, "고장" and "알람", no "장애".
+ */
+import type { Impact } from "./impact";
+import type { LayerId, TileClass, TopoKind } from "./types";
+
+/** The impact range is one thing for the whole world; only the cooling layer can say what it means there. */
+const IMPACT: Readonly<Record<LayerId, string>> = {
+  cooling: "더워지는 중",
+  power: "영향 범위",
+  network: "영향 범위",
+};
+
+export function classLabel(cls: TileClass, layer: LayerId): string {
+  switch (cls) {
+    case "fault":
+      return "고장";
+    case "alarm":
+      return "알람";
+    case "touch":
+      return "에이전트가 만지는";
+    case "impact":
+      return IMPACT[layer];
+    default:
+      return "정상";
+  }
+}
+
+/** What to call a piece of equipment when counting it: the noun and the word for counting. */
+const COUNTING: Readonly<Record<TopoKind, readonly [string, string]>> = {
+  feed: ["변압기·전환 장치", "대"],
+  generator: ["발전기", "대"],
+  ups: ["UPS", "대"],
+  panel: ["분전반", "개"],
+  pdu: ["PDU", "개"],
+  chiller: ["냉각 플랜트", "대"],
+  cdu: ["CDU", "대"],
+  crah: ["냉방기", "대"],
+  room: ["서버룸", "곳"],
+  rack: ["랙", "대"],
+  server: ["서버", "대"],
+  switch: ["스위치", "대"],
+  storage: ["스토리지", "대"],
+  vm: ["VM", "대"],
+  cluster: ["클러스터", "개"],
+};
+
+/** What a kind of equipment is called when counted ("랙", "냉방기"). */
+export const nounOf = (kind: TopoKind): string => COUNTING[kind][0];
+
+export const num = (n: number): string => n.toLocaleString("en-US");
+
+/** "정상 랙 408대": the state first, then what and how many. */
+export function groupName(
+  cls: TileClass,
+  layer: LayerId,
+  kind: TopoKind | undefined,
+  stage: string,
+  count: number,
+): string {
+  const [noun, unit] = kind ? COUNTING[kind] : [stage, "개"];
+  return `${classLabel(cls, layer)} ${noun} ${num(count)}${unit}`;
+}
+
+/** The first line of the impact box: how many rooms, racks and servers. */
+export function impactCounts(impact: Impact): string {
+  return `서버룸 ${num(impact.rooms.size)} · 랙 ${num(impact.racks.size)} · 서버 ${num(impact.servers)}`;
+}
+
+/** The second line: how soon it turns serious if nothing changes. Empty when it does not. */
+export function impactWhen(impact: Impact): string {
+  const s = impact.severe;
+  if (!s) return "";
+  if (s.kind === "power") return "전기가 끊긴 곳은 이미 꺼졌어요";
+  if (s.minutes === 0) return `이미 심각해요(${s.celsius}°C)`;
+  return `냉방이 그대로면 ${num(s.minutes)}분 뒤 심각(${s.celsius}°C)`;
+}

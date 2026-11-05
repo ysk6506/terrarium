@@ -155,6 +155,7 @@ export {
   type ThemeChoice,
   themeAttribute,
 } from "./settings";
+export * as hallTopology from "./topology";
 export {
   advanceTour,
   answerTour,

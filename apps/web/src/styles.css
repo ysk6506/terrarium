@@ -1070,6 +1070,11 @@ button.tag {
   grid-template-columns: minmax(0, 1fr);
 }
 
+/* The topology eye: no palette (nothing to put down), but the card of what is picked stays. */
+.builder-topo {
+  grid-template-columns: minmax(0, 1fr) 320px;
+}
+
 .air-enter {
   position: absolute;
   left: 16px;

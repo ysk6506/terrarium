@@ -4,8 +4,10 @@ kind: decision
 status: active
 last_verified: 2026-11-05
 enforced_by:
-  - none
-no_enforcement_reason: 구현 전 결정 기록이다. 구현 작업이 끝나면 frontmatter의 enforced_by를 시험(packages/core/src/topology/fold.test.ts, impact.test.ts)으로 바꾼다.
+  - packages/core/src/topology/fold.test.ts
+  - packages/core/src/topology/impact.test.ts
+  - packages/core/src/topology/layers.test.ts
+  - tests/spec/topology-scale.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 7c82ea921010282d

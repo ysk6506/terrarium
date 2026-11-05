@@ -254,9 +254,11 @@ export function Segmented<T extends string>(props: {
   readonly value: T;
   readonly options: readonly { readonly value: T; readonly label: string }[];
   readonly onChange: (v: T) => void;
+  /** The hand is on its way to it: a chance to start a download the choice will need. */
+  readonly onWarm?: () => void;
 }) {
   return (
-    <fieldset className="segmented">
+    <fieldset className="segmented" onPointerEnter={props.onWarm} onFocus={props.onWarm}>
       <legend className="sr-only">{props.label}</legend>
       {props.options.map((o) => (
         <button
