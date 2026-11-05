@@ -1,7 +1,7 @@
-/** The builder's top bar: the world's name, where we are, undo, "돌려 보기", save. */
+/** The builder's top bar: the world's name, where we are, undo, "돌려 보기", and how the world stands (saved on its own). */
 import { useEffect, useState } from "react";
 import { builder } from "../../logic";
-import { Go } from "../context";
+import { Go, useNow } from "../context";
 import { Icon } from "../icons";
 import { Button } from "../kit";
 import type { Builder } from "./useBuilder";
@@ -47,31 +47,27 @@ function Crumbs({ b }: { readonly b: Builder }) {
   );
 }
 
-function SaveButton({ b }: { readonly b: Builder }) {
-  const { mine, dirty, saving, issues } = b.state;
+/** How the world stands, in a word; a world made by someone else is saved as a copy by hand. */
+function SaveState({ b }: { readonly b: Builder }) {
+  const { world, mine, dirty, saving, issues } = b.state;
+  const now = useNow();
   const errors = issues.filter((i) => i.severity === "error").length;
-  if (!mine)
-    return (
-      <Button
-        kind="primary"
-        busy={saving}
-        onClick={() => void b.saveCopy()}
-        title="이 세계는 다른 사람이 만들었어요. 고친 것은 내 사본이 돼요"
-      >
-        내 사본으로 저장
-      </Button>
-    );
+  const text = builder.saveStatus({ mine, dirty, saving, errors }, world.updatedAt, now);
   return (
-    <Button
-      kind="primary"
-      busy={saving}
-      disabled={!dirty}
-      why="고친 곳이 없어서 저장할 게 없어요"
-      onClick={() => void b.save()}
-      title={errors > 0 ? `고칠 곳 ${errors}건을 고쳐야 저장돼요` : "Ctrl+S"}
-    >
-      {dirty ? "저장" : "저장됨"}
-    </Button>
+    <>
+      <output className="save-state" data-testid="save-state">
+        {text}
+      </output>
+      {!mine && (
+        <Button
+          busy={saving}
+          onClick={() => void b.saveCopy()}
+          title="이 세계는 다른 사람이 만들었어요. 고친 것은 내 사본이 돼요"
+        >
+          내 사본으로 저장
+        </Button>
+      )}
+    </>
   );
 }
 
@@ -154,10 +150,10 @@ export function BuilderBar({
       >
         {preview ? "돌려 본 결과 끄기" : "돌려 보기"}
       </Button>
-      <Go to={{ name: "scenarios", worldId: world.id }} className="btn">
+      <Go to={{ name: "scenarios", worldId: world.id }} className="btn btn-quiet">
         이 세계의 시나리오
       </Go>
-      <SaveButton b={b} />
+      <SaveState b={b} />
     </div>
   );
 }

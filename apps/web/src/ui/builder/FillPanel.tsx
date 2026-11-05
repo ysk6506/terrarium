@@ -1,91 +1,57 @@
 /**
- * "서버룸 채우기" (REQ-043, REQ-047): a bare server room gets its racks, servers, cooling and power in one go, with
- * the aisles sealed or not. A room with things in it says why it cannot be filled.
+ * "서버룸 채우기" (REQ-043, REQ-047, REQ-077): a bare server room gets its racks, servers, cooling and power in one
+ * go, with the aisles covered or not. The button is the pick card's main one; what is left here are the two choices
+ * under it, worded as what they come to ("랙마다 서버 7대, 전력 4 kW").
  */
-import { roomPurposeOf } from "@terrarium/core/world";
-import { useState } from "react";
-import { builder, count } from "../../logic";
-import { Button, SelectField } from "../kit";
+import { useMemo, useState } from "react";
+import { builder } from "../../logic";
+import { SelectField } from "../kit";
 import type { Builder } from "./useBuilder";
 import { catalog } from "./useBuilder";
 
-const LOAD_HELP: Readonly<Record<builder.FillLoad, string>> = {
-  empty: "랙만 세워요. 서버는 나중에 한 대씩 달 수 있어요.",
-  half: "랙마다 서버를 PDU 용량의 3분의 1쯤 채워요.",
-  full: "랙마다 서버를 PDU 용량의 80%까지 채워요.",
-};
-
-/** Why this room cannot be filled right now, or undefined when it can. */
-function whyNot(b: Builder, roomId: string): string | undefined {
-  return b.state.index.childrenOf(roomId).length > 0
-    ? "이미 놓은 것이 있어요. 모두 지우고 비운 서버룸에서 다시 채워 보세요"
-    : undefined;
+export interface FillChoice {
+  readonly load: builder.FillLoad;
+  readonly aisle: builder.FillAisle;
 }
 
-/** The way on from a full room: take the cursor to the size boxes of the room. */
-function widen(): void {
-  const box = document.querySelector<HTMLInputElement>('[data-testid="size-w"]');
-  box?.scrollIntoView({ block: "center" });
-  box?.focus();
+export function useFillChoice() {
+  const [choice, setChoice] = useState<FillChoice>({ load: "half", aisle: "cold" });
+  return { choice, setChoice };
 }
 
-export function FillPanel({ roomId, b }: { readonly roomId: string; readonly b: Builder }) {
-  const [load, setLoad] = useState<builder.FillLoad>("half");
-  const [aisle, setAisle] = useState<builder.FillAisle>("cold");
-  const blocked = whyNot(b, roomId);
-  const full = builder.roomFull(b.state.blueprint, catalog, roomId);
-  if (roomPurposeOf(b.state.index.entity(roomId)) !== "data_hall") return null;
-  const fill = () =>
-    b.apply(
-      (bp) => builder.fillRoom(bp, catalog, roomId, { load, aisle }),
-      `랙과 설비를 채웠어요. 되돌리려면 Ctrl+Z를 눌러요`,
-    );
+/** Fill the room with what was chosen; the whole of it is one step of undo. */
+export function fillWith(b: Builder, roomId: string, choice: FillChoice): void {
+  b.apply(
+    (bp) => builder.fillRoom(bp, catalog, roomId, choice),
+    "랙과 설비를 채웠어요. 되돌리려면 Ctrl+Z를 눌러요",
+  );
+}
+
+export function FillChoices({
+  choice,
+  onChange,
+}: {
+  readonly choice: FillChoice;
+  readonly onChange: (next: FillChoice) => void;
+}) {
+  const loads = useMemo(() => builder.loadChoices(catalog), []);
   return (
-    <div className="builder-block stack">
-      <h3>서버룸 채우기</h3>
+    <div className="stack" style={{ gap: 10 }}>
       <SelectField
-        label="서버"
-        value={load}
-        options={builder.FILL_LOADS.map((o) => ({ value: o.value, label: o.label }))}
-        onChange={(v) => setLoad(v as builder.FillLoad)}
-        help={LOAD_HELP[load]}
+        label="랙을 얼마나 채울까요"
+        value={choice.load}
+        options={loads}
+        onChange={(load) => onChange({ ...choice, load: load as builder.FillLoad })}
       />
       <SelectField
-        label="복도"
-        value={aisle}
-        options={builder.FILL_AISLES.map((o) => ({ value: o.value, label: o.label }))}
-        onChange={(v) => setAisle(v as builder.FillAisle)}
+        label="복도는 어떻게 할까요"
+        value={choice.aisle}
+        options={builder.AISLE_CHOICES}
+        onChange={(aisle) => onChange({ ...choice, aisle: aisle as builder.FillAisle })}
       />
-      <Button
-        icon="wand"
-        kind="primary"
-        disabled={blocked !== undefined}
-        {...(blocked ? { why: blocked } : {})}
-        onClick={fill}
-      >
-        서버룸 채우기
-      </Button>
-      {(blocked || full) && (
-        <div className="stack" style={{ gap: 6 }}>
-          <Button size="small" icon="plus" onClick={widen}>
-            {builder.WIDEN_ROOM}
-          </Button>
-          <p className="tiny muted">
-            {full
-              ? "랙을 놓을 자리가 없어요. 방을 넓히면 더 놓을 수 있어요."
-              : "더 놓을 자리가 필요하면 방을 넓혀요."}
-          </p>
-        </div>
-      )}
-      {blocked ? (
-        <p className="tiny muted">{blocked}</p>
-      ) : (
-        <p className="tiny muted">
-          한 줄에 최대 {count(20)}개씩, 두 줄이 한 쌍이에요. 냉방기와 분전반, UPS는 방의 뒤쪽 벽에
-          세우고 케이블은 모두 이어 줘요. 방이 {builder.MIN_FILL_M.w} × {builder.MIN_FILL_M.d} m보다
-          작으면 채울 수 없어요.
-        </p>
-      )}
+      <p className="tiny muted">
+        랙은 두 줄씩 짝을 지어 세워요. 냉방기와 전기는 방의 뒤쪽 벽에 세우고 케이블도 이어 줘요.
+      </p>
     </div>
   );
 }

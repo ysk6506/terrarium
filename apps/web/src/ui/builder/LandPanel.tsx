@@ -49,13 +49,11 @@ export function ParcelPanel({ entity, b }: { readonly entity: Entity; readonly b
         <p className="tiny muted">평당 {won((parcel.priceM / parcel.areaM2) * PYEONG_M2)}</p>
       )}
       {parcel.owned ? (
-        <p className="tiny muted">이 땅 위에는 건물과 설비를 놓을 수 있어요.</p>
+        <p className="tiny muted">이 땅 위에 건물과 설비를 놓아요.</p>
       ) : (
         <>
           <BuyButton parcel={parcel} b={b} />
-          <p className="tiny muted">
-            사야 이 땅 위에 건물을 지을 수 있어요. 산 땅값은 들인 돈에 더해져요.
-          </p>
+          <p className="tiny muted">사야 이 땅 위에 건물을 지어요. 산 땅값은 돈에 더해져요.</p>
         </>
       )}
     </div>

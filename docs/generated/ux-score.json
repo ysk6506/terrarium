@@ -1,6 +1,6 @@
 {
   "measuredOn": "2026-11-05",
-  "webHash": "df412798b9be34a5",
+  "webHash": "d9dd2ae65b8164d6",
   "scores": {
     "useful": 100,
     "usable": 100,
@@ -70,8 +70,8 @@
       "ok": 3
     },
     "load": {
-      "kb": 683.0390625,
-      "ms": 247,
+      "kb": 685.517578125,
+      "ms": 224,
       "sceneDrawn": true
     },
     "reach": {
@@ -93,8 +93,8 @@
       "ok": 5
     },
     "focus": {
-      "tried": 80,
-      "ok": 80
+      "tried": 84,
+      "ok": 84
     },
     "motion": {
       "animated": 0
@@ -116,8 +116,8 @@
       "ok": 7
     },
     "voice": {
-      "tried": 755,
-      "ok": 755
+      "tried": 789,
+      "ok": 789
     },
     "oneThing": {
       "tried": 13,
@@ -128,16 +128,16 @@
       "ok": 124
     },
     "targets": {
-      "tried": 297,
-      "ok": 297
+      "tried": 344,
+      "ok": 344
     },
     "disabledWhy": {
       "tried": 13,
       "ok": 13
     },
     "units": {
-      "tried": 22,
-      "ok": 22
+      "tried": 90,
+      "ok": 90
     },
     "hover": {
       "tried": 25,

@@ -95,7 +95,9 @@ describe("the server rooms of Hwaseong: the HPC centre, the fabs and the DSR tow
     expect(halls.length).toBeGreaterThanOrEqual(20);
     const fabRooms = result.halls.filter((h) => h.building.includes("-fab"));
     const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
-    expect(mean(halls.map((h) => h.pods))).toBeGreaterThan(1.3 * mean(fabRooms.map((h) => h.pods)));
+    expect(mean(halls.map((h) => h.racks))).toBeGreaterThan(
+      1.3 * mean(fabRooms.map((h) => h.racks)),
+    );
     expect(Math.max(...halls.map((h) => h.racks))).toBeGreaterThan(
       Math.max(...fabRooms.map((h) => h.racks)),
     );

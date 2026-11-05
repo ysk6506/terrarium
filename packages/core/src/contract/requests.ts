@@ -2,6 +2,7 @@
 import { z } from "zod";
 import {
   BlueprintSchema,
+  CampusSpecSchema,
   IdSchema,
   NameSchema,
   NoteSchema,
@@ -32,9 +33,11 @@ export const MetadataBody = z
 
 export const CreateWorldBody = z.object({ name: NameSchema, blueprint: BlueprintSchema }).strict();
 
-export const GenerateWorldBody = z
-  .object({ name: NameSchema.optional(), spec: WorldgenSpecSchema })
-  .strict();
+/** A small grid of rooms from a few sizes (`spec`), or a whole campus on a site's real shape (`campus`). */
+export const GenerateWorldBody = z.union([
+  z.object({ name: NameSchema.optional(), spec: WorldgenSpecSchema }).strict(),
+  z.object({ name: NameSchema.optional(), campus: CampusSpecSchema }).strict(),
+]);
 
 export const ImportWorldBody = z
   .object({

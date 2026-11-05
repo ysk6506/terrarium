@@ -14,7 +14,10 @@ import {
 } from "@terrarium/core/scenario";
 import type { TimePolicy } from "@terrarium/core/session";
 import {
+  CAMPUS_PROFILE_LABELS,
+  type CampusSpec,
   CHOICE_LABELS,
+  campusProblems,
   SITE_PRESETS,
   specProblems,
   type WorldgenSpec,
@@ -297,6 +300,36 @@ export const WorldgenSpecSchema = z
     for (const message of specProblems(spec as WorldgenSpec))
       ctx.addIssue({ code: z.ZodIssueCode.custom, message });
   }) as unknown as z.ZodType<WorldgenSpec>;
+
+/** A whole campus (REQ-077): shape here; ranges and the rack ceilings come from `campusProblems`, in Korean. */
+export const CampusSpecSchema = z
+  .object({
+    site: z.enum(SITE_IDS),
+    seed: z
+      .number()
+      .int()
+      .min(0)
+      .max(2 ** 31 - 1),
+    name: NameSchema.optional(),
+    profile: z.enum(Object.keys(CAMPUS_PROFILE_LABELS) as [string, ...string[]]),
+    buildings: z.number(),
+    fabs: z.number(),
+    hallsPerFab: z.number(),
+    labs: z.number(),
+    floors: z.number(),
+    hallsPerFloor: z.number(),
+    podsPerHall: z.number(),
+    fill: z.number(),
+    detail: z.number(),
+    gpuShare: z.number(),
+    powerRedundancy: z.enum(["N", "2N"]),
+    vendors: z.enum(["mixed", "single"]),
+  })
+  .strict()
+  .superRefine((spec, ctx) => {
+    for (const message of campusProblems(spec as CampusSpec))
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message });
+  }) as unknown as z.ZodType<CampusSpec>;
 
 export const SeedsSchema = z
   .array(

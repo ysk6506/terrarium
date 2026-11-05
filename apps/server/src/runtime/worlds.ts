@@ -17,7 +17,7 @@ import {
 import type { WorldOrigin, WorldRecord, WorldSummary } from "@terrarium/core/experiments";
 import { ConflictError, TerrariumError } from "@terrarium/core/kernel";
 import { importReality } from "@terrarium/core/sources/realimport";
-import { generateWorld, sitePreset } from "@terrarium/core/sources/worldgen";
+import { generateCampus, generateWorld, sitePreset } from "@terrarium/core/sources/worldgen";
 import {
   type Blueprint,
   blueprintDigest,
@@ -85,11 +85,15 @@ export class Worlds {
   }
 
   async generate(viewer: Viewer, req: GenerateWorldRequest): Promise<GeneratedWorld> {
-    const result = generateWorld(req.spec, this.ctx.catalog);
-    const preset = sitePreset(req.spec.site);
-    const name = req.name ?? req.spec.name ?? `${preset?.name ?? req.spec.site} 생성 세계`;
+    const campus = "campus" in req;
+    const spec = campus ? req.campus : req.spec;
+    const result = campus
+      ? generateCampus(req.campus, this.ctx.catalog)
+      : generateWorld(req.spec, this.ctx.catalog);
+    const preset = sitePreset(spec.site);
+    const name = req.name ?? spec.name ?? `${preset?.name ?? spec.site} 생성 세계`;
     const saved = await this.save(
-      this.fresh(viewer, name, "worldgen", { spec: req.spec, notes: result.notes }),
+      this.fresh(viewer, name, "worldgen", { spec, notes: result.notes }),
       result.blueprint,
     );
     return { ...saved, stats: result.stats };

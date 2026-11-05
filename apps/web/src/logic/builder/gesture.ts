@@ -65,6 +65,8 @@ export interface Plan {
   /** The way on from a refusal, when there is one. */
   readonly way?: Refusal["way"];
   readonly edit?: Edit;
+  /** A drag that came to rest at the limit of the floor: why it could go no further, and the way on (REQ-076). */
+  readonly stopped?: { readonly message: string; readonly way?: Refusal["way"] };
 }
 
 export const gridOf = (level: Level) => GRID[level.kind];
@@ -289,11 +291,14 @@ const TOOL_HINTS: Readonly<Record<Exclude<Tool["kind"], "select">, string>> = {
   equipment: "누른 곳에 놓아요. R로 돌려요",
 };
 
+/** What the hint line says over empty ground with nothing in hand; it goes away once the person has dragged the picture. */
+export const DRAG_HINT = "끌면 화면이 움직여요. 놓을 것을 왼쪽에서 골라요";
+
 /** The hint line while just pointing, before any gesture. */
 export function pointingHint(tool: Tool, hit: string | undefined, index: BlueprintIndex): string {
   if (tool.kind !== "select") return TOOL_HINTS[tool.kind];
   const thing = hit ? index.find(hit) : undefined;
-  if (!thing) return "끌면 화면이 움직여요. 놓을 것을 왼쪽에서 골라요";
+  if (!thing) return DRAG_HINT;
   const enter = thing.kind === "building" || thing.kind === "room";
   return `${thing.name} (${KIND_LABELS[thing.kind]}): 누르면 고르고, 끌면 옮겨요${enter ? ", 두 번 누르면 들어가요" : ""}`;
 }

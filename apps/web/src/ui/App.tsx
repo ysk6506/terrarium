@@ -22,8 +22,10 @@ import {
   type Page,
   parseLocation,
   SECTIONS,
+  SETTINGS_SECTION,
   sectionOf,
   titleOf,
+  world3d,
 } from "../logic";
 import { AppContext, type AppServices, Go, type ToastTone, useApp, useAsync } from "./context";
 import { Icon, Mark } from "./icons";
@@ -54,6 +56,9 @@ const NewExperimentPage = lazy(() =>
   import("./pages/new-experiment").then((m) => ({ default: m.NewExperimentPage })),
 );
 const RunPage = lazy(() => import("./pages/run").then((m) => ({ default: m.RunPage })));
+const SettingsPage = lazy(() =>
+  import("./pages/settings").then((m) => ({ default: m.SettingsPage })),
+);
 
 const ICONS: Readonly<Record<string, string>> = {
   home: "home",
@@ -62,6 +67,7 @@ const ICONS: Readonly<Record<string, string>> = {
   experiments: "experiment",
   benchmarks: "benchmark",
   connections: "plug",
+  settings: "gear",
 };
 
 function pageView(page: Page): ReactNode {
@@ -91,7 +97,10 @@ function pageView(page: Page): ReactNode {
 
 /** The rest of the screens: benchmarks, connections, and an address that is nothing. */
 function otherView(
-  page: Extract<Page, { name: "benchmarks" | "connections" | "agentVersions" | "notFound" }>,
+  page: Extract<
+    Page,
+    { name: "benchmarks" | "connections" | "agentVersions" | "settings" | "notFound" }
+  >,
 ): ReactNode {
   switch (page.name) {
     case "benchmarks":
@@ -100,6 +109,8 @@ function otherView(
       return <ConnectionsPage />;
     case "agentVersions":
       return <AgentVersionsPage connectionId={page.connectionId} agentId={page.agentId} />;
+    case "settings":
+      return <SettingsPage />;
     case "notFound":
       return <NotFound path={page.path} />;
   }
@@ -269,6 +280,14 @@ function Rail({
         </Go>
       ))}
       <div className="rail-spacer" />
+      <Go
+        to={SETTINGS_SECTION.page}
+        className="rail-link"
+        aria-current={section === SETTINGS_SECTION.key ? "page" : undefined}
+      >
+        <Icon name={ICONS[SETTINGS_SECTION.key] as string} size={22} />
+        {SETTINGS_SECTION.label}
+      </Go>
       <button
         type="button"
         className="rail-user"
@@ -302,6 +321,11 @@ export function App({ api, identity }: { readonly api: Api; readonly identity: I
   const { page, navigate, setLeaveGuard, setTitle } = useNavigation();
   const mainId = useId();
   const { toasts, toast } = useToasts();
+  useEffect(() => {
+    const lowered = () => toast(world3d.QUALITY_NOTICE);
+    window.addEventListener(world3d.QUALITY_EVENT, lowered);
+    return () => window.removeEventListener(world3d.QUALITY_EVENT, lowered);
+  }, [toast]);
   const [asking, setAsking] = useState(false);
   const [, setNameVersion] = useState(0);
   const meta = useAsync((signal) => api.call("meta", { signal }), []);

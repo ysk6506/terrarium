@@ -31,8 +31,6 @@ export interface AirHost {
   focus(): Focus;
   /** Fly again to the current focus (the way it is looked at changed). */
   refocus(): void;
-  /** The air gave up moving because frames were slow. */
-  slow(): void;
 }
 
 /** The airflow map as the view uses it. */
@@ -51,8 +49,6 @@ export interface AirPort {
     size: { w: number; h: number },
     visit: (id: string, x: number, y: number, visible: boolean) => void,
   ): void;
-  /** The air stopped moving because frames were slow. */
-  settle(): void;
   dispose(): void;
 }
 
@@ -67,7 +63,6 @@ export function idleAir(poseFor: typeof world3d.poseFor): AirPort {
     poseOf: (box, focus, lens, size) =>
       poseFor(box, focus.kind, { fov: lens.fov, aspect: Math.max(0.3, size.w / size.h) }),
     forEachRack: () => undefined,
-    settle: () => undefined,
     dispose: () => undefined,
   };
 }

@@ -86,12 +86,10 @@ function keysFor(view: WorldView, back: () => void) {
 function useLookingAround(view: WorldView | undefined, index: BlueprintIndex, on: boolean) {
   const [focus, setFocus] = useState<Focus>({ kind: "site" });
   const [tip, setTip] = useState<Tip>();
-  const [lifeOff, setLifeOff] = useState(false);
   useEffect(() => {
     if (!view || !on) return;
     view.setEvents({
       onFocus: setFocus,
-      onLifeOff: () => setLifeOff(true),
       onHover: (tag, x, y) => {
         const name = tag ? index.find(tag.id)?.name : undefined;
         setTip((prev) => {
@@ -103,7 +101,7 @@ function useLookingAround(view: WorldView | undefined, index: BlueprintIndex, on
       },
     });
   }, [view, index, on]);
-  return { focus, tip, lifeOff };
+  return { focus, tip };
 }
 
 /** Escape goes one level up while looking around (a builder keeps its level). */
@@ -118,7 +116,7 @@ function useStepBack(view: WorldView | undefined, index: BlueprintIndex, buildin
 /** The visitors (cats, cars, deer) and the slow turn of a showcase. */
 function useAmbience(view: WorldView | undefined, props: WorldStageProps, lifeOn: boolean) {
   const around = useLookingAround(view, props.index, props.level === undefined);
-  const mode: LifeMode = props.life ?? (lifeOn && !around.lifeOff ? "auto" : "off");
+  const mode: LifeMode = props.life ?? (lifeOn ? "auto" : "off");
   useEffect(() => view?.setLife(mode), [view, mode]);
   useEffect(() => view?.setSpin(props.spin ?? 0), [view, props.spin]);
   return around;
@@ -307,7 +305,7 @@ export function WorldStage(props: WorldStageProps) {
         around={around}
         layer={chosen}
         onLayer={setChosen}
-        life={lifeOn && !around.lifeOff}
+        life={lifeOn}
         onLife={setLifeOn}
       />
       {view && <CrewBubble view={view} />}

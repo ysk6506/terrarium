@@ -66,8 +66,13 @@
   color-scheme: light;
 }
 
+/*
+ * 화면 색 (feedback 1): the settings screen puts data-theme on <html>. With none the computer's own setting
+ * decides; "light" keeps the light tokens above even on a dark computer; "dark" takes the dark set below. The
+ * dark set is written twice (once for the computer's choice, once for a person's) because CSS cannot share it.
+ */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --paper: #121317;
     --surface: #1c1e24;
     --sunk: #15171b;
@@ -97,6 +102,37 @@
     --bar-shadow: 0 -10px 30px rgb(0 0 0 / 40%);
     color-scheme: dark;
   }
+}
+
+:root[data-theme="dark"] {
+  --paper: #121317;
+  --surface: #1c1e24;
+  --sunk: #15171b;
+  --fill: #262930;
+  --fill-hover: #30343c;
+  --ink: #f2f4f6;
+  --ink-2: #b0b8c1;
+  --ink-3: #8b95a1;
+  --line: #2b2e35;
+  --line-strong: #3a3e47;
+  --cobalt: #6fa8ff;
+  --cobalt-soft: #1e2a4d;
+  --primary: #2a62c9;
+  --primary-hover: #2f6fe0;
+  --good: #4cc3a1;
+  --good-soft: #10302a;
+  --warn: #f0b04a;
+  --warn-soft: #3a2c13;
+  --bad: #ff7b83;
+  --bad-soft: #3d1d20;
+  --bad-soft-hover: #4f262a;
+  --cold: #6aaee6;
+  --busy: #6fa8ff;
+  --on-ink: #121317;
+  --shadow: 0 10px 30px rgb(0 0 0 / 45%);
+  --card-shadow: 0 1px 2px rgb(0 0 0 / 30%);
+  --bar-shadow: 0 -10px 30px rgb(0 0 0 / 40%);
+  color-scheme: dark;
 }
 
 *,
@@ -272,14 +308,26 @@ p {
   overflow: auto;
 }
 
+/*
+ * 화면 폭 (feedback 3, 12): 1,200 px at least on a monitor that has it, up to 1,440 px on a wide one, so a 2560 monitor
+ * does not leave a narrow strip in the middle. The world and the result of an experiment take the whole width.
+ */
+:root {
+  --page: clamp(1200px, calc(100vw - var(--rail) - 64px), 1440px);
+}
+
 .page {
-  max-width: 940px;
+  max-width: var(--page);
   margin: 0 auto;
   padding: 48px 32px 72px;
 }
 
+.page-full {
+  max-width: none;
+}
+
 .expiry-banner {
-  max-width: 940px;
+  max-width: var(--page);
   margin: 0 auto;
   padding: 16px 32px 0;
 }
@@ -938,11 +986,11 @@ button.tag {
 
 /* ── home ──────────────────────────────────────────────────────────────────── */
 
+/* The words first, then the world across the whole width (feedback 12): at least 60% of the window's height. */
 .home-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-  gap: 32px;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
   margin-bottom: 8px;
 }
 
@@ -953,7 +1001,9 @@ button.tag {
 
 .vitrine {
   position: relative;
-  aspect-ratio: 4 / 3;
+  width: 100%;
+  height: 60vh;
+  min-height: 420px;
   border: 1px solid var(--line-strong);
   border-radius: 2px;
   background: linear-gradient(180deg, var(--sheen), transparent 40%), var(--sunk);
@@ -2585,4 +2635,293 @@ ol.elevation li:first-child .u-slot {
 
 .air-label-picked {
   color: var(--cobalt);
+}
+
+/* ── settings ──────────────────────────────────────────────────────────────── */
+
+.setting-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.setting-text {
+  flex: 1 1 280px;
+  max-width: 560px;
+}
+
+.setting-text p {
+  margin: 4px 0 0;
+}
+
+/* ── new world: two cards, then a site, a scale and one sentence (REQ-077) ──── */
+
+.world-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.world-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.world-card:hover,
+.world-card:focus-visible {
+  border-color: var(--cobalt);
+  box-shadow: 0 0 0 1px var(--cobalt);
+}
+
+.world-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 18px;
+}
+
+.world-card-art {
+  width: 100%;
+  height: auto;
+  max-height: 150px;
+}
+
+.art-ground {
+  fill: var(--sunk);
+  stroke: var(--line-strong);
+}
+
+.art-building {
+  fill: var(--cobalt-soft);
+  stroke: var(--cobalt);
+}
+
+.art-room {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+}
+
+.art-rack {
+  fill: var(--ink-2);
+}
+
+.site-cards,
+.scale-cards {
+  display: grid;
+  gap: 8px;
+}
+
+.site-cards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.scale-cards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.site-card,
+.scale-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.site-card:hover,
+.scale-card:hover {
+  border-color: var(--ink-2);
+}
+
+.site-card[aria-checked="true"],
+.scale-card[aria-checked="true"] {
+  border-color: var(--cobalt);
+  background: var(--cobalt-soft);
+  box-shadow: 0 0 0 1px var(--cobalt);
+}
+
+.site-card .pad-small {
+  max-height: 64px;
+  width: 100%;
+  background: transparent;
+}
+
+.result-line {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: var(--radius-control);
+  background: var(--cobalt-soft);
+  color: var(--ink);
+  font-weight: 650;
+}
+
+.detail-fold > summary {
+  min-height: 36px;
+  font-weight: 650;
+}
+
+.detail-group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.detail-group legend {
+  margin-bottom: 8px;
+  padding: 0;
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+@media (max-width: 640px) {
+  .world-cards,
+  .site-cards,
+  .scale-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── builder: what to do here, the pick card, the next-step chip (REQ-077) ─── */
+
+.bundle {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.btn-big {
+  width: 100%;
+  min-height: 48px;
+  justify-content: flex-start;
+  padding: 10px 14px;
+  font-size: 16px;
+}
+
+.btn-big[aria-pressed="true"] {
+  background: var(--cobalt-soft);
+  color: var(--cobalt);
+  box-shadow: 0 0 0 1px var(--cobalt);
+}
+
+.keys-help > summary {
+  cursor: pointer;
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.pick-card h2 {
+  margin: 0;
+}
+
+.panel-fold {
+  border-bottom: 1px solid var(--line);
+}
+
+.panel-fold > summary {
+  padding: 14px 16px;
+  cursor: pointer;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.panel-fold-body {
+  padding: 0 16px 16px;
+}
+
+.panel-fold-body .builder-block {
+  padding: 0;
+  border: 0;
+}
+
+.issues-line > summary {
+  cursor: pointer;
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.save-state {
+  color: var(--ink-3);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.next-chip {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--cobalt);
+  border-radius: 999px;
+  background: var(--glass-96);
+  box-shadow: var(--shadow);
+  color: var(--cobalt);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.next-chip:hover {
+  background: var(--cobalt-soft);
+}
+
+.tour-ask {
+  position: absolute;
+  left: 50%;
+  top: 76px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: calc(100% - 24px);
+  padding: 12px 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-panel);
+  background: var(--glass-96);
+  box-shadow: var(--shadow);
+  transform: translateX(-50%);
+}
+
+.tour-ask p {
+  margin: 2px 0 0;
+}
+
+/* 실험 3단계 (feedback 10): the product's recommended choice carries a small green mark. */
+.tag-recommend {
+  margin-inline-start: 8px;
+  padding: 1px 8px;
+  background: var(--good-soft);
+  color: var(--good);
+  font-size: 12px;
+  font-weight: 600;
+}
+.how-runs .tag-recommend {
+  margin-inline-start: 0;
 }

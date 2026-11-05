@@ -105,6 +105,15 @@ function buildFloor(engine: Engine, scene: BuildingScene, f: FloorScene): Floor 
   const k: Kit = { b, m: engine.mats };
   const cover: Kit = { b: covers, m: engine.mats };
   slab(k, scene.w, scene.d);
+  for (const r of f.bare)
+    k.b.box(k.m.freeFloor, {
+      x: r.x + r.w / 2,
+      z: r.y + r.d / 2,
+      w: r.w,
+      d: r.d,
+      h: 0.05,
+      shadow: false,
+    });
   shell(cover, scene.w, scene.d, f.height);
   const group = new THREE.Group();
   const rooms = new Map<string, THREE.Object3D[]>();

@@ -15,6 +15,7 @@ export type Page =
   | { readonly name: "run"; readonly id: string }
   | { readonly name: "benchmarks"; readonly set?: string }
   | { readonly name: "connections" }
+  | { readonly name: "settings" }
   | { readonly name: "agentVersions"; readonly connectionId: string; readonly agentId: string }
   | { readonly name: "notFound"; readonly path: string };
 
@@ -50,7 +51,16 @@ export const SECTIONS: ReadonlyArray<{
   },
 ];
 
-export const sectionOf = (page: Page) => SECTIONS.find((s) => s.owns.includes(page.name))?.key;
+/** The settings sit at the foot of the rail, under the others and beside the person's name. */
+export const SETTINGS_SECTION = {
+  key: "settings",
+  label: "설정",
+  page: { name: "settings" } as Page,
+  owns: ["settings"] as readonly PageName[],
+} as const;
+
+export const sectionOf = (page: Page) =>
+  [...SECTIONS, SETTINGS_SECTION].find((s) => s.owns.includes(page.name))?.key;
 
 const ID = "([A-Za-z0-9._:-]+)";
 const PATTERNS: ReadonlyArray<[RegExp, (m: RegExpExecArray, q: URLSearchParams) => Page]> = [
@@ -86,6 +96,7 @@ const PATTERNS: ReadonlyArray<[RegExp, (m: RegExpExecArray, q: URLSearchParams) 
       q.get("set") ? { name: "benchmarks", set: q.get("set") as string } : { name: "benchmarks" },
   ],
   [/^\/connections\/?$/, () => ({ name: "connections" })],
+  [/^\/settings\/?$/, () => ({ name: "settings" })],
   [
     new RegExp(`^/connections/${ID}/agents/${ID}/versions$`),
     (m) => ({
@@ -126,6 +137,7 @@ const HREFS: { readonly [N in PageName]: (page: Of<N>) => string } = {
   run: (p) => `/runs/${enc(p.id)}`,
   benchmarks: (p) => withQuery("/benchmarks", { set: p.set }),
   connections: () => "/connections",
+  settings: () => "/settings",
   agentVersions: (p) => `/connections/${enc(p.connectionId)}/agents/${enc(p.agentId)}/versions`,
   notFound: (p) => p.path,
 };
@@ -136,7 +148,7 @@ export function hrefOf(page: Page): string {
 
 /** The title in the browser tab, so open tabs can be told apart. */
 export function titleOf(page: Page, name?: string): string {
-  const section = SECTIONS.find((s) => s.owns.includes(page.name))?.label;
+  const section = [...SECTIONS, SETTINGS_SECTION].find((s) => s.owns.includes(page.name))?.label;
   const parts = [name, page.name === "home" ? undefined : section, "테라리움"].filter(Boolean);
   if (page.name === "notFound") return "없는 화면 — 테라리움";
   if (page.name === "newExperiment") return "새 실험 — 테라리움";

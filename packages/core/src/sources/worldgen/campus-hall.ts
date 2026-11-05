@@ -8,6 +8,7 @@ import type { SeededRng } from "@terrarium/core/kernel";
 import type { EquipmentSpec, PodSpec, RackSpec, RoomSpec } from "@terrarium/core/sources";
 import type { RackSpot } from "@terrarium/core/spatial";
 import { bulkProps } from "@terrarium/core/world";
+import { CRAH_GAP_M, CROSS_GAP_M, innerAisle, MARGIN_M, podCell, shapeOf } from "./campus-fit";
 import type { HallPlan, PodPlan } from "./campus-plan";
 import { HALL_MODE_LABELS } from "./campus-plan";
 import { draftRack, sidesOf } from "./campus-rack";
@@ -21,12 +22,6 @@ import {
 
 /** Most expected IT load a power block (a UPS pair) carries, W. */
 const BLOCK_LIMIT_W = 600_000;
-const MARGIN_M = 1.5;
-const COLD_AISLE_M = 1.8;
-const SERVICE_AISLE_M = 2.0;
-const HOT_AISLE_M = 1.2;
-const CROSS_GAP_M = 0.9;
-const CRAH_GAP_M = 0.6;
 /** Expected load a cooling unit is planned for, as a share of its capacity. */
 const COOLING_PLAN = 0.6;
 
@@ -105,34 +100,6 @@ export function planCrah(catalog: Catalog, hall: HallDraft): CrahPlan {
   return { model, chilled: !dx, count: needed + 1 };
 }
 
-interface PodShape {
-  readonly rackW: number;
-  readonly rackD: number;
-  readonly w: number;
-  readonly d: number;
-}
-
-/** Aisle between a pod's two rows: the hot aisle of a hot-sealed pod, a service aisle for tanks, else the cold aisle. */
-function innerAisle(plan: PodPlan): number {
-  if (plan.kind === "tank") return SERVICE_AISLE_M;
-  return plan.aisle === "hot" ? HOT_AISLE_M : COLD_AISLE_M;
-}
-
-/** Aisle left between pods: the opposite of the one inside them. */
-function outerAisle(plan: PodPlan): number {
-  return plan.aisle === "hot" ? COLD_AISLE_M : HOT_AISLE_M;
-}
-
-function shapeOf(catalog: Catalog, plan: PodPlan): PodShape {
-  const model = catalog.getOf(plan.rackModel, "rack");
-  return {
-    rackW: model.footprint.w,
-    rackD: model.footprint.d,
-    w: plan.perRow * model.footprint.w,
-    d: 2 * model.footprint.d + innerAisle(plan),
-  };
-}
-
 interface Grid {
   readonly cellW: number;
   readonly cellD: number;
@@ -142,14 +109,14 @@ interface Grid {
 }
 
 function gridOf(catalog: Catalog, hall: HallDraft): Grid {
-  const shapes = hall.pods.map((p) => shapeOf(catalog, p.plan));
-  const cellW = Math.max(...shapes.map((s) => s.w)) + CROSS_GAP_M;
-  const gap = Math.max(...hall.pods.map((p) => outerAisle(p.plan)));
-  const cellD = Math.max(...shapes.map((s) => s.d)) + gap;
-  const columns = Math.max(
-    1,
-    Math.round(Math.sqrt((hall.pods.length * cellD * hall.plan.aspect) / cellW)),
+  const { cellW, cellD, gap } = podCell(
+    catalog,
+    hall.pods.map((p) => p.plan),
   );
+  // A hall on a floor plan has the columns its room's width gives; any other has the shape its aspect asks for.
+  const columns =
+    hall.plan.room?.columns ??
+    Math.max(1, Math.round(Math.sqrt((hall.pods.length * cellD * hall.plan.aspect) / cellW)));
   return { cellW, cellD, gap, columns: Math.min(columns, hall.pods.length) };
 }
 
@@ -241,6 +208,7 @@ export function emitHall(ctx: CampusCtx, hall: HallDraft, parts: HallParts): voi
       });
   });
   const placed = crah.map((c) => ({ ...c, at: strip.at.get(c.id) }) as EquipmentSpec);
+  const fixed = hall.plan.room?.rect;
   const depth = top + rowsOfPods * grid.cellD - grid.gap + MARGIN_M;
   const room: RoomSpec = {
     id: hall.plan.id,
@@ -250,7 +218,9 @@ export function emitHall(ctx: CampusCtx, hall: HallDraft, parts: HallParts): voi
     devices,
     equipment: placed,
     pods,
-    size: { w: width, d: depth },
+    // A hall on a floor plan is as big as its room, wherever the pods end.
+    size: fixed ? { w: fixed.w, d: fixed.d } : { w: width, d: depth },
+    ...(fixed ? { at: { x: fixed.x, y: fixed.y } } : {}),
     props: { cooling: hall.plan.mode, containment: hall.plan.containment, pods: hall.pods.length },
   };
   asm.room(hall.plan.floorId, room);

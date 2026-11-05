@@ -31,8 +31,6 @@ export interface ViewEvents {
   readonly onHover?: (tag: PickTag | undefined, x: number, y: number) => void;
   /** The camera moved to a new focus on its own (a click or a jump). */
   readonly onFocus?: (focus: Focus) => void;
-  /** The little visitors switched themselves off because frames were getting slow. */
-  readonly onLifeOff?: () => void;
 }
 
 export class WorldView {
@@ -125,9 +123,7 @@ export class WorldView {
     this.site = world3d.siteScene(index, catalog);
     this.siteLayer = this.site ? buildSiteLayer(this.engine, this.site) : undefined;
     if (this.siteLayer) this.engine.content.add(this.siteLayer.group);
-    this.life = this.site
-      ? buildLifeLayer(this.engine, this.site, () => this.events.onLifeOff?.())
-      : undefined;
+    this.life = this.site ? buildLifeLayer(this.engine, this.site) : undefined;
     if (this.life) {
       this.engine.content.add(this.life.group);
       this.life.setMode(this.lifeMode);
@@ -208,7 +204,6 @@ export class WorldView {
       building: () => this.building?.layer,
       focus: () => this.current,
       refocus: () => this.focusOn(this.current),
-      slow: () => this.air.settle(),
     });
     this.air.sync();
   }

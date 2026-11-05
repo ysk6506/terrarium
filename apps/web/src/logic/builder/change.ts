@@ -36,6 +36,7 @@ import {
 } from "./edit";
 import { landReason } from "./edit-site";
 import type { Level } from "./levels";
+import { assertPower } from "./power";
 import { reshape } from "./reshape";
 
 // ── moving, turning, renaming, removing ────────────────────────────────────────────────────
@@ -166,14 +167,13 @@ export function setModel(bp: Blueprint, catalog: Catalog, id: string, modelId: s
   // Units of the two rack standards are not the same size, so a rack that changes standard takes its new height.
   const retall =
     model.kind === "rack" && (model.standard ?? "eia310") !== rackStandardOf(entity, catalog);
-  return {
-    blueprint: replaceEntity(bp, id, (e) => ({
-      ...e,
-      modelId,
-      ...(retall ? { props: { ...e.props, units: model.uHeight } } : {}),
-    })),
-    select: [id],
-  };
+  const next = replaceEntity(bp, id, (e) => ({
+    ...e,
+    modelId,
+    ...(retall ? { props: { ...e.props, units: model.uHeight } } : {}),
+  }));
+  assertPower(bp, next, catalog);
+  return { blueprint: next, select: [id] };
 }
 
 /** Remove things with everything inside them and every cable to them. */

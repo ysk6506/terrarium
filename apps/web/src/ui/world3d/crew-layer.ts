@@ -3,13 +3,13 @@
  * each role one instanced mesh, a laptop or a toolbox in their hands when they work, and an unseen box
  * round each person to click. Where each one stands comes from the pure `hallCrew.crewAt` as a function
  * of the clock and of what is the matter; this layer only writes matrices twenty times a second, and
- * only while the room is on screen. If the machine cannot keep up the people stand still.
+ * only while the room is on screen. If the machine cannot keep up there are fewer people (half for each
+ * level, one at least) and they are redrawn less often, but they keep walking.
  */
 import * as THREE from "three";
-import { hallCrew, type world3d } from "../../logic";
+import { hallCrew, world3d } from "../../logic";
 import { CREW_SCALE, crewModelOf, desk, laptop, SHIRTS, toolbox } from "./crew-model";
 import type { Engine } from "./engine";
-import { Strain } from "./strain";
 
 type Role = world3d.CrewRole;
 type Trouble = Pick<world3d.CrewWorld, "alarms" | "activity">;
@@ -20,7 +20,7 @@ export interface CrewLayer {
   readonly pickables: readonly THREE.Object3D[];
   /** What is the matter now; a change starts the walks. */
   setTrouble(trouble: Trouble): void;
-  /** Everyone stands (less motion asked for, or frames too slow). */
+  /** Everyone stands (less motion asked for). */
   setStill(still: boolean): void;
   /** Where the person's head is in the world, and what they are doing. */
   head(i: number, into: THREE.Vector3): THREE.Vector3;
@@ -206,12 +206,7 @@ function freeParts(
   material.dispose();
 }
 
-export function buildCrewLayer(
-  engine: Engine,
-  crew: world3d.Crew,
-  onSlow: () => void,
-  still = false,
-): CrewLayer {
+export function buildCrewLayer(engine: Engine, crew: world3d.Crew, still = false): CrewLayer {
   const group = new THREE.Group();
   const material = new THREE.MeshStandardMaterial({
     vertexColors: true,
@@ -229,15 +224,19 @@ export function buildCrewLayer(
     p: new THREE.Vector3(),
     s: new THREE.Vector3(),
   };
-  const strain = new Strain();
   let calm = still;
   let clock = 0;
   let since = 0;
+  let level = 0;
+  let kept = world3d.peopleKept(crew.people, level);
   let world: world3d.CrewWorld = hallCrew.NO_TROUBLE;
   let key = hallCrew.troubleKey(world);
   let states: world3d.CrewState[] = [];
   const draw = (t: number) => {
-    states = hallCrew.crewAt(crew, t, world, { still: calm });
+    // The people left out stand nowhere: not drawn, not to be clicked.
+    states = hallCrew
+      .crewAt(crew, t, world, { still: calm })
+      .map((st) => (kept.has(st.id) ? st : { ...st, present: false }));
     drawCrew(parts, states, t, k);
     engine.invalidate();
   };
@@ -245,13 +244,13 @@ export function buildCrewLayer(
     clock = time;
     if (calm) return;
     since += dt;
-    if (strain.frame(dt)) {
-      calm = true;
-      draw(0);
-      onSlow();
-      return;
+    const now = engine.strain.level;
+    if (now !== level) {
+      level = now;
+      kept = world3d.peopleKept(crew.people, level);
+      since = Number.POSITIVE_INFINITY;
     }
-    if (since < STEP_S) return;
+    if (since < world3d.stepAt(STEP_S, level)) return;
     since = 0;
     draw(time);
   });
@@ -268,7 +267,6 @@ export function buildCrewLayer(
     },
     setStill: (on) => {
       calm = on;
-      strain.reset();
       draw(clock);
     },
     head: (i, into) => {

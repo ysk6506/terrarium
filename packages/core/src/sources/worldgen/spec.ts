@@ -19,6 +19,8 @@ export interface SitePreset {
   readonly outline: Outline;
   /** Place on the notional map of all sites (0..100, not to scale). */
   readonly map: { readonly x: number; readonly y: number };
+  /** What the site's grid connection gives, MW; an estimate unless a published figure is known (REQ-076). */
+  readonly power: { readonly mw: number; readonly estimated: boolean };
   /** Where this site's fabs stand, in the order a campus fills them (none for sites without a map to read them from). */
   readonly fabs: readonly SiteSlot[];
   /** Where this site's data-centre buildings stand, in the order a campus fills them. */
@@ -48,6 +50,7 @@ export const SITE_PRESETS: readonly SitePreset[] = NAMES.map(([id, code, name]) 
     land: outlineLand(outline),
     outline,
     map: shape.map,
+    power: shape.power,
     fabs: shape.fabs ?? [],
     dcs: shape.dcs ?? [],
     labs: shape.labs ?? [],

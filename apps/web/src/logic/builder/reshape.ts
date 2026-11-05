@@ -13,6 +13,7 @@ import {
   type Entity,
   footprint,
   insideRoomLocal,
+  isSizeLocked,
   type Placement,
   roomRects,
   shapeProblem,
@@ -28,7 +29,9 @@ import {
   TILE_M,
 } from "./edit";
 import { landReason } from "./edit-site";
+import { assertFloorRoom, floorFullRefusal } from "./floor-notes";
 import { type Level, levelArea } from "./levels";
+import { Refusal } from "./refusal";
 
 export type Side = "left" | "right" | "top" | "bottom";
 export const SIDES: readonly Side[] = ["left", "right", "top", "bottom"];
@@ -39,15 +42,7 @@ export const SIDE_LABELS: Readonly<Record<Side, string>> = {
   bottom: "아래쪽",
 };
 
-/** The refusal that has a way on: the building a room outgrew, or the land a building outgrew. */
-export class Refusal extends EditError {
-  constructor(
-    message: string,
-    readonly way: { readonly kind: "widen-building" | "buy-land"; readonly entityId: string },
-  ) {
-    super(message);
-  }
-}
+export { Refusal };
 
 /** A space's rectangles as `reshape` takes them: the body first, then the pieces. */
 export type Shape = readonly Rect[];
@@ -158,24 +153,38 @@ function assertStands(index: BlueprintIndex, catalog: Catalog, entity: Entity, r
     try {
       assertFree(index, catalog, area, r, siblings, entity.name);
     } catch (err) {
-      const floor = entity.kind === "room" ? entity.parentId : undefined;
-      const building = floor ? index.enclosing(floor, "building") : undefined;
-      if (building && (err as Error).message.endsWith("벗어나요"))
-        throw new Refusal("건물이 꽉 찼어요. 건물을 넓혀요", {
-          kind: "widen-building",
-          entityId: building.id,
-        });
-      throw err;
+      throw asWallRefusal(index, catalog, entity, err);
     }
   }
-  if (entity.kind === "building") {
-    const reason = landReason(index, catalog, body);
-    if (reason) {
-      if (reason.includes("아직 사지 않은"))
-        throw new Refusal(reason, { kind: "buy-land", entityId: entity.id });
-      throw new EditError(reason);
-    }
-  }
+  if (entity.kind === "building") assertOwnLand(index, catalog, entity, body);
+}
+
+/** A room that went past its building's walls is told about the floor (REQ-076); any other refusal stays as it was. */
+function asWallRefusal(
+  index: BlueprintIndex,
+  catalog: Catalog,
+  entity: Entity,
+  err: unknown,
+): unknown {
+  const floor = entity.kind === "room" ? entity.parentId : undefined;
+  const building = floor ? index.enclosing(floor, "building") : undefined;
+  return floor && building && (err as Error).message.endsWith("벗어나요")
+    ? floorFullRefusal(index, catalog, floor, true)
+    : err;
+}
+
+/** A building stands on land that is the owner's: land for sale gets the way to buy it. */
+function assertOwnLand(
+  index: BlueprintIndex,
+  catalog: Catalog,
+  building: Entity,
+  body: Rect,
+): void {
+  const reason = landReason(index, catalog, body);
+  if (!reason) return;
+  if (reason.includes("아직 사지 않은"))
+    throw new Refusal(reason, { kind: "buy-land", entityId: building.id });
+  throw new EditError(reason);
 }
 
 /**
@@ -195,9 +204,15 @@ export function reshape(
   const old = footprint(entity, catalog) as Rect;
   const rects = snapShape(entity, shape);
   const body = rects[0] as Rect;
+  // A building of real size can be moved, never made bigger or smaller (REQ-076).
+  if (isSizeLocked(entity) && (body.w !== old.w || body.d !== old.d))
+    throw new EditError(
+      `${withJosa(entity.name, "은")} 실제 크기라 바꿀 수 없어요. 방은 층의 빈 바닥 안에서 넓혀요`,
+    );
   assertStands(index, catalog, entity, rects);
   const moved = keepWorld ? shifted(bp, index, entity, old.x - body.x, old.y - body.y) : bp;
   const next = replaceEntity(moved, id, (e) => ({ ...e, placement: placementOfShape(rects) }));
+  if (entity.kind === "room") assertFloorRoom(bp, next, catalog, entity.parentId);
   const nextIndex = new BlueprintIndex(next);
   if (entity.kind !== "containment") {
     const outside = spilledOut(nextIndex, catalog, nextIndex.entity(id));

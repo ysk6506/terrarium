@@ -19,6 +19,7 @@ import {
   rackUnits,
 } from "@terrarium/core/world";
 import { type Edit, EditError, nextId } from "./edit";
+import { assertPower } from "./power";
 
 export interface Slot {
   /** Lowest unit the slot covers (1 = bottom). */
@@ -182,7 +183,9 @@ export function mountDevice(
     placement: { type: "unit", u: at },
     props: model.kind === "pdu" && !shelf ? { feed } : {},
   };
-  return { blueprint: { ...bp, entities: [...bp.entities, device] }, select: [id] };
+  const next = { ...bp, entities: [...bp.entities, device] };
+  assertPower(bp, next, catalog);
+  return { blueprint: next, select: [id] };
 }
 
 /** Move a mounted device to another unit of the same rack. */

@@ -5,6 +5,7 @@ status: active
 last_verified: 2026-11-05
 verification_log:
   - "2026-11-05: harness-e2e.md 링크를 더했다"
+  - "2026-11-05: ADR-0082 링크를 더했다"
 ---
 # 문서 색인
 
@@ -45,6 +46,7 @@ verification_log:
 - [설정 변경 시나리오 — 누군가 바꾼 설정으로 사고를 만들고, 블록은 장비가 가진 것에서 고른다](design-docs/config-scenarios.md)
 - [제어 가능 요소표 — 실험이 무엇을 바꿀 수 있고, 에이전트가 무엇을 할 수 있는가](design-docs/controllability.md)
 - [측정의 신뢰 — 효율 점수는 과제를 푼 만큼만, 시험지는 기준선 에이전트로 점검](design-docs/measurement.md)
+- [세계 만들기 검토 — 설명 없이도 되는가, 토스의 원칙으로](design-docs/world-builder-review.md)
 - [시나리오 편집기 검토 — 처음 쓰는 사람의 눈으로, 토스의 원칙으로](design-docs/scenario-editor-review.md)
 - [용어집 — 화면에 쓰는 말은 여기서 정한다](design-docs/glossary.md)
 
@@ -131,6 +133,10 @@ verification_log:
 - [0079 서버룸과 건물은 직사각형 안에서 자유롭게 넓히고, 꽉 차면 길을 보여 준다](design-docs/adr/0079-room-resize.md)
 - [0080 방은 직사각형 조각을 붙인 하나의 공간이다 — L자와 육각형 윤곽을 그대로 만든다](design-docs/adr/0080-room-pieces.md)
 - [0081 건물은 실제 크기에 묶이고, 방은 그 바닥이 허락하는 만큼 자유롭다](design-docs/adr/0081-real-building-size.md)
+- [0083 세계 만들기는 결과를 고르고, 빌더는 고른 것 하나에 할 일 하나다](design-docs/adr/0083-world-making-redesign.md)
+- [0084 가져오기를 없애고 토폴로지 보기를 둔다 — 같은 것은 접고 다른 것만 편다](design-docs/adr/0084-topology-view.md)
+- [0086 세계 만들기 재설계로 달라진 글과 흐름의 시험 기대값을 고친다](design-docs/adr/0086-world-making-amend-tests.md)
+- [0082 느린 기계에서는 멈추지 않고 줄인다 — 품질·부하 시험 기대값을 고친다](design-docs/adr/0082-quality-degrade-amend-tests.md)
 
 ## 계획과 부채
 

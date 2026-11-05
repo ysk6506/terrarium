@@ -119,8 +119,16 @@ export class BlueprintAssembler {
     name: string,
     props: Props = {},
     at?: { readonly x: number; readonly y: number },
+    size?: { readonly w: number; readonly d: number },
   ): this {
-    this.buildings.push({ id, siteId, name, props, ...(at ? { at } : {}) });
+    this.buildings.push({
+      id,
+      siteId,
+      name,
+      props,
+      ...(at ? { at: { x: at.x, y: at.y } } : {}),
+      ...(size ? { size } : {}),
+    });
     return this;
   }
 
@@ -204,10 +212,13 @@ export class BlueprintAssembler {
       const sizes = this.floors
         .filter((f) => f.buildingId === building.id)
         .map((f) => footprints.get(f.id) ?? { w: 10, d: 10 });
-      buildingSize.set(building.id, {
-        w: Math.max(10, ...sizes.map((s) => s.w)) + 2 * BUILDING_MARGIN_M,
-        d: Math.max(10, ...sizes.map((s) => s.d)) + 2 * BUILDING_MARGIN_M,
-      });
+      buildingSize.set(
+        building.id,
+        building.size ?? {
+          w: Math.max(10, ...sizes.map((s) => s.w)) + 2 * BUILDING_MARGIN_M,
+          d: Math.max(10, ...sizes.map((s) => s.d)) + 2 * BUILDING_MARGIN_M,
+        },
+      );
     }
     entities.push(
       ...siteEntities(
@@ -262,6 +273,18 @@ export class BlueprintAssembler {
 
   /** Pack a floor's rooms in a row of shelves; returns the floor's used footprint. */
   private placeRooms(rooms: readonly PendingRoom[], out: Entity[]): { w: number; d: number } {
+    // Rooms that all say where they stand are put there; a floor of real size has a plan, not a packing.
+    if (rooms.length > 0 && rooms.every((r) => r.spec.at)) {
+      let w = 0;
+      let d = 0;
+      for (const room of rooms) {
+        const at = room.spec.at as { x: number; y: number };
+        out.push(...roomEntities(this.catalog, room, at));
+        w = Math.max(w, at.x + room.layout.size.w);
+        d = Math.max(d, at.y + room.layout.size.d);
+      }
+      return { w, d };
+    }
     const total = rooms.reduce((sum, r) => sum + r.layout.size.w * r.layout.size.d, 0);
     const maxWidth = Math.max(40, Math.sqrt(total) * 1.6);
     const packed = packShelves(

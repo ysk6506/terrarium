@@ -115,3 +115,8 @@ export function levelStats(index: BlueprintIndex, catalog: Catalog, level: Level
     warnings: [...(cooling ? [cooling] : []), ...wiringWarnings(index, all, t.coolingKw)],
   };
 }
+
+/** What one thing costs with everything inside it: its model, its walls and fit-out, and what stands in it (million won). */
+export function costOf(index: BlueprintIndex, catalog: Catalog, entity: Entity): number {
+  return totalsOf(index, [entity, ...index.descendants(entity.id)], catalog).costM;
+}

@@ -53,7 +53,19 @@ export {
   type FillOptions,
   MIN_FILL_M,
 } from "./fill-plan";
+export { AISLE_CHOICES, type Choice, loadChoices } from "./fill-words";
 export {
+  assertFloorRoom,
+  type FloorNote,
+  floorFullRefusal,
+  floorNote,
+  floorNoteText,
+  moreRacksText,
+  racksGainText,
+  squareMetres,
+} from "./floor-notes";
+export {
+  DRAG_HINT,
   gridOf,
   movePlan,
   nextRotation,
@@ -78,6 +90,7 @@ export {
   pieceAt,
 } from "./handles";
 export { History } from "./history";
+export { type HudItem, hudItems, powerHeadroomW } from "./hud";
 export {
   type Crumb,
   crumbs,
@@ -88,6 +101,7 @@ export {
   levelOf,
   levelParent,
   levelShape,
+  openingLevel,
   sameLevel,
   siteOf,
   startLevel,
@@ -106,6 +120,14 @@ export {
   type SiteSpec,
 } from "./new-site";
 export {
+  describePick,
+  type PickCard,
+  type PickPrimary,
+  type PickPrimaryId,
+  RUN,
+  RUN_OFF,
+} from "./pick";
+export {
   addPiece,
   costDeltaM,
   type PieceOptions,
@@ -117,6 +139,7 @@ export {
   structureOfM,
   tileCount,
 } from "./pieces";
+export { assertPower, megawatts, type SiteUse, siteUse, siteUseText } from "./power";
 export { PREVIEW_SECONDS, type Preview, type PreviewFrame, preview } from "./preview";
 export {
   type Elevation,
@@ -127,8 +150,10 @@ export {
   type Slot,
   unitsOf,
 } from "./rack";
+export type { Way } from "./refusal";
 export { Refusal, SIDE_LABELS, SIDES, type Side, shapeOf } from "./reshape";
 export { roomFull, WIDEN_ROOM } from "./room-space";
+export { AUTOSAVE_MS, type SaveState, saveStatus, shouldAutosave } from "./save-status";
 export {
   COLORS,
   type GroupKey,
@@ -143,7 +168,25 @@ export {
   type SceneLabel,
   sceneOf,
 } from "./scene";
-export { type LevelStats, levelStats, TYPICAL_UTIL } from "./stats";
+export { SMALL_BUILDING_M, SMALL_LAND_M, type SmallSpec, smallStart } from "./small-start";
+export {
+  OUTSIDE_PICKS,
+  type OutsideWay,
+  outsideWays,
+  type RoomSources,
+  roomSources,
+  type SourceGroup,
+} from "./sources";
+export { costOf, type LevelStats, levelStats, TYPICAL_UTIL } from "./stats";
+export {
+  type BundleMain,
+  bundleTexts,
+  NAMED_MODELS,
+  type ToolBundle,
+  type ToolPick,
+  type ToolView,
+  toolsFor,
+} from "./tools";
 export {
   autoWireRack,
   autoWireRoom,

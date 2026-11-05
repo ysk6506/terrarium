@@ -101,8 +101,8 @@ export const CAMPUS_NUMBERS: ReadonlyArray<{
   { key: "fabs", label: "반도체 팹", min: 0, max: 10, unit: "동", integer: true },
   { key: "hallsPerFab", label: "팹당 서버룸", min: 1, max: 6, unit: "개", integer: true },
   { key: "labs", label: "연구동(DSR) 타워", min: 0, max: 3, unit: "동", integer: true },
-  { key: "floors", label: "건물당 데이터 홀 층", min: 1, max: 12, unit: "층", integer: true },
-  { key: "hallsPerFloor", label: "층당 데이터 홀", min: 1, max: 4, unit: "개", integer: true },
+  { key: "floors", label: "건물당 서버룸 층", min: 1, max: 12, unit: "층", integer: true },
+  { key: "hallsPerFloor", label: "층당 서버룸", min: 1, max: 4, unit: "개", integer: true },
   {
     key: "podsPerHall",
     label: "홀당 컨테인먼트(보통)",

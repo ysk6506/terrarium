@@ -50,7 +50,7 @@ export function emitMechanical(
   const cooling = roomCooling(ctx, room, 0.04 * loadKw * 1000, [feed(0), feed(1)]);
   emitRoom(ctx, floorId, {
     id: room,
-    name: `${floorId.split("-").at(-1)?.toUpperCase()} 기계실`,
+    name: `${floorId.split("-f").at(-1)}F 기계실`,
     purpose: "mechanical",
     equipment: [...cdus, ...cooling],
   });

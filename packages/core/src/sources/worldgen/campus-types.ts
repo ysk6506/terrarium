@@ -2,6 +2,7 @@
 import type { Catalog } from "@terrarium/core/catalog";
 import type { SeededRng } from "@terrarium/core/kernel";
 import type { BlueprintAssembler, DeviceSpec } from "@terrarium/core/sources";
+import type { Rect } from "@terrarium/core/spatial";
 import type { BulkLoad } from "@terrarium/core/world";
 import type { HallPlan, PodKind, PodPlan } from "./campus-plan";
 import type { CampusSpec } from "./campus-spec";
@@ -16,6 +17,8 @@ export interface CampusCtx {
   readonly siteId: string;
   /** Short code used in host names, e.g. "gh". */
   readonly code: string;
+  /** Where rooms of buildings with a floor plan stand (room id → rectangle on the floor), REQ-076. */
+  readonly placed: ReadonlyMap<string, Rect>;
 }
 
 export interface RackDraft {

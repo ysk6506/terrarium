@@ -12,6 +12,7 @@ import type { ReservedPlot } from "@terrarium/core/spatial";
 import { type EntityKind, landMarket } from "@terrarium/core/world";
 import { emitMechanical, emitPlants } from "./campus-cooling";
 import { type CrahPlan, draftHall, emitHall, planCrah } from "./campus-hall";
+import { emitLockedRooms } from "./campus-locked";
 import type { HallContainment } from "./campus-plan";
 import {
   type BuildingPlan,
@@ -60,12 +61,16 @@ function addBuilding(ctx: CampusCtx, building: BuildingPlan): void {
     dc: [`DC${building.index}동`, "data_center"],
   } as const;
   const [name, purpose] = named[building.kind];
+  // A building on a map's place has the size of the real one: its size is locked (REQ-076).
+  const props: Record<string, string | boolean> = { purpose };
+  if (building.slot) props.sizeLocked = true;
   ctx.asm.building(
     building.id,
     ctx.siteId,
     building.slot?.name ?? name,
-    { purpose },
+    props,
     building.slot,
+    building.fixed?.size,
   );
 }
 
@@ -101,6 +106,10 @@ function emitControlRoom(ctx: CampusCtx, building: string, feeds: readonly strin
   });
 }
 
+/** The floors that have coolant distribution units, and so a mechanical room already. */
+const floorsWithCdus = (cdus: ReadonlyMap<string, readonly string[]>): Set<string> =>
+  new Set([...cdus].flatMap(([floor, ids]) => (ids.length > 0 ? [floor] : [])));
+
 function buildBuilding(
   ctx: CampusCtx,
   rng: SeededRng,
@@ -125,8 +134,15 @@ function buildBuilding(
     cduIds.push(...mech.cdus);
     cduLoadKw += mech.loadKw;
   }
+  if (building.fixed) emitLockedRooms(ctx, building, floorsWithCdus(cdus));
   const plants = emitPlants(ctx, building.id, drafts, crah, cduIds, cduLoadKw);
-  emitPower(ctx, { building: building.id, halls: drafts, crah, plants });
+  emitPower(ctx, {
+    building: building.id,
+    halls: drafts,
+    crah,
+    plants,
+    distributed: building.fixed !== undefined,
+  });
   const first = drafts[0] as HallDraft;
   const swA = `${first.plan.id}-b1-sw-a`;
   const swB = ctx.spec.powerRedundancy === "2N" ? `${first.plan.id}-b1-sw-b` : swA;
@@ -191,7 +207,7 @@ export function generateCampus(spec: CampusSpec, catalog: Catalog = new Catalog(
     throw new InvalidValueError(`세계를 만들 수 없어요: ${problems.join("; ")}`);
   const preset = sitePreset(spec.site) as SitePreset;
   const rng = new SeededRng(spec.seed);
-  const plan = planCampus(spec, preset.code, rng.fork("plan"), preset);
+  const plan = planCampus(spec, preset.code, rng.fork("plan"), preset, catalog);
   if (plan.racks > MAX_CAMPUS_RACKS)
     throw new InvalidValueError(
       `세계를 만들 수 없어요: 랙이 ${plan.racks}개예요. 한 캠퍼스는 ${MAX_CAMPUS_RACKS}개까지 만들 수 있어요`,
@@ -218,6 +234,8 @@ export function generateCampus(spec: CampusSpec, catalog: Catalog = new Catalog(
     preset.land,
     {
       preset: preset.id,
+      powerCapacityMW: preset.power.mw,
+      ...(preset.power.estimated ? { powerCapacityEstimated: true } : {}),
       mapX: preset.map.x,
       mapY: preset.map.y,
       landMarket: preset.id,
@@ -227,11 +245,40 @@ export function generateCampus(spec: CampusSpec, catalog: Catalog = new Catalog(
     preset.outline,
   );
   asm.reserve(preset.code, unbuiltPlots(preset, spec));
-  const ctx: CampusCtx = { asm, catalog, spec, siteId: preset.code, code: preset.code };
+  const placed = new Map(plan.buildings.flatMap((b) => Object.entries(b.fixed?.rooms ?? {})));
+  const ctx: CampusCtx = { asm, catalog, spec, siteId: preset.code, code: preset.code, placed };
   const backbone: string[] = [];
   const drafts = plan.buildings.flatMap((b) => buildBuilding(ctx, rng.fork(b.id), b, backbone));
   const result = asm.build();
   const stats: Partial<Record<EntityKind, number>> = {};
   for (const e of result.blueprint.entities) stats[e.kind] = (stats[e.kind] ?? 0) + 1;
   return { ...result, stats, halls: summarize(plan, drafts) };
+}
+
+/** What a campus comes to, without building it: the racks exactly, servers and power as round estimates. */
+export interface CampusSize {
+  readonly racks: number;
+  /** Racks built server by server; the rest count their servers. */
+  readonly detailedRacks: number;
+  /** About this many servers (a generated rack holds a dozen on average). */
+  readonly servers: number;
+  /** About this much power the servers ask for, MW. */
+  readonly mw: number;
+}
+
+/** Servers a generated rack holds on average, and the kW it asks for; measured on every site's real mix. */
+const SERVERS_PER_RACK = 12;
+const KW_PER_RACK = 9;
+
+/** The size of the campus a spec would build, from its plan alone: nothing is assembled, so it answers at once. */
+export function campusSize(spec: CampusSpec, catalog: Catalog = new Catalog()): CampusSize {
+  const preset = sitePreset(spec.site) as SitePreset;
+  const rng = new SeededRng(spec.seed).fork("plan");
+  const plan = planCampus(spec, preset.code, rng, preset, catalog);
+  return {
+    racks: plan.racks,
+    detailedRacks: plan.detailedRacks,
+    servers: plan.racks * SERVERS_PER_RACK,
+    mw: Math.round((plan.racks * KW_PER_RACK) / 100) / 10,
+  };
 }

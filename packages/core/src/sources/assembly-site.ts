@@ -51,6 +51,8 @@ export interface BuildingPlan {
   readonly props: Props;
   /** Where the building's centre should stand, when a map says so. */
   readonly at?: { readonly x: number; readonly y: number };
+  /** The size of the building when it is fixed (a real building read off a map), instead of what its rooms need. */
+  readonly size?: { readonly w: number; readonly d: number };
 }
 
 export interface YardEntry {

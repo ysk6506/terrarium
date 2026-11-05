@@ -4,41 +4,38 @@
  */
 import type { WorldRecord } from "@terrarium/core/experiments";
 import { useMemo, useState } from "react";
-import { builder, celsius, count, watts, won, type world3d } from "../../logic";
+import { builder, celsius, type world3d } from "../../logic";
 import { useApp, useAsync, useLeaveGuard, usePageTitle } from "../context";
 import { Failure, Loading } from "../kit";
 import { useActivity } from "../world3d/useActivity";
 import { WorldStage } from "../world3d/WorldStage";
 import { BuilderBar } from "./BuilderBar";
 import { Inspector } from "./Inspector";
+import { NextChip } from "./NextChip";
 import { Toolbox } from "./Toolbox";
+import { useAutosave } from "./useAutosave";
 import { type Builder, catalog, useBuilder } from "./useBuilder";
 import { useBuilderKeys } from "./useBuilderKeys";
 import { useGestures } from "./useGestures";
 
+/** The numbers an experiment runs on, over the picture: racks, servers, heat against cooling, power left (no money). */
 function Hud({ b }: { readonly b: Builder }) {
-  const { index, level, preview } = b.state;
+  const { index, level, preview, blueprint } = b.state;
   const stats = builder.levelStats(index, catalog, level);
-  const heatKw = stats.itTypicalW / 1000;
-  const short = stats.coolingKw > 0 && heatKw > stats.coolingKw;
+  const site = level.kind === "site" ? builder.siteUse(blueprint, catalog) : undefined;
   return (
     <div className="stage-top">
-      <section className="hud" aria-label="이 화면의 합계">
-        <div className="hud-item">
-          들인 돈<b>{won(stats.costM)}</b>
-        </div>
-        <div className="hud-item">
-          랙<b>{count(stats.racks)}</b>
-        </div>
-        <div className="hud-item">
-          서버<b>{count(stats.servers)}</b>
-        </div>
-        <div className="hud-item" style={short ? { color: "var(--bad)" } : undefined}>
-          발열 / 냉방
-          <b>
-            {watts(stats.itTypicalW)} / {stats.coolingKw} kW
-          </b>
-        </div>
+      <section className="hud" aria-label="실험에 들어가는 숫자">
+        {builder.hudItems(stats, site).map((item) => (
+          <div
+            key={item.label}
+            className="hud-item"
+            style={item.bad ? { color: "var(--bad)" } : undefined}
+          >
+            {item.label}
+            <b>{item.value}</b>
+          </div>
+        ))}
       </section>
       {preview && (
         <div className="heat-scale" title="랙 흡기 온도: 파랑은 차갑고 빨강은 너무 더워요">
@@ -94,15 +91,27 @@ const NO_HANDLES: readonly world3d.PlanHandle[] = [];
 const shownHandles = (map: boolean, g: { readonly handles: readonly world3d.PlanHandle[] }) =>
   map ? NO_HANDLES : g.handles;
 
+/** The map mode (REQ-072): the picture takes the page, the palette and the numbers fold away. */
+function useMapMode(level: builder.Level) {
+  const [mapRoom, setMapRoom] = useState<string>();
+  return { map: level.kind === "room" && mapRoom === level.id, setMapRoom };
+}
+
+/** Keys, saving on its own, and the warning before leaving a change that is not saved yet. */
+function useBuilderHabits(b: Builder): void {
+  useBuilderKeys(b);
+  useAutosave(b);
+  useLeaveGuard(
+    b.state.dirty ? "저장하지 않고 나가면 고친 것이 사라져요. 그래도 나갈까요?" : undefined,
+  );
+}
+
 function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
   const b = useBuilder(initial);
-  const { index, level, preview, selected, dirty } = b.state;
-  // The map mode (REQ-072): the picture takes the page, the palette and the numbers fold away.
-  const [mapRoom, setMapRoom] = useState<string>();
-  const map = level.kind === "room" && mapRoom === level.id;
+  const { index, level, preview, selected } = b.state;
+  const { map, setMapRoom } = useMapMode(level);
   usePageTitle(initial.name);
-  useBuilderKeys(b);
-  useLeaveGuard(dirty ? "저장하지 않고 나가면 고친 것이 사라져요. 그래도 나갈까요?" : undefined);
+  useBuilderHabits(b);
   const gestures = useGestures(b);
   const { activity, now } = useActivity(initial.id);
   const overlay = useMemo(
@@ -137,11 +146,12 @@ function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
             onWatch={(id) => b.go(builder.levelOf(index, id))}
           >
             {!map && <Hud b={b} />}
-            {!map && (
+            {!map && gestures.hint && (
               <output className={`stage-hint${gestures.bad ? " stage-hint-bad" : ""}`}>
                 {gestures.hint}
               </output>
             )}
+            {!map && <NextChip b={b} worldId={initial.id} />}
           </WorldStage>
         </div>
         {!map && <Inspector b={b} />}

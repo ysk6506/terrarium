@@ -3,7 +3,8 @@
  * what stands in them. The building's frame has its corner at (0, 0); each room sits at its own offset.
  */
 import type { Catalog } from "@terrarium/core/catalog";
-import { type BlueprintIndex, DEFAULT_FLOOR_HEIGHT_M } from "@terrarium/core/world";
+import type { Rect } from "@terrarium/core/spatial";
+import { type BlueprintIndex, DEFAULT_FLOOR_HEIGHT_M, floorSpace } from "@terrarium/core/world";
 import { floorsOf } from "../builder/levels";
 import { floorY } from "./camera";
 import { boxOf } from "./plan";
@@ -26,6 +27,8 @@ export interface FloorScene {
   readonly y: number;
   readonly height: number;
   readonly rooms: readonly PlacedRoom[];
+  /** The floor no room covers, in the building's frame: where a room may still grow (REQ-076). */
+  readonly bare: readonly Rect[];
 }
 
 export interface BuildingScene {
@@ -56,7 +59,16 @@ export function buildingScene(
       if (!at || !scene) return [];
       return [{ id: room.id, name: room.name, x: at.x - at.w / 2, z: at.z - at.d / 2, scene }];
     });
-    return { id: floor.id, name: floor.name, level, y: floorY(index, floor.id), height, rooms };
+    const bare = floorSpace(index, catalog, floor.id)?.bare ?? [];
+    return {
+      id: floor.id,
+      name: floor.name,
+      level,
+      y: floorY(index, floor.id),
+      height,
+      rooms,
+      bare,
+    };
   });
   const top = floors.at(-1);
   return {

@@ -1,14 +1,17 @@
 /**
- * A new site to build on (REQ-048): its shape is a preset's, a rectangle of a chosen size, or one drawn on a pad,
- * with or without land for sale beside it. The button says what is wrong with the shape while it cannot be made.
+ * "작게 시작" (REQ-077, ADR-0083): a name, and a small site opens with its first land, building and server room. The
+ * shape of the land (a preset's, a rectangle of a chosen size, or one drawn on a pad) and the land for sale beside
+ * it are folded away; the button says what it makes while the shape cannot be made.
  */
 
 import { SITE_PRESETS } from "@terrarium/core/sources/worldgen";
 import type { Point } from "@terrarium/core/spatial";
 import { LAND_MARKETS, landMarket, PYEONG_M2 } from "@terrarium/core/world";
 import { useState } from "react";
-import { builder, count, won } from "../../logic";
-import { useApp } from "../context";
+import { builder, count, queueTour, won } from "../../logic";
+import { browserStore } from "../browser-store";
+import { catalog } from "../builder/useBuilder";
+import { messageOf, useApp } from "../context";
 import { Button, Check, Note, NumberField, Segmented, SelectField, TextField } from "../kit";
 import { OutlineView, SitePad } from "./site-pad";
 
@@ -39,10 +42,10 @@ function outlineFor(
 }
 
 function useShape() {
-  const [shape, setShape] = useState<Shape>("preset");
+  const [shape, setShape] = useState<Shape>("size");
   const [presetId, setPresetId] = useState<string>(SITE_PRESETS[0]?.id ?? "giheung");
-  const [w, setW] = useState<number | undefined>(600);
-  const [d, setD] = useState<number | undefined>(400);
+  const [w, setW] = useState<number | undefined>(builder.SMALL_LAND_M.w);
+  const [d, setD] = useState<number | undefined>(builder.SMALL_LAND_M.d);
   const [points, setPoints] = useState<Point[]>([]);
   const [picked, setPicked] = useState<string>();
   const preset = SITE_PRESETS.find((p) => p.id === presetId) ?? SITE_PRESETS[0];
@@ -78,8 +81,8 @@ function marketHelp(id: string): string {
 }
 
 const SHAPE_OPTIONS = [
-  { value: "preset", label: "사업장 모양 따라 하기" },
   { value: "size", label: "크기로 정하기" },
+  { value: "preset", label: "사업장 모양 따라 하기" },
   { value: "draw", label: "직접 그리기" },
 ] as const;
 
@@ -132,23 +135,17 @@ function DrawFields({ s }: { readonly s: Shaping }) {
         </Button>
       </div>
       <p className="tiny muted">
-        땅의 모서리를 순서대로 눌러서 점을 찍어요. 점이 3개를 넘으면 모양이 닫혀요. 10 m 칸에
-        맞춰져요.
+        땅의 경계를 찍어요. 마지막 점은 처음과 이어져요. 점은 10 m 칸에 맞춰져요.
       </p>
     </>
   );
 }
 
-/** The shape of the land: a campus's, a rectangle, or drawn. */
+/** The shape of the land: a rectangle, a campus's, or drawn. */
 function ShapeFields({ s }: { readonly s: Shaping }) {
   return (
     <>
-      <Segmented
-        label="사업장의 모양"
-        value={s.shape}
-        options={SHAPE_OPTIONS}
-        onChange={s.setShape}
-      />
+      <Segmented label="땅의 모양" value={s.shape} options={SHAPE_OPTIONS} onChange={s.setShape} />
       {s.shape === "preset" && (
         <>
           <SelectField
@@ -156,7 +153,7 @@ function ShapeFields({ s }: { readonly s: Shaping }) {
             value={s.presetId}
             options={PRESET_OPTIONS}
             onChange={s.setPresetId}
-            help="지도에서 옮긴 대략의 모양만 써요. 건물은 하나도 없는 빈 땅에서 시작해요."
+            help="지도에서 옮긴 대략의 모양만 써요."
           />
           <OutlineView outline={s.outline} />
         </>
@@ -181,7 +178,7 @@ function SaleFields({ s, forSale, onForSale }: SaleProps) {
   const sale = box ? builder.forSaleTotal(Math.ceil(box.w), Math.ceil(box.d), s.market) : undefined;
   return (
     <>
-      <Check label="사업장 바깥에 팔고 있는 땅도 두기" checked={forSale} onChange={onForSale} />
+      <Check label="옆에 팔고 있는 땅도 두기" checked={forSale} onChange={onForSale} />
       {forSale && (
         <SelectField
           label="땅값 기준"
@@ -193,40 +190,38 @@ function SaleFields({ s, forSale, onForSale }: SaleProps) {
       )}
       {forSale && sale && (
         <p className="tiny muted">
-          동쪽과 남쪽에 땅이 {sale.count}곳 생겨요. 모두 사면 {won(sale.priceM)}이에요. 사야 그 위에
-          건물을 지을 수 있어요.
+          동쪽과 남쪽에 땅이 {sale.count}곳 생겨요. 나중에 넓힐 때 살 땅이에요. 모두 사면{" "}
+          {won(sale.priceM)}이에요.
         </p>
       )}
     </>
   );
 }
 
-export function SiteForm({ onDone }: { readonly onDone: () => void }) {
-  const { api, navigate, toast } = useApp();
+const NAME = "내 사업장";
+
+export function SmallForm({ onDone }: { readonly onDone: () => void }) {
+  const { api, navigate } = useApp();
   const s = useShape();
   const [forSale, setForSale] = useState(true);
-  const [name, setName] = useState("");
+  const [name, setName] = useState(NAME);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
-  const siteName = s.shape === "preset" ? (s.preset?.name ?? "새 사업장") : "새 사업장";
   const create = async () => {
     setBusy(true);
     try {
-      const title = name.trim() || `${siteName} 새 세계`;
-      const blueprint = builder.newSite({
-        name: title,
-        siteName,
-        outline: s.outline,
-        forSale,
-        market: s.market,
-      });
+      const title = name.trim() || NAME;
+      const blueprint = builder.smallStart(
+        { name: title, siteName: title, outline: s.outline, forSale, market: s.market },
+        catalog,
+      );
       const saved = await api.call("createWorld", { body: { name: title, blueprint } });
-      toast("사업장을 만들었어요. 왼쪽에서 건물을 골라 내 땅 위를 끌어 보세요");
+      // The first small site of a browser asks about the tour once, in the builder.
+      queueTour(browserStore(), saved.world.id);
       onDone();
       navigate({ name: "world", id: saved.world.id });
     } catch (err) {
-      setError((err as Error).message);
-    } finally {
+      setError(messageOf(err));
       setBusy(false);
     }
   };
@@ -238,16 +233,21 @@ export function SiteForm({ onDone }: { readonly onDone: () => void }) {
         void create();
       }}
     >
-      <ShapeFields s={s} />
-      <SaleFields s={s} forSale={forSale} onForSale={setForSale} />
       <TextField
-        label="이름"
+        label="세계 이름"
         value={name}
-        placeholder={`${siteName} 새 세계`}
         maxLength={80}
         onChange={setName}
         {...(error ? { error } : {})}
+        help="땅 하나, 건물 하나, 서버룸 하나로 시작해요. 서버룸을 채우고 넓히는 건 안에서 해요."
       />
+      <details className="fold detail-fold">
+        <summary>땅 모양 정하기</summary>
+        <div className="stack" style={{ marginTop: 12 }}>
+          <ShapeFields s={s} />
+          <SaleFields s={s} forSale={forSale} onForSale={setForSale} />
+        </div>
+      </details>
       <div className="dialog-actions">
         <Button
           kind="primary"
@@ -256,7 +256,7 @@ export function SiteForm({ onDone }: { readonly onDone: () => void }) {
           disabled={s.problem !== undefined}
           {...(s.problem ? { why: s.problem } : {})}
         >
-          이 모양으로 만들기
+          작은 사업장 만들기
         </Button>
       </div>
     </form>

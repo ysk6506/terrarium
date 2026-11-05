@@ -3,19 +3,19 @@
  * water deer and raccoon dogs, each kind drawn as one instanced mesh so a hundred of them cost about
  * a dozen draw calls. Where each one stands comes from the pure `world3d.life` module as a function of
  * time; this layer only writes the matrices, twenty times a second, and only while someone can see them.
- * If the machine cannot keep up it switches itself off rather than make the rest of the view stutter.
+ * If the machine cannot keep up there are fewer of them (half for each level, one of a kind at least) and they
+ * are redrawn less often, but they keep moving.
  */
 import * as THREE from "three";
 import { world3d } from "../../logic";
 import { type Model, modelOf } from "./critters";
 import type { Engine } from "./engine";
-import { Strain } from "./strain";
 
 type Agent = world3d.Agent;
 type LifeKind = world3d.LifeKind;
 
 /**
- * on: always moving. auto: moving, but gives up when frames get slow. still: standing where they were
+ * on: always moving, all of them. auto: moving, fewer of them when frames get slow. still: standing where they were
  * at the start (for people who asked the system for less motion). off: nobody.
  */
 export type LifeMode = "on" | "auto" | "still" | "off";
@@ -67,6 +67,8 @@ interface Scratch {
   readonly p: THREE.Vector3;
   readonly s: THREE.Vector3;
 }
+
+const GONE = new THREE.Matrix4().makeScale(0, 0, 0);
 
 const toneOf = (model: Model, tone: number): THREE.Color =>
   model.tones[
@@ -136,11 +138,7 @@ function herdsFor(agents: readonly Agent[], material: THREE.Material, into: THRE
   return [...byKind].map(([kind, list]) => herdOf(kind, list, material, into));
 }
 
-export function buildLifeLayer(
-  engine: Engine,
-  site: world3d.SiteScene,
-  onSlow: () => void,
-): LifeLayer {
+export function buildLifeLayer(engine: Engine, site: world3d.SiteScene): LifeLayer {
   const group = new THREE.Group();
   group.visible = false;
   const material = new THREE.MeshStandardMaterial({
@@ -157,8 +155,8 @@ export function buildLifeLayer(
     p: new THREE.Vector3(),
     s: new THREE.Vector3(),
   };
-  const strain = new Strain();
   let shown = false;
+  let level = 0;
   let mode: LifeMode = "auto";
   let clock = 0;
   let since = 0;
@@ -166,7 +164,12 @@ export function buildLifeLayer(
   const live = () => shown && mode !== "off";
   const draw = (t: number) => {
     for (const h of herds) {
-      for (let i = 0; i < h.agents.length; i++) writePose(h, i, t, scratch);
+      // The ones left out at this level are drawn at no size; one of each kind always stays.
+      const kept = world3d.shownAt(h.agents.length, level);
+      for (let i = 0; i < h.agents.length; i++) {
+        if (i < kept) writePose(h, i, t, scratch);
+        else h.lead.setMatrixAt(i, GONE);
+      }
       h.lead.instanceMatrix.needsUpdate = true;
     }
     engine.invalidate();
@@ -181,13 +184,12 @@ export function buildLifeLayer(
     clock = time;
     if (!live() || mode === "still") return;
     since += dt;
-    if (mode === "auto" && strain.frame(dt)) {
-      mode = "off";
-      sync();
-      onSlow();
-      return;
+    const now = mode === "auto" ? engine.strain.level : 0;
+    if (now !== level) {
+      level = now;
+      since = Number.POSITIVE_INFINITY;
     }
-    if (since < STEP_S) return;
+    if (since < world3d.stepAt(STEP_S, level)) return;
     since = 0;
     draw(time);
   });
@@ -202,7 +204,6 @@ export function buildLifeLayer(
     },
     setMode: (next) => {
       mode = next;
-      strain.reset();
       sync();
     },
     dispose: () => {

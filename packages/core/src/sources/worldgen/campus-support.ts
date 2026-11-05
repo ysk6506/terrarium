@@ -20,23 +20,28 @@ const footprintOf = (catalog: Catalog, modelId: string) => {
   return "footprint" in model ? model.footprint : { w: 1, d: 1 };
 };
 
+/** Gap between equipment in a room that has a size given by a floor plan: tighter than in a room that grows to fit. */
+const PLAN_GAP_M = 0.4;
+
 /** Equipment placed in shelves; the room is as big as the shelves need. */
 export function shelve(
   catalog: Catalog,
   items: readonly EquipmentSpec[],
   minSize = { w: 8, d: 6 },
+  fixed = false,
 ): { equipment: EquipmentSpec[]; size: { w: number; d: number } } {
+  const gap = fixed ? PLAN_GAP_M : GAP_M;
   const packed = packShelves(
     items.map((i) => ({ id: i.id, ...footprintOf(catalog, i.modelId) })),
-    MAX_WIDTH_M,
-    GAP_M,
+    fixed ? minSize.w - 2 * gap : MAX_WIDTH_M,
+    gap,
   );
   const equipment = items.map((item) => {
     const p = packed.find((x) => x.id === item.id) as (typeof packed)[number];
     return { ...item, at: { x: p.x, y: p.y } };
   });
-  const w = Math.max(minSize.w, ...packed.map((p) => p.x + p.w + GAP_M));
-  const d = Math.max(minSize.d, ...packed.map((p) => p.y + p.d + GAP_M));
+  const w = Math.max(minSize.w, ...packed.map((p) => p.x + p.w + gap));
+  const d = Math.max(minSize.d, ...packed.map((p) => p.y + p.d + gap));
   return { equipment, size: { w, d } };
 }
 
@@ -74,8 +79,11 @@ export interface PlainRoom {
 }
 
 export function emitRoom(ctx: CampusCtx, floorId: string, room: PlainRoom): void {
-  const shelved = shelve(ctx.catalog, room.equipment ?? [], room.size);
+  // A room on a floor plan has the size and place the plan gives it; its equipment is packed into that.
+  const plan = ctx.placed.get(room.id);
+  const shelved = shelve(ctx.catalog, room.equipment ?? [], plan ?? room.size, plan !== undefined);
   ctx.asm.room(floorId, {
+    ...(plan ? { at: { x: plan.x, y: plan.y } } : {}),
     id: room.id,
     name: room.name,
     purpose: room.purpose,

@@ -31,6 +31,8 @@ const MAX_GENS_PER_SIDE = 3;
 
 export interface PowerInput {
   readonly building: string;
+  /** The building has a floor plan (REQ-076): its gear stands in an electrical room on the floor of the halls it feeds. */
+  readonly distributed?: boolean;
   readonly halls: readonly HallDraft[];
   readonly crah: ReadonlyMap<string, CrahPlan>;
   /** Plants of the building's cooling loops; they take power from a transfer switch of their own. */
@@ -39,6 +41,8 @@ export interface PowerInput {
 
 interface Block {
   readonly id: string;
+  /** The storey of the hall this block feeds. */
+  readonly floorId: string;
   readonly model: string;
   /** Load behind the UPS, W. */
   readonly loadW: number;
@@ -76,6 +80,7 @@ function blocksOf(ctx: CampusCtx, input: PowerInput): Block[] {
       const loadW = (itW + fanW / hall.blocks) * HEADROOM;
       return {
         id: blockId(hall, n),
+        floorId: hall.plan.floorId,
         loadW,
         model: loadW <= SMALL_UPS_LIMIT_W ? "ups-500kva" : "dp-ups-1200kva",
       };
@@ -94,6 +99,10 @@ interface SideRooms {
   readonly bat: EquipmentSpec[];
   /** Heat the UPS give off at full block load, W. */
   heatW: number;
+  /** The storey each piece of gear belongs on (equipment id → floor id), for a building with a floor plan. */
+  readonly floorOf: Map<string, string>;
+  /** Heat the UPS give off on each storey, W. */
+  readonly heatOf: Map<string, number>;
 }
 
 /** Switchgear and UPS of every block on one side; links switchgear -> UPS. */
@@ -116,7 +125,10 @@ function blockEquipment(ctx: CampusCtx, blocks: readonly Block[], side: Side, ro
     });
     ctx.asm.link("power", sw, ups);
     const model = ctx.catalog.getOf(block.model, "ups");
-    rooms.heatW += block.loadW * (1 / model.efficiency - 1);
+    const heat = block.loadW * (1 / model.efficiency - 1);
+    rooms.heatW += heat;
+    rooms.floorOf.set(sw, block.floorId).set(ups, block.floorId);
+    rooms.heatOf.set(block.floorId, (rooms.heatOf.get(block.floorId) ?? 0) + heat);
   }
 }
 
@@ -137,6 +149,7 @@ function emitAts(
       modelId: ATS_MODEL,
     });
     for (const block of group) ctx.asm.link("power", `${block.id}-ups-${side}`, id);
+    rooms.floorOf.set(id, (group[0] as Block).floorId);
     return { id, loadW: group.reduce((sum, b) => sum + upstreamW(ctx, b), 0) };
   });
 }
@@ -252,19 +265,50 @@ function emitSideRooms(ctx: CampusCtx, building: string, side: Side, rooms: Side
   });
 }
 
+/**
+ * One electrical room on each storey that has halls (REQ-076): the switchgear, transfer switches and UPS of
+ * both sides for the halls of that storey, cooled by units of their own.
+ */
+function emitFloorRooms(ctx: CampusCtx, sides: readonly SideRooms[]): void {
+  const floors = new Set(sides.flatMap((r) => [...r.floorOf.values()]));
+  for (const floorId of [...floors].sort()) {
+    const mine = (e: EquipmentSpec) => sides.some((r) => r.floorOf.get(e.id) === floorId);
+    const gear = sides.flatMap((r) => [...r.ele, ...r.bat]).filter(mine);
+    const feeds = gear.filter((e) => e.id.includes("-sw-")).map((e) => e.id);
+    const heat = sides.reduce((n, r) => n + (r.heatOf.get(floorId) ?? 0), 0);
+    const id = `${floorId}-ele`;
+    const level = floorId.split("-f").at(-1);
+    emitRoom(ctx, floorId, {
+      id,
+      name: `${level}F 전기실`,
+      purpose: "electrical",
+      equipment: [
+        ...gear,
+        ...roomCooling(ctx, id, 2000 + 1.5 * heat, [
+          feeds[0] as string,
+          (feeds[1] ?? feeds[0]) as string,
+        ]),
+      ],
+    });
+  }
+}
+
 /** Everything electrical for one building: its blocks' switchgear and UPS, transfer switches, sources. */
 export function emitPower(ctx: CampusCtx, input: PowerInput): void {
   const sides = sidesOf(ctx.spec.powerRedundancy);
   const blocks = blocksOf(ctx, input);
   const plantAts = emitPlantAts(ctx, input, sides);
+  const made: SideRooms[] = [];
   for (const side of sides) {
-    const rooms: SideRooms = { ele: [], bat: [], heatW: 0 };
+    const rooms: SideRooms = { ele: [], bat: [], heatW: 0, floorOf: new Map(), heatOf: new Map() };
+    made.push(rooms);
     blockEquipment(ctx, blocks, side, rooms);
     const feeds = [
       ...emitAts(ctx, { building: input.building, blocks, side, rooms }),
       ...plantAts.filter((a) => a.side === side),
     ];
     emitSources(ctx, { building: input.building, side, feeds });
-    emitSideRooms(ctx, input.building, side, rooms);
+    if (!input.distributed) emitSideRooms(ctx, input.building, side, rooms);
   }
+  if (input.distributed) emitFloorRooms(ctx, made);
 }

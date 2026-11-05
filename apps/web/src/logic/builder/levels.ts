@@ -14,6 +14,7 @@ import {
   footprint,
   roomBounds,
   roomLocalRects,
+  roomPurposeOf,
 } from "@terrarium/core/world";
 
 export type Level =
@@ -54,6 +55,20 @@ export function startLevel(index: BlueprintIndex): Level {
   if (room) return { kind: "room", id: room.id };
   const floor = index.ofKind("floor")[0];
   return floor ? { kind: "floor", id: floor.id } : { kind: "site" };
+}
+
+/**
+ * Where the builder opens a world (REQ-077): in the first server room that has racks, so the first thing seen is what
+ * an experiment runs on; where it starts when there is none; but on the site when the world has server rooms and no
+ * rack in any of them, since a bare room has nothing to look at and the next-step chip leads on from the site.
+ */
+export function openingLevel(index: BlueprintIndex): Level {
+  const racked = (id: string) => index.descendants(id).some((e) => e.kind === "rack");
+  const rooms = index.ofKind("room");
+  const hall = rooms.find((r) => roomPurposeOf(r) === "data_hall" && racked(r.id));
+  if (hall) return { kind: "room", id: hall.id };
+  const bare = rooms.length > 0 && rooms.every((r) => !racked(r.id));
+  return bare ? { kind: "site" } : startLevel(index);
 }
 
 export interface Crumb {

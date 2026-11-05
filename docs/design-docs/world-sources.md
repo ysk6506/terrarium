@@ -2,7 +2,7 @@
 title: 세계 소스 — 생성과 가져오기
 kind: spec
 status: active
-last_verified: 2026-11-04
+last_verified: 2026-11-05
 covers:
   - packages/core/src/sources/assembly.ts
   - packages/core/src/sources/assembly-site.ts
@@ -17,12 +17,12 @@ covers:
   - packages/core/src/sources/realimport/mapping.ts
   - packages/core/src/sources/realimport/synthesize.ts
 verification_log:
-  - "2026-10-30: 큰 설비 마당(개체 150개 초과)의 간격 3 m 규칙을 assembly-site.ts와 대조해 더함"
-  - "2026-10-30: REQ-057/ADR-0047: 이름 있는 자리(SiteSlot.name), places(부속 건물)와 모두 예약, CLEARED_PLOT_KINDS, campus-structures, 기본 구성(기흥 3·화성 7·평택 4, DC는 화성뿐)을 코드와 대조해 문서에 반영"
-  - "2026-11-03: 서버·core가 사람에게 돌려주는 안내 문장이 해요체로 바뀐 것만 확인했다. 동작과 본문은 그대로 (ADR-0050)"
-  - "2026-11-03: 부지 가격과 site props(landMarket, landPriceM)를 assembly-site.ts·campus.ts와 대조해 더했다 (REQ-059, ADR-0051)"
   - "2026-11-04: campus-families의 fabric 필드와 campus-rack의 스위치 props를 확인해 family별 네트워크 모양 문단을 더했다 (REQ-065)"
-covers_hash: 41613df2716709cd
+  - "2026-11-05: REQ-076: HPC센터 층 구성(campus-floor, campus-locked-plan, campus-fit)과 건물 잠금, 사업장 수전 용량을 코드와 대조해 적었다"
+  - "2026-11-05: REQ-076: 잠긴 건물의 홀은 방이 허락하는 만큼 놓되 podsPerHall개를 넘지 않는 것을 campus-plan.ts와 대조해 적었다"
+  - "2026-11-05: podsPerHall 상한 문장을 campus-plan.ts와 대조해 고쳤다"
+  - "2026-11-05: REQ-077 세계 만들기 재설계(작업 #90) 반영: 코드와 대조해 맞는 것을 확인했다"
+covers_hash: d1ea874e7b031d4d
 ---
 # 세계 소스 (REQ-009~013, REQ-035, REQ-043~049)
 
@@ -74,9 +74,24 @@ AI 수랭·액침 / 동별로 다름), 건물 수, 건물당 데이터 홀 층�
 팹마다 서버룸은 **2~4층 중 팹마다 정해진 한 층**에 1~2개 들어가고(3개 이상이면 위층으로 이어진다), 컨테인먼트는 보통 홀의 0.4~0.85배, 한 줄은 5~10랙이다(컨테인먼트당 10~20랙).
 맨 윗층은 서버룸 없이 더 깊은 클린룸 하나다. 클린룸 안의 공정 장비는 월드가 모델링하지 않는다(방이 곧 데이터이고, 3D가 장식으로 그린다). 1층의 전기실·통신실과 층마다 기계실(CDU)은 데이터센터와 같다.
 연구동은 `purpose: "research"` 건물로 이름이 `DSR동 A타워`·`B타워`·`C타워`이고 지상 27층이다. 서버룸은 팹처럼 작고 동·층별로 있다: A 4층 1개(추정), B 5층 1개, C 3층 2개
-(`campus-plan.ts`의 `LAB_ROOM_FLOORS`). 데이터센터의 홀은 서버룸보다 크다. 화성의 HPC센터는 이름이 `HPC센터`이고 데이터 홀 층이 10개(2~11층)에 층당 홀 2개다.
+(`campus-plan.ts`의 `LAB_ROOM_FLOORS`). 데이터센터의 홀은 서버룸보다 크다. 화성의 HPC센터는 이름이 `HPC센터`이고 데이터 홀 층이 10개(2~11층)다.
 사업장마다 기본 구성이 다르다(`SITE_CAMPUS_MIX`, [ADR-0046](adr/0046-site-places-and-server-rooms.md), [ADR-0047](adr/0047-site-names-and-places.md)): 지도에 보이는 가동 중인 팹을 모두 짓고
 (기흥 3, 화성 7, 평택 P1~P4 네 곳; P5·P6은 아직 빈 자리), 화성은 HPC센터와 DSR 세 동에 맞춰 홀 크기·층·상세 비율도 정한다. 기흥·평택에는 데이터센터 자리가 없다(지도에 없다). 수원은 데이터센터만, 온양은 팹 하나다.
+
+### HPC센터의 층 구성 (REQ-076, [ADR-0081](adr/0081-real-building-size.md))
+
+지도의 자리(`slot`)로 만든 건물은 `props.sizeLocked`가 `true`다. 그 가운데 데이터센터 건물(화성의 HPC센터)은 자리의 크기 **95 × 72 m**가 곧 건물의 바닥이다(`BlueprintAssembler.building(…, size)`). 방은 모두 타일(0.6 m) 단위라서 빌더가 크기를 바꿀 때 어긋나지 않는다. 팹과 연구동은 크기가 내용에서 나오는 그대로 잠기기만 한다.
+HPC센터의 방은 `campus-floor.ts`의 층 평면이 자리를 정한다(조립기의 `RoomSpec.at`: 한 층의 모든 방이 자리를 말하면 쌓는 대신 그 자리에 놓는다).
+
+| 층 | 방 |
+|---|---|
+| 1층 | 로비·하역장(40.2 × 24 m), 창고(30 × 24 m), 통신실(MMR), 관제실(NOC) |
+| 2~11층 | 서버룸 2개(5층만 3개; 폭 66.6 m, 깊이는 층 바닥의 56~60%를 방 수로 나눈 만큼) + 전기실(24 × 39.6 m) + 기계실(24 × 12 m) + 창고(24 × 7.8 m) |
+
+- 서버룸 안의 컨테인먼트는 방이 허락하는 만큼, 입력의 `podsPerHall`개까지 놓는다(`campus-fit.ts`의 `fitPods`가 폭으로 열을, 냉방기 띠를 뺀 깊이로 줄을 센다). 화성 기본 구성은 30이라 방이 먼저 찬다. 한 줄은 12랙, 홀은 공랭 넷에 후면도어+수랭 하나꼴이다(`campus-locked-plan.ts`).
+- **전기실은 층마다 있고**, 그 층 홀이 먹는 UPS·수배전반·ATS가 들어 있다(`campus-power.ts`의 `emitFloorRooms`). 다른 건물은 예전처럼 1층에 전기실·배터리실을 둔다. 기계실은 모든 서버 층에 있고, 수랭 랙이 있는 층에만 CDU가 있다.
+- 지하 2층은 만들지 않았다(층 번호 0과 음수가 3D 단면에서 비싸다). 연면적은 층마다 같은 바닥으로 75,240 ㎡가 되어 실제 53,508 ㎡보다 크다. 수치와 출처는 [용량](capacity.md)에 있다.
+- 사업장은 수전 용량을 가진다(`SiteShape.power`, 화성 108 MW는 공개 수치, 나머지는 추정). 사이트 개체의 `props.powerCapacityMW`와 `powerCapacityEstimated`로 간다.
 
 ### 짓지 않은 자리 (REQ-056, [ADR-0046](adr/0046-site-places-and-server-rooms.md))
 

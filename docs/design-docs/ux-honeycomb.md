@@ -2,18 +2,18 @@
 title: UX Honeycomb 측정
 kind: guide
 status: active
-last_verified: 2026-11-04
+last_verified: 2026-11-05
 covers:
   - harness/src/ux/score.ts
   - tests/e2e/ux/probes-voice.ts
   - tests/e2e/ux/probes-detail.ts
-covers_hash: 6eac166f9d31eeb6
+covers_hash: d11f507820e64788
 verification_log:
-  - "2026-10-29: 측정 항목 표와 여정 예산을 score.ts, 여정 코드와 대조했다. 첫 화면 크기는 전송량(압축 후)으로 잰다"
   - "2026-11-03: 측정 항목 표를 score.ts와 대조해 voice·one-thing·buttons·disabled-why·hover·targets·units를 더했고, probes-voice/probes-detail을 covers에 넣었다 (REQ-058, ADR-0050)"
   - "2026-11-03: targets 행을 높이 32 px·너비 24 px 기준으로 고쳤다 (REQ-058, ADR-0050)"
   - "2026-11-04: 여정 표에 site(새 사업장 만들고 땅 사기, 예산 6)를 더하고 score.ts의 JOURNEY_BUDGETS·JOURNEY_LABELS와 journeys.ts를 대조했다"
   - "2026-11-04: 여정 표에 author(빈 캔버스에서 시험지 점검까지, 예산 8)를 더하고 score.ts의 JOURNEY_BUDGETS·JOURNEY_LABELS, journeys.ts와 대조했다. 여정 수는 열 개"
+  - "2026-11-05: REQ-077 세계 만들기 재설계(작업 #90) 반영: 코드와 대조해 맞는 것을 확인했다"
 ---
 # UX를 숫자로 재는 법 (REQ-041, [ADR-0031](adr/0031-ux-honeycomb-measurement.md))
 
@@ -69,7 +69,7 @@ UI를 바꿨다면 `pnpm ux`를 한 번 돌려야 `pnpm check`가 통과한다(�
 
 | 여정 | 예산(손 수) | 하는 일 |
 |---|---|---|
-| build | 8 | 사업장으로 세계를 만들고, 3D에서 랙을 놓고, 되돌린다 |
+| build | 8 | 사업장 그대로(작게)로 세계를 만들고, 첫 서버룸에서 랙을 놓고, 되돌린다 |
 | design | 8 | 템플릿으로 시나리오를 만들고, 팔레트에서 블록을 끌어다 놓고, 저장한다 |
 | author | 8 | 빈 캔버스에서 시작해 "블록 넣기" 한 번으로 에이전트 투입 블록이 줄에 이어지는 것을 보고, 편집기에서 시험지 점검을 돌려 기준선 점수가 나오는 것까지 본다 (REQ-071) |
 | run | 6 | 새 실험을 시작하고 결과가 나올 때까지 본다 |
@@ -77,8 +77,8 @@ UI를 바꿨다면 `pnpm ux`를 한 번 돌려야 `pnpm check`가 통과한다(�
 | share | 5 | 끝난 실험에서 링크를 복사하고, 이름 모르는 사람의 브라우저에서 연다 |
 | fork | 6 | 끝난 실험에서 에이전트를 바꿔 다시 돌리고 원본과 견주는 결과를 본다 |
 | compare | 4 | 벤치마크에서 줄을 골라 조건을 바꿔 해 보는 화면까지 간다 |
-| import | 6 | 현실(샘플 소스)에서 세계를 가져온다 |
-| site | 6 | 새 세계에서 크기로 정해 빈 사업장을 만들고, 팔고 있는 땅을 사서 들인 돈이 느는 것을 보고, 되돌린다 |
+| site | 6 | 작게 시작으로 작은 사업장을 만들고, 팔고 있는 땅을 사서 "팔고 있는 땅이 n곳"이 줄어드는 것을 보고, 되돌린다 |
+| build-small | 8 | 작게 시작 → 다음 할 일 칩으로 서버룸 채우기(랙 24대) → 돌려 보기까지 (REQ-077, ADR-0083). 맨 뒤에 둔다 |
 
 ## 코드 위치와 고치는 법
 

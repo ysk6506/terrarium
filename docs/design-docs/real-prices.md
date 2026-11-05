@@ -14,12 +14,12 @@ covers:
   - packages/core/src/catalog/builtin/orv3.ts
   - apps/web/src/logic/builder/stats.ts
 verification_log:
-  - "2026-11-04: GPU 서버 5종(gpu-servers.ts)의 값과 근거를 더하고, 장당 값의 상한을 B300에 맞춘 것(ADR-0063)을 반영"
-  - "2026-11-04: GPU 서버 5종의 값과 근거, 장당 값 상한 130백만 원을 gpu-servers.ts·construction.test.ts와 대조"
   - "2026-11-04: GPU 백엔드 leaf·스파인 2종(it.ts)의 값과 근거를 더하고 it.ts와 대조 (REQ-067, ADR-0064)"
   - "2026-11-04: it.ts의 rail leaf·스파인 값 180백만 원을 문서와 대조"
   - "2026-11-05: REQ-075: construction.ts의 방 마감이 조각 넓이의 합(roomArea)을 쓰는 것을 적었다. 단가는 그대로"
-covers_hash: c1795f7a2fd9afe2
+  - "2026-11-05: REQ-076: construction.ts에 창고(0.2)와 로비·하역장(0.3) 마감 단가를 더한 것을 표에 적었다. 나머지 단가는 그대로"
+  - "2026-11-05: REQ-077 세계 만들기 재설계(작업 #90) 반영: 코드와 대조해 맞는 것을 확인했다"
+covers_hash: 127b27c871f5199e
 ---
 # 현실의 가격 (REQ-059)
 
@@ -64,6 +64,7 @@ covers_hash: c1795f7a2fd9afe2
 | 서버룸 마감 | 120만 원 | | 추정 |
 | 통신실 / 전기실 / 기계실 / 배터리실 / 관제실 | 90 / 60 / 50 / 80 / 100만 원 | | 추정 |
 | 클린룸 마감 | 400만 원 | | 추정 |
+| 창고 / 로비·하역장 마감 | 20 / 30만 원 | | 추정 (바닥과 조명만) |
 | 컨테인먼트 (바닥 ㎡당) | 90만 원 | | 추정 (랙 한 대에 약 1,500달러) |
 
 어떻게 잡았나:

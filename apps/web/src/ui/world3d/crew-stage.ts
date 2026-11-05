@@ -15,7 +15,7 @@ type Trouble = Pick<world3d.CrewWorld, "alarms" | "activity">;
 
 /** What the crew module brings (it is loaded when the camera first goes into a room, so the first screen does not carry it). */
 export interface CrewKit {
-  build(engine: Engine, crew: world3d.Crew, onSlow: () => void, still: boolean): CrewLayer;
+  build(engine: Engine, crew: world3d.Crew, still: boolean): CrewLayer;
   lineFor: typeof world3d.lineFor;
 }
 
@@ -86,7 +86,7 @@ export class CrewStage {
     }
     if (this.mounted?.crew === cfg.crew && this.mounted.roomId === cfg.roomId) return;
     this.release();
-    const layer = cfg.kit.build(this.engine, cfg.crew, () => this.setStill(true), this.still);
+    const layer = cfg.kit.build(this.engine, cfg.crew, this.still);
     if (!building.mountInRoom(cfg.roomId, layer.group)) {
       layer.dispose();
       return;

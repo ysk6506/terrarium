@@ -10,10 +10,11 @@ import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass.js";
-import { world3d } from "../../logic";
+import { readSettings, world3d } from "../../logic";
 
-const { THEME, QUALITY_HIGH, QualityGovernor, startQuality } = world3d;
+const { THEME, QUALITY_EVENT, QualityGovernor, Strain, pixelRatioFor, planQuality } = world3d;
 
+import { browserStore } from "../browser-store";
 import { Materials } from "./materials";
 
 export type Quality = world3d.Quality;
@@ -33,6 +34,8 @@ export interface Engine {
   /** A soft light that rides with the camera, for close-ups. */
   readonly fill: THREE.PointLight;
   quality: Quality;
+  /** How much the machine struggles; the moving extras (people, visitors, air, the slow turn) follow its level. */
+  readonly strain: world3d.Strain;
   /** Ask for a new frame. */
   invalidate(): void;
   /** Keep drawing frames while an animation runs; call the returned function when it ends. */
@@ -51,7 +54,8 @@ export interface Engine {
   readonly topDown: boolean;
   /** Fit the orthographic camera to what `camera` sees at this distance from its target; the rig calls it on every move. */
   frameOrtho(distance: number): void;
-  setQuality(q: Quality): void;
+  /** Draw with this quality. `fixed` keeps the judge of frame times from lowering it; `lowered` tells the page it was made lighter by itself. */
+  setQuality(q: Quality, fixed?: boolean, lowered?: boolean): void;
   /** Frames drawn so far (for tests and for knowing a screenshot is ready). */
   readonly frames: () => number;
   /** Nothing is waiting to be drawn and nothing is moving. */
@@ -198,7 +202,8 @@ class StageEngine implements Engine {
   private readonly listeners = new Set<(dt: number, time: number) => void>();
   private readonly drawn = new Set<() => void>();
   private readonly governor = new QualityGovernor();
-  private current: Quality = QUALITY_HIGH;
+  private current: Quality = world3d.QUALITY_HIGH;
+  readonly strain = new Strain();
   private width = 0;
   private height = 0;
   private dirty = true;
@@ -218,9 +223,13 @@ class StageEngine implements Engine {
     this.scene.fog = new THREE.Fog(THEME.sky[1], 400, 3000);
     ({ sun: this.sun, fill: this.fill } = addLights(this.scene));
     this.post = makePost(this.renderer, this.scene, this.camera);
-    this.setQuality(
-      startQuality(graphicsOf(this.renderer), new URLSearchParams(location.search).get("quality")),
+    const plan = planQuality(
+      graphicsOf(this.renderer),
+      new URLSearchParams(location.search).get("quality"),
+      readSettings(browserStore()).graphics,
     );
+    this.setQuality(plan.quality, plan.fixed);
+    this.renderer.domElement.dataset.strain = "0";
     this.raf = requestAnimationFrame(this.tick);
   }
 
@@ -242,7 +251,7 @@ class StageEngine implements Engine {
     this.post.render.camera = this.view;
     this.post.ao.camera = this.view;
     this.post.ao.enabled = this.current.ao && !on;
-    for (const p of this.post.tilts) p.enabled = !on && this.tiltAmount > 0.01;
+    this.applyTilt();
     this.frameOrtho(this.orthoDistance);
     this.dirty = true;
   }
@@ -304,6 +313,7 @@ class StageEngine implements Engine {
     this.height = h;
     this.renderer.setSize(w, h, false);
     this.post.composer.setSize(w, h);
+    this.applyPixelRatio();
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.frameOrtho(this.orthoDistance);
@@ -340,29 +350,43 @@ class StageEngine implements Engine {
 
   setTilt(amount: number, centre = 0.52): void {
     this.tiltAmount = amount;
+    for (const p of this.post.tilts) (p.uniforms.centre as { value: number }).value = centre;
+    this.applyTilt();
+  }
+
+  /** The blur is what the level of the view asks for, scaled by the quality; with none of it the passes are left out. */
+  private applyTilt(): void {
+    const amount = this.tiltAmount * this.current.blur;
     for (const p of this.post.tilts) {
       (p.uniforms.amount as { value: number }).value = amount;
-      (p.uniforms.centre as { value: number }).value = centre;
       p.enabled = amount > 0.01 && !this.flat;
     }
     this.dirty = true;
   }
 
-  setQuality(q: Quality): void {
+  setQuality(q: Quality, fixed = false, lowered = false): void {
     this.current = q;
     this.governor.set(q);
+    this.governor.pin(fixed);
     this.post.ao.enabled = q.ao && !this.flat;
     this.post.smaa.enabled = q.smaa;
     this.renderer.domElement.dataset.quality = q.name;
     this.applyShadowSize();
     this.applySamples(q.samples);
-    const ratio = Math.min(window.devicePixelRatio || 1, q.pixelRatio);
-    if (ratio !== this.renderer.getPixelRatio()) {
-      this.renderer.setPixelRatio(ratio);
-      this.post.composer.setPixelRatio(ratio);
-      this.syncTiltSize();
-    }
+    this.applyPixelRatio();
+    this.applyTilt();
+    if (lowered) window.dispatchEvent(new CustomEvent(QUALITY_EVENT, { detail: q.name }));
     this.dirty = true;
+  }
+
+  /** Draw at the ratio the quality allows for this canvas: a big monitor gets a lower one so the pixel count stays bounded. */
+  private applyPixelRatio(): void {
+    const q = this.current;
+    const ratio = pixelRatioFor(q, window.devicePixelRatio || 1, this.width, this.height);
+    if (ratio === this.renderer.getPixelRatio()) return;
+    this.renderer.setPixelRatio(ratio);
+    this.post.composer.setPixelRatio(ratio);
+    this.syncTiltSize();
   }
 
   dispose(): void {
@@ -393,6 +417,9 @@ class StageEngine implements Engine {
     this.raf = requestAnimationFrame(this.tick);
     const dt = Math.min(0.1, (now - this.last) / 1000);
     this.last = now;
+    const was = this.strain.level;
+    if (this.strain.frame(dt) !== was)
+      this.renderer.domElement.dataset.strain = String(this.strain.level);
     for (const l of this.listeners) l(dt, now / 1000);
     if (!this.dirty && this.running === 0) return;
     // A light picture keeps to its frame rate so a slow machine is not drawing all the time.
@@ -418,7 +445,7 @@ class StageEngine implements Engine {
   private judge(started: number): void {
     this.renderer.getContext().finish();
     const next = this.governor.frame(performance.now() - started);
-    if (next) this.setQuality(next);
+    if (next) this.setQuality(next, false, true);
   }
 }
 

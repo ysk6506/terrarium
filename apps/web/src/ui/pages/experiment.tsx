@@ -224,7 +224,7 @@ export function ExperimentPage({ id }: { readonly id: string }) {
   const runs = live?.runs.length ? live.runs : view.runs;
   const status = live?.summary?.status ?? view.status;
   return (
-    <div className="page" data-status={status}>
+    <div className="page page-full" data-status={status}>
       <Head view={{ ...view, status }} onChange={state.set} />
       <ResultFigures a={view.analysis} />
       <p className="sr-only" aria-live="polite">

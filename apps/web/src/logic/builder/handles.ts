@@ -5,13 +5,22 @@
  */
 import type { Catalog } from "@terrarium/core/catalog";
 import type { Rect } from "@terrarium/core/spatial";
-import { type Blueprint, BlueprintIndex, type Entity, roomRects } from "@terrarium/core/world";
+import {
+  type Blueprint,
+  BlueprintIndex,
+  type Entity,
+  isSizeLocked,
+  roomArea,
+  roomRects,
+} from "@terrarium/core/world";
 import { count, won } from "../format";
+import type { Edit } from "./edit";
 import { snap } from "./edit";
+import { moreRacksText } from "./floor-notes";
 import type { Plan, Point, Where } from "./gesture";
 import { GRID, TILE_M } from "./grid";
 import type { Level } from "./levels";
-import { addPiece, costDeltaM, pieceRect, resizeBody, resizePiece, tileCount } from "./pieces";
+import { addPiece, costDeltaM, pieceRect, resizeBody, resizePiece } from "./pieces";
 import { Refusal, type Side } from "./reshape";
 import { HEIGHTS } from "./scene";
 
@@ -55,10 +64,12 @@ export function handlesFit(
       (level.kind === "floor" && target.parentId === level.id) ||
       (level.kind === "room" && level.id === target.id)
     );
+  // A building of real size is moved, never resized: it has no handles (REQ-076).
   if (target.kind === "building")
     return (
-      level.kind === "site" ||
-      (level.kind === "floor" && index.enclosing(level.id, "building")?.id === target.id)
+      !isSizeLocked(target) &&
+      (level.kind === "site" ||
+        (level.kind === "floor" && index.enclosing(level.id, "building")?.id === target.id))
     );
   return false;
 }
@@ -232,9 +243,13 @@ function sizeLabel(
   const delta = costDeltaM(bp, after, catalog, target.id);
   const amount =
     target.kind === "room"
-      ? `방 전체 타일 ${count(tileCount(next))}장`
+      ? `방 전체 ${count(Math.round(roomArea(next)))}㎡`
       : `${count(Math.round(shown.w * shown.d))}㎡`;
-  return `${piece ? "" : `${meters(shown)} · `}${amount} · ${costText(delta)}`;
+  const racks =
+    target.kind === "room" ? moreRacksText(roomArea(next) - roomArea(target)) : undefined;
+  return [`${piece ? "" : `${meters(shown)} · `}${amount}`, costText(delta), racks]
+    .filter((part) => part !== undefined)
+    .join(" · ");
 }
 
 /** What happens if a handle is dragged from `from` to `to` on the plan: the ghost, the words, and the edit. */
@@ -252,16 +267,80 @@ export function handlePlan(where: Where, handle: Handle, from: Point, to: Point)
   if (handle.kind === "attach") return attachPlan(where, target, handle, base, { dx, dy }, show);
   const next = draggedRect(base, handle.side, dx, dy, unit);
   const height = target.kind === "building" ? 3 : HEIGHTS.roomSlab;
+  const make = (r: Rect) =>
+    handle.rect === 0
+      ? resizeBody(bp, catalog, target.id, r)
+      : resizePiece(bp, catalog, target.id, handle.rect - 1, r);
   try {
-    const edit =
-      handle.rect === 0
-        ? resizeBody(bp, catalog, target.id, next)
-        : resizePiece(bp, catalog, target.id, handle.rect - 1, next);
+    const edit = make(next);
     const label = sizeLabel(bp, edit.blueprint, catalog, target, next);
     return { rect: show(next), height, label, edit };
   } catch (err) {
+    const stopped =
+      target.kind === "room"
+        ? stopAtLimit(make, base, { dx, dy, unit, side: handle.side }, err)
+        : undefined;
+    if (stopped) {
+      const label = `${sizeLabel(bp, stopped.edit.blueprint, catalog, target, stopped.rect)} · 여기가 끝이에요`;
+      return {
+        rect: show(stopped.rect),
+        height,
+        label,
+        edit: stopped.edit,
+        stopped: {
+          message: (stopped.reason as Error).message,
+          ...(stopped.reason instanceof Refusal ? { way: stopped.reason.way } : {}),
+        },
+      };
+    }
     return { rect: show(next), height, label: "", ...refused(err) };
   }
+}
+
+/** A refusal that comes of there being no floor left: a full floor or another room in the way. */
+const outOfRoom = (err: unknown) =>
+  err instanceof Refusal ||
+  (err as Error).message.includes("겹쳐요") ||
+  (err as Error).message.startsWith("건물 벽에 닿았어요");
+
+/**
+ * Where a drag that asks for too much floor comes to rest (REQ-076): the largest size, in steps of the grid, the edit
+ * still allows. The handle stops there instead of turning red, and the reason is that of the very next step, which is
+ * what stopped it (a wall, a neighbour, or no bare floor left).
+ */
+function stopAtLimit(
+  make: (r: Rect) => Edit,
+  base: Rect,
+  drag: { readonly dx: number; readonly dy: number; readonly unit: number; readonly side: Side },
+  err: unknown,
+): { readonly rect: Rect; readonly edit: Edit; readonly reason: unknown } | undefined {
+  if (!outOfRoom(err)) return undefined;
+  const steps = Math.ceil(Math.max(Math.abs(drag.dx), Math.abs(drag.dy)) / drag.unit);
+  const at = (k: number): Rect =>
+    draggedRect(base, drag.side, (drag.dx * k) / steps, (drag.dy * k) / steps, drag.unit);
+  let lo = 0;
+  let hi = steps - 1;
+  let bestK = -1;
+  let edit: Edit | undefined;
+  while (lo <= hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    try {
+      edit = make(at(mid));
+      bestK = mid;
+      lo = mid + 1;
+    } catch {
+      hi = mid - 1;
+    }
+  }
+  const rect = at(bestK);
+  if (!edit || (rect.w === base.w && rect.d === base.d)) return undefined;
+  let reason: unknown = err;
+  try {
+    make(at(bestK + 1));
+  } catch (next) {
+    reason = next;
+  }
+  return { rect, edit, reason };
 }
 
 function attachPlan(

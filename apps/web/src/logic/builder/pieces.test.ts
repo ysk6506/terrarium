@@ -240,7 +240,8 @@ describe("the handles of a selected room [REQ-075]", () => {
     expect(plan?.problem).toBeUndefined();
     expect(plan?.rect).toMatchObject({ x: 3, w: 15 });
     expect(plan?.label).toContain("15 × 9 m");
-    expect(plan?.label).toContain("타일");
+    expect(plan?.label).toContain("방 전체");
+    expect(plan?.label).not.toContain("타일");
     expect(plan?.label).toMatch(/건설비 \+/);
     const plus = handles.find((h) => h.key === "0:bottom+") as (typeof handles)[number];
     const piece = handlePlan({ bp, index, catalog, level }, plus, plus.at, {

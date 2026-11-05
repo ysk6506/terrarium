@@ -5,7 +5,8 @@
  */
 import type { Entity } from "@terrarium/core/world";
 import { useMemo, useState } from "react";
-import { builder, type world3d } from "../../logic";
+import { builder, hasLearned, learn, type world3d } from "../../logic";
+import { browserStore } from "../browser-store";
 import type { Ghost, PlanPoint, StageEvents } from "../world3d/stage-types";
 import type { Builder } from "./useBuilder";
 import { catalog } from "./useBuilder";
@@ -81,11 +82,13 @@ function hintOf(
   b: Builder,
   plan: builder.Plan | undefined,
   over: builder.Handle | undefined,
-  hit: string | undefined,
+  seen: { readonly hit: string | undefined; readonly dragged: boolean },
 ): string {
   if (plan) return plan.problem ?? plan.label;
   if (over) return HANDLE_HINTS[over.kind];
-  return builder.pointingHint(b.state.tool, hit, b.state.index);
+  const hint = builder.pointingHint(b.state.tool, seen.hit, b.state.index);
+  // Said until the first drag of the picture, then gone: the person knows.
+  return seen.dragged && hint === builder.DRAG_HINT ? "" : hint;
 }
 
 /** The plan of a gesture in progress, or of just pointing with a tool that shows where it would go. */
@@ -108,7 +111,8 @@ function commit(b: Builder, p: builder.Plan | undefined): void {
   if (!p) return;
   if (p.edit) {
     const edit = p.edit;
-    b.apply(() => edit);
+    // A drag that stopped at the limit of the floor is applied as far as it went, and says why it went no further.
+    if (b.apply(() => edit) && p.stopped) b.refuse(p.stopped.message, p.stopped.way);
   } else if (p.problem) b.refuse(p.problem, p.way);
 }
 
@@ -135,6 +139,7 @@ export function useGestures(b: Builder): Gestures {
   const { handles, size, planHandles } = useHandles(b);
   const [pointer, setPointer] = useState<{ at?: PlanPoint; hit?: string }>({});
   const [drag, setDrag] = useState<Drag>();
+  const [dragged, setDragged] = useState(() => hasLearned(browserStore(), "drag"));
   const where: builder.Where = { bp: blueprint, index, catalog, level };
   // biome-ignore lint/correctness/useExhaustiveDependencies: `where` is rebuilt from these each render
   const plan = useMemo(
@@ -166,6 +171,10 @@ export function useGestures(b: Builder): Gestures {
         if (tool.kind === "select") {
           const grabbed = grab(b, handles, size * 1.2, { from, to, hit });
           if (grabbed) setDrag(grabbed);
+          else if (!dragged) {
+            learn(browserStore(), "drag");
+            setDragged(true);
+          }
           return grabbed !== undefined;
         }
         if (CLICK_TOOLS.has(tool.kind)) return false;
@@ -190,7 +199,7 @@ export function useGestures(b: Builder): Gestures {
   return {
     ...(ghost ? { ghost } : {}),
     handles: planHandles,
-    hint: hintOf(b, plan, over, pointer.hit),
+    hint: hintOf(b, plan, over, { hit: pointer.hit, dragged }),
     bad: Boolean(plan?.problem),
     events,
   };

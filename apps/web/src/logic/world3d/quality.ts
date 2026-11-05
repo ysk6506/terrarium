@@ -13,6 +13,10 @@ export interface Quality {
   readonly maxFps: number;
   /** The most device pixels drawn per screen pixel (a sharp screen asks for 2). */
   readonly pixelRatio: number;
+  /** The most pixels drawn in all: a big monitor draws at a lower ratio instead of paying for millions of them. */
+  readonly maxPixels: number;
+  /** How strong the tilt-shift blur is, as a share of what each level of the view asks for; 0 leaves the blur pass out. */
+  readonly blur: 0 | 0.5 | 1;
   /** Multisampling of the picture before the effects; 0 is none. */
   readonly samples: 0 | 2 | 4;
   /** Smoothing of jagged edges as a last step over the whole picture. */
@@ -25,6 +29,8 @@ export const QUALITY_HIGH: Quality = {
   shadow: 4096,
   maxFps: 0,
   pixelRatio: 2,
+  maxPixels: 3_000_000,
+  blur: 0.5,
   samples: 4,
   smaa: true,
 };
@@ -34,6 +40,8 @@ export const QUALITY_LOW: Quality = {
   shadow: 1024,
   maxFps: 30,
   pixelRatio: 1.25,
+  maxPixels: 2_000_000,
+  blur: 0.5,
   samples: 2,
   smaa: true,
 };
@@ -43,6 +51,8 @@ export const QUALITY_MIN: Quality = {
   shadow: 1024,
   maxFps: 12,
   pixelRatio: 1,
+  maxPixels: 1_200_000,
+  blur: 0,
   samples: 0,
   smaa: false,
 };
@@ -56,6 +66,55 @@ const BY_NAME: Readonly<Record<string, Quality>> = {
 /** Drawing done by the processor, not a graphics card: remote desktops and servers show these names. */
 const SOFTWARE = /swiftshader|llvmpipe|softpipe|lavapipe|software|basic render|microsoft basic/i;
 
+/** Never draw below this many device pixels per screen pixel, however big the screen. */
+export const MIN_PIXEL_RATIO = 0.5;
+
+/**
+ * The device pixels to draw per screen pixel: what the screen asks for, kept under the quality's ratio and
+ * under its pixel budget. A 4K monitor at a ratio of 2 would draw 33 million pixels with ambient occlusion
+ * on each; the budget turns that into the ratio that costs about what a laptop pays.
+ */
+export function pixelRatioFor(
+  quality: Quality,
+  deviceRatio: number,
+  width: number,
+  height: number,
+): number {
+  const fit = Math.sqrt(quality.maxPixels / Math.max(1, width * height));
+  const wanted = Math.min(deviceRatio > 0 ? deviceRatio : 1, quality.pixelRatio, fit);
+  return Math.max(MIN_PIXEL_RATIO, Math.round(wanted * 100) / 100);
+}
+
+/** What a person chose for the graphics: leave it to the machine, or pin it. */
+export type GraphicsChoice = "auto" | "high" | "light";
+
+/** A picture and whether it is pinned (the judge of frame times leaves a pinned one alone). */
+export interface Planned {
+  readonly quality: Quality;
+  readonly fixed: boolean;
+}
+
+/**
+ * The picture to start with and whether to keep it. A name in the address wins over what was saved, and
+ * both pin the picture; with neither, `startQuality` decides and the governor may lower it later.
+ */
+export function planQuality(
+  graphics: string,
+  asked: string | null,
+  saved: GraphicsChoice,
+): Planned {
+  const named = asked ? BY_NAME[asked.toLowerCase()] : undefined;
+  if (named) return { quality: named, fixed: true };
+  if (saved === "high") return { quality: QUALITY_HIGH, fixed: true };
+  if (saved === "light") return { quality: QUALITY_MIN, fixed: true };
+  return { quality: startQuality(graphics, null), fixed: false };
+}
+
+/** The event the page hears when the picture was made lighter by itself (not when a person chose). */
+export const QUALITY_EVENT = "terrarium:quality-lowered";
+/** What the page tells a person when it happens. */
+export const QUALITY_NOTICE = "그래픽을 가볍게 바꿨어요. 설정에서 되돌릴 수 있어요";
+
 /**
  * The picture to start with. A name in the address (`?quality=low`) wins, so a person can ask for it; then a
  * machine that draws with its processor starts light (its first frame would otherwise take many seconds);
@@ -67,10 +126,10 @@ export function startQuality(graphics: string, asked: string | null): Quality {
   return SOFTWARE.test(graphics) ? QUALITY_MIN : QUALITY_HIGH;
 }
 
-/** A frame that costs more than this (ms) makes the picture lighter. */
-export const SLOW_FRAME_MS = 40;
+/** A frame that costs more than this (ms, 40 frames a second) makes the picture lighter. */
+export const SLOW_FRAME_MS = 25;
 /** A frame this slow skips a step: the machine cannot draw the full picture at all. */
-export const VERY_SLOW_FRAME_MS = 90;
+export const VERY_SLOW_FRAME_MS = 50;
 /** One frame this slow lowers the picture at once, without waiting for an average. */
 export const STALL_MS = 1500;
 /** Frames ignored after the start or a change (shaders compile then), and frames weighed before judging. */
@@ -96,8 +155,14 @@ export class QualityGovernor {
   private cost = 0;
   private seen = 0;
   private quiet = 0;
+  private pinned = false;
 
   constructor(private current: Quality = QUALITY_HIGH) {}
+
+  /** A pinned picture is never judged: the person chose it. */
+  pin(on: boolean): void {
+    this.pinned = on;
+  }
 
   get quality(): Quality {
     return this.current;
@@ -112,7 +177,7 @@ export class QualityGovernor {
 
   /** Should the frame about to be drawn be timed? The lightest picture has nowhere lower to go. */
   measuring(): boolean {
-    return this.quiet === 0 && this.current !== QUALITY_MIN;
+    return !this.pinned && this.quiet === 0 && this.current !== QUALITY_MIN;
   }
 
   /** A frame was drawn without being timed. */

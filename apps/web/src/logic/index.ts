@@ -75,6 +75,7 @@ export {
   won,
 } from "./format";
 export { HEADLINES, type Headline, pickHeadline, STARTS, type Start } from "./home-copy";
+export * as howWords from "./how-words";
 export { Identity, type KeyValueStore, nameProblem } from "./identity";
 export {
   applyEvent,
@@ -93,13 +94,49 @@ export {
   narrowOptions,
 } from "./narrow";
 export {
+  type Aim,
+  hasRacks,
+  type NextStep,
+  nextStep,
+  type StepId,
+  TOUR_STEPS,
+  type TourStep,
+  tourLabel,
+} from "./next-step";
+export {
   hrefOf,
   type Page,
   type PageName,
   parseLocation,
   SECTIONS,
+  SETTINGS_SECTION,
   sectionOf,
   titleOf,
 } from "./router";
 export * as scenario from "./scenario";
+export {
+  DEFAULT_SETTINGS,
+  readSettings,
+  SETTING_DEFS,
+  SETTINGS_KEY,
+  type SettingDef,
+  type SettingKey,
+  type Settings,
+  saveSetting,
+  type ThemeChoice,
+  themeAttribute,
+} from "./settings";
+export {
+  advanceTour,
+  answerTour,
+  hasLearned,
+  type Lesson,
+  learn,
+  queueTour,
+  readTour,
+  type TourMode,
+  type TourSave,
+  tourMode,
+} from "./tour";
 export * as world3d from "./world3d";
+export * as worldScale from "./worldgen-scale";
