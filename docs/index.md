@@ -47,6 +47,7 @@ verification_log:
 - [제어 가능 요소표 — 실험이 무엇을 바꿀 수 있고, 에이전트가 무엇을 할 수 있는가](design-docs/controllability.md)
 - [측정의 신뢰 — 효율 점수는 과제를 푼 만큼만, 시험지는 기준선 에이전트로 점검](design-docs/measurement.md)
 - [세계 만들기 검토 — 설명 없이도 되는가, 토스의 원칙으로](design-docs/world-builder-review.md)
+- [고장 종류별 리드타임 — 넘기면 얼마나 걸려 사라지나](design-docs/lead-times.md)
 - [시나리오 편집기 검토 — 처음 쓰는 사람의 눈으로, 토스의 원칙으로](design-docs/scenario-editor-review.md)
 - [용어집 — 화면에 쓰는 말은 여기서 정한다](design-docs/glossary.md)
 
