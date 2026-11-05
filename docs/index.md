@@ -145,6 +145,7 @@ verification_log:
 - [0095 현실의 쌍둥이는 네 단계로 가고, 세계의 모델은 플러그인으로 바꿀 수 있다](design-docs/adr/0095-digital-twin-and-model-plugins.md)
 - [0096 파워 캐핑 — 전기요금을 아끼면서 서비스를 지키는 줄다리기를 잰다](design-docs/adr/0096-power-capping.md)
 - [0098 도메인 범위, 가상 담당자, 작업 티켓 — 넘기고 기다리고 그동안 다른 일을 하는 운영을 잰다](design-docs/adr/0098-domains-virtual-counterparts-tickets.md)
+- [0099 가상 담당자는 거절하지 않고 결정론적이며, 티켓 툴은 선택이고, 교체 작업은 3D에 보인다 (0098 보정)](design-docs/adr/0099-counterparts-deterministic.md)
 - [0082 느린 기계에서는 멈추지 않고 줄인다 — 품질·부하 시험 기대값을 고친다](design-docs/adr/0082-quality-degrade-amend-tests.md)
 
 ## 계획과 부채
