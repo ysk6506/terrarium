@@ -28,6 +28,9 @@
   --bad-soft: #fdecec;
   --bad-soft-hover: #fbd9da;
   --cold: #3a86c9;
+  --air-cold: #2b8fe6;
+  --air-hot: #ff7a4a;
+  --air-halo: #fff;
   --busy: #1b64da;
   --on-ink: #ffffff;
   --shadow: 0 8px 28px rgb(25 31 40 / 10%);
@@ -2482,11 +2485,11 @@ ol.elevation li:first-child .u-slot {
 }
 
 .air-dot-cold {
-  background: #2b8fe6;
+  background: var(--air-cold);
 }
 
 .air-dot-hot {
-  background: #ff7a4a;
+  background: var(--air-hot);
 }
 
 .air-units {
@@ -2573,9 +2576,9 @@ ol.elevation li:first-child .u-slot {
   font-weight: 650;
   line-height: 1;
   text-shadow:
-    0 0 2px #fff,
-    0 0 3px #fff,
-    0 0 3px #fff;
+    0 0 2px var(--air-halo),
+    0 0 3px var(--air-halo),
+    0 0 3px var(--air-halo);
   white-space: nowrap;
   pointer-events: none;
 }

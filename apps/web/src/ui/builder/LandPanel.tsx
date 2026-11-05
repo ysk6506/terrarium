@@ -21,6 +21,7 @@ function BuyButton({ parcel, b }: { readonly parcel: builder.ParcelView; readonl
   return (
     <Button
       size="small"
+      aria-label={`${parcel.name}, ${won(parcel.priceM)}에 사기`}
       onClick={() =>
         b.apply(
           (bp) => builder.buyParcel(bp, parcel.id),

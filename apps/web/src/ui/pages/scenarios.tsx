@@ -189,7 +189,9 @@ function ScenarioTable({
                 <td>{s.owner}</td>
                 <td>{relativeTime(s.updatedAt, now)}</td>
                 <td>
-                  <Go to={{ name: "newExperiment", scenarioId: s.id }}>실험하기</Go>
+                  <Go to={{ name: "newExperiment", scenarioId: s.id }}>
+                    실험하기<span className="sr-only"> ({s.name})</span>
+                  </Go>
                 </td>
               </tr>
             ))}

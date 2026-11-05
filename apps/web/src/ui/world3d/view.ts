@@ -9,8 +9,7 @@ import type { BlueprintIndex } from "@terrarium/core/world";
 import * as THREE from "three";
 import { builder, world3d } from "../../logic";
 import { ActivityLayer } from "./activity-layer";
-import { type AirConfig, AirStage } from "./air-stage";
-import type { AirMode } from "./airflow-layer";
+import { type AirConfig, type AirMaker, type AirPort, idleAir } from "./air-port";
 import { type BuildingLayer, buildBuildingLayer } from "./building-layer";
 import { CrewStage } from "./crew-stage";
 import { createEngine, type Engine } from "./engine";
@@ -44,7 +43,8 @@ export class WorldView {
   /** What the builder draws over the plan: outlines, handles, the ghost. */
   readonly overlay: PlanOverlay;
   private readonly activity: ActivityLayer;
-  private readonly air: AirStage;
+  private air: AirPort = idleAir(world3d.poseFor);
+  private airLoaded = false;
   /** The people of the room in view (REQ-074). */
   readonly crew: CrewStage;
   private stopSpin?: () => void;
@@ -87,12 +87,6 @@ export class WorldView {
       () => performance.now(),
     );
     this.engine.overlay.add(this.activity.group);
-    this.air = new AirStage(this.engine, this.rig, {
-      building: () => this.building?.layer,
-      focus: () => this.current,
-      refocus: () => this.focusOn(this.current),
-      slow: () => this.air.settle(),
-    });
     this.crew = new CrewStage(this.engine, {
       building: () => this.building?.layer,
       focus: () => this.current,
@@ -206,23 +200,27 @@ export class WorldView {
     this.events.onFocus?.(focus);
   }
 
+  /** The map was opened: take the drawing code its bundle brought (once), and show it in the room if the camera is there. */
+  loadAir(make: AirMaker): void {
+    if (this.airLoaded) return;
+    this.airLoaded = true;
+    this.air = make(this.engine, this.rig, {
+      building: () => this.building?.layer,
+      focus: () => this.current,
+      refocus: () => this.focusOn(this.current),
+      slow: () => this.air.settle(),
+    });
+    this.air.sync();
+  }
+
   /** Show the airflow map on the room being looked at (REQ-072); none takes it away. */
   setAirflow(config: AirConfig | undefined): void {
     this.air.set(config);
   }
 
-  /** How the airflow map moves: live, only arrows standing still, or no air. */
-  setAirMode(mode: AirMode): void {
-    this.air.setMode(mode);
-  }
-
   /** The canvas size, pixels. */
   get canvasSize(): { readonly w: number; readonly h: number } {
     return this.size;
-  }
-
-  get airStats() {
-    return this.air.stats;
   }
 
   /** Visit each rack of the airflow map with where it shows on the canvas; follow it with `onRender`. */

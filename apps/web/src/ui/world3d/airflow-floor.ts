@@ -5,7 +5,7 @@
  * once for a room and only recoloured when the readings change; `dispose` lets go of every piece.
  */
 import * as THREE from "three";
-import { world3d } from "../../logic";
+import { hallAir, world3d } from "../../logic";
 
 type Airflow = world3d.Airflow;
 type AirView = world3d.AirView;
@@ -82,13 +82,13 @@ export class HeatPlane {
 
   set(field: world3d.Field, view: AirView): void {
     const { cols, rows, values } = field;
-    const { lo, hi } = world3d.AIR_SCALES[view === "outlet" ? "outlet" : "inlet"];
+    const { lo, hi } = hallAir.AIR_SCALES[view === "outlet" ? "outlet" : "inlet"];
     this.small.width = cols;
     this.small.height = rows;
     const g = this.small.getContext("2d") as CanvasRenderingContext2D;
     const img = g.createImageData(cols, rows);
     for (let i = 0; i < values.length; i++) {
-      const [r, gr, b] = rgb255(world3d.airColor(view, values[i] as number));
+      const [r, gr, b] = rgb255(hallAir.airColor(view, values[i] as number));
       img.data[i * 4] = r;
       img.data[i * 4 + 1] = gr;
       img.data[i * 4 + 2] = b;
@@ -265,7 +265,7 @@ export class Doors {
     const byId = new Map(racks.map((r) => [r.id, r]));
     this.rackIds.forEach((id, i) => {
       const rack = byId.get(id);
-      if (rack) mesh.instanceColor?.setXYZ(i, ...world3d.doorColor(view, rack));
+      if (rack) mesh.instanceColor?.setXYZ(i, ...hallAir.doorColor(view, rack));
     });
     mesh.instanceColor.needsUpdate = true;
   }

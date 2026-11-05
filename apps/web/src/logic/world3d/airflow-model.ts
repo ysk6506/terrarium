@@ -4,18 +4,12 @@
  * running unit's air reaches, and the colour of a temperature. Plain numbers, no browser.
  */
 import { INLET_WARNING_C, RACK_CRITICAL_C } from "@terrarium/core/physics";
+import { AIR_NOTE, AIR_VIEWS, AIR_WORDS, type AirView } from "./airflow-words";
 import type { RackForm } from "./modes";
 import { heatColor, hex, mix, type Rgb } from "./palette";
 import type { RoomScene } from "./room";
 
-/** The three things the map can show, one at a time. */
-export type AirView = "inlet" | "outlet" | "flow";
-
-export const AIR_VIEWS: ReadonlyArray<{ readonly id: AirView; readonly label: string }> = [
-  { id: "inlet", label: "흡기 온도" },
-  { id: "outlet", label: "배기 온도" },
-  { id: "flow", label: "공기 흐름" },
-];
+export { AIR_NOTE, AIR_VIEWS, AIR_WORDS, type AirView };
 
 /** Colour scales, °C: the inlet one is the 18-36 of the approved mockup, the outlet one is 26-50. */
 export const AIR_SCALES: Readonly<Record<"inlet" | "outlet", { lo: number; hi: number }>> = {
@@ -26,39 +20,6 @@ export const AIR_SCALES: Readonly<Record<"inlet" | "outlet", { lo: number; hi: n
 /** The rack inlet temperatures the physics warns and raises an alarm at. */
 export const WARN_C = INLET_WARNING_C;
 export const CRITICAL_C = RACK_CRITICAL_C;
-
-/** Always on screen next to the map (ADR-0074). */
-export const AIR_NOTE = "냉방기 풍량과 랙 발열로 계산한 방향과 세기예요. 유체 해석(CFD)이 아니에요";
-
-export const AIR_WORDS = {
-  flat: "3D",
-  top: "위에서 본 지도",
-  how: "보는 방법",
-  what: "보는 것",
-  title: "온도와 공기 흐름",
-  open: "온도와 공기 흐름 보기",
-  unitOn: "돌아가는 중",
-  unitOff: "멈춤",
-  units: "냉방기",
-  noUnits: "이 방에는 냉방기가 없어요",
-  none: "돌려 보면 온도와 공기 흐름이 나와요",
-  run: "돌려 보기",
-  liquid: "액체로 식히는 방이라 온도만 보여요. 공기 흐름은 그리지 않아요",
-  supply: "차가운 바람: 냉방기에서 랙 앞으로",
-  exhaust: "더운 바람: 랙 뒤에서 냉방기로",
-  strong: "화살표가 빠르고 진할수록 센 바람이에요",
-  racks: "랙",
-  pickHint: "랙을 가리키거나 누르면 숫자가 나와요",
-  stopUnit: "멈춰 보기",
-  startUnit: "다시 돌려 보기",
-  time: "시간",
-  scrub: "돌린 시간 고르기",
-  inlet: "흡기",
-  outlet: "배기",
-  gap: "차이",
-  warn: "경고",
-  critical: "심각",
-} as const;
 
 /** Puffs on screen at most, in a whole hall; arrows at most on one path (ADR-0074). */
 export const PUFF_BUDGET = 600;

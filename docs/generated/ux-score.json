@@ -1,10 +1,10 @@
 {
   "measuredOn": "2026-11-05",
-  "webHash": "6fde34a1c98b4e04",
+  "webHash": "df412798b9be34a5",
   "scores": {
     "useful": 100,
     "usable": 100,
-    "desirable": 98.6,
+    "desirable": 100,
     "findable": 100,
     "accessible": 100,
     "credible": 100,
@@ -62,16 +62,16 @@
       "ok": 4
     },
     "colors": {
-      "literals": 84,
-      "offToken": 5
+      "literals": 82,
+      "offToken": 0
     },
     "progress": {
       "tried": 3,
       "ok": 3
     },
     "load": {
-      "kb": 705.6884765625,
-      "ms": 271,
+      "kb": 683.0390625,
+      "ms": 247,
       "sceneDrawn": true
     },
     "reach": {
@@ -116,16 +116,16 @@
       "ok": 7
     },
     "voice": {
-      "tried": 749,
-      "ok": 749
+      "tried": 755,
+      "ok": 755
     },
     "oneThing": {
       "tried": 13,
       "ok": 13
     },
     "buttons": {
-      "tried": 121,
-      "ok": 121
+      "tried": 124,
+      "ok": 124
     },
     "targets": {
       "tried": 297,

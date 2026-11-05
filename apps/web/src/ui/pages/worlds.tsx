@@ -78,7 +78,9 @@ function WorldTable({ worlds }: { readonly worlds: readonly WorldSummary[] }) {
               <td>{w.owner}</td>
               <td>{relativeTime(w.updatedAt, now)}</td>
               <td>
-                <Go to={{ name: "scenarios", worldId: w.id }}>시나리오</Go>
+                <Go to={{ name: "scenarios", worldId: w.id }}>
+                  시나리오<span className="sr-only"> ({w.name})</span>
+                </Go>
               </td>
             </tr>
           ))}

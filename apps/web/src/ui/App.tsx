@@ -28,20 +28,32 @@ import {
 import { AppContext, type AppServices, Go, type ToastTone, useApp, useAsync } from "./context";
 import { Icon, Mark } from "./icons";
 import { Button, Dialog, Loading, Note, TextField } from "./kit";
-import { AgentVersionsPage } from "./pages/agent-versions";
-import { BenchmarksPage } from "./pages/benchmarks";
-import { ConnectionsPage } from "./pages/connections";
-import { ExperimentPage } from "./pages/experiment";
 import { ExperimentsPage } from "./pages/experiments";
 import { HomePage } from "./pages/home";
-import { NewExperimentPage } from "./pages/new-experiment";
-import { RunPage } from "./pages/run";
 import { ScenariosPage } from "./pages/scenarios";
 import { WorldsPage } from "./pages/worlds";
 
 // The 3D builder and the flow editor bring three.js and React Flow; they load when opened (REQ-036).
 const WorldBuilderPage = lazy(() => import("./builder/WorldBuilderPage"));
 const ScenarioEditorPage = lazy(() => import("./scenario/ScenarioEditorPage"));
+
+// Screens the first visit does not need come down when opened: the home page is the budgeted one (700 kB).
+const AgentVersionsPage = lazy(() =>
+  import("./pages/agent-versions").then((m) => ({ default: m.AgentVersionsPage })),
+);
+const BenchmarksPage = lazy(() =>
+  import("./pages/benchmarks").then((m) => ({ default: m.BenchmarksPage })),
+);
+const ConnectionsPage = lazy(() =>
+  import("./pages/connections").then((m) => ({ default: m.ConnectionsPage })),
+);
+const ExperimentPage = lazy(() =>
+  import("./pages/experiment").then((m) => ({ default: m.ExperimentPage })),
+);
+const NewExperimentPage = lazy(() =>
+  import("./pages/new-experiment").then((m) => ({ default: m.NewExperimentPage })),
+);
+const RunPage = lazy(() => import("./pages/run").then((m) => ({ default: m.RunPage })));
 
 const ICONS: Readonly<Record<string, string>> = {
   home: "home",

@@ -59,7 +59,9 @@ function Row({
       </td>
       <td className="small">{row.owners.join(", ")}</td>
       <td>
-        <Go to={{ name: "newExperiment", forkOf: row.latest }}>조건 바꿔 해 보기</Go>
+        <Go to={{ name: "newExperiment", forkOf: row.latest }}>
+          조건 바꿔 해 보기<span className="sr-only"> ({name(row.harnessId, row.agentId)})</span>
+        </Go>
       </td>
     </tr>
   );

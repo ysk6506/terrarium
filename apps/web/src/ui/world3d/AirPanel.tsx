@@ -5,7 +5,7 @@
  * on screen when the card is folded.
  */
 import type { builder } from "../../logic";
-import { celsius, world3d } from "../../logic";
+import { celsius, hallAir, world3d } from "../../logic";
 import { Button } from "../kit";
 
 type Airflow = world3d.Airflow;
@@ -15,9 +15,9 @@ const STOPS = 8;
 
 /** The colour bar of a temperature view, as a CSS gradient, with the warning and critical lines marked on it. */
 function Legend({ kind }: { readonly kind: "inlet" | "outlet" }) {
-  const { lo, hi } = world3d.AIR_SCALES[kind];
+  const { lo, hi } = hallAir.AIR_SCALES[kind];
   const css = Array.from({ length: STOPS }, (_, i) => {
-    const c = world3d.airColor(kind, lo + ((hi - lo) * i) / (STOPS - 1));
+    const c = hallAir.airColor(kind, lo + ((hi - lo) * i) / (STOPS - 1));
     return `rgb(${c.map((v) => Math.round(v * 255)).join(",")}) ${Math.round((i / (STOPS - 1)) * 100)}%`;
   }).join(", ");
   const at = (c: number) => `${Math.round(((c - lo) / (hi - lo)) * 100)}%`;
@@ -27,12 +27,12 @@ function Legend({ kind }: { readonly kind: "inlet" | "outlet" }) {
         {kind === "inlet" && (
           <>
             <i
-              style={{ left: at(world3d.WARN_C) }}
-              title={`${world3d.AIR_WORDS.warn} ${world3d.WARN_C}°C`}
+              style={{ left: at(hallAir.WARN_C) }}
+              title={`${world3d.AIR_WORDS.warn} ${hallAir.WARN_C}°C`}
             />
             <i
-              style={{ left: at(world3d.CRITICAL_C) }}
-              title={`${world3d.AIR_WORDS.critical} ${world3d.CRITICAL_C}°C`}
+              style={{ left: at(hallAir.CRITICAL_C) }}
+              title={`${world3d.AIR_WORDS.critical} ${hallAir.CRITICAL_C}°C`}
             />
           </>
         )}
@@ -41,8 +41,8 @@ function Legend({ kind }: { readonly kind: "inlet" | "outlet" }) {
         <span>{lo}°C</span>
         {kind === "inlet" && (
           <span>
-            {world3d.AIR_WORDS.warn} {world3d.WARN_C} · {world3d.AIR_WORDS.critical}{" "}
-            {world3d.CRITICAL_C}
+            {world3d.AIR_WORDS.warn} {hallAir.WARN_C} · {world3d.AIR_WORDS.critical}{" "}
+            {hallAir.CRITICAL_C}
           </span>
         )}
         <span>{hi}°C</span>
@@ -97,7 +97,7 @@ function Units({
           {u.running && (
             <div className="air-unit-load">
               <span className="meter" aria-hidden="true">
-                <i style={{ width: `${Math.round(world3d.loadShareOf(u) * 100)}%` }} />
+                <i style={{ width: `${Math.round(hallAir.loadShareOf(u) * 100)}%` }} />
               </span>
               <span className="tiny">
                 {Math.round(u.loadKw)} / {Math.round(u.capacityKw)} kW · 급기 {celsius(u.supplyC)}
@@ -128,7 +128,7 @@ function RackNumbers({ rack, name }: { readonly rack: world3d.RackSpot; readonly
           <dd>{celsius(rack.outletC - rack.inletC)}</dd>
         </div>
       </dl>
-      <p className="tiny">{world3d.marginText(rack.inletC)}</p>
+      <p className="tiny">{hallAir.marginText(rack.inletC)}</p>
     </div>
   );
 }
@@ -176,7 +176,7 @@ export function AirPanel(p: AirPanelProps) {
               className="air-callout"
               onClick={() => p.onPickHottest(hottest.id)}
             >
-              {world3d.hottestText(p.nameOf(hottest.id), hottest.inletC)}
+              {hallAir.hottestText(p.nameOf(hottest.id), hottest.inletC)}
             </button>
           )}
           <div className="air-block">
@@ -204,7 +204,7 @@ export function AirPanel(p: AirPanelProps) {
             <div className="air-block">
               <label className="air-time">
                 <span>
-                  {world3d.AIR_WORDS.time} <b>{world3d.frameText(frames[p.frame]?.t ?? 0)}</b>
+                  {world3d.AIR_WORDS.time} <b>{hallAir.frameText(frames[p.frame]?.t ?? 0)}</b>
                 </span>
                 <input
                   type="range"

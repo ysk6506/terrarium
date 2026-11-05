@@ -69,6 +69,40 @@ function Block({ data, selected }: NodeProps<BlockNode>) {
 
 const NODE_TYPES = { block: Block };
 
+const DIRECTIONS: Readonly<Record<string, string>> = {
+  left: "왼쪽",
+  right: "오른쪽",
+  up: "위",
+  down: "아래",
+};
+
+/** What the canvas library says to a screen reader, in the words of the rest of the screen. */
+const ARIA_WORDS = {
+  "node.a11yDescription.default":
+    "엔터나 스페이스로 블록을 골라요. Delete로 지우고 Esc로 그만둬요.",
+  "node.a11yDescription.keyboardDisabled":
+    "엔터나 스페이스로 블록을 고른 뒤 화살표 키로 옮겨요. Delete로 지우고 Esc로 그만둬요.",
+  "node.a11yDescription.ariaLiveMessage": ({
+    direction,
+    x,
+    y,
+  }: {
+    direction: string;
+    x: number;
+    y: number;
+  }) =>
+    `블록을 ${DIRECTIONS[direction] ?? direction}으로 옮겼어요. 새 자리는 가로 ${x}, 세로 ${y}예요`,
+  "edge.a11yDescription.default":
+    "엔터나 스페이스로 이음선을 골라요. Delete로 지우고 Esc로 그만둬요.",
+  "controls.ariaLabel": "보기 조절",
+  "controls.zoomIn.ariaLabel": "확대",
+  "controls.zoomOut.ariaLabel": "축소",
+  "controls.fitView.ariaLabel": "전체 보기",
+  "controls.interactive.ariaLabel": "움직임 켜고 끄기",
+  "minimap.ariaLabel": "미니맵",
+  "handle.ariaLabel": "이음 점",
+};
+
 /** The nodes and edges the editor draws: from the document, with dragging kept local until it stops. */
 function useFlowGraph(e: ScenarioEditor) {
   const flow = useMemo(() => scenario.toFlow(e.doc, e.issues, e.index), [e.doc, e.issues, e.index]);
@@ -82,18 +116,22 @@ function useFlowGraph(e: ScenarioEditor) {
           data: n as BlockData,
           selected: n.id === e.selected,
           deletable: n.type !== "start",
+          domAttributes: { "aria-roledescription": "블록" },
         }),
       ),
     [flow, e.selected],
   );
   const [nodes, setNodes] = useState<BlockNode[]>(fromDoc);
   useEffect(() => setNodes(fromDoc), [fromDoc]);
+  const titleOf = (id: string) => flow.nodes.find((n) => n.id === id)?.title ?? id;
   const edges: Edge[] = flow.edges.map((x) => ({
     id: x.id,
     source: x.source,
     sourceHandle: x.sourceHandle,
     target: x.target,
     label: x.label === "다음" ? undefined : x.label,
+    ariaLabel: `${titleOf(x.source)}에서 ${titleOf(x.target)} 쪽으로 이어져요`,
+    domAttributes: { "aria-roledescription": "이음선" },
   }));
   return { nodes, setNodes, edges };
 }
@@ -158,6 +196,7 @@ function Flow({ e }: { readonly e: ScenarioEditor }) {
       fitViewOptions={{ padding: 0.2, maxZoom: 1 }}
       minZoom={0.2}
       proOptions={{ hideAttribution: true }}
+      ariaLabelConfig={ARIA_WORDS}
       aria-label="시나리오 흐름. 블록을 끌어 옮기고, 아래쪽 점에서 다음 블록 위쪽 점으로 끌어 이어요."
     >
       <Background gap={24} size={1} />

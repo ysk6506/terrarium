@@ -197,7 +197,13 @@ export function RunsTable({
                 )}
               </td>
               <td>{runNote(r, analysis, live?.calls ?? {})}</td>
-              <td>{r.status !== "queued" && <Go to={{ name: "run", id: r.id }}>들여다보기</Go>}</td>
+              <td>
+                {r.status !== "queued" && (
+                  <Go to={{ name: "run", id: r.id }}>
+                    들여다보기<span className="sr-only"> ({r.index + 1}번째 실행)</span>
+                  </Go>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

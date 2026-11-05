@@ -25,6 +25,7 @@ export {
   versionFormOf,
   versionTitle,
 } from "./agent-versions";
+export * as hallAir from "./air";
 export {
   type Api,
   ApiError,

@@ -4,15 +4,14 @@
  * rack names on the plan. It reads what the "돌려 보기" run recorded, so the time can be dragged; with no run
  * yet it offers to make one. The sentence that says it is a calculation is always on screen.
  */
-import type { Catalog } from "@terrarium/core/catalog";
 import type { BlueprintIndex } from "@terrarium/core/world";
 import { useEffect, useMemo, useState } from "react";
-import { type builder, world3d } from "../../logic";
+import { type builder, hallAir, world3d } from "../../logic";
 import { Segmented } from "../fields";
 import { useMediaQuery } from "../hooks";
-import { Button } from "../kit";
 import { AirLabels } from "./AirLabels";
 import { AirPanel } from "./AirPanel";
+import { AirStage } from "./air-stage";
 import type { WorldView } from "./view";
 
 type AirView = world3d.AirView;
@@ -106,37 +105,16 @@ interface MapProps {
   readonly scene: world3d.RoomScene;
 }
 
-/** A hall with racks has a map; the way in is one quiet button, and the map takes the page over once it is on. */
-export function AirMap({
-  view,
-  index,
-  catalog,
-  input,
-}: {
-  readonly view: WorldView;
-  readonly index: BlueprintIndex;
-  readonly catalog: Catalog;
-  readonly input: AirInput;
-}) {
-  const { roomId } = input;
-  const scene = useMemo(() => world3d.roomScene(index, catalog, roomId), [index, catalog, roomId]);
-  const usable = scene !== undefined && scene.purpose === "data_hall" && scene.racks > 0;
-  useEffect(() => {
-    if (!usable || !input.on) view.setAirflow(undefined);
-  }, [view, usable, input.on]);
-  if (!usable) return null;
-  if (!input.on)
-    return (
-      <div className="air-enter">
-        <Button kind="quiet" onClick={() => input.onToggle(true)}>
-          {world3d.AIR_WORDS.open}
-        </Button>
-      </div>
-    );
-  return <AirMapOn view={view} index={index} input={input} scene={scene} />;
+/**
+ * The map, once it is on (the way in is `AirDoor`, which the first screen carries). This file and the drawing code
+ * under it are one bundle that comes down the first time the map is opened.
+ */
+export function AirMap(props: MapProps) {
+  return <AirMapOn {...props} />;
 }
 
 function AirMapOn({ view, index, input, scene }: MapProps) {
+  useEffect(() => view.loadAir((engine, rig, host) => new AirStage(engine, rig, host)), [view]);
   const { roomId, preview } = input;
   const [dim, setDim] = useState<Dim>("flat");
   const [kind, setKind] = useState<AirView>("inlet");
@@ -151,7 +129,7 @@ function AirMapOn({ view, index, input, scene }: MapProps) {
     return f ? { racks: f.racks, units: f.units, ambientC: f.rooms.get(roomId) ?? 22 } : undefined;
   }, [frames, frame, roomId]);
   const air = useMemo(
-    () => (readings ? world3d.airflowOf(scene, readings, kind) : undefined),
+    () => (readings ? hallAir.airflowOf(scene, readings, kind) : undefined),
     [scene, readings, kind],
   );
   const nameOf = useMemo(() => (id: string) => index.find(id)?.name ?? id, [index]);
@@ -174,9 +152,9 @@ function AirMapOn({ view, index, input, scene }: MapProps) {
       view.setAirflow(undefined);
       return;
     }
-    view.setAirflow({ roomId, scene, air, view: kind, map: dim === "top", picked, inset });
-  }, [view, scene, air, kind, dim, picked, inset, roomId]);
-  useEffect(() => view.setAirMode(calm ? "still" : "live"), [view, calm]);
+    const mode = calm ? "still" : "live";
+    view.setAirflow({ roomId, scene, air, view: kind, map: dim === "top", picked, inset, mode });
+  }, [view, scene, air, kind, dim, picked, inset, roomId, calm]);
   useEffect(() => () => view.setAirflow(undefined), [view]);
   const spot = (id: string | undefined) => air?.racks.find((r) => r.id === id);
   return (

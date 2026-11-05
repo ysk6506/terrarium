@@ -2,19 +2,19 @@
 title: 시나리오 편집기 검토 — 처음 쓰는 사람의 눈으로, 토스의 원칙으로
 kind: spec
 status: active
-last_verified: 2026-11-04
+last_verified: 2026-11-05
 covers:
   - apps/web/src/ui/scenario/ScenarioEditorPage.tsx
   - apps/web/src/ui/scenario/Palette.tsx
   - apps/web/src/ui/scenario/Sheet.tsx
   - apps/web/src/ui/pages/scenarios.tsx
-covers_hash: bf31b08b00e64943
+covers_hash: 3d4c0108d453284d
 verification_log:
-  - "2026-11-04: 처음 썼다: 캡처 12장과 코드를 토스 원칙 10가지로 대조한 결과 (REQ-071, ADR-0070)"
   - "2026-11-04: 블록 이름을 용어집(고장 발생/복구)으로 맞췄다"
   - "2026-11-04: 고칠 것 1, 2, 11, 12를 구현 현황 절에 대조해 적었다 (scenarios.tsx, Toolbar.tsx, ScenarioEditorPage.tsx, Canvas.tsx)"
   - "2026-11-04: 2026-11-04: 편집기의 말을 용어집에 맞추고(고장 발생·복구, 상황 설명, 툴 호출 상한), 시간을 분으로 보이게 하고, 복구 방식 선택과 조치 항목 더하기를 더한 것에 맞춰 글을 고쳤다 (ADR-0072)"
   - "2026-11-04: 2026-11-04: ADR-0073. 점수 카드의 큰 조건 묶음을 접고 예/아니요 기준을 선택 칸으로 바꿨다. 검토 문서의 지적과 어긋나지 않는다"
+  - "2026-11-05: scenarios.tsx는 실험하기 링크에 시나리오 이름(sr-only)을 더한 것만 바뀌었고 검토 내용은 그대로 맞다"
 ---
 # 시나리오 편집기 검토 (REQ-071, ADR-0070)
 

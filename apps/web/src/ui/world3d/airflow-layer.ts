@@ -2,7 +2,7 @@
  * The airflow map of one server room (REQ-072, ADR-0074), laid over the room the 3D view already draws:
  * a soft floor temperature, a tinted front door on every rack, the glowing tiles of the cold aisles, and
  * the air as puffs and arrows that move along their paths — faster and stronger where more air moves.
- * The numbers come from the pure `world3d.airflowOf`; this file only draws them. In "still" (people who
+ * The numbers come from the pure `hallAir.airflowOf`; this file only draws them. In "still" (people who
  * asked their system for less motion, or a machine that cannot keep up) only the arrows are drawn, standing.
  * Nothing here needs a transmission material: they would hide the puffs.
  */

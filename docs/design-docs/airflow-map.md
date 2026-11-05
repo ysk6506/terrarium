@@ -11,11 +11,13 @@ covers:
   - apps/web/src/ui/world3d/airflow-layer.ts
   - apps/web/src/ui/world3d/airflow-floor.ts
   - apps/web/src/ui/world3d/airflow-motion.ts
-covers_hash: 54c19e90f6b33938
+  - apps/web/src/logic/world3d/airflow-words.ts
+covers_hash: 9fb8ff4d1fafb03b
 verification_log:
   - "2026-11-05: 2026-11-05: 코드와 대조: 시간 간격(30초/100초, 랙 2000개), 개수 예산(600, 4), 도달 12 m, 바닥 불투명도(0.82/0.45)를 맞췄고 web-ui.md와 색인에 연결했다"
   - "2026-11-05: 2026-11-05: 지도 모드, 방에 맞춘 카메라(workBounds, 1.6 m), 냉방기 플룸, 바닥 온도(벽 15 cm 비움, 불투명도 0.92/0.6)와 타공 타일 글로우를 코드와 대조해 적었다"
   - "2026-11-05: REQ-075: 조각을 붙인 방의 바닥 온도(Field.x0/z0, insetOutline로 오려 얹기), 타공 타일과 workBounds의 윤곽 안 자르기를 코드와 대조해 적었다"
+  - "2026-11-05: 공기 흐름 계산·그리는 코드를 지도를 열 때 따로 받도록 바꾼 것(logic/air.ts, AirDoor, air-port.ts, airflow-words.ts)과 말·문장 함수가 airflow-words.ts로 옮겨 간 것을 대조해 '어떻게 내려받나' 절을 더했다"
 ---
 # 온도와 공기 흐름 지도 (REQ-072, [ADR-0074](adr/0074-airflow-map.md))
 
@@ -79,6 +81,11 @@ verification_log:
 - 물리 모델은 방 하나를 한 덩어리로 본다. 그래서 랙 사이의 온도 차는 모델이 준 값 그대로이고, 방 안의 구배(냉방기에서 먼 쪽이 따뜻함)는 바닥 온도장이 거리로 짐작한 것이다. 랙 앞문 색과 카드의 숫자는 모델의 값이다.
 - **액침·직접수랭 방**은 공기가 열을 나르지 않으므로 바닥 온도만 보이고 바람은 그리지 않는다. 공랭+수랭 방은 공기 흐름을 그린다.
 - 위쪽 시간 막대는 돌려 보기 기록이다. 실험의 실행 기록이나 시나리오 미리 돌려 보기를 따라가지 않는다.
+
+## 어떻게 내려받나 (첫 화면 예산)
+
+계산(`logic/air.ts`의 `hallAir` 이름공간: `airflowOf`, `workBounds`, 색 …)과 그리는 코드(`ui/world3d`의 `AirStage`와 `airflow-*`, `AirMap`, `AirPanel`)는 지도를 처음 열 때 따로 내려받는다. 첫 화면 묶음에 있는 것은 방에 들어가면 늘 떠 있는 버튼(`AirDoor`)과 말(`AIR_WORDS`, `AIR_NOTE`, `hottestText` …, `airflow-words.ts`)뿐이다.
+버튼에 포인터를 올리거나 초점이 가면 미리 받기 시작하고, 누르면 받는 동안 "불러오고 있어요" 한 줄이 뜬 뒤 지도가 나온다. 버튼은 지도를 받기 전에도 늘 있다. 3D 보기(`WorldView`)는 지도가 열릴 때 `loadAir`로 그리는 쪽을 받아 쓰고, 그전에는 카메라가 평소 자세로 간다(`air-port.ts`).
 
 ## 시험과 예산
 

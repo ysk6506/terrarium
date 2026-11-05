@@ -6,19 +6,11 @@
  */
 import type { Catalog } from "@terrarium/core/catalog";
 import type { BlueprintIndex } from "@terrarium/core/world";
-import {
-  lazy,
-  type ReactNode,
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type ActivityState, type builder, noActivity, world3d } from "../../logic";
 import { ActivityPanel } from "./ActivityPanel";
 import { ActivityPins } from "./ActivityPins";
+import { AirDoor } from "./AirDoor";
 import type { AirInput } from "./AirMap";
 import { CrewBubble } from "./CrewBubble";
 import type { LifeMode } from "./life-layer";
@@ -30,9 +22,6 @@ import type { WorldView } from "./view";
 import { WorldBar } from "./WorldBar";
 
 type Focus = world3d.Focus;
-
-/** The airflow map is only for a room being built: the first screen does not carry it. */
-const AirMap = lazy(() => import("./AirMap").then((m) => ({ default: m.AirMap })));
 
 export interface WorldStageProps extends StageEvents {
   readonly index: BlueprintIndex;
@@ -74,6 +63,10 @@ interface Tip {
 }
 
 const KEY_TURN = Math.PI / 4;
+
+/** Read after the canvas's name, for anyone who cannot drag: the keys that move the view. An attribute, not text on the page: words drawn on the first screen cost a font file. */
+const STAGE_HELP =
+  "끌어서 돌리고 휠로 확대해요. 키보드로는 Q와 E로 45도씩 돌리고, 더하기와 빼기로 확대하고 줄이고, Esc로 한 단계 나와요.";
 
 /** Q and E turn the view, + and - move in and out, Escape steps back out of a level. */
 function keysFor(view: WorldView, back: () => void) {
@@ -183,10 +176,13 @@ function StageCanvas({ canvasRef, failed, label, onKeyDown, onLeave }: CanvasPro
       </div>
     );
   return (
+    // biome-ignore lint/a11y/noInteractiveElementToNoninteractiveRole: a 3D viewer with its own keys is an application; a focusable canvas needs a role to carry its name
     <canvas
       ref={canvasRef}
+      role="application"
       tabIndex={0}
-      aria-label={label ?? "세계의 3D 보기. 끌어서 돌리고, 휠로 확대하고, Q와 E로 돌려요."}
+      aria-label={`${label ?? "세계"}의 3D 보기`}
+      aria-description={STAGE_HELP}
       style={{ touchAction: "none" }}
       onKeyDown={onKeyDown}
       onPointerLeave={onLeave}
@@ -242,9 +238,7 @@ function StageOverlays({ view, props, around, layer, onLayer, life, onLife }: Ov
         />
       )}
       {view && props.air && (
-        <Suspense fallback={null}>
-          <AirMap view={view} index={props.index} catalog={props.catalog} input={props.air} />
-        </Suspense>
+        <AirDoor view={view} index={props.index} catalog={props.catalog} input={props.air} />
       )}
       {around.tip && (
         <span className="stage-tip" style={{ left: around.tip.x + 14, top: around.tip.y + 14 }}>

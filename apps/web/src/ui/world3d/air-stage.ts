@@ -4,36 +4,14 @@
  * renderer). The view tells it when the focus or the building changed; the page tells it what to show.
  */
 import * as THREE from "three";
-import { world3d } from "../../logic";
+import { hallAir, world3d } from "../../logic";
+import type { AirConfig, AirHost, AirPort } from "./air-port";
 import { type AirflowLayer, type AirMode, buildAirflowLayer } from "./airflow-layer";
-import type { BuildingLayer } from "./building-layer";
 import type { Engine } from "./engine";
 import type { Rig } from "./rig";
 import { calm } from "./view-look";
 
 type Focus = world3d.Focus;
-
-export interface AirConfig {
-  readonly roomId: string;
-  readonly scene: world3d.RoomScene;
-  readonly air: world3d.Airflow;
-  readonly view: world3d.AirView;
-  /** The plan seen from above (an orthographic camera) instead of the three-quarter view. */
-  readonly map: boolean;
-  readonly picked?: string;
-  /** Pixels on the right of the picture that a card covers: the room is fitted into the rest. */
-  readonly inset?: number;
-}
-
-/** What the air stage needs from the view that owns it. */
-export interface AirHost {
-  building(): BuildingLayer | undefined;
-  focus(): Focus;
-  /** Fly again to the current focus (the way it is looked at changed). */
-  refocus(): void;
-  /** The air gave up moving because frames were slow. */
-  slow(): void;
-}
 
 /** Room left around the racks and cooling when the camera goes in on them, metres. */
 const WORK_MARGIN_M = 1.6;
@@ -43,7 +21,7 @@ const WORK_HEIGHT_M = 2.6;
 /** Straight down, a hair short of it so the camera has an "up". */
 const STRAIGHT_DOWN = Math.PI / 2 - 0.001;
 
-export class AirStage {
+export class AirStage implements AirPort {
   private cfg: AirConfig | undefined;
   private mounted: { readonly roomId: string; readonly layer: AirflowLayer } | undefined;
   private shown: { readonly air: world3d.Airflow; readonly view: world3d.AirView } | undefined;
@@ -61,10 +39,6 @@ export class AirStage {
     return this.mounted !== undefined;
   }
 
-  get stats(): AirflowLayer["stats"] | undefined {
-    return this.mounted?.layer.stats;
-  }
-
   get inset(): number {
     return this.cfg?.inset ?? 0;
   }
@@ -77,6 +51,7 @@ export class AirStage {
   set(cfg: AirConfig | undefined): void {
     const before = this.cfg;
     this.cfg = cfg;
+    if (cfg) this.setMode(cfg.mode);
     this.sync();
     const same = before && cfg && before.roomId === cfg.roomId;
     const moved =
@@ -107,7 +82,7 @@ export class AirStage {
     }
     const { layer } = this.mounted as NonNullable<typeof this.mounted>;
     if (this.shown?.air !== cfg.air || this.shown?.view !== cfg.view) {
-      layer.update(cfg.air, cfg.view, world3d.aisleReach(cfg.scene, cfg.air));
+      layer.update(cfg.air, cfg.view, hallAir.aisleReach(cfg.scene, cfg.air));
       this.shown = { air: cfg.air, view: cfg.view };
     }
     layer.setTopDown(cfg.map);
@@ -147,7 +122,7 @@ export class AirStage {
   private workBox(box: world3d.Box3, focus: Focus): world3d.Box3 {
     const cfg = this.cfg;
     if (!cfg || focus.kind !== "room" || focus.id !== cfg.roomId) return box;
-    const work = world3d.workBounds(cfg.scene, cfg.air, WORK_MARGIN_M);
+    const work = hallAir.workBounds(cfg.scene, cfg.air, WORK_MARGIN_M);
     if (!work) return box;
     return {
       x0: box.x0 + work.x0,

@@ -1,23 +1,14 @@
-/**
- * The airflow map of one server room (REQ-072, ADR-0074): from the room as the 3D view has it and the
- * live readings of its racks and cooling units, the temperature of the floor, the colour of each rack's
- * front door, and the paths the air takes with how strong each is. DOM-free, so it is tested without
- * a browser. It is a picture of the readings, not a fluid simulation (CFD).
- */
-import { celsius } from "../format";
 import { type Field, fieldOf } from "./airflow-field";
 import {
   type AirReadings,
   type AirView,
   airColor,
-  CRITICAL_C,
   isLiquidHall,
   type RackSpot,
   rackSpots,
   reachAt,
   type UnitSpot,
   unitSpots,
-  WARN_C,
 } from "./airflow-model";
 import { type FlowPath, pathsOf } from "./airflow-paths";
 import type { Rgb } from "./palette";
@@ -44,6 +35,7 @@ export {
   WARN_C,
 } from "./airflow-model";
 export type { FlowPath, PathKind, Point3 } from "./airflow-paths";
+export { frameText, hottestText, marginText } from "./airflow-words";
 
 export interface Airflow {
   /** A liquid-cooled room: the field is drawn, the air is not (ADR-0074). */
@@ -85,27 +77,6 @@ export function airflowOf(scene: RoomScene, readings: AirReadings, view: AirView
 export function doorColor(view: AirView, rack: RackSpot): Rgb {
   if (view === "flow") return [0.42, 0.455, 0.52];
   return airColor(view, view === "outlet" ? rack.outletC : rack.inletC);
-}
-
-/** How far an inlet temperature is from the warning and critical lines the physics raises alarms at. */
-export function marginText(inletC: number): string {
-  if (inletC > CRITICAL_C)
-    return `심각선 ${CRITICAL_C}°C를 ${celsius(inletC - CRITICAL_C)} 넘었어요`;
-  if (inletC > WARN_C)
-    return `경고선 ${WARN_C}°C를 넘었고 심각선까지 ${celsius(CRITICAL_C - inletC)} 남았어요`;
-  return `경고선 ${WARN_C}°C까지 ${celsius(WARN_C - inletC)} 남았어요`;
-}
-
-/** The words for the hottest rack. */
-export const hottestText = (name: string, inletC: number): string =>
-  `가장 더운 곳 · ${name} 흡기 ${celsius(inletC)} · ${marginText(inletC)}`;
-
-/** Where in the run a frame is, in words: "시작", "30초 뒤", "5분 30초 뒤". */
-export function frameText(seconds: number): string {
-  if (seconds <= 0) return "시작";
-  const m = Math.floor(seconds / 60);
-  const s = Math.round(seconds % 60);
-  return `${m > 0 ? `${m}분 ` : ""}${s > 0 ? `${s}초 ` : ""}뒤`.trim();
 }
 
 /** How much of a unit's rating it carries, 0..1. */
