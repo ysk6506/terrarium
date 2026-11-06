@@ -5,17 +5,22 @@
  * function of (blueprint, seed, events, time steps), so runs replay and snapshots restore exactly.
  */
 import type { Catalog } from "@terrarium/core/catalog";
-import { InvalidValueError, NotFoundError, ReadOnlyViolationError } from "@terrarium/core/kernel";
+import { InvalidValueError, NotFoundError } from "@terrarium/core/kernel";
 import type { Blueprint, EntityKind } from "./blueprint";
 import { cloneState } from "./clone";
 import { validateCommand } from "./command-check";
-import { type Fault, faultSpec } from "./faults";
+import { type Fault, withParamDefaults } from "./faults";
 import type { FirmwareCommand } from "./firmware";
 import { reduceFirmware } from "./firmware-reduce";
 import type { BlueprintIndex } from "./graph";
+import type { HostAction } from "./host-os";
+import { HostRegistry } from "./host-registry";
 import { type NetChange, type NetPatch, patchWith } from "./net-config";
-import { setLinkAdmin, setOutlet } from "./operator";
+import { setLinkAdmin, setLoad, setOutlet } from "./operator";
+import { type HostOs, OS_FAULT_TYPES } from "./os";
 import { type PreparedWorld, prepareWorld } from "./prepared";
+import { reduceHostAndService } from "./reduce-os";
+import type { ServiceCommand } from "./service-act";
 import {
   type Alarm,
   DEFAULT_OUTDOOR_C,
@@ -50,6 +55,15 @@ export type WorldCommand =
   /** An operator changes the layer-2/3 configuration of a switch (VLAN, port mode, SVI, route); `target` is the switch. */
   | { readonly type: "net.set"; readonly target: string; readonly change: NetChange }
   | FirmwareCommand
+  | ServiceCommand
+  /** An operator acts on the operating system of a server or VM: restart a process, free disk, remount, reboot (ADR-0091). */
+  | {
+      readonly type: "host.act";
+      readonly target: string;
+      readonly action: HostAction;
+      /** The process to restart, or the path whose files are removed. */
+      readonly arg?: string;
+    }
   /** Outdoor air changes (a heat wave, a cold snap); the plants' capacity follows it. Scenarios do this, operators cannot. */
   | { readonly type: "outdoor.set"; readonly celsius: number }
   | { readonly type: "thermal.shutdown"; readonly target: string }
@@ -122,6 +136,7 @@ export class World implements WorldPort {
   private faultArray: ReadonlyArray<readonly Fault[]> | undefined;
   private anyDown: boolean | undefined;
   private updating: Set<string> | undefined;
+  private readonly hosts: HostRegistry;
   private log: WorldEvent[] = [];
   private seq = 0;
   private netChanges = 0;
@@ -132,6 +147,7 @@ export class World implements WorldPort {
   ) {
     this.index = index;
     this.state = initialState(this.index, catalog);
+    this.hosts = new HostRegistry(index, (id) => this.rawState(id));
   }
 
   /** Build a world; a blueprint with validation errors is refused with every error listed. */
@@ -299,6 +315,7 @@ export class World implements WorldPort {
     this.state = cloneState(checkpoint.state);
     this.stateArray = undefined;
     this.updating = undefined;
+    this.hosts.reset();
     this.anyDown = undefined;
     this.sortedAlarms = undefined;
     this.faultsChanged();
@@ -311,6 +328,7 @@ export class World implements WorldPort {
     this.state = cloneState(snapshot.state);
     this.stateArray = undefined;
     this.updating = undefined;
+    this.hosts.reset();
     this.anyDown = undefined;
     this.sortedAlarms = undefined;
     this.faultsChanged();
@@ -340,7 +358,7 @@ export class World implements WorldPort {
       case "fault.add":
         s.faults[command.fault.id] = {
           ...command.fault,
-          params: this.withDefaults(command.fault),
+          params: withParamDefaults(command.fault),
           since: s.t,
         };
         this.applyImmediate(command.fault.type, command.fault.target, true);
@@ -352,7 +370,7 @@ export class World implements WorldPort {
         return;
       }
       case "load.set":
-        this.reduceLoad(command.target, command.value);
+        setLoad(this.stateOf(command.target), command.value);
         return;
       case "setpoint.set":
         this.patch(command.target, "cooling_unit", { setpointC: command.celsius });
@@ -405,7 +423,10 @@ export class World implements WorldPort {
 
   /** The firmware commands change one server's state (`note` ends up here and does nothing). */
   private reduceFirmware(command: WorldCommand): void {
-    if (!command.type.startsWith("firmware.")) return;
+    if (!command.type.startsWith("firmware.")) {
+      reduceHostAndService(this, command);
+      return;
+    }
     const target = (command as FirmwareCommand).target;
     const server = this.stateAs(target, "server");
     reduceFirmware(server, command as FirmwareCommand, this.state.t);
@@ -421,6 +442,20 @@ export class World implements WorldPort {
     return this.updating;
   }
 
+  /** The hosts whose operating system has a stored state (physics moves only these). */
+  osHosts = (): Set<string> => this.hosts.osHosts();
+  /** The operating system of a host, stored on first need (a healthy one, made from the host's id). */
+  ensureHostOs = (id: string): HostOs => this.hosts.ensureOs(this, id);
+  /** VMs moved to another server, as positions (VM, new host); undefined while none was moved. */
+  vmMoves = (): ReadonlyMap<number, number> | undefined => this.hosts.vmMoves();
+  moveVm = (id: string, host: string): void => this.hosts.moveVm(id, host);
+
+  /** End a fault without an event of its own (the command that cleared it is the event). */
+  dropFault(faultId: string): void {
+    delete this.state.faults[faultId];
+    this.faultsChanged();
+  }
+
   private faultsChanged(): void {
     this.faultsByTarget = undefined;
     this.faultArray = undefined;
@@ -433,20 +468,6 @@ export class World implements WorldPort {
     Object.assign(this.state.entities[target] as object, { tripped: false });
   }
 
-  private reduceLoad(target: string, value: number): void {
-    const state = this.stateOf(target);
-    if (state.kind === "server") state.cpuUtil = value;
-    else if (state.kind === "vm") state.cpuDemand = value;
-    else if (state.kind === "rack") state.util = value;
-  }
-
-  private withDefaults(fault: Omit<Fault, "since">): Record<string, number> {
-    const params: Record<string, number> = {};
-    for (const spec of faultSpec(fault.type).params)
-      params[spec.name] = fault.params[spec.name] ?? spec.default;
-    return params;
-  }
-
   /** Effects that happen the moment a fault starts or ends; gradual effects belong to physics. */
   private applyImmediate(type: Fault["type"], target: string, active: boolean): void {
     if (type === "breaker_trip")
@@ -454,6 +475,7 @@ export class World implements WorldPort {
     if (type === "grid_outage" && this.stateOf(target).kind === "ups")
       this.patch(target, "ups", { inputOk: !active });
     if (type === "link_down") this.setLinkUp(target, !active);
+    if (active && (OS_FAULT_TYPES as readonly string[]).includes(type)) this.ensureHostOs(target);
   }
 }
 
@@ -462,39 +484,3 @@ const changesFaults = (command: WorldCommand): boolean =>
   command.type === "fault.add" ||
   command.type === "fault.remove" ||
   command.type === "breaker.reset";
-
-/** Wraps a reader so that every command is refused: the shape of a connection to reality (REQ-011). */
-export class ReadOnlyWorldPort implements WorldPort {
-  constructor(private readonly reader: WorldReader) {}
-
-  get index(): BlueprintIndex {
-    return this.reader.index;
-  }
-
-  get catalog(): Catalog {
-    return this.reader.catalog;
-  }
-
-  time = (): number => this.reader.time();
-  outdoorC = (): number => this.reader.outdoorC();
-  stateOf = (id: string): EntityState => this.reader.stateOf(id);
-  stateAs = <K extends EntityKind>(id: string, kind: K): StateOf<K> =>
-    this.reader.stateAs(id, kind);
-  linkUp = (linkId: string): boolean => this.reader.linkUp(linkId);
-  linkAdminDown = (linkId: string, end?: "from" | "to"): boolean =>
-    this.reader.linkAdminDown(linkId, end);
-  netconf = (switchId: string): NetPatch | undefined => this.reader.netconf(switchId);
-  hasNetconf = (): boolean => this.reader.hasNetconf();
-  netEpoch = (): number => this.reader.netEpoch();
-  faults = (): Fault[] => this.reader.faults();
-  faultsOn = (target: string): readonly Fault[] => this.reader.faultsOn(target);
-  alarms = (): Alarm[] => this.reader.alarms();
-  events = (sinceSeq?: number): WorldEvent[] => this.reader.events(sinceSeq);
-  lastSeq = (): number => this.reader.lastSeq();
-
-  apply(command: WorldCommand): WorldEvent {
-    throw new ReadOnlyViolationError(
-      `this world mirrors a real system and is read-only (refused ${command.type})`,
-    );
-  }
-}

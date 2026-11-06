@@ -51,7 +51,14 @@ export function chainOf(index: BlueprintIndex, id: string): readonly string[] {
   }
   const hit = known.get(id);
   if (hit) return hit;
-  const host = index.find(id)?.kind === "vm" ? index.outgoing(id, "runs_on")[0]?.to : undefined;
+  const kind = index.find(id)?.kind;
+  // A VM stands where its host does; a service where the first place it runs does (its host's containers, not the host).
+  const host =
+    kind === "vm"
+      ? index.outgoing(id, "runs_on")[0]?.to
+      : kind === "service"
+        ? index.outgoing(id, "service_on")[0]?.to
+        : undefined;
   const chain = host
     ? [...chainOf(index, host), host]
     : index

@@ -14,6 +14,7 @@ import { LandList, ParcelPanel, PurposeField } from "./LandPanel";
 import { PickCardView } from "./PickCard";
 import { RackPanel } from "./RackPanel";
 import { PowerLine, RealSizeNote, SourcesPanel } from "./RealSizePanel";
+import { carriesServices, ServiceFields, SupportedServices } from "./ServicePanel";
 import { SizePanel } from "./SizePanel";
 import type { Builder } from "./useBuilder";
 import { catalog } from "./useBuilder";
@@ -235,14 +236,21 @@ function MoneyFold({ cost, children }: { readonly cost: number; readonly childre
   );
 }
 
+/** Whether a pick has a size, a mount height or an aisle to set. */
+const hasShape = (e: Entity): boolean =>
+  e.kind === "room" ||
+  e.kind === "building" ||
+  e.kind === "containment" ||
+  e.placement?.type === "unit";
+
 /** The folded sections of one picked thing: 크기와 모양, 냉방과 전기, 돈. */
 function EntityFolds({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
   const { index } = b.state;
   const sized = entity.kind === "room" || entity.kind === "building";
   const fits = builder.handlesFit(index, b.state.level, entity);
   const linked = builder.linkKindsFrom(entity.kind, entity).length > 0;
-  const shaped = sized || entity.kind === "containment" || entity.placement?.type === "unit";
-  const priced = entity.kind !== "parcel";
+  const shaped = hasShape(entity);
+  const priced = entity.kind !== "parcel" && entity.kind !== "service";
   return (
     <>
       {shaped && (
@@ -263,7 +271,7 @@ function EntityFolds({ entity, b }: { readonly entity: Entity; readonly b: Build
           <ModelField entity={entity} b={b} />
         </MoneyFold>
       )}
-      {priced && <RemoveBlock entity={entity} b={b} />}
+      {entity.kind !== "parcel" && <RemoveBlock entity={entity} b={b} />}
     </>
   );
 }
@@ -282,6 +290,8 @@ function EntityPanel({ entity, b }: { readonly entity: Entity; readonly b: Build
       )}
       <EntityActions entity={entity} b={b} />
       {entity.kind === "rack" && <RackPanel rack={entity} b={b} />}
+      {carriesServices(entity) && <SupportedServices entity={entity} b={b} />}
+      {entity.kind === "service" && <ServiceFields entity={entity} b={b} />}
       {entity.kind === "parcel" && <ParcelPanel entity={entity} b={b} />}
       <EntityFolds entity={entity} b={b} />
     </>

@@ -6,6 +6,8 @@ import type { Fault } from "./faults";
 import { type FirmwareJob, SHIPPED_FIRMWARE } from "./firmware";
 import type { BlueprintIndex } from "./graph";
 import type { NetPatch } from "./net-config";
+import type { HostOs } from "./os";
+import type { ServiceStatus } from "./service";
 
 export type Health = "ok" | "warning" | "critical";
 
@@ -24,6 +26,8 @@ export interface ServerState extends Base {
   psuOk: boolean[];
   powerW: number;
   throttled: boolean;
+  /** The operating system, once something needed it (see os.ts). */
+  os?: HostOs;
   /** Firmware versions; the BMC says "shipped" until it is updated (the profile's own version shows then). */
   bmcVersion: string;
   biosVersion: string;
@@ -153,6 +157,28 @@ export interface VmState extends Base {
   /** What it actually uses after spikes and host throttling; physics computes this. */
   cpuUsage: number;
   memUtil: number;
+  /** The server it runs on after a migration (`migrate_vm`); absent while it is where the blueprint put it. */
+  hostId?: string;
+  /** The operating system, once something needed it (see os.ts). */
+  os?: HostOs;
+}
+/** A service (ADR-0091): its health is computed from what it runs on; `runsOn` and `standby` change on a failover. */
+export interface ServiceState extends Base {
+  kind: "service";
+  status: ServiceStatus;
+  /** Why it is not healthy, one short sentence each (empty while healthy). */
+  reasons: string[];
+  /** Where it runs now, and where it can be moved to. */
+  runsOn: string[];
+  standby: string[];
+  /** Work waiting because the service did not run (batch), in the unit of its queue. */
+  backlog: number;
+  /** Money lost so far while it was down or slow, KRW (an estimate: the hourly figure is a guess). */
+  lostKrw: number;
+  /** World time it stopped being healthy, absent while healthy. */
+  since?: number;
+  /** Times the operator moved it to its standby. */
+  failovers: number;
 }
 export interface PlainState extends Base {
   kind: "parcel" | "building" | "floor" | "vcenter" | "cluster" | "datastore";
@@ -178,6 +204,7 @@ export type EntityState =
   | ContainmentState
   | RoomState
   | VmState
+  | ServiceState
   | SiteState
   | PlainState;
 
@@ -187,6 +214,8 @@ export interface Alarm {
   readonly id: string;
   readonly entityId: string;
   readonly code: string;
+  /** Which part of the world raised it when that is not the equipment itself: a service, or a host's operating system. */
+  readonly kind?: "service" | "os";
   readonly severity: "warning" | "critical";
   readonly message: string;
   readonly since: number;
@@ -326,6 +355,17 @@ const FACTORIES: Partial<Record<EntityKind, Factory>> = {
     hotC: AMBIENT_C + 10,
   }),
   room: () => ({ kind: "room", health: "ok", ambientC: AMBIENT_C }),
+  service: () => ({
+    kind: "service",
+    health: "ok",
+    status: "healthy",
+    reasons: [],
+    runsOn: [],
+    standby: [],
+    backlog: 0,
+    lostKrw: 0,
+    failovers: 0,
+  }),
   vm: () => ({
     kind: "vm",
     health: "ok",
@@ -349,12 +389,20 @@ function initial(kind: EntityKind, modelId: string | undefined, catalog: Catalog
   return FACTORIES[kind]?.(model) ?? ({ kind, health: "ok" } as EntityState);
 }
 
+/** A service starts where the blueprint's `service_on` links say: the active places run it, the standby ones wait. */
+function placeService(state: StateOf<"service">, id: string, index: BlueprintIndex): void {
+  for (const link of index.outgoing(id, "service_on")) {
+    (link.props.role === "standby" ? state.standby : state.runsOn).push(link.to);
+  }
+}
+
 export function initialState(index: BlueprintIndex, catalog: Catalog): WorldState {
   const entities: Record<string, EntityState> = {};
   for (const entity of index.all()) {
     const state = initial(entity.kind, entity.modelId, catalog);
     if (state.kind === "vm" && typeof entity.props.cpuDemand === "number")
       state.cpuDemand = entity.props.cpuDemand;
+    if (state.kind === "service") placeService(state, entity.id, index);
     if (state.kind === "server") applyServerProps(state, entity.props);
     if (state.kind === "rack") state.util = bulkOf(entity)?.util ?? 0;
     if (state.kind === "cooling_unit" && typeof entity.props.setpointC === "number")

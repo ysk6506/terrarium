@@ -36,6 +36,7 @@ export const FAULT_DOMAIN_LABELS: Readonly<Record<FaultSpec["domain"], string>> 
   network: "네트워크",
   storage: "스토리지",
   virtual: "가상화",
+  os: "운영체제",
 };
 
 /** Default values for a block's parameters (those that have one). */

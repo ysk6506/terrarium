@@ -2,19 +2,19 @@
 title: 시나리오 모델
 kind: spec
 status: active
-last_verified: 2026-11-05
+last_verified: 2026-11-06
 covers:
   - packages/core/src/scenario/model.ts
   - packages/core/src/scenario/blocks.ts
   - packages/core/src/scenario/runner.ts
   - packages/core/src/scenario/library-facility.ts
 verification_log:
-  - "2026-11-04: 2026-11-04: 편집기의 말을 용어집에 맞추고(고장 발생·복구, 상황 설명, 툴 호출 상한), 시간을 분으로 보이게 하고, 복구 방식 선택과 조치 항목 더하기를 더한 것에 맞춰 글을 고쳤다 (ADR-0072)"
   - "2026-11-04: 2026-11-04: ADR-0073. 덮는 코드에서 사람이 읽는 말(알람 해요체, 에이전트 지시문 한다체, 툴·멈춤·상한 등)만 바뀌었고 문서가 말하는 구조와 규칙은 그대로다"
   - "2026-11-04: event 이력 조건, set_outdoor_temp 지원, 채점표 사실 규칙, 운영 채점 시나리오를 model.ts·blocks.ts·runner.ts·library와 대조해 더함 (REQ-073, ADR-0075)"
   - "2026-11-04: library.ts·library-facility.ts는 채점 코드를 도우미 함수로 나눴을 뿐이고 문서 내용은 그대로임을 대조"
   - "2026-11-05: ADR-0101: 행동 종류에 펌웨어 올리기, 펌웨어 올리기와 작업 보고 절을 model.ts, conditions.ts, library-firmware.ts와 대조해 더했다"
-covers_hash: ea946d80cbfab340
+  - "2026-11-06: 2026-11-06: ADR-0091(결정 1·2)·ADR-0102 구현: 서비스 층·OS 층 1차를 코드와 대조해 해당 절을 더하거나 고쳤다. 이 문서가 말하는 나머지 구조는 그대로다"
+covers_hash: 24872f1d4e90d9e3
 ---
 # 시나리오 모델 (REQ-033, REQ-034)
 
@@ -56,7 +56,7 @@ covers_hash: ea946d80cbfab340
 
 채점은 `core.oracle`이 한다. 채점표는 사실만 말한다(REQ-073, ADR-0075): "서버가 살아 있다"는 켜져 있음(`adminOn`)과 열 보호 차단 없음으로 보고(전원 공급 `powered`는 에이전트가 끈 서버에도 참이다), 유일한 완화를 벌하는 금지 항목은 없고, 상황 설명은 그 세계에서 일어나는 일만 말한다. 조건은 흐름과 채점표가 같은 `Condition` 형식을 쓴다.
 
-조치는 **툴 이름이 아니라 세계에 끼친 효과**로 적는다(전원 끄기·켜기, 재시작, 차단기 리셋, 냉방 설정 변경, 포트 끄기·켜기, 콘센트 끄기·켜기, 펌웨어 올리기 — ADR-0019, ADR-0059, ADR-0060, ADR-0101).
+조치는 **툴 이름이 아니라 세계에 끼친 효과**로 적는다(전원 끄기·켜기, 재시작, 차단기 리셋, 냉방 설정 변경, 포트 끄기·켜기, 콘센트 끄기·켜기, 펌웨어 올리기, 서비스 대기 쪽으로 옮기기·서비스 다시 시작·프로세스 다시 시작·디스크 비우기·파일시스템 다시 마운트·VM 옮기기 — ADR-0019, ADR-0059, ADR-0060, ADR-0101).
 `power_server`로 껐든 Redfish `ComputerSystem.Reset`으로 껐든 같은 "전원 끄기"다. 그래야 툴 조합이 다른 실험끼리 공정하게 비교된다.
 세션이 툴 호출마다 그 호출이 일으킨 월드 명령을 행동(`effects`)으로 묶어 기록한다.
 
@@ -101,6 +101,10 @@ VM 폭주). `FACILITY_TEMPLATES`는 플랜트·수랭·발전기가 있는 세�
 
 서버에는 BMC와 BIOS의 버전이 있고(조건 필드 `bmcVersion`, `biosVersion`, 글자 비교), Redfish `UpdateService`의 `SimpleUpdate`로 올린다. 올리기는 **시간이 가는 일**이다: 2분 뒤 서버가 꺼지고(`rebooting`), BIOS는 4분, BMC는 2분 뒤에 새 버전으로 돌아온다. 고장 "펌웨어 올리기 실패"를 걸어 둔 서버는 정해진 횟수만큼 끝에서 실패하고 이전 버전과 경고 알람(`firmware_update_failed`)으로 돌아온다.
 채점은 이 일을 사건(`firmware.update`·`reboot`·`finish`·`fail`)과 상태로 읽는다. 올릴 것이 있고 찾을 고장은 없으므로 진단의 "고장 종류"에는 일 종류 `firmware_update`를 쓸 수 있고(작업 보고), 시험지 점검은 이것을 고장이 없어도 올바른 정답으로 받아들인다. 템플릿 셋은 [설정 변경 시나리오](config-scenarios.md#펌웨어-작업-템플릿-셋)에 있다.
+
+## 서비스와 OS (REQ-086, REQ-087, [ADR-0091](adr/0091-service-os-layer-recovery-first.md))
+
+조건 필드에 서비스의 `status`(healthy·degraded·down), `backlog`(밀린 일), `lostKrw`(지금까지 본 피해, 추정), `failovers`(대기 쪽으로 옮긴 횟수)가 있다. 고장 종류에 OS 열 가지(분야 "운영체제")가 더해졌고, 내장 템플릿 묶음 "OS 고장" 다섯이 있다. 조치는 행동 종류 여섯으로 읽힌다. 계산과 표는 [서비스·OS 층](service-os-layer.md).
 
 ## 운영을 채점하는 내장 시나리오
 

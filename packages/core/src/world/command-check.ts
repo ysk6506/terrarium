@@ -7,8 +7,10 @@ import type { EntityKind } from "./blueprint";
 import { isBulkRack } from "./bulk";
 import { type Fault, faultSpec } from "./faults";
 import { FIRMWARE_COMPONENTS, type FirmwareComponent } from "./firmware";
+import { HOST_ACTIONS } from "./host-os";
 import { checkNetChange } from "./net-check";
 import { outletCount } from "./outlets";
+import { checkServiceCommand } from "./service-act";
 import type { WorldCommand, WorldReader } from "./world";
 
 /** What the world can answer about itself beyond its reader: whether a fault or a network link is there. */
@@ -121,6 +123,22 @@ function checkFirmwareCommand(world: WorldReader, command: WorldCommand): void {
     world.stateAs((command as { target: string }).target, "server");
 }
 
+function checkHostAct(world: WorldReader, target: string, action: string): void {
+  const kind = world.stateOf(target).kind;
+  if (kind !== "server" && kind !== "vm")
+    throw new InvalidValueError(`'${target}' has no operating system`);
+  if (!(HOST_ACTIONS as readonly string[]).includes(action))
+    throw new InvalidValueError(`'${action}' is not a host action`);
+}
+
+/** The commands of the layers above the equipment: host and service actions (ADR-0091), then firmware (ADR-0101). */
+function checkLayerCommand(world: WorldReader, command: WorldCommand): void {
+  if (command.type === "host.act") checkHostAct(world, command.target, command.action);
+  else if (command.type === "vm.migrate" || command.type.startsWith("service."))
+    checkServiceCommand(world, command as Parameters<typeof checkServiceCommand>[1]);
+  else checkFirmwareCommand(world, command);
+}
+
 export function validateCommand(world: WorldReader, has: Lookups, command: WorldCommand): void {
   switch (command.type) {
     case "power.set":
@@ -157,6 +175,6 @@ export function validateCommand(world: WorldReader, has: Lookups, command: World
       checkNetChange(world, command.target, command.change);
       return;
     default:
-      checkFirmwareCommand(world, command);
+      checkLayerCommand(world, command);
   }
 }

@@ -20,6 +20,7 @@ import {
   SUBMIT,
 } from "./library-kit";
 import { NETWORK_TEMPLATES } from "./library-network";
+import { OS_TEMPLATES } from "./library-os";
 import type { Condition, Expectation } from "./model";
 
 export { allOf, type ScenarioTemplate };
@@ -447,23 +448,28 @@ export { NETWORK_TEMPLATES };
 /** Work an operator does in a maintenance window (REQ-071): raising the firmware of servers. */
 export { FIRMWARE_TEMPLATES };
 
+/** Faults of the operating system of a host, seen as a service that slows or stops (REQ-087). */
+export { OS_TEMPLATES };
+
 /** Every built-in template, the facility ones and then the configuration ones last. */
 export const ALL_SCENARIO_TEMPLATES: readonly ScenarioTemplate[] = [
   ...SCENARIO_TEMPLATES,
   ...FACILITY_TEMPLATES,
   ...NETWORK_TEMPLATES,
   ...FIRMWARE_TEMPLATES,
+  ...OS_TEMPLATES,
 ];
 
 /** How the new-scenario picker groups the templates: equipment first, then changes people make to settings. */
 export const TEMPLATE_GROUPS: readonly {
-  readonly id: "facility" | "network" | "firmware";
+  readonly id: "facility" | "network" | "firmware" | "os";
   readonly label: string;
   readonly templates: readonly ScenarioTemplate[];
 }[] = [
   { id: "facility", label: "설비", templates: [...SCENARIO_TEMPLATES, ...FACILITY_TEMPLATES] },
   { id: "network", label: "네트워크·전원 설정", templates: NETWORK_TEMPLATES },
   { id: "firmware", label: "펌웨어 작업", templates: FIRMWARE_TEMPLATES },
+  { id: "os", label: "OS 고장", templates: OS_TEMPLATES },
 ];
 
 export function scenarioTemplate(id: string): ScenarioTemplate | undefined {

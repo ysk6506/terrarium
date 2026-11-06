@@ -7,6 +7,7 @@ import {
   type Board,
   type Impact,
   impactCounts,
+  impactServices,
   impactWhen,
   type Tile,
 } from "@terrarium/core/topology";
@@ -17,7 +18,9 @@ const W = hallTopology.TOPO_WORDS;
 
 export function ImpactBox({ impact, ran }: { readonly impact: Impact; readonly ran: boolean }) {
   const when = impactWhen(impact);
-  const none = impact.racks.size === 0 && impact.rooms.size === 0 && impact.servers === 0;
+  const services = impactServices(impact);
+  const none =
+    impact.racks.size === 0 && impact.rooms.size === 0 && impact.servers === 0 && services === "";
   return (
     <section className="topo-card topo-impact" aria-label={W.impact}>
       <div className="t">{W.impact}</div>
@@ -25,7 +28,10 @@ export function ImpactBox({ impact, ran }: { readonly impact: Impact; readonly r
         <div className="n topo-none">{ran ? W.noImpact : W.notRun}</div>
       ) : (
         <>
-          <div className="n">{impactCounts(impact)}</div>
+          {services && <div className="n">{services}</div>}
+          {impact.racks.size + impact.rooms.size + impact.servers > 0 && (
+            <div className="n">{impactCounts(impact)}</div>
+          )}
           {when && <div className="w">{when}</div>}
         </>
       )}

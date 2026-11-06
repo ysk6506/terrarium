@@ -15,6 +15,7 @@ import type {
 } from "@terrarium/core/world";
 import { desiredAlarms } from "./alarms";
 import { advanceFirmware } from "./firmware";
+import { updateHostOs } from "./os-physics";
 import { updateGenerators, updatePlant } from "./plant";
 import {
   aggregateLoads,
@@ -24,6 +25,7 @@ import {
   updateBatteries,
   updateDevices,
 } from "./power";
+import { updateServices } from "./services";
 import { updateThermal } from "./thermal";
 
 export interface PhysicsOptions {
@@ -78,6 +80,8 @@ export class Physics {
     updatePlant(this.world, dt);
     events.push(...this.protect());
     if (events.length > 0) this.updateElectrical();
+    events.push(...updateHostOs(this.world, dt));
+    updateServices(this.world, dt);
     events.push(...this.syncAlarms());
     this.updateHealth();
     return events;

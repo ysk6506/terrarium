@@ -85,7 +85,7 @@ describe("validating action conditions [REQ-034]", () => {
       );
     expect(issues({ kind: "action_taken", action: "power_off", target: "srv-a1" })).toEqual([]);
     expect(issues({ kind: "action_taken", action: "explode" as never })[0]?.message).toContain(
-      "알 수 없는 행동 'explode' (가능: 전원 끄기, 전원 켜기, 재시작, 차단기 리셋, 냉방 설정 변경, 포트 끄기, 포트 켜기, 콘센트 끄기, 콘센트 켜기, 스위치 설정 변경, 펌웨어 올리기)",
+      "알 수 없는 행동 'explode' (가능: 전원 끄기, 전원 켜기, 재시작, 차단기 리셋, 냉방 설정 변경, 포트 끄기, 포트 켜기, 콘센트 끄기, 콘센트 켜기, 스위치 설정 변경, 펌웨어 올리기, 서비스를 대기 쪽으로 옮기기, 서비스 다시 시작, 프로세스 다시 시작, 디스크 비우기, 파일시스템 다시 마운트, VM 다른 서버로 옮기기)",
     );
     expect(issues({ kind: "action_taken", action: "restart", target: "ghost" })[0]?.code).toBe(
       "SC012",

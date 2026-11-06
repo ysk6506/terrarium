@@ -24,6 +24,7 @@ import { type Blueprint, FAULT_SPECS, World, type WorldCommand } from "@terrariu
 import { describe, expect, test } from "vitest";
 import { networkLab } from "../../packages/core/src/world/test-support/net-lab";
 import { campusBlueprint } from "../../packages/core/src/world/test-support/sample-campus";
+import { serviceLab } from "../../packages/core/src/world/test-support/service-lab";
 
 const rowOf = (id: string) => CONTROL_ROWS.find((r) => r.id === id) as ControlRow;
 
@@ -64,13 +65,16 @@ describe("the list of what can be controlled is made of real things [REQ-069]", 
     expect([...onList].sort()).toEqual([
       "breaker.reset",
       "firmware.update",
+      "host.act",
       "link.admin",
       "load.set",
       "net.set",
       "outdoor.set",
       "outlet.set",
       "power.set",
+      "service.failover",
       "setpoint.set",
+      "vm.migrate",
     ]);
   });
 
@@ -212,7 +216,7 @@ const portDown = (device: string) => (w: World) =>
   w.index.allLinks().some((l) => (l.from === device || l.to === device) && w.linkAdminDown(l.id));
 
 /** One call per (row, tool). The key is `row|tool|target` so a row with several targets drives each. */
-const DRIVES: Readonly<Record<string, Drive>> = {
+const DRIVES: Record<string, Drive> = {
   "power.server|power_server": {
     world: campusBlueprint,
     tool: "power_server",
@@ -413,6 +417,72 @@ const DRIVES: Readonly<Record<string, Drive>> = {
     action: { kind: "config_change", target: "tor-a" },
   },
 };
+
+// The service and operating-system routes (REQ-086, REQ-087, ADR-0091), in a world with three services.
+const hostAct = (target: string, action: string) => (w: World) =>
+  w
+    .events()
+    .some(
+      (e) =>
+        e.type === "host.act" &&
+        (e as { target?: string }).target === target &&
+        (e as { action?: string }).action === action,
+    );
+const happened = (type: string, target: string) => (w: World) =>
+  w.events().some((e) => e.type === type && (e as { target?: string }).target === target);
+const shell = (cmd: string) => ({ host: "vm-web", cmd });
+
+Object.assign(DRIVES, {
+  "host.process|run_command": {
+    world: serviceLab,
+    tool: "run_command",
+    args: shell("systemctl restart portal"),
+    changed: hostAct("vm-web", "restart"),
+    action: { kind: "process_restart", target: "vm-web" },
+  },
+  "host.process|restart_service": {
+    world: serviceLab,
+    tool: "restart_service",
+    args: { service: "svc-web" },
+    changed: happened("service.restart", "svc-web"),
+    action: { kind: "service_restart", target: "svc-web" },
+  },
+  "host.disk|run_command": {
+    world: serviceLab,
+    tool: "run_command",
+    args: shell("rm /var/log/messages-old"),
+    changed: hostAct("vm-web", "free_disk"),
+    action: { kind: "disk_cleanup", target: "vm-web" },
+  },
+  "host.remount|run_command": {
+    world: serviceLab,
+    tool: "run_command",
+    args: shell("mount -o remount,rw /"),
+    changed: hostAct("vm-web", "remount_rw"),
+    action: { kind: "fs_remount", target: "vm-web" },
+  },
+  "host.reboot|run_command": {
+    world: serviceLab,
+    tool: "run_command",
+    args: shell("reboot"),
+    changed: hostAct("vm-web", "reboot"),
+    action: { kind: "restart", target: "vm-web" },
+  },
+  "service.failover|failover_service": {
+    world: serviceLab,
+    tool: "failover_service",
+    args: { service: "svc-web" },
+    changed: happened("service.failover", "svc-web"),
+    action: { kind: "service_failover", target: "svc-web" },
+  },
+  "vm.migrate|migrate_vm": {
+    world: serviceLab,
+    tool: "migrate_vm",
+    args: { vm: "vm-web", host: "srv-b1" },
+    changed: happened("vm.migrate", "vm-web"),
+    action: { kind: "vm_migrate", target: "vm-web" },
+  },
+} satisfies Record<string, Drive>);
 
 const keyOf = (row: ControlRow, tool: string) => `${row.id}|${tool}`;
 const driveKeys = (row: ControlRow, tool: string) =>

@@ -7,6 +7,7 @@ import { InvalidValueError, SeededRng } from "@terrarium/core/kernel";
 import { type AssemblyResult, BlueprintAssembler } from "@terrarium/core/sources";
 import type { EntityKind } from "@terrarium/core/world";
 import { buildRoom, type RoomPower, unitsFor } from "./room";
+import { withServices } from "./services";
 import { type SitePreset, sitePreset, specProblems, type WorldgenSpec } from "./spec";
 
 export interface WorldgenResult extends AssemblyResult {
@@ -40,7 +41,8 @@ export function generateWorld(
     for (let f = 1; f <= spec.floors; f++)
       addFloor({ asm, catalog, rng, spec, preset, vcenter }, buildingId, b, f);
   }
-  const result = asm.build();
+  const built = asm.build();
+  const result = { ...built, blueprint: withServices(built.blueprint) };
   const stats: Partial<Record<EntityKind, number>> = {};
   for (const e of result.blueprint.entities) stats[e.kind] = (stats[e.kind] ?? 0) + 1;
   return { ...result, stats };

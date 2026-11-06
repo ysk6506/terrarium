@@ -7,6 +7,7 @@ export {
   ROOM_WARNING_C,
 } from "./alarms";
 export { DEFAULT_PHYSICS, Physics, type PhysicsOptions } from "./engine";
+export { updateHostOs } from "./os-physics";
 export { ambientDerate } from "./plant";
 export {
   aggregateLoads,
@@ -22,4 +23,5 @@ export {
   updateDevices,
 } from "./power";
 export { faultParam } from "./power-supply";
+export { updateServices } from "./services";
 export { roomHeatW, updateThermal } from "./thermal";

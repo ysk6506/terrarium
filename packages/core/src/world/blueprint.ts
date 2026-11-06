@@ -18,7 +18,7 @@ export type RackMountedKind = "server" | "switch" | "storage" | "pdu";
 export type FloorStandingKind = "cooling_unit" | "power_panel" | "ups" | "cdu";
 /** Plant equipment: stands in a yard or on a roof, outside the data halls. */
 export type PlantKind = "chiller" | "generator";
-export type VirtualKind = "vcenter" | "cluster" | "vm" | "datastore";
+export type VirtualKind = "vcenter" | "cluster" | "vm" | "datastore" | "service";
 export type EntityKind =
   | SpaceKind
   | "rack"
@@ -49,6 +49,7 @@ export const ENTITY_KINDS: readonly EntityKind[] = [
   "cluster",
   "vm",
   "datastore",
+  "service",
 ]; // prettier-ignore
 
 export const MODELLED_KINDS: ReadonlySet<EntityKind> = new Set([
@@ -87,6 +88,7 @@ export const ALLOWED_PARENTS: Readonly<Record<EntityKind, readonly EntityKind[]>
   cluster: [],
   vm: [],
   datastore: [],
+  service: [],
 };
 
 /** Where something is, relative to its parent. Units are metres; racks use units (U). */
@@ -128,6 +130,7 @@ export const PLACEMENT_OF: Readonly<Record<EntityKind, Placement["type"] | undef
   cluster: undefined,
   vm: undefined,
   datastore: undefined,
+  service: undefined,
 };
 
 export type PropValue = string | number | boolean;
@@ -151,7 +154,11 @@ export type LinkKind =
   | "member_of"
   | "managed_by"
   | "stored_on"
-  | "backed_by";
+  | "backed_by"
+  /** A service runs on this VM, server or storage; `role` is `active` or `standby` (ADR-0091). */
+  | "service_on"
+  /** A service needs the traffic of this switch to reach its users. */
+  | "service_via";
 
 /** Allowed (from kinds, to kinds) per link kind. `from` depends on `to`. */
 export const LINK_RULES: Readonly<
@@ -179,6 +186,8 @@ export const LINK_RULES: Readonly<
   managed_by: { from: ["cluster"], to: ["vcenter"] },
   stored_on: { from: ["vm"], to: ["datastore"] },
   backed_by: { from: ["datastore"], to: ["storage"] },
+  service_on: { from: ["service"], to: ["vm", "server", "storage"] },
+  service_via: { from: ["service"], to: ["switch"] },
 };
 
 export interface Link {
@@ -213,4 +222,8 @@ export const isPlantKind = (kind: EntityKind): kind is PlantKind =>
   kind === "chiller" || kind === "generator";
 
 export const isVirtualKind = (kind: EntityKind): kind is VirtualKind =>
-  kind === "vcenter" || kind === "cluster" || kind === "vm" || kind === "datastore";
+  kind === "vcenter" ||
+  kind === "cluster" ||
+  kind === "vm" ||
+  kind === "datastore" ||
+  kind === "service";

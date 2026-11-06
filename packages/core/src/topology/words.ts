@@ -44,6 +44,7 @@ const COUNTING: Readonly<Record<TopoKind, readonly [string, string]>> = {
   storage: ["스토리지", "대"],
   vm: ["VM", "대"],
   cluster: ["클러스터", "개"],
+  service: ["서비스", "개"],
 };
 
 /** What a kind of equipment is called when counted ("랙", "냉방기"). */
@@ -66,6 +67,20 @@ export function groupName(
 /** The first line of the impact box: how many rooms, racks and servers. */
 export function impactCounts(impact: Impact): string {
   return `서버룸 ${num(impact.rooms.size)} · 랙 ${num(impact.racks.size)} · 서버 ${num(impact.servers)}`;
+}
+
+/**
+ * The services line (ADR-0091): "서비스 3개 멈춤 · 설계 검증 큐 1,200건 대기". Empty when every service is fine.
+ * Slow services are told after the stopped ones, then the work that piled up (the two largest queues).
+ */
+export function impactServices(impact: Impact): string {
+  const s = impact.services;
+  const parts = [
+    ...(s.down > 0 ? [`서비스 ${num(s.down)}개 멈춤`] : []),
+    ...(s.degraded > 0 ? [`${s.down > 0 ? "" : "서비스 "}${num(s.degraded)}개 느려짐`] : []),
+    ...s.waiting.slice(0, 2).map((w) => `${w.name} ${num(w.items)}${w.unit} 대기`),
+  ];
+  return parts.join(" · ");
 }
 
 /** The second line: how soon it turns serious if nothing changes. Empty when it does not. */
