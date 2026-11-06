@@ -1,7 +1,8 @@
 /**
- * The right panel (REQ-077, ADR-0083): the pick card on top — one thing, one line, one main button — and under it
- * three folded sections: 크기와 모양, 냉방과 전기, 돈. A rack also shows its front, a parcel its land, and
- * every pick can be removed. The numbers of the whole level are not here: they are the line over the 3D view.
+ * The detail card (REQ-077, ADR-0083, ADR-0107 item 8): what the right panel held, now a card over the stage. The pick
+ * card on top — one thing, one line, one main button — and under it three folded sections: 크기와 모양, 냉방과 전기,
+ * 돈. A parcel shows its land, and every pick can be removed. A server's small card opens the same folds under
+ * "더 보기"; a rack's front and the services have cards of their own (ServerCards.tsx).
  */
 
 import { withJosa } from "@terrarium/core/kernel";
@@ -12,9 +13,7 @@ import { builder, celsius, count, won } from "../../logic";
 import { Button, Note, NumberField, Segmented, SelectField } from "../kit";
 import { LandList, ParcelPanel, PurposeField } from "./LandPanel";
 import { PickCardView } from "./PickCard";
-import { RackPanel } from "./RackPanel";
 import { PowerLine, RealSizeNote, SourcesPanel } from "./RealSizePanel";
-import { carriesServices, ServiceFields, SupportedServices } from "./ServicePanel";
 import { SizePanel } from "./SizePanel";
 import type { Builder } from "./useBuilder";
 import { catalog } from "./useBuilder";
@@ -244,7 +243,7 @@ const hasShape = (e: Entity): boolean =>
   e.placement?.type === "unit";
 
 /** The folded sections of one picked thing: 크기와 모양, 냉방과 전기, 돈. */
-function EntityFolds({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
+export function EntityFolds({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
   const { index } = b.state;
   const sized = entity.kind === "room" || entity.kind === "building";
   const fits = builder.handlesFit(index, b.state.level, entity);
@@ -277,7 +276,7 @@ function EntityFolds({ entity, b }: { readonly entity: Entity; readonly b: Build
 }
 
 /** One picked thing: its card, what it holds, and its folds. */
-function EntityPanel({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
+export function EntityPanel({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
   const { preview } = b.state;
   const heat = preview?.heat.get(entity.id);
   return (
@@ -289,9 +288,6 @@ function EntityPanel({ entity, b }: { readonly entity: Entity; readonly b: Build
         </div>
       )}
       <EntityActions entity={entity} b={b} />
-      {entity.kind === "rack" && <RackPanel rack={entity} b={b} />}
-      {carriesServices(entity) && <SupportedServices entity={entity} b={b} />}
-      {entity.kind === "service" && <ServiceFields entity={entity} b={b} />}
       {entity.kind === "parcel" && <ParcelPanel entity={entity} b={b} />}
       <EntityFolds entity={entity} b={b} />
     </>
@@ -348,7 +344,7 @@ function RunResult({ b }: { readonly b: Builder }) {
 }
 
 /** Nothing picked: the place being looked at. */
-function LevelPanel({ b }: { readonly b: Builder }) {
+export function LevelPanel({ b }: { readonly b: Builder }) {
   const { index, level } = b.state;
   const building = level.kind === "floor" ? index.enclosing(level.id, "building") : undefined;
   const stats = builder.levelStats(index, catalog, level);
@@ -395,33 +391,25 @@ function LevelPanel({ b }: { readonly b: Builder }) {
   );
 }
 
-export function Inspector({ b }: { readonly b: Builder }) {
-  const { selected, index } = b.state;
-  const entity = selected.length === 1 ? index.find(selected[0] as string) : undefined;
+/** Several things picked: the one thing to do with them. */
+export function ManyPicked({ b }: { readonly b: Builder }) {
+  const { selected } = b.state;
   return (
-    <aside className="builder-side builder-side-right" aria-label="고른 것">
-      {selected.length > 1 ? (
-        <div className="builder-block stack">
-          <h2 style={{ fontSize: 18 }}>{selected.length}개를 골랐어요</h2>
-          <div className="row">
-            <Button
-              kind="danger"
-              size="small"
-              icon="trash"
-              onClick={() => b.apply((bp) => builder.remove(bp, selected))}
-            >
-              모두 지우기
-            </Button>
-            <Button size="small" onClick={() => b.setSelected([])}>
-              선택 풀기
-            </Button>
-          </div>
-        </div>
-      ) : entity ? (
-        <EntityPanel entity={entity} b={b} />
-      ) : (
-        <LevelPanel b={b} />
-      )}
-    </aside>
+    <div className="builder-block stack">
+      <h2 style={{ fontSize: 18 }}>{selected.length}개를 골랐어요</h2>
+      <div className="row">
+        <Button
+          kind="danger"
+          size="small"
+          icon="trash"
+          onClick={() => b.apply((bp) => builder.remove(bp, selected))}
+        >
+          모두 지우기
+        </Button>
+        <Button size="small" onClick={() => b.setSelected([])}>
+          선택 풀기
+        </Button>
+      </div>
+    </div>
   );
 }

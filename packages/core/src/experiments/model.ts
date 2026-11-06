@@ -14,7 +14,7 @@ import type {
 } from "@terrarium/core/session";
 import type { Blueprint, Domain, LeadTimeSettings } from "@terrarium/core/world";
 
-export type WorldOrigin = "builder" | "worldgen" | "import" | "sample";
+export type WorldOrigin = "builder" | "worldgen" | "import" | "sample" | "template";
 
 export interface WorldRecord {
   readonly id: string;

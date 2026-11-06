@@ -145,10 +145,11 @@ export function BuilderBar({
       <div className="toolbar-title">
         <h1 className="sr-only">{world.name}</h1>
         <WorldName b={b} />
-        <div className="row tiny muted" style={{ gap: 10 }}>
-          <Crumbs b={b} />
-          {!mine && <span>{world.owner}의 세계예요. 보고 고쳐 볼 수 있어요</span>}
-        </div>
+        {!mine && (
+          <div className="row tiny muted" style={{ gap: 10 }}>
+            <span>{world.owner}의 세계예요. 보고 고쳐 볼 수 있어요</span>
+          </div>
+        )}
       </div>
       <ViewToggle topology={topology} onChange={onTopology} warm={warm} />
       <Button

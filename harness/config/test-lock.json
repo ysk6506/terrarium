@@ -16415,6 +16415,94 @@
    "added": "2026-11-04",
    "amended_by": null
   },
+  "apps/server/src/runtime/world-templates.test.ts::<import:88d2955a>": {
+   "kind": "support",
+   "hash": "88d2955ae7b62fc3",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/world-templates.test.ts::<import:c7201240>": {
+   "kind": "support",
+   "hash": "c7201240e892d1f8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/world-templates.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/world-templates.test.ts::서비스부터 만든 세계와 템플릿 [REQ-094] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/world-templates.test.ts::서비스부터 만든 세계와 템플릿 [REQ-094] > 모양으로 세계를 만들고, 서비스·일감이 세계에 저장된다": {
+   "kind": "test",
+   "hash": "85a848e9076230ba",
+   "asserts": 5,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"48\"",
+    "\"IAP\"",
+    "\"IAP\"",
+    "\"interactive\"",
+    "\"interactive\"",
+    "\"service\"",
+    "\"worldgen\"",
+    "\"worldgen\"",
+    "\"모양으로 세계를 만들고, 서비스·일감이 세계에 저장된다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/world-templates.test.ts::서비스부터 만든 세계와 템플릿 [REQ-094] > 템플릿은 세계 목록에 끼지 않고 따로 나열되며, 구성을 그대로 담는다": {
+   "kind": "test",
+   "hash": "085afd26cf0856d6",
+   "asserts": 4,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"48\"",
+    "\"48\"",
+    "\"48\"",
+    "\"48\"",
+    "\"template\"",
+    "\"template\"",
+    "\"worldgen\"",
+    "\"worldgen\"",
+    "\"우리 IAP\"",
+    "\"우리 IAP\"",
+    "\"우리 IAP\"",
+    "\"템플릿은 세계 목록에 끼지 않고 따로 나열되며, 구성을 그대로 담는다\"",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
   "apps/server/src/scale-out.test.ts::<hook:afterAll>": {
    "kind": "support",
    "hash": "f160015a0e4bf149",
@@ -24275,6 +24363,164 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-04",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/server-card.test.ts::<import:118aca58>": {
+   "kind": "support",
+   "hash": "118aca580a14d7cc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/server-card.test.ts::<import:259a4b1f>": {
+   "kind": "support",
+   "hash": "259a4b1f9924753b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/server-card.test.ts::<import:89c20f07>": {
+   "kind": "support",
+   "hash": "89c20f07a610ae05",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/server-card.test.ts::<import:b2677072>": {
+   "kind": "support",
+   "hash": "b26770722ae02ccc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/server-card.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/server-card.test.ts::=catalog": {
+   "kind": "support",
+   "hash": "e0d83f2b24742ae5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/server-card.test.ts::=index": {
+   "kind": "support",
+   "hash": "5a56010a48bb2394",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/server-card.test.ts::=world": {
+   "kind": "support",
+   "hash": "3390a7337e407fbc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/server-card.test.ts::직접 짓기 카드 [REQ-094] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/server-card.test.ts::직접 짓기 카드 [REQ-094] > 단계 합계는 그 단계만 센다: 랙 하나의 서버와 서버룸 전체": {
+   "kind": "test",
+   "hash": "c588106aa268ae62",
+   "asserts": 4,
+   "literals": [
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"rack\"",
+    "\"room\"",
+    "\"room\"",
+    "\"room\"",
+    "\"server\"",
+    "\"단계 합계는 그 단계만 센다: 랙 하나의 서버와 서버룸 전체\"",
+    "\"이 랙\"",
+    "\"이 랙\"",
+    "\"이 서버룸\"",
+    "\"이 서버룸\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/server-card.test.ts::직접 짓기 카드 [REQ-094] > 서버 넣기는 종류 셋을 가격·전력과 함께 보인다": {
+   "kind": "test",
+   "hash": "a61523bbfd298f3d",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"general\"",
+    "\"general\"",
+    "\"gpu\"",
+    "\"gpu\"",
+    "\"rack\"",
+    "\"storage\"",
+    "\"storage\"",
+    "\"서버 넣기는 종류 셋을 가격·전력과 함께 보인다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/server-card.test.ts::직접 짓기 카드 [REQ-094] > 서버 카드는 서비스·전원·스위치를 말한다": {
+   "kind": "test",
+   "hash": "d8ece13475b5b53e",
+   "asserts": 4,
+   "literals": [
+    "\"-iap-vm\"",
+    "\"-iap-vm\"",
+    "\"0\"",
+    "\"0\"",
+    "\"IAP\"",
+    "\"IAP\"",
+    "\"runs_on\"",
+    "\"runs_on\"",
+    "\"서버 카드는 서비스·전원·스위치를 말한다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
    "amended_by": null
   },
   "apps/web/src/logic/builder/service-edit.test.ts::<import:3d4412c1>": {
@@ -34315,6 +34561,442 @@
    "added": "2026-11-05",
    "amended_by": null
   },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::<import:00aae5b4>": {
+   "kind": "support",
+   "hash": "00aae5b4c8cf4706",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::<import:0f514abf>": {
+   "kind": "support",
+   "hash": "0f514abf0edb6115",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::<import:15a6551e>": {
+   "kind": "support",
+   "hash": "15a6551e1e8c372b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::<import:27322d83>": {
+   "kind": "support",
+   "hash": "27322d835a758d94",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::<import:47bc4d29>": {
+   "kind": "support",
+   "hash": "47bc4d297117d35c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::<import:4b46970c>": {
+   "kind": "support",
+   "hash": "4b46970c21987588",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::<import:615f1e80>": {
+   "kind": "support",
+   "hash": "615f1e80470d5302",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::<import:f93a367f>": {
+   "kind": "support",
+   "hash": "f93a367fbe768946",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::=specWith": {
+   "kind": "support",
+   "hash": "fbbab1b06cec9fc6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::HA 사다리: 선택지와 카드 [REQ-094] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::HA 사다리: 선택지와 카드 [REQ-094] > 점선은 ADR-0107 결정 5의 목록 그대로다": {
+   "kind": "test",
+   "hash": "3112ba90e43082d1",
+   "asserts": 1,
+   "literals": [
+    "\"app-mesh\"",
+    "\"app-mesh\"",
+    "\"app-microservices\"",
+    "\"app-microservices\"",
+    "\"app-multiregion\"",
+    "\"app-multiregion\"",
+    "\"app-stateless\"",
+    "\"app-stateless\"",
+    "\"cmp-containers\"",
+    "\"cmp-containers\"",
+    "\"cmp-drs\"",
+    "\"cmp-drs\"",
+    "\"cmp-multicluster\"",
+    "\"cmp-multicluster\"",
+    "\"db-active-passive\"",
+    "\"db-active-passive\"",
+    "\"db-auto-failover\"",
+    "\"db-auto-failover\"",
+    "\"db-distributed-sql\"",
+    "\"db-distributed-sql\"",
+    "\"db-managed-multiaz\"",
+    "\"db-managed-multiaz\"",
+    "\"db-primary-secondary\"",
+    "\"db-primary-secondary\"",
+    "\"db-shared-aa\"",
+    "\"db-shared-aa\"",
+    "\"db-single\"",
+    "\"db-single\"",
+    "\"net-cloud-native\"",
+    "\"net-cloud-native\"",
+    "\"net-sdn\"",
+    "\"net-sdn\"",
+    "\"site-dr-warm\"",
+    "\"site-dr-warm\"",
+    "\"site-multi-active\"",
+    "\"site-multi-active\"",
+    "\"sto-distributed\"",
+    "\"sto-distributed\"",
+    "\"sto-dual-controller\"",
+    "\"sto-dual-controller\"",
+    "\"sto-geo\"",
+    "\"sto-geo\"",
+    "\"점선은 ADR-0107 결정 5의 목록 그대로다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::HA 사다리: 선택지와 카드 [REQ-094] > 층은 여덟이고, 카드는 코어의 선택지와 같은 순서로 하나씩 있다": {
+   "kind": "test",
+   "hash": "248c4647d3ab64d2",
+   "asserts": 4,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"8\"",
+    "\"8\"",
+    "\"층은 여덟이고, 카드는 코어의 선택지와 같은 순서로 하나씩 있다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::HA 사다리: 선택지와 카드 [REQ-094] > 카드마다 그림·문단·잃어도 되는 것·잃으면 안 되는 것·고장·비용이 있고 글 잣대를 지킨다": {
+   "kind": "test",
+   "hash": "4b97c6c1e41d8ff4",
+   "asserts": 5,
+   "literals": [
+    "\" \"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"카드마다 그림·문단·잃어도 되는 것·잃으면 안 되는 것·고장·비용이 있고 글 잣대를 지킨다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::서버 수와 나머지 숫자 [REQ-094] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::서버 수와 나머지 숫자 [REQ-094] > A+B면 PDU가 두 배, N+1이면 냉방기가 하나 더, 리프-스파인이면 스위치가 리프+스파인이다": {
+   "kind": "test",
+   "hash": "b3ba9fbccc17bea1",
+   "asserts": 4,
+   "literals": [
+    "\" \"",
+    "\" \"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"A+B면 PDU가 두 배, N+1이면 냉방기가 하나 더, 리프-스파인이면 스위치가 리프+스파인이다\"",
+    "\"cool-n\"",
+    "\"cool-n\"",
+    "\"pwr-single\"",
+    "\"pwr-single\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::서버 수와 나머지 숫자 [REQ-094] > 서버가 많을수록 랙이 늘고 서버 수는 어림으로 맞는다": {
+   "kind": "test",
+   "hash": "a0316e5f2cd779f0",
+   "asserts": 2,
+   "literals": [
+    "\"10\"",
+    "\"10\"",
+    "\"20\"",
+    "\"20\"",
+    "\"48\"",
+    "\"4800\"",
+    "\"4800\"",
+    "\"4800\"",
+    "\"서버가 많을수록 랙이 늘고 서버 수는 어림으로 맞는다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::알아서와 프리셋 [REQ-094] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::알아서와 프리셋 [REQ-094] > 고른 층은 그대로 두고 나머지는 알아서 고르며 한 줄로 이유를 말한다": {
+   "kind": "test",
+   "hash": "e736c953bd4295aa",
+   "asserts": 4,
+   "literals": [
+    "\"6\"",
+    "\"6\"",
+    "\"cmp-virt-ha\"",
+    "\"net-three-tier\"",
+    "\"net-three-tier\"",
+    "\"net-three-tier\"",
+    "\"고른 층은 그대로 두고 나머지는 알아서 고르며 한 줄로 이유를 말한다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::알아서와 프리셋 [REQ-094] > 도메인을 안 고른 사람은 여덟 층 모두 알아서다": {
+   "kind": "test",
+   "hash": "ffa09537c1849457",
+   "asserts": 1,
+   "literals": [
+    "\"8\"",
+    "\"8\"",
+    "\"도메인을 안 고른 사람은 여덟 층 모두 알아서다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::알아서와 프리셋 [REQ-094] > 싸게·보통·멈추지 않게는 여덟 층을 모두 채우고 실제 선택지만 가리킨다": {
+   "kind": "test",
+   "hash": "e4fbfe8c70a2ad0b",
+   "asserts": 2,
+   "literals": [
+    "\"auto\"",
+    "\"auto\"",
+    "\"middle\"",
+    "\"싸게·보통·멈추지 않게는 여덟 층을 모두 채우고 실제 선택지만 가리킨다\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::알아서와 프리셋 [REQ-094] > 알아서는 다른 층에 맞춘다: 가상화면 공유 저장소, 베어메탈이면 RAID": {
+   "kind": "test",
+   "hash": "9b6749e06ca02680",
+   "asserts": 2,
+   "literals": [
+    "\"cmp-bare\"",
+    "\"cmp-bare\"",
+    "\"cmp-virt-ha\"",
+    "\"cmp-virt-ha\"",
+    "\"sto-raid-backup\"",
+    "\"sto-raid-backup\"",
+    "\"sto-shared\"",
+    "\"sto-shared\"",
+    "\"알아서는 다른 층에 맞춘다: 가상화면 공유 저장소, 베어메탈이면 RAID\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::이 모양이면 [REQ-094] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::이 모양이면 [REQ-094] > 베어메탈 + 핫 스페어는 호스트를 한 대 더하고 VM이 없다": {
+   "kind": "test",
+   "hash": "d96d1bfd885419ec",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"10\"",
+    "\"10\"",
+    "\"cmp-bare-spare\"",
+    "\"베어메탈 + 핫 스페어는 호스트를 한 대 더하고 VM이 없다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::이 모양이면 [REQ-094] > 점선 칸은 고장도 시나리오도 더하지 않는다": {
+   "kind": "test",
+   "hash": "0f34b121162aa8b7",
+   "asserts": 3,
+   "literals": [
+    "\"db-managed-multiaz\"",
+    "\"db-single\"",
+    "\"db-single\"",
+    "\"net-leaf-spine\"",
+    "\"net-sdn\"",
+    "\"점선 칸은 고장도 시나리오도 더하지 않는다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::이 모양이면 [REQ-094] > 호스트·VM·스위치와 멈추는·느려지는 고장, 살리는 길, 시나리오 수를 코어에서 센다": {
+   "kind": "test",
+   "hash": "87c842e27db522a6",
+   "asserts": 7,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"3\"",
+    "\"3\"",
+    "\"9\"",
+    "\"9\"",
+    "\"호스트·VM·스위치와 멈추는·느려지는 고장, 살리는 길, 시나리오 수를 코어에서 센다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::일감 [REQ-094] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::일감 [REQ-094] > 낮과 밤 시나리오 수를 더하면 전체이고, 밤 일감은 밤이 더 많다": {
+   "kind": "test",
+   "hash": "9fddfddbc428841d",
+   "asserts": 3,
+   "literals": [
+    "\"night\"",
+    "\"office\"",
+    "\"낮과 밤 시나리오 수를 더하면 전체이고, 밤 일감은 밤이 더 많다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/world-shape.test.ts::일감 [REQ-094] > 알아서 서비스 종류에서 일감을 짐작하고 이유를 말한다": {
+   "kind": "test",
+   "hash": "70325507c335fa31",
+   "asserts": 2,
+   "literals": [
+    "\"batch\"",
+    "\"batch\"",
+    "\"batch\"",
+    "\"로그\"",
+    "\"알아서 서비스 종류에서 일감을 짐작하고 이유를 말한다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
   "apps/web/src/logic/world-words.test.ts::<import:043b925c>": {
    "kind": "support",
    "hash": "043b925cee583382",
@@ -34437,13 +35119,13 @@
   },
   "apps/web/src/logic/world-words.test.ts::=SCREENS": {
    "kind": "support",
-   "hash": "42e7fd4898ae0d70",
+   "hash": "30b187b3e265e9e0",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-06",
+   "amended_by": "0109-world-entry-amend-tests.md"
   },
   "apps/web/src/logic/world-words.test.ts::=screenTexts": {
    "kind": "support",
@@ -34467,13 +35149,13 @@
   },
   "apps/web/src/logic/world-words.test.ts::=SOURCES": {
    "kind": "support",
-   "hash": "2a0f02d80c8e7676",
+   "hash": "e0aebb6e03195fdf",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-06",
+   "amended_by": "0109-world-entry-amend-tests.md"
   },
   "apps/web/src/logic/world-words.test.ts::=view": {
    "kind": "support",
@@ -72078,6 +72760,155 @@
    "added": "2026-11-03",
    "amended_by": null
   },
+  "packages/core/src/sources/worldgen/shaped.test.ts::<import:08fd8a66>": {
+   "kind": "support",
+   "hash": "08fd8a66a76422de",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped.test.ts::<import:3bfa0ae5>": {
+   "kind": "support",
+   "hash": "3bfa0ae507c440f5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped.test.ts::<import:983e3f78>": {
+   "kind": "support",
+   "hash": "983e3f784d37b419",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped.test.ts::=withLayers": {
+   "kind": "support",
+   "hash": "eeeb2e9806f226f8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped.test.ts::서비스부터 세계 생성 [REQ-094] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped.test.ts::서비스부터 세계 생성 [REQ-094] > 계획이 센 랙·스위치·PDU가 지은 세계와 맞는다": {
+   "kind": "test",
+   "hash": "92fd2ba598b771f5",
+   "asserts": 5,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"3\"",
+    "\"3\"",
+    "\"48\"",
+    "\"480\"",
+    "\"9\"",
+    "\"9\"",
+    "\"계획이 센 랙·스위치·PDU가 지은 세계와 맞는다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped.test.ts::서비스부터 세계 생성 [REQ-094] > 고른 모양이 세계를 바꾼다: 베어메탈은 VM이 없고 핫 스페어는 호스트를 더한다": {
+   "kind": "test",
+   "hash": "ecde1791e6680da1",
+   "asserts": 6,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"9\"",
+    "\"9\"",
+    "\"cmp-bare\"",
+    "\"cmp-bare-spare\"",
+    "\"cool-2n\"",
+    "\"cool-2n\"",
+    "\"cool-n\"",
+    "\"cool-n\"",
+    "\"pwr-single\"",
+    "\"pwr-single\"",
+    "\"site-two-buildings\"",
+    "\"site-two-buildings\"",
+    "\"고른 모양이 세계를 바꾼다: 베어메탈은 VM이 없고 핫 스페어는 호스트를 더한다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped.test.ts::서비스부터 세계 생성 [REQ-094] > 서비스 정의와 일감이 서비스 개체에 저장된다": {
+   "kind": "test",
+   "hash": "ef944c4cb9ee7401",
+   "asserts": 3,
+   "literals": [
+    "\"3\"",
+    "\"3\"",
+    "\"90\"",
+    "\"90\"",
+    "\"IAP\"",
+    "\"IAP\"",
+    "\"service\"",
+    "\"서비스 정의와 일감이 서비스 개체에 저장된다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped.test.ts::서비스부터 세계 생성 [REQ-094] > 서비스의 호스트 셋은 서로 다른 랙에 선다": {
+   "kind": "test",
+   "hash": "6468bf867217cf97",
+   "asserts": 1,
+   "literals": [
+    "\"-iap-vm\"",
+    "\"3\"",
+    "\"3\"",
+    "\"runs_on\"",
+    "\"서비스의 호스트 셋은 서로 다른 랙에 선다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped.test.ts::서비스부터 세계 생성 [REQ-094] > 흉내 낼 수 없는 칸은 가까운 칸 모양으로 짓고 같은 결과를 낸다": {
+   "kind": "test",
+   "hash": "ed4f25a953423520",
+   "asserts": 1,
+   "literals": [
+    "\"net-leaf-spine\"",
+    "\"net-sdn\"",
+    "\"흉내 낼 수 없는 칸은 가까운 칸 모양으로 짓고 같은 결과를 낸다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
   "packages/core/src/sources/worldgen/site-places.test.ts::<import:8edece02>": {
    "kind": "support",
    "hash": "8edece02e98cbf01",
@@ -84469,6 +85300,199 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-05",
+   "amended_by": null
+  },
+  "packages/core/src/world/workload.test.ts::<import:62e63384>": {
+   "kind": "support",
+   "hash": "62e633849fbf69ac",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/world/workload.test.ts::<import:8a91f3d5>": {
+   "kind": "support",
+   "hash": "8a91f3d5afbabb39",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/world/workload.test.ts::<import:983e3f78>": {
+   "kind": "support",
+   "hash": "983e3f784d37b419",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/world/workload.test.ts::<import:e963b0d9>": {
+   "kind": "support",
+   "hash": "e963b0d92f81011b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/world/workload.test.ts::<import:ff7b1ca7>": {
+   "kind": "support",
+   "hash": "ff7b1ca7072645c8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/world/workload.test.ts::=svc": {
+   "kind": "support",
+   "hash": "267738d5bcde5704",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/world/workload.test.ts::일감과 사다리 [REQ-094] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/world/workload.test.ts::일감과 사다리 [REQ-094] > 가장 많이 쓰는 자원이 정상 조건을 낮춘다: CPU 위주면 CPU가 더 일찍 느려진다": {
+   "kind": "test",
+   "hash": "c70d73d385b65ebf",
+   "asserts": 4,
+   "literals": [
+    "\"0.1\"",
+    "\"0.1\"",
+    "\"0.1\"",
+    "\"0.1\"",
+    "\"0.1\"",
+    "\"0.1\"",
+    "\"0.1\"",
+    "\"0.1\"",
+    "\"0.1\"",
+    "\"0.7\"",
+    "\"0.7\"",
+    "\"0.7\"",
+    "\"cpu\"",
+    "\"cpu\"",
+    "\"가장 많이 쓰는 자원이 정상 조건을 낮춘다: CPU 위주면 CPU가 더 일찍 느려진다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/world/workload.test.ts::일감과 사다리 [REQ-094] > 말이 안 되는 일감은 한국어로 말한다": {
+   "kind": "test",
+   "hash": "08ba78acd834f65c",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"말이 안 되는 일감은 한국어로 말한다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/world/workload.test.ts::일감과 사다리 [REQ-094] > 사다리: 여덟 층에 선택지가 마흔네 개이고 층마다 아이디가 겹치지 않는다": {
+   "kind": "test",
+   "hash": "3ac95f8cb3d99540",
+   "asserts": 5,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"44\"",
+    "\"44\"",
+    "\"8\"",
+    "\"8\"",
+    "\"x\"",
+    "\"x\"",
+    "\"사다리: 여덟 층에 선택지가 마흔네 개이고 층마다 아이디가 겹치지 않는다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/world/workload.test.ts::일감과 사다리 [REQ-094] > 시각 가중치는 합이 1이고 낮 일감은 낮에 더 쏠린다": {
+   "kind": "test",
+   "hash": "9d8f80f1c14812bd",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"6\"",
+    "\"6\"",
+    "\"bursty\"",
+    "\"flat\"",
+    "\"night\"",
+    "\"night\"",
+    "\"night\"",
+    "\"office\"",
+    "\"office\"",
+    "\"office\"",
+    "\"시각 가중치는 합이 1이고 낮 일감은 낮에 더 쏠린다\""
+   ],
+   "precision": [
+    6
+   ],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/world/workload.test.ts::일감과 사다리 [REQ-094] > 일감은 서비스 개체에 저장되고 그대로 읽힌다": {
+   "kind": "test",
+   "hash": "516c0fd927839077",
+   "asserts": 2,
+   "literals": [
+    "\"일감은 서비스 개체에 저장되고 그대로 읽힌다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
+   "amended_by": null
+  },
+  "packages/core/src/world/workload.test.ts::일감과 사다리 [REQ-094] > 직접 정한 정상 조건은 일감이 덮어쓰지 않는다": {
+   "kind": "test",
+   "hash": "ed3a267d6ede6a5f",
+   "asserts": 1,
+   "literals": [
+    "\"0.5\"",
+    "\"0.5\"",
+    "\"0.5\"",
+    "\"직접 정한 정상 조건은 일감이 덮어쓰지 않는다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-06",
    "amended_by": null
   },
   "packages/core/src/world/world-edges.test.ts::<import:293c6510>": {

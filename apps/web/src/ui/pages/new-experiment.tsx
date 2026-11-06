@@ -19,7 +19,7 @@ interface Start {
 }
 
 /** Where the form starts: a fork's parent as it was, a chosen scenario, or empty. */
-function useStart(forkOf?: string, scenarioId?: string) {
+function useStart(forkOf?: string, scenarioId?: string, worldId?: string) {
   const { api } = useApp();
   return useAsync(
     async (signal): Promise<Start> => {
@@ -37,10 +37,13 @@ function useStart(forkOf?: string, scenarioId?: string) {
       }
       return {
         worlds,
-        draft: { ...experiment.emptyDraft(), ...(worlds[0] ? { worldId: worlds[0].id } : {}) },
+        draft: {
+          ...experiment.emptyDraft(),
+          ...(worldId || worlds[0] ? { worldId: worldId ?? (worlds[0] as WorldSummary).id } : {}),
+        },
       };
     },
-    [forkOf, scenarioId],
+    [forkOf, scenarioId, worldId],
   );
 }
 
@@ -277,7 +280,7 @@ export function NewExperimentPage() {
   const query = page.name === "newExperiment" ? page : undefined;
   const forkOf = query?.forkOf;
   const scenarioId = query?.scenarioId;
-  const start = useStart(forkOf, scenarioId);
+  const start = useStart(forkOf, scenarioId, query?.worldId);
   return (
     <div className="page">
       <PageHead

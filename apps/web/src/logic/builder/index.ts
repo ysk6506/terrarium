@@ -168,6 +168,15 @@ export {
   type SceneLabel,
   sceneOf,
 } from "./scene";
+export {
+  INSERT_CHOICES,
+  type InsertOption,
+  insertOptions,
+  type ServerFacts,
+  type StepSum,
+  serverFacts,
+  stepSum,
+} from "./server-card";
 export { addService, servicesOnPlace, supportLine } from "./service-edit";
 export { SMALL_BUILDING_M, SMALL_LAND_M, type SmallSpec, smallStart } from "./small-start";
 export {

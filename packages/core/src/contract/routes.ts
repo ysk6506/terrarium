@@ -152,6 +152,12 @@ export const ROUTES = {
   },
 
   listWorlds: { method: "GET", path: "/api/worlds", summary: "세계 목록", produces: json },
+  listWorldTemplates: {
+    method: "GET",
+    path: "/api/world-templates",
+    summary: "저장해 둔 세계 템플릿 목록",
+    produces: json,
+  },
   getWorld: {
     method: "GET",
     path: "/api/worlds/:id",

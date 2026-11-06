@@ -121,6 +121,21 @@ export {
 } from "./host-os";
 export { KIND_LABELS, kindList, LINK_LABELS } from "./labels";
 export {
+  builtChip,
+  CHIP_COUNT,
+  type ChipBuild,
+  type ChipMech,
+  chipById,
+  chipsOf,
+  LADDER,
+  LAYER_COUNT,
+  LAYER_IDS,
+  type LayerId,
+  type Layers,
+  layersProblem,
+  type Problem,
+} from "./ladder";
+export {
   LAND_MARKETS,
   LAND_PRICE_M_PER_M2,
   type LandMarket,
@@ -319,6 +334,27 @@ export {
 } from "./state";
 export { hasErrors, type Issue, validateBlueprint } from "./validate";
 export { isOwned, landProblem } from "./validate-campus";
+export {
+  conditionsFor,
+  DAY_PATTERN_LABELS,
+  DAY_PATTERNS,
+  type DayPattern,
+  DEFAULT_WORKLOAD,
+  daytimeShare,
+  heaviest,
+  hourWeights,
+  RESOURCE_LABELS,
+  RESOURCES,
+  type Resource,
+  WORKLOAD_KIND_LABELS,
+  WORKLOAD_KINDS,
+  WORKLOAD_LIMITS,
+  type WorkloadKind,
+  type WorkloadProfile,
+  workloadOf,
+  workloadProblem,
+  workloadProps,
+} from "./workload";
 export {
   World,
   type WorldCheckpoint,

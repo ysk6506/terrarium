@@ -7,10 +7,24 @@ export type Page =
   | { readonly name: "home" }
   | { readonly name: "worlds" }
   | { readonly name: "world"; readonly id: string }
+  | {
+      readonly name: "newWorld";
+      /** A template to start from, and whether to change it ("조금 바꿔서") or build it as it is. */
+      readonly template?: string;
+      readonly change?: boolean;
+      /** The door already chosen: "service" skips the first question. */
+      readonly door?: "service";
+    }
   | { readonly name: "scenarios"; readonly worldId?: string }
   | { readonly name: "scenario"; readonly id: string }
   | { readonly name: "experiments"; readonly mine?: boolean }
-  | { readonly name: "newExperiment"; readonly forkOf?: string; readonly scenarioId?: string }
+  | {
+      readonly name: "newExperiment";
+      readonly forkOf?: string;
+      readonly scenarioId?: string;
+      /** The world the new experiment starts on (after "바로 실험 만들기"). */
+      readonly worldId?: string;
+    }
   | { readonly name: "experiment"; readonly id: string }
   | { readonly name: "run"; readonly id: string }
   | { readonly name: "benchmarks"; readonly set?: string }
@@ -29,7 +43,7 @@ export const SECTIONS: ReadonlyArray<{
   readonly owns: readonly PageName[];
 }> = [
   { key: "home", label: "홈", page: { name: "home" }, owns: ["home"] },
-  { key: "worlds", label: "세계", page: { name: "worlds" }, owns: ["worlds", "world"] },
+  { key: "worlds", label: "세계", page: { name: "worlds" }, owns: ["worlds", "world", "newWorld"] },
   {
     key: "scenarios",
     label: "시나리오",
@@ -66,6 +80,15 @@ const ID = "([A-Za-z0-9._:-]+)";
 const PATTERNS: ReadonlyArray<[RegExp, (m: RegExpExecArray, q: URLSearchParams) => Page]> = [
   [/^\/$/, () => ({ name: "home" })],
   [/^\/worlds\/?$/, () => ({ name: "worlds" })],
+  [
+    /^\/worlds\/new$/,
+    (_, q) => ({
+      name: "newWorld",
+      ...(q.get("template") ? { template: q.get("template") as string } : {}),
+      ...(q.get("change") === "1" ? { change: true } : {}),
+      ...(q.get("door") === "service" ? { door: "service" as const } : {}),
+    }),
+  ],
   [new RegExp(`^/worlds/${ID}$`), (m) => ({ name: "world", id: m[1] as string })],
   [
     /^\/scenarios\/?$/,
@@ -86,6 +109,7 @@ const PATTERNS: ReadonlyArray<[RegExp, (m: RegExpExecArray, q: URLSearchParams) 
       name: "newExperiment",
       ...(q.get("fork") ? { forkOf: q.get("fork") as string } : {}),
       ...(q.get("scenario") ? { scenarioId: q.get("scenario") as string } : {}),
+      ...(q.get("world") ? { worldId: q.get("world") as string } : {}),
     }),
   ],
   [new RegExp(`^/experiments/${ID}$`), (m) => ({ name: "experiment", id: m[1] as string })],
@@ -129,10 +153,17 @@ const HREFS: { readonly [N in PageName]: (page: Of<N>) => string } = {
   home: () => "/",
   worlds: () => "/worlds",
   world: (p) => `/worlds/${enc(p.id)}`,
+  newWorld: (p) =>
+    withQuery("/worlds/new", {
+      template: p.template,
+      change: p.change ? "1" : undefined,
+      door: p.door,
+    }),
   scenarios: (p) => withQuery("/scenarios", { world: p.worldId }),
   scenario: (p) => `/scenarios/${enc(p.id)}`,
   experiments: (p) => withQuery("/experiments", { mine: p.mine ? "1" : undefined }),
-  newExperiment: (p) => withQuery("/experiments/new", { fork: p.forkOf, scenario: p.scenarioId }),
+  newExperiment: (p) =>
+    withQuery("/experiments/new", { fork: p.forkOf, scenario: p.scenarioId, world: p.worldId }),
   experiment: (p) => `/experiments/${enc(p.id)}`,
   run: (p) => `/runs/${enc(p.id)}`,
   benchmarks: (p) => withQuery("/benchmarks", { set: p.set }),

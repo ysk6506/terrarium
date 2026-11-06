@@ -14,15 +14,17 @@ covers:
   - packages/core/src/sources/worldgen/campus-spec.ts
   - packages/core/src/sources/worldgen/campus-rack.ts
   - packages/core/src/world/bulk.ts
+  - packages/core/src/sources/worldgen/shaped.ts
+  - packages/core/src/sources/worldgen/shaped-plan.ts
   - packages/core/src/sources/realimport/mapping.ts
   - packages/core/src/sources/realimport/synthesize.ts
 verification_log:
-  - "2026-11-05: REQ-076: 잠긴 건물의 홀은 방이 허락하는 만큼 놓되 podsPerHall개를 넘지 않는 것을 campus-plan.ts와 대조해 적었다"
   - "2026-11-05: podsPerHall 상한 문장을 campus-plan.ts와 대조해 고쳤다"
   - "2026-11-05: REQ-077 세계 만들기 재설계(작업 #90) 반영: 코드와 대조해 맞는 것을 확인했다"
   - "2026-11-05: 2026-11-05: 합친 뒤 코드(ADR-0081 실제 크기와 ADR-0083 세계 만들기 재설계)와 다시 대조: 크기와 모양 절, 냉방과 전기, m² 단위, 서버룸 이름이 맞다"
   - "2026-11-06: 2026-11-06: ADR-0091(결정 1·2)·ADR-0102 구현: 서비스 층·OS 층 1차를 코드와 대조해 해당 절을 더하거나 고쳤다. 이 문서가 말하는 나머지 구조는 그대로다"
-covers_hash: af6e10593eaf35d7
+  - "2026-11-06: REQ-094 세계 만들기 입구·서비스부터·패널 없는 직접 짓기(ADR-0107~0109)를 코드와 대조해 해당 절을 더하거나 고쳤다"
+covers_hash: 59951de48425448a
 ---
 # 세계 소스 (REQ-009~013, REQ-035, REQ-043~049)
 
@@ -127,6 +129,10 @@ HPC센터의 방은 `campus-floor.ts`의 층 평면이 자리를 정한다(조�
 건물을 세울 수 있고, 외곽선 바깥에 이어진 땅은 부지로 나뉘어 **살 수 있다**(`owned: false`, `priceM`: 사업장의 ㎡당 땅값 × 넓이. 사업장은 `props.landMarket`과 `props.landPriceM`으로 어느 시장의 값인지 기억한다, [현실의 가격](real-prices.md)). 사서 소유가 되면 그 위에도 건물을 세운다(W041).
 들어가지 않는 건물은 숨기지 않고 알림(notes)으로 남기며 W041로 지적한다. 실제 외곽선이 생기면 `outlineFromLonLat`(경도·위도 한 고리 → 미터)로
 바꿔 `SITE_SHAPES`의 점만 교체하면 된다. 새 사업장은 같은 입력(`raw` 점들과 `areaM2`)으로 만든다.
+
+## 서비스부터 만들기 (shaped, REQ-094)
+
+`generateShaped(spec)`(`worldgen/shaped.ts`)는 서비스·층 여덟 선택·서버 수로 세계를 짓는다. 먼저 `planShape`(`shaped-plan.ts`)가 랙·서버룸·스위치·PDU·냉방기·kW를 센다(서버 ÷ 20이 계산 랙, 줄마다 인프라 랙 하나). 그 계획대로 `generateWorld`가 서버룸을 짓고(기본 서비스는 뺀다), 서비스를 호스트(서로 다른 랙·서버룸)와 VM 위에 얹는다. 레거시 계층형은 서버룸마다 스파인을 하나만 둔다. 사업장 실측(`real`)은 서버 수 대신 `generateCampus`에 서비스를 얹는다. 점선 선택지는 가까운 칸 모양으로 짓는다. 자세한 규칙은 [세계 만들기 입구와 서비스부터](world-entry.md#세계에-서비스가-깔리는-규칙). 템플릿은 세계 기록의 출처 `template`이고 `provenance.shape`에 구성이 든다.
 
 ## 가져오기 (realimport)
 

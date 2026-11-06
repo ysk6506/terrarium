@@ -11,8 +11,9 @@ import { FramesBar } from "../replay/FramesBar";
 import { useActivity } from "../world3d/useActivity";
 import { WorldStage } from "../world3d/WorldStage";
 import { BuilderBar } from "./BuilderBar";
-import { Inspector } from "./Inspector";
 import { NextChip } from "./NextChip";
+import { StageCards } from "./StageCards";
+import { StepBar } from "./StepBar";
 import { Toolbox } from "./Toolbox";
 import { useAutosave } from "./useAutosave";
 import { type Builder, catalog, useBuilder } from "./useBuilder";
@@ -221,10 +222,9 @@ function useViews(level: builder.Level) {
   return { map, setMapRoom, topology, openTopology };
 }
 
-/** The class of the builder's grid: all three columns, the picture alone (map mode), or the picture and the card. */
+/** The class of the builder's grid: the palette and the picture, or the picture alone (map mode, topology). */
 function gridClass(map: boolean, topology: boolean): string {
-  if (map) return "builder builder-map";
-  return topology ? "builder builder-topo" : "builder";
+  return map || topology ? "builder builder-map" : "builder";
 }
 
 function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
@@ -253,8 +253,9 @@ function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
             <Stage3D b={b} map={map} worldId={initial.id} setMapRoom={setMapRoom} {...moment} />
           )}
           {!map && <NextChip b={b} worldId={initial.id} />}
+          {!map && <StageCards b={b} />}
+          {!map && <StepBar b={b} />}
         </div>
-        {!map && <Inspector b={b} />}
       </div>
     </div>
   );

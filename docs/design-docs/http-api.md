@@ -8,13 +8,13 @@ covers:
   - packages/core/src/contract/responses.ts
   - packages/core/src/contract/errors.ts
   - packages/core/src/contract/views.ts
-covers_hash: 943faab2345067f0
+covers_hash: c91e6c83458fdef0
 verification_log:
-  - "2026-11-06: routes.ts의 runEvents, runWorld 두 경로를 표에 더했고 views.ts의 RunEventsView, RunWorldView와 대조했다"
   - "2026-11-06: RunView의 commonReach와 calibrate 응답의 recoveryPath, commonReach를 views.ts와 대조해 표에 적었다 (REQ-088)"
   - "2026-11-06: listEscalations, answerEscalation, runbookDraft 세 경로와 레시피 선택 칸, calibrate 응답의 toolPick을 routes.ts, responses.ts(Responses를 옮김), views.ts와 대조해 표에 더했다 (REQ-080~082)"
   - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: 2a·2b 합치기"
+  - "2026-11-06: 2b·2d 합치기"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -58,7 +58,8 @@ verification_log:
 | `GET /api/worlds` | 세계 목록 | |
 | `GET /api/worlds/:id` | 세계 하나 (blueprint 포함) | |
 | `POST /api/worlds` | 빌더에서 지은 세계 저장 | |
-| `POST /api/worlds/generate` | 사업장 프리셋으로 세계 생성 | |
+| `POST /api/worlds/generate` | 사업장 프리셋으로 세계 생성. 본문이 `{ shape }`이면 서비스부터(REQ-094), `template: true`를 더하면 템플릿으로 저장 | |
+| `GET /api/world-templates` | 저장해 둔 세계 템플릿 목록(구성은 `provenance.shape`). `GET /api/worlds`에는 나오지 않는다 | |
 | `POST /api/worlds/import` | 현실(KG 등)에서 읽기 전용으로 가져오기 | |
 | `PUT /api/worlds/:id` | 세계 고쳐 저장 (버전 확인) | |
 | `DELETE /api/worlds/:id` | 세계 숨기기 (실험이 쓴 버전은 남는다) | |
