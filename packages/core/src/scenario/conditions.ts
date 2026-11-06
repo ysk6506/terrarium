@@ -25,6 +25,8 @@ export interface ToolCallRecord {
   readonly error?: string;
   /** What the call did to the world (derived from the world events it caused). */
   readonly effects?: readonly AgentAction[];
+  /** For `run_command`: what the fake shell could not do in this call (ADR-0117 decision 6). */
+  readonly outside?: readonly string[];
 }
 
 const SIMPLE_ACTIONS: Partial<Record<WorldCommand["type"], ActionKind>> = {
@@ -64,6 +66,14 @@ function serviceAction(c: WorldCommand): AgentAction | undefined {
     free_disk: "disk_cleanup",
     remount_rw: "fs_remount",
     reboot: "restart",
+    stop: "process_restart",
+    start: "process_restart",
+    enable: "process_restart",
+    disable: "process_restart",
+    kill: "process_restart",
+    remove: "disk_cleanup",
+    truncate: "disk_cleanup",
+    write: "disk_cleanup",
   } as const;
   return { action: kind[c.action], target: c.target };
 }

@@ -498,8 +498,8 @@ Object.assign(DRIVES, {
   "host.disk|run_command": {
     world: serviceLab,
     tool: "run_command",
-    args: shell("rm /var/log/messages-old"),
-    changed: hostAct("vm-web", "free_disk"),
+    args: shell("rm /var/log/messages-20251221"),
+    changed: hostAct("vm-web", "remove"),
     action: { kind: "disk_cleanup", target: "vm-web" },
   },
   "host.remount|run_command": {

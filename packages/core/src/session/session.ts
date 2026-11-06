@@ -47,7 +47,7 @@ import {
 } from "./operation";
 import { DEFAULT_RECORDER, MetricRecorder } from "./recorder";
 import { RunLog } from "./run-events";
-import { effectsSince, extrasOf, faultSkipper, operationEndOf } from "./session-parts";
+import { effectsSince, extrasOf, faultSkipper, operationEndOf, outsideOf } from "./session-parts";
 import { buildTimeline } from "./timeline";
 import {
   type CallResult,
@@ -66,6 +66,7 @@ export {
   type RunResult,
   type SessionConfig,
   type SessionStatus,
+  type ShellOutside,
   type SopMode,
   type SopResult,
   type TimePolicy,
@@ -303,6 +304,7 @@ export class Session {
       ok: result.ok,
       ...(result.error ? { error: result.error } : {}),
       effects,
+      ...outsideOf(tool, result),
     });
     this.log.call(this.calls[this.calls.length - 1] as ToolCallRecord);
   }

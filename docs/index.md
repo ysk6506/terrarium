@@ -4,11 +4,11 @@ kind: reference
 status: active
 last_verified: 2026-11-06
 verification_log:
-  - "2026-11-06: ADR-0112 링크를 더했다"
   - "2026-11-06: container-layer.md와 ADR-0114 링크를 더했다"
   - "2026-11-06: LLM API 등록"
   - "2026-11-06: LLM API 등록"
   - "2026-11-06: o4 합치기 (LLM API 등록)"
+  - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
 ---
 # 문서 색인
 
@@ -171,6 +171,8 @@ verification_log:
 - [0112 서버가 멈춰도 운영은 이어 가고, 저장해 둔 것은 서버에 두고, 서비스마다 모양을 고르고, 운영의 끝은 운영의 말로 쓴다](design-docs/adr/0112-operation-resume-and-presets-amend-tests.md)
 - [0110 운영 모드를 구현하면서 ADR-0094의 강제 장치를 시험으로 잇는다](design-docs/adr/0110-operation-mode-amend-tests.md)
 - [0117 흉내 OS를 깊게 — 작은 리눅스 흉내가 run_command에 답한다 (0116 대체)](design-docs/adr/0117-deep-os-simulation.md)
+- [0120 컨테이너·SDN 층을 깊은 OS 흉내 위에 얹으면서 노드 디스크 압박 시험의 지우는 길을 고친다](design-docs/adr/0120-container-layer-on-deep-os.md)
+- [0118 깊은 OS 흉내를 구현하면서 시험 다섯 곳의 기대값을 고치고 시험을 더한다](design-docs/adr/0118-deep-os-tests.md)
 - [0119 LLM API 등록 — 워크스페이스 단위 모델 연결, 키는 서버에만, 얇은 클라이언트](design-docs/adr/0119-llm-api-registration.md)
 - [0116 진짜 호스트 섞기 (폐기, 0117로 대체)](design-docs/adr/0116-real-hosts-in-the-world.md)
 - [0108 서비스부터는 IAP 하나로 시작하고, 사다리의 칩마다 그림·설명 카드가 있다 (0107 보정)](design-docs/adr/0108-world-entry-iap-and-chip-cards.md)

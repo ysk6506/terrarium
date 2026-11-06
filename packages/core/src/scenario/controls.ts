@@ -203,7 +203,7 @@ export const CONTROL_ROWS: readonly ControlRow[] = [
     targets: ["server", "vm"],
     blocks: [],
     agent: [
-      { tool: "run_command", via: "systemctl restart <서비스>" },
+      { tool: "run_command", via: "systemctl restart <서비스> (또는 stop·start, kill -9 <pid>)" },
       { tool: "restart_service", via: "service (서비스가 도는 모든 곳에서 다시 시작)" },
     ],
     actions: ["process_restart", "service_restart"],
@@ -215,7 +215,12 @@ export const CONTROL_ROWS: readonly ControlRow[] = [
     command: "host.act",
     targets: ["server", "vm"],
     blocks: [],
-    agent: [{ tool: "run_command", via: "rm /var/log/… 또는 logrotate -f" }],
+    agent: [
+      {
+        tool: "run_command",
+        via: "du·find 로 큰 로그를 찾아 rm (예: find /var/log -size +1G | xargs rm), 또는 logrotate -f",
+      },
+    ],
     actions: ["disk_cleanup"],
   },
   {

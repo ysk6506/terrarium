@@ -212,6 +212,7 @@ export {
   type ThemeChoice,
   themeAttribute,
 } from "./settings";
+export * as shellOutside from "./shell-outside";
 export * as toolPicker from "./tool-picker";
 export { HUMAN_WORDS, TOOL_WORDS } from "./tool-words";
 export * as hallTopology from "./topology";

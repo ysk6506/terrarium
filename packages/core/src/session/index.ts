@@ -12,6 +12,7 @@ export {
   IDLE_WAIT_SECONDS,
   judge,
   knownAnswer,
+  NO_COMMON_COMMANDS,
   NO_COMMON_PATH,
   withProbes,
 } from "./baselines";
@@ -104,10 +105,12 @@ export {
   Session,
   type SessionConfig,
   type SessionStatus,
+  type ShellOutside,
   type SopMode,
   type SopResult,
   type TimePolicy,
 } from "./session";
+export { FIRST_LOOK, type ShellReach, SIGNS, shellReach } from "./shell-reach";
 export { buildTimeline, type TimelineEntry, type TimelineSource } from "./timeline";
 export {
   type AmbiguousPair,

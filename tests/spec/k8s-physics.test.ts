@@ -199,7 +199,10 @@ describe("a node runs short of disk [REQ-096]", () => {
     expect(status()).toBe("healthy");
     expect(fromCluster().length).toBeGreaterThan(0);
     expect(sh("vm-main-w1", "df -h").output).toMatch(/9\d%/);
-    sh("vm-main-w1", "rm /var/log/messages-old");
+    sh(
+      "vm-main-w1",
+      `rm ${sh("vm-main-w1", "find /var/log -size +1G").output.split("\n").join(" ")}`,
+    );
     physics.run(MINUTE);
     expect(node().diskPressure).toBe(false);
     expect(node().unschedulable).toBe(true);

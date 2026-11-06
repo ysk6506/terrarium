@@ -69,6 +69,8 @@ export type WorldCommand =
       readonly action: HostAction;
       /** The process to restart, or the path whose files are removed. */
       readonly arg?: string;
+      /** What the action carries besides `arg`: the text written to a file, or the bytes a removal frees. */
+      readonly data?: string;
     }
   /** Outdoor air changes (a heat wave, a cold snap); the plants' capacity follows it. Scenarios do this, operators cannot. */
   | { readonly type: "outdoor.set"; readonly celsius: number }

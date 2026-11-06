@@ -10,14 +10,16 @@ covers:
   - packages/core/src/oracle/recovery-score.ts
   - packages/core/src/session/baselines.ts
   - packages/core/src/session/probes.ts
+  - packages/core/src/session/shell-reach.ts
+  - packages/core/src/session/session-parts.ts
   - packages/core/src/oracle/handoff.ts
-covers_hash: 3e5aa8b13a87c50f
 verification_log:
-  - "2026-11-06: REQ-096: probes.ts의 컨테이너 길(k8sPath)과 쿠버네티스 위 서비스가 옮기기 단계를 건너뛰는 규칙을 더했다"
-  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
-  - "2026-11-06: REQ-096: probes.ts의 컨테이너 길 정리(반복문), 서술은 그대로 맞다"
-  - "2026-11-06: recovery-score.ts의 클러스터 복구 문장을 승격에서 복구로 일반화한 것을 채점 절과 대조했다 (REQ-096)"
-  - "2026-11-06: o1·o2 합치기"
+  - "2026-11-06: 2c 보완 합치기"
+  - "2026-11-06: 컨트롤러 전환·EVPN 재수립·ECMP도 원인 cluster 사건이라는 문장을 recovery.ts와 대조해 더했다 (REQ-097)"
+  - "2026-11-06: 변별력 점검의 셋째 물음(shellReach)과 실행 결과의 흉내 밖 명령 절을 baselines.ts, shell-reach.ts, session-parts.ts와 대조해 더했다 (REQ-098)"
+  - "2026-11-06: 최종 코드와 다시 대조했다"
+  - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
+covers_hash: 780805b79cf742a4
 ---
 # 측정의 신뢰 (REQ-070, ADR-0067)
 
@@ -116,10 +118,11 @@ verification_log:
 
 ## 변별력 점검이 더 묻는 두 가지 (REQ-088, ADR-0091 결정 3·4)
 
-`calibrate`는 기준 에이전트 셋 말고도 시나리오마다 두 가지를 물어, 결과(`recoveryPath`, `commonReach`)와 경고로 말한다.
+`calibrate`는 기준 에이전트 셋 말고도 시나리오마다 세 가지를 물어, 결과(`recoveryPath`, `commonReach`, `shellReach`)와 경고로 말한다.
 
 1. **장비를 못 고쳐도 서비스를 살리는 길이 있는가** (서비스를 다루는 시나리오만). 서비스를 대기 쪽으로 옮기고(`failover_service`), 안 되면 VM을 다른 서버로 옮겨(`migrate_vm`) 모든 서비스가 정상이 되는지 본다. 그래도 안 되면(쿠버네티스 위에서 도는 서비스는 대기 쪽도 VM도 없어서 이 단계를 건너뛴다) 컨테이너의 길(롤아웃 재시작, 덜 중요한 워크로드 줄이기, 노드의 kubelet·containerd 다시 시작, 디스크를 비우고 uncordon, 노드 drain — 각각 새 세션에서 따로 해 본다, REQ-096)과 데이터베이스와 스토리지의 길(클러스터 페일오버, 남길 인스턴스 승격, 스토리지 경로 전환, 백업 복원: 최신 백업이 깨져 있으면 더 오래된 것으로)을 차례로 시도한다(REQ-095). 모두 안 되면 마지막으로 **그 고장의 도메인 팀에 넘겨서** 가장 긴 대기를 기다리면 돌아오는지 본다(`escalate`, ADR-0100 결정 5). 대기가 제한 시간보다 길면 "제한 시간 안에 돌아오지 않아요"로 실패한다. 길이 없는 템플릿은 "서비스를 옮길 길(대기 쪽이나 다른 서버)도, 그 고장의 도메인 팀에 넘겨서 돌아오는 길도 없어요"로 점검이 실패한다. 대기 쪽이 없는 서비스에 고장을 일으키는 템플릿이 그런 예다. OS 고장 템플릿은 대기 쪽이 있는 서비스를 먼저 고른다.
 2. **흔한 툴만으로 원인에 닿는가.** 툴의 현실 수준 꼬리표(`common`·`rare`·`ideal`, ADR-0087)가 이미 있으므로 `common`만 가진 에이전트를 돌린다. 알람과 멈춘 서비스에서 출발해, 장비 상세와 서비스 상태에 나온 이름을 따라 16번 안에 정답 장비의 이름이 나오는지 본다. 세계 전체를 훑는 `list_entities`는 쓰지 않는다. 닿지 않으면 "흔한 툴만으로는 원인에 닿을 수 없어요"를 경고로 말하고, 템플릿 카드(작은 세계에서)와 실행 결과에도 보인다. 작업형(펌웨어 올리기)은 원인이 없어 묻지 않는다. **한계**: 네트워크 CLI나 Redfish로 따라가는 길은 걷지 않는 좁은 점검이라, "없어요"는 "이 점검으로는 못 찾았다"는 뜻이다.
+3. **흔한 명령만으로 호스트 안의 원인에 닿는가** (ADR-0117 결정 7). 답이 OS 고장 열 가지 가운데 하나(디스크 꽉 참, 로그 폭주, 메모리 누수, 재시작 반복, 좀비, 읽기 전용, 시간 어긋남, DNS 실패, 커널 패닉, 인증서 만료)인 시나리오에서, `run_command`만 가진 에이전트가 정답 호스트에서 흔한 명령(`journalctl`, `systemctl list-units --failed`, `ps`, `df`, `free`, `mount`, `cat /etc/resolv.conf`, `date`, `timedatectl`, `cat /var/log/messages`, `journalctl -b -1`, `ls -lS /var/log`)을 순서대로 치고, 그 고장이 파일과 프로세스에 남기는 표지(`SIGNS`)가 출력에 나오는지 본다. 안 나오면 "흔한 명령(journalctl·ps·df·cat)만으로는 호스트 안에서 원인에 닿을 수 없어요"를 경고로 말한다. OS 고장이 아닌 시나리오는 묻지 않는다. 같은 점검이 고장 열 가지를 한 번씩 직접 넣어서도 돈다(`tests/spec/deep-os-outside.test.ts`).
 
 ## 툴 고르기 점검과 SOP 준수 (REQ-080, REQ-082, ADR-0087)
 
@@ -176,3 +179,7 @@ verification_log:
 - `tests/spec/reproducibility.test.ts`: 위 재현성 네 가지.
 - `packages/core/src/oracle/recovery.test.ts`: 사건 기록만으로 복구 시간, 비용, 악화, 에이전트의 복구를 읽는 것, 네 축의 배점(앞의 셋이 70점).
 - `tests/spec/recovery-scoring.test.ts`: 기준 에이전트 아홉의 순서(복구 먼저 > 원인 먼저 > 재시작만), 끝난 실행을 사건으로 다시 채점하면 같은 값, 결과 첫 줄의 서비스, 기본 툴 묶음으로 OS 고장이 풀리는 것, 템플릿마다 서비스를 옮겨 살리는 길, 흔한 툴로 닿는 길.
+
+## 실행 결과의 "흉내 밖 명령" (ADR-0117 결정 6)
+
+`run_command`는 호출마다 흉내가 못 한 명령과 기능을 돌려주고(`outside`), 실행 결과(`RunResult.shellOutside`)가 그 수와 목록을 센다. 결과 화면은 "흉내 밖 명령 n번 (목록)"을 점수와 따로 보여 준다. 점수에 섞이지 않는다(`tests/spec/deep-os-outside.test.ts`가 지킨다). 흉내를 어디부터 더 메울지 정하는 근거이고, 에이전트를 벌주는 숫자가 아니다.

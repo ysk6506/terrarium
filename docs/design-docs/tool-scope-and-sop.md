@@ -12,13 +12,13 @@ covers:
   - packages/core/src/session/human-line.ts
   - packages/core/src/session/tool-pick.ts
   - apps/server/src/runtime/escalations.ts
-covers_hash: e5073a721df0bfd9
 verification_log:
-  - "2026-11-06: 2c 보완 합치기"
-  - "2026-11-06: 툴 49개, 고장 51가지와 실수 7가지의 표를 catalog와 FAULT_TOOLS에 맞췄다 (REQ-097)"
-  - "2026-11-06: REQ-096: 툴 아홉(kubectl_*)과 고장 여덟의 필요한 툴을 FAULT_TOOLS·TOOL_DOCS와 대조해 표에 더했다 (툴 49개, 고장 52가지)"
-  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
+  - "2026-11-06: 툴 40개와 고장 44가지의 필요한 툴 표를 catalog와 FAULT_TOOLS에 맞췄다 (REQ-095)"
+  - "2026-11-06: 저장해 두기가 서버 보관으로 바뀐 것(툴 묶음·절차서·지시문)을 적고 정직한 한계를 고쳤다 (ADR-0112)"
+  - "2026-11-06: run_command의 툴 설명(tools/docs.ts)이 깊은 OS 흉내로 바뀐 것을 확인했다. 표의 필요한 툴은 그대로다 (REQ-098)"
+  - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
+covers_hash: f248e5bbfa504c37
 ---
 # 툴 범위, 에스컬레이션, 절차서 (REQ-080~082, ADR-0087, ADR-0105)
 

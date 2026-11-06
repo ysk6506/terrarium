@@ -3,6 +3,7 @@
  * (`id`, `server`, `unitId`, …); the live view needs those ids and the kind of act, not the whole call.
  * Which argument names equipment is written down once, here, and a test keeps it in step with the catalog.
  */
+import { changesWorld } from "@terrarium/core/world";
 import { toolSpec } from "./catalog";
 
 /** What the agent does to the world with a call. */
@@ -95,8 +96,7 @@ const eapiCommands = (args: Readonly<Record<string, unknown>>): unknown[] => {
 const WRITES: Readonly<Record<string, (args: Readonly<Record<string, unknown>>) => boolean>> = {
   snmp_request: (args) => args.operation === "set",
   bacnet_request: (args) => args.service === "write-property",
-  run_command: (args) =>
-    /^\s*(systemctl\s+restart|rm|logrotate|reboot|mount\s+.*-o)\b/.test(String(args.cmd ?? "")),
+  run_command: (args) => changesWorld(String(args.cmd ?? "")),
   network_cli: (args) =>
     args.configure === true ||
     (Array.isArray(args.commands) && args.commands.some((c) => !LOOKING.test(String(c)))),

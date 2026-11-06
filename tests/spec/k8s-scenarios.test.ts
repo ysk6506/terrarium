@@ -54,6 +54,12 @@ const report = (run: Run, scenario: ScenarioDoc) =>
 const score = (run: Run) => run.finish().score;
 const sh = (run: Run, host: string, cmd: string) => run.call("run_command", { host, cmd });
 
+/** The big old logs a full disk holds, found and removed the way an operator does. */
+function cleanDisk(run: Run, host: string): void {
+  const found = sh(run, host, "find /var/log -size +1G").data as { output: string };
+  sh(run, host, `rm ${found.output.split("\n").join(" ")}`);
+}
+
 /** The look an operator takes before touching anything. */
 function lookAround(run: Run): void {
   run.call("list_alarms", {});
@@ -80,7 +86,7 @@ function fix(run: Run, id: string): void {
       run.call("kubectl_scale", { workload: "report", replicas: 0 });
       return;
     case "k8s-disk-pressure":
-      sh(run, "vm-main-w1", "rm /var/log/messages-old");
+      cleanDisk(run, "vm-main-w1");
       run.call("kubectl_uncordon", { node: "main-w1" });
       return;
     default:
@@ -204,7 +210,7 @@ describe("what the cluster heals by itself is not the agent's recovery [REQ-096]
     const vm = index.outgoing(node.id, "hosted_on")[0]?.to as string;
     const done = open(s.scenario, s.blueprint);
     lookAround(done);
-    sh(done, vm, "rm /var/log/messages-old");
+    cleanDisk(done, vm);
     done.call("kubectl_uncordon", { node: node.id });
     done.call("wait", { seconds: 120 });
     report(done, s.scenario);

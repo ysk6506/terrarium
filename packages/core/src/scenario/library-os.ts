@@ -12,6 +12,11 @@
  *   os-fs-readonly       파일시스템 읽기 전용 → 쓰는 서비스가 멈춰요              → 다시 마운트해요
  *   os-ntp-drift         시간 동기 어긋남    → 인증이 실패해 서비스가 멈춰요      → 시간 동기 데몬을 다시 시작해요
  *
+ * The sheets read the world, not the tool: the same fix counts whether the agent used a dedicated tool or typed the
+ * commands a person would in the host's fake Linux (ADR-0117): `df`, `du` and `find` to see the disk and `rm` to free it,
+ * `mount` and `mount -o remount,rw /`, `timedatectl` and `systemctl restart chronyd`, `journalctl` and `ps` for the rest.
+ * The calibration checks that those common commands show the cause (session/shell-reach.ts).
+ *
  * An agent that does nothing earns nothing; an agent that only knows what to report earns the report's 30 points.
  */
 import type { BlueprintIndex, Entity, FaultType } from "@terrarium/core/world";

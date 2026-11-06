@@ -1,6 +1,7 @@
 /**
  * The reducers of the operating-system and service commands (ADR-0091): what `host.act`, `service.failover`,
- * `service.restart` and `vm.migrate` do to the state, and of the database, container and SDN layers above them. The world hands itself over as an `OsWorld`.
+ * `service.restart` and `vm.migrate` do to the state, and of the database, container and SDN layers above them. The
+ * world hands itself over as an `OsWorld`.
  */
 import { failoverCluster, promote, restartDatabase, startRestore, switchPath } from "./db-act";
 import { actOnHost, type HostActContext } from "./host-os";
@@ -28,6 +29,7 @@ export interface OsWorld extends WorldReader {
 
 function hostContext(world: OsWorld, id: string): HostActContext {
   return {
+    id,
     t: world.time(),
     os: world.ensureHostOs(id),
     faults: world.faultsOn(id),
@@ -68,35 +70,16 @@ function reduceK8s(world: OsWorld, command: WorldCommand): void {
 }
 
 /**
- * A restart of the process of a database, of a node's kubelet or containerd, of a CNI plug-in or of an ingress also
+ * A restart of the process of a database, of a node's kubelet or containerd, of a CNI plug-in or of an ingress
  * ends the faults a restart can end.
  */
-function afterRestart(world: OsWorld, host: string, unit: string | undefined): void {
-  if (unit === "postgresql") restartDatabase(dbContext(world), host);
-  if (unit === "kubelet" || unit === "containerd") restartKubelet(dbContext(world), host);
-  if (unit === CNI_PROCESS) restartCni(sdnContext(world), host);
-  if (unit === INGRESS_PROCESS) restartIngressProcess(sdnContext(world), host);
-}
-
-/** The database and storage commands (REQ-095). */
-function reduceDb(world: OsWorld, command: WorldCommand): void {
-  const ctx = dbContext(world);
-  switch (command.type) {
-    case "db.promote":
-      promote(ctx, command.target);
-      return;
-    case "db.failover":
-      failoverCluster(ctx, command.target);
-      return;
-    case "db.restore":
-      startRestore(ctx, command.target, command.backup);
-      return;
-    case "storage.path_switch":
-      switchPath(ctx, command.target);
-      return;
-    default:
-      return;
-  }
+function afterRestart(world: OsWorld, command: Extract<WorldCommand, { type: "host.act" }>): void {
+  if (command.action !== "restart") return;
+  if (command.arg === "postgresql") restartDatabase(dbContext(world), command.target);
+  if (command.arg === "kubelet" || command.arg === "containerd")
+    restartKubelet(dbContext(world), command.target);
+  if (command.arg === CNI_PROCESS) restartCni(sdnContext(world), command.target);
+  if (command.arg === INGRESS_PROCESS) restartIngressProcess(sdnContext(world), command.target);
 }
 
 /** The commands of the overlay and the cloud-native layer (REQ-097); false when the command is not one of them. */
@@ -128,10 +111,6 @@ export function reduceHostAndService(world: OsWorld, command: WorldCommand): voi
     reduceK8s(world, command);
     return;
   }
-  if (command.type.startsWith("db.") || command.type.startsWith("storage.")) {
-    reduceDb(world, command);
-    return;
-  }
   if (reduceSdn(world, command)) return;
   const ctx: ServiceActContext = {
     world,
@@ -140,8 +119,20 @@ export function reduceHostAndService(world: OsWorld, command: WorldCommand): voi
   };
   switch (command.type) {
     case "host.act":
-      actOnHost(hostContext(world, command.target), command.action, command.arg);
-      afterRestart(world, command.target, command.action === "restart" ? command.arg : undefined);
+      actOnHost(hostContext(world, command.target), command.action, command.arg, command.data);
+      afterRestart(world, command);
+      return;
+    case "db.promote":
+      promote(dbContext(world), command.target);
+      return;
+    case "db.failover":
+      failoverCluster(dbContext(world), command.target);
+      return;
+    case "db.restore":
+      startRestore(dbContext(world), command.target, command.backup);
+      return;
+    case "storage.path_switch":
+      switchPath(dbContext(world), command.target);
       return;
     case "service.failover":
       failover(ctx, command.target);

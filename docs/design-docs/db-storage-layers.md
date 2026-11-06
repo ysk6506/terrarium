@@ -13,18 +13,18 @@ covers:
   - packages/core/src/physics/db-alarms.ts
   - packages/core/src/tools/catalog-db.ts
   - packages/core/src/tools/handlers-db.ts
-  - packages/core/src/tools/shell-db.ts
+  - packages/core/src/world/os/cmd-db.ts
   - packages/core/src/scenario/library-db.ts
   - packages/core/src/sources/worldgen/shaped-db.ts
   - packages/core/src/topology/layer-network.ts
   - packages/core/src/oracle/recovery.ts
-covers_hash: 195137d79c40a1de
+covers_hash: e82be41fe012d3e5
 verification_log:
-  - "2026-11-06: 새 문서의 개체·상태·건강 규칙·고장 여덟·툴 여섯·자동 페일오버·사다리·시나리오를 코드와 대조했다 (REQ-095)"
-  - "2026-11-06: ladder.ts와 layer-network.ts의 변경은 SDN 층 몫이다. 토폴로지 단계 번호가 밀린다는 한 줄만 더했고 DB 규칙은 그대로 맞다 (REQ-097)"
   - "2026-11-06: layer-network.ts의 링크 방향 정리는 DB 단계의 그림이 같다. 문서는 그대로 맞다 (REQ-097)"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
+  - "2026-11-06: shell-db.ts가 world/os/cmd-db.ts로 옮겨진 것을 covers에 맞췄다(psql 질의 네 가지, 흉내 밖 세기 추가, 동작은 같다)"
+  - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
 ---
 # 데이터베이스 층과 스토리지 HA 층 (REQ-095, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0111](adr/0111-db-storage-layers-amend-tests.md))
 
@@ -106,7 +106,7 @@ verification_log:
 | `storage_status(pool|controller)` | 풀의 상태·활성 경로·컨트롤러, 분산이면 복제본 `n/m`과 재복제 진행률 | 보기만 | 관측 |
 | `storage_path_switch(controller)` | 호스트가 쓰는 경로를 그 컨트롤러로. 그 경로도 끊겼으면 거부 | 바꿈 | 조치 |
 
-가짜 셸 `run_command`는 데이터베이스 호스트에서 셋을 더 흉내 낸다. 가짜 셸 규칙(허용 목록, 한 단계 파이프, 목록 밖은 안내)은 그대로다.
+가짜 셸 `run_command`는 데이터베이스 호스트에서 셋을 더 흉내 낸다. 셸 문법은 깊은 OS 흉내([서비스와 OS 층](service-os-layer.md))의 것이고, 이 셋은 `world/os/cmd-db.ts`가 같은 상태를 읽어 답한다.
 
 | 명령 | 출력 |
 |---|---|

@@ -16,29 +16,30 @@ covers:
   - packages/core/src/physics/services.ts
   - packages/core/src/sources/worldgen/services.ts
   - packages/core/src/tools/shell.ts
-  - packages/core/src/tools/shell-output.ts
+  - packages/core/src/world/os/*.ts
+  - packages/core/src/session/shell-reach.ts
   - packages/core/src/scenario/library-os.ts
-covers_hash: 3466a4e26933cb52
 verification_log:
-  - "2026-11-06: service-health.ts의 depends_on 규칙과 shell.ts의 데이터베이스 명령을 더했다 (REQ-095)"
-  - "2026-11-06: 서비스 건강이 sdn-health.ts의 오버레이 규칙을 합친다는 항목을 더했다 (REQ-097)"
-  - "2026-11-06: REQ-096: service-health.ts의 클러스터 위 서비스 규칙과 shell.ts의 kubectl·crictl 명령을 더했다"
-  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
+  - "2026-11-06: REQ-095: 서비스 건강에 depends_on 규칙(데이터베이스·풀)을 더하고 가짜 셸 표에 데이터베이스 호스트의 명령을 더했다 (service-health.ts·shell.ts·host-os.ts와 대조)"
+  - "2026-11-06: 깊은 OS 흉내(REQ-098, ADR-0117)에 맞춰 가짜 셸 절을 가상 파일시스템·프로세스 표·저널·셸 문법·명령 표·고장 열 가지의 진단 길·흉내 밖 명령 세기·정직한 한계로 다시 썼고 world/os, tools/shell.ts, session/shell-reach.ts와 대조했다"
+  - "2026-11-06: 최종 코드(world/os 분할, 호스트 조치 열두 가지, 변별력 셋째 물음)와 다시 대조했다"
+  - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
+covers_hash: c551e067d928835b
 ---
 # 서비스와 OS 층 (REQ-086, REQ-087, [ADR-0091](adr/0091-service-os-layer-recovery-first.md))
 
 ## 한 문장으로
 
-**장비 위에서 일하는 것(서비스)과 그 장비 안의 운영체제를 세계에 올렸다. 서비스의 건강은 따로 시뮬레이션하지 않고 아래 장비와 호스트 상태에서 그때그때 계산하고, 호스트 안은 가짜 셸 `run_command`로 들여다본다.**
+**장비 위에서 일하는 것(서비스)과 그 장비 안의 운영체제를 세계에 올렸다. 서비스의 건강은 따로 시뮬레이션하지 않고 아래 장비와 호스트 상태에서 그때그때 계산하고, 호스트 안은 흉내 OS(`run_command`)로 들여다본다.**
 
 비유하면 식당이다. 장비는 주방 설비(가스, 냉장고)이고, 서비스는 "점심 영업"이다. 가스가 끊기면 영업이 멈추고, 냉장고가 약하면 메뉴가 줄고, 주방장(프로세스)이 계속 쓰러지거나 설거지통(디스크)이 넘치면 설비는 멀쩡해도 영업이 안 된다. 서비스 층은 영업이 되는지를, OS 층은 설비 안쪽의 일을 맡는다.
 
 ## 한계부터 (정직하게)
 
-- **진짜 OS가 아니다.** 호스트 상태(숫자 몇 개와 프로세스 목록, 로그 줄)를 물리 스텝이 움직이고, 셸은 그 **상태에서 진짜 Linux 출력의 모양을 흉내 낸다**. 명령이 실제로 실행되지 않는다. 허용 목록 밖의 명령은 "이 명령은 아직 못 해요"라고 답한다.
+- **진짜 OS가 아니다.** 호스트 상태(숫자 몇 개와 프로세스 목록, 로그 줄)를 물리 스텝이 움직이고, 셸은 그 **상태에서 가상 파일 트리와 프로세스 표를 만들어** 진짜 Linux 출력의 모양으로 답한다([ADR-0117](adr/0117-deep-os-simulation.md)). 진짜 호스트를 붙이지 않는다. 커널이 아니라서 임의 프로그램 실행, 컴파일, 패키지 설치, 네트워크 밖 접속은 안 되고 `command not found`로 답한다. 어디까지 못 했는지는 실행 결과의 "흉내 밖 명령 n번"으로 센다.
 - **시간당 피해는 추정이다.** 생성기가 깐 값은 업종 평균을 어림한 것이고 모든 서비스에 `harmEstimated`가 붙어 툴 출력과 화면에 "추정"으로 나온다. 실제 사업장에 맞게 고쳐야 의미가 있다.
-- **컨테이너(kubectl)는 2차다.** 이 층은 서버·VM의 OS만 다룬다.
+- **컨테이너(kubectl, crictl)는 컨테이너 층의 일이다.** 이 층은 서버·VM의 OS만 다루고, 컨테이너 층(`tools/shell-layers.ts`)이 `registerShellCommand`로 두 명령을 단다. 쿠버네티스 노드인 호스트에서는 컨테이너 층의 출력이 나오고([컨테이너 층](container-layer.md)), 노드가 아닌 호스트에서는 `command not found`다.
 - 건강은 **지금 상태의 함수**다. 응답 시간 분포나 요청 단위 실패는 없다. 느려짐(degraded)은 "지금 정상 조건에서 벗어났다"는 뜻이다.
 
 ## 서비스 (`world/service.ts`)
@@ -118,7 +119,7 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 
 | 고장 | 호스트에서 벌어지는 일 | 서비스에 번지는 모양 | 푸는 길 |
 |---|---|---|---|
-| 디스크 꽉 참 | 디스크 100%, 로그에 "No space left on device" | 요청 처리는 느려짐, 배치·상태 유지는 멈춤 | 로그 지우기(`rm /var/log/…`, `logrotate -f`) |
+| 디스크 꽉 참 | 디스크 100%, 로그에 "No space left on device" | 요청 처리는 느려짐, 배치·상태 유지는 멈춤 | 큰 로그를 찾아 지우기(`du`·`find`로 찾고 `rm`, 또는 `logrotate -f`) |
 | 로그 폭주 | 디스크가 분당 3%(조절) 차오르고 로그가 초당 4,500줄 | 정상 조건을 넘으면 느려지고 가득 차면 디스크 꽉 참과 같음 | 서비스 프로세스 다시 시작(폭주를 끊음), 그다음 디스크 비우기 |
 | 메모리 누수 | 서비스 프로세스 메모리가 분당 2%(조절) 늘어 99%에서 OOM 강제 종료, 20초 뒤 다시 떠서 또 샘 | 90%쯤부터 느려지고 강제 종료 순간 멈췄다 돌아오기를 반복 | 다시 시작은 잠깐뿐(누수는 남음). 서비스를 대기 쪽으로 옮기면 오래 감 |
 | 프로세스 재시작 반복 | 30초(조절)마다 죽고 재시작 횟수가 늘고 로그에 `status=1/FAILURE` | 멈춤 | 다시 시작해도 같음. 서비스를 대기 쪽으로 옮김 |
@@ -131,35 +132,93 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 
 알람은 종류 `os`(디스크, 메모리, 프로세스, 파일시스템, 시계, DNS, 좀비, 로그 폭주, 인증서, OS 내려감)와 `service`(서비스 멈춤은 심각, 느려짐은 경고)가 있다. 호스트가 장비 쪽 이유로 꺼져 있으면 OS 알람은 내지 않는다(그쪽 알람이 이미 있다).
 
-## 가짜 셸 `run_command(host, cmd)` (`tools/shell.ts`)
+## 깊은 OS 흉내 (`world/os/`, [ADR-0117](adr/0117-deep-os-simulation.md))
 
-호스트(서버 또는 VM)에서 명령 한 줄을 실행한다. 꺼져 있거나 닿지 않는 호스트는 `ssh: connect to host … Connection timed out`이다. 읽는 명령은 상태에서 진짜 Linux 출력의 모양(`df -h`의 표, `top`의 머리말, `ps aux`의 열, `journalctl`의 시각과 단위)으로 만들고, 쓰는 명령은 월드 명령 `host.act`가 되어 사건으로 남는다.
+`run_command(host, cmd)`는 호스트(서버 또는 VM)에서 명령 한 줄을 실행한다. 꺼져 있거나 닿지 않는 호스트는 `ssh: connect to host … Connection timed out`이고, 커널 패닉도 같다. 그 밖에는 **작은 리눅스 흉내**가 답한다. 허용 목록은 없다. 흉내가 할 수 있는 명령은 모두 돌고, 모르는 명령은 `bash: xyz: command not found`(종료 코드 127)다. 출력은 세계 시드·상태·세계 시간의 함수라서 같은 명령 열은 새 세계에서 같은 글자를 내고, 빨리 감기와 기록 재생이 전과 같다(`tests/spec/deep-os-determinism.test.ts`).
 
-| 명령 | 하는 일 | 세계를 바꾸나 |
+호출 결과는 `{stdout, stderr, exitCode, outside, output}`이다. `output`은 stdout 다음에 stderr를 이은 글(예전 모양)이고, `outside`는 이 호출에서 흉내가 못 한 명령·기능의 목록이다.
+
+### 가상 파일시스템 (`os/fs.ts`, `fs-etc.ts`, `fs-proc.ts`, `fs-var.ts`)
+
+호스트마다 파일 트리를 **그때그때 서술**한다(저장하는 덩어리가 없다). 파일 내용은 읽을 때만 만든다. 운영자가 쓴 것(`>`, `>>`, `tee`, `sed -i`, `cp`, `touch`)과 지운 것은 호스트 상태(`files`·`removed`)에 사건으로 남아 트리 위에 덮인다.
+
+| 자리 | 들어 있는 것 | 어디서 나오나 |
 |---|---|---|
-| `df -h` | 디스크 사용 | 아니오 |
-| `free -m` | 메모리 | 아니오 |
-| `top -bn1` | CPU·메모리 상위 프로세스 | 아니오 |
-| `ps aux` | 프로세스 목록(좀비 포함) | 아니오 |
-| `systemctl status <유닛>` | 유닛 상태와 최근 로그 | 아니오 |
-| `journalctl -n <N> [-u <유닛>] [-p err]` | 시스템 로그 | 아니오 |
-| `dmesg` | 커널 로그 (`dmesg \| tail`) | 아니오 |
-| `ping <호스트>`, `curl -I <URL>` | 닿는지, 서비스가 어떻게 답하는지(200 느림 / 401 / 500 / 502 / 연결 거부 / 시간 초과) | 아니오 |
-| `date`, `uptime`, `mount`, `chronyc tracking` | 시각, 가동 시간, 마운트, 시계 어긋남 | 아니오 |
-| `systemctl restart <유닛>` | 프로세스 다시 시작 | 예 (`host.act` 다시 시작) |
-| `rm <경로>`, `logrotate -f /etc/logrotate.conf` | 로그 지우기. 경로는 `/var/log`, `/tmp` 아래만 | 예 (디스크 비우기) |
-| `mount -o remount,rw /` | 다시 마운트 | 예 |
-| `reboot` | 재부팅 | 예 (그 위의 서비스가 모두 멈춤) |
-| `pg_isready`, `psql -c "select pg_is_in_recovery()"` 등, `multipath -ll` | 데이터베이스 호스트에서 인스턴스와 경로의 상태 (REQ-095, [데이터베이스 층](db-storage-layers.md)) | 아니오 |
-| 쿠버네티스 노드인 호스트에서 `kubectl get nodes\|pods\|deployments [-n <ns>]`, `kubectl describe node <이름>`, `crictl ps` | 노드·파드 목록과 상태, 노드의 조건·할당량, 노드에 서 있는 컨테이너 (REQ-096, [컨테이너 층](container-layer.md)). 노드가 아닌 호스트에서는 `command not found` | 아니오 |
+| `/proc` | `cpuinfo`, `meminfo`, `loadavg`, `uptime`, `mounts`, `<pid>/status·cmdline·comm·stat` | 호스트 숫자와 프로세스 표 (`free`·`top`·`ps`와 같은 값) |
+| `/var/log` | `messages`(=`syslog`), `secure`(=`auth.log`), `kern.log`, `cron`, `dmesg`, `<서비스>/<서비스>.log`, 지난주 로그(`messages-20251221` 따위), `journal/` | 호스트의 **한 사건 목록**(아래). 알람·고장·조치·건강 점검이 줄이 되고 시각은 세계 시간 |
+| `/etc` | `hostname`, `hosts`, `resolv.conf`, `fstab`, `passwd`, `logrotate.conf`·`logrotate.d/<서비스>`, `systemd/system/*.service`, `ssl/certs/<서비스>.pem`(머리에 notAfter), `<서비스>.conf`, `chrony.conf` | 고장이 바꾸는 파일이 여기 있다 |
+| `/var/lib` | `<서비스>/data/store.dat`, `state.db`, 데이터베이스 호스트의 `pgsql/data` | 디스크의 기본 사용량을 채우는 큰 파일 |
+| `/tmp`, `/home/ops`, `/opt/app/bin`, `/usr/bin`, `/dev`, `/boot` | 업로드 임시 파일, 로그인 홈, 서비스 실행 파일, 명령 파일 | 얼개 |
 
-파이프는 한 단계만: `| grep [-i|-v|-c] <글자>`, `| tail [-n N]`, `| head [-n N]`. 출력은 400줄까지 보여 주고 더 길면 "| grep 이나 | tail 로 좁혀 보세요"를 붙인다. 허용 밖의 명령은 오류가 아니라 이 답이다.
+크기는 서로 맞는다. `df`의 사용량 = 기본 사용량(호스트 id에서 정해짐) + 고장이 쌓은 묵은 로그이고, `du`와 `ls -l`은 같은 트리를 더한다. 지우면 그만큼 `df`가 줄어든다. 쓰기와 지우기는 `/var/log`·`/tmp`·`/home` 같은 자리만 되고(`/etc`는 쓰기만), 그 밖은 `Operation not permitted`·`Permission denied`다. 파일시스템이 읽기 전용이면 `/tmp`를 뺀 모든 쓰기가 `Read-only file system`이다.
 
-```
-이 명령은 아직 못 해요: kubectl apply -f deploy.yaml
-되는 명령: df -h, free -m, top -bn1, ps aux, systemctl status <unit>, …
-한 단계 파이프만 돼요: | grep [-i|-v|-c] <글자>, | tail [-n N], | head [-n N]
-```
+### 프로세스 표 (`os/procs.ts`)
+
+호스트마다 PID·PPID·사용자·이름·명령줄·상태(R/S/D/Z)·CPU%·RSS·시작 시각을 가진다. systemd(PID 1), 커널 스레드, 시스템 데몬(sshd, chronyd, systemd-resolved, rsyslogd, crond, journald), 서비스의 프로세스(`appsvc`), 데이터베이스·CNI 같은 얹힌 것, 로그인 세션(sshd 자식, bash)이 있다. `ps`, `top -b -n 1`, `pgrep`, `/proc/<pid>/status`가 모두 이 표 하나를 읽는다. 메모리 누수는 그 프로세스의 RSS가 자라고, 좀비 누적은 Z 줄이 부모(서비스 프로세스) 밑에 늘고, 재시작 반복은 재시작 때마다 PID가 바뀐다(`pid + 재시작 횟수 × 1009`). 한 번 재시작하면 새 PID이고, 죽이는 신호(`kill -9`)는 systemd가 다시 띄우고 얌전한 신호(`kill`)는 끝낸다.
+
+### 유닛과 저널 (`os/units.ts`, `os/events.ts`, `os/journal.ts`)
+
+유닛은 호스트의 프로세스다. `systemctl status|start|stop|restart|reload|enable|disable|is-active|is-enabled|is-failed|list-units [--failed]|show -p|cat`가 된다. 상태에는 재시작 횟수(`show -p NRestarts`)와 최근 저널 줄이 같이 나온다. `journalctl`은 `-u`(여러 번), `-n`, `--since`·`--until`("10 minutes ago", "today", "2026-01-01 00:10"), `-p`, `-k`, `-b`(`-b -1`은 지난 부팅), `-g`, `-r`, `-o cat`를 알고, `-f`는 안 된다고 말하고 마지막 줄만 보여 준다. 저널, `/var/log/*`, `dmesg`는 **호스트의 한 사건 목록**에서 나온다.
+
+| 사건의 출처 | 예 |
+|---|---|
+| 물리가 저장한 줄 | 메모리 90%·강제 종료, 파일시스템 읽기 전용 전환, 커널 패닉과 부팅, 다시 시작 |
+| 고장의 박자(고장이 시작된 때부터 계산) | 재시작 반복의 `Scheduled restart job`·`Main process exited`, 로그 폭주의 에러, 시계 어긋남 경고(분마다), DNS 실패, 인증서 만료 |
+| 살아 있는 호스트의 바탕 | cron(10분), 시간 동기(1시간), 로그인(2시간), 서비스의 건강 점검(2분), 데이터베이스 체크포인트 |
+| 세계의 알람·조치 | `monitoring-agent`의 알람 줄, `sudo`의 조치 줄(`COMMAND=…`) |
+
+고장의 박자는 고장의 시작·끝과 지금 시각만으로 계산해서, 한 번에 빨리 감아도 1초씩 걸어도 같은 줄이 나온다.
+
+### 셸 문법 (`os/shell-parse.ts`, `os/shell-exec.ts`)
+
+| 되는 것 | 안 되는 것(거절하고 종료 코드 2, "흉내 밖"으로 센다) |
+|---|---|
+| 파이프 여러 단계 `a \| b \| c`, `&&` `\|\|` `;` | 변수 `$X`, `$(…)`, 백틱 |
+| `>` `>>` `<` `2>` `2>>` `2>&1`, `/dev/null` | `&`(백그라운드), 히어독 `<<`, 서브셸 |
+| `'…'` `"…"` 백슬래시 따옴표, `*` `?` `[…]` 글롭, `~` | `if`·`for`·`while`·`case`·함수 |
+| `cd`, `pwd`, `sudo`(그냥 실행), `sleep`(바로 끝) | |
+
+### 명령 표
+
+| 분야 | 명령과 되는 옵션 |
+|---|---|
+| 읽기·찾기 | `cat`(-n), `ls`(-l -a -h -R -d -t -S -r -F), `stat`(-c), `find`(-name -iname -type -size -mtime -mmin -newer -user -empty -maxdepth -print -ls -delete -exec), `du`(-s -h -a -c -d --max-depth), `which`, `env`, `wc`(-l -w -c), `head`·`tail`(-n -c -N, `-f`는 안 됨) |
+| 글 다루기 | `grep`·`egrep`·`fgrep`(-i -v -c -n -E -F -r -l -L -w -x -o -h -q -s -m -A -B -C -e), `awk`(-F -v -f, `$N` `NF` `NR`, 패턴, `BEGIN`·`END`, `printf`, 배열, `if`·`for`·`while`, 내장 함수), `sed`(`s///[g\|p\|N]` `d` `p` `q` `y` `a` `i` `c` `=` 주소·범위·`!`, -n -e -E -i), `sort`(-n -r -u -k -t -f -h), `uniq`(-c -d -u -i), `cut`(-d -f -c), `tr`(-d -s -c, 문자 클래스), `xargs`(-n -I -r), `tee`(-a), `echo`, `printf`, `test`·`[` |
+| 시스템 | `ps`(aux, -ef, -eo, -p -C -u, --sort), `top`(-b -n -o -p), `free`(-m -g -h), `df`(-h -T -i), `uptime`, `date`(+FORMAT -d -u), `hostname`, `uname`, `mount`, `lsblk`, `lsof`(-i -p 파일), `kill`·`pkill`·`pgrep`·`pidof`·`nice`, `dmesg`(-T -l), `journalctl`, `systemctl`, `timedatectl`, `chronyc`(tracking sources), `openssl x509`(-dates -enddate -checkend -subject -in), `logrotate`(-f -d) |
+| 네트워크 | `ping`, `curl`(-I -s -S -o -w -f), `dig`(+short @서버), `nslookup`, `ss`·`netstat`(-tulnpa -r), `ip`(a r l) |
+| 쓰기 | `rm`(-r -f -v), `truncate -s 0`, `touch`, `cp`, `mv`, `tee`, `>` `>>`, `sed -i`, `kill`, `systemctl start·stop·restart·enable·disable`, `logrotate -f`, `mount -o remount,rw`, `reboot` |
+| 다른 층 | `pg_isready`, `psql -c`, `multipath -ll`(데이터베이스 호스트, [데이터베이스 층](db-storage-layers.md)). `kubectl get nodes\|pods\|deployments [-n <ns>]`, `kubectl describe node <이름>`, `crictl ps`(쿠버네티스 노드인 호스트, 컨테이너 층이 `registerShellCommand`로 달고 노드가 아닌 호스트에서는 `command not found`, [컨테이너 층](container-layer.md)). `systemctl restart kubelet\|containerd\|calico-node`는 위 `systemctl`이 하고, 노드의 디스크 압박과 CNI 고장 같은 그 층의 상태도 함께 풀린다([SDN 층](sdn-network-layer.md)) |
+
+쓰는 명령은 월드 명령 `host.act`가 되어 사건으로 남는다(다시 시작, 멈춤·시작, 켜기·끄기, 신호, 지우기, 쓰기, 비우기, 로그 돌리기, 다시 마운트, 재부팅). 사건 기록과 복구 우선 채점이 예전 툴 조치와 같이 읽는다. 파이프 속(`find … \| xargs rm`, `find -exec rm`, `sudo …`)에 숨은 쓰기도 조치로 센다(`callEffect`).
+
+### 고장 열 가지가 보이는 길
+
+흔한 명령만으로 원인에 닿는 길이 있다. 변별력 점검(`session/shell-reach.ts`)이 이 목록을 순서대로 쳐서 확인한다: `journalctl -p warning`, `systemctl list-units --failed`, `ps aux --sort=-%mem`, `df -h`, `free -m`, `mount`, `cat /etc/resolv.conf`, `date`, `timedatectl`, `cat /var/log/messages`, `journalctl -b -1`, `ps … grep defunct`, `ls -lS /var/log`.
+
+| 고장 | 파일과 프로세스에 남는 것 | 진단 길 |
+|---|---|---|
+| 디스크 꽉 참 | `/var/log/<서비스>/`에 날짜별 큰 로그 넷, `logrotate.d/<서비스>`의 로테이션이 꺼져 있음 | `df -h` 100% → `du`·`find /var/log -size +1G` → `cat /etc/logrotate.d/…` |
+| 로그 폭주 | 서비스 로그 하나가 자람, 저널에 같은 에러가 5초마다 | `ls -lS` 두 번 비교, `journalctl -u` |
+| 메모리 누수 | 그 프로세스의 RSS가 자람, 저널에 `heap usage n%` | `ps aux --sort=-rss`, `free -m`, `journalctl -p warning` |
+| 재시작 반복 | PID가 바뀜, `NRestarts` 증가, 설정 14번째 줄이 깨짐 | `systemctl status`(activating (auto-restart)), `journalctl -u`, `sed -n 14p /etc/….conf` |
+| 좀비 누적 | 서비스 프로세스 밑에 Z 줄이 늘고 좀비는 `kill`이 안 먹음 | `ps aux \| grep -c defunct`, `ps -eo ppid,stat` |
+| 읽기 전용 | `mount`가 `ro`, 쓰기가 `Read-only file system`, 커널 줄 | `mount`, `journalctl -k` |
+| 시간 어긋남 | `date`가 앞섬(RTC는 그대로), `System clock synchronized: no` | `timedatectl`, `chronyc tracking`, `journalctl -u chronyd` |
+| DNS 실패 | `resolv.conf`가 죽은 리졸버(`10.20.99.53`)를 가리킴, `dig`가 시간 초과 | `cat /etc/resolv.conf`, `dig`, `dig @10.20.0.54`(좋은 리졸버는 답함) |
+| 커널 패닉 | 로그인이 안 되다가(`ssh` 시간 초과) 부팅하면 업타임이 짧고 지난 부팅 저널에 패닉 | `uptime`, `journalctl -b -1 -p err` |
+| 인증서 만료 | `.pem` 머리의 notAfter가 지금보다 앞, 앱이 `certificate has expired` | `openssl x509 -noout -dates -in …`, `-checkend 0` |
+
+### "흉내 밖 명령" 세기 (ADR-0117 결정 6)
+
+호출마다 흉내가 못 한 것을 `outside`에 적는다. 모르는 명령은 이름, 안 되는 옵션과 기능은 `명령 옵션`(`tail -f`, `셸 문법 $`, `psql 질의 …`)이다. 실행 결과는 `shellOutside`(`commands`, `count`, `items`)를 가지고, 결과 화면의 "흉내 밖 명령" 블록이 "흉내 밖 명령 n번 (목록)"을 점수와 따로 보여 준다. `run_command`를 한 번도 안 쓴 실행은 이 줄이 없다. 이 목록이 흉내를 어디부터 더 메울지의 근거다.
+
+### 정직한 한계
+
+- 커널이 아니다. 임의 프로그램 실행, 컴파일, 패키지 설치, `vim` 같은 대화형 프로그램, 네트워크 밖 접속은 안 된다.
+- 쓰기는 파일을 **고정된 내용**으로 바꾼다. 로그를 `>`로 비우면 그 파일은 비어 있는 채로 남고 그 뒤의 새 줄은 그 파일에 안 들어간다(저널에는 계속 쌓인다).
+- 묵은 로그는 날짜별 네 파일로 나뉜다(디스크 꽉 참뿐 아니라 쿠버네티스 노드의 디스크 압박도 노드 VM에 같은 큰 로그를 남긴다). 지우면 그 파일 몫만큼 디스크가 비고, 90% 밑으로 내려오면 디스크 꽉 참이 풀린다. 열린 파일을 지워도 공간이 안 돌아오는 일(삭제된 파일을 쥔 프로세스)은 흉내 내지 않는다.
+- 지난 줄의 PID는 지금 PID로 찍힌다(재시작 반복의 에러 줄만 그때의 PID).
+- 저널은 마지막 6시간(`--since`로 24시간까지)만 만든다. 그 앞은 없다.
 
 ## 서비스 툴
 
@@ -225,7 +284,11 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 ## 시험
 
 - `packages/core/src/physics/service-os.test.ts`: 건강 규칙(종류별), 고장 열 가지의 번짐과 풀리는 길, 알람, 대기 쪽 옮기기.
-- `tests/spec/service-tools.test.ts`: 툴 설명 표준과 현실 수준 꼬리표, 서비스 툴, 가짜 셸 출력과 허용 밖 안내.
+- `tests/spec/service-tools.test.ts`: 툴 설명 표준과 현실 수준 꼬리표, 서비스 툴, 가짜 셸 출력과 `command not found`.
+- `tests/spec/deep-os-shell.test.ts`: 셸 문법, `grep`·`awk`·`sed` 같은 텍스트 명령, 쓰기가 사건이 되는 것, 파일과 프로세스가 서로 맞는 것 (REQ-098).
+- `tests/spec/deep-os-faults.test.ts`: 고장 열 가지가 흔한 명령으로 보이고 풀리는 길 (REQ-098).
+- `tests/spec/deep-os-determinism.test.ts`: 같은 명령 열은 같은 글자, 빨리 감기와 1초씩이 같은 로그 (REQ-098).
+- `tests/spec/deep-os-outside.test.ts`: "흉내 밖 명령" 세기와 "흔한 명령만으로 원인에 닿는가" 점검 (REQ-098).
 - `tests/spec/os-scenarios.test.ts`: 템플릿 다섯의 변별력(기준 에이전트), 맞게 고친 점수, 재부팅 감점.
 - `tests/spec/recovery-scoring.test.ts`: 복구 우선 채점의 순서(기준 에이전트 아홉), 사고 비용, 복구하는 길, 흔한 툴로 닿는 길 (REQ-088).
 - `apps/web/src/logic/builder/service-edit.test.ts`: 빌더의 "떠받치는 서비스" 줄과 서비스 더하기.

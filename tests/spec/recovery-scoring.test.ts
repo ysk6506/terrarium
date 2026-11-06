@@ -196,7 +196,7 @@ describe("the default tools can solve a fault of the operating system [REQ-088]"
     const { host, service } = aboutOf(scenario);
     const session = Session.create({ blueprint, scenario, tools: DEFAULT_TOOLSET, seed: 1 });
     session.start();
-    expect(session.call("run_command", { host, cmd: "rm /var/log/journal/old.log" }).ok).toBe(true);
+    expect(session.call("run_command", { host, cmd: "rm -f /var/log/*/*.log" }).ok).toBe(true);
     session.call("wait", { seconds: 30 });
     expect(session.call("service_status", { service }).data).toMatchObject({ status: "healthy" });
   });

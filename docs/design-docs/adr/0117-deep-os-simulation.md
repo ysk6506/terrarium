@@ -5,8 +5,10 @@ status: active
 last_verified: 2026-11-06
 supersedes: 0116-real-hosts-in-the-world.md
 enforced_by:
-  - none
-no_enforcement_reason: 구현하면서 시험으로 바꾼다
+  - tests/spec/deep-os-shell.test.ts
+  - tests/spec/deep-os-faults.test.ts
+  - tests/spec/deep-os-determinism.test.ts
+  - tests/spec/deep-os-outside.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 933b30a723d6756d

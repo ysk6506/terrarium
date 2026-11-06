@@ -16,15 +16,17 @@ covers:
   - packages/core/src/tools/catalog-k8s.ts
   - packages/core/src/tools/handlers-k8s.ts
   - packages/core/src/tools/shell-k8s.ts
+  - packages/core/src/tools/shell-layers.ts
   - packages/core/src/scenario/library-k8s.ts
   - packages/core/src/sources/worldgen/shaped-k8s.ts
   - packages/core/src/topology/impact-k8s.ts
   - packages/core/src/world/ladder.ts
-covers_hash: 4c8dad6e058764e1
+covers_hash: 3aef8fd1c24ce3c5
 verification_log:
   - "2026-11-06: 새 문서: 컨테이너 층의 개체·상태, 서비스 건강 규칙, 고장 여덟, 툴 아홉, 클러스터가 알아서 하는 일, DRS, 사다리 연결, 시나리오 다섯을 코드와 대조해 적었다 (REQ-096)"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
+  - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
 ---
 # 컨테이너 층 (REQ-096, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0114](adr/0114-container-layer-amend-tests.md))
 
@@ -137,7 +139,7 @@ VM 위의 노드(IAP)와 베어메탈 위의 노드가 같은 개체다. 노드�
 
 툴이 아홉 개 늘어난다(SDN 층의 아홉과 합쳐 40개에서 58개). 바꾸는 여섯은 제어 가능 요소표의 행 다섯(`k8s.rollout_restart`, `k8s.scale`, `k8s.cordon`(cordon과 uncordon), `k8s.drain`, `k8s.delete_pod`)과 `host.kubelet`(노드 호스트의 kubelet·containerd 다시 시작)을 가진다.
 
-가짜 셸 `run_command`는 노드인 호스트에서 `kubectl get nodes|pods|deployments [-n <ns>]`, `kubectl describe node <이름>`, `crictl ps`를 흉내 낸다(허용 목록, 상태에서 생성). 노드가 아닌 호스트에서는 `command not found`(127)다. `systemctl restart kubelet`과 `containerd`가 되고, 노드의 kubelet이 멈춘 동안 `systemctl status kubelet`은 failed를 보인다.
+가짜 셸 `run_command`는 노드인 호스트에서 `kubectl get nodes|pods|deployments [-n <ns>]`, `kubectl describe node <이름>`, `crictl ps`를 흉내 낸다(상태에서 생성). 깊은 OS 흉내의 셸([서비스와 OS 층](service-os-layer.md))에 `tools/shell-layers.ts`가 `registerShellCommand`로 두 명령을 달기 때문에 파이프·`grep`·`awk`와 함께 쓸 수 있다. 노드가 아닌 호스트에서는 `command not found`(127)다. `systemctl restart kubelet`과 `containerd`가 되고, 노드의 kubelet이 멈춘 동안 `systemctl status kubelet`은 failed를 보인다.
 
 ## 채점: 클러스터가 한 복구와 에이전트가 한 복구
 

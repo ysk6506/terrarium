@@ -151,15 +151,11 @@ export {
 export { BlueprintIndex } from "./graph";
 export {
   DB_PROCESS,
-  FREED_PCT,
-  freshHostOs,
   HOST_ACTIONS,
-  HOST_REBOOT_SECONDS,
   type HostAction,
   hostOsOf,
   isHost,
   K8S_PROCESSES,
-  RESTART_SECONDS,
   servicesOnHost,
 } from "./host-os";
 export {
@@ -311,17 +307,19 @@ export {
   AUTH_SKEW_S,
   DISK_FULL_PCT,
   type HostOs,
-  LOG_KEEP,
   line,
   logTo,
   memoryOf,
   OS_FAULT_TYPES,
-  type OsLine,
   type OsProcess,
-  type ProcessState,
-  processCpuPct,
-  processNamed,
 } from "./os";
+export {
+  type Cmd as ShellCmd,
+  changesWorld,
+  type R as ShellCmdResult,
+  registerShellCommand,
+  runLine,
+} from "./os/index";
 export { outletConsumer, outletCount, outletOff } from "./outlets";
 export { type PreparedWorld, prepareWorld } from "./prepared";
 export {
