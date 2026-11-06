@@ -137,6 +137,14 @@ describe("scenario palette [REQ-034]", () => {
       "ingress_controller_down",
       "cni_plugin_failure",
       "nfv_firewall_overload",
+      "k8s_node_notready",
+      "k8s_control_plane_down",
+      "k8s_etcd_quorum_lost",
+      "k8s_pod_crashloop",
+      "k8s_resource_exhausted",
+      "k8s_image_pull_failure",
+      "k8s_disk_pressure",
+      "k8s_cni_failure",
     ]);
     // In the campus sample every supported fault has something to act on.
     const campus = paletteFor(new BlueprintIndex(campusBlueprint()));

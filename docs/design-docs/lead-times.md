@@ -6,13 +6,13 @@ last_verified: 2026-11-06
 covers:
   - packages/core/src/world/lead-times.ts
   - packages/core/src/world/domains.ts
-covers_hash: 905dfb70a6095a84
+covers_hash: 389f824f9c646e3f
 verification_log:
-  - "2026-11-06: REQ-097: 오버레이·클라우드 네이티브 고장 일곱 행을 LEAD_ROWS와 대조해 더했다"
-  - "2026-11-06: REQ-095: 데이터베이스 고장 다섯, 스토리지 고장 셋의 행을 LEAD_ROWS와 대조해 더했다"
-  - "2026-11-06: LEAD_ROWS의 기본값이 표와 같음을 확인하고 구현된 설정 네 가지, 계산 예, 아직 없는 것을 적었다 (REQ-093)"
   - "2026-11-06: LEAD_ROWS의 새 행 여덟을 표에 더했다 (REQ-095)"
   - "2026-11-06: LEAD_ROWS의 새 행 일곱을 표에 더했다 (REQ-097)"
+  - "2026-11-06: REQ-096: 컨테이너 고장 여덟의 행을 LEAD_ROWS와 대조해 더했다 (리드타임은 모두 원격)"
+  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
+  - "2026-11-06: o1·o2 합치기"
 ---
 # 고장 종류별 리드타임 (ADR-0100)
 
@@ -126,7 +126,7 @@ verification_log:
 | nfv_firewall_overload (가상 방화벽 과부하) | 네트워크팀 | 1h | 4h | 1d | 용량을 늘리거나 분산 | 서비스를 다른 경로로 |
 | network_policy_deny (잘못된 정책 배포, 설정 실수라 고장 목록에 없어 넘길 수 없다) | 네트워크팀 | 15m | 45m | 2h | 변경 승인과 되돌리기 | 정책 되돌리기(`policy_revert`) |
 
-## 서비스/OS (고장 10 + 데이터베이스 5)
+## 서비스/OS (고장 10 + 데이터베이스 5 + 컨테이너 8)
 | 고장 | 누가 | 최소 | 보통 | 최대 | 임시 조치 |
 |---|---|---|---|---|---|
 | 디스크 꽉 참, 로그 폭주 | OS팀 | 15m | 30m | 1h | 로그 정리 |
@@ -140,6 +140,14 @@ verification_log:
 | db_replication_broken (복제 끊김) | OS/서비스팀 | 15m | 45m | 2h | 인스턴스 다시 시작. 승격하면 지연만큼 잃는다 |
 | db_split_brain (스플릿 브레인) | OS/서비스팀 | 30m | 1h | 4h | 남길 쪽을 골라 승격(다른 쪽은 격리) |
 | db_backup_corrupt (백업 손상) | OS/서비스팀 | 1h | 4h | 1d | 백업을 다시 뜬다. 그동안 더 오래된 백업으로 복원 |
+| k8s_node_notready (워커 NotReady) | OS/서비스팀 | 15m | 30m | 2h | kubelet 다시 시작. 밑의 VM·호스트 고장이면 그쪽 시간이 더 든다 | 클러스터가 5분 뒤 파드를 옮긴다. kubelet 다시 시작은 내 도메인이면 직접 |
+| k8s_control_plane_down (컨트롤 플레인 노드 다운) | OS/서비스팀 | 30m | 1h | 4h | 노드의 kubelet·API 서버 복구 | 3대면 하나쯤 잃어도 버틴다. 하나뿐이면 새 배포를 미룬다 |
+| k8s_etcd_quorum_lost (etcd 쿼럼 상실) | OS/서비스팀 | 1h | 3h | 1d | 멤버를 되살리거나 스냅샷에서 복구 | API가 없는 동안 새 배포·재스케줄을 하지 않는다 |
+| k8s_pod_crashloop (파드 CrashLoopBackOff) | OS/서비스팀 | 15m | 30m | 2h | 고친 설정·이미지로 롤아웃 | 내 도메인이면 롤아웃 재시작을 직접 |
+| k8s_resource_exhausted (자원 부족) | OS/서비스팀 | 1h | 4h | 1d | 노드 추가 요청 | 덜 중요한 워크로드의 레플리카를 줄인다 |
+| k8s_image_pull_failure (이미지 풀 실패) | OS/서비스팀 | 30m | 1h | 4h | 레지스트리·네트워크 복구 | 도는 파드는 건드리지 않는다 |
+| k8s_disk_pressure (kubelet 디스크 압박) | OS/서비스팀 | 15m | 30m | 2h | 로그 정리·디스크 확장 | 내 도메인이면 디스크를 비우고 uncordon |
+| k8s_cni_failure (네트워크 플러그인) | OS/서비스팀 | 30m | 1h | 4h | containerd·CNI 다시 시작 | 노드를 drain 해 파드를 옮긴다 |
 
 ## 정직한 한계
 - 값은 업계 통상 SLA와 경험값이며 사내 계약·사업장 실측으로 바꿔야 한다. 지금 바꿀 수 있는 것은 위의 네 가지(벤더 SLA, 예비 부품 모두 있음·없음, 야간·주말 가산, 일을 맡는 때)뿐이다.

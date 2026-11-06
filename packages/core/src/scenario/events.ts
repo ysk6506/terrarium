@@ -38,6 +38,11 @@ export const EVENT_LABELS: Readonly<Record<Exclude<EventType, "note">, string>> 
   "policy.set": "네트워크 정책을 배포한 적",
   "policy.revert": "네트워크 정책을 되돌린 적",
   "ingress.restart": "인그레스를 다시 시작한 적",
+  "k8s.rollout_restart": "워크로드를 롤아웃 재시작한 적",
+  "k8s.scale": "워크로드의 레플리카 수를 바꾼 적",
+  "k8s.cordon": "노드를 cordon·uncordon 한 적",
+  "k8s.drain": "노드를 drain 한 적",
+  "k8s.delete_pod": "파드를 지운 적",
 };
 
 export const EVENT_TYPES = Object.keys(EVENT_LABELS) as (keyof typeof EVENT_LABELS)[];

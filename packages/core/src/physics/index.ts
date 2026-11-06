@@ -7,7 +7,9 @@ export {
   ROOM_WARNING_C,
 } from "./alarms";
 export { baselineLag, CLUSTER_CAUSE, updateDb } from "./db";
+export { updateDrs } from "./drs";
 export { DEFAULT_PHYSICS, Physics, type PhysicsOptions } from "./engine";
+export { updateK8s } from "./k8s";
 export { updateHostOs } from "./os-physics";
 export { ambientDerate } from "./plant";
 export {

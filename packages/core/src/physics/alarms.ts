@@ -21,6 +21,7 @@ import type {
 } from "@terrarium/core/world";
 import { type Draft, type Hit, NO_HITS, pushHits, type Scan } from "./alarm-scan";
 import { dbAlarms } from "./db-alarms";
+import { k8sAlarms } from "./k8s-alarms";
 import { netAlarms } from "./net-alarms";
 import { osAlarms } from "./os-alarms";
 import { plantAlarms } from "./plant-alarms";
@@ -289,6 +290,7 @@ export function desiredAlarms(world: World): Draft[] {
   netAlarms(world, out);
   osAlarms(world, out);
   dbAlarms(world, out);
+  k8sAlarms(world, out);
   sdnAlarms(world, out);
   serviceAlarms(world, out);
   return out;

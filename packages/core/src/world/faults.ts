@@ -5,6 +5,7 @@
  */
 import type { EntityKind } from "./blueprint";
 import { DB_FAULT_SPECS } from "./faults-db";
+import { K8S_FAULT_SPECS } from "./faults-k8s";
 import { OS_FAULT_SPECS } from "./faults-os";
 import { SDN_FAULT_SPECS, SDN_MISTAKE_SPEC } from "./faults-sdn";
 
@@ -59,7 +60,15 @@ export type FaultType =
   | "evpn_session_flap"
   | "ingress_controller_down"
   | "cni_plugin_failure"
-  | "nfv_firewall_overload";
+  | "nfv_firewall_overload"
+  | "k8s_node_notready"
+  | "k8s_control_plane_down"
+  | "k8s_etcd_quorum_lost"
+  | "k8s_pod_crashloop"
+  | "k8s_resource_exhausted"
+  | "k8s_image_pull_failure"
+  | "k8s_disk_pressure"
+  | "k8s_cni_failure";
 
 /**
  * Things people do wrong, as opposed to things that break: a port put in the wrong VLAN, a gateway interface left
@@ -352,6 +361,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   ...OS_FAULT_SPECS,
   ...DB_FAULT_SPECS,
   ...SDN_FAULT_SPECS,
+  ...K8S_FAULT_SPECS,
 ];
 
 /** The mistakes a scenario can make with its configuration blocks, named so a diagnosis can name them. */

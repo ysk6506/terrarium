@@ -35,8 +35,8 @@ const SIMPLE_ACTIONS: Partial<Record<WorldCommand["type"], ActionKind>> = {
 /** The switch (or server) at one end of a network link, which the session reads off the blueprint. */
 export type LinkEnd = (linkId: string, end: "from" | "to") => string | undefined;
 
-/** Commands of the service and operating-system layers (ADR-0091); a reboot is a restart of the host. */
-const TARGET_ACTIONS: Partial<Record<WorldCommand["type"], ActionKind>> = {
+/** Commands that are one action each on their target: the service, database, storage, container and SDN layers (a reboot is a restart of the host). */
+const PLAIN_ACTIONS: Readonly<Record<string, AgentAction["action"]>> = {
   "service.failover": "service_failover",
   "service.restart": "service_restart",
   "vm.migrate": "vm_migrate",
@@ -44,6 +44,11 @@ const TARGET_ACTIONS: Partial<Record<WorldCommand["type"], ActionKind>> = {
   "db.failover": "db_failover",
   "db.restore": "db_restore",
   "storage.path_switch": "path_switch",
+  "k8s.rollout_restart": "k8s_rollout_restart",
+  "k8s.scale": "k8s_scale",
+  "k8s.cordon": "k8s_cordon",
+  "k8s.drain": "k8s_drain",
+  "k8s.delete_pod": "k8s_delete_pod",
   "sdn.sync": "sdn_sync",
   "sdn.failover": "sdn_failover",
   "policy.revert": "policy_revert",
@@ -51,8 +56,8 @@ const TARGET_ACTIONS: Partial<Record<WorldCommand["type"], ActionKind>> = {
 };
 
 function serviceAction(c: WorldCommand): AgentAction | undefined {
-  const direct = TARGET_ACTIONS[c.type];
-  if (direct) return { action: direct, target: (c as { target: string }).target };
+  const plain = PLAIN_ACTIONS[c.type];
+  if (plain) return { action: plain, target: (c as { target: string }).target };
   if (c.type !== "host.act") return undefined;
   const kind = {
     restart: "process_restart",

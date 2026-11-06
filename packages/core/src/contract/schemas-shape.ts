@@ -40,6 +40,12 @@ const ServiceDraftSchema = z
             count: z.number().int().min(0).max(999).optional(),
             tier: z.union([z.literal(0), z.literal(1), z.literal(2)]).optional(),
             role: z.enum(["node", "host", "switch"]).optional(),
+            /** On Kubernetes (REQ-096): the workload this part is, by name. */
+            workload: z
+              .string()
+              .trim()
+              .regex(/^[a-z0-9][a-z0-9-]{0,39}$/)
+              .optional(),
           })
           .strict(),
       )

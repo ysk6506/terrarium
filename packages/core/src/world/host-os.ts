@@ -25,6 +25,8 @@ export const FREED_PCT = 35;
 
 /** The process of a database instance, as `systemctl` names it. */
 export const DB_PROCESS = "postgresql";
+/** The processes of a Kubernetes node, as `systemctl` names them. */
+export const K8S_PROCESSES: readonly string[] = ["kubelet", "containerd"];
 
 export const isHost = (kind: string): boolean => kind === "server" || kind === "vm";
 
@@ -43,7 +45,7 @@ function cpuOf(state: EntityState): number {
   return 0;
 }
 
-/** The processes of what is hosted on a host besides services: a database instance, a CNI plugin, an SDN controller, an ingress. */
+/** The processes of what is hosted on a host besides services: a database instance, a Kubernetes node, a CNI plugin, an SDN controller, an ingress. */
 function hostedProcesses(world: WorldReader, id: string): string[] {
   const kinds = new Set(
     world.index.incoming(id, "hosted_on").map((l) => world.index.find(l.from)?.kind),
@@ -53,6 +55,7 @@ function hostedProcesses(world: WorldReader, id: string): string[] {
     ...(kinds.has("cni") ? [CNI_PROCESS] : []),
     ...(kinds.has("sdn_controller") ? [SDN_PROCESS] : []),
     ...(kinds.has("ingress") ? [INGRESS_PROCESS] : []),
+    ...(kinds.has("k8s_node") ? K8S_PROCESSES : []),
   ];
 }
 

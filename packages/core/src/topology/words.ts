@@ -56,6 +56,9 @@ const COUNTING: Readonly<Record<TopoKind, readonly [string, string]>> = {
   cni: ["CNI 플러그인", "개"],
   network_policy: ["네트워크 정책", "개"],
   ingress: ["인그레스", "개"],
+  k8s_cluster: ["쿠버네티스 클러스터", "개"],
+  k8s_node: ["쿠버네티스 노드", "개"],
+  k8s_workload: ["워크로드", "개"],
 };
 
 /** What a kind of equipment is called when counted ("랙", "냉방기"). */

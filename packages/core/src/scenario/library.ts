@@ -9,6 +9,7 @@ import { DB_TEMPLATES } from "./library-db";
 import { DOMAIN_TEMPLATES } from "./library-domains";
 import { FACILITY_TEMPLATES } from "./library-facility";
 import { FIRMWARE_TEMPLATES } from "./library-firmware";
+import { K8S_TEMPLATES } from "./library-k8s";
 import {
   agent,
   allOf,
@@ -442,17 +443,13 @@ export const SCENARIO_TEMPLATES: readonly ScenarioTemplate[] = [
   noisyNeighbour,
 ];
 
-/**
- * The groups of built-in templates: incidents that need a plant (facility), changes people make to the network and PDUs
- * (REQ-068), work in a maintenance window (REQ-071), faults of a host's operating system (REQ-087), of the database and
- * storage-HA layers (REQ-095), of the SDN overlay and the cloud-native network (REQ-097), and faults whose cause is in
- * another domain than the one the agent looks after (REQ-093).
- */
+/** The groups of built-in templates, one list per layer of the world they break or change (REQ-068 to REQ-097). */
 export {
   DB_TEMPLATES,
   DOMAIN_TEMPLATES,
   FACILITY_TEMPLATES,
   FIRMWARE_TEMPLATES,
+  K8S_TEMPLATES,
   NETWORK_TEMPLATES,
   OS_TEMPLATES,
   SDN_TEMPLATES,
@@ -467,6 +464,7 @@ export const ALL_SCENARIO_TEMPLATES: readonly ScenarioTemplate[] = [
   ...OS_TEMPLATES,
   ...DB_TEMPLATES,
   ...SDN_TEMPLATES,
+  ...K8S_TEMPLATES,
   ...DOMAIN_TEMPLATES,
 ];
 
@@ -478,6 +476,7 @@ export const TEMPLATE_GROUPS: readonly {
     | "firmware"
     | "os"
     | "database"
+    | "containers"
     | "network_overlay"
     | "domains";
   readonly label: string;
@@ -488,6 +487,7 @@ export const TEMPLATE_GROUPS: readonly {
   { id: "firmware", label: "펌웨어 작업", templates: FIRMWARE_TEMPLATES },
   { id: "os", label: "OS 고장", templates: OS_TEMPLATES },
   { id: "database", label: "데이터베이스·스토리지 HA", templates: DB_TEMPLATES },
+  { id: "containers", label: "컨테이너(쿠버네티스)", templates: K8S_TEMPLATES },
   { id: "network_overlay", label: "SDN·클라우드 네이티브 네트워크", templates: SDN_TEMPLATES },
   { id: "domains", label: "내 도메인 밖이 원인", templates: DOMAIN_TEMPLATES },
 ];

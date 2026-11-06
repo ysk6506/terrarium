@@ -22,6 +22,8 @@ export interface ServicePart {
   readonly count?: number;
   readonly tier?: 0 | 1 | 2;
   readonly role?: "node" | "host" | "switch";
+  /** On Kubernetes (REQ-096): the workload this part is, by name; `count` is its replicas. */
+  readonly workload?: string;
 }
 
 /** One thing that can stop and what comes of it. */
@@ -151,8 +153,11 @@ export function recount(draft: ServiceDraft): ServiceDraft {
 /** Hosts one service needs under the compute choice. */
 export function hostsOf(draft: ServiceDraft, build: ChipBuild): number {
   if (build.bare) return Math.max(1, draft.nodes);
+  const clusters = build.k8s?.clusters ?? 1;
   const packed = Math.ceil(draft.nodes / (build.pack ?? 3));
-  return Math.max(1, Math.min(draft.hosts > 0 ? draft.hosts : packed, draft.nodes));
+  const own = Math.max(1, Math.min(draft.hosts > 0 ? draft.hosts : packed, draft.nodes));
+  // two clusters keep each other up only on hosts of their own
+  return own * clusters;
 }
 
 const rowsFor = (computeRacksPerRoom: number) => {

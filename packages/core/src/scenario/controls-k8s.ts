@@ -1,0 +1,68 @@
+/** The controllable things of the container layer (REQ-096). */
+import type { ControlRow } from "./controls";
+
+export const K8S_CONTROL_ROWS: readonly ControlRow[] = [
+  {
+    id: "host.kubelet",
+    label: "kubelet·containerd 다시 시작",
+    command: "host.act",
+    targets: ["server", "vm"],
+    blocks: [],
+    agent: [{ tool: "run_command", via: "systemctl restart kubelet | containerd" }],
+    actions: ["process_restart"],
+    note: "멈춘 kubelet(NotReady)과 죽은 네트워크 플러그인(CNI)은 다시 시작하면 풀린다. 컨트롤 플레인 노드도 같다.",
+  },
+  {
+    id: "k8s.rollout_restart",
+    label: "워크로드 롤아웃 재시작",
+    command: "k8s.rollout_restart",
+    targets: ["k8s_workload"],
+    blocks: [],
+    agent: [{ tool: "kubectl_rollout_restart", via: "workload" }],
+    actions: ["k8s_rollout_restart"],
+    note: "고친 설정·이미지로 파드를 하나씩 바꾼다. CrashLoopBackOff는 이렇게 풀린다. 컨트롤 플레인이 멈춰 있으면 안 된다.",
+  },
+  {
+    id: "k8s.scale",
+    label: "워크로드 레플리카 수",
+    command: "k8s.scale",
+    targets: ["k8s_workload"],
+    blocks: [],
+    agent: [{ tool: "kubectl_scale", via: "workload, replicas" }],
+    actions: ["k8s_scale"],
+    note: "자원이 모자랄 때 덜 중요한 워크로드를 줄여 자리를 만든다. 줄이면 그 워크로드의 서비스는 레플리카가 모자라 보일 수 있다.",
+  },
+  {
+    id: "k8s.cordon",
+    label: "노드 cordon·uncordon",
+    command: "k8s.cordon",
+    targets: ["k8s_node"],
+    blocks: [],
+    agent: [
+      { tool: "kubectl_cordon", via: "node" },
+      { tool: "kubectl_uncordon", via: "node" },
+    ],
+    actions: ["k8s_cordon"],
+    note: "새 파드가 이 노드로 오지 않게 한다. 돌던 파드는 그대로다.",
+  },
+  {
+    id: "k8s.drain",
+    label: "노드 drain",
+    command: "k8s.drain",
+    targets: ["k8s_node"],
+    blocks: [],
+    agent: [{ tool: "kubectl_drain", via: "node" }],
+    actions: ["k8s_drain"],
+    note: "cordon 하고 파드를 모두 내보낸다. 다른 노드에 자리가 없으면 Pending이 된다.",
+  },
+  {
+    id: "k8s.delete_pod",
+    label: "파드 지우기",
+    command: "k8s.delete_pod",
+    targets: ["k8s_workload"],
+    blocks: [],
+    agent: [{ tool: "kubectl_delete_pod", via: "pod" }],
+    actions: ["k8s_delete_pod"],
+    note: "지운 파드는 워크로드가 새로 만든다. 원인이 남아 있으면 새 파드도 같은 상태가 된다.",
+  },
+];

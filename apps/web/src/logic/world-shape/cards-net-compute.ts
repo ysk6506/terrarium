@@ -191,9 +191,10 @@ export const COMPUTE_CARDS: readonly ChipCard[] = [
     what: "호스트가 바빠지면 VM을 알아서 다른 호스트로 옮겨 균형을 맞춰요. 느려지는 일이 줄지만 옮기는 동안 잠깐 흔들려요.",
     canLose: "호스트 하나 · 바쁜 호스트의 부담",
     mustNot: "공유 스토리지",
-    faults: "호스트 다운 · 재배치 폭주 · VM 메모리 누수",
+    faults:
+      "커널 패닉 · BMC 무응답 · PSU 고장 · VM CPU 급증 · 메모리 누수 · CPU 폭주 · 서버 팬 고장",
     cost: "가상화 클러스터 + 상위 라이선스",
-    result: "가상화 클러스터 모양으로 지어요. 자동 재배치는 아직 흉내 낼 수 없어요",
+    result: "호스트가 바빠지면 VM을 알아서 옮겨요 · 옮기는 동안 잠깐 느려요",
     diagram: rows(
       "호스트 셋 사이로 VM이 옮겨 다니고 호스트 하나가 끊김",
       [
@@ -210,9 +211,11 @@ export const COMPUTE_CARDS: readonly ChipCard[] = [
     what: "VM 위에 쿠버네티스를 올려 파드를 알아서 옮겨요. 워커 하나쯤 잃어도 파드가 옆으로 가요. 컨트롤 플레인이 멈추면 새 배포가 막혀요.",
     canLose: "워커 노드 하나 · 파드",
     mustNot: "컨트롤 플레인 과반 · etcd",
-    faults: "워커 다운 · 컨트롤 플레인 정지 · 파드 반복 재시작",
+    faults:
+      "파드 CrashLoopBackOff · 워커 노드 NotReady · 컨트롤 플레인 노드 다운 · etcd 쿼럼 상실 · 자원 부족 (Pending) · 이미지 풀 실패 · kubelet 디스크 압박 · 네트워크 플러그인(CNI) 고장 · PSU 고장",
     cost: "컨트롤 플레인 3 + 워커 N",
-    result: "가상화 클러스터 모양으로 지어요. 파드 재스케줄은 아직 흉내 낼 수 없어요",
+    result:
+      "워커를 잃으면 5분 뒤 파드가 옆 노드로 옮겨가요 · 컨트롤 플레인이 멈추면 새 배포만 막혀요",
     diagram: rows(
       "컨트롤 플레인 셋과 워커 여섯, 워커 하나가 끊김",
       [
@@ -229,9 +232,10 @@ export const COMPUTE_CARDS: readonly ChipCard[] = [
     what: "클러스터를 둘 이상 두고 앞단에서 갈라 보내거나, 서버를 아예 보지 않고 함수로 돌려요. 한 클러스터가 통째로 죽어도 다른 쪽이 받아요.",
     canLose: "클러스터 하나 통째",
     mustNot: "앞단 분배기 · 공통 설정 저장소",
-    faults: "클러스터 정지 · 분배기 설정 잘못 · 클러스터 간 어긋남",
+    faults:
+      "파드 CrashLoopBackOff · 워커 노드 NotReady · 컨트롤 플레인 노드 다운 · etcd 쿼럼 상실 · 자원 부족 (Pending) · 이미지 풀 실패 · kubelet 디스크 압박 · 네트워크 플러그인(CNI) 고장",
     cost: "클러스터를 둘 이상 · 운영 비용 큼",
-    result: "가상화 클러스터 모양으로 지어요. 다중 클러스터는 아직 흉내 낼 수 없어요",
+    result: "클러스터를 둘 지어요 · 한쪽이 통째로 멈춰도 서비스는 느려질 뿐이에요",
     diagram: rows(
       "분배기 아래 클러스터 둘, 클러스터 하나가 끊김",
       [

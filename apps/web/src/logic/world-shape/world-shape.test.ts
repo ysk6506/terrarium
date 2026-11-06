@@ -31,9 +31,6 @@ describe("HA 사다리: 선택지와 카드 [REQ-094]", () => {
   test("점선은 ADR-0107 결정 5의 목록 그대로다", () => {
     const dotted = LAYER_IDS.flatMap((l) => LADDER[l].filter((c) => !c.modeled).map((c) => c.id));
     expect(dotted).toEqual([
-      "cmp-drs",
-      "cmp-containers",
-      "cmp-multicluster",
       "sto-geo",
       "db-distributed-sql",
       "db-managed-multiaz",

@@ -44,7 +44,12 @@ export type ActionKind =
   | "sdn_sync"
   | "sdn_failover"
   | "policy_revert"
-  | "ingress_restart";
+  | "ingress_restart"
+  | "k8s_rollout_restart"
+  | "k8s_scale"
+  | "k8s_cordon"
+  | "k8s_drain"
+  | "k8s_delete_pod";
 
 export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   power_off: "전원 끄기",
@@ -72,6 +77,11 @@ export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   sdn_failover: "SDN 컨트롤러 전환",
   policy_revert: "네트워크 정책 되돌리기",
   ingress_restart: "인그레스 다시 시작",
+  k8s_rollout_restart: "롤아웃 재시작",
+  k8s_scale: "레플리카 수 바꾸기",
+  k8s_cordon: "노드 cordon·uncordon",
+  k8s_drain: "노드 drain",
+  k8s_delete_pod: "파드 지우기",
 };
 
 export const ACTION_KINDS = Object.keys(ACTION_LABELS) as ActionKind[];

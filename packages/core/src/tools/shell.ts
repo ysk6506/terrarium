@@ -18,6 +18,7 @@ import {
   type WorldPort,
 } from "@terrarium/core/world";
 import { instanceOn, multipath, pgIsReady, psql } from "./shell-db";
+import { crictl, kubectl } from "./shell-k8s";
 import {
   chronycOutput,
   dateLine,
@@ -62,6 +63,8 @@ export const SHELL_COMMANDS: readonly string[] = [
   "pg_isready (database host)",
   'psql -c "select pg_is_in_recovery()" (database host)',
   "multipath -ll (database host)",
+  "kubectl get nodes|pods|deployments, kubectl describe node <name> (Kubernetes node)",
+  "crictl ps (Kubernetes node)",
 ];
 
 const MAX_LINES = 400;
@@ -428,6 +431,8 @@ const SIMPLE: Readonly<Record<string, (c: Cmd) => ShellResult>> = {
     return asShell(psql(c.world, c.id, at >= 0 ? c.argv[at + 1] : undefined));
   },
   multipath: (c) => asShell(multipath(c.world, c.id)),
+  kubectl: (c) => asShell(kubectl(c.world, c.id, c.argv)),
+  crictl: (c) => asShell(crictl(c.world, c.id, c.argv)),
   chronyc: (c) =>
     c.argv[1] === "tracking" ? ok(chronycOutput(c.view)) : NOT_YET(c.argv.join(" ")),
   systemctl: (c) =>

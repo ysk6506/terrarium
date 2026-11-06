@@ -48,6 +48,9 @@ describe("lookups and labels at the edges [REQ-001]", () => {
       "cni",
       "network_policy",
       "ingress",
+      "k8s_cluster",
+      "k8s_node",
+      "k8s_workload",
     ]);
   });
 

@@ -17,13 +17,13 @@ covers:
   - apps/server/src/runtime/dispatcher.ts
   - apps/server/src/runtime/hosts.ts
   - packages/core/src/session/operation/journal.ts
-covers_hash: 566f10a15ea7f9d2
+covers_hash: 45eec0a645add5a8
 verification_log:
-  - "2026-11-06: MTBF 표에 오버레이·클라우드 네이티브 고장 일곱 줄을 mtbf.ts와 대조해 더했다 (REQ-097)"
-  - "2026-11-06: 새 문서. 발생기·MTBF 표·시계 드라이버·측정식·변별력 표·끊김과 재연결을 operation/*.ts, world/incidents.ts, executor-operation.ts와 대조해 썼다 (REQ-090)"
-  - "2026-11-06: 마지막 구현(연결 사건 link, executor-operation, 운영 툴 필수 검사, operator 설명)과 다시 대조했다. 본문은 그대로 맞다 (REQ-090)"
   - "2026-11-06: 재시작 뒤 재개(입력 기록·재생·link resumed)와 결과 상태 문구 절을 더하고 journal.ts, executor.ts, executor-operation.ts, dispatcher.ts, hosts.ts와 대조했다 (REQ-090, ADR-0112)"
   - "2026-11-06: MTBF 표의 새 줄 두 개를 mtbf.ts와 대조해 더했다 (REQ-097)"
+  - "2026-11-06: REQ-096: mtbf.ts의 컨테이너 고장 여덟 행을 MTBF 표에 더했다"
+  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
+  - "2026-11-06: o1·o2 합치기"
 ---
 # 운영 모드 (REQ-090, [ADR-0094](adr/0094-operation-mode.md))
 
@@ -71,6 +71,9 @@ verification_log:
 | `disk_full`, `log_flood`, `memory_leak`, `process_crashloop`, `zombie_pileup`, `fs_readonly`, `ntp_drift`, `dns_failure`, `kernel_panic`, `cert_expired` | 서버·VM | 1,400 / 1,800 / 1,800 / 1,200 / 3,000 / 4,000 / 2,400 / 6,000 / 5,000 / 8,000시간 |
 | `sdn_controller_down` / `sdn_sync_failed` / `vxlan_tunnel_down` / `evpn_session_flap` | SDN 컨트롤러 / VTEP / VTEP / VTEP | 4,000 / 3,000 / 8,000 / 5,000시간 |
 | `ingress_controller_down` / `cni_plugin_failure` / `nfv_firewall_overload` | 인그레스 / CNI 플러그인 / 가상 방화벽 | 2,400 / 3,600 / 2,000시간 |
+| `k8s_node_notready`, `k8s_control_plane_down`, `k8s_disk_pressure`, `k8s_cni_failure` | 쿠버네티스 노드 | 1,500 / 4,000 / 2,000 / 3,000시간 |
+| `k8s_pod_crashloop` | 워크로드 | 900시간 |
+| `k8s_etcd_quorum_lost`, `k8s_resource_exhausted`, `k8s_image_pull_failure` | 쿠버네티스 클러스터 | 9,000 / 6,000 / 5,000시간 |
 
 표는 `operation/mtbf.ts`가 단일 출처이고 발생기와 시험이 이 값을 읽는다. 새 고장 종류를 더하면 표에도 줄을 더한다(그리고 `FAULT_TOOLS`와 `physics-golden.json`에도, 툴 추가 규칙대로).
 

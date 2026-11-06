@@ -15,7 +15,9 @@ import type {
 } from "@terrarium/core/world";
 import { desiredAlarms } from "./alarms";
 import { updateDb } from "./db";
+import { updateDrs } from "./drs";
 import { advanceFirmware } from "./firmware";
+import { updateK8s } from "./k8s";
 import { updateHostOs } from "./os-physics";
 import { updateGenerators, updatePlant } from "./plant";
 import {
@@ -84,6 +86,8 @@ export class Physics {
     if (events.length > 0) this.updateElectrical();
     events.push(...updateHostOs(this.world, dt));
     events.push(...updateDb(this.world, dt));
+    events.push(...updateDrs(this.world));
+    events.push(...updateK8s(this.world));
     events.push(...updateSdn(this.world));
     updateServices(this.world, dt);
     events.push(...this.syncAlarms());

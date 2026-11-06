@@ -19,13 +19,13 @@ covers:
   - apps/web/src/logic/handoffs.ts
   - apps/web/src/ui/pages/run-handoffs.tsx
   - apps/web/src/ui/pages/experiment-domains.tsx
-covers_hash: 86f21fad6451151f
+covers_hash: ff2ef943ca3ddb34
 verification_log:
-  - "2026-11-06: 2a·2b 합치기: escalate는 세계를 바꾸지 않는 툴(mutating false)로 표시"
-  - "2026-11-06: operator의 운영 모드 상주 루프 한 문장을 더하고 scripted-operator.ts와 대조했다 (REQ-090)"
-  - "2026-11-06: 마지막 구현(연결 사건 link, executor-operation, 운영 툴 필수 검사, operator 설명)과 다시 대조했다. 본문은 그대로 맞다 (REQ-090)"
   - "2026-11-06: 2e 합치기"
   - "2026-11-06: 네트워크 도메인의 툴 아홉과 고장을 TOOL_DOMAIN·FAULT_DOMAIN과 대조해 더했다 (REQ-097)"
+  - "2026-11-06: REQ-096: 컨테이너 고장 여덟(모두 서비스/OS)과 툴 아홉을 domains.ts·tools/domains.ts와 대조해 고쳤다"
+  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
+  - "2026-11-06: o1·o2 합치기"
 ---
 # 도메인과 가상 담당자 (REQ-093, [ADR-0098](adr/0098-domains-virtual-counterparts-tickets.md)·[0099](adr/0099-counterparts-deterministic.md)·[0100](adr/0100-escalate-by-domain.md))
 
@@ -35,14 +35,14 @@ IT 운영은 도메인별로 나뉘어 있어서, 실험은 "내 도메인"만 �
 ## 도메인 여섯 (`world/domains.ts`)
 | 도메인 (`id`) | 부르는 말 | 넘기는 팀 | 맡는 것 |
 |---|---|---|---|
-| `service_os` | 서비스/OS | 서비스/OS 팀 | 서비스, 호스트의 운영 체제와 프로세스, 데이터베이스 |
+| `service_os` | 서비스/OS | 서비스/OS 팀 | 서비스, 호스트의 운영 체제와 프로세스, 데이터베이스, 쿠버네티스(노드·파드) |
 | `virtualization` | 가상화 | 가상화 팀 | VM, 클러스터, 호스트 배치 |
 | `server` | 서버 | 서버 팀 | 서버 하드웨어(메모리, 팬, 전원 공급 장치, BMC) |
 | `network` | 네트워크 | 네트워크 팀 | 스위치, 링크, VLAN, 라우팅 |
 | `storage` | 스토리지 | 스토리지 팀 | 스토리지와 디스크, 컨트롤러와 경로, 분산 스토리지 |
 | `facility` | 데이터센터 인프라 | 데이터센터 인프라 팀 | 전원, 냉방, 센서 |
 
-고장 종류 44가지와 사람이 하는 실수 6가지에는 모두 도메인이 하나씩 달려 있다(`FAULT_DOMAIN`, `MISTAKE_DOMAIN`은 빠지면 타입 검사가 실패하고 시험이 한 번 더 센다). 어느 고장이 어느 도메인인지는 "누가 고치나"로 정했다: `cpu_runaway`는 프로세스 정리라 서비스/OS, `disk_failure`는 스토리지, 센서 틀어짐은 시설팀이라 데이터센터 인프라다. 새 고장 `memory_failure`(메모리 불량)는 서버다: 서버가 멈추고, 그 위의 VM과 서비스가 멈추며, 모듈을 바꿔야 돌아온다.
+고장 종류 59가지와 사람이 하는 실수 7가지에는 모두 도메인이 하나씩 달려 있다(`FAULT_DOMAIN`, `MISTAKE_DOMAIN`은 빠지면 타입 검사가 실패하고 시험이 한 번 더 센다). 어느 고장이 어느 도메인인지는 "누가 고치나"로 정했다: `cpu_runaway`는 프로세스 정리라 서비스/OS, `disk_failure`는 스토리지, 센서 틀어짐은 시설팀이라 데이터센터 인프라다. 새 고장 `memory_failure`(메모리 불량)는 서버다: 서버가 멈추고, 그 위의 VM과 서비스가 멈추며, 모듈을 바꿔야 돌아온다.
 
 ## 도메인 × 툴 (`tools/domains.ts`)
 모든 툴에 도메인이 하나 달려 있다(없으면 시험이 실패한다). `common`은 어느 도메인이나 가진 툴이다.
@@ -50,7 +50,7 @@ IT 운영은 도메인별로 나뉘어 있어서, 실험은 "내 도메인"만 �
 | 도메인 | 툴 |
 |---|---|
 | common | `list_alarms` `list_entities` `get_entity` `get_topology` `get_impact` `query_metrics` `wait` `submit_diagnosis` `events_since` `escalate` `create_ticket` `update_ticket` `list_tickets` |
-| service_os | `list_services` `service_status` `failover_service` `restart_service` `run_command` `db_status` `db_promote` `db_failover` `db_restore` |
+| service_os | `list_services` `service_status` `failover_service` `restart_service` `run_command` `db_status` `db_promote` `db_failover` `db_restore` `kubectl_get` `kubectl_describe` `kubectl_logs` `kubectl_rollout_restart` `kubectl_scale` `kubectl_cordon` `kubectl_uncordon` `kubectl_drain` `kubectl_delete_pod` |
 | virtualization | `vcenter_request` `vrops_request` `migrate_vm` |
 | server | `redfish_request` `power_server` |
 | network | `network_cli` `eapi_request` `nxapi_request` `sdn_status` `sdn_sync` `sdn_failover` `overlay_trace` `evpn_sessions` `policy_list` `policy_revert` `ingress_status` `ingress_restart` (REQ-097, [SDN 오버레이와 클라우드 네이티브 네트워크 층](sdn-network-layer.md)). 컨트롤러·VTEP·인그레스·CNI·가상 방화벽의 고장과 잘못된 정책도 이 도메인의 일이다 |

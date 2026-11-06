@@ -18,12 +18,13 @@ covers:
   - packages/core/src/sources/worldgen/shaped-db.ts
   - packages/core/src/topology/layer-network.ts
   - packages/core/src/oracle/recovery.ts
-covers_hash: 35a790e210b268e9
+covers_hash: 195137d79c40a1de
 verification_log:
-  - "2026-11-06: 새 문서: 데이터베이스·스토리지 HA 층의 개체·상태, 서비스 건강 규칙, 고장 여덟, 툴 여섯, 자동 페일오버, 사다리 연결, 시나리오 여섯을 코드와 대조해 적었다 (REQ-095)"
   - "2026-11-06: 새 문서의 개체·상태·건강 규칙·고장 여덟·툴 여섯·자동 페일오버·사다리·시나리오를 코드와 대조했다 (REQ-095)"
   - "2026-11-06: ladder.ts와 layer-network.ts의 변경은 SDN 층 몫이다. 토폴로지 단계 번호가 밀린다는 한 줄만 더했고 DB 규칙은 그대로 맞다 (REQ-097)"
   - "2026-11-06: layer-network.ts의 링크 방향 정리는 DB 단계의 그림이 같다. 문서는 그대로 맞다 (REQ-097)"
+  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
+  - "2026-11-06: o1·o2 합치기"
 ---
 # 데이터베이스 층과 스토리지 HA 층 (REQ-095, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0111](adr/0111-db-storage-layers-amend-tests.md))
 

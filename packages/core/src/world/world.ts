@@ -16,6 +16,7 @@ import { reduceFirmware } from "./firmware-reduce";
 import type { BlueprintIndex } from "./graph";
 import type { HostAction } from "./host-os";
 import { HostRegistry } from "./host-registry";
+import type { K8sCommand } from "./k8s-act";
 import { type NetChange, type NetPatch, patchWith } from "./net-config";
 import { setLinkAdmin, setLoad, setOutlet } from "./operator";
 import { type HostOs, OS_FAULT_TYPES } from "./os";
@@ -60,6 +61,7 @@ export type WorldCommand =
   | ServiceCommand
   | DbCommand
   | SdnCommand
+  | K8sCommand
   /** An operator acts on the operating system of a server or VM: restart a process, free disk, remount, reboot (ADR-0091). */
   | {
       readonly type: "host.act";

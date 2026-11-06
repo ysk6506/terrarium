@@ -158,6 +158,7 @@ export {
   type HostAction,
   hostOsOf,
   isHost,
+  K8S_PROCESSES,
   RESTART_SECONDS,
   servicesOnHost,
 } from "./host-os";
@@ -169,6 +170,45 @@ export {
   type Incident,
   incidents,
 } from "./incidents";
+export {
+  BACKOFF_FIRST_S,
+  BACKOFF_MAX_S,
+  clusterOfK8s,
+  controlPlaneOf,
+  DISK_PRESSURE_PCT,
+  DRS_GAP,
+  DRS_HOT_UTIL,
+  DRS_MIGRATE_S,
+  EVICTED_KEEP_S,
+  k8sClusterDef,
+  k8sClusterProps,
+  k8sNodeDef,
+  k8sNodeProps,
+  k8sWorkloadDef,
+  k8sWorkloadProps,
+  NODE_GRACE_S,
+  type NodeRole,
+  nodeHost,
+  nodesOfCluster,
+  POD_START_S,
+  podSuffix,
+  servicesOfWorkload,
+  workersOf,
+  workloadsOfCluster,
+  workloadsOfService,
+} from "./k8s";
+export { workloadOfPod } from "./k8s-act";
+export {
+  standsOnCluster,
+  workloadVerdict,
+} from "./k8s-health";
+export {
+  bindPending,
+  livePods,
+  type NodeRef,
+  newPod,
+  type WorkloadRef,
+} from "./k8s-sched";
 export { KIND_LABELS, kindList, LINK_LABELS } from "./labels";
 export {
   builtChip,
@@ -178,6 +218,7 @@ export {
   chipById,
   chipsOf,
   type DatabaseBuild,
+  type K8sBuild,
   LADDER,
   LAYER_COUNT,
   LAYER_IDS,
@@ -325,22 +366,12 @@ export {
   type WorldRunEvent,
 } from "./run-events";
 export {
-  CNI_PROCESS,
-  cniOfHost,
   EVPN_REESTABLISH_S,
-  INGRESS_PROCESS,
-  INGRESS_RESTART_S,
   leafOfServer,
-  type PolicyRule,
   policiesOf,
-  policyRuleOf,
-  SDN_DETECT_S,
-  SDN_PROCESS,
   SDN_REVISION,
-  type SdnControllerDef,
   sdnControllerDef,
   sdnControllers,
-  sdnDependencies,
   segmentsOfVtep,
   serverUnder,
   servicesLeaningOn,
@@ -350,8 +381,6 @@ export {
 } from "./sdn";
 export {
   activeController,
-  isSdnCommand,
-  type SdnCommand,
   vtepFor,
 } from "./sdn-act";
 export { type SdnVerdict, sdnHealth } from "./sdn-health";
@@ -418,6 +447,8 @@ export {
   type OverlaySegmentState,
   type PanelState,
   type PduState,
+  type PodPhase,
+  type PodState,
   type RackState,
   type RoomState,
   type SdnControllerState,

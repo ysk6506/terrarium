@@ -9,6 +9,7 @@ import { checkDbCommand, type DbCommand, isDbCommand } from "./db-act";
 import { type Fault, faultSpec } from "./faults";
 import { FIRMWARE_COMPONENTS, type FirmwareComponent } from "./firmware";
 import { HOST_ACTIONS } from "./host-os";
+import { checkK8sCommand, isK8sCommand, type K8sCommand } from "./k8s-act";
 import { checkNetChange } from "./net-check";
 import { outletCount } from "./outlets";
 import { checkSdnCommand, isSdnCommand, type SdnCommand } from "./sdn-act";
@@ -137,6 +138,7 @@ function checkHostAct(world: WorldReader, target: string, action: string): void 
 function checkLayerCommand(world: WorldReader, command: WorldCommand): void {
   if (isDbCommand(command.type)) checkDbCommand(world, command as DbCommand);
   else if (isSdnCommand(command.type)) checkSdnCommand(world, command as SdnCommand);
+  else if (isK8sCommand(command.type)) checkK8sCommand(world, command as K8sCommand);
   else if (command.type === "host.act") checkHostAct(world, command.target, command.action);
   else if (command.type === "vm.migrate" || command.type.startsWith("service."))
     checkServiceCommand(world, command as Parameters<typeof checkServiceCommand>[1]);

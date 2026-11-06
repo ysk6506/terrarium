@@ -22,12 +22,13 @@ covers:
   - packages/core/src/topology/layer-network.ts
   - packages/core/src/session/probes.ts
   - packages/core/src/session/operation/mtbf.ts
-covers_hash: 0939dd77bc6d0deb
+covers_hash: 0e302e025526ad09
 verification_log:
   - "2026-11-06: 새 문서: SDN 오버레이·클라우드 네이티브 층의 개체·상태, 서비스 건강 규칙, 고장 일곱과 실수 하나, 자동 동작, 툴 아홉, CLI, 사다리 연결, 시나리오 여섯을 코드와 대조해 적었다 (REQ-097)"
   - "2026-11-06: 새 문서의 개체·상태·건강 규칙·고장·자동 동작·툴·CLI·사다리·시나리오·토폴로지를 코드와 대조했다 (REQ-097)"
   - "2026-11-06: 처리기·물리·토폴로지의 함수 쪼개기 뒤에도 표와 규칙이 코드와 같음을 다시 대조했다 (REQ-097)"
   - "2026-11-06: library-sdn.ts의 VTEP 고르기를 서비스의 세그먼트에서 잡도록 고쳤고(생성된 세계에서 서비스가 비던 문제), 시나리오 표는 그대로 맞다 (REQ-097)"
+  - "2026-11-06: o1·o2 합치기"
 ---
 # SDN 오버레이와 클라우드 네이티브 네트워크 층 (REQ-097, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0115](adr/0115-sdn-network-layer-amend-tests.md))
 

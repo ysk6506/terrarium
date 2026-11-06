@@ -35,6 +35,9 @@ export const KIND_LABELS: Readonly<Record<EntityKind, string>> = {
   cni: "CNI 플러그인",
   network_policy: "네트워크 정책",
   ingress: "인그레스",
+  k8s_cluster: "쿠버네티스 클러스터",
+  k8s_node: "쿠버네티스 노드",
+  k8s_workload: "워크로드",
 };
 
 export const LINK_LABELS: Readonly<Record<LinkKind, string>> = {

@@ -46,6 +46,15 @@ export const MTBF_TABLE: readonly Mtbf[] = [
   { type: "ingress_controller_down", kinds: ["ingress"], hours: 2_400 },
   { type: "cni_plugin_failure", kinds: ["cni"], hours: 3_600 },
   { type: "nfv_firewall_overload", kinds: ["nfv_function"], hours: 2_000 },
+  // the container layer (REQ-096): per node, per cluster, per workload
+  { type: "k8s_node_notready", kinds: ["k8s_node"], hours: 1_500 },
+  { type: "k8s_control_plane_down", kinds: ["k8s_node"], hours: 4_000 },
+  { type: "k8s_etcd_quorum_lost", kinds: ["k8s_cluster"], hours: 9_000 },
+  { type: "k8s_pod_crashloop", kinds: ["k8s_workload"], hours: 900 },
+  { type: "k8s_resource_exhausted", kinds: ["k8s_cluster"], hours: 6_000 },
+  { type: "k8s_image_pull_failure", kinds: ["k8s_cluster"], hours: 5_000 },
+  { type: "k8s_disk_pressure", kinds: ["k8s_node"], hours: 2_000 },
+  { type: "k8s_cni_failure", kinds: ["k8s_node"], hours: 3_000 },
 ];
 
 /**

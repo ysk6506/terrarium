@@ -9,6 +9,9 @@ import { type LayerShape, ShapeBuilder } from "./shape";
 
 const STAGES = [
   { id: "service", label: "서비스" },
+  { id: "workload", label: "워크로드·파드" },
+  { id: "cluster", label: "쿠버네티스 클러스터" },
+  { id: "knode", label: "쿠버네티스 노드" },
   { id: "database", label: "데이터베이스" },
   { id: "instance", label: "DB 인스턴스" },
   { id: "pool", label: "스토리지 풀·컨트롤러" },
@@ -24,18 +27,21 @@ const STAGES = [
 ] as const;
 
 const SERVICE = 0;
-const DATABASE = 1;
-const INSTANCE = 2;
-const POOL = 3;
-const DOOR = 4;
-const SEGMENT = 5;
-const CONTROLLER = 6;
-const VTEP = 7;
-const CORE = 8;
-const SPINE = 9;
-const TOR = 10;
-const HOST = 11;
-const VIRTUAL = 12;
+const WORKLOAD = 1;
+const CLUSTER = 2;
+const KNODE = 3;
+const DATABASE = 4;
+const INSTANCE = 5;
+const POOL = 6;
+const DOOR = 7;
+const SEGMENT = 8;
+const CONTROLLER = 9;
+const VTEP = 10;
+const CORE = 11;
+const SPINE = 12;
+const TOR = 13;
+const HOST = 14;
+const VIRTUAL = 15;
 
 /** Steps from a switch down to the nearest ToR: 0 for a ToR (or a switch nothing leans on), then 1, 2... */
 function depthsOf(index: BlueprintIndex): Map<string, number> {
@@ -70,7 +76,15 @@ function addEquipment(index: BlueprintIndex, b: ShapeBuilder): void {
   for (const e of index.ofKind("cluster")) b.add(e.id, VIRTUAL, "cluster");
   for (const e of index.ofKind("service")) b.add(e.id, SERVICE, "service");
   addDatabase(index, b);
+  addContainers(index, b);
   addOverlay(index, b);
+}
+
+/** The container stages next to the services (REQ-096): workloads with their pods, the clusters, their nodes. */
+function addContainers(index: BlueprintIndex, b: ShapeBuilder): void {
+  for (const e of index.ofKind("k8s_workload")) b.add(e.id, WORKLOAD, "k8s_workload");
+  for (const e of index.ofKind("k8s_cluster")) b.add(e.id, CLUSTER, "k8s_cluster");
+  for (const e of index.ofKind("k8s_node")) b.add(e.id, KNODE, "k8s_node");
 }
 
 /** The overlay and cloud-native stages next to the switches (REQ-097): controllers, VTEPs, segments, doors. */
@@ -97,10 +111,14 @@ function direction(index: BlueprintIndex, l: Link): "down" | "up" | undefined {
   // The switch carries the traffic of what is cabled to it, and the server carries the VM that runs on it.
   // A cluster is drawn after its servers (they are its members), though the link says the server depends on it.
   if (l.kind === "network" || l.kind === "runs_on") return "up";
-  if (l.kind === "member_of") return index.find(l.to)?.kind === "cluster" ? "down" : "up";
+  if (l.kind === "member_of") {
+    // a workload leans on the cluster it runs on, as a server does on its cluster (REQ-096)
+    const [from, to] = [index.find(l.from)?.kind, index.find(l.to)?.kind];
+    return to === "cluster" || from === "k8s_workload" ? "down" : "up";
+  }
   // The top of the layer: a service leans on the VMs and servers it runs on. The database and storage layers (REQ-095):
   // a service leans on a cluster or a pool, an instance runs on a VM or server and keeps its data in a pool, a pool is
-  // storage nodes. The overlay (REQ-097): a service leans on its segment, a segment on the VTEPs, a VTEP on its switch,
+  // storage nodes. The container layer (REQ-096): a workload leans on its cluster, a node on its server or VM. The overlay (REQ-097): a service leans on its segment, a segment on the VTEPs, a VTEP on its switch,
   // the controller manages the switches; a policy guards a service (so it is drawn the other way).
   if (DRAWN_DOWN.has(l.kind)) return "down";
   return l.kind === "applies_to" ? "up" : undefined;

@@ -112,6 +112,15 @@ export const LEAD_ROWS: Readonly<Record<FaultType, LeadRow>> = {
   ingress_controller_down: remote([15 * M, 30 * M, 2 * H]),
   cni_plugin_failure: remote([15 * M, 45 * M, 2 * H]),
   nfv_firewall_overload: remote([1 * H, 4 * H, 1 * D]),
+  // 컨테이너 (서비스/OS 팀)
+  k8s_node_notready: remote([15 * M, 30 * M, 2 * H]),
+  k8s_control_plane_down: remote([30 * M, 1 * H, 4 * H]),
+  k8s_etcd_quorum_lost: remote([1 * H, 3 * H, 1 * D]),
+  k8s_pod_crashloop: remote([15 * M, 30 * M, 2 * H]),
+  k8s_resource_exhausted: remote([1 * H, 4 * H, 1 * D]),
+  k8s_image_pull_failure: remote([30 * M, 1 * H, 4 * H]),
+  k8s_disk_pressure: remote([15 * M, 30 * M, 2 * H]),
+  k8s_cni_failure: remote([30 * M, 1 * H, 4 * H]),
 };
 
 // ---------- what the experiment sets ----------

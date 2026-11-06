@@ -55,6 +55,10 @@ export interface ChipBuild {
   readonly database?: DatabaseBuild;
   /** The overlay and cloud-native network the network choice builds on the leaf-spine (REQ-097). */
   readonly overlay?: OverlayBuild;
+  /** The hosts' cluster moves VMs by itself when one host is hot (DRS, REQ-096). */
+  readonly drs?: boolean;
+  /** The service runs on Kubernetes: this many clusters, each with its control plane, workers and workloads (REQ-096). */
+  readonly k8s?: K8sBuild;
 }
 
 /** The SDN overlay a network chip builds: a controller pair, a VTEP per leaf, a segment per service, and for cloud native the pod network. */
@@ -65,6 +69,11 @@ export interface OverlayBuild {
   readonly nfv: boolean;
   /** A CNI plugin per node, a network policy and an ingress per service. */
   readonly cloudNative: boolean;
+}
+
+/** The Kubernetes clusters a chip builds for every service: how many (two keep each other up). */
+export interface K8sBuild {
+  readonly clusters: 1 | 2;
 }
 
 /** The storage pool a chip builds (REQ-095): two controllers and two paths, or nodes holding copies. */
@@ -201,9 +210,42 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       slows: ["psu_failure", "vm_cpu_spike", "memory_leak", "cpu_runaway", "fan_failure"],
       costM: 30,
     }),
-    dotted("compute", "cmp-drs", "cmp-virt-ha", 20),
-    dotted("compute", "cmp-containers", "cmp-virt-ha", 40),
-    dotted("compute", "cmp-multicluster", "cmp-virt-ha", 120),
+    c("compute", "cmp-drs", {
+      build: { pack: 3, drs: true },
+      stops: ["kernel_panic", "bmc_unresponsive"],
+      slows: ["psu_failure", "vm_cpu_spike", "memory_leak", "cpu_runaway", "fan_failure"],
+      costM: 20,
+    }),
+    c("compute", "cmp-containers", {
+      build: { pack: 3, k8s: { clusters: 1 } },
+      stops: ["k8s_pod_crashloop"],
+      slows: [
+        "k8s_node_notready",
+        "k8s_control_plane_down",
+        "k8s_etcd_quorum_lost",
+        "k8s_resource_exhausted",
+        "k8s_image_pull_failure",
+        "k8s_disk_pressure",
+        "k8s_cni_failure",
+        "psu_failure",
+      ],
+      costM: 40,
+    }),
+    c("compute", "cmp-multicluster", {
+      build: { pack: 3, k8s: { clusters: 2 } },
+      stops: [],
+      slows: [
+        "k8s_pod_crashloop",
+        "k8s_node_notready",
+        "k8s_control_plane_down",
+        "k8s_etcd_quorum_lost",
+        "k8s_resource_exhausted",
+        "k8s_image_pull_failure",
+        "k8s_disk_pressure",
+        "k8s_cni_failure",
+      ],
+      costM: 120,
+    }),
   ],
   storage: [
     c("storage", "sto-local", {

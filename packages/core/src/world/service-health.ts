@@ -12,6 +12,8 @@
 import type { Entity } from "./blueprint";
 import { dependenciesOf } from "./db";
 import { dependencyVerdict } from "./db-health";
+import { workloadsOfService } from "./k8s";
+import { isNodeHost, standsOnCluster, workloadsVerdict } from "./k8s-health";
 import { cutOffHosts } from "./net-reach";
 import { AUTH_SKEW_S, DISK_FULL_PCT, type HostOs } from "./os";
 import { sdnHealth } from "./sdn-health";
@@ -238,6 +240,8 @@ function vmVerdict(world: WorldReader, id: string, def: ServiceDef): HostVerdict
   }
   const os = osVerdict(world, id, def);
   if (os) return { ...os, why: `${who}: ${os.why}` };
+  if (s.migratingUntil !== undefined && world.time() < s.migratingUntil)
+    return slow(id, `${who}를 다른 서버로 옮기는 중이에요`, "cpu");
   if (s.cpuUsage >= def.conditions.maxCpuUtil)
     return slow(id, `${who} CPU ${Math.round(s.cpuUsage * 100)}%`, "cpu");
   return ok(id);
@@ -307,6 +311,14 @@ function fromDeps(
     status = worse(status, v.state === "dead" ? "down" : "degraded");
     if (v.why) reasons.push(v.why);
   }
+  const workloads = workloadsOfService(world.index, service.id);
+  if (workloads.length > 0) {
+    const v = workloadsVerdict(world, workloads);
+    if (v.state !== "ok") {
+      status = worse(status, v.state === "dead" ? "down" : "degraded");
+      if (v.why) reasons.push(v.why);
+    }
+  }
   return { status, reasons };
 }
 
@@ -315,14 +327,16 @@ export function serviceHealth(world: WorldReader, serviceId: string): ServiceHea
   const entity = world.index.entity(serviceId);
   const def = serviceDef(entity);
   const state = world.stateAs(serviceId, "service");
-  const verdicts = state.runsOn.map((id) => hostVerdict(world, id, def));
+  // a service on a cluster stands on its pods: the machines under the nodes reach it through the nodes
+  const onCluster = standsOnCluster(world, serviceId);
+  const places = onCluster ? state.runsOn.filter((id) => !isNodeHost(world, id)) : state.runsOn;
+  const verdicts = places.map((id) => hostVerdict(world, id, def));
   const path = fromPath(world, entity);
   const deps = fromDeps(world, entity, def);
   const overlay = sdnHealth(world, entity, def);
-  const status = worse(
-    worse(worse(fromHosts(def.kind, verdicts), path.status), deps.status),
-    overlay.status,
-  );
+  const hosts: ServiceStatus =
+    onCluster && verdicts.length === 0 ? "healthy" : fromHosts(def.kind, verdicts);
+  const status = worse(worse(worse(hosts, path.status), deps.status), overlay.status);
   const reasons = [
     ...verdicts.flatMap((v) => (v.why ? [v.why] : [])),
     ...(path.reason ? [path.reason] : []),

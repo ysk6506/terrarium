@@ -130,6 +130,22 @@ const READERS: Readonly<Record<string, Reader>> = {
     if (s.status === "down") return "닫혔어요";
     return s.status === "degraded" ? "다시 뜨는 중" : "열려 있어요";
   },
+  k8s_cluster: (s) => {
+    if (s.kind !== "k8s_cluster") return undefined;
+    if (!s.apiUp) return "API가 답하지 않아요";
+    return s.cpUp < s.cpTotal ? `컨트롤 플레인 ${s.cpUp}/${s.cpTotal}개` : "잘 돌아가요";
+  },
+  k8s_node: (s) => {
+    if (s.kind !== "k8s_node") return undefined;
+    if (s.status === "NotReady") return "NotReady";
+    if (s.diskPressure) return "디스크 압박";
+    return s.unschedulable ? "스케줄 막힘" : "Ready";
+  },
+  k8s_workload: (s) => {
+    if (s.kind !== "k8s_workload") return undefined;
+    const running = s.pods.filter((p) => p.phase === "Running").length;
+    return `파드 ${running}/${s.desired}개 돌아요`;
+  },
   vm: (s) => (s.kind === "vm" ? (s.running ? `CPU ${pct(s.cpuUsage)}` : "꺼졌어요") : undefined),
 };
 

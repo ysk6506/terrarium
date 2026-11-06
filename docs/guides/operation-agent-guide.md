@@ -8,13 +8,13 @@ covers:
   - packages/core/src/session/operation/metrics.ts
   - packages/core/src/session/operation/mtbf.ts
   - apps/server/src/adapters/harness/scripted-operator.ts
-covers_hash: d301491beac3c850
+covers_hash: 170a063e9f3d645d
 verification_log:
-  - "2026-11-06: MTBF 표에 오버레이 고장 일곱이 더해진 것을 mtbf.ts와 대조해 한 줄 적었다 (REQ-097)"
-  - "2026-11-06: 새 가이드. 툴 규약과 지표 계산식, 빨리 감기 규칙을 clock.ts·metrics.ts·scripted-operator.ts와 대조해 썼다 (REQ-090)"
-  - "2026-11-06: operator 설명 변경과 clock.ts의 최종 규칙(새 알람·팀 사건 뒤 5분, 호출 뒤 2초)을 다시 대조했다"
   - "2026-11-06: 서버 재시작 뒤 재개(같은 툴 주소, 프롬프트의 이어 가기 말, 호출 실패 시 다시 하기)를 한 문단 더하고 operation-mode.md와 대조했다 (REQ-090, ADR-0112)"
   - "2026-11-06: MTBF 표에 오버레이 고장이 더해진 것을 mtbf.ts와 대조해 한 줄 적었다 (REQ-097)"
+  - "2026-11-06: REQ-096: mtbf.ts에 컨테이너 고장 행이 늘었다. 가이드의 툴 규약·지표 계산식·빨리 감기 규칙은 그대로 맞다"
+  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
+  - "2026-11-06: o1·o2 합치기"
 ---
 # 운영 에이전트 설계 가이드
 

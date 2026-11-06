@@ -18,13 +18,13 @@ covers:
   - packages/core/src/tools/shell.ts
   - packages/core/src/tools/shell-output.ts
   - packages/core/src/scenario/library-os.ts
-covers_hash: fbc0ffdaba92fe2b
+covers_hash: 3466a4e26933cb52
 verification_log:
-  - "2026-11-06: REQ-094 세계 만들기 입구·서비스부터·패널 없는 직접 짓기(ADR-0107~0109)를 코드와 대조해 해당 절을 더하거나 고쳤다"
-  - "2026-11-06: 2b·2d 합치기"
-  - "2026-11-06: REQ-095: 서비스 건강에 depends_on 규칙(데이터베이스·풀)을 더하고 가짜 셸 표에 데이터베이스 호스트의 명령을 더했다 (service-health.ts·shell.ts·host-os.ts와 대조)"
   - "2026-11-06: service-health.ts의 depends_on 규칙과 shell.ts의 데이터베이스 명령을 더했다 (REQ-095)"
   - "2026-11-06: 서비스 건강이 sdn-health.ts의 오버레이 규칙을 합친다는 항목을 더했다 (REQ-097)"
+  - "2026-11-06: REQ-096: service-health.ts의 클러스터 위 서비스 규칙과 shell.ts의 kubectl·crictl 명령을 더했다"
+  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
+  - "2026-11-06: o1·o2 합치기"
 ---
 # 서비스와 OS 층 (REQ-086, REQ-087, [ADR-0091](adr/0091-service-os-layer-recovery-first.md))
 
@@ -102,6 +102,7 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 
 6. **오버레이와 클라우드 네이티브 층**(REQ-097): 서비스가 기대는 세그먼트·인그레스·가상 방화벽과, 서비스를 지키는 네트워크 정책, 서비스 노드의 CNI 플러그인도 읽어 합친다(`sdn-health.ts`). 끊긴 VTEP 뒤의 노드는 죽은 자리로 세고, 닫힌 인그레스는 요청 서비스를 멈추게 하고 나머지는 느리게 한다. 컨트롤러가 멈춘 것은 서비스에 영향이 없다. 규칙은 [SDN 오버레이와 클라우드 네이티브 네트워크 층](sdn-network-layer.md#서비스-건강이-오버레이를-읽는-법).
 7. **서비스가 기대는 것**(`depends_on`, REQ-095): 서비스가 데이터베이스 클러스터나 스토리지 풀에 기대면 그 상태도 읽어 위와 합친다. 하나라도 멈췄으면 서비스가 멈추고 하나라도 느리면 느리다. 읽는 규칙(프라이머리가 멈추면 요청 처리는 읽기만 되어 느려지고 나머지는 멈춘다, 복제 지연이 한계를 넘으면 느려진다 따위)은 [데이터베이스 층과 스토리지 HA 층](db-storage-layers.md)에 있다. 서비스를 대기 쪽으로 옮겨도 데이터베이스는 그대로라서, 데이터베이스가 원인이면 옮겨도 돌아오지 않는다.
+8. **서비스가 서 있는 클러스터**(`depends_on` 워크로드, REQ-096): 서비스가 쿠버네티스 워크로드에 기대고 노드 VM 위에만 서 있으면, 건강은 VM이 아니라 **파드**로 읽는다. 레플리카 중 제 몫을 하는 파드가 전부면 정상, 일부면 느려짐, 하나도 없으면 멈춤이다. 컨트롤 플레인이 멈춰도 돌던 파드는 정상이다(새 배포·재스케줄만 멈춘다). 노드 밑의 머신이 멈추면 노드가 NotReady가 되고 그 노드의 파드가 제 몫을 못 하는 길로 닿는다. 규칙은 [컨테이너 층](container-layer.md#서비스-건강이-파드를-읽는-법)에 있다. VM이나 서버 위에도 서 있는 서비스는 머신 규칙도 함께 읽는다.
 
 장비를 고치거나 서비스를 대기 쪽으로 옮기면 다음 스텝에 저절로 돌아온다. 따로 "복구"를 쓰는 곳이 없다.
 
@@ -150,11 +151,12 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 | `mount -o remount,rw /` | 다시 마운트 | 예 |
 | `reboot` | 재부팅 | 예 (그 위의 서비스가 모두 멈춤) |
 | `pg_isready`, `psql -c "select pg_is_in_recovery()"` 등, `multipath -ll` | 데이터베이스 호스트에서 인스턴스와 경로의 상태 (REQ-095, [데이터베이스 층](db-storage-layers.md)) | 아니오 |
+| 쿠버네티스 노드인 호스트에서 `kubectl get nodes\|pods\|deployments [-n <ns>]`, `kubectl describe node <이름>`, `crictl ps` | 노드·파드 목록과 상태, 노드의 조건·할당량, 노드에 서 있는 컨테이너 (REQ-096, [컨테이너 층](container-layer.md)). 노드가 아닌 호스트에서는 `command not found` | 아니오 |
 
 파이프는 한 단계만: `| grep [-i|-v|-c] <글자>`, `| tail [-n N]`, `| head [-n N]`. 출력은 400줄까지 보여 주고 더 길면 "| grep 이나 | tail 로 좁혀 보세요"를 붙인다. 허용 밖의 명령은 오류가 아니라 이 답이다.
 
 ```
-이 명령은 아직 못 해요: kubectl get pods
+이 명령은 아직 못 해요: kubectl apply -f deploy.yaml
 되는 명령: df -h, free -m, top -bn1, ps aux, systemctl status <unit>, …
 한 단계 파이프만 돼요: | grep [-i|-v|-c] <글자>, | tail [-n N], | head [-n N]
 ```
