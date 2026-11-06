@@ -46,6 +46,7 @@ export {
   startsCollapsed,
   valueForField,
 } from "./group";
+export { canProbe, REACH_MAX_ENTITIES, reachesAnswer } from "./reach";
 export {
   addExpectation,
   EXPECTATION_LABELS,

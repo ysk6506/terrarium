@@ -22,6 +22,7 @@ import { RackStage } from "./rack-stage";
 import { createRig, type DragTool, type Rig } from "./rig";
 import { buildSiteLayer, type SiteLayer } from "./site-layer";
 import { calm, FILL, ROOM_WALL, TILT } from "./view-look";
+import { type ScreenPoint, screenOfPlan } from "./view-plan";
 import { startSpin } from "./view-spin";
 
 type Focus = world3d.Focus;
@@ -397,21 +398,10 @@ export class WorldView {
   }
 
   /** Where a point of the builder's plan (x, height above its floor, plan y) shows on the canvas, in pixels. */
-  screenOf(p: {
-    x: number;
-    y: number;
-    z: number;
-  }): { x: number; y: number; visible: boolean } | undefined {
+  screenOf(p: { x: number; y: number; z: number }): ScreenPoint | undefined {
     const frame = this.plan;
     if (!frame) return undefined;
-    const at = world3d.toSite(frame, { x: p.x, y: p.z });
-    const v = new THREE.Vector3(at.x, frame.y + p.y, at.z).project(this.engine.view);
-    const rect = this.canvas.getBoundingClientRect();
-    return {
-      x: ((v.x + 1) / 2) * rect.width,
-      y: ((1 - v.y) / 2) * rect.height,
-      visible: v.z > -1 && v.z < 1,
-    };
+    return screenOfPlan(frame, this.engine.view, this.canvas.getBoundingClientRect(), p);
   }
 
   /** The builder's plan is where it is now; follow it with `onRender`. */

@@ -16,6 +16,9 @@
  *
  * total = 100 × max(0, earned − penalties) / possible, one decimal. Pass: total ≥ 60 and, if the
  * sheet asks for a diagnosis, a fully correct one.
+ *
+ * A scenario with services (`doc.scoring === "recovery"`) is scored recovery first instead: how soon the services were
+ * well again, how soon the agent acted, no harm on the way, then the diagnosis (REQ-088, recovery-score.ts).
  */
 import { formatDuration, round, withJosa } from "@terrarium/core/kernel";
 import {
@@ -30,10 +33,17 @@ import {
   type ScenarioDoc,
   type ToolCallRecord,
 } from "@terrarium/core/scenario";
-import { diagnosisLabel, isDiagnosisType, type WorldReader } from "@terrarium/core/world";
+import {
+  diagnosisLabel,
+  isDiagnosisType,
+  type RunEvent,
+  type WorldReader,
+} from "@terrarium/core/world";
+import { analyzeRecovery, type RecoveryReport, serviceHarms } from "./recovery";
+import { RECOVERY_WEIGHTS, type RecoveryAxis, recoveryAxes } from "./recovery-score";
 
 /** Bump when scoring rules change; it is part of the benchmark key (REQ-039). */
-export const ORACLE_VERSION = "2";
+export const ORACLE_VERSION = "3";
 export const PASS_MARK = 60;
 const ROOT_SHARE = 0.6;
 
@@ -64,6 +74,10 @@ export interface RunOutcome {
   readonly agentStartedAt?: number;
   /** When the scenario started; `event` conditions ignore what happened before it. */
   readonly scenarioStart?: number;
+  /** The run's events up to the end of the run; a scenario with services is scored from them (REQ-088). */
+  readonly events?: readonly RunEvent[];
+  /** The world's clock when the run was scored, the last moment its events are read up to. */
+  readonly endedAt?: number;
   readonly endReason: EndReason;
 }
 
@@ -91,8 +105,14 @@ export interface DiagnosisFacts {
   readonly faultType: readonly string[];
 }
 
+/** Which rules scored the run: the sheet's items as written, or recovery first (a scenario with services). */
+export type Scoring = "classic" | "recovery";
+
 export interface Score {
   readonly version: string;
+  readonly scoring: Scoring;
+  /** What the run did for the services; only in a recovery-first score. */
+  readonly recovery?: RecoveryReport;
   /** 0..100, or null when the sheet has nothing to earn. */
   readonly total: number | null;
   readonly earned: number;
@@ -289,8 +309,8 @@ function scaleEfficiency(item: ScoreItem, share: number): ScoreItem {
   };
 }
 
-export function score(outcome: RunOutcome): Score {
-  const raw: ScoreItem[] = outcome.doc.expectations.map((e) => {
+function scoreExpectations(outcome: RunOutcome): ScoreItem[] {
+  return outcome.doc.expectations.map((e) => {
     const scored = (SCORERS[e.kind] as Scorer<typeof e.kind>)(e as never, outcome);
     return {
       id: e.id,
@@ -303,8 +323,10 @@ export function score(outcome: RunOutcome): Score {
       ...(scored.facts ? { facts: scored.facts } : {}),
     };
   });
-  const share = taskShare(raw);
-  const items = raw.map((i) => scaleEfficiency(i, share));
+}
+
+/** The total, the points earned and taken, and whether the run passed, for a list of items. */
+function tally(items: readonly ScoreItem[]) {
   const possible = items.reduce((sum, i) => sum + i.max, 0);
   const earned = round(
     items.reduce((sum, i) => sum + Math.max(0, i.points), 0),
@@ -315,15 +337,59 @@ export function score(outcome: RunOutcome): Score {
   const diagnosis = items.filter((i) => i.kind === "diagnosis");
   const diagnosed = diagnosis.length === 0 || diagnosis.every((i) => i.verdict === "pass");
   const passed = total !== null && total >= PASS_MARK && diagnosed;
+  return { possible, earned, penalty, total, passed };
+}
+
+export function score(outcome: RunOutcome): Score {
+  if (outcome.doc.scoring === "recovery") return scoreRecovery(outcome);
+  const raw = scoreExpectations(outcome);
+  const share = taskShare(raw);
+  const items = raw.map((i) => scaleEfficiency(i, share));
+  const t = tally(items);
   return {
     version: ORACLE_VERSION,
-    total,
-    earned,
-    penalty,
-    possible,
-    passed,
+    scoring: "classic",
+    ...t,
     items,
-    summary: summarize(total, passed, items, outcome),
+    summary: summarize(t.total, t.passed, items, outcome),
+  };
+}
+
+/** The sheet's diagnosis as the report axis: the same share of the cause and the kind, out of the report's weight. */
+function reportItem(raw: readonly ScoreItem[], doc: ScenarioDoc): ScoreItem[] {
+  const item = raw.find((i) => i.kind === "diagnosis");
+  const e = doc.expectations.find((x) => x.id === item?.id);
+  if (!item || e?.kind !== "diagnosis") return [];
+  const max = RECOVERY_WEIGHTS.report;
+  return [{ ...item, label: "진단·보고", points: round((item.points / e.weight) * max, 2), max }];
+}
+
+const axisItem = (a: RecoveryAxis): ScoreItem => ({ ...a, kind: "final_state" });
+
+/**
+ * Recovery first: the axes come from the run's events, the report from the sheet's diagnosis. The sheet's
+ * prohibitions still count and its final-state items say whether the recovery lasts. Its time limit, tool budget and
+ * required actions are not used: how soon and by what is what the axes judge.
+ */
+function scoreRecovery(outcome: RunOutcome): Score {
+  const raw = scoreExpectations(outcome);
+  const harms = serviceHarms(outcome.world.index);
+  const report = analyzeRecovery(outcome.events ?? [], harms, outcome.endedAt);
+  const lasting = raw.filter((i) => i.kind === "final_state").every((i) => i.verdict === "pass");
+  const name = (id: string) => outcome.world.index.find(id)?.name ?? id;
+  const items = [
+    ...recoveryAxes(report, lasting, name).map(axisItem),
+    ...reportItem(raw, outcome.doc),
+    ...raw.filter((i) => i.kind === "forbidden_action"),
+  ];
+  const t = tally(items);
+  return {
+    version: ORACLE_VERSION,
+    scoring: "recovery",
+    recovery: report,
+    ...t,
+    items,
+    summary: `복구 우선 채점 · ${summarize(t.total, t.passed, items, outcome)}`,
   };
 }
 

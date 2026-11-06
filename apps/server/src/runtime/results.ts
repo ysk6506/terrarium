@@ -34,7 +34,7 @@ import type {
 import { UnavailableError } from "@terrarium/core/contract";
 import type { Experiment, RunRecord } from "@terrarium/core/experiments";
 import { NotFoundError, randomToken } from "@terrarium/core/kernel";
-import { legacyEvents } from "@terrarium/core/session";
+import { type CommonReach, commonReach, legacyEvents } from "@terrarium/core/session";
 import type { ImportReport } from "@terrarium/core/sources/realimport";
 import { spanOf } from "@terrarium/core/topology";
 import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
@@ -44,6 +44,9 @@ import type { Experiments } from "./experiments";
 export type ReportFormat = "html" | "md" | "text";
 
 const DAY_MS = 86_400_000;
+
+/** Whether the common tools reach the answer, per world version and scenario version: it is the same every time (REQ-088). */
+const REACH = new Map<string, CommonReach | null>();
 
 export class Results {
   constructor(
@@ -73,14 +76,29 @@ export class Results {
     const run = must(await this.ctx.store.getRun(id), `실행 ${id}`);
     const experiment = await this.experiments.get(run.experimentId);
     const adapter = await this.adapterOf(run);
+    const reach = run.result ? await this.reachOf(experiment) : undefined;
     return {
       run,
       analysis: analyzeRun(run, await this.telemetryOf(run)),
+      ...(reach ? { commonReach: reach } : {}),
       experiment: await this.experiments.summaryOf(experiment),
       timeline: run.result?.timeline ?? [],
       hasTelemetry: Boolean(run.harness?.traceId && adapter),
       ...(adapter ? { telemetryName: adapter.name } : {}),
     };
+  }
+
+  /** Whether the common tools reach the equipment the scenario's answer names, worked out once for each version pair. */
+  private async reachOf(experiment: Experiment): Promise<CommonReach | undefined> {
+    const { worldId, scenarioId } = experiment.recipe;
+    const { worldDigest, scenarioDigest } = experiment.snapshot;
+    const key = `${worldId}@${worldDigest}|${scenarioId}@${scenarioDigest}`;
+    if (!REACH.has(key)) {
+      const blueprint = await this.ctx.store.worldVersion(worldId, worldDigest);
+      const scenario = await this.ctx.store.scenarioVersion(scenarioId, scenarioDigest);
+      REACH.set(key, blueprint && scenario ? (commonReach({ blueprint, scenario }) ?? null) : null);
+    }
+    return REACH.get(key) ?? undefined;
   }
 
   /** Who did the run's work, named as the speech bubble of the topology view names them. */

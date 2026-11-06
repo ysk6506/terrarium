@@ -216,10 +216,21 @@ export {
   type ServiceDef,
   type ServiceKind,
   type ServiceStatus,
+  SLOW_HARM_SHARE,
   serviceDef,
   serviceProps,
 } from "./service";
 export type { ServiceCommand } from "./service-act";
+export {
+  harmShare,
+  impairedAt,
+  peakImpaired,
+  type ServiceTimeline,
+  type StatusChange,
+  serviceTimeline,
+  statusAt,
+  statusBefore,
+} from "./service-events";
 export {
   type HostVerdict,
   hostOfVm,

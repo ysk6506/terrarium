@@ -258,6 +258,7 @@ export const ScenarioDocSchema = z
       )
       .max(2000),
     expectations: z.array(ExpectationSchema).max(100),
+    scoring: z.literal("recovery").optional(),
     template: z.string().max(64).optional(),
   })
   .strict() as unknown as z.ZodType<ScenarioDoc>;

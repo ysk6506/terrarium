@@ -197,6 +197,12 @@ export interface ScenarioDoc {
   readonly nodes: readonly ScenarioNode[];
   readonly edges: readonly ScenarioEdge[];
   readonly expectations: readonly Expectation[];
+  /**
+   * How the sheet is scored. Absent means the items as written. `recovery` is for a scenario with services (ADR-0091
+   * item 3): the score is the services' recovery time, the order, no harm on the way, and the report; the sheet then
+   * supplies the diagnosis, the prohibitions and the conditions for a lasting recovery.
+   */
+  readonly scoring?: "recovery";
   /** Which built-in template it came from, if any (informational). */
   readonly template?: string;
 }

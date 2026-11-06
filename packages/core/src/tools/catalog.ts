@@ -392,7 +392,17 @@ export function toolSpec(name: string): ToolSpec | undefined {
   return TOOL_SPECS.find((t) => t.name === name);
 }
 
-/** The default selection: everything an operator would have, minus raw protocol access. */
+/**
+ * The protocol tools the default selection keeps: the shell. The faults of a host's operating system are solved on
+ * the host (df, rm, systemctl), so a set without it cannot solve them (ADR-0091, REQ-088). The Redfish, vCenter, SNMP
+ * and switch requests stay out of the default.
+ */
+const DEFAULT_PROTOCOL: readonly string[] = ["run_command"];
+
+/**
+ * The default selection: everything an operator would have, minus raw protocol access except the shell. A selection
+ * by how common a tool is in real operations (`realism`) is the third beta round's work (beta-rounds.md).
+ */
 export const DEFAULT_TOOLSET: readonly string[] = TOOL_SPECS.filter(
-  (t) => t.category !== "protocol",
+  (t) => t.category !== "protocol" || DEFAULT_PROTOCOL.includes(t.name),
 ).map((t) => t.name);

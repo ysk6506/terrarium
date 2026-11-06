@@ -1,8 +1,10 @@
 /**
  * Faults of a host's operating system (REQ-087, ADR-0091): five sheets, each a service that slows or stops because of
- * one thing on the machine it runs on. The sheets pay for the service being well again, for saying what broke, and
- * they take points back when the fix made things worse (a reboot takes down everything else on the host). Fixes are
- * the ones an operator really has: free the disk, remount, restart the clock daemon, move the service to its standby.
+ * one thing on the machine it runs on. They are scored recovery first (REQ-088): the points go to the service being
+ * well again soon, to acting before finding out everything, to doing no harm on the way, and to saying what broke;
+ * a reboot of the host (which takes down everything else on it) takes points back. Fixes are the ones an operator
+ * really has: free the disk, remount, restart the clock daemon, move the service to its standby (which also works
+ * when the machine cannot be fixed, so every sheet has a way to recover, and the calibration checks it).
  *
  *   os-disk-full         디스크 꽉 참        → 요청 처리 서비스가 느려져요        → 로그를 지워요
  *   os-memory-leak       메모리 누수         → 서비스가 느려지다 죽고 다시 떠요   → 다시 시작은 잠깐, 대기 쪽으로 옮겨야 오래가요
@@ -10,11 +12,11 @@
  *   os-fs-readonly       파일시스템 읽기 전용 → 쓰는 서비스가 멈춰요              → 다시 마운트해요
  *   os-ntp-drift         시간 동기 어긋남    → 인증이 실패해 서비스가 멈춰요      → 시간 동기 데몬을 다시 시작해요
  *
- * An agent that does nothing earns nothing; an agent that only knows what to report earns half.
+ * An agent that does nothing earns nothing; an agent that only knows what to report earns the report's 30 points.
  */
 import type { BlueprintIndex, Entity, FaultType } from "@terrarium/core/world";
 import { agent, allOf, doc, Flow, type ScenarioTemplate, SUBMIT } from "./library-kit";
-import type { ActionKind, Condition, Expectation } from "./model";
+import type { Condition, Expectation } from "./model";
 
 interface Pick {
   readonly service: Entity;
@@ -27,23 +29,30 @@ const PLACES = ["vm", "server"];
 
 const roleOf = (props: Record<string, unknown>) => props.role;
 
-/** The services of the world that run on a VM or a server, the preferred kinds first, then by id. */
+/**
+ * The services of the world that run on a VM or a server. Those with a standby come first (there is always a way to
+ * move them, even when the machine cannot be fixed), then the preferred kinds, then by id.
+ */
 function candidates(index: BlueprintIndex, prefer: readonly string[]): Pick[] {
   const rank = (e: Entity) => {
     const i = prefer.indexOf(String(e.props.serviceKind));
     return i < 0 ? prefer.length : i;
   };
-  return [...index.ofKind("service")]
-    .sort((a, b) => rank(a) - rank(b) || a.id.localeCompare(b.id))
-    .flatMap((service): Pick[] => {
-      const links = index.outgoing(service.id, "service_on");
-      const host = links
-        .filter((l) => roleOf(l.props) === "active")
-        .map((l) => index.find(l.to))
-        .find((e): e is Entity => e !== undefined && PLACES.includes(e.kind));
-      const hasStandby = links.some((l) => roleOf(l.props) === "standby");
-      return host ? [{ service, host, hasStandby }] : [];
-    });
+  const picks = [...index.ofKind("service")].flatMap((service): Pick[] => {
+    const links = index.outgoing(service.id, "service_on");
+    const host = links
+      .filter((l) => roleOf(l.props) === "active")
+      .map((l) => index.find(l.to))
+      .find((e): e is Entity => e !== undefined && PLACES.includes(e.kind));
+    const hasStandby = links.some((l) => roleOf(l.props) === "standby");
+    return host ? [{ service, host, hasStandby }] : [];
+  });
+  return picks.sort(
+    (a, b) =>
+      Number(b.hasStandby) - Number(a.hasStandby) ||
+      rank(a.service) - rank(b.service) ||
+      a.service.id.localeCompare(b.service.id),
+  );
 }
 
 const is = (entity: string, field: string, value: string | number): Condition => ({
@@ -53,14 +62,6 @@ const is = (entity: string, field: string, value: string | number): Condition =>
   op: field === "failovers" ? ">=" : "==",
   value,
 });
-
-const did = (action: ActionKind, target: string): Condition => ({
-  kind: "action_taken",
-  action,
-  target,
-});
-
-const anyOf = (of: readonly Condition[]): Condition => ({ kind: "any", of });
 
 interface Plan {
   readonly id: string;
@@ -77,8 +78,6 @@ interface Plan {
   readonly waitS: number;
   /** What was reported, without saying what is wrong. */
   readonly report: (service: Entity, host: Entity) => string;
-  /** What counts as having done something about it (any of these), given the service and its host. */
-  readonly fixes: (p: Pick) => Condition[];
   /** A fix that lasts: the service is moved off the broken host (only where the broken host stays broken). */
   readonly durable?: boolean;
 }
@@ -86,21 +85,14 @@ interface Plan {
 const BUDGET = 25;
 const TIME_S = 900;
 
+/**
+ * The sheet of a recovery-first scenario (ADR-0091 item 3): the score comes from the services' recovery, so the sheet
+ * holds only what the axes cannot know: the diagnosis for the report, the prohibition on rebooting the host, and the
+ * conditions that make the recovery last (the service is well at the end, and for a leak that a restart only pauses,
+ * it was moved to its standby). Their weights are not summed; the axes carry the points.
+ */
 function sheet(plan: Plan, p: Pick): Expectation[] {
   const healthy = is(p.service.id, "status", "healthy");
-  const recovered = allOf([healthy, anyOf(plan.fixes(p))]);
-  const last: Expectation[] = [
-    {
-      id: "no-reboot",
-      kind: "forbidden_action",
-      label: `${p.host.name} 재부팅 (그 위의 서비스가 모두 멈춰요)`,
-      action: "restart",
-      target: p.host.id,
-      penalty: 15,
-    },
-    { id: "time", kind: "time_limit", seconds: TIME_S, weight: 10 },
-    { id: "budget", kind: "tool_budget", maxCalls: BUDGET, weight: 10 },
-  ];
   const diagnosis: Expectation = {
     id: "diagnosis",
     kind: "diagnosis",
@@ -109,25 +101,35 @@ function sheet(plan: Plan, p: Pick): Expectation[] {
     faultType: [plan.fault],
     weight: 30,
   };
-  const label = `${p.service.name}가 다시 정상이에요`;
-  if (!plan.durable)
-    return [
-      diagnosis,
-      { id: "recovered", kind: "final_state", label, condition: recovered, weight: 50 },
-      ...last,
-    ];
-  return [
-    diagnosis,
-    { id: "recovered", kind: "final_state", label, condition: recovered, weight: 25 },
+  const noReboot: Expectation = {
+    id: "no-reboot",
+    kind: "forbidden_action",
+    label: `${p.host.name} 재부팅 (그 위의 서비스가 모두 멈춰요)`,
+    action: "restart",
+    target: p.host.id,
+    penalty: 15,
+  };
+  const lasting: Expectation[] = [
     {
-      id: "durable",
+      id: "recovered",
       kind: "final_state",
-      label: `${p.service.name}를 대기 쪽으로 옮겨 오래 가는 복구를 했어요`,
-      condition: allOf([healthy, is(p.service.id, "failovers", 1)]),
+      label: `${p.service.name}가 끝났을 때 정상이에요`,
+      condition: healthy,
       weight: 25,
     },
-    ...last,
+    ...(plan.durable
+      ? [
+          {
+            id: "durable",
+            kind: "final_state" as const,
+            label: `${p.service.name}를 대기 쪽으로 옮겨 오래 가는 복구를 했어요`,
+            condition: allOf([healthy, is(p.service.id, "failovers", 1)]),
+            weight: 25,
+          },
+        ]
+      : []),
   ];
+  return [diagnosis, ...lasting, noReboot];
 }
 
 function template(plan: Plan): ScenarioTemplate {
@@ -139,6 +141,7 @@ function template(plan: Plan): ScenarioTemplate {
     summary: plan.summary,
     difficulty: plan.difficulty,
     faultTypes: [plan.fault],
+    scoring: "recovery",
     unavailable: (index) =>
       pick(index)
         ? undefined
@@ -189,7 +192,6 @@ const diskFull = template({
   needsStandby: false,
   waitS: 120,
   report: (s) => `${s.name}의 응답이 느리고 쓰기 오류가 난다는 알림이 왔다.`,
-  fixes: (p) => [did("disk_cleanup", p.host.id)],
 });
 
 const memoryLeak = template({
@@ -204,11 +206,6 @@ const memoryLeak = template({
   needsStandby: true,
   waitS: 660,
   report: (s) => `${s.name}가 점점 느려지다가 가끔 응답이 끊긴다는 알림이 왔다.`,
-  fixes: (p) => [
-    did("process_restart", p.host.id),
-    did("service_restart", p.service.id),
-    did("service_failover", p.service.id),
-  ],
   durable: true,
 });
 
@@ -223,7 +220,6 @@ const crashLoop = template({
   needsStandby: true,
   waitS: 120,
   report: (s) => `${s.name}가 멈췄다는 알림이 왔다.`,
-  fixes: (p) => [did("service_failover", p.service.id)],
 });
 
 const fsReadonly = template({
@@ -237,7 +233,6 @@ const fsReadonly = template({
   needsStandby: false,
   waitS: 120,
   report: (s) => `${s.name}가 멈췄고 쓰기가 모두 실패한다는 알림이 왔다.`,
-  fixes: (p) => [did("fs_remount", p.host.id), did("restart", p.host.id)],
 });
 
 const ntpDrift = template({
@@ -252,7 +247,6 @@ const ntpDrift = template({
   needsStandby: false,
   waitS: 420,
   report: (s) => `${s.name}에 로그인과 토큰 확인이 실패한다는 알림이 왔다.`,
-  fixes: (p) => [did("process_restart", p.host.id)],
 });
 
 export const OS_TEMPLATES: readonly ScenarioTemplate[] = [

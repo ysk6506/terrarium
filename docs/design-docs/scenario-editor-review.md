@@ -2,19 +2,19 @@
 title: 시나리오 편집기 검토 — 처음 쓰는 사람의 눈으로, 토스의 원칙으로
 kind: spec
 status: active
-last_verified: 2026-11-05
+last_verified: 2026-11-06
 covers:
   - apps/web/src/ui/scenario/ScenarioEditorPage.tsx
   - apps/web/src/ui/scenario/Palette.tsx
   - apps/web/src/ui/scenario/Sheet.tsx
   - apps/web/src/ui/pages/scenarios.tsx
-covers_hash: 3d4c0108d453284d
+covers_hash: 97136444c5612c7c
 verification_log:
-  - "2026-11-04: 블록 이름을 용어집(고장 발생/복구)으로 맞췄다"
   - "2026-11-04: 고칠 것 1, 2, 11, 12를 구현 현황 절에 대조해 적었다 (scenarios.tsx, Toolbar.tsx, ScenarioEditorPage.tsx, Canvas.tsx)"
   - "2026-11-04: 2026-11-04: 편집기의 말을 용어집에 맞추고(고장 발생·복구, 상황 설명, 툴 호출 상한), 시간을 분으로 보이게 하고, 복구 방식 선택과 조치 항목 더하기를 더한 것에 맞춰 글을 고쳤다 (ADR-0072)"
   - "2026-11-04: 2026-11-04: ADR-0073. 점수 카드의 큰 조건 묶음을 접고 예/아니요 기준을 선택 칸으로 바꿨다. 검토 문서의 지적과 어긋나지 않는다"
   - "2026-11-05: scenarios.tsx는 실험하기 링크에 시나리오 이름(sr-only)을 더한 것만 바뀌었고 검토 내용은 그대로 맞다"
+  - "2026-11-06: scenarios.tsx의 카드 점검과 Calibration.tsx의 서비스와 툴 줄을 구현 현황에 대조해 더했다 (REQ-088)"
 ---
 # 시나리오 편집기 검토 (REQ-071, ADR-0070)
 
@@ -72,6 +72,11 @@ verification_log:
 - 10: 점검 경고 "정답만 말하면 만점이에요" 옆에 "조치 항목 더하기"가 있다 (`suggestedAction`). 고장의 첫 대응 행에서 첫 조치를 골라 "이 조치를 하면" 카드(점수 20)를 더하고 채점표를 연다. 고장이 원격으로 고쳐지지 않으면(`diagnose`) 설명이 빈 "끝났을 때 이 상태면" 카드를 더한다. 조치가 그 장비에 하는 것일 때만 대상을 채운다.
 - 12: 새 시나리오 대화상자의 카드는 1200px 이상에서 세 열, 그 아래 두 열, 640px 아래 한 열이다.
 - 말이 용어집을 어기지 않는지는 `editor-words.test.ts`가 본다 (ADR-0072).
+
+## 구현 현황 (복구 우선 채점, REQ-088)
+
+- 새 시나리오 카드는 세계가 작을 때(장비 600개 이하) 템플릿을 흔한 툴만 가진 에이전트로 한 번씩 돌려 보고, 정답 장비에 닿지 않는 카드에 "흔한 툴만으로는 원인에 닿을 수 없어요"를 요약 아래에 보인다. 카드는 한 장씩 차례로 점검해서 화면이 멈추지 않고, 점검이 끝나기 전에는 아무 말도 하지 않는다 (`useNoCommonPath`, `reachesAnswer`).
+- 변별력 점검 패널은 기준 에이전트 점수 아래에 "서비스를 옮겨서 복구하는 길"과 "흔한 툴만으로 원인에 닿는 길"을 있음·없음으로 보이고, 없으면 경고 줄이 하나 더 는다.
 
 ## 아직 안 하는 것
 

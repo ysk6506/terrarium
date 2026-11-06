@@ -9,6 +9,22 @@ export {
   type RunOutcome,
   type Score,
   type ScoreItem,
+  type Scoring,
   score,
   type Verdict,
 } from "./oracle";
+export {
+  analyzeRecovery,
+  type RecoveryReport,
+  type ServiceHarm,
+  serviceHarms,
+  WORSEN_WINDOW_S,
+} from "./recovery";
+export {
+  FULL_ORDER_S,
+  FULL_RECOVERY_S,
+  RECOVERY_WEIGHTS,
+  ramp,
+  ZERO_ORDER_S,
+  ZERO_RECOVERY_S,
+} from "./recovery-score";

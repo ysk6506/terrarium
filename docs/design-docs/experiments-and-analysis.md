@@ -14,11 +14,11 @@ covers:
   - packages/core/src/session/run-events.ts
 covers_hash: 7dc75808424a495f
 verification_log:
-  - "2026-10-30: 2026-10-30: 에이전트 버전(agent-version.ts)과 lineage.ts의 agentVersion 이어받기를 코드와 대조해 '누가 돌렸나, 어느 버전인가' 항목을 더했다 (REQ-053, ADR-0043)"
   - "2026-11-03: 서버·core가 사람에게 돌려주는 안내 문장이 해요체로 바뀐 것만 확인했다. 동작과 본문은 그대로 (ADR-0050)"
   - "2026-11-04: 2026-11-04: ADR-0073. 덮는 코드에서 사람이 읽는 말(알람 해요체, 에이전트 지시문 한다체, 툴·멈춤·상한 등)만 바뀌었고 문서가 말하는 구조와 규칙은 그대로다"
   - "2026-11-05: ADR-0085: 트레이스를 쌓는 곳이 연결마다 정해진다는 문장을 더했다. 덮는 코드의 동작은 그대로"
   - "2026-11-06: 사건 기록 절(RunEvent 세 종류, 두 시계, 조회 경로)을 world/run-events.ts와 session/run-events.ts와 대조해 더했다"
+  - "2026-11-06: 사건 기록 절에 서비스 복구를 사건에서 읽는다는 문단을 더했고 service-events.ts, recovery.ts와 대조했다 (REQ-088)"
 ---
 # 실험과 결과 분석 (REQ-015, REQ-030~033, REQ-037~040)
 
@@ -71,6 +71,8 @@ verification_log:
 | 점수 사건 `score` | `agent_start`(과제를 받음, 세는 시작점 `scenarioStart`), `closed`(끝난 이유, 진단했나), `graded`(총점, 합격, 정답 장비 `rootCause`) |
 
 `seq`는 나열 속 자리(0부터)이고, 형식은 필드를 더하기만 한다(`RUN_EVENT_FORMAT`). 읽는 쪽은 모르는 필드를 무시한다.
+
+**서비스의 복구도 이 나열에서 읽는다** (REQ-088). 서비스가 멈추거나 느려지면 세계 사건 `alarm.raise`(종류 `service`, 코드 `service_down`·`service_degraded`)가, 돌아오면 `alarm.clear`가 이미 남는다. 복구 우선 채점과 결과 첫 줄의 "서비스 k개 멈춤 → 0"은 이 사건과 서비스별 시간당 피해만으로 계산하는 순수 함수(`analyzeRecovery`, `serviceTimeline`)이고, 채점할 때와 끝난 실행을 다시 읽을 때 같은 값이 나온다. 세션은 채점하기 전에 세계가 마지막으로 쉬는 동안의 사건까지 나열에 적는다. 결과의 숫자(복구 시간·사람 없이 복구했나·복구 중 악화·사고 비용)와 규칙은 [측정의 신뢰](measurement.md#3-서비스가-있는-시나리오는-복구-우선으로-채점한다-req-088-adr-0091-adr-0104)에 있다. 점수는 `scoring`으로 어느 채점인지 말하고(`classic`·`recovery`), 채점 버전이 3으로 올라 벤치마크 세트가 옛 점수와 섞이지 않는다.
 
 ## 벤치마크 대시보드 (REQ-039)
 
