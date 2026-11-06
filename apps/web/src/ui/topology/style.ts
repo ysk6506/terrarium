@@ -9,12 +9,14 @@ export const TOPOLOGY_CSS = `
 :root {
   --topo-alarm: #e9962f;
   --topo-range: #c3ccd8;
-  --topo-ground-a: #f7f9fb;
-  --topo-ground-b: #eef2f6;
-  --topo-slab: #ffffff;
-  --topo-slab-line: #dfe5ec;
-  --topo-slab-l: #d9e0e8;
-  --topo-slab-r: #e8edf3;
+  --topo-touch-read: color-mix(in srgb, var(--cobalt) 45%, var(--surface));
+  /* The ground and the bases come from the app's own tokens, so the board is light or dark with the app. */
+  --topo-ground-a: color-mix(in srgb, var(--surface) 55%, var(--paper));
+  --topo-ground-b: var(--paper);
+  --topo-slab: var(--surface);
+  --topo-slab-line: var(--line);
+  --topo-slab-l: color-mix(in srgb, var(--ink) 14%, var(--surface));
+  --topo-slab-r: color-mix(in srgb, var(--ink) 7%, var(--surface));
   --topo-steel-t: #e6ecf3;
   --topo-steel-l: #9fb0c4;
   --topo-steel-r: #c3cfdc;
@@ -35,16 +37,11 @@ export const TOPOLOGY_CSS = `
   --topo-impact-slab: color-mix(in srgb, var(--topo-range) 30%, var(--topo-slab));
 }
 
+/* Dark follows the app's own setting (data-theme), and the computer's when the app has none. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --topo-alarm: #f0b04a;
     --topo-range: #566176;
-    --topo-ground-a: #181b22;
-    --topo-ground-b: #14171d;
-    --topo-slab: #262a33;
-    --topo-slab-line: #343a46;
-    --topo-slab-l: #1d2027;
-    --topo-slab-r: #20242c;
     --topo-steel-t: #5a6678;
     --topo-steel-l: #3a4352;
     --topo-steel-r: #4a5566;
@@ -61,6 +58,26 @@ export const TOPOLOGY_CSS = `
     --topo-olive-l: #4a4930;
     --topo-olive-r: #5a5a3b;
   }
+}
+
+:root[data-theme="dark"] {
+  --topo-alarm: #f0b04a;
+  --topo-range: #566176;
+  --topo-steel-t: #5a6678;
+  --topo-steel-l: #3a4352;
+  --topo-steel-r: #4a5566;
+  --topo-dark-t: #11141a;
+  --topo-dark-l: #090b0f;
+  --topo-dark-r: #0d1015;
+  --topo-green-t: #3d5a45;
+  --topo-green-l: #2b4132;
+  --topo-green-r: #34503c;
+  --topo-blue-t: #4b6a96;
+  --topo-blue-l: #324a6c;
+  --topo-blue-r: #3d5a82;
+  --topo-olive-t: #6b6a45;
+  --topo-olive-l: #4a4930;
+  --topo-olive-r: #5a5a3b;
 }
 
 .topo {
@@ -227,6 +244,87 @@ export const TOPOLOGY_CSS = `
 
 .topo-agent-slot {
   flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.topo-caption {
+  margin: 0;
+  padding: 6px 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--glass-92);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.topo-agent {
+  max-width: 300px;
+  padding: 10px 14px;
+  border-color: var(--cobalt);
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--cobalt) 16%, transparent);
+  font-size: 12px;
+  animation: topo-bubble 0.25s ease-out;
+}
+
+.topo-agent-read {
+  border-color: color-mix(in srgb, var(--cobalt) 45%, var(--line));
+}
+
+.topo-agent .who {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 4px;
+  color: var(--cobalt);
+  font-weight: 600;
+}
+
+.topo-agent .who i {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8ab4ff, #1b64da);
+}
+
+.topo-agent code {
+  display: inline-block;
+  max-width: 100%;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 11.5px;
+  overflow-wrap: anywhere;
+}
+
+.topo-agent .when {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink-3);
+}
+
+.topo-agent .when.bad {
+  color: var(--bad);
+}
+
+@keyframes topo-bubble {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .topo-agent {
+    animation: none;
+  }
 }
 
 .topo-drawn {
@@ -287,18 +385,8 @@ export const TOPOLOGY_CSS = `
   color: var(--ink-2);
 }
 
-.topo-time {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 260px;
-  padding: 8px 14px;
-  color: var(--ink-2);
-  font-size: 13px;
-}
-
-.topo-time input {
+.topo-bar {
   flex: 1;
-  min-width: 120px;
+  min-width: 300px;
 }
 `;

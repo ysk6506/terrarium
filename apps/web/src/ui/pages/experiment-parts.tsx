@@ -160,16 +160,24 @@ export function RunsTable({
   runs,
   live,
   analysis,
+  picked,
+  onPick,
 }: {
   readonly runs: readonly RunSummary[];
   readonly live: LiveState | undefined;
   readonly analysis: ExperimentAnalysis;
+  /** The runs ticked for the side-by-side view (REQ-078). */
+  readonly picked: readonly string[];
+  readonly onPick: (id: string) => void;
 }) {
   return (
     <div className="table-wrap">
       <table className="table">
         <thead>
           <tr>
+            <th style={{ width: 40 }}>
+              <span className="sr-only">나란히 보기에 넣기</span>
+            </th>
             <th className="num" style={{ width: 48 }}>
               #
             </th>
@@ -185,6 +193,16 @@ export function RunsTable({
         <tbody>
           {runs.map((r) => (
             <tr key={r.id}>
+              <td>
+                {r.status === "completed" && (
+                  <input
+                    type="checkbox"
+                    checked={picked.includes(r.id)}
+                    onChange={() => onPick(r.id)}
+                    aria-label={`${r.index + 1}번째 실행을 나란히 보기에 넣기`}
+                  />
+                )}
+              </td>
               <td className="num">{r.index + 1}</td>
               <td>
                 <Status status={r.status} />

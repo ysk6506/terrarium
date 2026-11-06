@@ -2,18 +2,18 @@
 title: HTTP API 계약
 kind: spec
 status: active
-last_verified: 2026-11-05
+last_verified: 2026-11-06
 covers:
   - packages/core/src/contract/routes.ts
   - packages/core/src/contract/errors.ts
   - packages/core/src/contract/views.ts
-covers_hash: c4fb9091cde743eb
+covers_hash: bb99d9ef143ed6ed
 verification_log:
-  - "2026-10-30: 2026-10-30: routes.ts의 연결(listConnectors~deleteConnection)과 에이전트 버전 4개 경로를 표와 '연결' 절에 더하고, 응답 모양을 connections.ts·views.ts와 대조했다 (REQ-051, REQ-053)"
   - "2026-11-03: 오류 문장이 해요체가 된 것을 오류 모양 절에 적었다 (ADR-0050)"
   - "2026-11-04: calibrate 경로를 contract/routes.ts와 대조해 표에 더했다"
   - "2026-11-04: 2026-11-04: ADR-0073. 서버 오류 문장과 라우트 요약의 말(툴, 더하기, 멈추기, 지우기)만 바뀌었다. 경로와 본문 모양은 그대로, 안내 문구만 도구에서 툴로 고쳤다"
   - "2026-11-05: routes.ts의 telemetry-adapters와 connections/:id/try 두 경로, 확인 응답의 census·hiddenAgents와 traces를 표와 연결 절에 대조해 더했다 (REQ-079)"
+  - "2026-11-06: routes.ts의 runEvents, runWorld 두 경로를 표에 더했고 views.ts의 RunEventsView, RunWorldView와 대조했다"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -81,6 +81,8 @@ verification_log:
 | `POST /api/experiments/:id/shares` | 공유 링크 만들기 | |
 | `DELETE /api/shares/:token` | 공유 링크 끊기 | |
 | `GET /api/runs/:id` | 실행 하나: 결과, 분석, 타임라인 | |
+| `GET /api/runs/:id/events` | 실행의 불변 사건 기록(세계 시간·실제 시간). `from`·`to`(세계 초)로 구간만. 실행 중이면 지금까지, `live: true` | |
+| `GET /api/runs/:id/world` | 실행이 돌았던 때의 세계(그 버전 그대로) | |
 | `GET /api/runs/:id/telemetry` | 하네스 트레이스·로그·메트릭 (ClickStack) | |
 | `GET /api/leaderboards` | 벤치마크 세트별 순위 | |
 | `GET /api/twin/diagnoses` | 모든 진단 기록 (JSON Lines) | |

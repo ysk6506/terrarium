@@ -3,10 +3,10 @@
  * what was learned, each run, and the ways onward: share it, change a condition and run it again,
  * add more runs, or stop it.
  */
-import type { ExperimentView } from "@terrarium/core/contract";
+import type { ExperimentView, RunSummary } from "@terrarium/core/contract";
 import { withJosa } from "@terrarium/core/kernel";
 import { useState } from "react";
-import { dateText, statusLabel } from "../../logic";
+import { dateText, hallTopology, statusLabel } from "../../logic";
 import { Go, useAction, useApp, useAsync, usePageTitle } from "../context";
 import {
   Button,
@@ -20,6 +20,7 @@ import {
   Section,
   Status,
 } from "../kit";
+import { CompareRuns } from "../topology/RunReplay";
 import {
   ConditionsPanel,
   CriteriaTable,
@@ -203,8 +204,53 @@ function Head({
   );
 }
 
+/** Two ticked runs and the button that lays them side by side. */
+function SideBySide({
+  runs,
+  worldId,
+  picked,
+  onPicked,
+}: {
+  readonly runs: readonly RunSummary[];
+  readonly worldId: string;
+  readonly picked: readonly string[];
+  readonly onPicked: (ids: readonly string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const chosen = picked.flatMap((id) => runs.find((r) => r.id === id) ?? []);
+  const [a, b] = chosen;
+  return (
+    <div style={{ marginTop: 16 }}>
+      <Button
+        size="small"
+        disabled={!(a && b)}
+        why={hallTopology.TOPO_WORDS.pickTwo}
+        onClick={() => setOpen(true)}
+      >
+        {hallTopology.TOPO_WORDS.sideBySide}
+      </Button>
+      {open && a && b && (
+        <CompareRuns
+          worldId={worldId}
+          runs={[
+            { id: a.id, index: a.index },
+            { id: b.id, index: b.index },
+          ]}
+          onClose={() => {
+            setOpen(false);
+            onPicked([]);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
 export function ExperimentPage({ id }: { readonly id: string }) {
   const { api } = useApp();
+  const [picked, setPicked] = useState<readonly string[]>([]);
+  const pick = (runId: string) =>
+    setPicked((p) => (p.includes(runId) ? p.filter((x) => x !== runId) : [...p, runId].slice(-2)));
   const state = useAsync((signal) => api.call("getExperiment", { params: { id }, signal }), [id]);
   const view = state.data;
   usePageTitle(view?.experiment.name);
@@ -238,7 +284,21 @@ export function ExperimentPage({ id }: { readonly id: string }) {
         {runs.length === 0 ? (
           <Empty title="아직 실행이 없어요" />
         ) : (
-          <RunsTable runs={runs} live={live} analysis={view.analysis} />
+          <RunsTable
+            runs={runs}
+            live={live}
+            analysis={view.analysis}
+            picked={picked}
+            onPick={pick}
+          />
+        )}
+        {runs.length > 1 && (
+          <SideBySide
+            runs={runs}
+            worldId={view.experiment.recipe.worldId}
+            picked={picked}
+            onPicked={setPicked}
+          />
         )}
         <div style={{ marginTop: 16 }}>
           <AddRuns view={view} onDone={state.set} />

@@ -27,7 +27,7 @@ import type { Calibration, MetricSeries, TimelineEntry } from "@terrarium/core/s
 import type { ImportReport } from "@terrarium/core/sources/realimport";
 import type { WorldgenResult } from "@terrarium/core/sources/worldgen";
 import type { CallEffect } from "@terrarium/core/tools";
-import type { Issue } from "@terrarium/core/world";
+import type { Blueprint, Issue, RunEvent } from "@terrarium/core/world";
 
 export interface HarnessView extends HarnessInfo {
   readonly agents: readonly AgentInfo[];
@@ -141,6 +141,37 @@ export interface RunView {
   readonly telemetryName?: string;
 }
 
+/** Who did a run's work: the harness, the agent and the model behind it, as the topology view names them. */
+export interface RunWho {
+  readonly harness: string;
+  readonly agent: string;
+  readonly model?: string;
+}
+
+/**
+ * A run's record (REQ-083, ADR-0088): its events in time order, two clocks each. A run that is still going is
+ * read from the live record, and `live` says so; the window `from`/`to` cuts `events` only, `total` and the
+ * span cover the whole run so far.
+ */
+export interface RunEventsView {
+  readonly runId: string;
+  readonly live: boolean;
+  /** The world time the run is counted from, and the last moment known (the close, or the latest event). */
+  readonly origin: number;
+  readonly end: number;
+  readonly total: number;
+  readonly events: readonly RunEvent[];
+  readonly who: RunWho;
+}
+
+/** The world a run ran in, at the version it ran in (the world may have been edited since). */
+export interface RunWorldView {
+  readonly worldId: string;
+  readonly name: string;
+  readonly digest: string;
+  readonly blueprint: Blueprint;
+}
+
 export type TelemetryView = Telemetry;
 
 export interface ShareView {
@@ -164,6 +195,8 @@ export type ExperimentEvent =
       readonly tool: string;
       readonly ok: boolean;
       readonly error?: string;
+      /** What the agent passed in, for the speech bubble of the topology view (REQ-078); absent from older servers. */
+      readonly args?: Readonly<Record<string, unknown>>;
       /** What the call does to the world, and the equipment it names (REQ-050); absent from older servers. */
       readonly effect?: CallEffect;
       readonly targets?: readonly string[];
@@ -191,6 +224,7 @@ export type ActivityEvent =
       readonly t: number;
       readonly tool: string;
       readonly ok: boolean;
+      readonly args?: Readonly<Record<string, unknown>>;
       readonly effect: CallEffect;
       readonly targets: readonly string[];
     }

@@ -31,6 +31,7 @@ import {
   ImportWorldBody,
   LeaderboardQuery,
   ReportQuery,
+  RunEventsQuery,
   ScenarioQuery,
   TryConnectionBody,
   TwinQuery,
@@ -47,7 +48,9 @@ import type {
   ImportedWorld,
   LeaderboardView,
   MetaView,
+  RunEventsView,
   RunView,
+  RunWorldView,
   SavedScenario,
   SavedWorld,
   ShareView,
@@ -347,6 +350,19 @@ export const ROUTES = {
     summary: "실행 하나: 결과, 분석, 타임라인",
     produces: json,
   },
+  runEvents: {
+    method: "GET",
+    path: "/api/runs/:id/events",
+    summary: "실행의 불변 사건 기록 (세계 시간·실제 시간), 구간은 from·to",
+    query: RunEventsQuery,
+    produces: json,
+  },
+  runWorld: {
+    method: "GET",
+    path: "/api/runs/:id/world",
+    summary: "실행이 돌았던 때의 세계 (그 버전 그대로)",
+    produces: json,
+  },
   runTelemetry: {
     method: "GET",
     path: "/api/runs/:id/telemetry",
@@ -433,6 +449,8 @@ export interface Responses {
   createShare: ShareView;
   deleteShare: { readonly deleted: boolean };
   getRun: RunView;
+  runEvents: RunEventsView;
+  runWorld: RunWorldView;
   runTelemetry: TelemetryView;
   leaderboards: LeaderboardView[];
   twinDiagnoses: string;

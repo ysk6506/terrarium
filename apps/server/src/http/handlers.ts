@@ -84,6 +84,8 @@ export const HANDLERS: Handlers = {
   deleteShare: (p, i) => p.results.deleteShare(i.viewer, i.params.token as string),
 
   getRun: (p, i) => p.results.run(id(i)),
+  runEvents: (p, i) => p.results.runEvents(id(i), i.query),
+  runWorld: (p, i) => p.results.runWorld(id(i)),
   runTelemetry: (p, i) => p.results.telemetry(id(i)),
 
   leaderboards: (p, i) => p.results.leaderboards(i.query),

@@ -21,6 +21,7 @@ export {
   type RecorderCapture,
   type RecorderOptions,
 } from "./recorder";
+export { type CallStamp, legacyEvents, RunLog, stampReal } from "./run-events";
 export {
   type CallResult,
   DEFAULT_TIME,

@@ -21,7 +21,7 @@ function squeeze(text: string): number | undefined {
   return width > TEXT_W ? TEXT_W : undefined;
 }
 
-function Slab({ tile }: { readonly tile: Tile }) {
+function Slab({ tile, state }: { readonly tile: Tile; readonly state: string }) {
   const w = TILE_HALF * 2;
   const top = `0,${-TILE_D} ${w / 2},0 0,${TILE_D} ${-w / 2},0`;
   const stack = tile.group ? [10, 5] : [];
@@ -37,7 +37,7 @@ function Slab({ tile }: { readonly tile: Tile }) {
       <polygon className="slab-l" points={`${-w / 2},0 0,${TILE_D} 0,${TILE_D + 8} ${-w / 2},8`} />
       <polygon className="slab-r" points={`${w / 2},0 0,${TILE_D} 0,${TILE_D + 8} ${w / 2},8`} />
       <polygon className="slab-top" points={top} />
-      {tile.state !== "ok" && tile.state !== "impact" && <polygon className="rim" points={top} />}
+      {state !== "ok" && state !== "impact" && <polygon className="rim" points={top} />}
     </>
   );
 }
@@ -67,23 +67,31 @@ function Bar({ tile, y }: { readonly tile: Tile; readonly y: number }) {
   );
 }
 
-function TileView({ at }: { readonly at: hallTopology.Placed }) {
+/** What the agent's last call looks like on the board: a look is light, a change is dark and rings while it is new. */
+export interface Pulse {
+  readonly effect: "read" | "write";
+  /** Within three seconds of the call: the ring runs. The touched tile keeps its colour until the next call. */
+  readonly active: boolean;
+}
+
+function TileView({ at, pulse }: { readonly at: hallTopology.Placed; readonly pulse?: Pulse }) {
   const { tile } = at;
   const state = tile.touched && tile.state === "ok" ? "touch" : tile.state;
+  const kind = tile.touched && pulse ? ` touch-${pulse.effect}` : "";
   const label = 4 + TILE_D + 22;
   return (
-    <g className={`topo-tile s-${state}`} transform={`translate(${at.x},${at.y})`}>
+    <g className={`topo-tile s-${state}${kind}`} transform={`translate(${at.x},${at.y})`}>
       {tile.focus && (
         <ellipse className="pick" cx={0} cy={4} rx={TILE_HALF + 14} ry={TILE_D + 14} />
       )}
       {state !== "ok" && (
         <ellipse className="glow" cx={0} cy={6} rx={TILE_HALF * 0.82} ry={TILE_D * 0.78} />
       )}
-      {tile.touched && (
+      {tile.touched && pulse?.active && pulse.effect === "write" && (
         <ellipse className="ring" cx={0} cy={2} rx={TILE_HALF * 0.6} ry={TILE_D * 0.6} />
       )}
       <ellipse className="shadow" cx={0} cy={10} rx={TILE_HALF * 0.55} ry={TILE_D * 0.5} />
-      <Slab tile={tile} />
+      <Slab tile={tile} state={state} />
       <g transform="translate(0,-6)">
         <Glyph kind={tile.kind} group={tile.group} state={tile.state} />
       </g>
@@ -156,13 +164,14 @@ export interface BoardViewProps {
   readonly picture: string;
   /** Pipes carry drops when true; false for a person who asked for less motion. */
   readonly moving: boolean;
+  readonly pulse?: Pulse;
   readonly onPick: (tile: Tile) => void;
 }
 
 /** A tile can be pressed when it is one piece of equipment, or a group that opens. */
 const pressable = (tile: Tile): boolean => !tile.group || tile.open !== undefined;
 
-export function BoardView({ layout, picture, moving, onPick }: BoardViewProps) {
+export function BoardView({ layout, picture, moving, pulse, onPick }: BoardViewProps) {
   const uid = useId().replace(/:/g, "");
   const { width, height } = layout;
   const hit = { w: TILE_HALF * 2 + 24, h: 116 };
@@ -178,7 +187,7 @@ export function BoardView({ layout, picture, moving, onPick }: BoardViewProps) {
           <PipeView key={p.key} pipe={p} running={moving && i < RUNNING} anchor={`${uid}-p${i}`} />
         ))}
         {layout.tiles.map((t) => (
-          <TileView key={t.tile.id} at={t} />
+          <TileView key={t.tile.id} at={t} {...(pulse ? { pulse } : {})} />
         ))}
       </svg>
       <ul className="topo-hits" aria-label="타일">

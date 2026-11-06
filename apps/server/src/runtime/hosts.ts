@@ -15,6 +15,7 @@ import {
   WarmStartCache,
 } from "@terrarium/core/session";
 import type { ToolSpec } from "@terrarium/core/tools";
+import type { RunEvent } from "@terrarium/core/world";
 import { identityOf, WorldCache, type WorldIdentity } from "./world-cache";
 
 /**
@@ -32,6 +33,8 @@ export interface HostedSession {
   readonly endedBy: EndReason | undefined;
   call(tool: string, args: Record<string, unknown>): Promise<CallResult>;
   finish(reason?: EndReason): Promise<RunResult>;
+  /** The run's events after the first `count` of them, as far as the host has seen (the live topology view, REQ-083); a session on another cluster node has none. */
+  eventsSince?(count: number): readonly RunEvent[];
   /** Forget the session (after finish, or to abandon it). */
   dispose(): void;
 }
@@ -56,6 +59,7 @@ export class LocalSession implements HostedSession {
   private ended: EndReason | undefined;
   private readonly timer: ReturnType<typeof setInterval> | undefined;
   private readonly startedWall = wallClockMs();
+  private taken = 0;
 
   constructor(
     private readonly session: Session,
@@ -83,6 +87,17 @@ export class LocalSession implements HostedSession {
   /** Catch simulated time up with the wall clock (realtime policy). */
   sync(): void {
     this.markEnded(this.session.sync((wallClockMs() - this.startedWall) / 1000));
+  }
+
+  eventsSince(count: number): readonly RunEvent[] {
+    return this.session.eventsSince(count);
+  }
+
+  /** The events written since the last time they were taken: what a worker sends along with a call's answer. */
+  takeEvents(): readonly RunEvent[] {
+    const fresh = this.session.eventsSince(this.taken);
+    this.taken += fresh.length;
+    return fresh;
   }
 
   async call(tool: string, args: Record<string, unknown>): Promise<CallResult> {
@@ -133,6 +148,7 @@ export class InProcessHost implements SessionHost {
       },
       call: (tool, args) => local.call(tool, args),
       finish: (reason) => local.finish(reason),
+      eventsSince: (count) => local.eventsSince(count),
       dispose,
     };
   }

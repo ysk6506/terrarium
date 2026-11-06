@@ -12,7 +12,7 @@ import type { TryOptions } from "./connection-try";
 import { Connections } from "./connections";
 import type { PlatformContext, Viewer } from "./context";
 import { Dispatcher } from "./dispatcher";
-import { EventBus } from "./events";
+import { EventBus, RunLogs } from "./events";
 import { executeRun, type ToolGateway } from "./executor";
 import { Experiments, summarize } from "./experiments";
 import type { SessionHost } from "./hosts";
@@ -127,6 +127,7 @@ export class Platform {
   readonly experiments: Experiments;
   readonly results: Results;
   readonly events = new EventBus();
+  readonly logs = new RunLogs();
   readonly dispatcher: Dispatcher;
   readonly connections: Connections;
   readonly agentVersions: AgentVersions;
@@ -145,6 +146,7 @@ export class Platform {
       host: options.host,
       stamps,
       events: this.events,
+      logs: this.logs,
     };
     const deps = {
       store: this.ctx.store,
@@ -152,6 +154,7 @@ export class Platform {
       harnesses,
       host: options.host,
       stamps,
+      logs: this.logs,
       emit: (id: string, e: Parameters<EventBus["emit"]>[1]) => this.events.emit(id, e),
       activity: (worldId: string, e: Parameters<EventBus["emitWorld"]>[1]) =>
         this.events.emitWorld(worldId, e),

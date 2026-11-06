@@ -26,9 +26,11 @@ import {
 } from "@terrarium/core/experiments";
 import { randomToken } from "@terrarium/core/kernel";
 import type { EndReason } from "@terrarium/core/oracle";
+import { stampReal } from "@terrarium/core/session";
 import { callEffect, callTargets } from "@terrarium/core/tools";
 import type { BlueprintCache } from "./blueprint-cache";
 import type { HarnessDirectory } from "./context";
+import type { RunLogs } from "./events";
 import type { HostedSession, SessionHost } from "./hosts";
 import type { Stamps } from "./ids";
 
@@ -50,6 +52,8 @@ export interface ExecutorDeps {
   readonly host: SessionHost;
   readonly stamps: Stamps;
   readonly gateway?: ToolGateway;
+  /** The record of the runs going now, for the live topology view (REQ-083). */
+  readonly logs?: RunLogs;
   /** World versions read lately; without it every run reads its own. */
   readonly blueprints?: BlueprintCache;
   readonly emit: (experimentId: string, event: ExperimentEvent) => void;
@@ -185,7 +189,7 @@ async function openSession(
 const WHO_WAIT_MS = 1000;
 
 /** Experiment, harness, agent and model of a run, as the live view of a world names them. */
-async function whoIs(experiment: Experiment, harness: HarnessPort): Promise<ActivityWho> {
+export async function whoIs(experiment: Experiment, harness: HarnessPort): Promise<ActivityWho> {
   const { agentId } = experiment.recipe;
   let timer: ReturnType<typeof setTimeout> | undefined;
   const wait = new Promise<readonly []>((resolve) => {
@@ -215,6 +219,11 @@ function endpointFor(deps: ExecutorDeps, run: RunRecord, session: HostedSession,
     call: async (name: string, args: Record<string, unknown>): Promise<ToolCallOutcome> => {
       const r = await session.call(name, args);
       counter.calls++;
+      deps.logs?.record(run.id, session.eventsSince?.(deps.logs.count(run.id)) ?? [], {
+        t: r.t,
+        tool: name,
+        real: deps.stamps.now(),
+      });
       const effect = callEffect(name, args);
       const targets = callTargets(name, args);
       deps.emit(run.experimentId, {
@@ -222,6 +231,7 @@ function endpointFor(deps: ExecutorDeps, run: RunRecord, session: HostedSession,
         runId: run.id,
         t: r.t,
         tool: name,
+        args,
         ok: r.ok,
         ...(r.error ? { error: r.error } : {}),
         effect,
@@ -232,6 +242,7 @@ function endpointFor(deps: ExecutorDeps, run: RunRecord, session: HostedSession,
         runId: run.id,
         t: r.t,
         tool: name,
+        args,
         ok: r.ok,
         effect,
         targets,
@@ -266,7 +277,11 @@ async function conclude(deps: ExecutorDeps, e: Ending): Promise<RunRecord> {
   if (e.stopped === "shutdown") return failWith("서버가 멈춰 실행이 중단됐어요");
   if (e.outcome.status === "error" && e.calls === 0 && !e.session.endedBy)
     return failWith(`에이전트가 시작하지 못했어요: ${e.outcome.message ?? "원인 미상"}`);
-  const result = await e.session.finish(endReasonOf(e.session, e.outcome, e.timedOut));
+  const finished = await e.session.finish(endReasonOf(e.session, e.outcome, e.timedOut));
+  const calls = deps.logs?.callsOf(e.run.id) ?? [];
+  const result = finished.events
+    ? { ...finished, events: stampReal(finished.events, calls, e.run.startedAt) }
+    : finished;
   e.session.dispose();
   return save(deps, applyRunEvent(e.run, { type: "complete", at, result, harness: e.info }));
 }
@@ -287,6 +302,8 @@ export async function executeRun(
   const session = await openSession(deps, run, experiment);
   if (typeof session === "string") return fail(session);
   const worldId = experiment.recipe.worldId;
+  deps.logs?.open(run.id, run.startedAt);
+  deps.logs?.record(run.id, session.eventsSince?.(0) ?? []);
   deps.activity?.(worldId, { type: "start", runId: run.id, who: await who });
   const { endpoint, counter } = endpointFor(deps, run, session, worldId);
   const exposed =
@@ -333,6 +350,7 @@ export async function executeRun(
   } finally {
     w.stop();
     exposed?.close();
+    deps.logs?.close(run.id);
     deps.activity?.(worldId, { type: "end", runId: run.id });
   }
 }

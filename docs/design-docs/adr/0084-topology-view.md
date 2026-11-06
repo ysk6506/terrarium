@@ -8,6 +8,10 @@ enforced_by:
   - packages/core/src/topology/impact.test.ts
   - packages/core/src/topology/layers.test.ts
   - tests/spec/topology-scale.test.ts
+  - tests/spec/run-replay.test.ts
+  - packages/core/src/session/run-events.test.ts
+  - apps/server/src/runtime/run-events.test.ts
+  - apps/web/src/logic/topology/replay.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 7c82ea921010282d

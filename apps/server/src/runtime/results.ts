@@ -23,15 +23,22 @@ import type {
   CreateShareRequest,
   LeaderboardQueryParams,
   LeaderboardView,
+  RunEventsQueryParams,
+  RunEventsView,
   RunView,
+  RunWho,
+  RunWorldView,
   ShareView,
   TwinQueryParams,
 } from "@terrarium/core/contract";
 import { UnavailableError } from "@terrarium/core/contract";
 import type { Experiment, RunRecord } from "@terrarium/core/experiments";
 import { NotFoundError, randomToken } from "@terrarium/core/kernel";
+import { legacyEvents } from "@terrarium/core/session";
 import type { ImportReport } from "@terrarium/core/sources/realimport";
+import { spanOf } from "@terrarium/core/topology";
 import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
+import { whoIs } from "./executor";
 import type { Experiments } from "./experiments";
 
 export type ReportFormat = "html" | "md" | "text";
@@ -73,6 +80,53 @@ export class Results {
       timeline: run.result?.timeline ?? [],
       hasTelemetry: Boolean(run.harness?.traceId && adapter),
       ...(adapter ? { telemetryName: adapter.name } : {}),
+    };
+  }
+
+  /** Who did the run's work, named as the speech bubble of the topology view names them. */
+  private async whoOf(run: RunRecord): Promise<RunWho> {
+    const experiment = await this.experiments.get(run.experimentId);
+    const harness = this.ctx.harnesses.get(experiment.recipe.harnessId);
+    if (!harness) return { harness: experiment.recipe.harnessId, agent: experiment.recipe.agentId };
+    const who = await whoIs(experiment, harness);
+    const model = run.harness?.model ?? who.model;
+    return { harness: who.harness, agent: who.agent, ...(model ? { model } : {}) };
+  }
+
+  /** The run's events (REQ-083): from its result once it is over, from the live record while it goes. */
+  async runEvents(id: string, window: RunEventsQueryParams): Promise<RunEventsView> {
+    const run = must(await this.ctx.store.getRun(id), `실행 ${id}`);
+    const live = this.ctx.logs.get(id);
+    const all = run.result?.events ?? (run.result ? legacyEvents(run.result) : (live ?? []));
+    const span = spanOf(all);
+    const from = window.from ?? Number.NEGATIVE_INFINITY;
+    const to = window.to ?? Number.POSITIVE_INFINITY;
+    return {
+      runId: id,
+      live: run.result === undefined && live !== undefined,
+      origin: span.origin,
+      end: span.end,
+      total: all.length,
+      events: all.filter((e) => e.t >= from && e.t <= to),
+      who: await this.whoOf(run),
+    };
+  }
+
+  /** The world as the run saw it: the version the experiment recorded, not the one that is saved now. */
+  async runWorld(id: string): Promise<RunWorldView> {
+    const run = must(await this.ctx.store.getRun(id), `실행 ${id}`);
+    const experiment = await this.experiments.get(run.experimentId);
+    const { worldId } = experiment.recipe;
+    const blueprint = must(
+      await this.ctx.store.worldVersion(worldId, experiment.snapshot.worldDigest),
+      "실행이 돌았던 세계 버전",
+    );
+    const world = await this.ctx.store.getWorld(worldId);
+    return {
+      worldId,
+      name: world?.name ?? worldId,
+      digest: experiment.snapshot.worldDigest,
+      blueprint,
     };
   }
 

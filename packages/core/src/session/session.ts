@@ -44,10 +44,12 @@ import {
   type Blueprint,
   blueprintDigest,
   type PreparedWorld,
+  type RunEvent,
   World,
   type WorldEvent,
 } from "@terrarium/core/world";
 import { DEFAULT_RECORDER, MetricRecorder, type MetricSeries, RECORDED_METRICS } from "./recorder";
+import { RunLog } from "./run-events";
 import { buildTimeline, type TimelineEntry } from "./timeline";
 import type { WarmStartCache } from "./warm";
 
@@ -105,6 +107,8 @@ export interface RunResult {
   readonly diagnosis?: Diagnosis;
   readonly diagnosedAt?: number;
   readonly timeline: readonly TimelineEntry[];
+  /** The run as an append-only list of events, two clocks each (REQ-083); absent from runs saved before it existed. */
+  readonly events?: readonly RunEvent[];
   readonly series: readonly MetricSeries[];
   readonly digests: { readonly world: string; readonly scenario: string; readonly oracle: string };
   readonly seed: number;
@@ -131,6 +135,7 @@ export class Session {
   private readonly ctx: ToolContext;
   private readonly time: TimePolicy;
   private readonly calls: ToolCallRecord[] = [];
+  private readonly log: RunLog;
   private state: SessionStatus = "ready";
   private task: AgentTask | undefined;
   private diagnosis: Diagnosis | undefined;
@@ -144,6 +149,7 @@ export class Session {
     world: World,
   ) {
     this.world = world;
+    this.log = new RunLog(world, (id) => world.index.find(id)?.name ?? id);
     this.physics = new Physics(world);
     this.time = config.time ?? DEFAULT_TIME;
     this.toolbox = new Toolbox([...new Set([...config.tools, ...ALWAYS_TOOLS])]);
@@ -212,6 +218,7 @@ export class Session {
     }
     this.task = this.runner.agentTask;
     this.state = "running";
+    this.log.agentStart(this.task.startedAt, this.scenarioStart);
     return this.task;
   }
 
@@ -276,12 +283,14 @@ export class Session {
       ...(result.error ? { error: result.error } : {}),
       effects,
     });
+    this.log.call(this.calls[this.calls.length - 1] as ToolCallRecord);
     if (tool === "submit_diagnosis" && result.ok) {
       this.end("diagnosed");
       return { ...result, t, ended: "diagnosed" };
     }
     if (this.time.kind === "lockstep" && tool !== "wait")
       this.advance(Math.min(this.time.secondsPerCall, this.remaining()));
+    this.log.flush();
     if (this.remaining() <= 0) {
       this.end("time_limit");
       return { ...result, t, ended: "time_limit" };
@@ -295,6 +304,7 @@ export class Session {
     const target = (this.task as AgentTask).startedAt + elapsedSeconds * this.time.speed;
     const behind = target - this.world.time();
     if (behind > 0) this.advance(Math.min(behind, this.remaining()));
+    this.log.flush();
     if (this.remaining() > 0) return undefined;
     this.end("time_limit");
     return "time_limit";
@@ -305,6 +315,11 @@ export class Session {
     if (this.state === "ready") throw new ConflictError("the run has not started");
     if (this.state === "running") this.end(reason);
     return this.result as RunResult;
+  }
+
+  /** The run's events after the first `count` of them: what a host shows live (REQ-083). */
+  eventsSince(count: number): readonly RunEvent[] {
+    return this.log.since(count);
   }
 
   /** Simulated seconds left before the task's time limit. */
@@ -341,8 +356,20 @@ export class Session {
         ? { diagnosis: this.diagnosis, diagnosedAt: this.diagnosedAt as number }
         : {}),
     };
+    const scored = score(outcome);
+    this.log.close({
+      closedAt: endedAt,
+      gradedAt: this.world.time(),
+      reason,
+      diagnosed: this.diagnosis !== undefined,
+      total: scored.total,
+      passed: scored.passed,
+      rootCause: this.config.scenario.expectations.flatMap((e) =>
+        e.kind === "diagnosis" ? e.rootCause : [],
+      ),
+    });
     this.result = {
-      score: score(outcome),
+      score: scored,
       endReason: reason,
       task,
       toolCalls: this.calls,
@@ -357,6 +384,7 @@ export class Session {
         this.scenarioStart,
         (id) => this.world.index.find(id)?.name ?? id,
       ),
+      events: this.log.events,
       series: this.keySeries(),
       digests: {
         world: this.worldDigest(),

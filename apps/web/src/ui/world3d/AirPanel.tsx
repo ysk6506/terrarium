@@ -7,6 +7,7 @@
 import type { builder } from "../../logic";
 import { celsius, hallAir, world3d } from "../../logic";
 import { Button } from "../kit";
+import { FramesBar } from "../replay/FramesBar";
 
 type Airflow = world3d.Airflow;
 type AirView = world3d.AirView;
@@ -202,20 +203,7 @@ export function AirPanel(p: AirPanelProps) {
           </div>
           {frames.length > 1 && (
             <div className="air-block">
-              <label className="air-time">
-                <span>
-                  {world3d.AIR_WORDS.time} <b>{hallAir.frameText(frames[p.frame]?.t ?? 0)}</b>
-                </span>
-                <input
-                  type="range"
-                  min={0}
-                  max={frames.length - 1}
-                  step={1}
-                  value={p.frame}
-                  aria-label={world3d.AIR_WORDS.scrub}
-                  onChange={(e) => p.onFrame(Number(e.target.value))}
-                />
-              </label>
+              <FramesBar frames={frames} at={p.frame} onAt={p.onFrame} />
             </div>
           )}
         </>

@@ -10,8 +10,7 @@ import {
   impactWhen,
   type Tile,
 } from "@terrarium/core/topology";
-import type { builder } from "../../logic";
-import { hallTopology, world3d } from "../../logic";
+import { hallTopology } from "../../logic";
 import { Button } from "../kit";
 
 const W = hallTopology.TOPO_WORDS;
@@ -88,31 +87,5 @@ export function PickedCard(props: {
         </Button>
       )}
     </section>
-  );
-}
-
-/** The time bar of the "돌려 보기" run: the same one the airflow map has, so both show the same moment. */
-export function TimeBar(props: {
-  readonly frames: builder.Preview["frames"];
-  readonly at: number;
-  readonly onAt: (i: number) => void;
-}) {
-  const { frames, at } = props;
-  const last = frames.length - 1;
-  if (last < 1) return null;
-  return (
-    <label className="topo-card topo-time">
-      <span>{W.time}</span>
-      <input
-        type="range"
-        min={0}
-        max={last}
-        value={at}
-        aria-label={W.scrub}
-        aria-valuetext={world3d.frameText(frames[at]?.t ?? 0)}
-        onChange={(e) => props.onAt(Number(e.target.value))}
-      />
-      <output>{world3d.frameText(frames[at]?.t ?? 0)}</output>
-    </label>
   );
 }

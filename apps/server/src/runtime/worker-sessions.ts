@@ -56,7 +56,13 @@ export class WorkerSessions {
         (reason) => this.send({ kind: "ended", id, reason }),
       );
       this.sessions.set(id, local);
-      this.send({ kind: "opened", id, task: local.task, specs: local.specs });
+      this.send({
+        kind: "opened",
+        id,
+        task: local.task,
+        specs: local.specs,
+        events: local.takeEvents(),
+      });
     } catch (err) {
       this.send({ kind: "open_failed", id, error: errorOf(err) });
     }
@@ -71,14 +77,16 @@ export class WorkerSessions {
     }
     try {
       const session = this.sessionOf(msg.id);
-      if (msg.kind === "call")
+      if (msg.kind === "call") {
+        const result = await session.call(msg.tool, msg.args);
         this.send({
           kind: "called",
           id: msg.id,
           seq: msg.seq,
-          result: await session.call(msg.tool, msg.args),
+          result,
+          events: session.takeEvents(),
         });
-      else
+      } else
         this.send({
           kind: "finished",
           id: msg.id,
