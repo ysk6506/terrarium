@@ -1,7 +1,8 @@
 ---
 title: ADR-0116 진짜 호스트 섞기 — 세계의 서버 몇 대는 실제 리눅스가 답한다
 kind: decision
-status: active
+status: superseded
+superseded_by: 0117-deep-os-simulation.md
 last_verified: 2026-11-06
 enforced_by:
   - none
