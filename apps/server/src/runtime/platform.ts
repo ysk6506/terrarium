@@ -22,6 +22,9 @@ import { Models, type ModelsOptions } from "./models";
 import { Presets } from "./presets";
 import { Results } from "./results";
 import { Scenarios } from "./scenarios";
+import { Titles } from "./titles";
+import { watchStore } from "./watched-store";
+import { WorldBoard } from "./world-board";
 import { Worlds } from "./worlds";
 
 export interface PlatformOptions {
@@ -145,14 +148,20 @@ export class Platform {
   readonly presets: Presets;
   /** The model APIs the workspace registered for later (REQ-099, ADR-0119). */
   readonly models: Models;
+  /** The world list in popularity order with hearts (REQ-101, ADR-0122). */
+  readonly board: WorldBoard;
+  /** What people earned (REQ-101, ADR-0122). */
+  readonly titles: Titles;
   private readonly ctx: PlatformContext;
 
   constructor(private readonly options: PlatformOptions) {
     const stamps = options.stamps ?? SYSTEM_STAMPS;
     const harnesses = connectionsOf(options, stamps);
     this.connections = harnesses;
+    // Titles and popularity are counted from records; the watcher says when a write made them stale.
+    const watched = watchStore(options.adapters.store);
     this.ctx = {
-      store: options.adapters.store,
+      store: watched.store,
       catalog: new Catalog(),
       harnesses,
       sources: options.adapters.sources,
@@ -186,7 +195,9 @@ export class Platform {
         : { ...DEFAULT_LIMITS, ...options.limits },
       (id) => void this.announce(id),
     );
+    this.titles = new Titles(this.ctx, watched.version);
     this.worlds = new Worlds(this.ctx);
+    this.board = new WorldBoard(this.ctx, this.worlds, this.titles);
     this.scenarios = new Scenarios(this.ctx);
     this.agentVersions = new AgentVersions(this.ctx);
     this.presets = new Presets(this.ctx);
@@ -201,6 +212,7 @@ export class Platform {
       this.scenarios,
       this.dispatcher,
       this.agentVersions,
+      this.titles,
     );
     this.results = new Results(this.ctx, this.experiments);
   }

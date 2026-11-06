@@ -7,6 +7,7 @@
 import type { ToolResult, ToolSpec } from "@terrarium/core/tools";
 import type { Blueprint, EntityKind } from "@terrarium/core/world";
 import type { AgentHistory } from "./agent-version";
+import type { CalibrationMark, TitleAward, WorldLike } from "./community";
 import type { Journal, JournalEntry } from "./journal";
 import type { LlmModelRecord } from "./llm-models";
 import type { Experiment, HarnessRunInfo, RunRecord, ScenarioRecord, WorldRecord } from "./model";
@@ -270,4 +271,16 @@ export interface ExperimentStore {
   /** Every registered model API, in the order they were registered. */
   listModels(): Promise<LlmModelRecord[]>;
   deleteModel(id: string): Promise<boolean>;
+  /** Put a heart on a world; asking twice leaves one (REQ-101). */
+  putLike(like: WorldLike): Promise<void>;
+  /** Take the heart back. False when there was none. */
+  deleteLike(worldId: string, user: string): Promise<boolean>;
+  listLikes(): Promise<WorldLike[]>;
+  /** Remember that a scenario was checked (one row per scenario version). */
+  putCalibrationMark(mark: CalibrationMark): Promise<void>;
+  listCalibrationMarks(): Promise<CalibrationMark[]>;
+  /** Titles people earned, everyone's, oldest first. */
+  listTitleAwards(): Promise<TitleAward[]>;
+  /** Keep new awards; one already there is left as it was. */
+  putTitleAwards(awards: readonly TitleAward[]): Promise<void>;
 }

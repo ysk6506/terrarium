@@ -50,6 +50,8 @@ export const GenerateWorldBody = z.union([
       name: NameSchema.optional(),
       shape: ShapeSpecSchema,
       template: z.boolean().optional(),
+      /** The template this was made from (REQ-101), so its popularity can count the start. */
+      startedFrom: IdSchema.optional(),
     })
     .strict(),
 ]);

@@ -24,7 +24,7 @@ function useStart(forkOf?: string, scenarioId?: string, worldId?: string) {
   const { api } = useApp();
   return useAsync(
     async (signal): Promise<Start> => {
-      const worlds = await api.call("listWorlds", { signal });
+      const worlds = await api.call("listWorlds", { query: { sort: "new" }, signal });
       if (forkOf) {
         const parent = await api.call("getExperiment", { params: { id: forkOf }, signal });
         return { worlds, parent, draft: experiment.draftFrom(parent.experiment) };

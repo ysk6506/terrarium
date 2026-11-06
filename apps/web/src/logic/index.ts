@@ -213,6 +213,7 @@ export {
   themeAttribute,
 } from "./settings";
 export * as shellOutside from "./shell-outside";
+export { earnedDay, NO_TITLES, SHOWN_TITLES, titleHint, titleRow } from "./titles";
 export * as toolPicker from "./tool-picker";
 export { HUMAN_WORDS, TOOL_WORDS } from "./tool-words";
 export * as hallTopology from "./topology";
@@ -229,6 +230,22 @@ export {
   tourMode,
 } from "./tour";
 export { DEFAULT_QUESTION, type Fact, traceAdvice, tryDetail, tryFacts } from "./try-talk";
+export {
+  boardEmpty,
+  DEFAULT_WORLD_SORT,
+  type EmptyBoard,
+  evidenceHint,
+  evidenceLine,
+  likeLabel,
+  quietPopular,
+  readWorldSort,
+  SORT_NOTES,
+  saveWorldSort,
+  settledLike,
+  toggledLike,
+  WORLD_SORT_KEY,
+  WORLD_SORT_OPTIONS,
+} from "./world-board";
 export {
   CARDS,
   type Chip,

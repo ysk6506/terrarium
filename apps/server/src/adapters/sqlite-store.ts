@@ -9,6 +9,7 @@ import path from "node:path";
 import { DatabaseSync, type StatementSync } from "node:sqlite";
 import {
   type AgentHistory,
+  type CalibrationMark,
   type ConnectionRecord,
   type Experiment,
   type ExperimentFilter,
@@ -23,6 +24,8 @@ import {
   type RunRecord,
   type ScenarioRecord,
   type ShareRecord,
+  type TitleAward,
+  type WorldLike,
   type WorldRecord,
   type WorldSummary,
 } from "@terrarium/core/experiments";
@@ -66,6 +69,13 @@ CREATE TABLE IF NOT EXISTS presets (
 CREATE INDEX IF NOT EXISTS presets_owner ON presets (owner, kind);
 CREATE TABLE IF NOT EXISTS llm_models (
   id TEXT PRIMARY KEY, created_at TEXT NOT NULL, record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS world_likes (
+  world_id TEXT NOT NULL, user_name TEXT NOT NULL, at TEXT NOT NULL, PRIMARY KEY (world_id, user_name));
+CREATE TABLE IF NOT EXISTS calibration_marks (
+  scenario_id TEXT NOT NULL, digest TEXT NOT NULL, at TEXT NOT NULL, clean INTEGER NOT NULL,
+  PRIMARY KEY (scenario_id, digest));
+CREATE TABLE IF NOT EXISTS title_awards (
+  user_name TEXT NOT NULL, key TEXT NOT NULL, earned_at TEXT NOT NULL, PRIMARY KEY (user_name, key));
 `;
 
 type Row = Record<string, unknown>;
@@ -406,5 +416,69 @@ export class SqliteStore implements ExperimentStore {
 
   async deleteModel(id: string): Promise<boolean> {
     return Number(this.sql("DELETE FROM llm_models WHERE id = ?").run(id).changes) > 0;
+  }
+
+  async putLike(like: WorldLike): Promise<void> {
+    this.sql("INSERT OR IGNORE INTO world_likes (world_id, user_name, at) VALUES (?, ?, ?)").run(
+      like.worldId,
+      like.user,
+      like.at,
+    );
+  }
+
+  async deleteLike(worldId: string, user: string): Promise<boolean> {
+    return (
+      Number(
+        this.sql("DELETE FROM world_likes WHERE world_id = ? AND user_name = ?").run(worldId, user)
+          .changes,
+      ) > 0
+    );
+  }
+
+  async listLikes(): Promise<WorldLike[]> {
+    const rows = this.sql(
+      "SELECT world_id, user_name, at FROM world_likes ORDER BY at, world_id, user_name",
+    ).all() as Row[];
+    return rows.map((r) => ({
+      worldId: String(r.world_id),
+      user: String(r.user_name),
+      at: String(r.at),
+    }));
+  }
+
+  async putCalibrationMark(mark: CalibrationMark): Promise<void> {
+    this.sql(
+      "INSERT OR REPLACE INTO calibration_marks (scenario_id, digest, at, clean) VALUES (?, ?, ?, ?)",
+    ).run(mark.scenarioId, mark.digest, mark.at, mark.clean ? 1 : 0);
+  }
+
+  async listCalibrationMarks(): Promise<CalibrationMark[]> {
+    const rows = this.sql(
+      "SELECT scenario_id, digest, at, clean FROM calibration_marks ORDER BY at, scenario_id",
+    ).all() as Row[];
+    return rows.map((r) => ({
+      scenarioId: String(r.scenario_id),
+      digest: String(r.digest),
+      at: String(r.at),
+      clean: Number(r.clean) === 1,
+    }));
+  }
+
+  async listTitleAwards(): Promise<TitleAward[]> {
+    const rows = this.sql(
+      "SELECT user_name, key, earned_at FROM title_awards ORDER BY earned_at, user_name, key",
+    ).all() as Row[];
+    return rows.map((r) => ({
+      user: String(r.user_name),
+      key: String(r.key),
+      earnedAt: String(r.earned_at),
+    }));
+  }
+
+  async putTitleAwards(awards: readonly TitleAward[]): Promise<void> {
+    for (const a of awards)
+      this.sql(
+        "INSERT OR IGNORE INTO title_awards (user_name, key, earned_at) VALUES (?, ?, ?)",
+      ).run(a.user, a.key, a.earnedAt);
   }
 }

@@ -1,6 +1,7 @@
 /** An ExperimentStore in memory, for tests and for running without a database. Values are copied in and out. */
 import type { Blueprint, EntityKind } from "@terrarium/core/world";
 import type { AgentHistory } from "./agent-version";
+import type { CalibrationMark, TitleAward, WorldLike } from "./community";
 import type { Journal, JournalEntry } from "./journal";
 import type { LlmModelRecord } from "./llm-models";
 import type { Experiment, RunRecord, ScenarioRecord, WorldRecord } from "./model";
@@ -74,6 +75,9 @@ export class MemoryStore implements ExperimentStore {
   private readonly journals = new Map<string, { entries: JournalEntry[]; lastAt?: string }>();
   private readonly presets = new Map<string, PresetRecord>();
   private readonly models = new Map<string, LlmModelRecord>();
+  private readonly likes = new Map<string, WorldLike>();
+  private readonly marks = new Map<string, CalibrationMark>();
+  private readonly awards = new Map<string, TitleAward>();
 
   async putWorld(world: WorldRecord): Promise<void> {
     this.worlds.set(world.id, copy(world));
@@ -272,5 +276,37 @@ export class MemoryStore implements ExperimentStore {
 
   async deleteModel(id: string): Promise<boolean> {
     return this.models.delete(id);
+  }
+
+  async putLike(like: WorldLike): Promise<void> {
+    const key = `${like.worldId}\u0000${like.user}`;
+    if (!this.likes.has(key)) this.likes.set(key, copy(like));
+  }
+
+  async deleteLike(worldId: string, user: string): Promise<boolean> {
+    return this.likes.delete(`${worldId}\u0000${user}`);
+  }
+
+  async listLikes(): Promise<WorldLike[]> {
+    return [...this.likes.values()].map(copy);
+  }
+
+  async putCalibrationMark(mark: CalibrationMark): Promise<void> {
+    this.marks.set(`${mark.scenarioId}\u0000${mark.digest}`, copy(mark));
+  }
+
+  async listCalibrationMarks(): Promise<CalibrationMark[]> {
+    return [...this.marks.values()].map(copy);
+  }
+
+  async listTitleAwards(): Promise<TitleAward[]> {
+    return [...this.awards.values()].sort((a, b) => a.earnedAt.localeCompare(b.earnedAt)).map(copy);
+  }
+
+  async putTitleAwards(awards: readonly TitleAward[]): Promise<void> {
+    for (const a of awards) {
+      const key = `${a.user}\u0000${a.key}`;
+      if (!this.awards.has(key)) this.awards.set(key, copy(a));
+    }
   }
 }

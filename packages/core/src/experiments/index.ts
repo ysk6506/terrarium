@@ -19,6 +19,17 @@ export {
   snapshotOf,
   type VersionPatch,
 } from "./agent-version";
+export type { CalibrationMark, TitleAward, WorldLike } from "./community";
+export {
+  type Competition,
+  type CompetitionEntry,
+  type CompetitionResult,
+  type CompetitionsPort,
+  MemoryCompetitions,
+  medalCountsOf,
+  resultsOf,
+  tierOfUser,
+} from "./competitions";
 export {
   type Journal,
   type JournalEntry,
@@ -61,6 +72,18 @@ export {
   type WorldOrigin,
   type WorldRecord,
 } from "./model";
+export {
+  ACTIVE_DAYS,
+  POPULAR_DAYS,
+  type PopularExperiment,
+  type PopularityInput,
+  type PopularWorld,
+  sortWorlds,
+  WORLD_SORTS,
+  type WorldSort,
+  type WorldStats,
+  worldStats,
+} from "./popularity";
 export type {
   AgentInfo,
   AgentInventory,

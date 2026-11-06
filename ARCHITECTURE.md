@@ -5,13 +5,13 @@ status: active
 last_verified: 2026-11-06
 covers:
   - harness/config/architecture.yaml
-covers_hash: a4591a23da8b69a2
+covers_hash: 100f23e4b1e92e97
 verification_log:
-  - "2026-10-29: server.cluster 단위 행과 fastify 허용 단위를 architecture.yaml과 대조했다 (ADR-0032)"
   - "2026-10-30: 2026-10-30: server.adapters 행(커넥터·봉인), runtime 행(연결 레지스트리·버전), http 행(식별 자리), 외부 라이브러리 줄(MCP SDK는 server.mcp와 server.adapters)을 architecture.yaml과 대조했다 (ADR-0042~0044)"
   - "2026-11-04: architecture.yaml 대조: 시험 전용 의존성 ajv와 ajv-formats가 tests.spec 단위에만 허용된 것(ADR-0057)을 외부 라이브러리 줄에, 파사드 단위 설명에 SNMP·BACnet을 반영했다"
   - "2026-11-05: architecture.yaml에 core.topology 단위(kernel, catalog, world, physics)가 늘었다. 단위 표와 그림에 한 줄씩 더했다"
   - "2026-11-06: LLM API 등록"
+  - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
 ---
 # 아키텍처
 
@@ -40,6 +40,7 @@ contract ─► analysis ─► experiments ─► oracle ─► scenario ─►
 |---|---|---|
 | `kernel` | ID, 오류, `Clock`/`Rng` 포트, 유일한 비결정 입구 `entropy.ts` | 없음 |
 | `llm` | 사람이 등록한 모델 API(LiteLLM·OpenAI 호환·Claude 호환)를 부르는 얇은 클라이언트: 모델 목록과 완성 한 번, `fetch` 주입, 연결 확인. 스트리밍·툴 호출은 없다(ADR-0119) | 없음 |
+| `ranking` | 대회 메달 컷과 순위, 메달 수로 정하는 계급. 순수 함수, 아직 화면에 없다(ADR-0122) | 없음 |
 | `spatial` | 위치 프로퍼티 → 좌표계. 순수 기하 | kernel |
 | `catalog` | 장비 **모델**별 사양(데이터) | kernel |
 | `world` | 청사진(부지~장비), 엔티티 상태, 이벤트 로그, 스냅샷 | kernel, spatial, catalog |
@@ -52,7 +53,7 @@ contract ─► analysis ─► experiments ─► oracle ─► scenario ─►
 | `oracle` | 시나리오 정답 기준 채점 | kernel, world, scenario |
 | `sources` / `sources/worldgen` / `sources/realimport` | 세계를 만드는 쪽. worldgen과 realimport는 서로 모른다 | kernel, spatial, catalog, world (+부모 sources) |
 | `session` | 실행 중인 시뮬레이션 하나를 조립 | 위의 시뮬레이터 단위 전부 |
-| `experiments` | 레시피·계보·수명주기·스케줄러 정책·포트 | kernel, catalog, world, tools, scenario, oracle, session (ADR-0022) |
+| `experiments` | 레시피·계보·수명주기·스케줄러 정책·포트, 세계 인기 점수와 정렬, 좋아요·칭호 기록의 모양, 대회 포트(ADR-0122) | kernel, catalog, world, tools, scenario, oracle, session, ranking (ADR-0022, ADR-0122) |
 | `analysis` | 결과 분석, 리더보드, 공유 렌더링 | kernel, world, tools, scenario, oracle, session, experiments |
 | `contract` | HTTP API 계약(zod) | core 전부 (ADR-0022) |
 

@@ -145,7 +145,7 @@ function stepBack(flow: Flow, back: Step | undefined, leave: () => void): void {
 }
 
 /** Build the world the spec comes to, and keep what came of it. */
-function useMake(spec: ShapeSpec) {
+function useMake(spec: ShapeSpec, startedFrom?: string) {
   const { api, toast } = useApp();
   const [busy, setBusy] = useState(false);
   const [built, setBuilt] = useState<Built>();
@@ -154,7 +154,9 @@ function useMake(spec: ShapeSpec) {
     setBusy(true);
     setError(undefined);
     try {
-      const saved = await api.call("generateWorld", { body: { shape: spec } });
+      const saved = await api.call("generateWorld", {
+        body: { shape: spec, ...(startedFrom ? { startedFrom } : {}) },
+      });
       const world = saved.world;
       const counts = (world.provenance?.counts ?? {}) as ShapedResult["counts"];
       setBuilt({ worldId: world.id, counts });
@@ -199,12 +201,15 @@ export function ShapeScreen({
   start,
   fromTemplate,
   startAt,
+  startedFrom,
   onLeave,
 }: {
   readonly start?: ShapeSpec;
   readonly fromTemplate: boolean;
   /** A template built "그대로" opens on the last screen. */
   readonly startAt?: Step;
+  /** The template this world starts from, kept with the world so its popularity can count the start (REQ-101). */
+  readonly startedFrom?: string;
   readonly onLeave: () => void;
 }) {
   const flow = useShapeFlow(start, fromTemplate, startAt);
@@ -212,7 +217,7 @@ export function ShapeScreen({
   const view = useMemo(() => shapeView(spec), [spec]);
   const plan = useMemo(() => planShape(spec), [spec]);
   const problem = shapeProblem(spec);
-  const { busy, built, error, make } = useMake(spec);
+  const { busy, built, error, make } = useMake(spec, startedFrom);
   const at = STEPS.indexOf(flow.step);
   const next = NEXT[flow.step];
   const back = BACK[flow.step];

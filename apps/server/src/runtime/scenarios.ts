@@ -202,10 +202,19 @@ export class Scenarios {
       right !== undefined,
     );
     // the two questions about services and tools run two short sessions here (REQ-088)
-    return {
-      ...withProbes(judged, { blueprint: world.blueprint, scenario: scenario.doc, seed }),
-      issues,
-    };
+    const checked = withProbes(judged, {
+      blueprint: world.blueprint,
+      scenario: scenario.doc,
+      seed,
+    });
+    // the check is remembered: a scenario that comes back with nothing to fix counts toward 꼼꼼한 출제자 (REQ-101)
+    await this.ctx.store.putCalibrationMark({
+      scenarioId: id,
+      digest: scenario.digest,
+      at: this.ctx.stamps.now(),
+      clean: checked.runs.length > 0 && checked.warnings.length === 0,
+    });
+    return { ...checked, issues };
   }
 
   private async baseline(
