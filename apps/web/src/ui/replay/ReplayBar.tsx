@@ -9,6 +9,7 @@ import { clockText, MARK_LABELS } from "@terrarium/core/topology";
 import type { KeyboardEvent, PointerEvent } from "react";
 import { useRef } from "react";
 import { hallTopology } from "../../logic";
+import { SIGNAL_CSS } from "../signal-colors";
 import { REPLAY_CSS } from "./style";
 
 const W = hallTopology.TOPO_WORDS;
@@ -117,7 +118,7 @@ export function ReplayBar(props: ReplayBarProps) {
   };
   return (
     <div className="rb">
-      <style>{REPLAY_CSS}</style>
+      <style>{SIGNAL_CSS + REPLAY_CSS}</style>
       <button
         type="button"
         className="rb-play"

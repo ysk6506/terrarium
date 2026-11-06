@@ -1,7 +1,7 @@
 /**
  * The style of the time bar (REQ-078 step 2, ADR-0084 item 8), kept as a string the bar puts in a `<style>`: the bar is
  * used by the run page, the result page, the side-by-side view and the builder, and comes down with the first of them.
- * Colours are the app's tokens and the topology's (`--topo-alarm`); the marks are the board's own colours.
+ * Colours are the app's tokens and the signal colours (`--topo-alarm`, from `signal-colors.ts`); the marks are the board's own colours.
  */
 export const REPLAY_CSS = `
 .rb {
@@ -98,7 +98,7 @@ export const REPLAY_CSS = `
 }
 
 .m-alarm {
-  background: var(--topo-alarm, #e9962f);
+  background: var(--topo-alarm);
 }
 
 .m-read {
@@ -118,7 +118,7 @@ export const REPLAY_CSS = `
 }
 
 .t-alarm {
-  --mark: var(--topo-alarm, #e9962f);
+  --mark: var(--topo-alarm);
 }
 
 .t-read {
@@ -196,15 +196,8 @@ export const REPLAY_CSS = `
   height: 520px;
 }
 
-/* Two boards share the width, so the speech bubble drops under the boxes instead of squeezing between them. */
-.replay-pair .topo-top {
-  flex-wrap: wrap;
-  top: 44px;
-}
-
+/* Two boards share the width: the boxes wrap, and the speech bubble hangs under them at the left. */
 .replay-pair .topo-agent-slot {
-  order: 3;
-  flex-basis: 100%;
   justify-content: flex-start;
 }
 
