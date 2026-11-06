@@ -127,6 +127,21 @@ export const NET_BLOCK_SPECS: readonly BlockSpec[] = [
     ],
     ["pdu"],
   ),
+  block(
+    "policy_set",
+    "네트워크 정책 배포하기",
+    "네트워크 정책 하나를 차단(deny)으로 배포하거나 허용(allow)으로 되돌려요. 잘못 배포하면 그 서비스와 호출하는 서비스 사이가 끊겨요.",
+    [
+      {
+        name: "target",
+        label: "네트워크 정책",
+        kind: "entity",
+        kinds: ["network_policy"],
+      },
+      flag("deny", "차단으로 배포", "끄면 허용(allow)으로 배포해요."),
+    ],
+    ["network_policy"],
+  ),
 ];
 
 /** The block types above, for the runner and the validator to pick them out. */
@@ -140,4 +155,5 @@ export const MISTAKE_OF_BLOCK: Readonly<Record<string, MistakeType>> = {
   bgp_admin: "bgp_neighbor_shutdown",
   route_del: "route_missing",
   outlet_set: "outlet_off",
+  policy_set: "network_policy_deny",
 };

@@ -121,6 +121,7 @@ describe("mistakes are named so a diagnosis can name them [REQ-068]", () => {
       "bgp_neighbor_shutdown",
       "route_missing",
       "outlet_off",
+      "network_policy_deny",
     ]);
     for (const m of MISTAKE_SPECS) {
       expect(m.label.length).toBeGreaterThan(2);

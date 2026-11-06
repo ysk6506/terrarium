@@ -12,13 +12,13 @@ covers:
   - packages/core/src/session/human-line.ts
   - packages/core/src/session/tool-pick.ts
   - apps/server/src/runtime/escalations.ts
-covers_hash: 1e2e8464616dbcf2
+covers_hash: 7512523b374e9df2
 verification_log:
-  - "2026-11-06: 새 문서: tools/docs.ts·runbook.ts, scenario/tool-scope.ts·sop.ts, session/human.ts·human-line.ts·tool-pick.ts, server escalations.ts를 읽고 규칙·표·상태 흐름을 적었다 (REQ-080~082, ADR-0087, ADR-0105)"
   - "2026-11-06: 2a·2b 합치기"
   - "2026-11-06: 툴 40개와 고장 44가지의 필요한 툴 표를 catalog와 FAULT_TOOLS에 맞췄다 (REQ-095)"
   - "2026-11-06: 저장해 두기가 서버 보관으로 바뀐 것(툴 묶음·절차서·지시문)을 적고 정직한 한계를 고쳤다 (ADR-0112)"
   - "2026-11-06: 2c 보완 합치기"
+  - "2026-11-06: 툴 49개, 고장 51가지와 실수 7가지의 표를 catalog와 FAULT_TOOLS에 맞췄다 (REQ-097)"
 ---
 # 툴 범위, 에스컬레이션, 절차서 (REQ-080~082, ADR-0087, ADR-0105)
 
@@ -34,14 +34,14 @@ verification_log:
 
 ### 영역 카드와 현실 수준 꼬리표
 
-툴 40개는 일곱 영역 카드에 나뉜다(`TOOL_DOCS`의 `area`). 카드는 접혀 있고 펼치면 세부 툴이 나온다. 맨 위에 검색 한 칸이 있다(툴 이름, 제목, 영역, 흔함·드묾·없음으로 찾는다).
+툴 49개는 일곱 영역 카드에 나뉜다(`TOOL_DOCS`의 `area`). 카드는 접혀 있고 펼치면 세부 툴이 나온다. 맨 위에 검색 한 칸이 있다(툴 이름, 제목, 영역, 흔함·드묾·없음으로 찾는다).
 
 | 영역 | 툴 |
 |---|---|
 | 서버 | `redfish_request`, `power_server`, `run_command` |
 | 전원 | `reset_breaker`, `snmp_request` |
 | 냉방 | `bacnet_request`, `set_cooling_setpoint`, `restart_cooling_unit` |
-| 네트워크 | `network_cli`, `eapi_request`, `nxapi_request` |
+| 네트워크 | `network_cli`, `eapi_request`, `nxapi_request`, `sdn_status`, `sdn_sync`, `sdn_failover`, `overlay_trace`, `evpn_sessions`, `policy_list`, `policy_revert`, `ingress_status`, `ingress_restart` |
 | 가상화 | `vcenter_request`, `vrops_request`, `migrate_vm`, `failover_service`, `restart_service` |
 | 관측 | `list_alarms`, `list_entities`, `get_entity`, `get_topology`, `get_impact`, `query_metrics`, `facility_status`, `list_services`, `service_status`, `db_status`, `storage_status`, `events_since` |
 | 조치 | `wait`, `submit_diagnosis`, `ask_human`, `search_runbooks`, `escalate`, `db_promote`, `db_failover`, `db_restore`, `storage_path_switch`, 작업 티켓 셋 |
@@ -126,7 +126,7 @@ verification_log:
 
 ### 고장마다 풀려면 필요한 툴 (코어의 `FAULT_TOOLS`)
 
-고장 44가지와 설정 실수 6가지가 모두 풀거나 피해를 줄이는 툴을 적었다(없는 고장은 시험이 실패한다). 목록의 아무 툴 하나면 되고 첫 번째가 "필요한 것만 켜기"가 고르는 툴이다. 표는 `controls.ts`의 `FAULT_RESPONSES`와 제어 가능 요소표에서 나온 것과 시험으로 맞춰 둔다.
+고장 51가지와 설정 실수 7가지가 모두 풀거나 피해를 줄이는 툴을 적었다(없는 고장은 시험이 실패한다). 목록의 아무 툴 하나면 되고 첫 번째가 "필요한 것만 켜기"가 고르는 툴이다. 표는 `controls.ts`의 `FAULT_RESPONSES`와 제어 가능 요소표에서 나온 것과 시험으로 맞춰 둔다.
 
 | 고장 | 에이전트가 | 필요한 툴 (아무거나 하나) |
 |---|---|---|
@@ -173,12 +173,20 @@ verification_log:
 | 스토리지 경로 끊김 (`storage_path_cut`) | 피해를 줄여요 | `storage_path_switch` |
 | 스토리지 컨트롤러 고장 (`storage_controller_failure`) | 피해를 줄여요 | `storage_path_switch` |
 | 분산 스토리지 노드 상실 (`storage_node_lost`) | 진단하고 사람을 불러요 | — |
+| SDN 컨트롤러 다운 (`sdn_controller_down`) | 피해를 줄여요 | `sdn_failover` |
+| 컨트롤러 설정 동기화 실패 (`sdn_sync_failed`) | 고쳐요 | `sdn_sync` |
+| VXLAN 터널 끊김 (`vxlan_tunnel_down`) | 진단하고 사람을 불러요 | — |
+| EVPN 세션 플랩 (`evpn_session_flap`) | 고쳐요 | `sdn_sync` |
+| 인그레스 컨트롤러 다운 (`ingress_controller_down`) | 고쳐요 | `ingress_restart` |
+| CNI 플러그인 고장 (`cni_plugin_failure`) | 고쳐요 | `run_command` |
+| 가상 방화벽 과부하 (`nfv_firewall_overload`) | 진단하고 사람을 불러요 | — |
 | 포트 VLAN 오설정 (`port_vlan_mismatch`) | 고쳐요 | `network_cli`, `eapi_request`, `nxapi_request` |
 | 포트 꺼짐 (`port_shutdown`) | 고쳐요 | `network_cli`, `eapi_request`, `nxapi_request`, `snmp_request` |
 | VLAN 인터페이스 꺼짐 (`svi_shutdown`) | 고쳐요 | `network_cli`, `eapi_request`, `nxapi_request` |
 | BGP 이웃 꺼짐 (`bgp_neighbor_shutdown`) | 고쳐요 | `network_cli`, `eapi_request`, `nxapi_request` |
 | 경로 지워짐 (`route_missing`) | 고쳐요 | `network_cli`, `eapi_request`, `nxapi_request` |
 | PDU 콘센트 꺼짐 (`outlet_off`) | 고쳐요 | `redfish_request` |
+| 잘못된 네트워크 정책 배포 (`network_policy_deny`) | 고쳐요 | `policy_revert` |
 
 "진단하고 사람을 불러요"는 원격 툴로 고칠 수 없는 고장이다. 필요한 툴이 없으므로 어떤 묶음에서도 범위 안이다(진단하고 사람을 부르는 길은 `escalate`가 맡는다, ADR-0098·0100).
 

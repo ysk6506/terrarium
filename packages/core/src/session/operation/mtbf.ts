@@ -38,6 +38,14 @@ export const MTBF_TABLE: readonly Mtbf[] = [
   { type: "dns_failure", kinds: ["server", "vm"], hours: 6_000 },
   { type: "kernel_panic", kinds: ["server", "vm"], hours: 5_000 },
   { type: "cert_expired", kinds: ["server", "vm"], hours: 8_000 },
+  // SDN 오버레이와 클라우드 네이티브 네트워크 (REQ-097)
+  { type: "sdn_controller_down", kinds: ["sdn_controller"], hours: 4_000 },
+  { type: "sdn_sync_failed", kinds: ["vtep"], hours: 3_000 },
+  { type: "vxlan_tunnel_down", kinds: ["vtep"], hours: 8_000 },
+  { type: "evpn_session_flap", kinds: ["vtep"], hours: 5_000 },
+  { type: "ingress_controller_down", kinds: ["ingress"], hours: 2_400 },
+  { type: "cni_plugin_failure", kinds: ["cni"], hours: 3_600 },
+  { type: "nfv_firewall_overload", kinds: ["nfv_function"], hours: 2_000 },
 ];
 
 /**

@@ -53,6 +53,18 @@ export interface ChipBuild {
   /** The storage pool the storage choice builds, and the database the database choice builds. */
   readonly pool?: PoolBuild;
   readonly database?: DatabaseBuild;
+  /** The overlay and cloud-native network the network choice builds on the leaf-spine (REQ-097). */
+  readonly overlay?: OverlayBuild;
+}
+
+/** The SDN overlay a network chip builds: a controller pair, a VTEP per leaf, a segment per service, and for cloud native the pod network. */
+export interface OverlayBuild {
+  /** SDN controllers: one active, the rest standby. */
+  readonly controllers: number;
+  /** A virtual firewall in the way of every service (a network function). */
+  readonly nfv: boolean;
+  /** A CNI plugin per node, a network policy and an ingress per service. */
+  readonly cloudNative: boolean;
 }
 
 /** The storage pool a chip builds (REQ-095): two controllers and two paths, or nodes holding copies. */
@@ -132,8 +144,38 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       slows: ["link_down", "port_vlan_mismatch", "port_shutdown", "route_missing"],
       costM: 90,
     }),
-    dotted("network", "net-sdn", "net-leaf-spine", 150),
-    dotted("network", "net-cloud-native", "net-leaf-spine", 150),
+    c("network", "net-sdn", {
+      build: { spines: 2, overlay: { controllers: 2, nfv: true, cloudNative: false } },
+      stops: ["switch_failure", "vxlan_tunnel_down"],
+      slows: [
+        "link_down",
+        "port_vlan_mismatch",
+        "port_shutdown",
+        "route_missing",
+        "sdn_controller_down",
+        "sdn_sync_failed",
+        "evpn_session_flap",
+        "nfv_firewall_overload",
+      ],
+      costM: 150,
+    }),
+    c("network", "net-cloud-native", {
+      build: { spines: 2, overlay: { controllers: 2, nfv: true, cloudNative: true } },
+      stops: ["switch_failure", "vxlan_tunnel_down", "ingress_controller_down"],
+      slows: [
+        "link_down",
+        "port_vlan_mismatch",
+        "port_shutdown",
+        "route_missing",
+        "sdn_controller_down",
+        "sdn_sync_failed",
+        "evpn_session_flap",
+        "nfv_firewall_overload",
+        "cni_plugin_failure",
+        "network_policy_deny",
+      ],
+      costM: 150,
+    }),
     c("network", "net-ai-fabric", {
       build: { spines: 2 },
       stops: [],

@@ -237,6 +237,33 @@ const Controller = ({ state }: GlyphProps) => (
   </>
 );
 
+/** A VTEP: a small box with the tunnel's two ends over it. */
+const Vtep = ({ state }: GlyphProps) => (
+  <>
+    <Box x={0} y={8} w={16} d={8} z={6} tone="steel" />
+    <Box x={-6} y={0} w={4} d={4} z={10} tone="blue" />
+    <Box x={6} y={0} w={4} d={4} z={10} tone="blue" />
+    <Led x={-4} y={4} state={state} />
+  </>
+);
+
+/** An overlay segment, a policy, a plug-in, a door: a flat plate with a light. */
+const Segment = ({ state }: GlyphProps) => (
+  <>
+    <Box x={0} y={8} w={30} d={8} z={4} tone="olive" />
+    <Box x={0} y={0} w={22} d={6} z={4} tone="olive" />
+    <Led x={-10} y={-4} state={state} />
+  </>
+);
+
+const Door = ({ state }: GlyphProps) => (
+  <>
+    <Box x={-8} y={6} w={6} d={10} z={18} tone="steel" />
+    <Box x={8} y={6} w={6} d={10} z={18} tone="steel" />
+    <Led x={0} y={-4} state={state} />
+  </>
+);
+
 type Glyph = (p: GlyphProps) => React.ReactNode;
 
 const SINGLE: Readonly<Record<TopoKind, Glyph>> = {
@@ -260,6 +287,13 @@ const SINGLE: Readonly<Record<TopoKind, Glyph>> = {
   db_instance: DbInstance,
   storage_pool: Pool,
   storage_controller: Controller,
+  sdn_controller: Controller,
+  vtep: Vtep,
+  overlay_segment: Segment,
+  nfv_function: Door,
+  cni: Vm,
+  network_policy: Segment,
+  ingress: Door,
 };
 
 /** Many of a kind: racks stand in a row, servers in a stack; the rest are the single glyph on a stack of bases. */

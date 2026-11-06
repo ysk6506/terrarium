@@ -51,6 +51,14 @@ export const CAMPUS_ENTITY_IDS = [
   "stor-d1",
   "stor-d2",
   "stor-d3",
+  "sdn-c1",
+  "sdn-c2",
+  "vtep-c",
+  "seg-c",
+  "nfv-c",
+  "cni-c",
+  "np-c",
+  "ingress-c",
 ] as const;
 
 export function campusBlueprint(): Blueprint {
@@ -169,8 +177,36 @@ export function campusBlueprint(): Blueprint {
           },
         ),
     ),
+    // the SDN overlay and the cloud-native network (REQ-097): a controller pair, a VTEP on the leaf, a segment the portal
+    // stands on, a virtual firewall, a plug-in, a policy and an ingress
+    { id: "sdn-c1", kind: "sdn_controller", name: "SDN 컨트롤러 C1", props: { role: "active" } },
+    { id: "sdn-c2", kind: "sdn_controller", name: "SDN 컨트롤러 C2", props: { role: "standby" } },
+    { id: "vtep-c", kind: "vtep", name: "VTEP tor-a", props: {} },
+    { id: "seg-c", kind: "overlay_segment", name: "포털 세그먼트", props: { vni: 20000 } },
+    { id: "nfv-c", kind: "nfv_function", name: "포털 방화벽", props: {} },
+    { id: "cni-c", kind: "cni", name: "CNI vm-web", props: {} },
+    {
+      id: "np-c",
+      kind: "network_policy",
+      name: "포털 정책",
+      props: { ns: "portal", rule: "allow" },
+    },
+    { id: "ingress-c", kind: "ingress", name: "포털 인그레스", props: {} },
   ];
   const links: Link[] = [
+    link("hosted_on", "sdn-c1", "srv-l1"),
+    link("hosted_on", "sdn-c2", "srv-t1"),
+    link("controls", "sdn-c1", "tor-a"),
+    link("controls", "sdn-c2", "tor-a"),
+    link("hosted_on", "vtep-c", "tor-a"),
+    link("member_of", "vtep-c", "seg-c"),
+    link("depends_on", "svc-portal", "seg-c"),
+    link("hosted_on", "nfv-c", "srv-t1"),
+    link("depends_on", "svc-portal", "nfv-c"),
+    link("hosted_on", "cni-c", "srv-l1"),
+    link("applies_to", "np-c", "svc-portal"),
+    link("hosted_on", "ingress-c", "srv-t1"),
+    link("depends_on", "svc-portal", "ingress-c"),
     link("member_of", "db-c1", "db-c"),
     link("member_of", "db-c2", "db-c"),
     link("hosted_on", "db-c1", "srv-l1"),

@@ -26,6 +26,7 @@ import { osAlarms } from "./os-alarms";
 import { plantAlarms } from "./plant-alarms";
 import { effectiveUtilAt, type Pass, passOf } from "./power";
 import { faultParam, hasFault } from "./power-supply";
+import { sdnAlarms } from "./sdn-alarms";
 import { serviceAlarms } from "./services";
 
 export const INLET_WARNING_C = 27;
@@ -288,6 +289,7 @@ export function desiredAlarms(world: World): Draft[] {
   netAlarms(world, out);
   osAlarms(world, out);
   dbAlarms(world, out);
+  sdnAlarms(world, out);
   serviceAlarms(world, out);
   return out;
 }

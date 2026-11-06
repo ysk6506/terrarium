@@ -17,6 +17,7 @@ import {
 } from "@terrarium/core/world";
 import { DB_HANDLERS } from "./handlers-db";
 import { OPS_HANDLERS, type OpsPort } from "./handlers-ops";
+import { SDN_HANDLERS } from "./handlers-sdn";
 import { SERVICE_HANDLERS } from "./handlers-service";
 import { type Runbook, searchRunbooks } from "./runbook";
 
@@ -453,6 +454,7 @@ export const HANDLERS: Readonly<Record<string, Handler>> = {
   ...SERVICE_HANDLERS,
   ...OPS_HANDLERS,
   ...DB_HANDLERS,
+  ...SDN_HANDLERS,
   list_alarms: listAlarms,
   list_entities: listEntities,
   get_entity: getEntity,

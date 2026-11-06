@@ -4,7 +4,7 @@ import { chipById } from "@terrarium/core/world";
 import { type ChipCard, rows } from "./card-types";
 
 /** The faults a modelled choice has, named as the core names them: what it stops, then what it only slows (REQ-095). */
-function faultsOf(id: string): string {
+export function faultsOf(id: string): string {
   const chip = chipById(id);
   return chip ? [...chip.stops, ...chip.slows].map(problemName).join(" · ") : "";
 }

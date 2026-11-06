@@ -28,7 +28,15 @@ export type VirtualKind =
   | "db_cluster"
   | "db_instance"
   | "storage_pool"
-  | "storage_controller";
+  | "storage_controller"
+  /** SDN overlay and cloud-native network layers (REQ-097, ADR-0107 item 6). */
+  | "sdn_controller"
+  | "vtep"
+  | "overlay_segment"
+  | "nfv_function"
+  | "cni"
+  | "network_policy"
+  | "ingress";
 export type EntityKind =
   | SpaceKind
   | "rack"
@@ -64,6 +72,13 @@ export const ENTITY_KINDS: readonly EntityKind[] = [
   "db_instance",
   "storage_pool",
   "storage_controller",
+  "sdn_controller",
+  "vtep",
+  "overlay_segment",
+  "nfv_function",
+  "cni",
+  "network_policy",
+  "ingress",
 ]; // prettier-ignore
 
 export const MODELLED_KINDS: ReadonlySet<EntityKind> = new Set([
@@ -107,6 +122,13 @@ export const ALLOWED_PARENTS: Readonly<Record<EntityKind, readonly EntityKind[]>
   db_instance: [],
   storage_pool: [],
   storage_controller: [],
+  sdn_controller: [],
+  vtep: [],
+  overlay_segment: [],
+  nfv_function: [],
+  cni: [],
+  network_policy: [],
+  ingress: [],
 };
 
 /** Where something is, relative to its parent. Units are metres; racks use units (U). */
@@ -153,6 +175,13 @@ export const PLACEMENT_OF: Readonly<Record<EntityKind, Placement["type"] | undef
   db_instance: undefined,
   storage_pool: undefined,
   storage_controller: undefined,
+  sdn_controller: undefined,
+  vtep: undefined,
+  overlay_segment: undefined,
+  nfv_function: undefined,
+  cni: undefined,
+  network_policy: undefined,
+  ingress: undefined,
 };
 
 export type PropValue = string | number | boolean;
@@ -184,7 +213,11 @@ export type LinkKind =
   /** A service needs this database or storage pool (REQ-095): it reads its state, not its host. */
   | "depends_on"
   /** A database instance runs on this VM or server; a storage controller sits in this storage array. */
-  | "hosted_on";
+  | "hosted_on"
+  /** An SDN controller manages this switch's VTEP (REQ-097). */
+  | "controls"
+  /** A network policy applies to this service (REQ-097). */
+  | "applies_to";
 
 /** Allowed (from kinds, to kinds) per link kind. `from` depends on `to`. */
 export const LINK_RULES: Readonly<
@@ -209,16 +242,32 @@ export const LINK_RULES: Readonly<
   cooling: { from: ["rack", "cooling_unit", "cdu"], to: ["cooling_unit", "cdu", "chiller"] },
   runs_on: { from: ["vm"], to: ["server"] },
   member_of: {
-    from: ["server", "db_instance", "storage_controller"],
-    to: ["cluster", "db_cluster", "storage_pool"],
+    from: ["server", "db_instance", "storage_controller", "vtep"],
+    to: ["cluster", "db_cluster", "storage_pool", "overlay_segment"],
   },
   managed_by: { from: ["cluster"], to: ["vcenter"] },
   stored_on: { from: ["vm", "db_instance"], to: ["datastore", "storage_pool"] },
   backed_by: { from: ["datastore", "storage_pool"], to: ["storage"] },
   service_on: { from: ["service"], to: ["vm", "server", "storage"] },
   service_via: { from: ["service"], to: ["switch"] },
-  depends_on: { from: ["service"], to: ["db_cluster", "db_instance", "storage_pool"] },
-  hosted_on: { from: ["db_instance", "storage_controller"], to: ["vm", "server", "storage"] },
+  depends_on: {
+    from: ["service"],
+    to: ["db_cluster", "db_instance", "storage_pool", "overlay_segment", "ingress", "nfv_function"],
+  },
+  hosted_on: {
+    from: [
+      "db_instance",
+      "storage_controller",
+      "sdn_controller",
+      "vtep",
+      "nfv_function",
+      "cni",
+      "ingress",
+    ],
+    to: ["vm", "server", "storage", "switch"],
+  },
+  controls: { from: ["sdn_controller"], to: ["switch"] },
+  applies_to: { from: ["network_policy"], to: ["service"] },
 };
 
 export interface Link {
@@ -252,13 +301,23 @@ export const isFloorStandingKind = (kind: EntityKind): kind is FloorStandingKind
 export const isPlantKind = (kind: EntityKind): kind is PlantKind =>
   kind === "chiller" || kind === "generator";
 
-export const isVirtualKind = (kind: EntityKind): kind is VirtualKind =>
-  kind === "vcenter" ||
-  kind === "cluster" ||
-  kind === "vm" ||
-  kind === "datastore" ||
-  kind === "service" ||
-  kind === "db_cluster" ||
-  kind === "db_instance" ||
-  kind === "storage_pool" ||
-  kind === "storage_controller";
+const VIRTUAL_KINDS: ReadonlySet<EntityKind> = new Set<EntityKind>([
+  "vcenter",
+  "cluster",
+  "vm",
+  "datastore",
+  "service",
+  "db_cluster",
+  "db_instance",
+  "storage_pool",
+  "storage_controller",
+  "sdn_controller",
+  "vtep",
+  "overlay_segment",
+  "nfv_function",
+  "cni",
+  "network_policy",
+  "ingress",
+]);
+
+export const isVirtualKind = (kind: EntityKind): kind is VirtualKind => VIRTUAL_KINDS.has(kind);

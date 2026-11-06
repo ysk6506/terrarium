@@ -40,7 +40,14 @@ export type TopoKind =
   | "db_cluster"
   | "db_instance"
   | "storage_pool"
-  | "storage_controller";
+  | "storage_controller"
+  | "sdn_controller"
+  | "vtep"
+  | "overlay_segment"
+  | "nfv_function"
+  | "cni"
+  | "network_policy"
+  | "ingress";
 
 /** What the board reads of a world: the part of `WorldReader` that tells what is, and how it is doing. */
 export interface TopologySource {

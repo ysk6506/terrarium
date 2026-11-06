@@ -81,12 +81,20 @@ export const FAULT_TOOLS: Readonly<Record<ScopeKey, ToolNeed>> = {
   storage_path_cut: limit("storage_path_switch"),
   storage_controller_failure: limit("storage_path_switch"),
   storage_node_lost: NONE,
+  sdn_controller_down: limit("sdn_failover"),
+  sdn_sync_failed: fix("sdn_sync"),
+  vxlan_tunnel_down: NONE,
+  evpn_session_flap: fix("sdn_sync"),
+  ingress_controller_down: fix("ingress_restart"),
+  cni_plugin_failure: fix("run_command"),
+  nfv_firewall_overload: NONE,
   port_vlan_mismatch: fix(...NET),
   port_shutdown: fix(...NET, "snmp_request"),
   svi_shutdown: fix(...NET),
   bgp_neighbor_shutdown: fix(...NET),
   route_missing: fix(...NET),
   outlet_off: fix("redfish_request"),
+  network_policy_deny: fix("policy_revert"),
 };
 
 /** Tools every investigation starts with; "필요한 것만 켜기" always includes them. */

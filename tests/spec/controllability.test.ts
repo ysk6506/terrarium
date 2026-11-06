@@ -25,6 +25,7 @@ import { describe, expect, test } from "vitest";
 import { dbLab } from "../../packages/core/src/world/test-support/db-lab";
 import { networkLab } from "../../packages/core/src/world/test-support/net-lab";
 import { campusBlueprint } from "../../packages/core/src/world/test-support/sample-campus";
+import { sdnLab } from "../../packages/core/src/world/test-support/sdn-lab";
 import { serviceLab } from "../../packages/core/src/world/test-support/service-lab";
 
 const rowOf = (id: string) => CONTROL_ROWS.find((r) => r.id === id) as ControlRow;
@@ -70,12 +71,17 @@ describe("the list of what can be controlled is made of real things [REQ-069]", 
       "db.restore",
       "firmware.update",
       "host.act",
+      "ingress.restart",
       "link.admin",
       "load.set",
       "net.set",
       "outdoor.set",
       "outlet.set",
+      "policy.revert",
+      "policy.set",
       "power.set",
+      "sdn.failover",
+      "sdn.sync",
       "service.failover",
       "setpoint.set",
       "storage.path_switch",
@@ -531,6 +537,43 @@ Object.assign(DRIVES, {
     args: { controller: "ctl-b" },
     changed: happened("storage.path_switch", "ctl-b"),
     action: { kind: "path_switch", target: "ctl-b" },
+  },
+  "host.cni|run_command": {
+    world: () => sdnLab({ cloudNative: true }),
+    tool: "run_command",
+    args: shell("systemctl restart calico-node"),
+    changed: hostAct("vm-web", "restart"),
+    action: { kind: "process_restart", target: "vm-web" },
+  },
+  "sdn.sync|sdn_sync": {
+    world: () => sdnLab(),
+    tool: "sdn_sync",
+    args: { switch: "tor-a" },
+    changed: happened("sdn.sync", "tor-a"),
+    action: { kind: "sdn_sync", target: "tor-a" },
+  },
+  "sdn.failover|sdn_failover": {
+    world: () => sdnLab(),
+    tool: "sdn_failover",
+    args: { controller: "sdn-ctl-2" },
+    changed: happened("sdn.failover", "sdn-ctl-2"),
+    action: { kind: "sdn_failover", target: "sdn-ctl-2" },
+  },
+  "policy.revert|policy_revert": {
+    world: () => sdnLab({ cloudNative: true }),
+    tool: "policy_revert",
+    args: { policy: "np-license" },
+    before: (w) =>
+      void w.apply({ type: "policy.set", target: "np-license", rule: "deny" }, "scenario"),
+    changed: happened("policy.revert", "np-license"),
+    action: { kind: "policy_revert", target: "np-license" },
+  },
+  "ingress.restart|ingress_restart": {
+    world: () => sdnLab({ cloudNative: true }),
+    tool: "ingress_restart",
+    args: { ingress: "ingress-portal" },
+    changed: happened("ingress.restart", "ingress-portal"),
+    action: { kind: "ingress_restart", target: "ingress-portal" },
   },
 } satisfies Record<string, Drive>);
 

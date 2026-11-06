@@ -6,6 +6,7 @@
 import type { EntityKind } from "./blueprint";
 import { DB_FAULT_SPECS } from "./faults-db";
 import { OS_FAULT_SPECS } from "./faults-os";
+import { SDN_FAULT_SPECS, SDN_MISTAKE_SPEC } from "./faults-sdn";
 
 export type FaultType =
   | "cooling_unit_failure"
@@ -51,7 +52,14 @@ export type FaultType =
   | "db_backup_corrupt"
   | "storage_path_cut"
   | "storage_controller_failure"
-  | "storage_node_lost";
+  | "storage_node_lost"
+  | "sdn_controller_down"
+  | "sdn_sync_failed"
+  | "vxlan_tunnel_down"
+  | "evpn_session_flap"
+  | "ingress_controller_down"
+  | "cni_plugin_failure"
+  | "nfv_firewall_overload";
 
 /**
  * Things people do wrong, as opposed to things that break: a port put in the wrong VLAN, a gateway interface left
@@ -65,7 +73,8 @@ export type MistakeType =
   | "svi_shutdown"
   | "bgp_neighbor_shutdown"
   | "route_missing"
-  | "outlet_off";
+  | "outlet_off"
+  | "network_policy_deny";
 
 export interface FaultParamSpec {
   readonly name: string;
@@ -342,6 +351,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   },
   ...OS_FAULT_SPECS,
   ...DB_FAULT_SPECS,
+  ...SDN_FAULT_SPECS,
 ];
 
 /** The mistakes a scenario can make with its configuration blocks, named so a diagnosis can name them. */
@@ -402,6 +412,7 @@ export const MISTAKE_SPECS: ReadonlyArray<
     status: "supported",
     domain: "facility",
   },
+  SDN_MISTAKE_SPEC,
 ];
 
 export function faultSpec(type: FaultType): FaultSpec {

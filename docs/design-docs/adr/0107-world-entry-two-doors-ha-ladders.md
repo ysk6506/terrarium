@@ -10,6 +10,10 @@ enforced_by:
   - tests/spec/db-physics.test.ts
   - tests/spec/db-worldgen.test.ts
   - tests/spec/db-scenarios.test.ts
+  - tests/spec/sdn-physics.test.ts
+  - tests/spec/sdn-worldgen.test.ts
+  - tests/spec/sdn-scenarios.test.ts
+  - tests/spec/sdn-generated.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 3941f276858239b0

@@ -51,6 +51,11 @@ export interface RecoveryPath {
     | "db_promote"
     | "storage_path_switch"
     | "db_restore"
+    | "sdn_failover"
+    | "sdn_sync"
+    | "policy_revert"
+    | "ingress_restart"
+    | "cni_restart"
     | "escalate";
   /** In plain Korean: how it works, or what is missing. */
   readonly note: string;
@@ -142,6 +147,68 @@ function databasePath(config: Config): RecoveryPath | undefined {
     : undefined;
 }
 
+const SDN_SETTLE_SECONDS = 150;
+
+/** The ids of what a tool lists under `key`, for the tools of the overlay that answer with a list. */
+const listed = (s: Session, tool: string, key: string): Array<Record<string, unknown>> => {
+  const r = s.call(tool, {});
+  return r.ok ? ((r.data as Record<string, Array<Record<string, unknown>>>)[key] ?? []) : [];
+};
+
+/**
+ * The ways back that are the overlay's and the cloud-native layer's own (REQ-097): move to the standby controller, push the
+ * configuration to every switch again, put a policy back, restart the ingress, restart the plug-in of a node. Returns the
+ * first that brings every service back.
+ */
+function overlayPath(config: Config): RecoveryPath | undefined {
+  const tries: Array<[RecoveryPath["how"], string, (s: Session) => void]> = [
+    [
+      "sdn_sync",
+      "스위치에 설정을 다시 밀면 돌아와요",
+      (s) => {
+        for (const v of listed(s, "evpn_sessions", "sessions"))
+          s.call("sdn_sync", { switch: String(v.switch) });
+      },
+    ],
+    ["sdn_failover", "스탠바이 컨트롤러로 넘기면 돌아와요", (s) => void s.call("sdn_failover", {})],
+    [
+      "policy_revert",
+      "네트워크 정책을 되돌리면 돌아와요",
+      (s) => {
+        for (const p of listed(s, "policy_list", "policies"))
+          if (p.blocking === true) s.call("policy_revert", { policy: String(p.id) });
+      },
+    ],
+    [
+      "ingress_restart",
+      "인그레스를 다시 시작하면 돌아와요",
+      (s) => void s.call("ingress_restart", {}),
+    ],
+    [
+      "cni_restart",
+      "노드의 CNI 플러그인을 다시 시작하면 돌아와요",
+      (s) => {
+        const r = s.call("list_entities", { kind: "cni" });
+        const ids = r.ok ? (r.data as Array<{ id: string }>).map((e) => e.id) : [];
+        for (const id of ids) {
+          const host = (
+            s.call("get_entity", { id }).data as { connections?: Record<string, string[]> }
+          )?.connections?.hosted_on_to?.[0];
+          if (host) s.call("run_command", { host, cmd: "systemctl restart calico-node" });
+        }
+      },
+    ],
+  ];
+  for (const [how, note, act] of tries) {
+    const s = open(config, ALL_TOOLS);
+    if (troubled(s).length === 0) return undefined;
+    act(s);
+    s.call("wait", { seconds: SDN_SETTLE_SECONDS });
+    if (troubled(s).length === 0) return { applicable: true, ok: true, how, note };
+  }
+  return undefined;
+}
+
 /**
  * Hand each domain that has a fault to its team and wait out the longest lead time (ADR-0100 item 5): the way back
  * for a fault that nothing the agent's own tools do can clear. Not ok when the task's time limit comes first.
@@ -204,6 +271,7 @@ export function recoveryPath(config: Config): RecoveryPath {
   }
   return (
     databasePath(config) ??
+    overlayPath(config) ??
     handOver(config) ?? {
       applicable: true,
       ok: false,

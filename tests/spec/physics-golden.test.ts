@@ -19,6 +19,7 @@ import {
 import { type Blueprint, FAULT_SPECS, type FaultType, World } from "@terrarium/core/world";
 import { describe, expect, test } from "vitest";
 import { sampleBlueprint } from "../../packages/core/src/world/test-support/sample";
+import { sdnLab } from "../../packages/core/src/world/test-support/sdn-lab";
 
 const FILE = new URL("./physics-golden.json", import.meta.url);
 const catalog = new Catalog();
@@ -57,6 +58,7 @@ const worlds: ReadonlyArray<readonly [string, () => Blueprint]> = [
         detail: 0.3,
       }).blueprint,
   ],
+  ["sdn overlay", () => sdnLab({ cloudNative: true })],
 ];
 
 const stateHash = (world: World): string =>

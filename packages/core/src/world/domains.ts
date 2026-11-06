@@ -38,7 +38,12 @@ export const DOMAINS: readonly DomainInfo[] = [
     team: "서버 팀",
     covers: "서버 하드웨어(메모리, 팬, 전원 공급 장치, BMC)",
   },
-  { id: "network", label: "네트워크", team: "네트워크 팀", covers: "스위치, 링크, VLAN, 라우팅" },
+  {
+    id: "network",
+    label: "네트워크",
+    team: "네트워크 팀",
+    covers: "스위치, 링크, VLAN, 라우팅, SDN 오버레이(VXLAN·EVPN), 인그레스, 네트워크 정책",
+  },
   {
     id: "storage",
     label: "스토리지",
@@ -118,6 +123,13 @@ export const FAULT_DOMAIN: Readonly<Record<FaultType, Domain>> = {
   storage_path_cut: "storage",
   storage_controller_failure: "storage",
   storage_node_lost: "storage",
+  sdn_controller_down: "network",
+  sdn_sync_failed: "network",
+  vxlan_tunnel_down: "network",
+  evpn_session_flap: "network",
+  ingress_controller_down: "network",
+  cni_plugin_failure: "network",
+  nfv_firewall_overload: "network",
 };
 
 /** The domain of the mistakes people make (a wrong VLAN, a shut port, a PDU outlet switched off). */
@@ -128,6 +140,7 @@ export const MISTAKE_DOMAIN: Readonly<Record<MistakeType, Domain>> = {
   bgp_neighbor_shutdown: "network",
   route_missing: "network",
   outlet_off: "facility",
+  network_policy_deny: "network",
 };
 
 export function faultDomain(type: FaultType | MistakeType): Domain {

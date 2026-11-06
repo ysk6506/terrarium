@@ -24,5 +24,6 @@ export {
   updateDevices,
 } from "./power";
 export { faultParam } from "./power-supply";
+export { updateSdn } from "./sdn";
 export { updateServices } from "./services";
 export { roomHeatW, updateThermal } from "./thermal";

@@ -54,8 +54,8 @@ describe("서비스부터 세계 생성 [REQ-094]", () => {
   });
 
   it("흉내 낼 수 없는 칸은 가까운 칸 모양으로 짓고 같은 결과를 낸다", () => {
-    const a = generateShaped(withLayers({ network: "net-sdn" }));
-    const b = generateShaped(withLayers({ network: "net-leaf-spine" }));
+    const a = generateShaped(withLayers({ site: "site-dr-warm" }));
+    const b = generateShaped(withLayers({ site: "site-two-buildings" }));
     expect(a.counts).toEqual(b.counts);
   });
 });
