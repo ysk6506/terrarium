@@ -58,6 +58,8 @@ verification_log:
 ```
 - 2xx로 바로 답하고, 에이전트는 비동기로 돌린다.
 - `tools.mcpUrl`은 Streamable HTTP MCP 엔드포인트다. 이 실행에서 고른 툴만 있고, URL 자체가 비밀이다(다른 실행의 툴은 부를 수 없다).
+- 툴의 `description`은 모든 툴이 같은 순서로 쓴다(ADR-0087): 한 줄 요약, `Use when:`, `Don't use when:`(대신 쓸 툴을 `(use X)`로), `Example:`(입력 예 하나), `Access:`(`read-only` 또는 `changes the world`), `Cost:`. 에이전트가 읽는 이 글은 테라리움 카탈로그의 `TOOL_DOCS`에서 만들어서 화면과 같다([툴 범위, 에스컬레이션, 절차서](tool-scope-and-sop.md)).
+- 실험이 `ask_human`을 켰다면 에이전트는 이 툴로 사람에게 묻는다(`request`: 찾은 것, 해 본 것, 필요한 것). **응답이 늦을 수 있다.** 실험이 "사람 기다림"이면 사람이 답할 때까지 호출이 열려 있다. 하네스는 이 툴 호출에 시간 제한을 걸지 말아야 한다(테라리움의 실제 시간 제한은 기다린 시간을 빼고 센다). 답은 `{reply, from}`이고, 사람이 대신 조치했으면 `changes`, 툴을 더 줬으면 `newTools`가 같이 온다. MCP로 붙은 하네스는 `tools/list`를 다시 부르면 늘어난 툴이 보인다.
 - `specs`는 같은 툴의 JSON Schema다. MCP 없이 함수 호출로 넘기고 싶은 하네스가 참고한다.
 - `traceparent`를 에이전트의 OpenTelemetry 루트 스팬 부모로 쓰면, 연결이 ClickStack을 고른 경우 이 실행의 trace로 묶인다. 연결이 Langfuse를 고르면 같은 요청의 `x-terrarium-run-id` 헤더와 `baggage`의 `run_id`를 세션 ID(`langfuse.session.id`)나 메타데이터(`langfuse.trace.metadata.run_id`)로 남기면 찾는다([ADR-0085](adr/0085-telemetry-adapters.md)). 트레이스를 어디에 쌓는지는 연결마다 정한다.
 

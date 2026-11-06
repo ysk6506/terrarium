@@ -16,6 +16,7 @@ import {
   type WorldPort,
 } from "@terrarium/core/world";
 import { SERVICE_HANDLERS } from "./handlers-service";
+import { type Runbook, searchRunbooks } from "./runbook";
 
 export interface MetricSource {
   /** Samples [t, value] of `metric` on `entityId` since simulated time `sinceT`. */
@@ -39,6 +40,8 @@ export interface ToolContext {
   readonly wait?: (seconds: number) => void;
   /** Receives the agent's final answer. */
   readonly submit?: (diagnosis: Diagnosis) => void;
+  /** The runbooks an agent can find with `search_runbooks` (ADR-0087 item 6); none when the experiment gives none. */
+  readonly runbooks?: readonly Runbook[];
 }
 
 export type Args = Readonly<Record<string, unknown>>;
@@ -425,6 +428,23 @@ const submitDiagnosis: Handler = (ctx, args) => {
   return { accepted: true };
 };
 
+/** What `ask_human` answers when called outside a session (a session answers it itself, see session.ts). */
+export const NO_HUMAN_REPLY =
+  "지금은 답해 줄 사람이 없어요. 가진 툴로 할 수 있는 만큼 하고 진단을 제출하세요.";
+
+const askHuman: Handler = (_ctx, args) => {
+  if (str(args, "request").trim() === "")
+    throw new InvalidValueError("request must say what you need");
+  return { reply: NO_HUMAN_REPLY, from: "none" };
+};
+
+const searchRunbooksTool: Handler = (ctx, args) => {
+  const found = searchRunbooks(ctx.runbooks ?? [], str(args, "query"));
+  return found.length === 0
+    ? { runbooks: [], note: "No runbook is available." }
+    : { runbooks: found.map((r) => ({ title: r.title, steps: r.steps })) };
+};
+
 export const HANDLERS: Readonly<Record<string, Handler>> = {
   ...SERVICE_HANDLERS,
   list_alarms: listAlarms,
@@ -448,4 +468,6 @@ export const HANDLERS: Readonly<Record<string, Handler>> = {
   power_server: powerServer,
   wait,
   submit_diagnosis: submitDiagnosis,
+  ask_human: askHuman,
+  search_runbooks: searchRunbooksTool,
 };

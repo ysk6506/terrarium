@@ -232,6 +232,24 @@ const ExpectationSchema = z.discriminatedUnion("kind", [
     .strict(),
 ]) as unknown as z.ZodType<Expectation>;
 
+export const RunbookSchema = z
+  .object({
+    title: z.string().max(200),
+    steps: z
+      .array(
+        z
+          .object({
+            id: IdSchema,
+            todo: z.string().max(2000),
+            check: z.string().max(2000),
+            tools: z.array(z.string().min(1).max(64)).max(20),
+          })
+          .strict(),
+      )
+      .max(30),
+  })
+  .strict();
+
 export const ScenarioDocSchema = z
   .object({
     schemaVersion: z.literal(SCENARIO_SCHEMA_VERSION),
@@ -260,6 +278,7 @@ export const ScenarioDocSchema = z
     expectations: z.array(ExpectationSchema).max(100),
     scoring: z.literal("recovery").optional(),
     template: z.string().max(64).optional(),
+    runbook: RunbookSchema.optional(),
   })
   .strict() as unknown as z.ZodType<ScenarioDoc>;
 
@@ -345,6 +364,13 @@ export const SeedsSchema = z
   .refine((xs) => new Set(xs).size === xs.length, { message: "같은 시드가 두 번 있어요" });
 
 export const ToolsSchema = z.array(z.string().min(1).max(64)).min(1).max(64);
+
+export const EscalationSchema = z
+  .object({
+    mode: z.enum(["wait", "auto", "fail"]),
+    reply: z.string().max(1000).optional(),
+  })
+  .strict();
 
 export const ProfilesSchema = z
   .object({ vcenter: z.string().max(64).optional(), vrops: z.string().max(64).optional() })

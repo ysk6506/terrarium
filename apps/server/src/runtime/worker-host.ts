@@ -12,7 +12,8 @@ import {
   UnsupportedError,
 } from "@terrarium/core/kernel";
 import type { EndReason } from "@terrarium/core/oracle";
-import type { CallResult, RunResult } from "@terrarium/core/session";
+import type { CallResult, HumanAct, RunResult } from "@terrarium/core/session";
+import type { ToolSpec } from "@terrarium/core/tools";
 import type { RunEvent } from "@terrarium/core/world";
 import { defaultThreadMb, Ledger, PROMISED_SHARE } from "./admission";
 import type { HostedSession, PlainSessionConfig, SessionHost } from "./hosts";
@@ -275,11 +276,29 @@ export class WorkerHost implements SessionHost {
 
   private handle(id: string, opened: Extract<FromWorker, { kind: "opened" }>): HostedSession {
     let ended: EndReason | undefined;
+    let specs: readonly ToolSpec[] = opened.specs;
     const events: RunEvent[] = [...opened.events];
     const host = this;
+    const human = async (op: Extract<ToWorker, { kind: "human" }>["op"]) => {
+      const msg = await this.send<Extract<FromWorker, { kind: "humaned" }>>(id, (seq) => ({
+        kind: "human",
+        id,
+        seq,
+        op,
+      }));
+      specs = msg.specs;
+      events.push(...msg.events);
+      if (msg.result?.ended) ended = msg.result.ended;
+      return msg;
+    };
     return {
       task: opened.task,
-      specs: opened.specs,
+      get specs() {
+        return specs;
+      },
+      humanAct: async (tool, args) => (await human({ kind: "act", tool, args })).act as HumanAct,
+      resolveHuman: async (resolution) =>
+        (await human({ kind: "resolve", resolution })).result as CallResult,
       get endedBy() {
         return ended ?? host.ended.get(id);
       },

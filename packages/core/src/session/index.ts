@@ -16,6 +16,17 @@ export {
   withProbes,
 } from "./baselines";
 export {
+  DEFAULT_AUTO_REPLY,
+  DEFAULT_ESCALATION,
+  ESCALATION_LABELS,
+  type EscalationMode,
+  type EscalationPolicy,
+  type HumanAct,
+  type HumanRequest,
+  type HumanResolution,
+  type HumanSummary,
+} from "./human";
+export {
   type CommonReach,
   commonReach,
   REACH_CALLS,
@@ -34,11 +45,22 @@ export { type CallStamp, legacyEvents, RunLog, stampReal } from "./run-events";
 export {
   type CallResult,
   DEFAULT_TIME,
+  type FaultScope,
   type RunResult,
   Session,
   type SessionConfig,
   type SessionStatus,
+  type SopMode,
+  type SopResult,
   type TimePolicy,
 } from "./session";
 export { buildTimeline, type TimelineEntry, type TimelineSource } from "./timeline";
+export {
+  type AmbiguousPair,
+  PICK_SITUATIONS,
+  type PickRow,
+  type PickSituation,
+  type ToolPickCheck,
+  toolPickCheck,
+} from "./tool-pick";
 export { type WarmStart, WarmStartCache } from "./warm";

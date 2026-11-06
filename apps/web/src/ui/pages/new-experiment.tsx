@@ -3,7 +3,7 @@
  * will run, what is still missing, and — for a fork — exactly what differs from the original.
  */
 import type { ExperimentView } from "@terrarium/core/contract";
-import type { WorldSummary } from "@terrarium/core/experiments";
+import type { ScenarioRecord, WorldSummary } from "@terrarium/core/experiments";
 import { useCallback, useEffect, useState } from "react";
 import { experiment, metaProblems } from "../../logic";
 import { Go, messageOf, useApp, useAsync } from "../context";
@@ -75,7 +75,7 @@ function ForkChanges({
 function RunLine({ draft }: { readonly draft: Draft }) {
   return (
     <p className="small">
-      {draft.runs}회 실행. 툴 {draft.tools.length}개
+      {draft.runs}회 실행. 툴 {experiment.countTools(draft)}개
       {draft.time.kind === "lockstep" ? ", 결과가 재현돼요" : ", 벽시계 시간"}.
     </p>
   );
@@ -112,15 +112,17 @@ function SummaryCard({
   draft,
   onStart,
   busy,
+  scenarioDoc,
 }: {
   readonly start: Start;
   readonly draft: Draft;
   readonly onStart: () => void;
   readonly busy: boolean;
+  readonly scenarioDoc?: ScenarioRecord["doc"];
 }) {
   const { meta } = useApp();
   const agents = meta?.harnesses.find((h) => h.id === draft.harnessId)?.agents.map((a) => a.id);
-  const problems = experiment.draftProblems(draft, agents);
+  const problems = experiment.draftProblems(draft, agents, scenarioDoc);
   const metaBad = Object.keys(metaProblems(draft.metadata)).length > 0;
   const all = [
     ...problems.what,
@@ -154,6 +156,18 @@ function SummaryCard({
   );
 }
 
+/** The scenarios of the chosen world, for the list in step 1 and for what the later steps say about the choice. */
+function useScenarioList(worldId: string | undefined) {
+  const { api } = useApp();
+  return useAsync(
+    (signal) =>
+      worldId
+        ? api.call("listScenarios", { query: { worldId }, signal })
+        : Promise.resolve([] as ScenarioRecord[]),
+    [worldId],
+  );
+}
+
 function Wizard({ start }: { readonly start: Start }) {
   const { api, navigate, meta } = useApp();
   const [draft, setDraft] = useState<Draft>(start.draft);
@@ -171,10 +185,13 @@ function Wizard({ start }: { readonly start: Start }) {
       }));
   }, [meta, draft.harnessId]);
   const set = useCallback((change: Partial<Draft>) => setDraft((d) => ({ ...d, ...change })), []);
+  const scenarios = useScenarioList(draft.worldId);
+  const scenario = scenarios.data?.find((s) => s.id === draft.scenarioId);
   const agents = meta?.harnesses.find((h) => h.id === draft.harnessId)?.agents;
   const problems = experiment.draftProblems(
     draft,
     agents?.map((a) => a.id),
+    scenario?.doc,
   );
   const placeholder = experiment.suggestedName(
     undefined,
@@ -199,13 +216,30 @@ function Wizard({ start }: { readonly start: Start }) {
   return (
     <div className="wizard">
       <div className="stack" style={{ gap: 28 }}>
-        <WhatStep draft={draft} set={set} problems={problems.what} worlds={start.worlds} />
+        <WhatStep
+          draft={draft}
+          set={set}
+          problems={problems.what}
+          worlds={start.worlds}
+          scenarios={scenarios.data}
+        />
         <WhoStep draft={draft} set={set} problems={problems.who} />
-        <HowStep draft={draft} set={set} problems={problems.how} />
+        <HowStep
+          draft={draft}
+          set={set}
+          problems={problems.how}
+          {...(scenario ? { scenario } : {})}
+        />
         <NameStep draft={draft} set={set} placeholder={placeholder} />
       </div>
       <div className="stack">
-        <SummaryCard start={start} draft={draft} onStart={() => void launch()} busy={busy} />
+        <SummaryCard
+          start={start}
+          draft={draft}
+          onStart={() => void launch()}
+          busy={busy}
+          {...(scenario ? { scenarioDoc: scenario.doc } : {})}
+        />
         {error && <Note tone="bad">{error}</Note>}
       </div>
     </div>

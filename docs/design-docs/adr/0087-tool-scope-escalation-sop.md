@@ -4,8 +4,11 @@ kind: decision
 status: active
 last_verified: 2026-11-05
 enforced_by:
-  - none
-no_enforcement_reason: 구현 전 결정 기록이다. 구현 작업이 끝나면 frontmatter의 enforced_by를 그 작업의 시험으로 바꾼다.
+  - tests/spec/tool-scope.test.ts
+  - tests/spec/escalation.test.ts
+  - tests/spec/sop.test.ts
+  - packages/core/src/session/tool-pick.test.ts
+  - apps/server/src/runtime/escalation.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: b7c0fbc5d88e08cb

@@ -89,7 +89,7 @@ covers_hash: a1bfabf39fe60671
 
 ## 기본으로 받는 툴 (REQ-088, [ADR-0104](adr/0104-recovery-scoring-amend-tests.md))
 
-실험이 툴을 따로 고르지 않으면 `DEFAULT_TOOLSET`을 받는다: 조회와 조치 툴 전부와 **호스트에서 명령 실행(`run_command`)**. 날것의 프로토콜 요청(Redfish, vCenter, vROps, SNMP, BACnet, 스위치 CLI·eAPI·NX-API)은 넣지 않는다. 쉘을 넣은 이유는 위 표의 OS 고장(디스크, 읽기 전용, 시간 동기…)이 호스트 안에서 풀리기 때문이다. 쉘이 없는 묶음으로는 OS 고장 템플릿을 풀 수 없었다. 현실 수준(`common`·`rare`·`ideal`)별 묶음으로 다시 정리하는 것은 3차 베타의 일이다([차수 계획](../exec-plans/active/beta-rounds.md)).
+실험이 툴을 따로 고르지 않으면 `DEFAULT_TOOLSET`을 받는다: 현실 수준이 **흔함**(`common`)인 툴 가운데 날것의 프로토콜 요청(Redfish, vCenter, vROps, SNMP, BACnet, 스위치 CLI·eAPI·NX-API)을 뺀 것과 **호스트에서 명령 실행(`run_command`)**. 토폴로지(드묾)와 영향 범위(없음)는 일부러 켤 때만 들어가고, 사람에게 묻기·절차서 찾기도 설계자가 켠다. 쉘을 넣은 이유는 위 표의 OS 고장(디스크, 읽기 전용, 시간 동기…)이 호스트 안에서 풀리기 때문이다. 쉘이 없는 묶음으로는 OS 고장 템플릿을 풀 수 없었다. 고장마다 어떤 툴이 있어야 풀리는지는 [툴 범위, 에스컬레이션, 절차서](tool-scope-and-sop.md)의 표에 있고, 이 문서의 "고장마다 에이전트가 할 수 있는 일"과 시험으로 맞춰 둔다(ADR-0087).
 
 ## 아직 없는 것 (정직하게)
 

@@ -200,6 +200,8 @@ export {
   sharedEdge,
 } from "./room-shape";
 export {
+  type HumanEvent,
+  type RecentCall,
   RUN_EVENT_FORMAT,
   type RunEvent,
   type ScoreEvent,

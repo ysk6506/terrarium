@@ -6,6 +6,7 @@ import { lazy, Suspense, useState } from "react";
 import { pickHeadline, STARTS } from "../../logic";
 import { Go, useApp, useAsync } from "../context";
 import { Loading, Section } from "../kit";
+import { EscalationCards } from "./escalation";
 import { ExperimentTable } from "./experiments";
 
 const Vitrine = lazy(() => import("./Vitrine"));
@@ -79,6 +80,7 @@ function Recent() {
 export function HomePage() {
   return (
     <div className="page">
+      <EscalationCards />
       <Hero />
       <Starts />
       <Recent />

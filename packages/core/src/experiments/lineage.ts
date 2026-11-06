@@ -77,25 +77,35 @@ const LABELS: Readonly<Record<keyof Recipe, string>> = {
   seeds: "시드",
   time: "시간 정책",
   profiles: "제품 버전",
+  escalation: "에스컬레이션 처리",
+  faultScope: "고장 범위",
+  sop: "절차서",
 };
+
+const ESCALATION_TEXT = {
+  wait: "사람 기다림",
+  auto: "정해 둔 답으로 자동 응답",
+  fail: "실패로 끝냄",
+};
+const SCOPE_TEXT = { inside: "준 툴 안에서만", all: "전부" };
+const SOP_TEXT = { none: "안 줌", given: "줌", search: "찾게 함" };
 
 function timeText(t: Recipe["time"]): string {
   return t.kind === "lockstep" ? `호출당 ${t.secondsPerCall}초` : `실시간 ×${t.speed}`;
 }
 
+const TEXTS: Partial<Record<keyof Recipe, (r: Recipe) => string>> = {
+  tools: (r) => r.tools.join(", "),
+  seeds: (r) => r.seeds.join(", "),
+  time: (r) => timeText(r.time),
+  profiles: (r) => `vCenter ${r.profiles.vcenter ?? "기본"} · vROps ${r.profiles.vrops ?? "기본"}`,
+  escalation: (r) => ESCALATION_TEXT[r.escalation?.mode ?? "auto"],
+  faultScope: (r) => SCOPE_TEXT[r.faultScope ?? "all"],
+  sop: (r) => SOP_TEXT[r.sop ?? "none"],
+};
+
 function text(field: keyof Recipe, r: Recipe): string {
-  switch (field) {
-    case "tools":
-      return r.tools.join(", ");
-    case "seeds":
-      return r.seeds.join(", ");
-    case "time":
-      return timeText(r.time);
-    case "profiles":
-      return `vCenter ${r.profiles.vcenter ?? "기본"} · vROps ${r.profiles.vrops ?? "기본"}`;
-    default:
-      return String(r[field]);
-  }
+  return TEXTS[field]?.(r) ?? String(r[field]);
 }
 
 function toolDelta(a: Recipe, b: Recipe): string {

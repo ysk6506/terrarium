@@ -39,12 +39,21 @@ export function validateArgs(schema: JsonSchema, args: Args): string[] {
 }
 
 export class Toolbox {
-  private readonly enabled: ReadonlySet<string>;
+  private readonly enabled: Set<string>;
 
   constructor(names: readonly string[]) {
     const unknown = names.filter((n) => !toolSpec(n));
     if (unknown.length > 0) throw new InvalidValueError(`unknown tools: ${unknown.join(", ")}`);
     this.enabled = new Set(names);
+  }
+
+  /** Hand the agent more tools in the middle of a run (a person gave them when it asked for help). Returns the new ones. */
+  grant(names: readonly string[]): string[] {
+    const unknown = names.filter((n) => !toolSpec(n));
+    if (unknown.length > 0) throw new InvalidValueError(`unknown tools: ${unknown.join(", ")}`);
+    const added = names.filter((n) => !this.enabled.has(n));
+    for (const n of added) this.enabled.add(n);
+    return added;
   }
 
   list(): ToolSpec[] {

@@ -6,10 +6,13 @@ import type { ScenarioRecord, WorldSummary } from "@terrarium/core/experiments";
 import { MAX_SEEDS } from "@terrarium/core/experiments";
 import { BUILTIN_PROFILES } from "@terrarium/core/profiles";
 import { useEffect } from "react";
-import { experiment, hiddenWarning, howWords } from "../../logic";
-import { useApp, useAsync } from "../context";
+import { experiment, hiddenWarning, howWords, toolPicker } from "../../logic";
+import { useApp } from "../context";
 import { Button, Check, Note, NumberField, SelectField, TextField } from "../kit";
 import { ExperimentMetadata, NoHarness, VersionPreview } from "./experiment-subject";
+import { HumanSettings } from "./human-settings";
+import { ScenarioPick } from "./scenario-pick";
+import { ToolPicker } from "./tool-picker";
 
 type Draft = experiment.Draft;
 interface StepProps {
@@ -46,22 +49,22 @@ export function WhatStep({
   set,
   problems,
   worlds,
-}: StepProps & { readonly worlds: readonly WorldSummary[] }) {
-  const { api } = useApp();
-  const scenarios = useAsync(
-    (signal) =>
-      draft.worldId
-        ? api.call("listScenarios", { query: { worldId: draft.worldId }, signal })
-        : Promise.resolve([] as ScenarioRecord[]),
-    [draft.worldId],
-  );
-  const list = scenarios.data ?? [];
-  const first = list[0]?.id;
-  const known = list.some((x) => x.id === draft.scenarioId);
-  // A world with scenarios starts with the first one chosen, so the common case is one click fewer.
+  scenarios,
+}: StepProps & {
+  readonly worlds: readonly WorldSummary[];
+  /** The scenarios of the chosen world; undefined while they load. */
+  readonly scenarios: readonly ScenarioRecord[] | undefined;
+}) {
+  const list = scenarios ?? [];
+  const choices = toolPicker.scenarioChoices(list, draft.tools, draft.faultScope);
+  // A world with scenarios starts with the first one that can be chosen, so the common case is one click fewer.
+  // A choice that the tools or the fault scope put out of reach moves to the first one that is not.
+  const first = choices.find((c) => !c.out)?.id;
+  const current = choices.find((c) => c.id === draft.scenarioId);
+  const stale = !current || current.out;
   useEffect(() => {
-    if (!known && first) set({ scenarioId: first });
-  }, [known, first, set]);
+    if (stale && first && first !== draft.scenarioId) set({ scenarioId: first });
+  }, [stale, first, draft.scenarioId, set]);
   return (
     <section className="wizard-step stack">
       <StepHead n={1} title="무엇으로 시험할까요?" problems={problems} />
@@ -74,16 +77,12 @@ export function WhatStep({
           set({ ...rest, worldId });
         }}
       />
-      <SelectField
-        label="시나리오"
+      <ScenarioPick
+        choices={choices}
         value={draft.scenarioId}
-        options={list.map((s) => ({
-          value: s.id,
-          label: `${s.name} (채점 ${s.doc.expectations.length}항목)`,
-        }))}
         onChange={(scenarioId) => set({ scenarioId })}
-        {...(draft.worldId && scenarios.data && list.length === 0
-          ? { help: "이 세계에는 시나리오가 아직 없어요. 시나리오 화면에서 만들어 보세요." }
+        {...(draft.worldId && scenarios && list.length === 0
+          ? { empty: "이 세계에는 시나리오가 아직 없어요. 시나리오 화면에서 만들어 보세요." }
           : {})}
       />
     </section>
@@ -142,47 +141,6 @@ export function WhoStep({ draft, set, problems }: StepProps) {
         <VersionPreview harnessId={harness.id} agentId={draft.agentId} />
       )}
     </section>
-  );
-}
-
-function ToolPicker({ draft, set }: Pick<StepProps, "draft" | "set">) {
-  return (
-    <div className="stack how-tools" style={{ gap: 14 }}>
-      <div>
-        <b>{howWords.TOOLS_TITLE}</b>
-        <p className="small muted">{howWords.TOOLS_LEDE}</p>
-      </div>
-      {experiment.toolGroups().map((g) => {
-        const words = howWords.TOOL_GROUP_WORDS[g.category];
-        return (
-          <fieldset
-            key={g.category}
-            className="stack"
-            style={{ gap: 6, border: 0, padding: 0, margin: 0 }}
-          >
-            <legend className="small" style={{ fontWeight: 600, marginBottom: 2 }}>
-              {g.label}
-              {words.recommended && (
-                <span className="tag tag-recommend">{howWords.RECOMMENDED}</span>
-              )}
-            </legend>
-            <p className="tiny muted">{words.help}</p>
-            <div className="tool-list">
-              {g.tools.map((t) => (
-                <Check
-                  key={t.name}
-                  label={t.title}
-                  hint={t.description}
-                  checked={t.name === "submit_diagnosis" || draft.tools.includes(t.name)}
-                  disabled={t.name === "submit_diagnosis"}
-                  onChange={(on) => set({ tools: experiment.toggleTool(draft, t.name, on).tools })}
-                />
-              ))}
-            </div>
-          </fieldset>
-        );
-      })}
-    </div>
   );
 }
 
@@ -298,12 +256,22 @@ function Advanced({ draft, set }: Pick<StepProps, "draft" | "set">) {
   );
 }
 
-export function HowStep({ draft, set, problems }: StepProps) {
+export function HowStep({
+  draft,
+  set,
+  problems,
+  scenario,
+}: StepProps & { readonly scenario?: ScenarioRecord }) {
   return (
     <section className="wizard-step stack">
       <StepHead n={3} title="어떻게 시험할까요?" problems={problems} />
       <RunsField draft={draft} set={set} />
-      <ToolPicker draft={draft} set={set} />
+      <ToolPicker
+        selected={draft.tools}
+        onChange={(tools) => set(experiment.withTools(draft, tools))}
+        {...(scenario ? { scenario: scenario.doc } : {})}
+      />
+      <HumanSettings draft={draft} set={set} {...(scenario ? { scenario } : {})} />
       <Advanced draft={draft} set={set} />
     </section>
   );

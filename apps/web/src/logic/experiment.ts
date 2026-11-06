@@ -15,7 +15,15 @@ import {
   seedsUpTo,
 } from "@terrarium/core/experiments";
 import { BUILTIN_PROFILES } from "@terrarium/core/profiles";
-import { DEFAULT_TIME, type TimePolicy } from "@terrarium/core/session";
+import { type ScenarioDoc, scopeCheck } from "@terrarium/core/scenario";
+import {
+  DEFAULT_AUTO_REPLY,
+  DEFAULT_TIME,
+  type EscalationPolicy,
+  type FaultScope,
+  type SopMode,
+  type TimePolicy,
+} from "@terrarium/core/session";
 import {
   DEFAULT_TOOLSET,
   TOOL_SPECS,
@@ -40,7 +48,16 @@ export interface Draft {
   readonly profiles: { readonly vcenter?: string; readonly vrops?: string };
   /** `name=value` pairs attached to the experiment to tell results apart (REQ-052). */
   readonly metadata: readonly MetaRow[];
+  /** What happens when the agent asks a person for help (REQ-081). */
+  readonly escalation: EscalationPolicy;
+  /** Whether faults are limited to what the given tools can solve (REQ-080). */
+  readonly faultScope: FaultScope;
+  /** Whether the agent gets the scenario's runbook (REQ-082). */
+  readonly sop: SopMode;
 }
+
+/** The tool that finds a runbook: on exactly when the agent is made to find it. */
+export const FINDER = "search_runbooks";
 
 const metaRows = (m: Readonly<Record<string, string>> | undefined): MetaRow[] =>
   Object.entries(m ?? {}).map(([key, value]) => ({ key, value }));
@@ -57,6 +74,9 @@ export const emptyDraft = (): Draft => ({
   time: DEFAULT_TIME,
   profiles: {},
   metadata: [],
+  escalation: { mode: "auto", reply: DEFAULT_AUTO_REPLY },
+  faultScope: "all",
+  sop: "none",
 });
 
 export const PROFILE_CHOICES = {
@@ -87,7 +107,23 @@ export function toolGroups(): {
 export function toggleTool(draft: Draft, tool: string, on: boolean): Draft {
   if (tool === "submit_diagnosis") return draft;
   const tools = on ? [...new Set([...draft.tools, tool])] : draft.tools.filter((t) => t !== tool);
+  // finding the runbook and "찾게 함" are one choice seen from two places
+  if (tool === FINDER)
+    return { ...draft, tools, sop: on ? "search" : draft.sop === "search" ? "none" : draft.sop };
   return { ...draft, tools };
+}
+
+/** Choose how the runbook is offered; "찾게 함" turns the finder on and any other choice turns it off. */
+export function setSop(draft: Draft, sop: SopMode): Draft {
+  const rest = draft.tools.filter((t) => t !== FINDER);
+  return { ...draft, sop, tools: sop === "search" ? [...rest, FINDER] : rest };
+}
+
+/** Set many tools at once (an area, "필요한 것만 켜기", a saved set); the finder keeps the runbook choice in step. */
+export function withTools(draft: Draft, tools: readonly string[]): Draft {
+  const has = tools.includes(FINDER);
+  const sop = has ? "search" : draft.sop === "search" ? "none" : draft.sop;
+  return { ...draft, tools: [...tools], sop };
 }
 
 /** The recipe the draft stands for, once world, scenario, harness and agent are chosen. */
@@ -102,6 +138,10 @@ export function recipeOf(draft: Draft): Recipe | undefined {
     seeds: seedsUpTo(draft.runs),
     time: draft.time,
     profiles: draft.profiles,
+    // only where they matter, so an experiment that does not use them reads as it always did
+    ...(draft.tools.includes("ask_human") ? { escalation: draft.escalation } : {}),
+    ...(draft.faultScope === "inside" ? { faultScope: draft.faultScope } : {}),
+    ...(draft.sop !== "none" ? { sop: draft.sop } : {}),
   };
 }
 
@@ -127,16 +167,31 @@ function recipeSteps(
     (p.includes("에이전트") || p.includes("하네스") ? who : how).push(p);
 }
 
-/** What is still missing or wrong, by step of the form. Empty everywhere means it can start. */
+/** How many tools the experiment gives: the ones chosen, and the answer that is always there. */
+export const countTools = (draft: Draft): number =>
+  new Set([...draft.tools, "submit_diagnosis"]).size;
+
+/**
+ * What is still missing or wrong, by step of the form. Empty everywhere means it can start. With faults limited to
+ * the given tools, a scenario those tools cannot solve is a problem of step 1.
+ */
 export function draftProblems(
   draft: Draft,
   agents?: readonly string[],
+  scenario?: ScenarioDoc,
 ): Readonly<Record<Step, readonly string[]>> {
   const what: string[] = [];
   const who: string[] = [];
   const how: string[] = [];
   if (!draft.worldId) what.push("세계를 골라 주세요");
   if (!draft.scenarioId) what.push("시나리오를 골라 주세요");
+  if (draft.faultScope === "inside" && scenario) {
+    const scope = scopeCheck(scenario, [...draft.tools, "submit_diagnosis"]);
+    if (!scope.inScope)
+      what.push(
+        `준 툴 안에서만으로는 이 시나리오를 못 풀어요: ${(scope.reason ?? "").replaceAll("`", "")}`,
+      );
+  }
   if (!draft.harnessId) who.push("하네스를 골라 주세요");
   else if (!draft.agentId) who.push("에이전트를 골라 주세요");
   if (draft.runs < 1 || draft.runs > MAX_SEEDS) how.push(runsRange(MAX_SEEDS));
@@ -169,6 +224,9 @@ export function toRequest(draft: Draft, fallbackName: string): CreateExperimentR
       runs: draft.runs,
       time: recipe.time,
       profiles: recipe.profiles,
+      ...(recipe.escalation ? { escalation: recipe.escalation } : {}),
+      ...(recipe.faultScope ? { faultScope: recipe.faultScope } : {}),
+      ...(recipe.sop ? { sop: recipe.sop } : {}),
     },
   };
 }
@@ -190,6 +248,9 @@ export function draftFrom(parent: Experiment): Draft {
     time: r.time,
     profiles: r.profiles,
     metadata: metaRows(parent.metadata),
+    escalation: r.escalation ?? { mode: "auto", reply: DEFAULT_AUTO_REPLY },
+    faultScope: r.faultScope ?? "all",
+    sop: r.sop ?? "none",
   };
 }
 
@@ -203,7 +264,14 @@ export function toForkRequest(parent: Experiment, draft: Draft): ForkRequest {
   const recipe = recipeOf(draft);
   if (!recipe) throw new Error("실험 조건이 다 정해지지 않았어요");
   const change: Record<string, unknown> = {};
-  for (const c of recipeDiff(parent.recipe, recipe)) change[c.field] = recipe[c.field];
+  // a setting that went back to its default is sent as that default, so the fork does not keep the parent's
+  const back: Partial<Record<keyof Recipe, unknown>> = {
+    escalation: { mode: "auto" },
+    faultScope: "all",
+    sop: "none",
+  };
+  for (const c of recipeDiff(parent.recipe, recipe))
+    change[c.field] = recipe[c.field] ?? back[c.field];
   const metadata = metadataOf(draft.metadata);
   return {
     change: change as ForkRequest["change"],

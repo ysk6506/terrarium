@@ -73,4 +73,44 @@ export type ScoreEvent = Stamp &
       }
   );
 
-export type RunEvent = ToolEvent | WorldRunEvent | ScoreEvent;
+/** One of the agent's last calls, as the person who is asked for help sees it. */
+export interface RecentCall {
+  readonly tool: string;
+  readonly ok: boolean;
+  readonly summary: string;
+}
+
+/**
+ * The person on the other end of `ask_human` (ADR-0087 item 4): the agent's request, what the person did while the run
+ * waited, and how the answer went back. The wall-clock wait is `waitedSeconds` on the answer.
+ */
+export type HumanEvent = Stamp &
+  (
+    | {
+        readonly kind: "human";
+        readonly what: "asked";
+        readonly request: string;
+        /** The agent's last calls, newest last: what the person sees to understand the request. */
+        readonly recent: readonly RecentCall[];
+      }
+    | {
+        readonly kind: "human";
+        readonly what: "acted";
+        readonly tool: string;
+        readonly args: Readonly<Record<string, unknown>>;
+        readonly ok: boolean;
+        readonly summary: string;
+      }
+    | {
+        readonly kind: "human";
+        readonly what: "answered";
+        /** Who answered: a person, the setup's fixed reply, or nobody (the run was ended). */
+        readonly by: "human" | "auto" | "none";
+        readonly answer: "reply" | "acted" | "more_tools" | "end";
+        readonly reply?: string;
+        readonly tools?: readonly string[];
+        readonly waitedSeconds: number;
+      }
+  );
+
+export type RunEvent = ToolEvent | WorldRunEvent | ScoreEvent | HumanEvent;

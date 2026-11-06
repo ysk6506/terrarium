@@ -26,10 +26,11 @@ import {
 } from "@terrarium/core/experiments";
 import { randomToken } from "@terrarium/core/kernel";
 import type { EndReason } from "@terrarium/core/oracle";
-import { stampReal } from "@terrarium/core/session";
+import { type CallResult, DEFAULT_AUTO_REPLY, stampReal } from "@terrarium/core/session";
 import { callEffect, callTargets } from "@terrarium/core/tools";
 import type { BlueprintCache } from "./blueprint-cache";
 import type { HarnessDirectory } from "./context";
+import type { Escalations } from "./escalations";
 import type { RunLogs } from "./events";
 import type { HostedSession, SessionHost } from "./hosts";
 import type { Stamps } from "./ids";
@@ -54,6 +55,8 @@ export interface ExecutorDeps {
   readonly gateway?: ToolGateway;
   /** The record of the runs going now, for the live topology view (REQ-083). */
   readonly logs?: RunLogs;
+  /** Where a run that asks a person for help waits (ADR-0087 item 4); without it the setup answers at once. */
+  readonly escalations?: Escalations;
   /** World versions read lately; without it every run reads its own. */
   readonly blueprints?: BlueprintCache;
   readonly emit: (experimentId: string, event: ExperimentEvent) => void;
@@ -114,8 +117,18 @@ interface Watch {
   readonly timedOut: () => boolean;
 }
 
+/** Wall-clock time the agent was kept waiting for a person: it is not the agent's time, so the limit does not count it. */
+interface Pace {
+  pausedMs: number;
+}
+
 /** Abort the harness when stopped from outside, at the wall limit, or a grace period after the session ended. */
-function watch(deps: ExecutorDeps, session: HostedSession, outside: AbortSignal): Watch {
+function watch(
+  deps: ExecutorDeps,
+  session: HostedSession,
+  outside: AbortSignal,
+  pace: Pace,
+): Watch {
   const controller = new AbortController();
   let timedOut = false;
   let endedAt: number | undefined;
@@ -125,7 +138,8 @@ function watch(deps: ExecutorDeps, session: HostedSession, outside: AbortSignal)
   const timer = setInterval(() => {
     const now = Date.now();
     if (session.endedBy !== undefined) endedAt ??= now;
-    if (now - started > (deps.wallLimitMs ?? DEFAULT_WALL_LIMIT_MS)) timedOut = true;
+    if (now - started - pace.pausedMs > (deps.wallLimitMs ?? DEFAULT_WALL_LIMIT_MS))
+      timedOut = true;
     if (timedOut || (endedAt !== undefined && now - endedAt > (deps.graceMs ?? DEFAULT_GRACE_MS)))
       controller.abort();
   }, WATCH_MS);
@@ -179,6 +193,9 @@ async function openSession(
       seed: run.seed,
       time: experiment.recipe.time,
       profiles: experiment.recipe.profiles,
+      ...(experiment.recipe.escalation ? { escalation: experiment.recipe.escalation } : {}),
+      ...(experiment.recipe.faultScope ? { faultScope: experiment.recipe.faultScope } : {}),
+      ...(experiment.recipe.sop ? { sop: experiment.recipe.sop } : {}),
     });
   } catch (err) {
     return `세션을 열 수 없어요: ${(err as Error).message}`;
@@ -211,13 +228,52 @@ export async function whoIs(experiment: Experiment, harness: HarnessPort): Promi
   };
 }
 
+/** Where a run stands, for the parts that park its calls; `signal` is read when needed, the watch is made later. */
+interface Waiter {
+  readonly run: RunRecord;
+  readonly experiment: Experiment;
+  readonly session: HostedSession;
+  readonly signal: () => AbortSignal;
+}
+
+/** A call that asked a person: the run waits here until they answer (or the setup answers for them). */
+async function awaitPerson(
+  deps: ExecutorDeps,
+  r: CallResult,
+  at: Waiter,
+  pace: Pace,
+): Promise<CallResult> {
+  const { run, experiment, session } = at;
+  if (!r.waiting) return r;
+  if (!deps.escalations) return session.resolveHuman({ kind: "reply", text: DEFAULT_AUTO_REPLY });
+  const held = await deps.escalations.hold(
+    {
+      runId: run.id,
+      experimentId: experiment.id,
+      experimentName: experiment.name,
+      owner: experiment.owner,
+      agent: experiment.subject?.agent.name ?? experiment.recipe.agentId,
+      since: deps.stamps.now(),
+      request: r.waiting,
+    },
+    session,
+    at.signal(),
+  );
+  pace.pausedMs += held.waitedMs;
+  return held.result;
+}
+
 /** The run's tools as the harness reaches them; every call is also announced live. */
-function endpointFor(deps: ExecutorDeps, run: RunRecord, session: HostedSession, worldId: string) {
+function endpointFor(deps: ExecutorDeps, at: Waiter, pace: Pace) {
+  const { run, session } = at;
+  const worldId = at.experiment.recipe.worldId;
   const counter = { calls: 0 };
   const endpoint = {
-    specs: session.specs,
+    get specs() {
+      return session.specs;
+    },
     call: async (name: string, args: Record<string, unknown>): Promise<ToolCallOutcome> => {
-      const r = await session.call(name, args);
+      const r = await awaitPerson(deps, await session.call(name, args), at, pace);
       counter.calls++;
       deps.logs?.record(run.id, session.eventsSince?.(deps.logs.count(run.id)) ?? [], {
         t: r.t,
@@ -305,7 +361,13 @@ export async function executeRun(
   deps.logs?.open(run.id, run.startedAt);
   deps.logs?.record(run.id, session.eventsSince?.(0) ?? []);
   deps.activity?.(worldId, { type: "start", runId: run.id, who: await who });
-  const { endpoint, counter } = endpointFor(deps, run, session, worldId);
+  const pace: Pace = { pausedMs: 0 };
+  let w: Watch | undefined;
+  const { endpoint, counter } = endpointFor(
+    deps,
+    { run, experiment, session, signal: () => (w as Watch).controller.signal },
+    pace,
+  );
   const exposed =
     harness.info.toolTransport === "mcp"
       ? deps.gateway?.open(run.id, endpoint, harness.info.mcpSlot)
@@ -315,7 +377,8 @@ export async function executeRun(
     .telemetryOf?.(experiment.recipe.harnessId)
     ?.attach({ runId: run.id });
   const traceparent = attachment?.traceparent ?? newTraceparent();
-  const w = watch(deps, session, outside);
+  const watched = watch(deps, session, outside, pace);
+  w = watched;
   try {
     const outcome = await harness
       .run({

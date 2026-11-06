@@ -21,6 +21,7 @@ import {
   Status,
 } from "../kit";
 import { CompareRuns } from "../topology/RunReplay";
+import { EscalationCards } from "./escalation";
 import {
   ConditionsPanel,
   CriteriaTable,
@@ -272,6 +273,7 @@ export function ExperimentPage({ id }: { readonly id: string }) {
   return (
     <div className="page page-full" data-status={status}>
       <Head view={{ ...view, status }} onChange={state.set} />
+      <EscalationCards experimentId={id} />
       <ResultFigures a={view.analysis} />
       <p className="sr-only" aria-live="polite">
         {statusLabel(status)}, {view.progress.finished}/{view.progress.total}회 끝

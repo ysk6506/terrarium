@@ -2960,3 +2960,243 @@ ol.elevation li:first-child .u-slot {
 .stage-hint:not(:has(button)) {
   padding-right: 14px;
 }
+
+/* 툴 고르기, 에스컬레이션, 절차서 (ADR-0087). */
+.tool-need {
+  border: 1px solid var(--line);
+}
+
+.tool-need-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tag-off {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.tag-real {
+  margin-inline-start: 8px;
+  padding: 1px 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tag-real-common {
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+.tag-real-rare {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.tag-real-ideal {
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+
+.tool-area {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  padding: 8px 14px;
+  background: var(--surface);
+}
+
+.tool-area > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 36px;
+}
+
+.tool-area-name {
+  font-weight: 650;
+}
+
+.tool-area .btn {
+  align-self: flex-start;
+}
+
+.tool-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 16px;
+}
+
+.tool-rows li + li {
+  margin-top: 0;
+}
+
+.tool-note {
+  margin: 0 0 4px 25px;
+  color: var(--warn);
+}
+
+.field-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.preset-row {
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.preset-row .input,
+.preset-row select {
+  min-width: 160px;
+}
+
+.human-setting {
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.scenario-pick-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+
+.scenario-pick-row input {
+  margin-top: 3px;
+}
+
+.scenario-pick-row > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.scenario-pick-on {
+  border-color: var(--cobalt);
+  background: var(--cobalt-soft);
+}
+
+.scenario-pick-out {
+  background: var(--fill);
+  color: var(--ink-2);
+  cursor: not-allowed;
+}
+
+.scenario-pick-out .scenario-pick-name {
+  color: var(--ink-2);
+  text-decoration: line-through;
+  text-decoration-color: var(--line-strong);
+}
+
+.scenario-pick-why {
+  color: var(--warn);
+}
+
+.escalation-card {
+  border: 2px solid var(--cobalt);
+}
+
+.escalation-ask {
+  margin: 0;
+  padding: 10px 14px;
+  border-left: 3px solid var(--cobalt);
+  background: var(--fill);
+  border-radius: var(--radius-control);
+  white-space: pre-wrap;
+}
+
+.escalation-recent {
+  padding-left: 20px;
+}
+
+.escalation-failed {
+  color: var(--bad);
+}
+
+.runbook-step {
+  border: 1px solid var(--line);
+}
+
+.chip-x {
+  margin-inline-start: 6px;
+  min-width: 20px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.pick-scroll {
+  overflow-x: auto;
+}
+
+.pick-matrix {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.pick-matrix th,
+.pick-matrix td {
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+}
+
+.pick-matrix th[scope="row"] {
+  min-width: 150px;
+  text-align: left;
+  font-weight: 500;
+}
+
+.pick-col span {
+  display: inline-block;
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+}
+
+.pick-hit {
+  color: var(--good);
+}
+
+.pick-extra {
+  color: var(--warn);
+}
+
+.pick-miss {
+  color: var(--bad);
+}
+
+.pick-pair {
+  color: var(--warn);
+}
+
+.sop-step {
+  padding: 4px 0;
+}
+
+.sop-skipped {
+  color: var(--bad);
+}
+
+@media (max-width: 720px) {
+  .tool-rows {
+    grid-template-columns: 1fr;
+  }
+}

@@ -14,117 +14,68 @@
 import { Catalog } from "@terrarium/core/catalog";
 import { createFacades } from "@terrarium/core/facades";
 import { ConflictError, InvalidValueError } from "@terrarium/core/kernel";
-import {
-  type EndReason,
-  investigationCalls,
-  ORACLE_VERSION,
-  type Score,
-  score,
-} from "@terrarium/core/oracle";
+import { type EndReason, investigationCalls, ORACLE_VERSION, score } from "@terrarium/core/oracle";
 import { DEFAULT_PHYSICS, Physics } from "@terrarium/core/physics";
 import {
   type AgentTask,
   actionsOf,
   type Diagnosis,
   hasErrors,
-  type ScenarioDoc,
+  mainProblems,
+  reaches,
   ScenarioRunner,
   scenarioDigest,
+  scoreSop,
   type ToolCallRecord,
   validateScenario,
 } from "@terrarium/core/scenario";
 import {
   type Args,
+  runbookPrompt,
   Toolbox,
   type ToolContext,
   type ToolResult,
   type ToolSpec,
 } from "@terrarium/core/tools";
 import {
-  type Blueprint,
   blueprintDigest,
-  type PreparedWorld,
+  type FaultType,
   type RunEvent,
   World,
   type WorldEvent,
 } from "@terrarium/core/world";
+import type { HumanAct, HumanRequest, HumanResolution } from "./human";
+import { HUMAN_CAUSE, HumanLine } from "./human-line";
 import { DEFAULT_RECORDER, MetricRecorder, type MetricSeries, RECORDED_METRICS } from "./recorder";
 import { RunLog } from "./run-events";
-import { buildTimeline, type TimelineEntry } from "./timeline";
-import type { WarmStartCache } from "./warm";
+import { buildTimeline } from "./timeline";
+import {
+  type CallResult,
+  DEFAULT_TIME,
+  type RunResult,
+  type SessionConfig,
+  type SessionStatus,
+  type TimePolicy,
+} from "./types";
 
-export type TimePolicy =
-  /** Each tool call costs this many simulated seconds (default; deterministic). */
-  | { readonly kind: "lockstep"; readonly secondsPerCall: number }
-  /** Simulated time follows the wall clock × speed; the host calls sync(). */
-  | { readonly kind: "realtime"; readonly speed: number };
-
-export const DEFAULT_TIME: TimePolicy = { kind: "lockstep", secondsPerCall: 30 };
-
-export interface SessionConfig {
-  readonly blueprint: Blueprint;
-  readonly scenario: ScenarioDoc;
-  /** Tools the experiment selected; submit_diagnosis is always added (it is how the agent answers). */
-  readonly tools: readonly string[];
-  readonly seed: number;
-  readonly catalog?: Catalog;
-  readonly profiles?: { readonly vcenter?: string; readonly vrops?: string };
-  readonly time?: TimePolicy;
-  /** Simulated seconds of normal operation before the scenario starts (default 600). */
-  readonly warmupSeconds?: number;
-  /** Simulated seconds the world keeps running after the agent stops, before scoring (default 60). */
-  readonly aftermathSeconds?: number;
-  /** Longest the scenario may take to hand over the task (default 24 h). */
-  readonly maxPreAgentSeconds?: number;
-  readonly sampleSeconds?: number;
-  readonly retentionSeconds?: number;
-  /**
-   * Where warmed-up worlds are kept between sessions (a host passes one per thread). A session with a
-   * custom catalog never uses it: the catalog is not part of the cache key.
-   */
-  readonly warm?: WarmStartCache;
-  /**
-   * The blueprint already checked and indexed (a host keeps one per world and thread, so runs of a world
-   * share it). Must be made from `blueprint` with the built-in catalog; without it the session does that itself.
-   */
-  readonly prepared?: PreparedWorld;
-}
-
-export type SessionStatus = "ready" | "running" | "ended";
-
-export interface CallResult extends ToolResult {
-  /** Simulated time the call was made. */
-  readonly t: number;
-  /** Set when this call ended the run. */
-  readonly ended?: EndReason;
-}
-
-export interface RunResult {
-  readonly score: Score;
-  readonly endReason: EndReason;
-  readonly task: AgentTask;
-  readonly toolCalls: readonly ToolCallRecord[];
-  readonly diagnosis?: Diagnosis;
-  readonly diagnosedAt?: number;
-  readonly timeline: readonly TimelineEntry[];
-  /** The run as an append-only list of events, two clocks each (REQ-083); absent from runs saved before it existed. */
-  readonly events?: readonly RunEvent[];
-  readonly series: readonly MetricSeries[];
-  readonly digests: { readonly world: string; readonly scenario: string; readonly oracle: string };
-  readonly seed: number;
-  readonly simTime: {
-    readonly scenarioStart: number;
-    readonly agentStart: number;
-    readonly end: number;
-  };
-  readonly recorderBytes: number;
-}
+export {
+  type CallResult,
+  DEFAULT_TIME,
+  type FaultScope,
+  type RunResult,
+  type SessionConfig,
+  type SessionStatus,
+  type SopMode,
+  type SopResult,
+  type TimePolicy,
+} from "./types";
 
 const ALWAYS_TOOLS = ["submit_diagnosis"];
 const MAX_SERIES = 24;
 
 /** World events the agent caused (tools and protocol facades), as opposed to scenario and physics. */
-const byAgent = (e: WorldEvent) => e.cause !== "physics" && !e.cause.startsWith("scenario:");
+const byAgent = (e: WorldEvent) =>
+  e.cause !== "physics" && !e.cause.startsWith("scenario:") && e.cause !== HUMAN_CAUSE;
 
 export class Session {
   readonly world: World;
@@ -143,6 +94,7 @@ export class Session {
   private digestOfWorld: string | undefined;
   private scenarioStart = 0;
   private result: RunResult | undefined;
+  private readonly line: HumanLine;
 
   private constructor(
     private readonly config: SessionConfig,
@@ -152,20 +104,42 @@ export class Session {
     this.log = new RunLog(world, (id) => world.index.find(id)?.name ?? id);
     this.physics = new Physics(world);
     this.time = config.time ?? DEFAULT_TIME;
-    this.toolbox = new Toolbox([...new Set([...config.tools, ...ALWAYS_TOOLS])]);
+    const finder = config.sop === "search" ? ["search_runbooks"] : [];
+    this.toolbox = new Toolbox([...new Set([...config.tools, ...ALWAYS_TOOLS, ...finder])]);
     this.recorder = new MetricRecorder(world, {
       sampleSeconds: config.sampleSeconds ?? DEFAULT_RECORDER.sampleSeconds,
       retentionSeconds: config.retentionSeconds ?? DEFAULT_RECORDER.retentionSeconds,
     });
-    this.runner = new ScenarioRunner(config.scenario, world, config.seed, {
-      toolCalls: () => this.calls,
-      diagnosis: () => this.diagnosis,
-      scenarioStart: () => this.scenarioStart,
-    });
+    this.line = new HumanLine(
+      {
+        world,
+        toolbox: this.toolbox,
+        recorder: this.recorder,
+        log: this.log,
+        profiles: config.profiles,
+        calls: () => this.calls,
+        record: (tool, args, result, t, before) => this.record(tool, args, result, t, before),
+        conclude: (tool, args, result, t, before) => this.conclude(tool, args, result, t, before),
+        end: (reason) => this.end(reason),
+      },
+      config.escalation,
+    );
+    this.runner = new ScenarioRunner(
+      config.scenario,
+      world,
+      config.seed,
+      {
+        toolCalls: () => this.calls,
+        diagnosis: () => this.diagnosis,
+        scenarioStart: () => this.scenarioStart,
+      },
+      { skipFault: this.faultSkipper() },
+    );
     this.ctx = {
       world,
       facades: createFacades(world, config.profiles),
       metrics: this.recorder,
+      runbooks: config.sop === "search" && config.scenario.runbook ? [config.scenario.runbook] : [],
       wait: (seconds) => this.advance(Math.min(seconds, this.remaining())),
       submit: (d) => {
         this.diagnosis = d;
@@ -216,7 +190,12 @@ export class Session {
         throw new InvalidValueError("the scenario did not hand the task to the agent in time");
       this.advance(DEFAULT_PHYSICS.stepSeconds);
     }
-    this.task = this.runner.agentTask;
+    const task = this.runner.agentTask;
+    const runbook = this.config.scenario.runbook;
+    this.task =
+      this.config.sop === "given" && runbook
+        ? { ...task, prompt: task.prompt + runbookPrompt(runbook) }
+        : task;
     this.state = "running";
     this.log.agentStart(this.task.startedAt, this.scenarioStart);
     return this.task;
@@ -250,8 +229,8 @@ export class Session {
     return [this.worldDigest(), warmup, o.sampleSeconds, o.retentionSeconds].join("|");
   }
 
-  call(tool: string, args: Args = {}): CallResult {
-    const t = this.world.time();
+  /** Why a call cannot be made now, as the answer the agent gets; undefined when it can. */
+  private refusal(tool: string, t: number): CallResult | undefined {
     if (this.state !== "running") {
       const why =
         this.state === "ready"
@@ -259,6 +238,8 @@ export class Session {
           : `the run has ended (${this.result?.endReason})`;
       return { ok: false, t, error: why };
     }
+    if (this.line.waiting)
+      return { ok: false, t, error: "the run is waiting for a person to answer your request" };
     const task = this.task as AgentTask;
     if (tool !== "submit_diagnosis" && investigationCalls(this.calls) >= task.maxToolCalls) {
       this.end("tool_budget");
@@ -269,8 +250,20 @@ export class Session {
         ended: "tool_budget",
       };
     }
+    return undefined;
+  }
+
+  call(tool: string, args: Args = {}): CallResult {
+    const t = this.world.time();
+    const refused = this.refusal(tool, t);
+    if (refused) return refused;
+    if (tool === "ask_human" && this.toolbox.has(tool)) return this.line.ask(args, t);
     const before = this.world.lastSeq();
-    const result = this.toolbox.call(tool, args, this.ctx);
+    return this.conclude(tool, args, this.toolbox.call(tool, args, this.ctx), t, before);
+  }
+
+  /** Write a finished call into the record, with what it did to the world. */
+  private record(tool: string, args: Args, result: ToolResult, t: number, before: number): void {
     const effects = actionsOf(this.world.events(before).filter(byAgent), (id, end) => {
       const link = this.world.index.link(id);
       return end === "from" ? link.from : link.to;
@@ -284,6 +277,17 @@ export class Session {
       effects,
     });
     this.log.call(this.calls[this.calls.length - 1] as ToolCallRecord);
+  }
+
+  /** A call is done: record it, let time move on per the policy, and end the run if that was the last call. */
+  private conclude(
+    tool: string,
+    args: Args,
+    result: ToolResult,
+    t: number,
+    before: number,
+  ): CallResult {
+    this.record(tool, args, result, t, before);
     if (tool === "submit_diagnosis" && result.ok) {
       this.end("diagnosed");
       return { ...result, t, ended: "diagnosed" };
@@ -298,16 +302,47 @@ export class Session {
     return { ...result, t };
   }
 
+  // ── asking a person (ADR-0087 item 4; the line itself is in human-line.ts) ─────────────
+
+  /** The request a person is asked to answer right now. */
+  get waitingForPerson(): HumanRequest | undefined {
+    return this.line.waiting;
+  }
+
+  /** A person changes the world for the agent while the run waits; never scored as the agent's. */
+  humanAct(tool: string, args: Args): HumanAct {
+    return this.line.act(tool, args);
+  }
+
+  /** The person has answered: the call the agent waited on gets its result and the run goes on (or ends). */
+  resolveHuman(r: HumanResolution): CallResult {
+    return this.line.resolve(r);
+  }
+
   /** Realtime policy: move simulated time to `elapsedSeconds` of wall clock after the task began. */
   sync(elapsedSeconds: number): EndReason | undefined {
     if (this.state !== "running" || this.time.kind !== "realtime") return undefined;
-    const target = (this.task as AgentTask).startedAt + elapsedSeconds * this.time.speed;
+    // time stands still while the run waits for a person, and what they kept it waiting is not counted afterwards
+    if (this.line.waiting) return undefined;
+    const target =
+      (this.task as AgentTask).startedAt +
+      (elapsedSeconds - this.line.pausedSeconds) * this.time.speed;
     const behind = target - this.world.time();
     if (behind > 0) this.advance(Math.min(behind, this.remaining()));
     this.log.flush();
     if (this.remaining() > 0) return undefined;
     this.end("time_limit");
     return "time_limit";
+  }
+
+  /** Background faults that no tool the agent has can reach do not happen when faults are limited to the tools given. */
+  private faultSkipper(): ((type: FaultType) => boolean) | undefined {
+    if (this.config.faultScope !== "inside") return undefined;
+    const main = new Set<string>(mainProblems(this.config.scenario));
+    return (type) => {
+      const have = new Set(this.toolbox.list().map((t) => t.name));
+      return !main.has(type) && !reaches(type, have);
+    };
   }
 
   /** End the run (if it has not ended) and return the scored result. */
@@ -341,6 +376,7 @@ export class Session {
   }
 
   private end(reason: EndReason): void {
+    this.line.abandon();
     this.state = "ended";
     const endedAt = this.world.time();
     if (reason !== "cancelled") this.advance(this.config.aftermathSeconds ?? 60);
@@ -398,6 +434,18 @@ export class Session {
       seed: this.config.seed,
       simTime: { scenarioStart: this.scenarioStart, agentStart: task.startedAt, end: endedAt },
       recorderBytes: this.recorder.bytes,
+      ...this.extras(),
+    };
+  }
+
+  /** What the result shows apart from the score: escalation and runbook compliance. */
+  private extras(): Pick<RunResult, "human" | "sop"> {
+    const runbook = this.config.scenario.runbook;
+    return {
+      ...(this.toolbox.has("ask_human") ? { human: this.line.desk.summary() } : {}),
+      ...(runbook
+        ? { sop: { ...scoreSop(runbook, this.calls), mode: this.config.sop ?? "none" } }
+        : {}),
     };
   }
 

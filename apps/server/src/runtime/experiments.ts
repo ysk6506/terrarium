@@ -41,7 +41,7 @@ import {
 import { InvalidValueError } from "@terrarium/core/kernel";
 import { ORACLE_VERSION } from "@terrarium/core/oracle";
 import { BUILTIN_PROFILES } from "@terrarium/core/profiles";
-import { hasErrors } from "@terrarium/core/scenario";
+import { hasErrors, type ScenarioDoc, scopeCheck } from "@terrarium/core/scenario";
 import { DEFAULT_TIME } from "@terrarium/core/session";
 import type { AgentVersions } from "./agent-versions";
 import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
@@ -85,6 +85,20 @@ export function summarize(experiment: Experiment, runs: readonly RunRecord[]): E
   };
 }
 
+/**
+ * What a fork changes in the recipe. Finding the runbook is a tool the agent needs, so a change of the tools or of the
+ * runbook choice leaves the tool list agreeing with it: "찾게 함" has the finder, any other choice does not.
+ */
+function forkChange(parent: Recipe, change: ForkRequest["change"]): Partial<Recipe> {
+  const sop = change.sop ?? parent.sop;
+  const tools = change.tools ?? (change.sop ? parent.tools : undefined);
+  if (!tools) return change;
+  const wanted = sop === "search" ? [...tools, FINDER] : tools.filter((t) => t !== FINDER);
+  return { ...change, tools: normalizeTools(wanted) };
+}
+
+const FINDER = "search_runbooks";
+
 export class Experiments {
   constructor(
     private readonly ctx: PlatformContext,
@@ -116,6 +130,7 @@ export class Experiments {
           .filter((i) => i.severity === "error")
           .map((i) => ({ path: "recipe.scenarioId", message: i.message })),
       );
+    this.checkScope(recipe, scenario.doc, scenario.name);
     const subject = await this.checkRecipe(recipe);
     return {
       snapshot: {
@@ -127,6 +142,23 @@ export class Experiments {
       },
       subject,
     };
+  }
+
+  /** With faults limited to the given tools, a scenario those tools cannot solve is refused, with the missing tool. */
+  private checkScope(recipe: Recipe, doc: ScenarioDoc, name: string): void {
+    if (recipe.faultScope !== "inside") return;
+    const scope = scopeCheck(doc, recipe.tools);
+    if (!scope.inScope)
+      throw new InvalidInputError(`시나리오 '${name}'은 준 툴로 풀 수 없어요: ${scope.reason}`, [
+        { path: "recipe.faultScope", message: scope.reason ?? "준 툴 밖의 시나리오예요" },
+      ]);
+  }
+
+  /** A fork on the same scenario version still has to be solvable with the tools it now gives. */
+  private async checkKeptScope(target: Recipe, snapshot: Snapshot): Promise<void> {
+    if (target.faultScope !== "inside") return;
+    const doc = await this.ctx.store.scenarioVersion(target.scenarioId, snapshot.scenarioDigest);
+    if (doc) this.checkScope(target, doc, snapshot.scenarioName);
   }
 
   /** The harness answers and has the agent; returns who that is, to keep with the experiment (REQ-052). */
@@ -151,15 +183,22 @@ export class Experiments {
   }
 
   private recipeOf(req: RecipeRequest): Recipe {
+    // finding the runbook is a tool the agent needs, so choosing "찾게 함" gives it
+    const tools = normalizeTools(
+      req.sop === "search" ? [...req.tools, "search_runbooks"] : req.tools,
+    );
     return {
       worldId: req.worldId,
       scenarioId: req.scenarioId,
       harnessId: req.harnessId,
       agentId: req.agentId,
-      tools: normalizeTools(req.tools),
+      tools,
       seeds: req.seeds ?? (req.runs ? seedsUpTo(req.runs) : [...DEFAULT_SEEDS]),
       time: req.time ?? DEFAULT_TIME,
       profiles: req.profiles ?? {},
+      ...(req.escalation ? { escalation: req.escalation } : {}),
+      ...(req.faultScope ? { faultScope: req.faultScope } : {}),
+      ...(req.sop ? { sop: req.sop } : {}),
     };
   }
 
@@ -208,14 +247,12 @@ export class Experiments {
 
   async fork(viewer: Viewer, id: string, req: ForkRequest): Promise<ExperimentView> {
     const parent = await this.get(id);
-    const change = {
-      ...req.change,
-      ...(req.change.tools ? { tools: normalizeTools(req.change.tools) } : {}),
-    };
+    const change = forkChange(parent.recipe, req.change);
     const target = { ...parent.recipe, ...change };
     // Same world and scenario: the same versions the parent ran. Another one: its current version.
     const sameTask =
       target.worldId === parent.recipe.worldId && target.scenarioId === parent.recipe.scenarioId;
+    if (sameTask) await this.checkKeptScope(target, parent.snapshot);
     const resolved = sameTask ? undefined : await this.resolve(target);
     const snapshot = resolved?.snapshot ?? parent.snapshot;
     // A fork runs the agent as it is now, which may differ from the parent's agent (REQ-053).

@@ -5,7 +5,13 @@
  * even after someone edits the world.
  */
 import type { ScenarioDoc } from "@terrarium/core/scenario";
-import type { RunResult, TimePolicy } from "@terrarium/core/session";
+import type {
+  EscalationPolicy,
+  FaultScope,
+  RunResult,
+  SopMode,
+  TimePolicy,
+} from "@terrarium/core/session";
 import type { Blueprint } from "@terrarium/core/world";
 
 export type WorldOrigin = "builder" | "worldgen" | "import" | "sample";
@@ -45,6 +51,12 @@ export interface Recipe {
   readonly time: TimePolicy;
   /** Product versions of the protocol endpoints (BMCs follow each server's own profile). */
   readonly profiles: { readonly vcenter?: string; readonly vrops?: string };
+  /** What happens when the agent calls `ask_human` (ADR-0087 item 4). Absent: a fixed answer. */
+  readonly escalation?: EscalationPolicy;
+  /** `inside`: only faults the given tools can solve happen (ADR-0087 item 5). Absent: all of them. */
+  readonly faultScope?: FaultScope;
+  /** Whether the agent gets the scenario's runbook (ADR-0087 item 6). Absent: not at all. */
+  readonly sop?: SopMode;
 }
 
 /** Names and values people attach to tell results apart: team, version, a prompt variant (REQ-052). */

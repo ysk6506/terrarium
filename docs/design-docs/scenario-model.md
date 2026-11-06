@@ -9,12 +9,12 @@ covers:
   - packages/core/src/scenario/runner.ts
   - packages/core/src/scenario/library-facility.ts
 verification_log:
-  - "2026-11-04: event 이력 조건, set_outdoor_temp 지원, 채점표 사실 규칙, 운영 채점 시나리오를 model.ts·blocks.ts·runner.ts·library와 대조해 더함 (REQ-073, ADR-0075)"
   - "2026-11-04: library.ts·library-facility.ts는 채점 코드를 도우미 함수로 나눴을 뿐이고 문서 내용은 그대로임을 대조"
   - "2026-11-05: ADR-0101: 행동 종류에 펌웨어 올리기, 펌웨어 올리기와 작업 보고 절을 model.ts, conditions.ts, library-firmware.ts와 대조해 더했다"
   - "2026-11-06: 2026-11-06: ADR-0091(결정 1·2)·ADR-0102 구현: 서비스 층·OS 층 1차를 코드와 대조해 해당 절을 더하거나 고쳤다. 이 문서가 말하는 나머지 구조는 그대로다"
   - "2026-11-06: model.ts의 ScenarioDoc.scoring과 digest.ts, library-os.ts의 채점표(진단·재부팅 금지·끝에 정상)를 대조해 복구 우선 채점 절을 더했다 (REQ-088, ADR-0104)"
-covers_hash: b7f880ef04443350
+  - "2026-11-06: ScenarioDoc.runbook과 digest.ts의 해시 규칙, runner.ts의 skipFault를 절차서와 고장 범위 절에 대조해 더했다 (REQ-080, REQ-082)"
+covers_hash: 9fa5c3ff590d91b3
 ---
 # 시나리오 모델 (REQ-033, REQ-034)
 
@@ -73,6 +73,12 @@ covers_hash: b7f880ef04443350
 
 `scenarioDigest`는 벤치마크 키의 일부다. **동작과 채점에 영향을 주는 것만** 해시한다. 블록 위치, 캡션, 시나리오 이름을
 바꿔도 digest는 같으므로 화면 정리 때문에 벤치마크 집합이 갈라지지 않는다.
+절차서(`runbook`)는 에이전트가 하는 일과 SOP 준수 읽기를 바꾸므로 digest에 들어간다. 없으면 해시에 아무것도 더하지 않아 절차서 없는 시나리오의 digest는 그대로다.
+
+## 절차서와 고장 범위 (REQ-080, REQ-082, [ADR-0087](adr/0087-tool-scope-escalation-sop.md))
+
+시나리오 문서는 선택 칸 `runbook`(제목과 단계: 할 일·확인할 것·쓰는 툴)을 가질 수 있다. 실험이 이를 에이전트에게 줄지(안 줌·줌·찾게 함) 정한다.
+러너는 `skipFault` 선택지를 받는다. 실험이 고장 범위를 "준 툴 안에서만"으로 했을 때 세션이 넘겨 주며, 진단 정답에 나오지 않는 고장(배경 고장) 가운데 준 툴이 못 닿는 것은 일어나지 않고 흔적에 "일어나지 않음"으로 남는다. 고장마다 어떤 툴이 풀어 주는지는 코어의 표(`FAULT_TOOLS`)에 있다([툴 범위, 에스컬레이션, 절차서](tool-scope-and-sop.md)).
 
 ## 기본 제공 시나리오
 

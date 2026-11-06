@@ -1,7 +1,7 @@
 /** Messages between the server's main thread and a session worker (ADR-0027). Plain data only. */
 import type { EndReason } from "@terrarium/core/oracle";
 import type { AgentTask } from "@terrarium/core/scenario";
-import type { CallResult, RunResult } from "@terrarium/core/session";
+import type { CallResult, HumanAct, HumanResolution, RunResult } from "@terrarium/core/session";
 import type { ToolSpec } from "@terrarium/core/tools";
 import type { Blueprint, RunEvent } from "@terrarium/core/world";
 import type { PlainSessionConfig } from "./hosts";
@@ -25,6 +25,14 @@ export type ToWorker =
       readonly seq: number;
       readonly tool: string;
       readonly args: Record<string, unknown>;
+    }
+  | {
+      readonly kind: "human";
+      readonly id: string;
+      readonly seq: number;
+      readonly op:
+        | { readonly kind: "act"; readonly tool: string; readonly args: Record<string, unknown> }
+        | { readonly kind: "resolve"; readonly resolution: HumanResolution };
     }
   | {
       readonly kind: "finish";
@@ -56,6 +64,17 @@ export type FromWorker =
       readonly seq: number;
       readonly result: CallResult;
       /** What the run wrote while the call was made, apart from the answer: the agent never sees it. */
+      readonly events: readonly RunEvent[];
+    }
+  | {
+      readonly kind: "humaned";
+      readonly id: string;
+      readonly seq: number;
+      /** What a person did (an `act`). */
+      readonly act?: HumanAct;
+      /** What the waiting call got (a `resolve`), and the tools the agent has now. */
+      readonly result?: CallResult;
+      readonly specs: readonly ToolSpec[];
       readonly events: readonly RunEvent[];
     }
   | {

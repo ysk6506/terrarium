@@ -3,7 +3,7 @@
  * for people (Korean); descriptions are for the agent (English, as LLM tool descriptions usually are).
  */
 
-import { type Realism, standardDescription, TOOL_DOCS } from "./docs";
+import { type Realism, standardDescription, TOOL_DOCS, type ToolArea } from "./docs";
 
 export type ToolCategory = "observe" | "protocol" | "act" | "answer";
 
@@ -31,6 +31,8 @@ export interface ToolSpec {
   readonly category: ToolCategory;
   /** How common a tool like this is in a real operations team (ADR-0087). */
   readonly realism?: Realism;
+  /** The card of the tool picker it sits in (ADR-0087 item 1). */
+  readonly area?: ToolArea;
   /** True when the tool changes the simulated world (the oracle may reward or penalise it). */
   readonly mutating: boolean;
   readonly inputSchema: JsonSchema;
@@ -53,7 +55,7 @@ const list = (description: string, items = "string") => ({
   items: { type: items },
 });
 
-type RawSpec = Omit<ToolSpec, "realism" | "description">;
+type RawSpec = Omit<ToolSpec, "realism" | "area" | "description">;
 
 const RAW_SPECS: readonly RawSpec[] = [
   {
@@ -377,13 +379,37 @@ const RAW_SPECS: readonly RawSpec[] = [
       ["host", "cmd"],
     ),
   },
+  {
+    name: "ask_human",
+    title: "사람에게 묻기",
+    category: "observe",
+    mutating: false,
+    inputSchema: obj(
+      {
+        request: str("What you found, what you tried and what you need from the person"),
+      },
+      ["request"],
+    ),
+  },
+  {
+    name: "search_runbooks",
+    title: "절차서 찾기",
+    category: "observe",
+    mutating: false,
+    inputSchema: obj({ query: str("Words about the situation, e.g. disk full") }),
+  },
 ] as const; // prettier-ignore
 
 /** The tools with the description in the standard order and the realism tag (ADR-0087). */
 export const TOOL_SPECS: readonly ToolSpec[] = RAW_SPECS.map((raw) => {
   const doc = TOOL_DOCS[raw.name];
   if (!doc) throw new Error(`tool '${raw.name}' has no entry in TOOL_DOCS`);
-  return { ...raw, realism: doc.realism, description: standardDescription(doc, raw.mutating) };
+  return {
+    ...raw,
+    realism: doc.realism,
+    area: doc.area,
+    description: standardDescription(doc, raw.mutating),
+  };
 });
 
 export const TOOL_NAMES: readonly string[] = TOOL_SPECS.map((t) => t.name);
@@ -393,6 +419,13 @@ export function toolSpec(name: string): ToolSpec | undefined {
 }
 
 /**
+ * Tools an experiment gets only when its designer turns them on, even though real teams have them: the person
+ * on the other end of `ask_human` has to be arranged (ADR-0087 item 4), and runbooks are an experiment variable
+ * (item 6).
+ */
+export const OPT_IN_TOOLS: readonly string[] = ["ask_human", "search_runbooks"];
+
+/**
  * The protocol tools the default selection keeps: the shell. The faults of a host's operating system are solved on
  * the host (df, rm, systemctl), so a set without it cannot solve them (ADR-0091, REQ-088). The Redfish, vCenter, SNMP
  * and switch requests stay out of the default.
@@ -400,9 +433,17 @@ export function toolSpec(name: string): ToolSpec | undefined {
 const DEFAULT_PROTOCOL: readonly string[] = ["run_command"];
 
 /**
- * The default selection: everything an operator would have, minus raw protocol access except the shell. A selection
- * by how common a tool is in real operations (`realism`) is the third beta round's work (beta-rounds.md).
+ * The default selection (ADR-0087 item 2): the tools a real operations team has today (realism `common`), minus raw
+ * protocol access except the shell, minus the tools a designer opts into. Topology and impact tools (`rare`, `ideal`)
+ * stay out: giving them would measure our tools and not the agent.
  */
 export const DEFAULT_TOOLSET: readonly string[] = TOOL_SPECS.filter(
-  (t) => t.category !== "protocol" || DEFAULT_PROTOCOL.includes(t.name),
+  (t) =>
+    t.realism === "common" &&
+    !OPT_IN_TOOLS.includes(t.name) &&
+    (t.category !== "protocol" || DEFAULT_PROTOCOL.includes(t.name)),
 ).map((t) => t.name);
+
+/** The tools of one card of the picker, in catalog order. */
+export const toolsOfArea = (area: ToolArea): ToolSpec[] =>
+  TOOL_SPECS.filter((t) => t.area === area);
