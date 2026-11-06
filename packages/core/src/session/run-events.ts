@@ -13,6 +13,8 @@ import type {
   WorldCommand,
   WorldEvent,
 } from "@terrarium/core/world";
+import type { CounterpartDraft } from "./counterparts";
+import type { TicketDraft } from "./tickets";
 
 /** A person's event as it is written: the log numbers it. */
 type HumanInput = HumanEvent extends infer E ? (E extends unknown ? Omit<E, "seq"> : never) : never;
@@ -45,10 +47,18 @@ export class RunLog {
     return this.list.slice(count);
   }
 
+  /** What the other side and the tickets wrote since the last flush; it joins the world's events in time order. */
+  private waiting: RunEvent[] = [];
+
   private worldEvents(): RunEvent[] {
     const fresh = this.world.events(this.cursor).filter((e) => e.type !== "note");
     this.cursor = this.world.lastSeq();
-    return fresh.map((e) => this.fromWorld(e));
+    const events = fresh.map((e) => this.fromWorld(e));
+    if (this.waiting.length === 0) return events;
+    // a stable sort keeps the world's event first when both happened at the same moment
+    const merged = [...events, ...this.waiting].sort((a, b) => a.t - b.t);
+    this.waiting = [];
+    return merged;
   }
 
   private fromWorld(e: WorldEvent): RunEvent {
@@ -91,6 +101,16 @@ export class RunLog {
   /** The agent asked a person, a person did something for it, or the question was answered (ADR-0087 item 4). */
   human(event: HumanInput): void {
     this.add([...this.worldEvents(), { ...event, seq: 0 } as RunEvent]);
+  }
+
+  /** The other side of a hand-off did something (REQ-093): the world events up to it come first. */
+  counterpart(e: CounterpartDraft): void {
+    this.waiting.push({ ...e, seq: 0 } as RunEvent);
+  }
+
+  /** A work ticket was made or changed. */
+  ticket(e: TicketDraft): void {
+    this.waiting.push({ ...e, seq: 0 });
   }
 
   /** World events that happened with no call to carry them (time passing on its own). */

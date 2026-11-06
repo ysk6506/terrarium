@@ -11,7 +11,7 @@ import type { CrewLayer } from "./crew-layer";
 import type { Engine } from "./engine";
 
 type Focus = world3d.Focus;
-type Trouble = Pick<world3d.CrewWorld, "alarms" | "activity">;
+type Trouble = Pick<world3d.CrewWorld, "alarms" | "activity" | "partners">;
 
 /** What the crew module brings (it is loaded when the camera first goes into a room, so the first screen does not carry it). */
 export interface CrewKit {

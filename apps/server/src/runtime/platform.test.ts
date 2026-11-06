@@ -378,7 +378,7 @@ describe("what the server says about itself [REQ-031] [REQ-033]", () => {
       queue: { running: 0, queued: 0 },
     });
     expect(meta.harnesses.map((h) => [h.id, h.status, h.agents.length])).toEqual([
-      ["builtin", "ok", 3],
+      ["builtin", "ok", 4],
       ["down", "unreachable", 0],
     ]);
     await p.meta(JIMIN);

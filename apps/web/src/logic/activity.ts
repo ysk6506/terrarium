@@ -39,8 +39,20 @@ export interface Worker {
   readonly lastAt: number;
 }
 
+/** Another team at work on a machine for a run (REQ-093): the engineer the 3D view shows walking there. */
+export interface PartnerWork {
+  readonly runId: string;
+  readonly handoff: string;
+  readonly device: string;
+  readonly team: string;
+  readonly who: "team" | "vendor";
+  readonly replacing: boolean;
+  readonly onSite: boolean;
+}
+
 export interface ActivityState {
   readonly workers: readonly Worker[];
+  readonly partners?: readonly PartnerWork[];
 }
 
 export const noActivity: ActivityState = { workers: [] };
@@ -59,7 +71,8 @@ function started(
   now: number,
 ): ActivityState {
   const known = state.workers.some((w) => w.runId === runId);
-  if (known) return { workers: state.workers.map((w) => (w.runId === runId ? { ...w, who } : w)) };
+  if (known)
+    return { ...state, workers: state.workers.map((w) => (w.runId === runId ? { ...w, who } : w)) };
   const fresh: Worker = {
     runId,
     who,
@@ -69,7 +82,23 @@ function started(
     startedAt: now,
     lastAt: now,
   };
-  return { workers: [...state.workers, fresh].slice(-MAX_WORKERS) };
+  return { ...state, workers: [...state.workers, fresh].slice(-MAX_WORKERS) };
+}
+
+const sameWork = (a: PartnerWork, b: Pick<PartnerWork, "runId" | "handoff" | "device">) =>
+  a.runId === b.runId && a.handoff === b.handoff && a.device === b.device;
+
+function partnered(
+  state: ActivityState,
+  event: Extract<ActivityEvent, { type: "partner" }>,
+): ActivityState {
+  const rest = (state.partners ?? []).filter((p) => !sameWork(p, event));
+  if (event.what === "done") return { ...state, partners: rest };
+  const { runId, handoff, device, team, who, replacing, onSite } = event;
+  return {
+    ...state,
+    partners: [...rest, { runId, handoff, device, team, who, replacing, onSite }],
+  };
 }
 
 function called(w: Worker, event: Extract<ActivityEvent, { type: "call" }>, now: number): Worker {
@@ -96,10 +125,16 @@ export function applyActivity(
       return started(state, event.runId, event.who, now);
     case "call":
       return {
+        ...state,
         workers: state.workers.map((w) => (w.runId === event.runId ? called(w, event, now) : w)),
       };
+    case "partner":
+      return partnered(state, event);
     case "end":
-      return { workers: state.workers.filter((w) => w.runId !== event.runId) };
+      return {
+        workers: state.workers.filter((w) => w.runId !== event.runId),
+        partners: (state.partners ?? []).filter((p) => p.runId !== event.runId),
+      };
   }
 }
 
@@ -107,7 +142,7 @@ export function applyActivity(
 export function parseActivity(data: string): ActivityEvent | undefined {
   try {
     const event = JSON.parse(data) as ActivityEvent;
-    return event && ["start", "call", "end"].includes(event.type) ? event : undefined;
+    return event && ["start", "call", "partner", "end"].includes(event.type) ? event : undefined;
   } catch {
     return undefined;
   }

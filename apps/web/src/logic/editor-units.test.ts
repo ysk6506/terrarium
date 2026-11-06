@@ -70,7 +70,7 @@ describe("durations are minutes wherever people read them [REQ-071]", () => {
       unit: "분",
       value: 60,
       min: 1,
-      max: 1440,
+      max: 5760,
     });
     const until = with1("wait_until", { timeoutSeconds: 1800 });
     expect(field(until.doc, until.id, "timeoutSeconds")).toMatchObject({ unit: "분", value: 30 });

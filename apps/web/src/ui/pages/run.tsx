@@ -21,6 +21,7 @@ import { SeriesGrid, Timeline } from "../results";
 import { RunReplay } from "../topology/RunReplay";
 import { EscalationCards } from "./escalation";
 import { HumanBlock, SopBlock } from "./run-blocks";
+import { HandoffSection } from "./run-handoffs";
 import { CallsTable, DiagnosisCompare, ScoreSheet, TelemetryPanel } from "./run-parts";
 
 type Tab = "timeline" | "calls" | "metrics" | "harness";
@@ -242,6 +243,7 @@ export function RunPage({ id }: { readonly id: string }) {
             <Note tone="warn">{commonPathNote(view.commonReach)}</Note>
           )}
           <Replay view={view} reload={state.reload} />
+          <HandoffSection view={view} live={view.run.status === "running"} />
           <Verdicts view={view} />
           <Records view={view} />
         </>

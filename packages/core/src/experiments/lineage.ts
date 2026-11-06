@@ -4,6 +4,7 @@
  * shown in words; the family tree can be walked both ways.
  */
 import { InvalidValueError } from "@terrarium/core/kernel";
+import { describeLeadSettings, domainInfo } from "@terrarium/core/world";
 import type { Experiment, Metadata, Recipe, Snapshot, Subject } from "./model";
 import { benchmarkKey, normalizeTools } from "./recipe";
 
@@ -80,6 +81,8 @@ const LABELS: Readonly<Record<keyof Recipe, string>> = {
   escalation: "에스컬레이션 처리",
   faultScope: "고장 범위",
   sop: "절차서",
+  domains: "내 도메인",
+  leadTimes: "담당자·벤더 설정",
 };
 
 const ESCALATION_TEXT = {
@@ -102,6 +105,11 @@ const TEXTS: Partial<Record<keyof Recipe, (r: Recipe) => string>> = {
   escalation: (r) => ESCALATION_TEXT[r.escalation?.mode ?? "auto"],
   faultScope: (r) => SCOPE_TEXT[r.faultScope ?? "all"],
   sop: (r) => SOP_TEXT[r.sop ?? "none"],
+  domains: (r) =>
+    r.domains && r.domains.length > 0
+      ? r.domains.map((d) => domainInfo(d).label).join(", ")
+      : "전체",
+  leadTimes: (r) => describeLeadSettings(r.leadTimes),
 };
 
 function text(field: keyof Recipe, r: Recipe): string {

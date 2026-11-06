@@ -32,6 +32,7 @@ import {
 import {
   type Args,
   runbookPrompt,
+  scopeTools,
   Toolbox,
   type ToolContext,
   type ToolResult,
@@ -44,6 +45,7 @@ import {
   World,
   type WorldEvent,
 } from "@terrarium/core/world";
+import { HandOffs, scopeOf } from "./hand-offs";
 import type { HumanAct, HumanRequest, HumanResolution } from "./human";
 import { HUMAN_CAUSE, HumanLine } from "./human-line";
 import { DEFAULT_RECORDER, MetricRecorder, type MetricSeries, RECORDED_METRICS } from "./recorder";
@@ -75,7 +77,10 @@ const MAX_SERIES = 24;
 
 /** World events the agent caused (tools and protocol facades), as opposed to scenario and physics. */
 const byAgent = (e: WorldEvent) =>
-  e.cause !== "physics" && !e.cause.startsWith("scenario:") && e.cause !== HUMAN_CAUSE;
+  e.cause !== "physics" &&
+  !e.cause.startsWith("scenario:") &&
+  !e.cause.startsWith("counterpart:") &&
+  e.cause !== HUMAN_CAUSE;
 
 export class Session {
   readonly world: World;
@@ -87,6 +92,7 @@ export class Session {
   private readonly time: TimePolicy;
   private readonly calls: ToolCallRecord[] = [];
   private readonly log: RunLog;
+  private readonly handOffs: HandOffs;
   private state: SessionStatus = "ready";
   private task: AgentTask | undefined;
   private diagnosis: Diagnosis | undefined;
@@ -105,7 +111,17 @@ export class Session {
     this.physics = new Physics(world);
     this.time = config.time ?? DEFAULT_TIME;
     const finder = config.sop === "search" ? ["search_runbooks"] : [];
-    this.toolbox = new Toolbox([...new Set([...config.tools, ...ALWAYS_TOOLS, ...finder])]);
+    this.toolbox = new Toolbox([
+      ...new Set([...scopeTools(config.tools, config.domains), ...ALWAYS_TOOLS, ...finder]),
+    ]);
+    this.handOffs = new HandOffs({
+      world,
+      log: this.log,
+      seed: config.seed,
+      leadTimes: config.leadTimes,
+      originT: () => this.task?.startedAt ?? world.time(),
+      ticketsOn: () => this.toolbox.has("create_ticket"),
+    });
     this.recorder = new MetricRecorder(world, {
       sampleSeconds: config.sampleSeconds ?? DEFAULT_RECORDER.sampleSeconds,
       retentionSeconds: config.retentionSeconds ?? DEFAULT_RECORDER.retentionSeconds,
@@ -145,6 +161,7 @@ export class Session {
         this.diagnosis = d;
         this.diagnosedAt = world.time();
       },
+      ops: this.handOffs.port,
     };
   }
 
@@ -367,10 +384,13 @@ export class Session {
   private advance(seconds: number): void {
     const end = this.world.time() + seconds;
     for (let now = this.world.time(); now < end - 1e-9; now = this.world.time()) {
-      const wake = this.runner.nextWakeAt();
-      const toWake = wake !== undefined && wake > now ? wake - now : Number.POSITIVE_INFINITY;
+      const wakes = [this.runner.nextWakeAt(), this.handOffs.nextWakeAt(now)].filter(
+        (w): w is number => w !== undefined && w > now,
+      );
+      const toWake = wakes.length > 0 ? Math.min(...wakes) - now : Number.POSITIVE_INFINITY;
       this.physics.step(Math.min(DEFAULT_PHYSICS.stepSeconds, end - now, toWake));
       this.runner.tick();
+      this.handOffs.tick();
       this.recorder.sampleIfDue();
     }
   }
@@ -386,6 +406,7 @@ export class Session {
     const outcome = {
       doc: this.config.scenario,
       world: this.world,
+      ...(this.config.domains ? { domains: this.config.domains } : {}),
       toolCalls: this.calls,
       events: this.log.events,
       endedAt: this.world.time(),
@@ -432,6 +453,7 @@ export class Session {
         oracle: ORACLE_VERSION,
       },
       seed: this.config.seed,
+      ...scopeOf(this.config.domains, this.config.leadTimes),
       simTime: { scenarioStart: this.scenarioStart, agentStart: task.startedAt, end: endedAt },
       recorderBytes: this.recorder.bytes,
       ...this.extras(),

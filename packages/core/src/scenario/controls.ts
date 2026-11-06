@@ -328,6 +328,7 @@ export const FAULT_RESPONSES: Readonly<Record<FaultType, FaultResponse>> = {
   sensor_drift: { remedy: "diagnose", via: [] },
   cpu_runaway: { remedy: "mitigate", via: SHED },
   bmc_unresponsive: { remedy: "diagnose", via: [] },
+  memory_failure: { remedy: "diagnose", via: [] },
   firmware_update_failure: { remedy: "fix", via: ["firmware.update"] },
   link_down: { remedy: "diagnose", via: [] },
   switch_failure: { remedy: "diagnose", via: [] },

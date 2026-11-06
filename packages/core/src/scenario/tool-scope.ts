@@ -57,6 +57,7 @@ export const FAULT_TOOLS: Readonly<Record<ScopeKey, ToolNeed>> = {
   sensor_drift: NONE,
   cpu_runaway: limit(...SHED),
   bmc_unresponsive: NONE,
+  memory_failure: NONE,
   firmware_update_failure: fix("redfish_request"),
   link_down: NONE,
   switch_failure: NONE,

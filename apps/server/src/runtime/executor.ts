@@ -196,6 +196,8 @@ async function openSession(
       ...(experiment.recipe.escalation ? { escalation: experiment.recipe.escalation } : {}),
       ...(experiment.recipe.faultScope ? { faultScope: experiment.recipe.faultScope } : {}),
       ...(experiment.recipe.sop ? { sop: experiment.recipe.sop } : {}),
+      ...(experiment.recipe.domains ? { domains: experiment.recipe.domains } : {}),
+      ...(experiment.recipe.leadTimes ? { leadTimes: experiment.recipe.leadTimes } : {}),
     });
   } catch (err) {
     return `세션을 열 수 없어요: ${(err as Error).message}`;
@@ -275,11 +277,23 @@ function endpointFor(deps: ExecutorDeps, at: Waiter, pace: Pace) {
     call: async (name: string, args: Record<string, unknown>): Promise<ToolCallOutcome> => {
       const r = await awaitPerson(deps, await session.call(name, args), at, pace);
       counter.calls++;
-      deps.logs?.record(run.id, session.eventsSince?.(deps.logs.count(run.id)) ?? [], {
-        t: r.t,
-        tool: name,
-        real: deps.stamps.now(),
-      });
+      const fresh = session.eventsSince?.(deps.logs?.count(run.id) ?? 0) ?? [];
+      deps.logs?.record(run.id, fresh, { t: r.t, tool: name, real: deps.stamps.now() });
+      for (const event of fresh) {
+        if (event.kind !== "counterpart" || event.what === "handed") continue;
+        deps.activity?.(worldId, {
+          type: "partner",
+          runId: run.id,
+          t: event.t,
+          handoff: event.handoff,
+          device: event.fault.target,
+          what: event.what,
+          team: event.team,
+          who: event.fault.who,
+          replacing: event.fault.kind === "replace",
+          onSite: event.fault.onSite,
+        });
+      }
       const effect = callEffect(name, args);
       const targets = callTargets(name, args);
       deps.emit(run.experimentId, {

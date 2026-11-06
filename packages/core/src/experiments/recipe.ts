@@ -5,6 +5,7 @@
  */
 import { hashValue } from "@terrarium/core/kernel";
 import { TOOL_NAMES } from "@terrarium/core/tools";
+import { isDefaultLeadSettings, resolveLeadSettings } from "@terrarium/core/world";
 import type { Recipe, Snapshot } from "./model";
 
 export const MAX_SEEDS = 20;
@@ -95,9 +96,21 @@ export function recipeProblems(recipe: Recipe, ctx: RecipeContext): string[] {
 /** The comparable task: same world and scenario versions, same scoring, same time and product versions. */
 export function benchmarkKey(
   snapshot: Snapshot,
-  recipe: Pick<Recipe, "time" | "profiles" | "faultScope">,
+  recipe: Pick<Recipe, "time" | "profiles" | "domains" | "leadTimes" | "faultScope">,
 ): string {
+  // domains and lead times change the task, so they are in the key; unset they leave the key as it always was
+  const scope =
+    (recipe.domains && recipe.domains.length > 0) ||
+    (recipe.leadTimes && !isDefaultLeadSettings(recipe.leadTimes))
+      ? {
+          scope: {
+            domains: [...(recipe.domains ?? [])].sort(),
+            leadTimes: resolveLeadSettings(recipe.leadTimes),
+          },
+        }
+      : {};
   return hashValue({
+    ...scope,
     world: snapshot.worldDigest,
     scenario: snapshot.scenarioDigest,
     oracle: snapshot.oracle,

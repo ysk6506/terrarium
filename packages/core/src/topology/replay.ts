@@ -11,6 +11,7 @@ import type { Catalog } from "@terrarium/core/catalog";
 import {
   type Alarm,
   type BlueprintIndex,
+  type CounterpartEvent,
   type EntityState,
   type Fault,
   initialState,
@@ -33,6 +34,8 @@ export interface ReplayState {
   readonly last?: ToolEvent;
   /** The equipment that call named: "where the agent is touching", kept until the next call. */
   readonly touched: ReadonlySet<string>;
+  /** Equipment another team is working on at `t`, with the words for its tile (REQ-093). */
+  readonly partners: ReadonlyMap<string, string>;
   /** Tool calls made by `t`. */
   readonly calls: number;
   /** The run was closed by `t`. */
@@ -44,6 +47,7 @@ interface Acc {
   alarms: Map<string, Alarm>;
   links: Set<string>;
   patches: Map<string, Record<string, unknown>>;
+  partners: Map<string, string>;
   last?: ToolEvent;
   calls: number;
   closed: boolean;
@@ -102,6 +106,18 @@ function applyCommand(acc: Acc, c: WorldCommand, t: number): void {
   }
 }
 
+/** What the tile says while another team works on the equipment: "교체 중 · 벤더", "작업 중 · 네트워크 팀". */
+export const partnerText = (who: "team" | "vendor", team: string, replacing: boolean): string =>
+  `${replacing ? "교체 중" : "작업 중"} · ${who === "vendor" ? "벤더" : team}`;
+
+/** A team starts working on a piece of equipment, and is done with it. */
+function applyCounterpart(acc: Acc, e: CounterpartEvent): void {
+  if (e.what === "handed") return;
+  const { target, kind, who } = e.fault;
+  if (e.what === "done") acc.partners.delete(target);
+  else acc.partners.set(target, partnerText(who, e.team, kind === "replace"));
+}
+
 /** The index of the first event after `t` (events are in time order). */
 function upTo(events: readonly RunEvent[], t: number): number {
   let lo = 0;
@@ -127,6 +143,7 @@ export function stateAt(events: readonly RunEvent[], t: number): ReplayState {
     alarms: new Map(),
     links: new Set(),
     patches: new Map(),
+    partners: new Map(),
     calls: 0,
     closed: false,
   };
@@ -137,7 +154,8 @@ export function stateAt(events: readonly RunEvent[], t: number): ReplayState {
     else if (e.kind === "tool") {
       acc.calls++;
       if (e.targets.length > 0) acc.last = e;
-    } else if (e.what === "closed") acc.closed = true;
+    } else if (e.kind === "counterpart") applyCounterpart(acc, e);
+    else if (e.kind === "score" && e.what === "closed") acc.closed = true;
   }
   return {
     t,
@@ -145,6 +163,7 @@ export function stateAt(events: readonly RunEvent[], t: number): ReplayState {
     alarms: [...acc.alarms.values()],
     linksDown: acc.links,
     patches: acc.patches,
+    partners: acc.partners,
     touched: new Set(acc.last?.targets ?? []),
     calls: acc.calls,
     closed: acc.closed,
@@ -186,5 +205,6 @@ export function replaySource(base: TopologySource, state: ReplayState): Topology
     alarms: () => state.alarms,
     linkUp: (id) => !state.linksDown.has(id),
     touched: state.touched,
+    partners: state.partners,
   };
 }

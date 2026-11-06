@@ -9,6 +9,8 @@
  * made before it (the host never sees inside a simulated step), so for those it is an upper bound, not a
  * stopwatch.
  */
+import type { Domain } from "./domains";
+import type { WorkKind } from "./lead-times";
 import type { WorldCommand } from "./world";
 
 /** What a tool call does to the world: it only looks, changes something, lets time pass, or hands in the answer. */
@@ -113,4 +115,68 @@ export type HumanEvent = Stamp &
       }
   );
 
-export type RunEvent = ToolEvent | WorldRunEvent | ScoreEvent | HumanEvent;
+/** One fault handed to a team, and when it is gone (REQ-093, ADR-0100). Times are world seconds. */
+export interface HandedFault {
+  readonly faultId: string;
+  readonly faultType: string;
+  readonly target: string;
+  /** How long after the hand-off it is gone, in ten-minute steps; it is gone exactly then. */
+  readonly etaSeconds: number;
+  readonly doneAt: number;
+  /** When the last stretch begins: someone arrives on site, or starts at the console. */
+  readonly startsAt: number;
+  readonly kind: WorkKind;
+  /** Whether a person comes to the equipment (a part is changed, a breaker is reset). */
+  readonly onSite: boolean;
+  /** The team itself, or the vendor it calls. */
+  readonly who: "team" | "vendor";
+}
+
+/**
+ * What the other side does with a hand-off, in the order it happens: `handed` (the agent gave the domain over, with
+ * the faults it had then), `started` (the last stretch of the wait begins: an engineer is on site or at the console)
+ * and `done` (the fault is gone). They are the events `events_since` shows the agent and the topology time bar marks.
+ */
+export type CounterpartEvent = Stamp & {
+  readonly kind: "counterpart";
+  readonly handoff: string;
+  readonly domain: Domain;
+  /** "서버 팀", or the vendor's name when it is the vendor who works. */
+  readonly team: string;
+  readonly summary: string;
+} & (
+    | { readonly what: "handed"; readonly note?: string; readonly faults: readonly HandedFault[] }
+    | { readonly what: "started" | "done"; readonly fault: HandedFault }
+  );
+
+export type TicketStatus = "mine" | "waiting" | "done";
+
+export interface TicketSnapshot {
+  readonly id: string;
+  readonly title: string;
+  readonly status: TicketStatus;
+  /** Whom the agent waits for (status waiting). */
+  readonly waitingFor?: string;
+  /** World time by which it is due, or by which the other side will have finished. */
+  readonly dueAt?: number;
+  readonly note?: string;
+  /** The hand-off it was made for. */
+  readonly handoff?: string;
+}
+
+/** The agent's work tickets, written when one is made or changed (the board reads the latest of each). */
+export interface TicketEvent extends Stamp {
+  readonly kind: "ticket";
+  readonly what: "created" | "updated";
+  readonly ticket: TicketSnapshot;
+  /** Whether the system made or moved it (a hand-off, a finished hand-off) and not the agent. */
+  readonly auto: boolean;
+}
+
+export type RunEvent =
+  | ToolEvent
+  | WorldRunEvent
+  | ScoreEvent
+  | HumanEvent
+  | CounterpartEvent
+  | TicketEvent;

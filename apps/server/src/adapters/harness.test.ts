@@ -73,7 +73,12 @@ describe("built-in reference agents use only the tools [REQ-008] [REQ-031]", () 
     });
     expect(s.finish().endReason).toBe("agent_finished");
     expect((await harness.run(request(s, "chef"))).status).toBe("error");
-    expect((await harness.agents()).map((a) => a.id)).toEqual(["triage", "guess", "idle"]);
+    expect((await harness.agents()).map((a) => a.id)).toEqual([
+      "triage",
+      "guess",
+      "idle",
+      "operator",
+    ]);
     expect(harness.info).toMatchObject({ kind: "scripted", toolTransport: "in-process" });
   });
 

@@ -32,7 +32,8 @@ export type HostCause =
   | "memory"
   | "heat"
   | "cpu"
-  | "storage";
+  | "storage"
+  | "hardware";
 
 export interface HostVerdict {
   readonly id: string;
@@ -183,6 +184,8 @@ function serverDead(world: WorldReader, id: string, look: "all" | "up"): HostVer
   const who = name(world, id);
   if (!s.powered) return dead(id, `${who} 전원이 없어요`, "power");
   if (!s.adminOn) return dead(id, `${who} 꺼져 있어요`, "off");
+  if (world.faultsOn(id).some((f) => f.type === "memory_failure"))
+    return dead(id, `${who} 메모리 불량으로 멈췄어요`, "hardware");
   if (s.rebooting) return dead(id, `${who} 재부팅 중이에요`, "reboot");
   if (!reachable(world, id)) return dead(id, `${who}에 네트워크로 닿지 않아요`, "network");
   if (cutOffHosts(world).some((c) => c.host.id === id))

@@ -76,7 +76,7 @@ function RunLine({ draft }: { readonly draft: Draft }) {
   return (
     <p className="small">
       {draft.runs}회 실행. 툴 {experiment.countTools(draft)}개
-      {draft.time.kind === "lockstep" ? ", 결과가 재현돼요" : ", 벽시계 시간"}.
+      {draft.time.kind === "lockstep" ? ", 결과가 재현돼요" : ", 실제 시간"}.
     </p>
   );
 }

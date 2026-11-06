@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { experiment, hiddenWarning, howWords, toolPicker } from "../../logic";
 import { useApp } from "../context";
 import { Button, Check, Note, NumberField, SelectField, TextField } from "../kit";
+import { DomainScope } from "./experiment-domains";
 import { ExperimentMetadata, NoHarness, VersionPreview } from "./experiment-subject";
 import { HumanSettings } from "./human-settings";
 import { ScenarioPick } from "./scenario-pick";
@@ -266,6 +267,7 @@ export function HowStep({
     <section className="wizard-step stack">
       <StepHead n={3} title="어떻게 시험할까요?" problems={problems} />
       <RunsField draft={draft} set={set} />
+      <DomainScope draft={draft} set={set} />
       <ToolPicker
         selected={draft.tools}
         onChange={(tools) => set(experiment.withTools(draft, tools))}

@@ -12,7 +12,7 @@ import { CREW_SCALE, crewModelOf, desk, laptop, SHIRTS, toolbox } from "./crew-m
 import type { Engine } from "./engine";
 
 type Role = world3d.CrewRole;
-type Trouble = Pick<world3d.CrewWorld, "alarms" | "activity">;
+type Trouble = Pick<world3d.CrewWorld, "alarms" | "activity" | "partners">;
 
 export interface CrewLayer {
   readonly group: THREE.Group;

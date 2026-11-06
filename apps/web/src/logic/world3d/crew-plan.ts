@@ -98,6 +98,8 @@ interface Errand {
   readonly way: Poly;
   readonly device?: string;
   readonly forAgent: boolean;
+  /** For another team's hand-off (REQ-093). */
+  readonly forPartner?: boolean;
   readonly toDoor: boolean;
   /** Seconds the patrol is moved on by when the walk back ends, so the person takes it up where they arrived. */
   readonly shift: number;
@@ -209,7 +211,16 @@ function build(env: Env): Plan {
   const call = tasks.find((t) => t.critical && t.ageS > TECHNICIAN_AFTER_S);
   const tech = crew.people.find((p) => p.role === "technician");
   const spot = call ? spotOf(crew, call.device, true) : undefined;
-  if (call && tech && spot)
+  // the hand-off of a team comes first: its engineer is the one who walks in from the door
+  const partner = env.world.partners?.find((p) => spotOf(crew, p.device, true));
+  const partnerSpot = partner ? spotOf(crew, partner.device, true) : undefined;
+  if (partner && tech && partnerSpot)
+    out.set(tech.id, {
+      ...go(routeOf(crew.scene, crew.grid, crew.aisles, crew.door, partnerSpot), undefined, false),
+      device: partner.device,
+      forPartner: true,
+    });
+  else if (call && tech && spot)
     out.set(tech.id, go(routeOf(crew.scene, crew.grid, crew.aisles, crew.door, spot), call, false));
   sendBack(env, out);
   return out;
@@ -278,6 +289,7 @@ function backState(crew: Crew, p: CrewPerson, e: Errand, ctx: Walk): CrewState {
 
 /** What a person on the way to a machine is doing: going, working there, or doing it for an agent. */
 function situationOf(p: CrewPerson, e: Errand, arrived: boolean): CrewSituation {
+  if (e.forPartner) return "partner";
   if (e.forAgent) return "agent";
   if (p.role === "technician") return "technician";
   return arrived ? "working" : "going";
@@ -288,6 +300,7 @@ function goState(crew: Crew, p: CrewPerson, e: Errand, ctx: Walk): CrewState {
   const base = {
     ...(e.device ? { device: e.device } : {}),
     forAgent: e.forAgent,
+    ...(e.forPartner ? { forPartner: true } : {}),
     situation: situationOf(p, e, arrived),
     x: at.x,
     z: at.z,
@@ -371,7 +384,7 @@ const MEMORY = 4;
 /** The state that follows `prev` when the matter changes at clock time `from`. */
 export function nextWorld(
   prev: CrewWorld | undefined,
-  trouble: Pick<CrewWorld, "alarms" | "activity">,
+  trouble: Pick<CrewWorld, "alarms" | "activity" | "partners">,
   from: number,
 ): CrewWorld {
   const keep = (w: CrewWorld | undefined, depth: number): CrewWorld | undefined =>
@@ -379,6 +392,7 @@ export function nextWorld(
       ? {
           alarms: w.alarms,
           activity: w.activity,
+          ...(w.partners ? { partners: w.partners } : {}),
           ...(w.from === undefined ? {} : { from: w.from }),
           ...(w.before ? { before: keep(w.before, depth - 1) as CrewWorld } : {}),
         }
@@ -387,6 +401,7 @@ export function nextWorld(
   return {
     alarms: trouble.alarms,
     activity: trouble.activity,
+    ...(trouble.partners ? { partners: trouble.partners } : {}),
     from,
     ...(before ? { before } : {}),
   };

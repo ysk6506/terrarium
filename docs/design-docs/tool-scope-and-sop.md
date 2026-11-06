@@ -12,9 +12,10 @@ covers:
   - packages/core/src/session/human-line.ts
   - packages/core/src/session/tool-pick.ts
   - apps/server/src/runtime/escalations.ts
-covers_hash: 1161d68abc2c9ae6
+covers_hash: 68cf958772b36f03
 verification_log:
   - "2026-11-06: 새 문서: tools/docs.ts·runbook.ts, scenario/tool-scope.ts·sop.ts, session/human.ts·human-line.ts·tool-pick.ts, server escalations.ts를 읽고 규칙·표·상태 흐름을 적었다 (REQ-080~082, ADR-0087, ADR-0105)"
+  - "2026-11-06: 2a·2b 합치기"
 ---
 # 툴 범위, 에스컬레이션, 절차서 (REQ-080~082, ADR-0087, ADR-0105)
 

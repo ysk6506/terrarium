@@ -22,6 +22,7 @@ export type FaultType =
   | "cpu_runaway"
   | "vm_cpu_spike"
   | "bmc_unresponsive"
+  | "memory_failure"
   | "firmware_update_failure"
   | "chiller_failure"
   | "chiller_degraded"
@@ -271,6 +272,15 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
     type: "bmc_unresponsive",
     label: "BMC 무응답",
     description: "BMC(Redfish)가 응답하지 않아요",
+    targets: ["server"],
+    params: [],
+    status: "supported",
+    domain: "server",
+  },
+  {
+    type: "memory_failure",
+    label: "메모리 불량",
+    description: "메모리 모듈이 불량이라 서버가 멈춰요. 모듈을 바꿔야 돌아와요",
     targets: ["server"],
     params: [],
     status: "supported",

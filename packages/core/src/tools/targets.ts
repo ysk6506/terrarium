@@ -39,7 +39,15 @@ export const TARGET_ARGS: Readonly<Record<string, readonly string[]>> = {
   submit_diagnosis: ["rootCause"],
   ask_human: [],
   search_runbooks: [],
+  escalate: [],
+  events_since: [],
+  create_ticket: [],
+  update_ticket: [],
+  list_tickets: [],
 };
+
+/** Work tickets are the agent's own notes: they change nothing in the world, so they are not acts. */
+const TICKET_TOOLS: readonly string[] = ["create_ticket", "update_ticket", "list_tickets"];
 
 /** The entity ids a call names, in argument order, without repeats; nothing for a tool that names none. */
 export function callTargets(name: string, args: Readonly<Record<string, unknown>>): string[] {
@@ -85,6 +93,7 @@ export function callEffect(name: string, args: Readonly<Record<string, unknown>>
   if (!spec) return "observe";
   if (spec.category === "answer") return "answer";
   if (name === "wait") return "wait";
+  if (TICKET_TOOLS.includes(name)) return "observe";
   if (spec.category === "act") return "act";
   if (!spec.mutating) return "observe";
   const writes = WRITES[name];

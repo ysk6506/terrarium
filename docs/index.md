@@ -54,6 +54,7 @@ verification_log:
 - [측정의 신뢰 — 효율 점수는 과제를 푼 만큼만, 시험지는 기준선 에이전트로 점검](design-docs/measurement.md)
 - [세계 만들기 검토 — 설명 없이도 되는가, 토스의 원칙으로](design-docs/world-builder-review.md)
 - [고장 종류별 리드타임 — 넘기면 얼마나 걸려 사라지나](design-docs/lead-times.md)
+- [도메인과 가상 담당자 — 내 도메인 밖의 고장은 넘기고, 기다리는 동안 다른 일을 한다](design-docs/domains-and-counterparts.md)
 - [시나리오 편집기 검토 — 처음 쓰는 사람의 눈으로, 토스의 원칙으로](design-docs/scenario-editor-review.md)
 - [용어집 — 화면에 쓰는 말은 여기서 정한다](design-docs/glossary.md)
 
@@ -163,6 +164,7 @@ verification_log:
 - [0082 느린 기계에서는 멈추지 않고 줄인다 — 품질·부하 시험 기대값을 고친다](design-docs/adr/0082-quality-degrade-amend-tests.md)
 - [0104 복구 우선 채점을 구현하면서 시험 세 개의 기대값을 고친다](design-docs/adr/0104-recovery-scoring-amend-tests.md)
 - [0105 툴 범위·에스컬레이션·절차서를 구현하면서 시험의 기대값을 고친다](design-docs/adr/0105-tool-scope-sop-amend-tests.md)
+- [0106 도메인·넘기기를 구현하면서 시험 두 개의 기대값을 고친다 — 에이전트 투입의 제한 시간 상한, 서버룸 사람의 말 묶음](design-docs/adr/0106-domains-escalate-amend-tests.md)
 - [0097 토폴로지 보기 ①이 건드리는 보호 경로 — 새 코어 단위, UX 여정, 두 문서의 앞부분](design-docs/adr/0097-topology-amend-tests.md)
 
 ## 계획과 부채

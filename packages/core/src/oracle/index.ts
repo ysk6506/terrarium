@@ -1,4 +1,14 @@
 /** core.oracle: scoring an agent run against the scenario's scoring sheet (REQ-007, REQ-037). */
+
+export {
+  analyzeHandoffs,
+  type HandoffFault,
+  type HandoffInput,
+  type HandoffReport,
+  type HandoffRow,
+  NEEDLESS_CAP,
+  NEEDLESS_PENALTY,
+} from "./handoff";
 export {
   type DiagnosisFacts,
   END_REASON_LABELS,

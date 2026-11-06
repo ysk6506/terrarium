@@ -15,6 +15,7 @@ import {
   reportedInletC,
   type WorldPort,
 } from "@terrarium/core/world";
+import { OPS_HANDLERS, type OpsPort } from "./handlers-ops";
 import { SERVICE_HANDLERS } from "./handlers-service";
 import { type Runbook, searchRunbooks } from "./runbook";
 
@@ -42,6 +43,8 @@ export interface ToolContext {
   readonly submit?: (diagnosis: Diagnosis) => void;
   /** The runbooks an agent can find with `search_runbooks` (ADR-0087 item 6); none when the experiment gives none. */
   readonly runbooks?: readonly Runbook[];
+  /** Handing work over to another team and keeping tickets (REQ-093); the session provides it. */
+  readonly ops?: OpsPort;
 }
 
 export type Args = Readonly<Record<string, unknown>>;
@@ -447,6 +450,7 @@ const searchRunbooksTool: Handler = (ctx, args) => {
 
 export const HANDLERS: Readonly<Record<string, Handler>> = {
   ...SERVICE_HANDLERS,
+  ...OPS_HANDLERS,
   list_alarms: listAlarms,
   list_entities: listEntities,
   get_entity: getEntity,

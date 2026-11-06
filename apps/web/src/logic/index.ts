@@ -105,6 +105,7 @@ export {
   watts,
   won,
 } from "./format";
+export * as handoffs from "./handoffs";
 export { HEADLINES, type Headline, pickHeadline, STARTS, type Start } from "./home-copy";
 export * as howWords from "./how-words";
 export { Identity, type KeyValueStore, nameProblem } from "./identity";

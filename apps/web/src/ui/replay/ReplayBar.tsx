@@ -141,7 +141,7 @@ export function ReplayBar(props: ReplayBarProps) {
             style={{ left: `${at}%` }}
             onClick={() => props.onT(mark.t)}
           >
-            {MARK_LABELS[mark.kind]} {clockText(mark.t)}
+            {mark.label ?? MARK_LABELS[mark.kind]} {clockText(mark.t)}
           </button>
         ))}
       </div>

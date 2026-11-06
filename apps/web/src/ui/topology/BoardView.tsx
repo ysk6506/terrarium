@@ -76,7 +76,11 @@ export interface Pulse {
 
 function TileView({ at, pulse }: { readonly at: hallTopology.Placed; readonly pulse?: Pulse }) {
   const { tile } = at;
-  const state = tile.touched && tile.state === "ok" ? "touch" : tile.state;
+  const state = tile.partner
+    ? "partner"
+    : tile.touched && tile.state === "ok"
+      ? "touch"
+      : tile.state;
   const kind = tile.touched && pulse ? ` touch-${pulse.effect}` : "";
   const label = 4 + TILE_D + 22;
   return (

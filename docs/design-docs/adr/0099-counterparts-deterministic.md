@@ -4,8 +4,10 @@ kind: decision
 status: active
 last_verified: 2026-11-05
 enforced_by:
-  - none
-no_enforcement_reason: 구현 전 결정 기록이다. 3차 구현이 끝나면 frontmatter의 enforced_by를 그 작업의 시험으로 바꾼다.
+  - packages/core/src/session/escalate.test.ts
+  - packages/core/src/topology/partner.test.ts
+  - apps/web/src/logic/world3d/crew-partner.test.ts
+  - apps/web/src/logic/handoffs.test.ts
 decision_hash: 5d33e4e3192a3726
 ---
 # ADR-0099 가상 담당자 보정 (ADR-0098)

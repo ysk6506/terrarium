@@ -28,6 +28,7 @@ export {
   type CrewActivity,
   type CrewAlarm,
   type CrewOptions,
+  type CrewPartner,
   type CrewPerson,
   type CrewPose,
   type CrewRole,

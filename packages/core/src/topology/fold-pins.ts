@@ -40,6 +40,12 @@ function neighbours(shape: LayerShape, focus: Focus): string[] {
   return [...seen];
 }
 
+/** What an agent touches or another team works on: it stands alone on the board. */
+const touchedIds = (source: TopologySource): string[] => [
+  ...(source.touched ?? []),
+  ...(source.partners?.keys() ?? []),
+];
+
 /** For each stage, the equipment to draw on its own, most important first. */
 export function pinsOf(
   source: TopologySource,
@@ -67,7 +73,7 @@ export function pinsOf(
   }
   for (const id of status.impact.causes.faulted) add(id, RANK.fault);
   for (const id of status.impact.causes.alarmed) add(id, RANK.alarm);
-  for (const id of source.touched ?? []) add(id, RANK.touch);
+  for (const id of touchedIds(source)) add(id, RANK.touch);
   const { index } = source;
   return ranks.map((list) =>
     [...list.entries()]

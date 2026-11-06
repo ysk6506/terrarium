@@ -7,6 +7,8 @@
  * metrics, service status), `rare` (exists in a few places: topology), `ideal` (does not exist in practice:
  * impact analysis). An experiment that wants realistic results gives `common` tools only.
  */
+import { OPS_DOCS } from "./catalog-ops";
+
 export type Realism = "common" | "rare" | "ideal";
 export type Cost = "low" | "medium" | "high";
 
@@ -67,7 +69,7 @@ export function standardDescription(doc: ToolDoc, writes: boolean): string {
 
 const d = (doc: ToolDoc): ToolDoc => doc;
 
-export const TOOL_DOCS: Readonly<Record<string, ToolDoc>> = {
+const BASE_DOCS: Readonly<Record<string, ToolDoc>> = {
   list_alarms: d({
     area: "observe",
     realism: "common",
@@ -413,3 +415,6 @@ export const TOOL_DOCS: Readonly<Record<string, ToolDoc>> = {
       "Each step says what to do, what to check and which tools to use. Follow the steps in order unless the situation says otherwise.",
   }),
 };
+
+/** Every tool's words: the equipment, observation and answer tools above, and the hand-over and ticket tools (REQ-093). */
+export const TOOL_DOCS: Readonly<Record<string, ToolDoc>> = { ...BASE_DOCS, ...OPS_DOCS };

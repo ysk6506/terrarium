@@ -80,6 +80,8 @@ export interface Status {
   readonly impact: Impact;
   stateOf(id: string): TopoState;
   touched(id: string): boolean;
+  /** What another team is doing to it right now, if anything. */
+  partner(id: string): string | undefined;
 }
 
 export function statusOf(source: TopologySource, impact: Impact): Status {
@@ -96,6 +98,7 @@ export function statusOf(source: TopologySource, impact: Impact): Status {
             ? "impact"
             : "ok",
     touched: (id) => touched?.has(id) ?? false,
+    partner: (id) => source.partners?.get(id),
   };
 }
 
@@ -116,13 +119,15 @@ export function nodeOf(
   id: string,
 ): TopoNode {
   const e = source.index.entity(id);
+  const partner = status.partner(id);
   return {
     id,
     kind: shape.kindOf.get(id) ?? "server",
     name: e.name,
     state: status.stateOf(id),
     touched: status.touched(id),
-    line: lineOf(source.stateOf(id), layer),
+    ...(partner ? { partner } : {}),
+    line: partner ?? lineOf(source.stateOf(id), layer),
     servers: serversReaching(source, shape, [id]),
   };
 }

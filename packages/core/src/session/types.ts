@@ -9,7 +9,13 @@ import type {
   ToolCallRecord,
 } from "@terrarium/core/scenario";
 import type { ToolResult } from "@terrarium/core/tools";
-import type { Blueprint, PreparedWorld, RunEvent } from "@terrarium/core/world";
+import type {
+  Blueprint,
+  Domain,
+  LeadTimeSettings,
+  PreparedWorld,
+  RunEvent,
+} from "@terrarium/core/world";
 import type { EscalationPolicy, HumanRequest, HumanSummary } from "./human";
 import type { MetricSeries } from "./recorder";
 import type { TimelineEntry } from "./timeline";
@@ -29,6 +35,13 @@ export interface SessionConfig {
   /** Tools the experiment selected; submit_diagnosis is always added (it is how the agent answers). */
   readonly tools: readonly string[];
   readonly seed: number;
+  /**
+   * The domains this experiment is responsible for (REQ-093). With some, only their tools (and the ones every domain
+   * has) are on, `escalate` and `events_since` come on, and the rest is reached by handing it to the team that owns it.
+   */
+  readonly domains?: readonly Domain[];
+  /** The vendor SLA, spare parts and surcharge the teams' waits are worked out from; unset means the defaults. */
+  readonly leadTimes?: LeadTimeSettings;
   readonly catalog?: Catalog;
   readonly profiles?: { readonly vcenter?: string; readonly vrops?: string };
   readonly time?: TimePolicy;
@@ -88,6 +101,12 @@ export interface RunResult {
   readonly series: readonly MetricSeries[];
   readonly digests: { readonly world: string; readonly scenario: string; readonly oracle: string };
   readonly seed: number;
+  /** The scope the run had; absent for a run that owned every domain and used the default waits. */
+  readonly scope?: {
+    readonly domains: readonly Domain[];
+    readonly leadTimes: Required<LeadTimeSettings>;
+    readonly leadTimesLabel: string;
+  };
   readonly simTime: {
     readonly scenarioStart: number;
     readonly agentStart: number;

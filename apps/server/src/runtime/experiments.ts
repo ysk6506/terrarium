@@ -199,6 +199,8 @@ export class Experiments {
       ...(req.escalation ? { escalation: req.escalation } : {}),
       ...(req.faultScope ? { faultScope: req.faultScope } : {}),
       ...(req.sop ? { sop: req.sop } : {}),
+      ...(req.domains && req.domains.length > 0 ? { domains: req.domains } : {}),
+      ...(req.leadTimes ? { leadTimes: req.leadTimes } : {}),
     };
   }
 

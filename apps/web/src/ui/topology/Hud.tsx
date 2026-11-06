@@ -59,6 +59,10 @@ export function Legend() {
         {W.touch}
       </li>
       <li>
+        <i className="dot-partner" />
+        {W.partner}
+      </li>
+      <li>
         <i className="dot-impact" />
         {W.range}
       </li>

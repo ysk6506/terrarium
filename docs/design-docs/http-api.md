@@ -8,13 +8,13 @@ covers:
   - packages/core/src/contract/responses.ts
   - packages/core/src/contract/errors.ts
   - packages/core/src/contract/views.ts
-covers_hash: 2ce97a0374ba4f83
+covers_hash: 943faab2345067f0
 verification_log:
-  - "2026-11-04: 2026-11-04: ADR-0073. 서버 오류 문장과 라우트 요약의 말(툴, 더하기, 멈추기, 지우기)만 바뀌었다. 경로와 본문 모양은 그대로, 안내 문구만 도구에서 툴로 고쳤다"
-  - "2026-11-05: routes.ts의 telemetry-adapters와 connections/:id/try 두 경로, 확인 응답의 census·hiddenAgents와 traces를 표와 연결 절에 대조해 더했다 (REQ-079)"
   - "2026-11-06: routes.ts의 runEvents, runWorld 두 경로를 표에 더했고 views.ts의 RunEventsView, RunWorldView와 대조했다"
   - "2026-11-06: RunView의 commonReach와 calibrate 응답의 recoveryPath, commonReach를 views.ts와 대조해 표에 적었다 (REQ-088)"
   - "2026-11-06: listEscalations, answerEscalation, runbookDraft 세 경로와 레시피 선택 칸, calibrate 응답의 toolPick을 routes.ts, responses.ts(Responses를 옮김), views.ts와 대조해 표에 더했다 (REQ-080~082)"
+  - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
+  - "2026-11-06: 2a·2b 합치기"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -108,8 +108,9 @@ verification_log:
 ### 실시간 스트림 (SSE)
 
 - `GET /api/experiments/:id/events`: 실험 하나. 먼저 `experiment`(요약), 이후 `run`(실행 상태)과 `call`(툴 호출 하나: 시각 `t`, `tool`, `ok`, 그리고 `effect`와 `targets`).
+- 실험 만들기의 `recipe`에 선택 필드 `domains`(내 도메인 목록, 여섯 중에서)와 `leadTimes`(`vendorSla` 4h·nbd·3d, `spares` default·yes·no, `afterHours`, `start` weekday_day·weekday_night·weekend)가 있다(REQ-093). 포크의 `change`에도 있다. 실행 결과(`RunView`)의 `run.result`에는 `scope`(도메인과 설정 문구)와 `score.handoff`(넘긴 일)가 있다.
 - `GET /api/worlds/:id/activity` (REQ-050): 이 세계에서 도는 **모든 실험의 실행**. 늦게 연 화면이 알도록 지금 일하는 실행마다 `start`(누구인지: 실험 이름, 소유자,
-  하네스, 에이전트, 모델)를 먼저 보내고, 이후 `call`(`runId`, `t`, `tool`, `ok`, `effect`, `targets`)과 `end`를 보낸다. 세계가 없으면 404.
+  하네스, 에이전트, 모델)를 먼저 보내고, 이후 `call`(`runId`, `t`, `tool`, `ok`, `effect`, `targets`), `partner`(넘긴 일을 다른 팀이 시작하거나 끝냄: `runId`, `t`, `handoff`, `device`, `what` started·done, `team`, `who`, `replacing`, `onSite`; REQ-093)와 `end`를 보낸다. 세계가 없으면 404.
 - `effect`는 호출이 하는 일이다: `observe`(보기), `act`(세계를 바꿈. Redfish·vCenter 요청은 GET이 아닐 때만), `wait`(시간을 보냄), `answer`(진단 제출).
   `targets`는 호출이 이름을 댄 장비 id들이다(`core.tools`의 `callTargets`가 툴마다 정해 둔 인자에서 뽑는다). 이름을 대지 않는 호출은 빈 배열이다.
 

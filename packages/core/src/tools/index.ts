@@ -10,6 +10,7 @@ export {
   toolSpec,
   toolsOfArea,
 } from "./catalog";
+export { OPS_DOCS, OPS_SPECS, TICKET_BUNDLE, TICKET_HELP } from "./catalog-ops";
 export {
   type Cost,
   REALISM_LABELS,
@@ -22,6 +23,16 @@ export {
   type ToolDoc,
 } from "./docs";
 export {
+  onlyDomains,
+  SCOPE_TOOLS,
+  scopeTools,
+  TOOL_DOMAIN,
+  type ToolDomain,
+  toolDomain,
+  toolsForDomains,
+  toolsWithoutDomain,
+} from "./domains";
+export {
   type Args,
   type Diagnosis,
   dependencies,
@@ -33,6 +44,7 @@ export {
   summarizeState,
   type ToolContext,
 } from "./handlers";
+export type { EscalateAnswer, OpsPort, TicketInput, VisibleEvent } from "./handlers-ops";
 export {
   MAX_RUNBOOK_STEPS,
   type ParsedRunbook,

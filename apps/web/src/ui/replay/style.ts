@@ -109,6 +109,10 @@ export const REPLAY_CSS = `
   background: var(--cobalt);
 }
 
+.m-partner {
+  background: var(--topo-partner);
+}
+
 .m-recover {
   background: var(--good);
 }
@@ -127,6 +131,10 @@ export const REPLAY_CSS = `
 
 .t-act {
   --mark: var(--cobalt);
+}
+
+.t-partner {
+  --mark: var(--topo-partner);
 }
 
 .t-recover {

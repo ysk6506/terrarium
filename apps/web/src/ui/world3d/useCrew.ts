@@ -23,7 +23,10 @@ export interface CrewInput {
   readonly aisle?: string;
 }
 
-const NONE: Pick<world3d.CrewWorld, "alarms" | "activity"> = { alarms: [], activity: [] };
+const NONE: Pick<world3d.CrewWorld, "alarms" | "activity" | "partners"> = {
+  alarms: [],
+  activity: [],
+};
 
 /** The crew module, fetched the first time a room is looked at. */
 function useKit(wanted: boolean): typeof import("./crew-lazy") | undefined {
@@ -57,6 +60,7 @@ export function useCrew(view: WorldView | undefined, input: CrewInput): void {
             alarms: shown?.alarms ?? [],
             t: shown?.t ?? 0,
             workers: activity.workers,
+            partners: activity.partners ?? [],
             now,
           })
         : NONE,

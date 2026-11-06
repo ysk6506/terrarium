@@ -6,6 +6,7 @@
  *   triage  follows alarms upstream: the alarmed thing that explains the most other alarms is the cause
  *   guess   names a random alarmed entity and a random fault type: what chance scores
  *   idle    looks at the alarms and stops: what doing nothing scores
+ *   operator  keeps services alive, hands a cause outside its domain to the team that owns it, undoes after (REQ-093)
  */
 import type {
   AgentInfo,
@@ -16,6 +17,7 @@ import type {
   ToolEndpoint,
 } from "@terrarium/core/experiments";
 import { SeededRng } from "@terrarium/core/kernel";
+import { OPERATOR_AGENT, operator } from "./scripted-operator";
 
 const pick = <T>(rng: SeededRng, xs: readonly T[]): T =>
   xs[Math.floor(rng.random() * xs.length)] as T;
@@ -61,6 +63,7 @@ const AGENTS: readonly AgentInfo[] = [
     name: "아무것도 안 함",
     description: "알람만 보고 끝내요. 진단하지 않았을 때의 점수.",
   },
+  OPERATOR_AGENT,
 ];
 
 async function alarms(tools: ToolEndpoint): Promise<AlarmRow[]> {
@@ -166,6 +169,7 @@ const PLAYS: Readonly<Record<string, (req: AgentRunRequest) => Promise<AgentRunO
   triage,
   guess,
   idle,
+  operator,
 };
 
 export class ScriptedHarness implements HarnessPort {

@@ -3,7 +3,7 @@
  * you, an empty canvas as the last and quietest choice, and arrow keys that skip the cards that cannot be used.
  */
 import type { ScenarioTemplate } from "@terrarium/core/scenario";
-import type { BlueprintIndex } from "@terrarium/core/world";
+import { type BlueprintIndex, domainInfo } from "@terrarium/core/world";
 import { NO_COMMON_PATH_TEXT } from "../recovery";
 
 export const EMPTY_START = "empty";
@@ -20,6 +20,17 @@ export interface StartCard {
   readonly unavailable?: string;
   /** A line under the summary: the tools a real team has do not get to the cause (ADR-0091 item 4). */
   readonly note?: string;
+  /** Where the cause is and which domains to play it with: "원인은 서버 도메인 · 내 도메인 서비스/OS·가상화 권장" (REQ-093). */
+  readonly domains?: string;
+}
+
+/** The line a card with its cause in another domain carries. */
+export function domainsLine(
+  t: Pick<ScenarioTemplate, "causeDomain" | "ownDomains">,
+): string | undefined {
+  if (!t.causeDomain) return undefined;
+  const own = (t.ownDomains ?? []).map((d) => domainInfo(d).label).join("·");
+  return `원인은 ${domainInfo(t.causeDomain).label} 도메인${own ? ` · 내 도메인 ${own} 권장` : ""}`;
 }
 
 export interface StartGroup {
@@ -53,6 +64,7 @@ export function startGroups(
         difficulty: t.difficulty,
         ...(why ? { unavailable: why } : {}),
         ...(!why && noCommonPath.has(t.id) ? { note: NO_COMMON_PATH_TEXT } : {}),
+        ...(!why && domainsLine(t) ? { domains: domainsLine(t) as string } : {}),
       };
     }),
   }));

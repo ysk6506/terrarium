@@ -3,8 +3,10 @@ import { z } from "zod";
 import {
   BlueprintSchema,
   CampusSpecSchema,
+  DomainsSchema,
   EscalationSchema,
   IdSchema,
+  LeadTimesSchema,
   NameSchema,
   NoteSchema,
   ProfilesSchema,
@@ -119,6 +121,10 @@ export const RecipeBody = z
     escalation: EscalationSchema.optional(),
     faultScope: z.enum(["inside", "all"]).optional(),
     sop: z.enum(["none", "given", "search"]).optional(),
+    /** The domains this experiment is responsible for; the rest is handed to the team that owns it (REQ-093). */
+    domains: DomainsSchema.optional(),
+    /** Vendor SLA, spare parts and surcharge; left out, the defaults of lead-times.md. */
+    leadTimes: LeadTimesSchema.optional(),
   })
   .strict()
   .refine((r) => !(r.seeds && r.runs), {
@@ -151,6 +157,8 @@ export const ForkBody = z
         escalation: EscalationSchema.optional(),
         faultScope: z.enum(["inside", "all"]).optional(),
         sop: z.enum(["none", "given", "search"]).optional(),
+        domains: DomainsSchema.optional(),
+        leadTimes: LeadTimesSchema.optional(),
       })
       .strict(),
     name: NameSchema.optional(),

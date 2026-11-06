@@ -8,13 +8,14 @@ covers:
   - packages/core/src/scenario/blocks.ts
   - packages/core/src/scenario/runner.ts
   - packages/core/src/scenario/library-facility.ts
+  - packages/core/src/scenario/library-domains.ts
 verification_log:
-  - "2026-11-04: library.ts·library-facility.ts는 채점 코드를 도우미 함수로 나눴을 뿐이고 문서 내용은 그대로임을 대조"
-  - "2026-11-05: ADR-0101: 행동 종류에 펌웨어 올리기, 펌웨어 올리기와 작업 보고 절을 model.ts, conditions.ts, library-firmware.ts와 대조해 더했다"
   - "2026-11-06: 2026-11-06: ADR-0091(결정 1·2)·ADR-0102 구현: 서비스 층·OS 층 1차를 코드와 대조해 해당 절을 더하거나 고쳤다. 이 문서가 말하는 나머지 구조는 그대로다"
   - "2026-11-06: model.ts의 ScenarioDoc.scoring과 digest.ts, library-os.ts의 채점표(진단·재부팅 금지·끝에 정상)를 대조해 복구 우선 채점 절을 더했다 (REQ-088, ADR-0104)"
   - "2026-11-06: ScenarioDoc.runbook과 digest.ts의 해시 규칙, runner.ts의 skipFault를 절차서와 고장 범위 절에 대조해 더했다 (REQ-080, REQ-082)"
-covers_hash: 9fa5c3ff590d91b3
+  - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
+  - "2026-11-06: 2a·2b 합치기"
+covers_hash: 481c60ce00909603
 ---
 # 시나리오 모델 (REQ-033, REQ-034)
 
@@ -115,6 +116,10 @@ VM 폭주). `FACILITY_TEMPLATES`는 플랜트·수랭·발전기가 있는 세�
 ### 복구 우선 채점 `scoring` (REQ-088, [ADR-0104](adr/0104-recovery-scoring-amend-tests.md))
 
 시나리오 문서에 `scoring: "recovery"`를 쓰면 위 채점표의 항목을 더하는 대신 서비스의 복구 시간(35)·복구 순서(15)·복구 중 악화 없음(20)·진단·보고(30)로 센다. 이때 채점표에서는 `diagnosis`(보고), `forbidden_action`(감점 그대로), `final_state`("끝에도 정상이다", 지켜지지 않으면 시간과 순서 점수가 반)만 읽고, `time_limit`·`tool_budget`·`required_action`은 읽지 않는다. 필드가 없으면 지금까지처럼 항목대로다. 서비스가 있는 시나리오(내장은 OS 고장 다섯)만 쓰며, `scoring`은 디지스트에 들어가서(있을 때만) 채점 방식이 다른 결과가 한 벤치마크에 섞이지 않는다. 자세한 규칙은 [측정의 신뢰](measurement.md#3-서비스가-있는-시나리오는-복구-우선으로-채점한다-req-088-adr-0091-adr-0104).
+
+## 내 도메인 밖이 원인인 시나리오 (REQ-093, [ADR-0100](adr/0100-escalate-by-domain.md))
+
+내장 묶음 "내 도메인 밖이 원인" 둘(`scenario/library-domains.ts`): 서버 메모리 불량(`domain-memory-vendor`), 서버와 스위치를 잇는 포트 불량(`domain-port-network`). 둘 다 복구 우선 채점이고, 템플릿에 권장 내 도메인(`ownDomains`)과 원인의 도메인(`causeDomain`)이 있어 카드에 한 줄로 보인다. 벤더가 부품을 바꾸는 데 며칠 걸리므로 **`에이전트 투입`의 제한 시간 상한을 24시간에서 4일로 늘렸다**(분으로 5,760). 도메인과 리드타임은 [도메인과 가상 담당자](domains-and-counterparts.md)에 있다.
 
 ## 운영을 채점하는 내장 시나리오
 

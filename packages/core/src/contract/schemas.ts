@@ -365,6 +365,22 @@ export const SeedsSchema = z
 
 export const ToolsSchema = z.array(z.string().min(1).max(64)).min(1).max(64);
 
+/** The domains an experiment is responsible for (REQ-093). */
+export const DomainsSchema = z
+  .array(z.enum(["service_os", "virtualization", "server", "network", "storage", "facility"]))
+  .max(6)
+  .refine((d) => new Set(d).size === d.length, { message: "같은 도메인이 두 번 들어 있어요" });
+
+/** The vendor SLA, spare parts and surcharge the teams' waits are worked out from (REQ-093). */
+export const LeadTimesSchema = z
+  .object({
+    vendorSla: z.enum(["4h", "nbd", "3d"]).optional(),
+    spares: z.enum(["default", "yes", "no"]).optional(),
+    afterHours: z.boolean().optional(),
+    start: z.enum(["weekday_day", "weekday_night", "weekend"]).optional(),
+  })
+  .strict();
+
 export const EscalationSchema = z
   .object({
     mode: z.enum(["wait", "auto", "fail"]),

@@ -4,8 +4,10 @@ kind: decision
 status: active
 last_verified: 2026-11-05
 enforced_by:
-  - none
-no_enforcement_reason: 구현 전 결정 기록이다. 3차 구현이 끝나면 frontmatter의 enforced_by를 그 작업의 시험으로 바꾼다.
+  - packages/core/src/world/domains.test.ts
+  - packages/core/src/session/escalate.test.ts
+  - packages/core/src/session/handoff.test.ts
+  - packages/core/src/session/domain-calibration.test.ts
 decision_hash: 757c729355ea638b
 ---
 # ADR-0100 에스컬레이트는 도메인 하나만 받는다
