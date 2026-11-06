@@ -43,6 +43,7 @@ export {
   type RecipeChange,
   recipeDiff,
 } from "./lineage";
+export type { LlmCheckRecord, LlmModelRecord } from "./llm-models";
 export { MemoryStore, matchesMetadata, matchesText } from "./memory-store";
 export {
   type Experiment,

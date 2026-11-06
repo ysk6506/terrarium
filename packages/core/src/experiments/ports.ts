@@ -8,6 +8,7 @@ import type { ToolResult, ToolSpec } from "@terrarium/core/tools";
 import type { Blueprint, EntityKind } from "@terrarium/core/world";
 import type { AgentHistory } from "./agent-version";
 import type { Journal, JournalEntry } from "./journal";
+import type { LlmModelRecord } from "./llm-models";
 import type { Experiment, HarnessRunInfo, RunRecord, ScenarioRecord, WorldRecord } from "./model";
 import type { PresetKind, PresetRecord } from "./presets";
 
@@ -263,4 +264,10 @@ export interface ExperimentStore {
   listPresets(owner: string, kind?: PresetKind): Promise<PresetRecord[]>;
   /** Remove for good. */
   deletePreset(id: string): Promise<boolean>;
+  /** Save or replace a registered model API (ADR-0119). */
+  putModel(model: LlmModelRecord): Promise<void>;
+  getModel(id: string): Promise<LlmModelRecord | undefined>;
+  /** Every registered model API, in the order they were registered. */
+  listModels(): Promise<LlmModelRecord[]>;
+  deleteModel(id: string): Promise<boolean>;
 }

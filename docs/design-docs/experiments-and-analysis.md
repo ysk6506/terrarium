@@ -13,17 +13,18 @@ covers:
   - packages/core/src/world/run-events.ts
   - packages/core/src/experiments/journal.ts
   - packages/core/src/experiments/presets.ts
+  - packages/core/src/experiments/llm-models.ts
   - packages/core/src/experiments/ports.ts
   - packages/core/src/world/incidents.ts
   - apps/server/src/runtime/executor-operation.ts
   - packages/core/src/session/run-events.ts
-covers_hash: 252b19f11a800565
+covers_hash: eca72c8c5926d721
 verification_log:
-  - "2026-11-06: 2e 합치기"
   - "2026-11-06: 저장소 포트에 저장해 둔 것·재개 기록, link resumed, 분석의 endLabel을 ports.ts, journal.ts, presets.ts, run-events.ts, analysis/run.ts와 대조해 적었다 (ADR-0112)"
   - "2026-11-06: 2c 보완 합치기"
   - "2026-11-06: 2f: 실험 만들기 2단계의 툴 주소 안내와 슬롯 확인 절을 더했다. 덮는 코드는 바뀌지 않았다"
   - "2026-11-06: 2f 합치기 · 2차 끝"
+  - "2026-11-06: LLM API 등록"
 ---
 # 실험과 결과 분석 (REQ-015, REQ-030~033, REQ-037~040)
 
@@ -49,7 +50,7 @@ verification_log:
   또 에이전트가 스스로 밝힌 정보가 가장 새 버전과 다르면 새 버전(`agent-version.ts`)을 쓰고 실험에 그 번호(`agentVersion`)를 붙인다. 앞 버전과의 차이는 저장하지 않고 견주어 만든다(이름·모델·사실·연결 메타데이터·사람이 붙인 속성).
   번호는 오르기만 하고 다시 쓰이지 않는다. 포크는 부모의 에이전트가 아니라 지금 에이전트를 본다.
 - **스케줄러(REQ-032)**: [ADR-0024](adr/0024-fair-scheduling.md). 지금 가장 적게 돌리고 있는 사람의 실행부터, 서버·사람·하네스 한도 안에서.
-- **저장소 포트**: `ExperimentStore`. 메모리 구현(`MemoryStore`)은 테스트와 기본값, 서버는 SQLite 구현을 쓴다. 세계·시나리오·실험·실행 말고 두 가지를 더 둔다(ADR-0112). **저장해 둔 것**(`PresetRecord`: 종류 `instruction`·`toolset`·`runbook`, 이름, 본문, 만든 때, 만든 사람; 세계·시나리오와 무관, 지우면 7일 뒤 정리)과, 운영 실행이 도는 동안 쌓는 **재개 기록**(`appendJournal`·`readJournal`·`deleteJournal`: 세션이 받은 입력과 호스트가 본 것, 실행이 끝나면 지운다. [운영 모드](operation-mode.md#서버-재시작-뒤-재개-결정-8-adr-0112)).
+- **저장소 포트**: `ExperimentStore`. 메모리 구현(`MemoryStore`)은 테스트와 기본값, 서버는 SQLite 구현을 쓴다. 세계·시나리오·실험·실행 말고 셋을 더 둔다(ADR-0112, ADR-0119). **저장해 둔 것**(`PresetRecord`: 종류 `instruction`·`toolset`·`runbook`, 이름, 본문, 만든 때, 만든 사람; 세계·시나리오와 무관, 지우면 7일 뒤 정리), 워크스페이스가 등록한 **모델 API**(`LlmModelRecord`: 종류, 주소, 봉인한 키와 헤더 값, 기본 표시, 마지막 확인 결과; `putModel`·`getModel`·`listModels`·`deleteModel`; 실험과 무관, [모델 등록](model-registration.md)), 그리고 운영 실행이 도는 동안 쌓는 **재개 기록**(`appendJournal`·`readJournal`·`deleteJournal`: 세션이 받은 입력과 호스트가 본 것, 실행이 끝나면 지운다. [운영 모드](operation-mode.md#서버-재시작-뒤-재개-결정-8-adr-0112)).
 
 ### 실험을 만들 때 툴 주소를 어떻게 받나 (REQ-051, 베타 피드백 14·17)
 

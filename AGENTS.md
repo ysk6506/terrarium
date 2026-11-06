@@ -2,18 +2,18 @@
 title: AGENTS.md — 에이전트 진입점
 kind: guide
 status: active
-last_verified: 2026-11-05
+last_verified: 2026-11-06
 covers:
   - package.json
   - harness/config/architecture.yaml
   - harness/config/protected-paths.txt
-covers_hash: 37d921c107ebf840
+covers_hash: e6a6120e89c4e511
 verification_log:
-  - "2026-10-29: package.json의 e2e 스크립트 제거(ADR-0034), 명령 목록은 영향 없음을 확인했다"
   - "2026-10-30: 2026-10-30: architecture.yaml의 MCP SDK 허용 단위 변경(server.adapters 추가)을 확인했다. 지도에는 영향이 없다"
   - "2026-11-04: package.json과 architecture.yaml 변경은 시험 전용 의존성 ajv, ajv-formats 추가(ADR-0057)뿐이다. 지도와 절대 규칙 표는 그대로 맞다"
   - "2026-11-05: package.json의 dev 스크립트가 pnpm --parallel로 바뀐 것만 달라졌다. 명령 목록(dev, check, lock-tests, ratchet, ux)과 보호 경로 표는 그대로 맞다"
   - "2026-11-05: architecture.yaml의 변경은 core.topology 단위 하나를 더한 것뿐이다. 지도와 절대 규칙 표, 명령 목록은 그대로 맞다(ADR-0097)"
+  - "2026-11-06: LLM API 등록"
 ---
 # Terrarium — 코딩 에이전트 안내서
 

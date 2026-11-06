@@ -34,6 +34,7 @@ export {
   type SessionHost,
 } from "./hosts";
 export { type Stamps, SYSTEM_STAMPS } from "./ids";
+export { Models } from "./models";
 export { Platform, type PlatformOptions, withCapacity } from "./platform";
 export { Presets } from "./presets";
 export { type ReportFormat, Results } from "./results";

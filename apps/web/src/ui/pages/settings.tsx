@@ -12,6 +12,7 @@ import {
 } from "../../logic";
 import { applyTheme, browserStore } from "../browser-store";
 import { PageHead, Section, Segmented } from "../kit";
+import { ModelSection } from "./model-section";
 
 function Row({
   def,
@@ -47,7 +48,7 @@ export function SettingsPage() {
   };
   return (
     <div className="page">
-      <PageHead title="설정" lede="이 브라우저에만 저장돼요. 고르면 바로 기억해요." />
+      <PageHead title="설정" lede="화면 설정은 이 브라우저에만 저장돼요. 모델은 서버에 저장돼요." />
       <Section title="화면">
         <div className="stack">
           {SETTING_DEFS.map((def) => (
@@ -60,6 +61,7 @@ export function SettingsPage() {
           ))}
         </div>
       </Section>
+      <ModelSection />
     </div>
   );
 }

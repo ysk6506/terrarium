@@ -15,6 +15,7 @@ import {
   type ExperimentStore,
   type Journal,
   type JournalEntry,
+  type LlmModelRecord,
   matchesMetadata,
   matchesText,
   type PresetKind,
@@ -63,6 +64,8 @@ CREATE TABLE IF NOT EXISTS run_journal (
 CREATE TABLE IF NOT EXISTS presets (
   id TEXT PRIMARY KEY, owner TEXT NOT NULL, kind TEXT NOT NULL, created_at TEXT NOT NULL, record TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS presets_owner ON presets (owner, kind);
+CREATE TABLE IF NOT EXISTS llm_models (
+  id TEXT PRIMARY KEY, created_at TEXT NOT NULL, record TEXT NOT NULL);
 `;
 
 type Row = Record<string, unknown>;
@@ -381,5 +384,27 @@ export class SqliteStore implements ExperimentStore {
 
   async deletePreset(id: string): Promise<boolean> {
     return Number(this.sql("DELETE FROM presets WHERE id = ?").run(id).changes) > 0;
+  }
+
+  async putModel(model: LlmModelRecord): Promise<void> {
+    this.sql("INSERT OR REPLACE INTO llm_models (id, created_at, record) VALUES (?, ?, ?)").run(
+      model.id,
+      model.createdAt,
+      JSON.stringify(model),
+    );
+  }
+
+  async getModel(id: string): Promise<LlmModelRecord | undefined> {
+    const row = this.sql("SELECT record FROM llm_models WHERE id = ?").get(id) as Row | undefined;
+    return row && parse<LlmModelRecord>(row.record);
+  }
+
+  async listModels(): Promise<LlmModelRecord[]> {
+    const rows = this.sql("SELECT record FROM llm_models ORDER BY created_at, id").all() as Row[];
+    return rows.map((r) => parse<LlmModelRecord>(r.record));
+  }
+
+  async deleteModel(id: string): Promise<boolean> {
+    return Number(this.sql("DELETE FROM llm_models WHERE id = ?").run(id).changes) > 0;
   }
 }

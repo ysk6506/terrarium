@@ -5,6 +5,7 @@
  */
 
 import type { z } from "zod";
+import { MODEL_ROUTES } from "./model-routes";
 import { ImportPresetsBody, PresetQuery, RenamePresetBody, SavePresetBody } from "./presets";
 import {
   AddAgentVersionBody,
@@ -35,7 +36,7 @@ import {
 
 export type { Responses } from "./responses";
 
-export type Method = "GET" | "POST" | "PUT" | "DELETE";
+export type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 /** What the response body is; anything but json is a document to show or download. */
 export type Produces = "json" | "html" | "markdown" | "text" | "jsonl" | "sse";
 
@@ -192,6 +193,8 @@ export const ROUTES = {
     summary: "지운 것 되돌리기",
     produces: json,
   },
+
+  ...MODEL_ROUTES,
 
   listWorlds: { method: "GET", path: "/api/worlds", summary: "세계 목록", produces: json },
   listWorldTemplates: {

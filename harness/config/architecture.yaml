@@ -6,6 +6,7 @@
 # Other units are reached only through their index.ts (or the @terrarium/core/<path> alias).
 units:
   core.kernel:              {path: packages/core/src/kernel, may_import: []}
+  core.llm:                 {path: packages/core/src/llm, may_import: []}
   core.spatial:             {path: packages/core/src/spatial, may_import: [core.kernel]}
   core.catalog:             {path: packages/core/src/catalog, may_import: [core.kernel]}
   core.world:               {path: packages/core/src/world, may_import: [core.kernel, core.spatial, core.catalog]}
@@ -22,7 +23,7 @@ units:
   core.session:             {path: packages/core/src/session, may_import: [core.kernel, core.spatial, core.catalog, core.world, core.profiles, core.physics, core.facades, core.tools, core.scenario, core.oracle, core.sources]}
   core.experiments:         {path: packages/core/src/experiments, may_import: [core.kernel, core.catalog, core.world, core.tools, core.scenario, core.oracle, core.session]}
   core.analysis:            {path: packages/core/src/analysis, may_import: [core.kernel, core.world, core.tools, core.scenario, core.oracle, core.session, core.experiments]}
-  core.contract:            {path: packages/core/src/contract, may_import: [core.kernel, core.spatial, core.catalog, core.world, core.profiles, core.tools, core.scenario, core.oracle, core.session, core.sources, core.sources.worldgen, core.sources.realimport, core.experiments, core.analysis]}
+  core.contract:            {path: packages/core/src/contract, may_import: [core.kernel, core.spatial, core.catalog, core.world, core.profiles, core.tools, core.scenario, core.oracle, core.session, core.sources, core.sources.worldgen, core.sources.realimport, core.experiments, core.analysis, core.llm]}
   server.adapters:          {path: apps/server/src/adapters, may_import: ["core.*"]}
   server.runtime:           {path: apps/server/src/runtime, may_import: ["core.*", server.adapters]}
   server.cluster:           {path: apps/server/src/cluster, may_import: ["core.*", server.runtime]}

@@ -137,6 +137,31 @@ export {
 } from "./live";
 export * as miniMarkdown from "./mini-markdown";
 export {
+  blankModelForm,
+  cardFacts,
+  checkedWhen,
+  checkLine,
+  createBody as createModelBody,
+  DELETE_NOTE,
+  deleteText,
+  EMPTY_BODY,
+  EMPTY_TITLE,
+  firstStep as modelFirstStep,
+  formOfModel,
+  type HeaderRow as ModelHeaderRow,
+  isKind as isModelKind,
+  kindName as modelKindName,
+  LIMIT_LINE,
+  MODEL_KIND_CARDS,
+  type ModelForm,
+  type ModelKindCard,
+  type ModelSectionState,
+  modelProblems,
+  msText,
+  sectionState as modelSectionState,
+  updateBody as updateModelBody,
+} from "./models";
+export {
   NARROW_ABOVE,
   NARROW_LIMIT,
   type Narrowable,

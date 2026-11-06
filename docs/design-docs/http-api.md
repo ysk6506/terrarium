@@ -9,13 +9,15 @@ covers:
   - packages/core/src/contract/errors.ts
   - packages/core/src/contract/views.ts
   - packages/core/src/contract/presets.ts
-covers_hash: 9c3a939ba9fe3024
+  - packages/core/src/contract/models.ts
+  - packages/core/src/contract/model-routes.ts
+covers_hash: bd1be52ca82970b4
 verification_log:
-  - "2026-11-06: listEscalations, answerEscalation, runbookDraft 세 경로와 레시피 선택 칸, calibrate 응답의 toolPick을 routes.ts, responses.ts(Responses를 옮김), views.ts와 대조해 표에 더했다 (REQ-080~082)"
-  - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: 2a·2b 합치기"
   - "2026-11-06: 2b·2d 합치기"
   - "2026-11-06: 저장해 둔 것 여섯 경로를 routes.ts, responses.ts, contract/presets.ts와 대조해 표에 더했다 (ADR-0112)"
+  - "2026-11-06: LLM API 등록"
+  - "2026-11-06: LLM API 등록"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -62,6 +64,12 @@ verification_log:
 | `PUT /api/presets/:id` | 이름 바꾸기. 같은 이름이 있으면 409 | |
 | `DELETE /api/presets/:id` | 지우기: 7일 동안 남겨 두었다가 목록을 읽을 때 정리한다 | |
 | `POST /api/presets/:id/restore` | 지운 것 되돌리기 | |
+| `GET /api/models` | 워크스페이스에 등록한 LLM API 목록(모두에게 같다). 키는 `hasKey`와 `keyHint`(`…ab12`)뿐이고 헤더는 이름만 나온다. `lastCheck`에 마지막 확인 결과가 있다 | |
+| `POST /api/models` | 등록 `{kind: litellm\|openai\|anthropic, name, baseUrl, apiKey?, defaultModel?, headers?: [{name, value}]}`. 첫 번째는 기본이 된다. 같은 이름은 409, 주소가 안 맞으면(메타데이터 주소 등) 400 | |
+| `PATCH /api/models/:id` | 고치기(만든 사람만). 안 보낸 칸은 그대로, `apiKey`를 비우면 기존 키, `clearKey: true`면 키 삭제, 헤더는 `value` 없는 줄이 기존 값을 유지. 주소·키·헤더가 바뀌면 `lastCheck`가 지워진다 | |
+| `DELETE /api/models/:id` | 지우기(만든 사람만). 저장한 키도 지워진다. 기본이었으면 가장 먼저 등록한 것이 기본이 된다 | |
+| `POST /api/models/:id/check` | 연결 확인: 모델 목록을 읽고(`GET /v1/models`, LiteLLM은 `/model/info`도), 안 되면 기본 모델 이름이 있을 때 `max_tokens: 1` 완성 한 번. 결과(`ok`·`ms`·`via`·`modelCount`·`models`·`reason`·`error`)와 시각을 기록해 모델을 돌려준다. 이 호출은 **서버에서 바깥으로** 나가므로, 나가지 못하는 환경이면 `reason: network`로 그렇게 말한다 | |
+| `POST /api/models/:id/default` | 기본 모델로 정하기(하나만 기본) | |
 | `GET /api/worlds` | 세계 목록 | |
 | `GET /api/worlds/:id` | 세계 하나 (blueprint 포함) | |
 | `POST /api/worlds` | 빌더에서 지은 세계 저장 | |

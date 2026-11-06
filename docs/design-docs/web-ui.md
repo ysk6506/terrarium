@@ -72,13 +72,13 @@ covers:
   - apps/web/src/ui/replay/FramesBar.tsx
   - apps/web/src/ui/replay/useClock.ts
   - apps/web/src/logic/topology/words.ts
-covers_hash: 205cae817ccb3b15
+covers_hash: 8385817d32f41c3a
 verification_log:
-  - "2026-11-06: 2f 합치기 · 2차 끝"
-  - "2026-11-06: 오버레이 층 글리프와 칩 카드의 실선 전환을 glyphs.tsx·cards-net-compute.ts와 대조해 적었다 (REQ-097)"
-  - "2026-11-06: REQ-096: 점선 칩 설명과 토폴로지 글리프(glyphs.tsx)의 쿠버네티스 셋을 대조했다"
-  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
+  - "2026-11-06: 2c 보완 합치기"
+  - "2026-11-06: LLM API 등록"
+  - "2026-11-06: LLM API 등록"
+  - "2026-11-06: o4 합치기 (LLM API 등록)"
 ---
 # 웹 화면 (REQ-006, REQ-030~041)
 
@@ -215,7 +215,7 @@ verification_log:
 | `/scenarios`, `/scenarios/:id` | 시나리오 목록, 노코드 편집기(블록 + 채점표 + 미리 돌려 보기 + 변별력 점검; 팔레트는 세 질문(어디가 고장 나나요 / 에이전트가 뭘 하면 되나요 / 어떻게 채점하나요)이고 블록은 고른 블록 바로 뒤에 들어가며(없으면 끝) Ctrl+C·V·D·Z·Y와 Delete가 되고, 채점표는 "이 시나리오는 무엇을 보나" 문장이다; 뻔한 문제 옆에 고치는 버튼; 새 시나리오는 템플릿 카드에서 고르고, 위 막대의 주된 버튼은 하나, 900px 아래에서는 캔버스 대신 안내와 채점표·점검만; 블록의 말은 고장 → 설정 바꾸기 → 흐름 → 에이전트 묶음 이름을 따르고, 시간 칸은 분, 고장은 "복구 방식"을 고르고, 점검 경고 옆에 "조치 항목 더하기"; 새 시나리오 대화상자의 카드는 1200px 이상에서 세 열) | REQ-033, 034, 070, 071 |
 | `/experiments`, `/experiments/new`, `/experiments/:id` | 실험 목록, 만들기, 실시간 진행과 결과·공유·포크·계보 | REQ-030, 037, 038, 040 |
 | `/runs/:id` | 실행 하나: 타임라인, 툴 호출, 지표, 진단 대 정답, 하네스 트레이스 | REQ-037 |
-| `/settings` | 설정: 화면 색(시스템·밝게·어둡게, `<html data-theme>`)과 그래픽 | REQ-036, 077 |
+| `/settings` | 설정: 화면 색(시스템·밝게·어둡게, `<html data-theme>`)과 그래픽, 그리고 서버에 저장하는 "모델" 구역(LLM API 등록, [모델 등록](model-registration.md)) | REQ-036, 077, 099 |
 | `/benchmarks` | 벤치마크 세트별 순위, 디지털 트윈 내보내기 | REQ-039, 015 |
 | `/connections`, `/connections/:id/agents/:agentId/versions` | 연결한 하네스·에이전트(상태·주인·남은 기간·에이전트 목록), 연결 만들기·고치기 창, 에이전트 버전 기록 | REQ-051, 052, 053 |
 
