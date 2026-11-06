@@ -154,6 +154,7 @@ verification_log:
 - [0100 에스컬레이트는 도메인 하나만 받는다 — 그 도메인 고장이 종류별 리드타임 뒤에 사라진다 (0098·0099 단순화)](design-docs/adr/0100-escalate-by-domain.md)
 - [0101 랙 실장 장면, 컨테인먼트 안, 펌웨어 올리기 — 시험 세 개의 기대값을 고친다](design-docs/adr/0101-rack-containment-firmware-amend-tests.md)
 - [0102 서비스·OS 층을 구현하면서 시험 다섯 개의 기대값을 고친다](design-docs/adr/0102-service-os-amend-tests.md)
+- [0107 세계 만들기 입구를 둘로 가르고, 서비스부터는 층마다 HA 사다리에서 고른다 — 모르는 층은 알아서](design-docs/adr/0107-world-entry-two-doors-ha-ladders.md)
 - [0103 토폴로지 보기 ②가 건드리는 보호 경로 — ADR-0084의 강제 장치에 새 시험을 잇는다](design-docs/adr/0103-topology-replay-amend-tests.md)
 - [0086 세계 만들기 재설계로 달라진 글과 흐름의 시험 기대값을 고친다](design-docs/adr/0086-world-making-amend-tests.md)
 - [0082 느린 기계에서는 멈추지 않고 줄인다 — 품질·부하 시험 기대값을 고친다](design-docs/adr/0082-quality-degrade-amend-tests.md)
