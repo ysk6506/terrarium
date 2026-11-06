@@ -2,11 +2,12 @@
 title: 문서 색인
 kind: reference
 status: active
-last_verified: 2026-11-05
+last_verified: 2026-11-06
 verification_log:
   - "2026-11-05: ADR-0101 링크를 더했다"
   - "2026-11-05: harness-e2e.md 링크를 더했다"
   - "2026-11-05: ADR-0082 링크를 더했다"
+  - "2026-11-06: ADR-0104 링크를 더했다"
 ---
 # 문서 색인
 
@@ -156,6 +157,7 @@ verification_log:
 - [0103 토폴로지 보기 ②가 건드리는 보호 경로 — ADR-0084의 강제 장치에 새 시험을 잇는다](design-docs/adr/0103-topology-replay-amend-tests.md)
 - [0086 세계 만들기 재설계로 달라진 글과 흐름의 시험 기대값을 고친다](design-docs/adr/0086-world-making-amend-tests.md)
 - [0082 느린 기계에서는 멈추지 않고 줄인다 — 품질·부하 시험 기대값을 고친다](design-docs/adr/0082-quality-degrade-amend-tests.md)
+- [0104 복구 우선 채점을 구현하면서 시험 세 개의 기대값을 고친다](design-docs/adr/0104-recovery-scoring-amend-tests.md)
 - [0097 토폴로지 보기 ①이 건드리는 보호 경로 — 새 코어 단위, UX 여정, 두 문서의 앞부분](design-docs/adr/0097-topology-amend-tests.md)
 
 ## 계획과 부채

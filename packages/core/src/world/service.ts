@@ -13,6 +13,9 @@ export type ServiceStatus = "healthy" | "degraded" | "down";
 
 export const SERVICE_KINDS: readonly ServiceKind[] = ["request", "batch", "stateful"];
 
+/** A slow service loses this share of what a stopped one loses (physics adds it up, scoring reads it back). */
+export const SLOW_HARM_SHARE = 0.3;
+
 export const SERVICE_KIND_LABELS: Readonly<Record<ServiceKind, string>> = {
   request: "요청 처리",
   batch: "배치",

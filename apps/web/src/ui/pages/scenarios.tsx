@@ -4,8 +4,8 @@
  */
 import type { ScenarioRecord, WorldSummary } from "@terrarium/core/experiments";
 import { TEMPLATE_GROUPS } from "@terrarium/core/scenario";
-import { BlueprintIndex } from "@terrarium/core/world";
-import { type KeyboardEvent, useRef, useState } from "react";
+import { type Blueprint, BlueprintIndex } from "@terrarium/core/world";
+import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { relativeTime, scenario } from "../../logic";
 import { Go, messageOf, useApp, useAsync, useNow } from "../context";
 import { Button, Dialog, Empty, Failure, Loading, Note, PageHead, SelectField } from "../kit";
@@ -66,12 +66,50 @@ function StartCards({
                 {c.difficulty && <span className="tag">{c.difficulty}</span>}
               </span>
               <span className="small muted">{c.unavailable ?? c.summary}</span>
+              {c.note && (
+                <span className="tiny" style={{ color: "var(--warn)" }}>
+                  {c.note}
+                </span>
+              )}
             </button>
           ))}
         </section>
       ))}
     </div>
   );
+}
+
+/**
+ * The templates whose cause the tools a real team has never get to in this world (ADR-0091 item 4). Each is played
+ * in a short session, one after another so the page stays usable, and only for a world small enough to play here.
+ */
+function useNoCommonPath(blueprint: Blueprint | undefined): ReadonlySet<string> {
+  const [found, setFound] = useState<ReadonlySet<string>>(new Set());
+  useEffect(() => {
+    setFound(new Set());
+    if (!blueprint || !scenario.canProbe(blueprint)) return undefined;
+    const templates = TEMPLATE_GROUPS.flatMap((g) => g.templates);
+    const no = new Set<string>();
+    let next = 0;
+    let stopped = false;
+    const step = () => {
+      const template = templates[next++];
+      if (stopped || !template) return;
+      try {
+        if (scenario.reachesAnswer(blueprint, template) === false)
+          setFound(new Set(no.add(template.id)));
+      } catch {
+        // a template that cannot be played here says nothing about the tools
+      }
+      setTimeout(step, 0);
+    };
+    const timer = setTimeout(step, 0);
+    return () => {
+      stopped = true;
+      clearTimeout(timer);
+    };
+  }, [blueprint]);
+  return found;
 }
 
 function NewScenarioDialog({
@@ -94,7 +132,8 @@ function NewScenarioDialog({
     [world],
   );
   const index = detail.data ? new BlueprintIndex(detail.data.blueprint) : undefined;
-  const groups = scenario.startGroups(TEMPLATE_GROUPS, index);
+  const noCommonPath = useNoCommonPath(detail.data?.blueprint);
+  const groups = scenario.startGroups(TEMPLATE_GROUPS, index, noCommonPath);
   const start = scenario.chosenStart(groups, picked);
   const create = async () => {
     if (!world) return;

@@ -3,8 +3,8 @@
  * if one that knows nothing still scores well, or one that only says the answer gets full marks, the panel says so in
  * plain words, so the author fixes the paper before spending model calls on it.
  */
-import type { BaselineRun } from "@terrarium/core/session";
-import { scenario } from "../../logic";
+import type { BaselineRun, Calibration as CalibrationResult } from "@terrarium/core/session";
+import { probeLines, scenario } from "../../logic";
 import { Button, Note } from "../kit";
 import type { ScenarioEditor } from "./useScenario";
 
@@ -24,6 +24,25 @@ function Row({ run }: { readonly run: BaselineRun }) {
         <span className="tiny muted">{run.passed ? "합격" : "불합격"}</span>
       </div>
     </li>
+  );
+}
+
+/** The two facts about services and tools: a way to recover by moving a service, a way to the cause with common tools. */
+function ProbeList({ view }: { readonly view: CalibrationResult }) {
+  const lines = probeLines(view.recoveryPath, view.commonReach);
+  if (lines.length === 0) return null;
+  return (
+    <ul className="baselines" aria-label="서비스와 툴">
+      {lines.map((l) => (
+        <li key={l.label} className="baseline">
+          <div>
+            <b>{l.label}</b>
+            <div className="tiny muted">{l.value}</div>
+          </div>
+          <b>{l.good ? "있음" : "없음"}</b>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -71,6 +90,7 @@ export function Calibration({
               <Row key={run.id} run={run} />
             ))}
           </ul>
+          <ProbeList view={view} />
           {view.warnings.length === 0 ? (
             <Note tone="good">모르는 쪽과 아는 쪽의 점수가 확실히 갈려요.</Note>
           ) : (

@@ -3,11 +3,15 @@
  * (`serviceHealth`), and the cost of not running adds up: money for a request or stateful service, queued work for a
  * batch one. The queue drains faster than it filled once the service runs again.
  */
-import { type Alarm, serviceDef, serviceHealth, type World } from "@terrarium/core/world";
+import {
+  type Alarm,
+  SLOW_HARM_SHARE,
+  serviceDef,
+  serviceHealth,
+  type World,
+} from "@terrarium/core/world";
 import type { Draft } from "./alarm-scan";
 
-/** A slow service loses this share of what a stopped one loses. */
-const SLOW_SHARE = 0.3;
 /** Work is caught up at this many times the rate it piled up. */
 const CATCH_UP = 2;
 const HOUR = 3600;
@@ -23,7 +27,7 @@ export function updateServices(world: World, dt: number): void {
     }
     state.status = health.status;
     state.reasons = [...health.reasons];
-    const share = health.status === "down" ? 1 : health.status === "degraded" ? SLOW_SHARE : 0;
+    const share = health.status === "down" ? 1 : health.status === "degraded" ? SLOW_HARM_SHARE : 0;
     state.lostKrw = Math.round(state.lostKrw + ((def.harm.perHourKrw ?? 0) * share * dt) / HOUR);
     if (def.queue) {
       const rate = def.queue.perHour;

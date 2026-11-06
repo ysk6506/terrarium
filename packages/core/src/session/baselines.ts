@@ -12,6 +12,7 @@
  */
 import type { Expectation, ScenarioDoc } from "@terrarium/core/scenario";
 import { TOOL_NAMES } from "@terrarium/core/tools";
+import { type CommonReach, commonReach, type RecoveryPath, recoveryPath } from "./probes";
 import { Session, type SessionConfig } from "./session";
 
 export type BaselineId = "idle" | "guess" | "knows";
@@ -32,6 +33,10 @@ export interface Calibration {
   readonly diagnosisOnly: number;
   /** In plain Korean: what to fix, or nothing when the scenario tells agents apart. */
   readonly warnings: readonly string[];
+  /** Whether a service can be moved to get it back without fixing the machine (a scenario about services only). */
+  readonly recoveryPath?: RecoveryPath;
+  /** Whether the tools a real operations team has are enough to get to the equipment the answer names. */
+  readonly commonReach?: CommonReach;
 }
 
 /** Without knowing anything, more than this many points means the scenario rewards doing nothing. */
@@ -105,8 +110,23 @@ export function calibrate(config: Config): Calibration {
     const { score } = session.finish();
     return [baselineRun(id, score.total, score.passed)];
   });
-  return judge(runs, right !== undefined);
+  return withProbes(judge(runs, right !== undefined), config);
 }
+
+/** The two questions about services and tools (probes.ts), answered and added to the warnings where they are bad. */
+export function withProbes(calibration: Calibration, config: Config): Calibration {
+  const path = recoveryPath(config);
+  const reach = commonReach(config);
+  const warnings = [
+    ...calibration.warnings,
+    ...(path.ok ? [] : [`서비스를 옮겨서 복구하는 길이 없어요. ${path.note}`]),
+    ...(reach && !reach.reached ? [NO_COMMON_PATH] : []),
+  ];
+  return { ...calibration, warnings, recoveryPath: path, ...(reach ? { commonReach: reach } : {}) };
+}
+
+/** What a card and a result say about a scenario whose answer the common tools never reach (ADR-0091 item 4). */
+export const NO_COMMON_PATH = "흔한 툴만으로는 원인에 닿을 수 없어요";
 
 export const baselineRun = (
   id: BaselineId,

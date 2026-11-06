@@ -12,7 +12,16 @@ export {
   IDLE_WAIT_SECONDS,
   judge,
   knownAnswer,
+  NO_COMMON_PATH,
+  withProbes,
 } from "./baselines";
+export {
+  type CommonReach,
+  commonReach,
+  REACH_CALLS,
+  type RecoveryPath,
+  recoveryPath,
+} from "./probes";
 export {
   DEFAULT_RECORDER,
   MetricRecorder,

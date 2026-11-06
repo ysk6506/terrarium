@@ -7,13 +7,13 @@ covers:
   - packages/core/src/contract/routes.ts
   - packages/core/src/contract/errors.ts
   - packages/core/src/contract/views.ts
-covers_hash: bb99d9ef143ed6ed
+covers_hash: e886b16cef02ee6f
 verification_log:
-  - "2026-11-03: 오류 문장이 해요체가 된 것을 오류 모양 절에 적었다 (ADR-0050)"
   - "2026-11-04: calibrate 경로를 contract/routes.ts와 대조해 표에 더했다"
   - "2026-11-04: 2026-11-04: ADR-0073. 서버 오류 문장과 라우트 요약의 말(툴, 더하기, 멈추기, 지우기)만 바뀌었다. 경로와 본문 모양은 그대로, 안내 문구만 도구에서 툴로 고쳤다"
   - "2026-11-05: routes.ts의 telemetry-adapters와 connections/:id/try 두 경로, 확인 응답의 census·hiddenAgents와 traces를 표와 연결 절에 대조해 더했다 (REQ-079)"
   - "2026-11-06: routes.ts의 runEvents, runWorld 두 경로를 표에 더했고 views.ts의 RunEventsView, RunWorldView와 대조했다"
+  - "2026-11-06: RunView의 commonReach와 calibrate 응답의 recoveryPath, commonReach를 views.ts와 대조해 표에 적었다 (REQ-088)"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -67,7 +67,7 @@ verification_log:
 | `PUT /api/scenarios/:id` | 시나리오 고쳐 저장 (버전 확인) | |
 | `DELETE /api/scenarios/:id` | 시나리오 숨기기 | |
 | `POST /api/scenarios/:id/dry-run` | 에이전트 없이 미리 돌려 보기 | |
-| `POST /api/scenarios/:id/calibrate` | 시험지 점검: 아무것도 안 하는·찍는·정답만 아는 에이전트로 점수 재 보기 | |
+| `POST /api/scenarios/:id/calibrate` | 시험지 점검: 아무것도 안 하는·찍는·정답만 아는 에이전트로 점수 재 보기. 서비스를 옮겨 복구하는 길(`recoveryPath`)과 흔한 툴만으로 원인에 닿는 길(`commonReach`)도 함께 답한다 | |
 | `GET /api/experiments` | 실험 목록 (최신순) | |
 | `GET /api/experiments/:id` | 실험 하나: 실행, 분석, 계보 | |
 | `POST /api/experiments` | 실험 만들고 대기열에 넣기 | |
@@ -80,7 +80,7 @@ verification_log:
 | `GET /api/experiments/:id/diagnoses` | 진단 기록 (JSON Lines) | |
 | `POST /api/experiments/:id/shares` | 공유 링크 만들기 | |
 | `DELETE /api/shares/:token` | 공유 링크 끊기 | |
-| `GET /api/runs/:id` | 실행 하나: 결과, 분석, 타임라인 | |
+| `GET /api/runs/:id` | 실행 하나: 결과, 분석, 타임라인. 서비스를 다루는 시나리오의 결과 점수에는 `scoring: "recovery"`와 복구 보고(`recovery`)가 있고, 흔한 툴이 원인에 닿는지(`commonReach`)도 실려 온다 | |
 | `GET /api/runs/:id/events` | 실행의 불변 사건 기록(세계 시간·실제 시간). `from`·`to`(세계 초)로 구간만. 실행 중이면 지금까지, `live: true` | |
 | `GET /api/runs/:id/world` | 실행이 돌았던 때의 세계(그 버전 그대로) | |
 | `GET /api/runs/:id/telemetry` | 하네스 트레이스·로그·메트릭 (ClickStack) | |

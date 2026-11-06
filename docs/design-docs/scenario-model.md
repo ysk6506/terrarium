@@ -9,12 +9,12 @@ covers:
   - packages/core/src/scenario/runner.ts
   - packages/core/src/scenario/library-facility.ts
 verification_log:
-  - "2026-11-04: 2026-11-04: ADR-0073. 덮는 코드에서 사람이 읽는 말(알람 해요체, 에이전트 지시문 한다체, 툴·멈춤·상한 등)만 바뀌었고 문서가 말하는 구조와 규칙은 그대로다"
   - "2026-11-04: event 이력 조건, set_outdoor_temp 지원, 채점표 사실 규칙, 운영 채점 시나리오를 model.ts·blocks.ts·runner.ts·library와 대조해 더함 (REQ-073, ADR-0075)"
   - "2026-11-04: library.ts·library-facility.ts는 채점 코드를 도우미 함수로 나눴을 뿐이고 문서 내용은 그대로임을 대조"
   - "2026-11-05: ADR-0101: 행동 종류에 펌웨어 올리기, 펌웨어 올리기와 작업 보고 절을 model.ts, conditions.ts, library-firmware.ts와 대조해 더했다"
   - "2026-11-06: 2026-11-06: ADR-0091(결정 1·2)·ADR-0102 구현: 서비스 층·OS 층 1차를 코드와 대조해 해당 절을 더하거나 고쳤다. 이 문서가 말하는 나머지 구조는 그대로다"
-covers_hash: 24872f1d4e90d9e3
+  - "2026-11-06: model.ts의 ScenarioDoc.scoring과 digest.ts, library-os.ts의 채점표(진단·재부팅 금지·끝에 정상)를 대조해 복구 우선 채점 절을 더했다 (REQ-088, ADR-0104)"
+covers_hash: b7f880ef04443350
 ---
 # 시나리오 모델 (REQ-033, REQ-034)
 
@@ -105,6 +105,10 @@ VM 폭주). `FACILITY_TEMPLATES`는 플랜트·수랭·발전기가 있는 세�
 ## 서비스와 OS (REQ-086, REQ-087, [ADR-0091](adr/0091-service-os-layer-recovery-first.md))
 
 조건 필드에 서비스의 `status`(healthy·degraded·down), `backlog`(밀린 일), `lostKrw`(지금까지 본 피해, 추정), `failovers`(대기 쪽으로 옮긴 횟수)가 있다. 고장 종류에 OS 열 가지(분야 "운영체제")가 더해졌고, 내장 템플릿 묶음 "OS 고장" 다섯이 있다. 조치는 행동 종류 여섯으로 읽힌다. 계산과 표는 [서비스·OS 층](service-os-layer.md).
+
+### 복구 우선 채점 `scoring` (REQ-088, [ADR-0104](adr/0104-recovery-scoring-amend-tests.md))
+
+시나리오 문서에 `scoring: "recovery"`를 쓰면 위 채점표의 항목을 더하는 대신 서비스의 복구 시간(35)·복구 순서(15)·복구 중 악화 없음(20)·진단·보고(30)로 센다. 이때 채점표에서는 `diagnosis`(보고), `forbidden_action`(감점 그대로), `final_state`("끝에도 정상이다", 지켜지지 않으면 시간과 순서 점수가 반)만 읽고, `time_limit`·`tool_budget`·`required_action`은 읽지 않는다. 필드가 없으면 지금까지처럼 항목대로다. 서비스가 있는 시나리오(내장은 OS 고장 다섯)만 쓰며, `scoring`은 디지스트에 들어가서(있을 때만) 채점 방식이 다른 결과가 한 벤치마크에 섞이지 않는다. 자세한 규칙은 [측정의 신뢰](measurement.md#3-서비스가-있는-시나리오는-복구-우선으로-채점한다-req-088-adr-0091-adr-0104).
 
 ## 운영을 채점하는 내장 시나리오
 

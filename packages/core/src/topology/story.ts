@@ -3,7 +3,13 @@
  * bar (fault, alarm, look, act, recovery) and the first line of the result ("고장 1곳 → 알람 14곳 → ..."). Pure
  * functions of the event list, so the same run always reads the same.
  */
-import type { RunEvent, ToolEvent } from "@terrarium/core/world";
+import {
+  impairedAt,
+  peakImpaired,
+  type RunEvent,
+  serviceTimeline,
+  type ToolEvent,
+} from "@terrarium/core/world";
 import { clockText } from "./replay-words";
 
 export type MarkKind = "fault" | "alarm" | "read" | "act" | "recover";
@@ -99,6 +105,24 @@ function answerWords(tools: readonly ToolEvent[], events: readonly RunEvent[]): 
   return graded.rootCause.some((id) => looked.has(id)) ? "(정답 포함)" : "(정답은 못 짚었어요)";
 }
 
+/**
+ * The services in trouble before the agent first changed anything and at the end: "서비스 2개 멈춤 → 0". Only when
+ * a service was in trouble at all (REQ-088); it reads the same events the time bar reads.
+ */
+function servicesLine(events: readonly RunEvent[]): { text: string; t: number } | undefined {
+  const timeline = serviceTimeline(events);
+  if (timeline.size === 0) return undefined;
+  const firstAct = events.find((e) => e.kind === "tool" && e.effect === "act" && e.ok);
+  const before = peakImpaired(timeline, firstAct?.seq);
+  if (before.count === 0) return undefined;
+  const end = events.reduce((t, e) => Math.max(t, e.t), 0);
+  const after = impairedAt(timeline, end).count;
+  return {
+    text: `서비스 ${before.count}개 ${before.down ? "멈춤" : "느려짐"} → ${after}`,
+    t: before.t,
+  };
+}
+
 /** The first line of the result, as links that each go to a moment of the run. */
 export function storyLine(events: readonly RunEvent[], options: StoryOptions = {}): Story {
   const marks = markers(events);
@@ -123,8 +147,14 @@ export function storyLine(events: readonly RunEvent[], options: StoryOptions = {
     );
   if (acted > 0) add("act", `조치 ${acted}곳`, firstOf(marks, "act"));
   const moved = options.servers;
+  const sv = servicesLine(events);
   if (moved && (moved.before > 0 || moved.after > 0))
-    add("servers", `영향 범위 서버 ${moved.before} → ${moved.after}`, moved.at);
+    add(
+      "servers",
+      `영향 범위 서버 ${moved.before} → ${moved.after}${sv ? ` · ${sv.text}` : ""}`,
+      moved.at,
+    );
+  else if (sv) add("servers", sv.text, sv.t);
   const span = spanOf(events);
   const origin = options.origin ?? span.origin;
   return {

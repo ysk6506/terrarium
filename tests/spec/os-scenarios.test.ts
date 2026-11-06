@@ -145,8 +145,9 @@ describe("the right fix on the host pays nearly in full [REQ-087]", () => {
     restartOnly.call("restart_service", { service });
     restartOnly.call("wait", { seconds: 60 });
     report(restartOnly, host, "memory_leak");
-    expect(points(restartOnly, "recovered") ?? 0).toBeGreaterThan(0);
-    expect(points(restartOnly, "durable") ?? 0).toBe(0);
+    // the service is back for now, and the recovery that does not last earns half of the points for time
+    expect(points(restartOnly, "recovery_time") ?? 0).toBeGreaterThan(0);
+    expect(points(restartOnly, "recovery_time") ?? 0).toBeLessThan(35);
     const moved = open(s.scenario, s.blueprint);
     moved.call("failover_service", { service });
     moved.call("wait", { seconds: 60 });
@@ -165,7 +166,7 @@ describe("a hasty reboot recovers the service but costs points [REQ-087]", () =>
     run.call("wait", { seconds: 300 });
     expect(run.call("service_status", { service }).data).toMatchObject({ status: "healthy" });
     report(run, host, "fs_readonly");
-    expect(points(run, "recovered") ?? 0).toBeGreaterThan(0);
+    expect(points(run, "recovery_time") ?? 0).toBeGreaterThan(0);
     expect(score(run).penalty).toBeGreaterThanOrEqual(15);
     expect(score(run).total).toBeLessThan(90);
   });
@@ -177,7 +178,7 @@ describe("a hasty reboot recovers the service but costs points [REQ-087]", () =>
     sh(run, host, "reboot");
     run.call("wait", { seconds: 300 });
     report(run, host, "disk_full");
-    expect(points(run, "recovered") ?? 0).toBe(0);
+    expect(points(run, "recovery_time") ?? 0).toBe(0);
     expect(score(run).penalty).toBeGreaterThanOrEqual(15);
     expect(score(run).passed).toBe(false);
   });

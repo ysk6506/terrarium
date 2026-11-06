@@ -133,6 +133,13 @@ export {
   tourLabel,
 } from "./next-step";
 export {
+  commonPathNote,
+  NO_COMMON_PATH_TEXT,
+  probeLines,
+  recoveryFigures,
+  scoringText,
+} from "./recovery";
+export {
   hrefOf,
   type Page,
   type PageName,

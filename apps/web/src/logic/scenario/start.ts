@@ -4,6 +4,7 @@
  */
 import type { ScenarioTemplate } from "@terrarium/core/scenario";
 import type { BlueprintIndex } from "@terrarium/core/world";
+import { NO_COMMON_PATH_TEXT } from "../recovery";
 
 export const EMPTY_START = "empty";
 
@@ -17,6 +18,8 @@ export interface StartCard {
   readonly difficulty?: string;
   /** Why this one cannot be used in this world; the card shows it in place of the summary. */
   readonly unavailable?: string;
+  /** A line under the summary: the tools a real team has do not get to the cause (ADR-0091 item 4). */
+  readonly note?: string;
 }
 
 export interface StartGroup {
@@ -35,6 +38,8 @@ interface TemplateGroup {
 export function startGroups(
   groups: readonly TemplateGroup[],
   index: BlueprintIndex | undefined,
+  /** The template ids the common tools do not get to the cause of, in this world. */
+  noCommonPath: ReadonlySet<string> = new Set(),
 ): StartGroup[] {
   const cards = groups.map((g) => ({
     id: g.id,
@@ -47,6 +52,7 @@ export function startGroups(
         summary: t.summary,
         difficulty: t.difficulty,
         ...(why ? { unavailable: why } : {}),
+        ...(!why && noCommonPath.has(t.id) ? { note: NO_COMMON_PATH_TEXT } : {}),
       };
     }),
   }));

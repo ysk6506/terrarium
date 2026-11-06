@@ -17,5 +17,7 @@ export function scenarioDigest(doc: ScenarioDoc): string {
       .sort()
       .filter((e, i, all) => all.indexOf(e) === i),
     expectations: [...doc.expectations].sort(byId).map(({ label: _label, ...rest }) => rest),
+    // only where it is set, so the digest of every sheet scored as written stays what it was
+    ...(doc.scoring ? { scoring: doc.scoring } : {}),
   });
 }

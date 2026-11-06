@@ -7,7 +7,14 @@ import type { RunView } from "@terrarium/core/contract";
 import { END_REASON_LABELS } from "@terrarium/core/oracle";
 import { BlueprintIndex } from "@terrarium/core/world";
 import { useMemo, useState } from "react";
-import { formatDuration, PASS_RULE_TEXT, scoreText } from "../../logic";
+import {
+  commonPathNote,
+  formatDuration,
+  PASS_RULE_TEXT,
+  recoveryFigures,
+  scoreText,
+  scoringText,
+} from "../../logic";
 import { Go, useApp, useAsync, usePageTitle } from "../context";
 import { Failure, Figures, Loading, Note, PageHead, Section, Status, Tabs } from "../kit";
 import { SeriesGrid, Timeline } from "../results";
@@ -99,6 +106,8 @@ function RunFigures({ view }: { readonly view: RunView }) {
   return (
     <Figures
       items={[
+        // a scenario with services starts with how the services did (REQ-088)
+        ...recoveryFigures(run.result?.score),
         {
           label: "점수",
           value: scoreText(analysis.score),
@@ -155,7 +164,11 @@ function Verdicts({ view }: { readonly view: RunView }) {
       {result && (
         <Section
           title="채점표"
-          aside={<span className="tiny muted">채점 버전 {result.score.version}</span>}
+          aside={
+            <span className="tiny muted">
+              {scoringText(result.score)} · 채점 버전 {result.score.version}
+            </span>
+          }
         >
           <ScoreSheet items={result.score.items} />
         </Section>
@@ -220,6 +233,9 @@ export function RunPage({ id }: { readonly id: string }) {
           <RunHead view={view} />
           {view.run.error && <Note tone="bad">{view.run.error}</Note>}
           <RunFigures view={view} />
+          {commonPathNote(view.commonReach) && (
+            <Note tone="warn">{commonPathNote(view.commonReach)}</Note>
+          )}
           <Replay view={view} reload={state.reload} />
           <Verdicts view={view} />
           <Records view={view} />

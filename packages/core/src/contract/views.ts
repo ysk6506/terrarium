@@ -23,7 +23,12 @@ import type {
   WorldSummary,
 } from "@terrarium/core/experiments";
 import type { ScenarioIssue } from "@terrarium/core/scenario";
-import type { Calibration, MetricSeries, TimelineEntry } from "@terrarium/core/session";
+import type {
+  Calibration,
+  CommonReach,
+  MetricSeries,
+  TimelineEntry,
+} from "@terrarium/core/session";
 import type { ImportReport } from "@terrarium/core/sources/realimport";
 import type { WorldgenResult } from "@terrarium/core/sources/worldgen";
 import type { CallEffect } from "@terrarium/core/tools";
@@ -135,6 +140,8 @@ export interface RunView {
   readonly analysis: RunAnalysis;
   readonly experiment: ExperimentSummary;
   readonly timeline: readonly TimelineEntry[];
+  /** Whether the tools a real operations team has reach the equipment the answer names; absent for a run without a cause to reach. */
+  readonly commonReach?: CommonReach;
   /** Whether harness telemetry can be fetched for this run. */
   readonly hasTelemetry: boolean;
   /** Name of the tool the harness's traces are read from (the connection's choice), when there is one. */

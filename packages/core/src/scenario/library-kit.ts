@@ -22,6 +22,8 @@ export interface ScenarioTemplate {
   readonly faultTypes: readonly FaultType[];
   /** The mistakes (a wrong VLAN, a shut port) it makes with configuration blocks instead of faults. */
   readonly mistakeTypes?: readonly MistakeType[];
+  /** `recovery` for a template about services: its sheet is scored recovery first (ADR-0091 item 3). */
+  readonly scoring?: "recovery";
   /**
    * Why this template cannot be built for the world, or undefined when it can. Templates that read the network
    * design need the equipment catalog; without one they use the built-in models.
@@ -91,6 +93,7 @@ export function doc(
     nodes: flow.nodes,
     edges: flow.edges,
     expectations,
+    ...(template.scoring ? { scoring: template.scoring } : {}),
   };
 }
 

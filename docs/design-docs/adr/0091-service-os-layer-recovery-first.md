@@ -7,6 +7,9 @@ enforced_by:
   - packages/core/src/physics/service-os.test.ts
   - tests/spec/service-tools.test.ts
   - tests/spec/os-scenarios.test.ts
+  - packages/core/src/oracle/recovery.test.ts
+  - tests/spec/recovery-scoring.test.ts
+  - apps/web/src/logic/recovery.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 005eacf940902a71

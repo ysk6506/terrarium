@@ -31,6 +31,7 @@ import {
   IDLE_WAIT_SECONDS,
   judge,
   knownAnswer,
+  withProbes,
 } from "@terrarium/core/session";
 import { TOOL_NAMES } from "@terrarium/core/tools";
 import { BlueprintIndex } from "@terrarium/core/world";
@@ -169,11 +170,13 @@ export class Scenarios {
       this.baseline("guess", config, GUESS),
       right ? this.baseline("knows", config, right) : undefined,
     ]);
+    const judged = judge(
+      runs.filter((r): r is BaselineRun => r !== undefined),
+      right !== undefined,
+    );
+    // the two questions about services and tools run two short sessions here (REQ-088)
     return {
-      ...judge(
-        runs.filter((r): r is BaselineRun => r !== undefined),
-        right !== undefined,
-      ),
+      ...withProbes(judged, { blueprint: world.blueprint, scenario: scenario.doc, seed }),
       issues,
     };
   }

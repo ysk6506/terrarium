@@ -345,10 +345,14 @@ export class Session {
     const endedAt = this.world.time();
     if (reason !== "cancelled") this.advance(this.config.aftermathSeconds ?? 60);
     const task = this.task as AgentTask;
+    // what the world did while it settled is in the record before the run is read, as a replay of it will read it
+    this.log.flush();
     const outcome = {
       doc: this.config.scenario,
       world: this.world,
       toolCalls: this.calls,
+      events: this.log.events,
+      endedAt: this.world.time(),
       endReason: reason,
       agentStartedAt: task.startedAt,
       scenarioStart: this.scenarioStart,
