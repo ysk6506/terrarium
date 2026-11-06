@@ -247,7 +247,7 @@ function pingable(world: WorldPort, id: string): boolean {
   const dead = hostVerdict(world, id, PROBE);
   return !(
     dead.state === "dead" &&
-    ["power", "off", "reboot", "network", "os_down"].includes(dead.cause ?? "")
+    ["power", "off", "reboot", "network", "os_down", "hardware"].includes(dead.cause ?? "")
   );
 }
 

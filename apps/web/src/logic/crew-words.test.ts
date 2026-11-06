@@ -28,8 +28,8 @@ const lines = Object.entries(world3d.CREW_LINES).flatMap(([situation, list]) =>
 );
 
 describe("the lines of the people in the server room [REQ-074]", () => {
-  test("there are 3 to 5 for each of the six situations", () => {
-    expect(Object.keys(world3d.CREW_LINES)).toHaveLength(6);
+  test("there are 3 to 5 for each of the seven situations", () => {
+    expect(Object.keys(world3d.CREW_LINES)).toHaveLength(7);
     expect(lines.length).toBeGreaterThanOrEqual(18);
   });
 

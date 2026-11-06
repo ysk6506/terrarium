@@ -10,11 +10,13 @@
  */
 import type { ScenarioDoc } from "@terrarium/core/scenario";
 import { TOOL_SPECS } from "@terrarium/core/tools";
+import { domainInfo, faultDomain, formatSpan } from "@terrarium/core/world";
 import { Session, type SessionConfig } from "./session";
 
 type Config = Omit<SessionConfig, "tools" | "seed"> & { readonly seed?: number };
 
 const SETTLE_SECONDS = 60;
+const HOUR_S = 3600;
 const ALL_TOOLS = TOOL_SPECS.map((t) => t.name);
 
 function open(config: Config, tools: readonly string[]): Session {
@@ -41,8 +43,8 @@ export interface RecoveryPath {
   readonly applicable: boolean;
   /** Whether moving the services brought them all back. */
   readonly ok: boolean;
-  /** The tool that did it. */
-  readonly how?: "failover_service" | "migrate_vm";
+  /** The tool that did it; `escalate` when only the team that owns the fault can bring them back. */
+  readonly how?: "failover_service" | "migrate_vm" | "escalate";
   /** In plain Korean: how it works, or what is missing. */
   readonly note: string;
 }
@@ -61,6 +63,39 @@ function migrateVms(s: Session): boolean {
       (id) => (s.call("get_entity", { id }).data as { kind?: string } | undefined)?.kind === "vm",
     );
   return vms.map((vm) => migrateAway(s, vm)).some(Boolean);
+}
+
+/**
+ * Hand each domain that has a fault to its team and wait out the longest lead time (ADR-0100 item 5): the way back
+ * for a fault that nothing the agent's own tools do can clear. Not ok when the task's time limit comes first.
+ */
+function handOver(config: Config): RecoveryPath | undefined {
+  const s = open(config, ALL_TOOLS);
+  const domains = [...new Set(s.world.faults().map((f) => faultDomain(f.type)))];
+  if (domains.length === 0) return undefined;
+  const waits = domains.map((d) => {
+    const r = s.call("escalate", { domain: d });
+    const faults = r.ok ? (r.data as { faults: Array<{ etaSeconds: number }> }).faults : [];
+    return Math.max(0, ...faults.map((f) => f.etaSeconds));
+  });
+  const longest = Math.max(...waits);
+  const teams = domains.map((d) => domainInfo(d).team).join(", ");
+  if (longest + SETTLE_SECONDS > s.remaining())
+    return {
+      applicable: true,
+      ok: false,
+      note: `${teams}에 넘겨도 ${formatSpan(longest)} 걸려서 제한 시간 안에 돌아오지 않아요`,
+    };
+  for (let left = longest + SETTLE_SECONDS; left > 0; left -= HOUR_S)
+    s.call("wait", { seconds: Math.min(HOUR_S, left) });
+  return troubled(s).length === 0
+    ? {
+        applicable: true,
+        ok: true,
+        how: "escalate",
+        note: `${teams}에 넘기면 ${formatSpan(longest)} 뒤에 돌아와요`,
+      }
+    : undefined;
 }
 
 /** Try the ways of moving a service that need no repair of the machine, and say which one works. */
@@ -90,11 +125,13 @@ export function recoveryPath(config: Config): RecoveryPath {
         note: "VM을 다른 서버로 옮기면 돌아와요",
       };
   }
-  return {
-    applicable: true,
-    ok: false,
-    note: "장비를 고치지 못해도 서비스를 옮길 수 있는 길(대기 쪽이나 다른 서버)이 없어요",
-  };
+  return (
+    handOver(config) ?? {
+      applicable: true,
+      ok: false,
+      note: "서비스를 옮길 길(대기 쪽이나 다른 서버)도, 그 고장의 도메인 팀에 넘겨서 돌아오는 길도 없어요",
+    }
+  );
 }
 
 export interface CommonReach {

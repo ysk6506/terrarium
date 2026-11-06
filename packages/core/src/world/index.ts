@@ -41,6 +41,19 @@ export {
 } from "./construction";
 export { blueprintDigest } from "./digest";
 export {
+  DOMAIN_IDS,
+  DOMAINS,
+  type Domain,
+  type DomainInfo,
+  domainChoices,
+  domainInfo,
+  FAULT_DOMAIN,
+  faultDomain,
+  isDomain,
+  MISTAKE_DOMAIN,
+  parseDomain,
+} from "./domains";
+export {
   diagnosisLabel,
   FAULT_SPECS,
   type Fault,
@@ -116,6 +129,35 @@ export {
   PYEONG_M2,
   parcelPriceM,
 } from "./land";
+export {
+  AFTER_HOURS_FACTOR,
+  type Clock,
+  clockAt,
+  DEFAULT_LEAD_SETTINGS,
+  describeLeadSettings,
+  formatSpan,
+  isAfterHours,
+  isDefaultLeadSettings,
+  LEAD_ROWS,
+  LEAD_STEP_S,
+  type LeadRange,
+  type LeadRow,
+  type LeadTimeSettings,
+  leadRange,
+  type Range,
+  resolveLeadSettings,
+  roundLead,
+  SLA_FACTOR,
+  SLA_LABELS,
+  SPARE_LABELS,
+  type SpareSetting,
+  START_LABELS,
+  type StartKind,
+  sampleLead,
+  type VendorSla,
+  type WorkKind,
+  workWindow,
+} from "./lead-times";
 export {
   type Cidr,
   cidrText,
@@ -200,9 +242,14 @@ export {
   sharedEdge,
 } from "./room-shape";
 export {
+  type CounterpartEvent,
+  type HandedFault,
   RUN_EVENT_FORMAT,
   type RunEvent,
   type ScoreEvent,
+  type TicketEvent,
+  type TicketSnapshot,
+  type TicketStatus,
   type ToolEffect,
   type ToolEvent,
   type WorldRunEvent,

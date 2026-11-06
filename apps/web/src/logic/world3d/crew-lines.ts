@@ -38,6 +38,12 @@ export const CREW_LINES: Readonly<Record<CrewSituation, readonly string[]>> = {
     "알람이 울리면 제일 먼저 알아요. 그게 제 일이에요",
     "모니터 속 그래프랑 눈싸움 중이에요",
   ],
+  partner: [
+    "{device} 작업하러 왔어요. 부품부터 꺼낼게요",
+    "{device} 앞에서 작업 중이에요. 금방은 안 끝나요",
+    "넘겨받은 일이에요. 순서대로 해 볼게요",
+    "{device} 열어 놨어요. 조심조심 하는 중이에요",
+  ],
   technician: [
     "연락받고 왔어요. {device}부터 볼게요",
     "공구 가방은 늘 무거워요",

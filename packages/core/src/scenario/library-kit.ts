@@ -5,6 +5,7 @@
 import type { Catalog } from "@terrarium/core/catalog";
 import type {
   BlueprintIndex,
+  Domain,
   Entity,
   EntityKind,
   FaultType,
@@ -22,6 +23,10 @@ export interface ScenarioTemplate {
   readonly faultTypes: readonly FaultType[];
   /** The mistakes (a wrong VLAN, a shut port) it makes with configuration blocks instead of faults. */
   readonly mistakeTypes?: readonly MistakeType[];
+  /** The domains the experiment should be responsible for to play this sheet (REQ-093); the cause is in another. */
+  readonly ownDomains?: readonly Domain[];
+  /** The domain of the fault: who has to be handed the work. */
+  readonly causeDomain?: Domain;
   /** `recovery` for a template about services: its sheet is scored recovery first (ADR-0091 item 3). */
   readonly scoring?: "recovery";
   /**

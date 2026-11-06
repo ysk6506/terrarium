@@ -3,7 +3,9 @@ import { z } from "zod";
 import {
   BlueprintSchema,
   CampusSpecSchema,
+  DomainsSchema,
   IdSchema,
+  LeadTimesSchema,
   NameSchema,
   NoteSchema,
   ProfilesSchema,
@@ -115,6 +117,10 @@ export const RecipeBody = z
     runs: z.number().int().min(1).max(20).optional(),
     time: TimePolicySchema.optional(),
     profiles: ProfilesSchema.optional(),
+    /** The domains this experiment is responsible for; the rest is handed to the team that owns it (REQ-093). */
+    domains: DomainsSchema.optional(),
+    /** Vendor SLA, spare parts and surcharge; left out, the defaults of lead-times.md. */
+    leadTimes: LeadTimesSchema.optional(),
   })
   .strict()
   .refine((r) => !(r.seeds && r.runs), {
@@ -144,6 +150,8 @@ export const ForkBody = z
         seeds: SeedsSchema.optional(),
         time: TimePolicySchema.optional(),
         profiles: ProfilesSchema.optional(),
+        domains: DomainsSchema.optional(),
+        leadTimes: LeadTimesSchema.optional(),
       })
       .strict(),
     name: NameSchema.optional(),

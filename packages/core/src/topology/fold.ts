@@ -81,6 +81,7 @@ function singleTile(c: Context, stage: number, id: string): Tile {
     line: node.line,
     state: node.state,
     touched: node.touched,
+    ...(node.partner ? { partner: node.partner } : {}),
     count: 1,
     servers: node.servers,
     bar: [],

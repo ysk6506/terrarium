@@ -100,7 +100,9 @@ export {
 export {
   BlueprintSchema,
   CampusSpecSchema,
+  DomainsSchema,
   IdSchema,
+  LeadTimesSchema,
   MAX_ENTITIES,
   MAX_LINKS,
   NameSchema,

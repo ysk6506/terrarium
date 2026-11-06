@@ -3,6 +3,7 @@
  * for people (Korean); descriptions are for the agent (English, as LLM tool descriptions usually are).
  */
 
+import { OPS_DOCS, OPS_SPECS } from "./catalog-ops";
 import { type Realism, standardDescription, TOOL_DOCS } from "./docs";
 
 export type ToolCategory = "observe" | "protocol" | "act" | "answer";
@@ -34,6 +35,12 @@ export interface ToolSpec {
   /** True when the tool changes the simulated world (the oracle may reward or penalise it). */
   readonly mutating: boolean;
   readonly inputSchema: JsonSchema;
+  /** Off unless the experiment turns it on (REQ-093). */
+  readonly optional?: boolean;
+  /** One or two sentences under the tool on the picker, for tools that need explaining. */
+  readonly help?: string;
+  /** Tools the picker shows as one line (the work tickets). */
+  readonly bundle?: { readonly id: string; readonly label: string };
 }
 
 const obj = (properties: JsonSchema["properties"], required: string[] = []): JsonSchema => ({
@@ -380,8 +387,8 @@ const RAW_SPECS: readonly RawSpec[] = [
 ] as const; // prettier-ignore
 
 /** The tools with the description in the standard order and the realism tag (ADR-0087). */
-export const TOOL_SPECS: readonly ToolSpec[] = RAW_SPECS.map((raw) => {
-  const doc = TOOL_DOCS[raw.name];
+export const TOOL_SPECS: readonly ToolSpec[] = [...RAW_SPECS, ...OPS_SPECS].map((raw) => {
+  const doc = TOOL_DOCS[raw.name] ?? OPS_DOCS[raw.name];
   if (!doc) throw new Error(`tool '${raw.name}' has no entry in TOOL_DOCS`);
   return { ...raw, realism: doc.realism, description: standardDescription(doc, raw.mutating) };
 });
@@ -404,5 +411,5 @@ const DEFAULT_PROTOCOL: readonly string[] = ["run_command"];
  * by how common a tool is in real operations (`realism`) is the third beta round's work (beta-rounds.md).
  */
 export const DEFAULT_TOOLSET: readonly string[] = TOOL_SPECS.filter(
-  (t) => t.category !== "protocol" || DEFAULT_PROTOCOL.includes(t.name),
+  (t) => !t.optional && (t.category !== "protocol" || DEFAULT_PROTOCOL.includes(t.name)),
 ).map((t) => t.name);

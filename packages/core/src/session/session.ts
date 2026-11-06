@@ -35,6 +35,7 @@ import {
 } from "@terrarium/core/scenario";
 import {
   type Args,
+  scopeTools,
   Toolbox,
   type ToolContext,
   type ToolResult,
@@ -43,11 +44,14 @@ import {
 import {
   type Blueprint,
   blueprintDigest,
+  type Domain,
+  type LeadTimeSettings,
   type PreparedWorld,
   type RunEvent,
   World,
   type WorldEvent,
 } from "@terrarium/core/world";
+import { HandOffs, scopeOf } from "./hand-offs";
 import { DEFAULT_RECORDER, MetricRecorder, type MetricSeries, RECORDED_METRICS } from "./recorder";
 import { RunLog } from "./run-events";
 import { buildTimeline, type TimelineEntry } from "./timeline";
@@ -67,6 +71,13 @@ export interface SessionConfig {
   /** Tools the experiment selected; submit_diagnosis is always added (it is how the agent answers). */
   readonly tools: readonly string[];
   readonly seed: number;
+  /**
+   * The domains this experiment is responsible for (REQ-093). With some, only their tools (and the ones every domain
+   * has) are on, `escalate` and `events_since` come on, and the rest is reached by handing it to the team that owns it.
+   */
+  readonly domains?: readonly Domain[];
+  /** The vendor SLA, spare parts and surcharge the teams' waits are worked out from; unset means the defaults. */
+  readonly leadTimes?: LeadTimeSettings;
   readonly catalog?: Catalog;
   readonly profiles?: { readonly vcenter?: string; readonly vrops?: string };
   readonly time?: TimePolicy;
@@ -112,6 +123,12 @@ export interface RunResult {
   readonly series: readonly MetricSeries[];
   readonly digests: { readonly world: string; readonly scenario: string; readonly oracle: string };
   readonly seed: number;
+  /** The scope the run had; absent for a run that owned every domain and used the default waits. */
+  readonly scope?: {
+    readonly domains: readonly Domain[];
+    readonly leadTimes: Required<LeadTimeSettings>;
+    readonly leadTimesLabel: string;
+  };
   readonly simTime: {
     readonly scenarioStart: number;
     readonly agentStart: number;
@@ -124,7 +141,8 @@ const ALWAYS_TOOLS = ["submit_diagnosis"];
 const MAX_SERIES = 24;
 
 /** World events the agent caused (tools and protocol facades), as opposed to scenario and physics. */
-const byAgent = (e: WorldEvent) => e.cause !== "physics" && !e.cause.startsWith("scenario:");
+const byAgent = (e: WorldEvent) =>
+  e.cause !== "physics" && !e.cause.startsWith("scenario:") && !e.cause.startsWith("counterpart:");
 
 export class Session {
   readonly world: World;
@@ -136,6 +154,7 @@ export class Session {
   private readonly time: TimePolicy;
   private readonly calls: ToolCallRecord[] = [];
   private readonly log: RunLog;
+  private readonly handOffs: HandOffs;
   private state: SessionStatus = "ready";
   private task: AgentTask | undefined;
   private diagnosis: Diagnosis | undefined;
@@ -152,7 +171,17 @@ export class Session {
     this.log = new RunLog(world, (id) => world.index.find(id)?.name ?? id);
     this.physics = new Physics(world);
     this.time = config.time ?? DEFAULT_TIME;
-    this.toolbox = new Toolbox([...new Set([...config.tools, ...ALWAYS_TOOLS])]);
+    this.toolbox = new Toolbox([
+      ...new Set([...scopeTools(config.tools, config.domains), ...ALWAYS_TOOLS]),
+    ]);
+    this.handOffs = new HandOffs({
+      world,
+      log: this.log,
+      seed: config.seed,
+      leadTimes: config.leadTimes,
+      originT: () => this.task?.startedAt ?? world.time(),
+      ticketsOn: () => this.toolbox.has("create_ticket"),
+    });
     this.recorder = new MetricRecorder(world, {
       sampleSeconds: config.sampleSeconds ?? DEFAULT_RECORDER.sampleSeconds,
       retentionSeconds: config.retentionSeconds ?? DEFAULT_RECORDER.retentionSeconds,
@@ -171,6 +200,7 @@ export class Session {
         this.diagnosis = d;
         this.diagnosedAt = world.time();
       },
+      ops: this.handOffs.port,
     };
   }
 
@@ -332,10 +362,13 @@ export class Session {
   private advance(seconds: number): void {
     const end = this.world.time() + seconds;
     for (let now = this.world.time(); now < end - 1e-9; now = this.world.time()) {
-      const wake = this.runner.nextWakeAt();
-      const toWake = wake !== undefined && wake > now ? wake - now : Number.POSITIVE_INFINITY;
+      const wakes = [this.runner.nextWakeAt(), this.handOffs.nextWakeAt(now)].filter(
+        (w): w is number => w !== undefined && w > now,
+      );
+      const toWake = wakes.length > 0 ? Math.min(...wakes) - now : Number.POSITIVE_INFINITY;
       this.physics.step(Math.min(DEFAULT_PHYSICS.stepSeconds, end - now, toWake));
       this.runner.tick();
+      this.handOffs.tick();
       this.recorder.sampleIfDue();
     }
   }
@@ -350,6 +383,7 @@ export class Session {
     const outcome = {
       doc: this.config.scenario,
       world: this.world,
+      ...(this.config.domains ? { domains: this.config.domains } : {}),
       toolCalls: this.calls,
       events: this.log.events,
       endedAt: this.world.time(),
@@ -396,6 +430,7 @@ export class Session {
         oracle: ORACLE_VERSION,
       },
       seed: this.config.seed,
+      ...scopeOf(this.config.domains, this.config.leadTimes),
       simTime: { scenarioStart: this.scenarioStart, agentStart: task.startedAt, end: endedAt },
       recorderBytes: this.recorder.bytes,
     };

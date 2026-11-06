@@ -15,6 +15,7 @@ import {
   reportedInletC,
   type WorldPort,
 } from "@terrarium/core/world";
+import { OPS_HANDLERS, type OpsPort } from "./handlers-ops";
 import { SERVICE_HANDLERS } from "./handlers-service";
 
 export interface MetricSource {
@@ -39,6 +40,8 @@ export interface ToolContext {
   readonly wait?: (seconds: number) => void;
   /** Receives the agent's final answer. */
   readonly submit?: (diagnosis: Diagnosis) => void;
+  /** Handing work over to another team and keeping tickets (REQ-093); the session provides it. */
+  readonly ops?: OpsPort;
 }
 
 export type Args = Readonly<Record<string, unknown>>;
@@ -427,6 +430,7 @@ const submitDiagnosis: Handler = (ctx, args) => {
 
 export const HANDLERS: Readonly<Record<string, Handler>> = {
   ...SERVICE_HANDLERS,
+  ...OPS_HANDLERS,
   list_alarms: listAlarms,
   list_entities: listEntities,
   get_entity: getEntity,

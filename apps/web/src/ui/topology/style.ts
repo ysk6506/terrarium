@@ -377,6 +377,10 @@ export const TOPOLOGY_CSS = `
   background: var(--cobalt);
 }
 
+.dot-partner {
+  background: var(--topo-partner);
+}
+
 .dot-impact {
   background: var(--topo-range);
 }

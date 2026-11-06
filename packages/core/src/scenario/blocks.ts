@@ -354,7 +354,7 @@ const CORE_BLOCK_SPECS: readonly BlockSpec[] = [
         default: 40,
         integer: true,
       },
-      seconds("timeLimitSeconds", "제한 시간", 60, 86_400, 3600),
+      seconds("timeLimitSeconds", "제한 시간", 60, 345_600, 3600),
     ],
     status: "supported",
     minCount: 1,

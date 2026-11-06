@@ -5,6 +5,7 @@
 import type { ExperimentAnalysis, ParentComparison } from "@terrarium/core/analysis";
 import type { ExperimentView, RunSummary } from "@terrarium/core/contract";
 import { END_REASON_LABELS } from "@terrarium/core/oracle";
+import { describeLeadSettings, domainInfo } from "@terrarium/core/world";
 import {
   formatDuration,
   type LiveState,
@@ -328,9 +329,21 @@ export function ConditionsPanel({ view }: { readonly view: ExperimentView }) {
           <dd>
             {recipe.time.kind === "lockstep"
               ? `툴 호출 한 번에 ${formatDuration(recipe.time.secondsPerCall)} (재현됨)`
-              : `벽시계 ${recipe.time.speed}배속 (재현되지 않음)`}
+              : `실제 시간 ${recipe.time.speed}배속 (재현되지 않음)`}
           </dd>
         </div>
+        {recipe.domains && recipe.domains.length > 0 && (
+          <div>
+            <dt>내 도메인</dt>
+            <dd>{recipe.domains.map((d) => domainInfo(d).label).join(", ")}</dd>
+          </div>
+        )}
+        {recipe.domains && recipe.domains.length > 0 && (
+          <div>
+            <dt>SLA·예비 부품·팀</dt>
+            <dd>{describeLeadSettings(recipe.leadTimes)}</dd>
+          </div>
+        )}
       </dl>
       {view.experiment.note && <Note>{view.experiment.note}</Note>}
     </Section>

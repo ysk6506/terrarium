@@ -235,6 +235,21 @@ export type ActivityEvent =
       readonly effect: CallEffect;
       readonly targets: readonly string[];
     }
+  | {
+      /** The other side of a hand-off starts working on a machine, or is done with it (REQ-093). */
+      readonly type: "partner";
+      readonly runId: string;
+      readonly t: number;
+      readonly handoff: string;
+      /** The machine (or cable) the work is on. */
+      readonly device: string;
+      readonly what: "started" | "done";
+      readonly team: string;
+      readonly who: "team" | "vendor";
+      /** A part is changed (an engineer comes to the machine), as opposed to work at a console. */
+      readonly replacing: boolean;
+      readonly onSite: boolean;
+    }
   | { readonly type: "end"; readonly runId: string };
 
 export type { WorldSummary };

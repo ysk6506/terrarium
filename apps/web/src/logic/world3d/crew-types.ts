@@ -8,7 +8,14 @@ import type { RoomScene } from "./room";
 
 export type CrewRole = "engineer" | "manager" | "technician";
 export type CrewPose = "walk" | "stand" | "work" | "sit";
-export type CrewSituation = "patrol" | "going" | "working" | "agent" | "manager" | "technician";
+export type CrewSituation =
+  | "patrol"
+  | "going"
+  | "working"
+  | "agent"
+  | "manager"
+  | "technician"
+  | "partner";
 
 /** An alarm on a machine of the room, as the crew needs it. */
 export interface CrewAlarm {
@@ -33,8 +40,17 @@ export interface CrewActivity {
 export interface CrewWorld {
   readonly alarms: readonly CrewAlarm[];
   readonly activity: readonly CrewActivity[];
+  readonly partners?: readonly CrewPartner[];
   readonly from?: number;
   readonly before?: CrewWorld;
+}
+
+/** Another team is working on a machine of the room (REQ-093): a technician walks in from the door to it. */
+export interface CrewPartner {
+  readonly device: string;
+  /** "교체 중 · 벤더", "작업 중 · 네트워크 팀". */
+  readonly text: string;
+  readonly replacing: boolean;
 }
 
 export const NO_TROUBLE: CrewWorld = { alarms: [], activity: [] };
@@ -94,6 +110,8 @@ export interface CrewState {
   /** The machine this person is walking to or working at. */
   readonly device?: string;
   readonly forAgent: boolean;
+  /** Working for another team's hand-off, not for an alarm. */
+  readonly forPartner?: boolean;
   readonly situation: CrewSituation;
 }
 

@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { experiment, hiddenWarning, howWords } from "../../logic";
 import { useApp, useAsync } from "../context";
 import { Button, Check, Note, NumberField, SelectField, TextField } from "../kit";
+import { DomainScope } from "./experiment-domains";
 import { ExperimentMetadata, NoHarness, VersionPreview } from "./experiment-subject";
 
 type Draft = experiment.Draft;
@@ -303,6 +304,7 @@ export function HowStep({ draft, set, problems }: StepProps) {
     <section className="wizard-step stack">
       <StepHead n={3} title="어떻게 시험할까요?" problems={problems} />
       <RunsField draft={draft} set={set} />
+      <DomainScope draft={draft} set={set} />
       <ToolPicker draft={draft} set={set} />
       <Advanced draft={draft} set={set} />
     </section>

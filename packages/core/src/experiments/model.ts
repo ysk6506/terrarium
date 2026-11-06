@@ -6,7 +6,7 @@
  */
 import type { ScenarioDoc } from "@terrarium/core/scenario";
 import type { RunResult, TimePolicy } from "@terrarium/core/session";
-import type { Blueprint } from "@terrarium/core/world";
+import type { Blueprint, Domain, LeadTimeSettings } from "@terrarium/core/world";
 
 export type WorldOrigin = "builder" | "worldgen" | "import" | "sample";
 
@@ -45,6 +45,10 @@ export interface Recipe {
   readonly time: TimePolicy;
   /** Product versions of the protocol endpoints (BMCs follow each server's own profile). */
   readonly profiles: { readonly vcenter?: string; readonly vrops?: string };
+  /** The domains the experiment is responsible for (REQ-093); left out, it owns every domain. */
+  readonly domains?: readonly Domain[];
+  /** Vendor SLA, spare parts and surcharge the teams' waits are worked out from; left out, the defaults. */
+  readonly leadTimes?: LeadTimeSettings;
 }
 
 /** Names and values people attach to tell results apart: team, version, a prompt variant (REQ-052). */

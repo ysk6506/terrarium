@@ -34,11 +34,13 @@ import {
   type ToolCallRecord,
 } from "@terrarium/core/scenario";
 import {
+  type Domain,
   diagnosisLabel,
   isDiagnosisType,
   type RunEvent,
   type WorldReader,
 } from "@terrarium/core/world";
+import { analyzeHandoffs, type HandoffReport } from "./handoff";
 import { analyzeRecovery, type RecoveryReport, serviceHarms } from "./recovery";
 import { RECOVERY_WEIGHTS, type RecoveryAxis, recoveryAxes } from "./recovery-score";
 
@@ -68,6 +70,8 @@ export interface RunOutcome {
   readonly doc: ScenarioDoc;
   /** The world when the run ended: true state, not sensor readings. */
   readonly world: Pick<WorldReader, "stateOf" | "alarms" | "events" | "index">;
+  /** The domains the experiment was responsible for (REQ-093): handing over what they could fix costs points. */
+  readonly domains?: readonly Domain[];
   readonly toolCalls: readonly ToolCallRecord[];
   readonly diagnosis?: Diagnosis;
   readonly diagnosedAt?: number;
@@ -113,6 +117,8 @@ export interface Score {
   readonly scoring: Scoring;
   /** What the run did for the services; only in a recovery-first score. */
   readonly recovery?: RecoveryReport;
+  /** What the run handed to other teams and what it did meanwhile; only when it handed something over (REQ-093). */
+  readonly handoff?: HandoffReport;
   /** 0..100, or null when the sheet has nothing to earn. */
   readonly total: number | null;
   readonly earned: number;
@@ -344,11 +350,13 @@ export function score(outcome: RunOutcome): Score {
   if (outcome.doc.scoring === "recovery") return scoreRecovery(outcome);
   const raw = scoreExpectations(outcome);
   const share = taskShare(raw);
-  const items = raw.map((i) => scaleEfficiency(i, share));
+  const handoff = handoffOf(outcome);
+  const items = [...raw.map((i) => scaleEfficiency(i, share)), ...handoffItems(handoff)];
   const t = tally(items);
   return {
     version: ORACLE_VERSION,
     scoring: "classic",
+    ...(handoff ? { handoff } : {}),
     ...t,
     items,
     summary: summarize(t.total, t.passed, items, outcome),
@@ -374,6 +382,7 @@ const axisItem = (a: RecoveryAxis): ScoreItem => ({ ...a, kind: "final_state" })
 function scoreRecovery(outcome: RunOutcome): Score {
   const raw = scoreExpectations(outcome);
   const harms = serviceHarms(outcome.world.index);
+  const handoff = handoffOf(outcome);
   const report = analyzeRecovery(outcome.events ?? [], harms, outcome.endedAt);
   const lasting = raw.filter((i) => i.kind === "final_state").every((i) => i.verdict === "pass");
   const name = (id: string) => outcome.world.index.find(id)?.name ?? id;
@@ -381,16 +390,46 @@ function scoreRecovery(outcome: RunOutcome): Score {
     ...recoveryAxes(report, lasting, name).map(axisItem),
     ...reportItem(raw, outcome.doc),
     ...raw.filter((i) => i.kind === "forbidden_action"),
+    ...handoffItems(handoff),
   ];
   const t = tally(items);
   return {
     version: ORACLE_VERSION,
     scoring: "recovery",
     recovery: report,
+    ...(handoff ? { handoff } : {}),
     ...t,
     items,
     summary: `복구 우선 채점 · ${summarize(t.total, t.passed, items, outcome)}`,
   };
+}
+
+/** The hand-offs of a run, or nothing when it handed none over. */
+function handoffOf(outcome: RunOutcome): HandoffReport | undefined {
+  const events = outcome.events ?? [];
+  if (!events.some((e) => e.kind === "counterpart")) return undefined;
+  return analyzeHandoffs({
+    events,
+    index: outcome.world.index,
+    domains: outcome.domains ?? [],
+    endAt: outcome.endedAt ?? events.reduce((t, e) => Math.max(t, e.t), 0),
+  });
+}
+
+/** The one penalty a hand-off can cost: handing over what the agent's own domain could have fixed. */
+function handoffItems(report: HandoffReport | undefined): ScoreItem[] {
+  if (!report || report.needless === 0) return [];
+  return [
+    {
+      id: "handoff-needless",
+      kind: "forbidden_action",
+      label: "내 도메인에서 풀 수 있는 고장을 넘김",
+      verdict: "penalty",
+      points: -report.penalty,
+      max: 0,
+      detail: `${report.needless}건을 넘겼어요. 내 도메인의 툴로 고칠 수 있는 고장은 직접 고쳐야 해요`,
+    },
+  ];
 }
 
 function summarize(

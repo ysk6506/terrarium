@@ -4,6 +4,7 @@
  * shown in words; the family tree can be walked both ways.
  */
 import { InvalidValueError } from "@terrarium/core/kernel";
+import { describeLeadSettings, domainInfo } from "@terrarium/core/world";
 import type { Experiment, Metadata, Recipe, Snapshot, Subject } from "./model";
 import { benchmarkKey, normalizeTools } from "./recipe";
 
@@ -77,6 +78,8 @@ const LABELS: Readonly<Record<keyof Recipe, string>> = {
   seeds: "시드",
   time: "시간 정책",
   profiles: "제품 버전",
+  domains: "내 도메인",
+  leadTimes: "담당자·벤더 설정",
 };
 
 function timeText(t: Recipe["time"]): string {
@@ -91,6 +94,12 @@ function text(field: keyof Recipe, r: Recipe): string {
       return r.seeds.join(", ");
     case "time":
       return timeText(r.time);
+    case "domains":
+      return r.domains && r.domains.length > 0
+        ? r.domains.map((d) => domainInfo(d).label).join(", ")
+        : "전체";
+    case "leadTimes":
+      return describeLeadSettings(r.leadTimes);
     case "profiles":
       return `vCenter ${r.profiles.vcenter ?? "기본"} · vROps ${r.profiles.vrops ?? "기본"}`;
     default:

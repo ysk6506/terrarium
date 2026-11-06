@@ -21,7 +21,14 @@ import {
   TOOL_SPECS,
   type ToolCategory,
   type ToolSpec,
+  toolsForDomains,
 } from "@terrarium/core/tools";
+import {
+  DEFAULT_LEAD_SETTINGS,
+  type Domain,
+  isDefaultLeadSettings,
+  type LeadTimeSettings,
+} from "@terrarium/core/world";
 
 import { type MetaRow, metadataOf } from "./connections";
 import { RECOMMENDED_RUNS, runsRange } from "./how-words";
@@ -38,6 +45,10 @@ export interface Draft {
   readonly runs: number;
   readonly time: TimePolicy;
   readonly profiles: { readonly vcenter?: string; readonly vrops?: string };
+  /** The domains the experiment is responsible for (REQ-093); none means every domain is its own. */
+  readonly domains: readonly Domain[];
+  /** Vendor SLA, spare parts and surcharge; left out, the defaults of the lead-time table. */
+  readonly leadTimes?: LeadTimeSettings;
   /** `name=value` pairs attached to the experiment to tell results apart (REQ-052). */
   readonly metadata: readonly MetaRow[];
 }
@@ -56,8 +67,36 @@ export const emptyDraft = (): Draft => ({
   runs: RECOMMENDED_RUNS,
   time: DEFAULT_TIME,
   profiles: {},
+  domains: [],
   metadata: [],
 });
+
+const OPTIONAL_TOOLS: readonly string[] = TOOL_SPECS.filter((t) => t.optional).map((t) => t.name);
+
+/**
+ * Choosing the domains an experiment is responsible for turns on their tools (and `escalate` with `events_since`);
+ * choosing none puts the usual set back. The optional tools the person switched on stay as they were.
+ */
+export function setDomains(draft: Draft, domains: readonly Domain[]): Draft {
+  const kept = draft.tools.filter(
+    (t) => OPTIONAL_TOOLS.includes(t) && t !== "escalate" && t !== "events_since",
+  );
+  const base = domains.length > 0 ? toolsForDomains(domains, TOOL_SPECS) : [...DEFAULT_TOOLSET];
+  const { leadTimes: _drop, ...rest } = draft;
+  const next = { ...rest, domains, tools: [...new Set([...base, ...kept])] };
+  return domains.length > 0 && draft.leadTimes ? { ...next, leadTimes: draft.leadTimes } : next;
+}
+
+/** Change one of the vendor and spare-part settings; back to the defaults, nothing is kept. */
+export function setLeadTimes(draft: Draft, change: Partial<LeadTimeSettings> | undefined): Draft {
+  const merged = change === undefined ? undefined : { ...draft.leadTimes, ...change };
+  const { leadTimes: _drop, ...rest } = draft;
+  return merged && !isDefaultLeadSettings(merged) ? { ...rest, leadTimes: merged } : rest;
+}
+
+/** Whether a setting differs from the default: the form marks it. */
+export const leadChanged = (draft: Draft, key: keyof LeadTimeSettings): boolean =>
+  draft.leadTimes?.[key] !== undefined && draft.leadTimes[key] !== DEFAULT_LEAD_SETTINGS[key];
 
 export const PROFILE_CHOICES = {
   vcenter: BUILTIN_PROFILES.filter((p) => p.protocol === "vcenter").map((p) => p.key),
@@ -102,6 +141,8 @@ export function recipeOf(draft: Draft): Recipe | undefined {
     seeds: seedsUpTo(draft.runs),
     time: draft.time,
     profiles: draft.profiles,
+    ...(draft.domains.length > 0 ? { domains: draft.domains } : {}),
+    ...(draft.leadTimes ? { leadTimes: draft.leadTimes } : {}),
   };
 }
 
@@ -169,6 +210,8 @@ export function toRequest(draft: Draft, fallbackName: string): CreateExperimentR
       runs: draft.runs,
       time: recipe.time,
       profiles: recipe.profiles,
+      ...(recipe.domains ? { domains: [...recipe.domains] } : {}),
+      ...(recipe.leadTimes ? { leadTimes: recipe.leadTimes } : {}),
     },
   };
 }
@@ -189,6 +232,8 @@ export function draftFrom(parent: Experiment): Draft {
     runs: r.seeds.length,
     time: r.time,
     profiles: r.profiles,
+    domains: r.domains ?? [],
+    ...(r.leadTimes ? { leadTimes: r.leadTimes } : {}),
     metadata: metaRows(parent.metadata),
   };
 }
@@ -218,5 +263,7 @@ export function toForkRequest(parent: Experiment, draft: Draft): ForkRequest {
 
 /** The benchmark set changes when the task changes (world, scenario, time, product versions). */
 export function leavesBenchmarkSet(changes: readonly RecipeChange[]): boolean {
-  return changes.some((c) => ["worldId", "scenarioId", "time", "profiles"].includes(c.field));
+  return changes.some((c) =>
+    ["worldId", "scenarioId", "time", "profiles", "domains", "leadTimes"].includes(c.field),
+  );
 }

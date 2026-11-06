@@ -160,6 +160,8 @@ export class Experiments {
       seeds: req.seeds ?? (req.runs ? seedsUpTo(req.runs) : [...DEFAULT_SEEDS]),
       time: req.time ?? DEFAULT_TIME,
       profiles: req.profiles ?? {},
+      ...(req.domains && req.domains.length > 0 ? { domains: req.domains } : {}),
+      ...(req.leadTimes ? { leadTimes: req.leadTimes } : {}),
     };
   }
 

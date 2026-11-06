@@ -8,6 +8,17 @@ export {
   type ToolSpec,
   toolSpec,
 } from "./catalog";
+export { OPS_DOCS, OPS_SPECS, TICKET_BUNDLE, TICKET_HELP } from "./catalog-ops";
+export {
+  onlyDomains,
+  SCOPE_TOOLS,
+  scopeTools,
+  TOOL_DOMAIN,
+  type ToolDomain,
+  toolDomain,
+  toolsForDomains,
+  toolsWithoutDomain,
+} from "./domains";
 export {
   type Args,
   type Diagnosis,
@@ -19,5 +30,6 @@ export {
   summarizeState,
   type ToolContext,
 } from "./handlers";
+export type { EscalateAnswer, OpsPort, TicketInput, VisibleEvent } from "./handlers-ops";
 export { type CallEffect, callEffect, callTargets } from "./targets";
 export { Toolbox, type ToolResult, validateArgs } from "./toolbox";

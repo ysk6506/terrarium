@@ -65,6 +65,11 @@ export const BOARD_CSS = `
   stroke: var(--cobalt);
 }
 
+.topo-board .s-partner .rim {
+  stroke: var(--topo-partner);
+  stroke-dasharray: 5 3;
+}
+
 .topo-board .glow {
   opacity: 0.16;
 }
@@ -84,6 +89,10 @@ export const BOARD_CSS = `
 
 .topo-board .s-touch .glow {
   fill: var(--cobalt);
+}
+
+.topo-board .s-partner .glow {
+  fill: var(--topo-partner);
 }
 
 .topo-board .touch-read .rim {

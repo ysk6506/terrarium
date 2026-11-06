@@ -48,6 +48,8 @@ export interface TopologySource {
   linkUp(linkId: string): boolean;
   /** What the agents have been touching, as equipment ids (ADR-0084 step 2; empty until a run is watched). */
   readonly touched?: ReadonlySet<string>;
+  /** Equipment another team is working on right now, with the words for the tile ("교체 중 · 벤더"; REQ-093). */
+  readonly partners?: ReadonlyMap<string, string>;
   /** An earlier reading, to tell which way the temperatures are going. */
   readonly earlier?: Earlier;
 }
@@ -70,6 +72,8 @@ export interface TopoNode {
   readonly name: string;
   readonly state: TopoState;
   readonly touched: boolean;
+  /** Set while another team works on it: the line says so instead of the usual status. */
+  readonly partner?: string;
   /** The one line of status under the name, with one number in it. */
   readonly line: string;
   /** Servers that stand on this piece, or are inside it. */
@@ -92,6 +96,8 @@ export interface Tile {
   readonly line: string;
   readonly state: TopoState;
   readonly touched: boolean;
+  /** Another team is working on it: "교체 중 · 벤더". */
+  readonly partner?: string;
   /** How many pieces of equipment the tile stands for (1 unless it is a group). */
   readonly count: number;
   /** Servers on it, counted once each. */

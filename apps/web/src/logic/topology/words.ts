@@ -20,6 +20,7 @@ export const TOPO_WORDS = {
   fault: "고장",
   alarm: "알람",
   touch: "에이전트가 만지는 곳",
+  partner: "다른 팀이 작업 중인 곳",
   range: "영향 범위",
   stop: "멈춰 보기",
   start: "다시 돌려 보기",

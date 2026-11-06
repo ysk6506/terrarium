@@ -26,7 +26,7 @@ export interface Bucket {
 export const classOf = (status: Status, id: string): TileClass => {
   const state = status.stateOf(id);
   if (state === "fault" || state === "alarm") return state;
-  if (status.touched(id)) return "touch";
+  if (status.touched(id) || status.partner(id)) return "touch";
   return state === "impact" ? "impact" : "ok";
 };
 

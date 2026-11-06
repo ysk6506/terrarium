@@ -19,12 +19,12 @@ covers:
   - packages/core/src/tools/shell-output.ts
   - packages/core/src/scenario/library-os.ts
 verification_log:
-  - "2026-11-06: 처음 씀. 건강 규칙은 service-health.ts, 번짐은 os-physics.ts, 허용 명령은 shell.ts, 템플릿은 library-os.ts와 대조했다 (ADR-0091 결정 1·2, ADR-0102)"
-  - "2026-11-06: 새 문서"
   - "2026-11-06: 2026-11-06: ADR-0091(결정 1·2)·ADR-0102 구현: 서비스 층·OS 층 1차를 코드와 대조해 해당 절을 더하거나 고쳤다. 이 문서가 말하는 나머지 구조는 그대로다"
   - "2026-11-06: 2026-11-06: shell.ts, shell-output.ts는 린트 수정만 바뀌었고 문서 내용은 그대로임을 확인했다"
   - "2026-11-06: library-os.ts의 채점표가 복구 우선으로 바뀐 것과 world/service-events.ts, 기본 툴 묶음의 run_command를 코드와 대조해 템플릿 절·기준 에이전트 표를 고쳤다 (REQ-088, ADR-0104)"
-covers_hash: 421f2c950f92c3a3
+  - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
+  - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
+covers_hash: d892f656d4014614
 ---
 # 서비스와 OS 층 (REQ-086, REQ-087, [ADR-0091](adr/0091-service-os-layer-recovery-first.md))
 
@@ -75,6 +75,7 @@ covers_hash: 421f2c950f92c3a3
 | 조건 | 서버 | VM | 스토리지 |
 |---|---|---|---|
 | 전원 없음, 꺼짐, 재부팅 중 | dead | (VM은 꺼짐: dead) | 꺼짐: dead |
+| 메모리 불량(`memory_failure`, REQ-093) | dead (원인 `hardware`) | 올라간 서버를 따라감 | — |
 | 네트워크로 닿지 않음(케이블·스위치·설정) | dead | 올라간 서버를 따라감 | dead |
 | OS가 내려가 있음(재부팅·패닉) | dead | dead | — |
 | 서비스 프로세스가 죽었거나 재시작 중 | dead | dead | — |

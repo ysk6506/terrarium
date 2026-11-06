@@ -16,7 +16,7 @@ const setTitle = (b: Leaderboard) => `${b.snapshot.worldName}, ${b.snapshot.scen
 const timeText = (b: Leaderboard) =>
   b.time.kind === "lockstep"
     ? `툴 호출마다 ${formatDuration(b.time.secondsPerCall)} 흐름`
-    : `벽시계 ${b.time.speed}배속`;
+    : `실제 시간 ${b.time.speed}배속`;
 
 function Row({
   row,

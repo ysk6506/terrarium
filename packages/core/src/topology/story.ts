@@ -1,6 +1,6 @@
 /**
- * The shape of a run, read from its events (REQ-078 step 2, ADR-0084 items 8 and 9): the five marks on the time
- * bar (fault, alarm, look, act, recovery) and the first line of the result ("고장 1곳 → 알람 14곳 → ..."). Pure
+ * The shape of a run, read from its events (REQ-078 step 2, ADR-0084 items 8 and 9): the marks on the time
+ * bar (fault, alarm, look, act, a team finishing its work, recovery) and the first line of the result ("고장 1곳 → 알람 14곳 → ..."). Pure
  * functions of the event list, so the same run always reads the same.
  */
 import {
@@ -9,19 +9,28 @@ import {
   type RunEvent,
   serviceTimeline,
   type ToolEvent,
+  type WorldCommand,
 } from "@terrarium/core/world";
 import { clockText } from "./replay-words";
 
-export type MarkKind = "fault" | "alarm" | "read" | "act" | "recover";
+export type MarkKind = "fault" | "alarm" | "read" | "act" | "partner" | "recover";
 
 /** The order on the bar and in the line. */
-export const MARK_KINDS: readonly MarkKind[] = ["fault", "alarm", "read", "act", "recover"];
+export const MARK_KINDS: readonly MarkKind[] = [
+  "fault",
+  "alarm",
+  "read",
+  "act",
+  "partner",
+  "recover",
+];
 
 export const MARK_LABELS: Readonly<Record<MarkKind, string>> = {
   fault: "고장",
   alarm: "알람",
   read: "조회",
   act: "조치",
+  partner: "담당자",
   recover: "회복",
 };
 
@@ -31,18 +40,22 @@ export interface Mark {
   readonly t: number;
   /** Every distinct time it happened, first included: the small dots when it happened more than once. */
   readonly at: readonly number[];
+  /** What the mark says instead of the kind's name ("벤더: 교체 완료"), when the event knows better. */
+  readonly label?: string;
 }
 
 /** Which mark an event is, if any. */
+function worldMark(c: WorldCommand): MarkKind | undefined {
+  if (c.type === "fault.add") return "fault";
+  if (c.type === "alarm.raise") return "alarm";
+  if (c.type === "fault.remove" || c.type === "alarm.clear" || c.type === "breaker.reset")
+    return "recover";
+  return undefined;
+}
+
 function markOf(e: RunEvent): MarkKind | undefined {
-  if (e.kind === "world") {
-    const c = e.command;
-    if (c.type === "fault.add") return "fault";
-    if (c.type === "alarm.raise") return "alarm";
-    if (c.type === "fault.remove" || c.type === "alarm.clear" || c.type === "breaker.reset")
-      return "recover";
-    return undefined;
-  }
+  if (e.kind === "counterpart") return e.what === "done" ? "partner" : undefined;
+  if (e.kind === "world") return worldMark(e.command);
   if (e.kind !== "tool") return undefined;
   if (e.effect === "observe") return "read";
   return e.effect === "act" && e.ok ? "act" : undefined;
@@ -57,8 +70,18 @@ export function markers(events: readonly RunEvent[]): Mark[] {
   }
   return MARK_KINDS.flatMap((kind) => {
     const at = times.get(kind);
-    return at && at.length > 0 ? [{ kind, t: Math.min(...at), at: [...new Set(at)] }] : [];
+    if (!at || at.length === 0) return [];
+    const label = kind === "partner" ? partnerLabel(events) : undefined;
+    return [{ kind, t: Math.min(...at), at: [...new Set(at)], ...(label ? { label } : {}) }];
   });
+}
+
+/** "벤더: 교체 완료": who finished first and whether a part was changed. */
+function partnerLabel(events: readonly RunEvent[]): string | undefined {
+  const done = events.find((e) => e.kind === "counterpart" && e.what === "done");
+  if (done?.kind !== "counterpart" || done.what === "handed") return undefined;
+  const who = done.fault.who === "vendor" ? "벤더" : done.team;
+  return `${who}: ${done.fault.kind === "replace" ? "교체" : "작업"} 완료`;
 }
 
 /** One link of the line: what it says, and where in the run to go when it is pressed. */
@@ -123,6 +146,14 @@ function servicesLine(events: readonly RunEvent[]): { text: string; t: number } 
   };
 }
 
+/** "넘긴 일 2건", linked to the first hand-off; nothing when the run handed nothing over. */
+function handoffParts(events: readonly RunEvent[]): StoryPart[] {
+  const handed = events.filter((e) => e.kind === "counterpart" && e.what === "handed");
+  return handed.length > 0
+    ? [{ kind: "partner", text: `넘긴 일 ${handed.length}건`, t: handed[0]?.t ?? 0 }]
+    : [];
+}
+
 /** The first line of the result, as links that each go to a moment of the run. */
 export function storyLine(events: readonly RunEvent[], options: StoryOptions = {}): Story {
   const marks = markers(events);
@@ -146,6 +177,7 @@ export function storyLine(events: readonly RunEvent[], options: StoryOptions = {
       firstOf(marks, "read"),
     );
   if (acted > 0) add("act", `조치 ${acted}곳`, firstOf(marks, "act"));
+  parts.push(...handoffParts(events));
   const moved = options.servers;
   const sv = servicesLine(events);
   if (moved && (moved.before > 0 || moved.after > 0))

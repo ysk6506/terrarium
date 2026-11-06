@@ -6,6 +6,8 @@
 import { ACTION_LABELS, type ToolCallRecord } from "@terrarium/core/scenario";
 import { callEffect, callTargets } from "@terrarium/core/tools";
 import type { RunEvent, ToolEvent, World, WorldCommand, WorldEvent } from "@terrarium/core/world";
+import type { CounterpartDraft } from "./counterparts";
+import type { TicketDraft } from "./tickets";
 
 /** What came of a call in a few words: why it failed, or what it changed (names, not ids, when given). */
 function summaryOf(call: ToolCallRecord, nameOf: (id: string) => string): string {
@@ -35,10 +37,18 @@ export class RunLog {
     return this.list.slice(count);
   }
 
+  /** What the other side and the tickets wrote since the last flush; it joins the world's events in time order. */
+  private waiting: RunEvent[] = [];
+
   private worldEvents(): RunEvent[] {
     const fresh = this.world.events(this.cursor).filter((e) => e.type !== "note");
     this.cursor = this.world.lastSeq();
-    return fresh.map((e) => this.fromWorld(e));
+    const events = fresh.map((e) => this.fromWorld(e));
+    if (this.waiting.length === 0) return events;
+    // a stable sort keeps the world's event first when both happened at the same moment
+    const merged = [...events, ...this.waiting].sort((a, b) => a.t - b.t);
+    this.waiting = [];
+    return merged;
   }
 
   private fromWorld(e: WorldEvent): RunEvent {
@@ -76,6 +86,16 @@ export class RunLog {
       summary: summaryOf(call, this.nameOf),
     };
     this.add([...before, event, ...after]);
+  }
+
+  /** The other side of a hand-off did something (REQ-093): the world events up to it come first. */
+  counterpart(e: CounterpartDraft): void {
+    this.waiting.push({ ...e, seq: 0 } as RunEvent);
+  }
+
+  /** A work ticket was made or changed. */
+  ticket(e: TicketDraft): void {
+    this.waiting.push({ ...e, seq: 0 });
   }
 
   /** World events that happened with no call to carry them (time passing on its own). */

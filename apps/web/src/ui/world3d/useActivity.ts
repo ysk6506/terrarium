@@ -37,7 +37,7 @@ export function useActivity(worldId: string): { activity: ActivityState; now: nu
       flush();
     };
     source.addEventListener("open", onOpen);
-    for (const type of ["start", "call", "end"])
+    for (const type of ["start", "call", "partner", "end"])
       source.addEventListener(type, onMessage as EventListener);
     return () => {
       if (timer) clearTimeout(timer);

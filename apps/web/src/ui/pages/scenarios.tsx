@@ -66,6 +66,7 @@ function StartCards({
                 {c.difficulty && <span className="tag">{c.difficulty}</span>}
               </span>
               <span className="small muted">{c.unavailable ?? c.summary}</span>
+              {c.domains && <span className="tiny">{c.domains}</span>}
               {c.note && (
                 <span className="tiny" style={{ color: "var(--warn)" }}>
                   {c.note}

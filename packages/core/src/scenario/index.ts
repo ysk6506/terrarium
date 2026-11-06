@@ -39,6 +39,7 @@ export { scenarioDigest } from "./digest";
 export { EVENT_LABELS, EVENT_TYPES, type EventType, eventTarget, isEventType } from "./events";
 export {
   ALL_SCENARIO_TEMPLATES,
+  DOMAIN_TEMPLATES,
   FACILITY_TEMPLATES,
   FIRMWARE_TEMPLATES,
   NETWORK_TEMPLATES,
