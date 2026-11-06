@@ -13,6 +13,7 @@ import {
   type SchedulerLimits,
 } from "@terrarium/core/experiments";
 import type { StopReason } from "./executor";
+import { canResume } from "./executor-operation";
 import type { Stamps } from "./ids";
 
 export type Execute = (
@@ -120,13 +121,18 @@ export class Dispatcher {
       });
   }
 
-  /** After a restart: runs that were mid-flight failed; queued ones get back in line. */
+  /** After a restart: runs that were mid-flight failed (an operation with a journal goes on); queued ones get back in line. */
   async recover(): Promise<{ readonly resumed: number; readonly interrupted: number }> {
     let resumed = 0;
     let interrupted = 0;
     for (const run of await this.store.listActiveRuns()) {
       const experiment = await this.store.getExperiment(run.experimentId);
-      if (run.status === "running" || !experiment) {
+      // an operation that kept its journal is built again and goes on (ADR-0094 item 8, ADR-0112)
+      const resumable =
+        run.status === "running" &&
+        experiment?.recipe.operation !== undefined &&
+        (await canResume(this.store, run));
+      if (!experiment || (run.status === "running" && !resumable)) {
         await this.store.putRun(
           applyRunEvent(run, {
             type: "fail",

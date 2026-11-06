@@ -142,8 +142,8 @@ export function ToolPicker({ selected, onChange, scenario, given = [], noPresets
         />
       </label>
       {!granting && !noPresets && (
-        <PresetBar<string[]>
-          kind="tools"
+        <PresetBar<"toolset">
+          kind="toolset"
           current={[...selected]}
           onLoad={(tools) => onChange(toolPicker.setTools([], tools, true))}
         />

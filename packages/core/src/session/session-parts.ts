@@ -1,4 +1,6 @@
 /** Pieces of a session's setup and result that need nothing of its state, kept out of `session.ts` (500-line limit). */
+
+import type { RunOutcome } from "@terrarium/core/oracle";
 import {
   actionsOf,
   mainProblems,
@@ -24,6 +26,16 @@ export function faultSkipper(
     const have = new Set(toolbox.list().map((t) => t.name));
     return !main.has(type) && !reaches(type, have);
   };
+}
+
+/** How an operation was held to its hours and its call limit, for the words of how it ended (empty for any other run). */
+export function operationEndOf(
+  config: Pick<SessionConfig, "operation">,
+  task: { readonly maxToolCalls: number },
+): Pick<RunOutcome, "operation"> {
+  return config.operation
+    ? { operation: { hours: config.operation.hours, maxToolCalls: task.maxToolCalls } }
+    : {};
 }
 
 /** What the result shows apart from the score: escalation and runbook compliance. */

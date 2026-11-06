@@ -4,6 +4,7 @@
  */
 import { toJsonl } from "@terrarium/core/analysis";
 import type { ParsedBodyOf, ParsedQueryOf, Responses, RouteName } from "@terrarium/core/contract";
+import type { PresetKind } from "@terrarium/core/experiments";
 import { NotFoundError } from "@terrarium/core/kernel";
 import type { Platform, ReportFormat, Viewer } from "../runtime";
 
@@ -54,6 +55,13 @@ export const HANDLERS: Handlers = {
   editAgentVersion: (p, i) =>
     p.agentVersions.edit(i.viewer, id(i), agentId(i), versionNo(i), i.body),
   deleteAgentVersion: (p, i) => p.agentVersions.remove(i.viewer, id(i), agentId(i), versionNo(i)),
+
+  listPresets: (p, i) => p.presets.list(i.viewer, i.query.kind as PresetKind | undefined),
+  savePreset: (p, i) => p.presets.save(i.viewer, i.body),
+  importPresets: (p, i) => p.presets.import(i.viewer, i.body),
+  renamePreset: (p, i) => p.presets.rename(i.viewer, id(i), i.body),
+  deletePreset: (p, i) => p.presets.remove(i.viewer, id(i)),
+  restorePreset: (p, i) => p.presets.restore(i.viewer, id(i)),
 
   listWorlds: (p) => p.worlds.list(),
   getWorld: (p, i) => p.worlds.get(id(i)),

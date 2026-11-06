@@ -7,7 +7,9 @@
 import type { ToolResult, ToolSpec } from "@terrarium/core/tools";
 import type { Blueprint, EntityKind } from "@terrarium/core/world";
 import type { AgentHistory } from "./agent-version";
+import type { Journal, JournalEntry } from "./journal";
 import type { Experiment, HarnessRunInfo, RunRecord, ScenarioRecord, WorldRecord } from "./model";
+import type { PresetKind, PresetRecord } from "./presets";
 
 export interface HarnessInfo {
   readonly id: string;
@@ -248,4 +250,17 @@ export interface ExperimentStore {
   listAgentHistories(harnessId: string): Promise<AgentHistory[]>;
   /** All the histories of a harness, when its connection is removed. Returns how many. */
   deleteAgentHistories(harnessId: string): Promise<number>;
+  /** Add to what an operation run keeps for a restart (ADR-0112); `at` is the real time of the write. */
+  appendJournal(runId: string, entries: readonly JournalEntry[], at: string): Promise<void>;
+  /** What the run kept so far, in order; empty when it kept nothing. */
+  readJournal(runId: string): Promise<Journal>;
+  /** Forget a run's journal (the run ended). */
+  deleteJournal(runId: string): Promise<void>;
+  /** Save or replace a saved thing (instruction, tool set, runbook). */
+  putPreset(preset: PresetRecord): Promise<void>;
+  getPreset(id: string): Promise<PresetRecord | undefined>;
+  /** One person's saved things, deleted ones included, oldest first. */
+  listPresets(owner: string, kind?: PresetKind): Promise<PresetRecord[]>;
+  /** Remove for good. */
+  deletePreset(id: string): Promise<boolean>;
 }

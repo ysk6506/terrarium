@@ -1,6 +1,7 @@
 /** An ExperimentStore in memory, for tests and for running without a database. Values are copied in and out. */
 import type { Blueprint, EntityKind } from "@terrarium/core/world";
 import type { AgentHistory } from "./agent-version";
+import type { Journal, JournalEntry } from "./journal";
 import type { Experiment, RunRecord, ScenarioRecord, WorldRecord } from "./model";
 import type {
   ConnectionRecord,
@@ -9,6 +10,7 @@ import type {
   ShareRecord,
   WorldSummary,
 } from "./ports";
+import type { PresetKind, PresetRecord } from "./presets";
 
 const copy = <T>(value: T): T => structuredClone(value);
 
@@ -68,6 +70,8 @@ export class MemoryStore implements ExperimentStore {
   private readonly shares = new Map<string, ShareRecord>();
   private readonly connections = new Map<string, ConnectionRecord>();
   private readonly histories = new Map<string, AgentHistory>();
+  private readonly journals = new Map<string, { entries: JournalEntry[]; lastAt?: string }>();
+  private readonly presets = new Map<string, PresetRecord>();
 
   async putWorld(world: WorldRecord): Promise<void> {
     this.worlds.set(world.id, copy(world));
@@ -210,5 +214,42 @@ export class MemoryStore implements ExperimentStore {
         removed++;
       }
     return removed;
+  }
+  async appendJournal(runId: string, entries: readonly JournalEntry[], at: string): Promise<void> {
+    const j = this.journals.get(runId) ?? { entries: [] };
+    j.entries.push(...copy(entries));
+    j.lastAt = at;
+    this.journals.set(runId, j);
+  }
+
+  async readJournal(runId: string): Promise<Journal> {
+    const j = this.journals.get(runId);
+    return j
+      ? { entries: j.entries.slice(), ...(j.lastAt ? { lastAt: j.lastAt } : {}) }
+      : { entries: [] };
+  }
+
+  async deleteJournal(runId: string): Promise<void> {
+    this.journals.delete(runId);
+  }
+
+  async putPreset(preset: PresetRecord): Promise<void> {
+    this.presets.set(preset.id, copy(preset));
+  }
+
+  async getPreset(id: string): Promise<PresetRecord | undefined> {
+    const p = this.presets.get(id);
+    return p && copy(p);
+  }
+
+  async listPresets(owner: string, kind?: PresetKind): Promise<PresetRecord[]> {
+    return [...this.presets.values()]
+      .filter((p) => p.owner === owner && (kind === undefined || p.kind === kind))
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id))
+      .map(copy);
+  }
+
+  async deletePreset(id: string): Promise<boolean> {
+    return this.presets.delete(id);
   }
 }

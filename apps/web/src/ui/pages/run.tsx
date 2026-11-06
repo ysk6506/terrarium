@@ -76,8 +76,9 @@ function Metrics({
 
 function RunHead({ view }: { readonly view: RunView }) {
   const { run, analysis, experiment } = view;
+  const operation = experiment.experiment.recipe.operation !== undefined;
   const ended = analysis.endReason
-    ? END_REASON_LABELS[analysis.endReason]
+    ? (analysis.endLabel ?? END_REASON_LABELS[analysis.endReason])
     : run.status === "running"
       ? "아직 돌고 있어요"
       : "";
@@ -92,7 +93,7 @@ function RunHead({ view }: { readonly view: RunView }) {
       title={`${run.index + 1}번째 실행 (시드 ${run.seed})`}
       lede={
         <>
-          <Status status={run.status} /> {ended}
+          <Status status={run.status} operation={operation} /> {ended}
         </>
       }
     />

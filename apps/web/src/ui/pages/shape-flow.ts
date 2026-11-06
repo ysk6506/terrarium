@@ -7,6 +7,7 @@ import { DEFAULT_SHAPE, type ServiceDraft, type ShapeSpec } from "@terrarium/cor
 import { LAYER_IDS, type LayerId, type Layers } from "@terrarium/core/world";
 import { useCallback, useMemo, useState } from "react";
 import { type PresetId, presetLayers, resolveLayers } from "../../logic";
+import { shapedServices, useApart } from "./shape-apart";
 
 export type Step = "services" | "ladders" | "work" | "size";
 export const STEPS: readonly Step[] = ["services", "ladders", "work", "size"];
@@ -34,9 +35,26 @@ function saveOwn(own: readonly LayerId[]): void {
 const manualOf = (own: readonly LayerId[], from: Layers): Partial<Layers> =>
   Object.fromEntries(own.map((l) => [l, from[l]])) as Partial<Layers>;
 
+/** What one screen of ladders reads and changes: the world's layers, or those of a service that chose its own. */
+export interface LadderState {
+  readonly manual: Partial<Layers>;
+  readonly layers: Layers;
+  readonly why: Readonly<Partial<Record<LayerId, string>>>;
+  readonly preset: PresetId | undefined;
+  choose(layer: LayerId, chip: string | undefined): void;
+  applyPreset(preset: PresetId): void;
+}
+
 export interface Flow {
   readonly step: Step;
   readonly spec: ShapeSpec;
+  /** Which service's ladders the second screen shows ("서비스 2 / 2"). */
+  readonly ladder: number;
+  setLadder(index: number): void;
+  /** The ladders of a service other than the first: its own when it chose "따로 고르기", else nothing. */
+  apartOf(service: ServiceDraft): LadderState | undefined;
+  /** "따로 고르기" (starting from the world's shape) or back to "같은 모양". */
+  setApart(service: ServiceDraft, apart: boolean): void;
   readonly manual: Partial<Layers>;
   readonly own: readonly LayerId[];
   readonly why: Readonly<Partial<Record<LayerId, string>>>;
@@ -64,27 +82,28 @@ export function useShapeFlow(
   const [manual, setManual] = useState<Partial<Layers>>(() =>
     fromTemplate ? first.layers : manualOf(loadOwn(), first.layers),
   );
-  const [servers, setServersState] = useState(first.servers);
-  const [real, setReal] = useState(Boolean(first.real));
+  const shapes = useApart(first.services);
+  const [ladder, setLadder] = useState(0);
+  const [size, setSize] = useState({ servers: first.servers, real: Boolean(first.real) });
   const [name, setName] = useState(first.name);
   const resolved = useMemo(() => resolveLayers(services, manual), [services, manual]);
+  const shaped = useMemo(() => shapedServices(services, shapes.apart), [services, shapes.apart]);
   const spec = useMemo<ShapeSpec>(
     () => ({
       name: name.trim() || first.name,
       seed: first.seed,
       site: first.site,
-      servers,
-      ...(real ? { real } : {}),
+      servers: size.servers,
+      ...(size.real ? { real: true } : {}),
       layers: resolved.layers,
-      services,
+      services: shaped,
     }),
-    [name, first, servers, real, resolved, services],
+    [name, first, size, resolved, shaped],
   );
   const choose = useCallback((layer: LayerId, chip: string | undefined) => {
-    setManual((m) => {
-      const { [layer]: _gone, ...rest } = m;
-      return chip === undefined ? rest : { ...rest, [layer]: chip };
-    });
+    setManual(({ [layer]: _gone, ...rest }) =>
+      chip === undefined ? rest : { ...rest, [layer]: chip },
+    );
   }, []);
   const applyPreset = useCallback(
     (preset: PresetId) => {
@@ -102,20 +121,26 @@ export function useShapeFlow(
     saveOwn(next);
     setOwnState(next);
   }, []);
-  const preset = presetFor(manual, own);
   return {
     step,
     spec,
+    ladder,
+    setLadder,
+    apartOf: (service) => shapes.stateOf(service, resolved.layers),
+    setApart: (service, on) => shapes.toggle(service, on, resolved.layers),
     manual,
     own,
     why: resolved.why,
-    preset,
+    preset: presetFor(manual, own),
     go: setStep,
-    setServices,
-    setServers: (n, r = false) => {
-      setServersState(n);
-      setReal(r);
+    setServices: (next) => {
+      setServices(next);
+      setLadder((i) => Math.min(i, Math.max(0, next.length - 1)));
+      // the service that comes first is the world's shape: if it had chosen its own, that is the world's now
+      const mine = shapes.adopt(next[0]);
+      if (mine) setManual((m) => ({ ...m, ...mine }));
     },
+    setServers: (servers, real = false) => setSize({ servers, real }),
     setName,
     choose,
     applyPreset,

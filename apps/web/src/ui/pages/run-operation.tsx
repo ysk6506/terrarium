@@ -4,7 +4,7 @@
  * the numbers are the same whether the run is over or still going.
  */
 import type { RunView } from "@terrarium/core/contract";
-import { END_REASON_LABELS } from "@terrarium/core/oracle";
+import { endReasonLabel } from "@terrarium/core/oracle";
 import { incidents } from "@terrarium/core/world";
 import { useMemo } from "react";
 import { formatDuration, operationWords as op } from "../../logic";
@@ -67,9 +67,16 @@ export function OperationResult({ view }: { readonly view: RunView }) {
     <>
       <style>{CSS}</style>
       <p className="small muted" data-testid="operation-pace">
-        {op.paceNote(report.config)} · {END_REASON_LABELS[result.endReason]}
+        {op.paceNote(report.config)} ·{" "}
+        {endReasonLabel(result.endReason, {
+          hours: report.config.hours,
+          maxToolCalls: result.task.maxToolCalls,
+        })}
       </p>
       {note && <Note tone="warn">{note}</Note>}
+      {op.resumeNotes(result.events ?? []).map((text) => (
+        <Note key={text}>{text}</Note>
+      ))}
       {report.left > 0 && (
         <Note>
           계획한 고장 {report.planned}개 중 {report.left}개는 준 툴로 닿을 수 없어 일어나지 않게

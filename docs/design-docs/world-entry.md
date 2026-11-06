@@ -16,12 +16,15 @@ covers:
   - apps/web/src/logic/builder/server-card.ts
   - apps/web/src/ui/pages/new-world.tsx
   - apps/web/src/ui/pages/shape-screen.tsx
+  - apps/web/src/ui/pages/shape-same.tsx
+  - apps/web/src/ui/pages/shape-flow.ts
   - apps/web/src/ui/builder/StageCards.tsx
-covers_hash: 6d730ec8d2b631a1
+covers_hash: 05aa38c765fae052
 verification_log:
   - "2026-11-06: 새 문서: 사다리 데이터, 알아서, 생성 규칙, 직접 짓기 카드를 코드와 대조해 적었다"
   - "2026-11-06: REQ-094: CSS와 키보드 도움말(Toolbox의 조작법을 ? 도움말로 합침), 카드들을 코드와 다시 대조해 맞음"
   - "2026-11-06: REQ-094 최종 확인: 카드·사다리·생성 규칙·CSS·키보드 도움말을 코드와 대조해 맞음"
+  - "2026-11-06: 서비스마다 다른 모양 절을 더하고 shaped-plan.ts, shaped.ts, shape-view.ts, shape-flow.ts, shape-apart.ts, shape-same.tsx와 대조했다. 하지 않은 것에서 뺐다 (REQ-094, ADR-0108 결정 5, ADR-0112)"
 ---
 # 세계 만들기 입구와 서비스부터 (REQ-094, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md), [ADR-0108](adr/0108-world-entry-iap-and-chip-cards.md), [ADR-0109](adr/0109-world-entry-amend-tests.md))
 
@@ -100,8 +103,17 @@ verification_log:
 - 아래 막대(`StepBar`): 부지 › 건물 › 서버룸 › 랙, 지금 단계, 그 단계의 합계("이 랙 20대 · 4.2억 원 · 서비스 2개"), "서버룸으로", "다 지었어요"(이 세계의 시나리오로). 위 막대의 위치 표시는 뺐다.
 - 키보드(`KeysHint`): 첫 진입에 한 번 뜨는 안내(이 브라우저에 `terrarium.builderKeysSeen`), 아래 막대의 "?" 버튼과 `?` 키.
 
+## 서비스마다 다른 모양 (ADR-0108 결정 5, ADR-0112)
+
+서비스가 둘 이상이면 ②가 서비스마다 한 번씩 나온다. 머리에 **"서비스 2 / 2"**가 뜨고, 첫 서비스의 사다리는 세계의 모양이다. 그 뒤 서비스는 기본이 **"같은 모양"**(첫 서비스의 층을 그대로 쓴다고 말하고 컴퓨트·스토리지·데이터베이스·앱의 칩 이름을 보인다)이고, **"따로 고르기"** 링크를 누르면 그 서비스만의 사다리가 열린다(처음 값은 첫 서비스의 모양을 복사한 것, "같은 모양으로 되돌리기"로 돌아온다).
+
+- **서비스가 따로 고르는 층은 컴퓨트·스토리지·데이터베이스·앱 넷뿐이다.** 네트워크·전원·냉방·사업장은 건물이 하나라 세계의 `layers`(첫 서비스의 선택)를 모두가 쓴다. 그래서 따로 고르기 화면은 네 층만 보이고 그렇게 말한다.
+- `ServiceDraft.layers`(`ServiceLayers`)에 네 층의 선택이 있으면 그 서비스만 그 모양이다. 없으면 세계의 모양이다(옛 템플릿·옛 스펙은 그대로 열린다). `layersOf(world, service)`가 서비스가 서 있는 여덟 층을, `buildFor`가 그 모양이 짓기에 묻는 것을 준다.
+- 생성기는 서비스마다 `buildFor`로 본다: 서버째(`bare`)냐 VM이냐, 호스트 몇 대에 나눠 올리나, 예비 호스트(`spareHosts`)는 서비스마다 따로, 공유 스토리지에 올리나. 계획(`planShape`)의 `serviceHosts`·`spareHosts`도 서비스마다 더한다. 모양을 따로 고른 서비스가 있으면 블루프린트 `meta.serviceLayers`에 서비스별 여덟 층이 남고, 흉내 낼 수 없는 칸은 "정산 배치: …는 아직 흉내 낼 수 없어서 …로 지었어요"처럼 서비스 이름을 붙여 알린다.
+- "이 모양이면" 카드는 세계의 모양과 따로 고른 서비스들의 모양의 고장·시나리오를 합치고, 가격에는 따로 고른 서비스의 네 층 값을 더한다.
+- 화면 흐름: 아래 막대의 "다음"은 마지막 서비스까지 ②를 넘기고서야 ③으로 가고, "이전"은 거꾸로 걷는다. 서비스를 바꾸면(첫 서비스가 지워지면) 새 첫 서비스가 따로 고른 모양이 세계의 모양이 된다.
+
 ## 하지 않은 것
-- 서비스마다 다른 모양(ADR-0108 결정 5): 서비스가 여럿이어도 모양 하나를 함께 쓴다.
 - 바꾼 칸에 점, "템플릿에도 반영(v2)", 팀 공개, 지우기 되돌리기.
 - 복구 우선 채점의 등급별 피해와 쿠버네티스 자동 복구 구분(위).
 - 일감을 따라 움직이는 부하(운영 모드 2c의 몫).

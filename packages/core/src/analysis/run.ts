@@ -6,7 +6,12 @@
 
 import type { RunRecord, RunStatus } from "@terrarium/core/experiments";
 import { formatDuration, withJosa } from "@terrarium/core/kernel";
-import { END_REASON_LABELS, type EndReason, investigationCalls } from "@terrarium/core/oracle";
+import {
+  type EndReason,
+  endReasonLabel,
+  investigationCalls,
+  type OperationEnd,
+} from "@terrarium/core/oracle";
 import {
   ACTION_LABELS,
   type ActionKind,
@@ -24,6 +29,8 @@ export interface RunAnalysis {
   readonly score: number | null;
   readonly passed: boolean;
   readonly endReason?: EndReason;
+  /** How it ended in an operation's own words ("운영 시간 끝(8시간)"); only for an operation run. */
+  readonly endLabel?: string;
   readonly diagnosis: {
     readonly submitted: boolean;
     readonly root: boolean;
@@ -153,6 +160,14 @@ function behaviourOf(run: RunRecord, answers: readonly string[]): RunAnalysis["b
   };
 }
 
+/** What an operation result says it was held to, for the words of how it ended. */
+export function operationEnd(
+  report: { readonly config: { readonly hours: number } },
+  task: { readonly maxToolCalls: number },
+): OperationEnd {
+  return { hours: report.config.hours, maxToolCalls: task.maxToolCalls };
+}
+
 export function analyzeRun(run: RunRecord, telemetry: Telemetry = NO_TELEMETRY): RunAnalysis {
   const result = run.result;
   const answers = answerIds(run);
@@ -164,6 +179,9 @@ export function analyzeRun(run: RunRecord, telemetry: Telemetry = NO_TELEMETRY):
     score: result?.score.total ?? null,
     passed: result?.score.passed ?? false,
     ...(result ? { endReason: result.endReason } : {}),
+    ...(result?.operation
+      ? { endLabel: endReasonLabel(result.endReason, operationEnd(result.operation, result.task)) }
+      : {}),
     diagnosis: diagnosisOf(result),
     efficiency: efficiencyOf(run, telemetry),
     behaviour: behaviourOf(run, answers),
@@ -190,7 +208,7 @@ function runFindings(
 
 function diagnosisFindings(a: Omit<RunAnalysis, "findings">, result: RunResultOf): string[] {
   if (!a.diagnosis.submitted)
-    return [`진단을 제출하지 않았어요 (종료: ${END_REASON_LABELS[result.endReason]})`];
+    return [`진단을 제출하지 않았어요 (종료: ${a.endLabel ?? endReasonLabel(result.endReason)})`];
   if (a.diagnosis.root && a.diagnosis.type) return [];
   const item = result.score.items.find((i) => i.kind === "diagnosis");
   const how = a.diagnosis.root || a.diagnosis.type ? "일부만 맞았어요" : "틀렸어요";

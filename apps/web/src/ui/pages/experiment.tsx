@@ -188,9 +188,9 @@ function Head({
       title={e.name}
       lede={
         <>
-          <Status status={view.status} /> {withJosa(e.owner, "이")}{" "}
-          {dateText(e.createdAt, Date.now())}에 만들었어요. {view.progress.finished}/
-          {view.progress.total}회 끝.
+          <Status status={view.status} operation={e.recipe.operation !== undefined} />{" "}
+          {withJosa(e.owner, "이")} {dateText(e.createdAt, Date.now())}에 만들었어요.{" "}
+          {view.progress.finished}/{view.progress.total}회 끝.
         </>
       }
       actions={
@@ -248,6 +248,22 @@ function SideBySide({
   );
 }
 
+/** What a screen reader hears when the experiment's state changes. */
+function LiveStatus({
+  view,
+  status,
+}: {
+  readonly view: ExperimentView;
+  readonly status: ExperimentView["status"];
+}) {
+  return (
+    <p className="sr-only" aria-live="polite">
+      {statusLabel(status, Boolean(view.experiment.recipe.operation))}, {view.progress.finished}/
+      {view.progress.total}회 끝
+    </p>
+  );
+}
+
 export function ExperimentPage({ id }: { readonly id: string }) {
   const { api } = useApp();
   const [picked, setPicked] = useState<readonly string[]>([]);
@@ -290,14 +306,12 @@ export function ExperimentPage({ id }: { readonly id: string }) {
       ) : (
         <ResultFigures a={view.analysis} />
       )}
-      <p className="sr-only" aria-live="polite">
-        {statusLabel(status)}, {view.progress.finished}/{view.progress.total}회 끝
-      </p>
+      <LiveStatus view={view} status={status} />
       <Findings items={view.analysis.findings} />
       {view.analysis.parent && (
         <ParentCard parent={view.analysis.parent} ready={view.analysis.progress.completed > 0} />
       )}
-      <Section title="실행" aside=<EndReasons reasons={view.analysis.endReasons} />>
+      <Section title="실행" aside=<EndReasons analysis={view.analysis} />>
         {runs.length === 0 ? (
           <Empty title="아직 실행이 없어요" />
         ) : (

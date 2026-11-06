@@ -1,125 +1,144 @@
 /**
- * Saved sets (ADR-0092 item 3, "저장해 두기" for tool sets and runbooks): a name on a set, to load, change and delete
- * later. They live in this browser; a deleted one can be brought back for seven days. Pure over a key-value store, so
- * a test can read it.
+ * 저장해 둔 것(ADR-0092 결정 3, ADR-0112): 지시문·툴 묶음·절차서에 이름을 붙여 서버에 둔다. 이 파일은 화면이 서버와 주고받는
+ * 모양(본문 부호화)과, 이 브라우저에 있던 옛 저장분을 서버로 한 번 옮기는 일을 맡는다.
  */
+import type { PresetKind, PresetView } from "@terrarium/core/contract";
 import type { KeyValueStore } from "./identity";
 
-export type PresetKind = "tools" | "runbook";
+export type { PresetKind, PresetView };
 
-export interface Preset<T> {
-  readonly id: string;
+/** What a kind keeps: a text, a list of tool names, a runbook. */
+export interface PresetData {
+  readonly instruction: string;
+  readonly toolset: readonly string[];
+  readonly runbook: { readonly title: string; readonly steps: readonly unknown[] };
+}
+
+/** The body the server keeps for something the person has in front of them. */
+export function encode<K extends PresetKind>(kind: K, data: PresetData[K]): string {
+  return kind === "instruction" ? (data as string) : JSON.stringify(data);
+}
+
+/** What a saved body is, or nothing when it cannot be read (the server checks bodies, so this is a safety net). */
+export function decode<K extends PresetKind>(kind: K, body: string): PresetData[K] | undefined {
+  if (kind === "instruction") return body as PresetData[K];
+  try {
+    const parsed: unknown = JSON.parse(body);
+    const fits =
+      kind === "toolset"
+        ? Array.isArray(parsed)
+        : Array.isArray((parsed as { steps?: unknown } | null)?.steps);
+    return fits ? (parsed as PresetData[K]) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+// ── what this browser kept before the server did ──────────────────────────────────────────────
+
+const LEGACY_TOOLS = "terrarium.presets.tools.v1";
+const LEGACY_RUNBOOK = "terrarium.presets.runbook.v1";
+const LEGACY_INSTRUCTIONS = "terrarium.operation.instructions";
+
+/** One saved thing found in this browser, as the server takes it. */
+export interface LegacyItem {
+  readonly kind: PresetKind;
   readonly name: string;
-  readonly data: T;
-  /** ISO time it was saved or last changed. */
-  readonly savedAt: string;
-  /** ISO time it was deleted; kept for a week. */
-  readonly deletedAt?: string;
+  readonly body: string;
+  readonly createdAt?: string;
 }
 
-export const UNDO_DAYS = 7;
-const DAY_MS = 86_400_000;
-
-const keyOf = (kind: PresetKind) => `terrarium.presets.${kind}.v1`;
-
-function readAll<T>(store: KeyValueStore | undefined, kind: PresetKind): Preset<T>[] {
+function readJson(store: KeyValueStore | undefined, key: string): unknown {
   try {
-    const raw = store?.getItem(keyOf(kind));
-    const parsed: unknown = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? (parsed as Preset<T>[]) : [];
+    const raw = store?.getItem(key);
+    return raw ? JSON.parse(raw) : undefined;
   } catch {
-    return [];
+    return undefined;
   }
 }
 
-function writeAll<T>(store: KeyValueStore | undefined, kind: PresetKind, all: Preset<T>[]): void {
-  try {
-    store?.setItem(keyOf(kind), JSON.stringify(all));
-  } catch {
-    // a browser that refuses storage just forgets; the set in front of the person is not lost
-  }
-}
-
-/** The saved sets, newest first, without the deleted ones. */
-export function listPresets<T>(store: KeyValueStore | undefined, kind: PresetKind): Preset<T>[] {
-  return readAll<T>(store, kind)
-    .filter((p) => p.deletedAt === undefined)
-    .sort((a, b) => b.savedAt.localeCompare(a.savedAt));
-}
-
-/** The ones deleted within the last week, newest first. */
-export function deletedPresets<T>(
-  store: KeyValueStore | undefined,
-  kind: PresetKind,
-  now: Date,
-): Preset<T>[] {
-  return readAll<T>(store, kind)
-    .filter(
-      (p) =>
-        p.deletedAt !== undefined && now.getTime() - Date.parse(p.deletedAt) < UNDO_DAYS * DAY_MS,
-    )
-    .sort((a, b) => (b.deletedAt ?? "").localeCompare(a.deletedAt ?? ""));
-}
-
-/** Save a set under a name; the same name changes the set it names. Returns the saved one. */
-export function savePreset<T>(
-  store: KeyValueStore | undefined,
-  kind: PresetKind,
-  name: string,
-  data: T,
-  now: Date,
-): Preset<T> | undefined {
-  const clean = name.trim();
-  if (clean === "") return undefined;
-  const all = readAll<T>(store, kind).filter(
-    (p) => !(p.name === clean && p.deletedAt === undefined),
+function listed(store: KeyValueStore | undefined, key: string, kind: PresetKind): LegacyItem[] {
+  const all = readJson(store, key);
+  if (!Array.isArray(all)) return [];
+  return all.flatMap(
+    (p: { name?: unknown; data?: unknown; savedAt?: unknown; deletedAt?: unknown }) =>
+      typeof p?.name === "string" && p.data !== undefined && p.deletedAt === undefined
+        ? [
+            {
+              kind,
+              name: p.name,
+              body: encode(kind, p.data as never),
+              ...(typeof p.savedAt === "string" ? { createdAt: p.savedAt } : {}),
+            },
+          ]
+        : [],
   );
-  const saved: Preset<T> = {
-    id: `p${now.getTime().toString(36)}${all.length}`,
-    name: clean,
-    data,
-    savedAt: now.toISOString(),
-  };
-  writeAll(store, kind, [...all, saved]);
-  return saved;
 }
 
-/** Delete a set; it can be brought back for a week. */
-export function removePreset(
-  store: KeyValueStore | undefined,
-  kind: PresetKind,
-  id: string,
-  now: Date,
-): void {
-  const week = now.getTime() - UNDO_DAYS * DAY_MS;
-  const all = readAll<unknown>(store, kind)
-    .map((p) => (p.id === id ? { ...p, deletedAt: now.toISOString() } : p))
-    .filter((p) => p.deletedAt === undefined || Date.parse(p.deletedAt) >= week);
-  writeAll(store, kind, all);
+/** Everything the old localStorage holds: tool sets, runbooks (not the ones deleted) and instructions. */
+export function legacyItems(store: KeyValueStore | undefined): LegacyItem[] {
+  const instructions = readJson(store, LEGACY_INSTRUCTIONS);
+  const texts =
+    instructions && typeof instructions === "object" && !Array.isArray(instructions)
+      ? Object.entries(instructions as Record<string, unknown>).flatMap(([name, text]) =>
+          typeof text === "string" && text.trim() !== ""
+            ? [{ kind: "instruction" as const, name, body: text }]
+            : [],
+        )
+      : [];
+  return [
+    ...listed(store, LEGACY_TOOLS, "toolset"),
+    ...listed(store, LEGACY_RUNBOOK, "runbook"),
+    ...texts,
+  ];
 }
 
-/** Bring a deleted set back. */
-export function restorePreset(
+/** Forget the old copies, once the server has them. */
+export function clearLegacy(store: KeyValueStore | undefined): void {
+  for (const key of [LEGACY_TOOLS, LEGACY_RUNBOOK, LEGACY_INSTRUCTIONS]) {
+    try {
+      store?.removeItem(key);
+    } catch {
+      // a browser that refuses storage keeps them; the server skips names it already has
+    }
+  }
+}
+
+/** Move what this browser kept to the server and forget it. Says whether anything was moved; a failure keeps the old copies for next time. */
+export async function moveLegacy(
   store: KeyValueStore | undefined,
-  kind: PresetKind,
-  id: string,
-): void {
-  const all = readAll<unknown>(store, kind).map((p) => {
-    if (p.id !== id) return p;
-    const { deletedAt: _gone, ...kept } = p;
-    return kept as Preset<unknown>;
-  });
-  writeAll(store, kind, all);
+  send: (items: LegacyItem[]) => Promise<unknown>,
+): Promise<boolean> {
+  const items = legacyItems(store);
+  if (items.length === 0) {
+    clearLegacy(store);
+    return false;
+  }
+  try {
+    await send(items);
+  } catch {
+    return false;
+  }
+  clearLegacy(store);
+  return true;
 }
 
 export const PRESET_WORDS = {
-  TITLE: { tools: "툴 묶음", runbook: "내 절차서" } as Readonly<Record<PresetKind, string>>,
+  TITLE: {
+    instruction: "지시문",
+    toolset: "툴 묶음",
+    runbook: "내 절차서",
+  } as Readonly<Record<PresetKind, string>>,
   NAME: "이름",
   SAVE: "이름 붙여 저장",
   LOAD: "불러오기",
   DELETE: "지우기",
+  RENAME: "이름 바꾸기",
+  NEW_NAME: "바꿀 이름",
   NONE: "아직 저장해 둔 것이 없어요",
   PICK: "저장해 둔 것 고르기",
-  undo: (name: string) => `'${name}'을 지웠어요. 7일 안에는 되돌릴 수 있어요`,
   UNDO: "되돌리기",
+  MOVED: "이 브라우저에 있던 저장분을 서버로 옮겼어요",
+  undo: (name: string) => `'${name}'을 지웠어요. 7일 안에는 되돌릴 수 있어요`,
+  saved: (name: string) => `'${name}'을 저장했어요`,
 } as const;

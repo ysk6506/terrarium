@@ -8,13 +8,14 @@ covers:
   - packages/core/src/contract/responses.ts
   - packages/core/src/contract/errors.ts
   - packages/core/src/contract/views.ts
-covers_hash: c91e6c83458fdef0
+  - packages/core/src/contract/presets.ts
+covers_hash: 9c3a939ba9fe3024
 verification_log:
-  - "2026-11-06: RunView의 commonReach와 calibrate 응답의 recoveryPath, commonReach를 views.ts와 대조해 표에 적었다 (REQ-088)"
   - "2026-11-06: listEscalations, answerEscalation, runbookDraft 세 경로와 레시피 선택 칸, calibrate 응답의 toolPick을 routes.ts, responses.ts(Responses를 옮김), views.ts와 대조해 표에 더했다 (REQ-080~082)"
   - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: 2a·2b 합치기"
   - "2026-11-06: 2b·2d 합치기"
+  - "2026-11-06: 저장해 둔 것 여섯 경로를 routes.ts, responses.ts, contract/presets.ts와 대조해 표에 더했다 (ADR-0112)"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -55,6 +56,12 @@ verification_log:
 | `POST /api/connections/:id/agents/:agentId/versions` | 사람이 버전 더하기 | |
 | `PUT /api/connections/:id/agents/:agentId/versions/:n` | 버전의 이름표·메모·속성 바꾸기 | |
 | `DELETE /api/connections/:id/agents/:agentId/versions/:n` | 버전 지우기 | |
+| `GET /api/presets` | 저장해 둔 지시문·툴 묶음·절차서(내 것만). `?kind=instruction\|toolset\|runbook`. `presets`와 7일 안에 되돌릴 수 있는 `deleted`를 준다 | |
+| `POST /api/presets` | 이름 붙여 저장 `{kind, name, body}`. 같은 종류·같은 이름이면 내용을 바꾼다. 본문이 종류에 안 맞으면 400 | |
+| `POST /api/presets/import` | 이 브라우저(localStorage)에 있던 저장분을 서버로 한 번 옮기기. 이미 있는 이름·안 맞는 본문은 건너뛴다 | |
+| `PUT /api/presets/:id` | 이름 바꾸기. 같은 이름이 있으면 409 | |
+| `DELETE /api/presets/:id` | 지우기: 7일 동안 남겨 두었다가 목록을 읽을 때 정리한다 | |
+| `POST /api/presets/:id/restore` | 지운 것 되돌리기 | |
 | `GET /api/worlds` | 세계 목록 | |
 | `GET /api/worlds/:id` | 세계 하나 (blueprint 포함) | |
 | `POST /api/worlds` | 빌더에서 지은 세계 저장 | |

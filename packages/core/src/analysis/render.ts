@@ -61,7 +61,7 @@ function runRow(r: RunAnalysis): string[] {
     RUN_STATUS_LABELS[r.status],
     r.score === null ? "—" : r.score.toFixed(1),
     r.passed ? "합격" : "불합격",
-    r.endReason ? END_REASON_LABELS[r.endReason] : "—",
+    r.endReason ? (r.endLabel ?? END_REASON_LABELS[r.endReason]) : "—",
     r.diagnosis.root && r.diagnosis.type ? "정답" : r.diagnosis.submitted ? "오답" : "미제출",
     String(r.efficiency.investigationCalls),
     r.diagnosis.afterSeconds === undefined ? "—" : formatDuration(r.diagnosis.afterSeconds),

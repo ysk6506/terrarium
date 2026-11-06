@@ -14,10 +14,14 @@ covers:
   - apps/server/src/runtime/executor.ts
   - apps/server/src/runtime/alarm-wake.ts
   - apps/server/src/runtime/executor-operation.ts
-covers_hash: 80fde412d27eb1af
+  - apps/server/src/runtime/dispatcher.ts
+  - apps/server/src/runtime/hosts.ts
+  - packages/core/src/session/operation/journal.ts
+covers_hash: 06a678330962955a
 verification_log:
   - "2026-11-06: 새 문서. 발생기·MTBF 표·시계 드라이버·측정식·변별력 표·끊김과 재연결을 operation/*.ts, world/incidents.ts, executor-operation.ts와 대조해 썼다 (REQ-090)"
   - "2026-11-06: 마지막 구현(연결 사건 link, executor-operation, 운영 툴 필수 검사, operator 설명)과 다시 대조했다. 본문은 그대로 맞다 (REQ-090)"
+  - "2026-11-06: 재시작 뒤 재개(입력 기록·재생·link resumed)와 결과 상태 문구 절을 더하고 journal.ts, executor.ts, executor-operation.ts, dispatcher.ts, hosts.ts와 대조했다 (REQ-090, ADR-0112)"
 ---
 # 운영 모드 (REQ-090, [ADR-0094](adr/0094-operation-mode.md))
 
@@ -122,6 +126,27 @@ verification_log:
 - **하네스 끊김과 재연결.** 운영 도중 하네스가 오류로 멈추면(툴을 한 번이라도 부른 뒤, 세션이 끝나기 전) 실제 5초 뒤 같은 요청을 다시 보내는 것을 세 번까지 한다. 다시 보낼 때 프롬프트에 "연결이 끊겼다가 다시 이어졌어요. `events_since(0)`으로 확인하고 이어서 맡아 주세요"가 붙는다. 끊김과 돌아옴은 사건 기록에 `link` 사건(`lost`/`back`, 이유)으로 남고 시간 막대에 "연결 끊김" 표식이 찍힌다. 호스트가 아는 가장 새 세계 시간에 끼워 넣고 순서 번호를 다시 매긴다. 세 번을 넘기면 기존 규칙대로 `agent_error`로 끝난다.
 - **하네스가 오류 없이 끝나면**(`finished`) 기존 규칙대로 실행이 `agent_finished`로 끝난다.
 
+## 서버 재시작 뒤 재개 (결정 8, [ADR-0112](adr/0112-operation-resume-and-presets-amend-tests.md))
+
+세션은 시계를 읽지 않고 시드에서 시작하므로, **세션이 받은 입력을 순서대로 다시 넣으면 같은 상태가 된다.** 운영 실행은 그 입력을 실행 옆에 적어 둔다(`ExperimentStore.appendJournal`, 실행이 끝나면 지운다).
+
+| 항목 | 규칙 |
+|---|---|
+| 기록하는 것 | 머리(세계 버전 해시·시뮬레이터 버전) · 호스트가 세션을 시계에 맞춘 시각(`s`, 실제 경과 초) · 에이전트의 툴 호출(`c`) · 사람의 조치와 답(`a`/`r`) · 호출을 본 실제 시각(`k`) · 연결 끊김 메모(`l`). 조각은 `core/session/operation/journal.ts`와 `core/experiments/journal.ts` |
+| 쓰는 때 | 실행 중 1초마다(워커가 호출 사이에 쓴 입력도 `events` 메시지에 실려 온다), 호출마다, 멈추기 직전 |
+| 서버가 멈출 때 | 운영 실행은 `failed`로 끝내지 않고 `running` 그대로 두고 기록만 마저 쓴다. 갑자기 죽어도 같다(최대 1초 전까지 남는다) |
+| 서버가 다시 켜질 때 | `Dispatcher.recover()`가 `running`인 운영 실행에 기록이 있으면 대기열에 다시 넣고, `executeRun`이 입력을 `LocalSession`에 다시 넣어(`replayInputs`) 세션을 세운 뒤 거기서부터 이어 간다. 시계는 마지막 시각에서 이어지고 멈춰 있던 동안의 세계 시간은 흐르지 않는다 |
+| 성능 | 호출 1만 개(사건 1만 개 이상)를 다시 넣는 데 약 0.3초(시험은 1초 한도: `journal.test.ts`). 호출 한도 계산을 호출마다 전체를 훑지 않게 센 값으로 바꿨다 |
+| 결과 | 사건 기록에 `link` 사건 `lost`("서버가 멈췄어요") → `resumed`(멈춰 있던 실제 초)가 남고, 결과에 "서버가 다시 시작돼 n분 뒤 이어 갔어요"가 뜬다. 시간 막대에는 "연결 끊김" 표식이 찍힌다 |
+| 하네스 | 같은 실행 주소(`/mcp/runs/<실행 id>/...`)가 다시 열리고, 하네스는 프롬프트에 "서버가 멈췄다가 다시 시작됐고 …`events_since(0)`으로 확인하고 이어서 맡아 주세요"를 붙여 다시 시작한다. 서버가 없던 동안 하네스가 보낸 호출은 서버가 받지 못하므로 사건 기록에는 `lost`~`resumed` 사이의 빈 구간으로만 남는다 |
+| 이어 갈 수 없을 때 | 기록이 없거나, 실험이 가리키는 세계 버전이 바뀌었거나, 시뮬레이터 버전(`ORACLE_VERSION`)이 달라졌으면 "서버가 멈춰 중단됐어요. 세계 버전이 바뀌어 이어 갈 수 없어요"처럼 이유와 함께 `failed`로 끝낸다 |
+
+다른 클러스터 노드에서 도는 세션은 입력을 넘기지 않아(`HostedSession.journalSince`가 없다) 재개할 수 없고, 서버가 멈추면 전과 같이 `failed`로 끝난다.
+
+## 결과 상태 문구
+
+운영 실행은 "제한 시간을 넘겨" 끝나는 일이 없다. `endReasonLabel(reason, operation)`(`oracle.ts`)이 운영의 말로 바꾼다: 시간이 다 되면 **운영 시간 끝(8시간)**, 사람이 멈추면 **멈춤(사람)**, 호출 상한이면 **호출 상한(5,000회)**. 결과 첫 줄(`score.summary`), 실행 목록의 한 줄(`endLabel`), 실험의 "끝난 이유"와 소견, 보고서 표에 같은 말이 쓰이고, 실행 상태 "멈춤"도 운영에서는 "멈춤(사람)"이다(`statusLabel(status, operation)`).
+
 ## 이번에 하지 못한 것
 
-[build-plan](../exec-plans/active/build-plan.md)의 12g 항목에 적었다: 서버 재시작 뒤 실행 재개(세션 상태의 주기 저장; 지금은 재시작하면 실행이 "서버가 멈춰 중단됐어요"로 끝난다), 토큰·비용 상한(하네스가 사용량을 실행이 끝나야 알려 줘서 중간에 끊을 수 없다), 지시문을 서버에 이름 붙여 저장하는 것(지금은 이 브라우저에만), 알람마다 깨우기를 받는 연결(지금은 내장 하네스뿐), 운영 실험을 합친 순위표(벤치마크 화면은 점수가 없어 운영 세트의 순위를 못 낸다). 시계 드라이버의 5분·2초 창은 가짜 에이전트와 코드로 정했고, 진짜 모델의 반응 시간으로 맞춰 본 것이 아니다.
+[build-plan](../exec-plans/active/build-plan.md)의 12g 항목에 적었다(재시작 뒤 재개와 지시문의 서버 저장은 2c 보완에서 했다): 토큰·비용 상한(하네스가 사용량을 실행이 끝나야 알려 줘서 중간에 끊을 수 없다), 알람마다 깨우기를 받는 연결(지금은 내장 하네스뿐), 운영 실험을 합친 순위표(벤치마크 화면은 점수가 없어 운영 세트의 순위를 못 낸다). 다른 클러스터 노드에서 도는 운영은 재개하지 못한다(위). 서버가 멈춘 동안 하네스 프로세스가 따로 살아 있었다면(밖에서 돌리는 에이전트) 다시 시작한 요청과 겹칠 수 있다. 시계 드라이버의 5분·2초 창은 가짜 에이전트와 코드로 정했고, 진짜 모델의 반응 시간으로 맞춰 본 것이 아니다.

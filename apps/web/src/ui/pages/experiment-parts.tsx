@@ -2,7 +2,11 @@
  * The sections of an experiment's page (REQ-037, REQ-040): the numbers, what was fixed and what was
  * learned, the runs (live while they run), the scoring sheet's hit rates, and the family tree.
  */
-import type { ExperimentAnalysis, ParentComparison } from "@terrarium/core/analysis";
+import {
+  type ExperimentAnalysis,
+  endLabelOf,
+  type ParentComparison,
+} from "@terrarium/core/analysis";
 import type { ExperimentView, RunSummary } from "@terrarium/core/contract";
 import { END_REASON_LABELS } from "@terrarium/core/oracle";
 import { describeLeadSettings, domainInfo } from "@terrarium/core/world";
@@ -111,12 +115,12 @@ export function ParentCard({
   );
 }
 
-export function EndReasons({ reasons }: { readonly reasons: ExperimentAnalysis["endReasons"] }) {
-  const entries = Object.entries(reasons) as [keyof typeof END_REASON_LABELS, number][];
+export function EndReasons({ analysis }: { readonly analysis: ExperimentAnalysis }) {
+  const entries = Object.entries(analysis.endReasons) as [keyof typeof END_REASON_LABELS, number][];
   if (entries.length === 0) return null;
   return (
     <p className="small muted">
-      끝난 이유: {entries.map(([reason, n]) => `${END_REASON_LABELS[reason]} ${n}회`).join(", ")}
+      끝난 이유: {entries.map(([reason, n]) => `${endLabelOf(analysis, reason)} ${n}회`).join(", ")}
     </p>
   );
 }
@@ -153,7 +157,7 @@ function runNote(run: RunSummary, analysis: ExperimentAnalysis, calls: LiveState
   if (run.error) return <span className="small">{run.error}</span>;
   const a = analysis.runs.find((r) => r.runId === run.id);
   if (!a || run.status !== "completed") return null;
-  const why = a.endReason ? `${END_REASON_LABELS[a.endReason]}, ` : "";
+  const why = a.endReason ? `${a.endLabel ?? END_REASON_LABELS[a.endReason]}, ` : "";
   return <span className="small">{`${why}${answerText(a.diagnosis)}`}</span>;
 }
 
@@ -206,7 +210,10 @@ export function RunsTable({
               </td>
               <td className="num">{r.index + 1}</td>
               <td>
-                <Status status={r.status} />
+                <Status
+                  status={r.status}
+                  operation={analysis.experiment.recipe.operation !== undefined}
+                />
               </td>
               <td className="num">{r.seed}</td>
               <td className="num">

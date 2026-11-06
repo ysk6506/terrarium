@@ -120,6 +120,30 @@ const BACK: Readonly<Record<Step, Step | undefined>> = {
   size: "work",
 };
 
+/** The second screen asks once per service: "next" and "back" walk the services before they leave it. */
+function stepOn(flow: Flow, next: Step | undefined, make: () => Promise<void>): void {
+  if (flow.step === "ladders" && flow.ladder < flow.spec.services.length - 1) {
+    flow.setLadder(flow.ladder + 1);
+  } else if (next) {
+    if (next === "ladders") flow.setLadder(0);
+    flow.go(next);
+  } else {
+    void make();
+  }
+}
+
+function stepBack(flow: Flow, back: Step | undefined, leave: () => void): void {
+  if (flow.step === "ladders" && flow.ladder > 0) {
+    flow.setLadder(flow.ladder - 1);
+  } else if (back) {
+    // coming back to the second screen from the third lands on the last service
+    if (back === "ladders") flow.setLadder(flow.spec.services.length - 1);
+    flow.go(back);
+  } else {
+    leave();
+  }
+}
+
 /** Build the world the spec comes to, and keep what came of it. */
 function useMake(spec: ShapeSpec) {
   const { api, toast } = useApp();
@@ -208,9 +232,7 @@ export function ShapeScreen({
           onChange={flow.setServices}
         />
       )}
-      {flow.step === "ladders" && (
-        <LaddersStep flow={flow} view={view} title={spec.services[0]?.name ?? "서비스"} />
-      )}
+      {flow.step === "ladders" && <LaddersStep flow={flow} view={view} />}
       {flow.step === "work" && (
         <WorkloadStep services={spec.services} view={view} onChange={flow.setServices} />
       )}
@@ -235,8 +257,8 @@ export function ShapeScreen({
         flow={flow}
         sum={sum}
         busy={busy}
-        onBack={() => (back ? flow.go(back) : onLeave())}
-        onNext={() => (next ? flow.go(next) : void make())}
+        onBack={() => stepBack(flow, back, onLeave)}
+        onNext={() => stepOn(flow, next, make)}
         nextLabel={next ? "다음" : "세계 만들기"}
         nextDisabled={next ? undefined : problem}
       />

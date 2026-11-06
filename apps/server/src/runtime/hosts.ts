@@ -12,8 +12,10 @@ import {
   type HumanAct,
   type HumanResolution,
   type RunResult,
+  replayInputs,
   Session,
   type SessionConfig,
+  type SessionInput,
   WarmStartCache,
 } from "@terrarium/core/session";
 import type { ToolSpec } from "@terrarium/core/tools";
@@ -26,6 +28,8 @@ import { identityOf, WorldCache, type WorldIdentity } from "./world-cache";
  */
 export type PlainSessionConfig = Omit<SessionConfig, "catalog" | "warm" | "prepared"> & {
   readonly world?: WorldIdentity;
+  /** An operation picked up again after a restart: what its session was given before, played in order (ADR-0112). */
+  readonly resume?: readonly SessionInput[];
 };
 
 export interface HostedSession {
@@ -42,6 +46,8 @@ export interface HostedSession {
   finish(reason?: EndReason): Promise<RunResult>;
   /** The run's events after the first `count` of them, as far as the host has seen (the live topology view, REQ-083); a session on another cluster node has none. */
   eventsSince?(count: number): readonly RunEvent[];
+  /** What an operation session was given after the first `count` inputs, as far as the host has seen: the journal a restart builds it again from. */
+  journalSince?(count: number): readonly SessionInput[];
   /** Forget the session (after finish, or to abandon it). */
   dispose(): void;
 }
@@ -64,21 +70,45 @@ const HOLD_POLL_MS = 250;
 export class LocalSession implements HostedSession {
   readonly task: AgentTask;
   private ended: EndReason | undefined;
-  private readonly timer: ReturnType<typeof setInterval> | undefined;
-  private readonly startedWall = wallClockMs();
+  private timer: ReturnType<typeof setInterval> | undefined;
+  private startedWall = wallClockMs();
   private taken = 0;
+  /** An operation's inputs, in order (see operation/journal.ts); empty for any other session. */
+  private readonly journal: SessionInput[] = [];
+  private journalTaken = 0;
 
   constructor(
     private readonly session: Session,
     private readonly onEnd?: (reason: EndReason) => void,
-    /** Told what the session wrote on its own between calls (the worker sends it on). */
-    private readonly onEvents?: (events: readonly RunEvent[]) => void,
+    /** Told what the session wrote on its own between calls, and what it was given (the worker sends it on). */
+    private readonly onEvents?: (
+      events: readonly RunEvent[],
+      journal: readonly SessionInput[],
+    ) => void,
+    /** The inputs of an operation that is picked up again: played in before the clock runs on. */
+    resume?: readonly SessionInput[],
   ) {
     this.task = session.start();
-    this.timer =
-      session.timePolicy.kind === "realtime"
-        ? setInterval(() => this.sync(), REALTIME_TICK_MS)
-        : undefined;
+    if (resume) this.startedWall = wallClockMs() - this.replay(resume) * 1000;
+    if (session.timePolicy.kind === "realtime" && this.ended === undefined)
+      this.timer = setInterval(() => this.sync(), REALTIME_TICK_MS);
+  }
+
+  /** Bring the session to where the inputs left it; the time they ended at is where the clock goes on from. */
+  private replay(inputs: readonly SessionInput[]): number {
+    return replayInputs(
+      {
+        sync: (e) => this.markEnded(this.session.sync(e)),
+        call: (tool, args) => this.markEnded(this.session.call(tool, args).ended),
+        humanAct: (tool, args) => this.session.humanAct(tool, args),
+        resolveHuman: (r) => this.markEnded(this.session.resolveHuman(r).ended),
+      },
+      inputs,
+    );
+  }
+
+  private note(input: SessionInput): void {
+    if (this.session.operating) this.journal.push(input);
   }
 
   get specs(): readonly ToolSpec[] {
@@ -98,9 +128,23 @@ export class LocalSession implements HostedSession {
 
   /** Catch simulated time up with the wall clock (realtime policy). */
   sync(): void {
-    this.markEnded(this.session.sync((wallClockMs() - this.startedWall) / 1000));
+    const elapsed = (wallClockMs() - this.startedWall) / 1000;
+    this.note(["s", elapsed]);
+    this.markEnded(this.session.sync(elapsed));
     const fresh = this.onEvents ? this.takeEvents() : [];
-    if (fresh.length > 0) this.onEvents?.(fresh);
+    const given = this.onEvents ? this.takeJournal() : [];
+    if (fresh.length > 0 || given.length > 0) this.onEvents?.(fresh, given);
+  }
+
+  journalSince(count: number): readonly SessionInput[] {
+    return this.journal.slice(count);
+  }
+
+  /** The inputs noted since the last time they were taken: what a worker sends along with a call's answer. */
+  takeJournal(): readonly SessionInput[] {
+    const fresh = this.journal.slice(this.journalTaken);
+    this.journalTaken = this.journal.length;
+    return fresh;
   }
 
   eventsSince(count: number): readonly RunEvent[] {
@@ -132,16 +176,19 @@ export class LocalSession implements HostedSession {
   async call(tool: string, args: Record<string, unknown>): Promise<CallResult> {
     if (this.timer) this.sync();
     if (tool === "wait" && this.session.operating) await this.hold(args.seconds);
+    this.note(["c", tool, args]);
     const result = this.session.call(tool, args);
     this.markEnded(result.ended);
     return result;
   }
 
   async humanAct(tool: string, args: Record<string, unknown>): Promise<HumanAct> {
+    this.note(["a", tool, args]);
     return this.session.humanAct(tool, args);
   }
 
   async resolveHuman(resolution: HumanResolution): Promise<CallResult> {
+    this.note(["r", resolution]);
     const result = this.session.resolveHuman(resolution);
     this.markEnded(result.ended);
     return result;
@@ -167,11 +214,16 @@ export class InProcessHost implements SessionHost {
   }
 
   async open(config: PlainSessionConfig): Promise<HostedSession> {
-    const { world, ...rest } = config;
+    const { world, resume, ...rest } = config;
     const identity = world ?? identityOf(config.blueprint);
     const prepared =
       this.worlds.get(identity.key) ?? this.worlds.prepare(identity, config.blueprint);
-    const local = new LocalSession(Session.create({ ...rest, warm: this.warm, prepared }));
+    const local = new LocalSession(
+      Session.create({ ...rest, warm: this.warm, prepared }),
+      undefined,
+      undefined,
+      resume,
+    );
     this.count++;
     let disposed = false;
     const dispose = () => {
@@ -193,6 +245,7 @@ export class InProcessHost implements SessionHost {
       resolveHuman: (resolution) => local.resolveHuman(resolution),
       finish: (reason) => local.finish(reason),
       eventsSince: (count) => local.eventsSince(count),
+      journalSince: (count) => local.journalSince(count),
       dispose,
     };
   }

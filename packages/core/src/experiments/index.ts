@@ -20,6 +20,13 @@ export {
   type VersionPatch,
 } from "./agent-version";
 export {
+  type Journal,
+  type JournalEntry,
+  type JournalParts,
+  type LinkNote,
+  partsOf,
+} from "./journal";
+export {
   applyRunEvent,
   experimentStatus,
   isTerminal,
@@ -73,6 +80,14 @@ export type {
   ToolEndpoint,
   WorldSummary,
 } from "./ports";
+export {
+  PRESET_BODY_MAX,
+  PRESET_KINDS,
+  PRESET_NAME_MAX,
+  PRESET_UNDO_DAYS,
+  type PresetKind,
+  type PresetRecord,
+} from "./presets";
 export {
   benchmarkKey,
   DEFAULT_SEEDS,

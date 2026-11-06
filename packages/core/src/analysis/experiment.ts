@@ -85,6 +85,13 @@ function criteria(runs: readonly RunRecord[]): CriterionRate[] {
   });
 }
 
+/** How runs that ended for this reason say it: an operation in its own words, the rest as ever. */
+export function endLabelOf(a: Pick<ExperimentAnalysis, "runs">, reason: EndReason): string {
+  return (
+    a.runs.find((r) => r.endReason === reason && r.endLabel)?.endLabel ?? END_REASON_LABELS[reason]
+  );
+}
+
 function endReasons(runs: readonly RunRecord[]): Partial<Record<EndReason, number>> {
   const out: Partial<Record<EndReason, number>> = {};
   for (const r of runs) if (r.result) out[r.result.endReason] = (out[r.result.endReason] ?? 0) + 1;
@@ -169,7 +176,7 @@ function experimentFindings(a: Omit<ExperimentAnalysis, "findings">): string[] {
     out.push(`'${c.label}' 항목을 ${pct(1 - c.rate)}의 실행에서 놓쳤어요`);
   const reasons = Object.entries(a.endReasons).filter(([r]) => r !== "diagnosed");
   for (const [reason, n] of reasons)
-    out.push(`${n}번은 ${END_REASON_LABELS[reason as EndReason]}로 끝났어요`);
+    out.push(`${n}번은 ${endLabelOf(a, reason as EndReason)}로 끝났어요`);
   if (a.timeToDiagnosis)
     out.push(`진단까지 평균 ${formatDuration(a.timeToDiagnosis.mean)} (시뮬레이션 시간)`);
   if (a.parent) out.push(...parentFindings(a.parent));

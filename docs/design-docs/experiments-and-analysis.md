@@ -11,16 +11,19 @@ covers:
   - packages/core/src/analysis/leaderboard.ts
   - packages/core/src/analysis/twin.ts
   - packages/core/src/world/run-events.ts
+  - packages/core/src/experiments/journal.ts
+  - packages/core/src/experiments/presets.ts
+  - packages/core/src/experiments/ports.ts
   - packages/core/src/world/incidents.ts
   - apps/server/src/runtime/executor-operation.ts
   - packages/core/src/session/run-events.ts
-covers_hash: 09679a0e2c54de08
+covers_hash: 92c0e701a180d5fb
 verification_log:
-  - "2026-11-06: 레시피의 선택 칸 셋(escalation, faultScope, sop)과 벤치마크 키 규칙, 포크 차이 문구를 recipe.ts·lineage.ts와, 사건 기록의 human 사건과 원인 human을 world/run-events.ts·session/run-events.ts와 대조해 더했다 (REQ-080~083)"
   - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: 2a·2b 합치기"
   - "2026-11-06: 운영 실험 절과 link 사건 행을 더하고 recipe.ts의 벤치마크 키(operation)·lineage.ts의 운영 문구와 대조했다 (REQ-090)"
   - "2026-11-06: 마지막 구현(연결 사건 link, executor-operation, 운영 툴 필수 검사, operator 설명)과 다시 대조했다. 본문은 그대로 맞다 (REQ-090)"
+  - "2026-11-06: 저장소 포트에 저장해 둔 것·재개 기록, link resumed, 분석의 endLabel을 ports.ts, journal.ts, presets.ts, run-events.ts, analysis/run.ts와 대조해 적었다 (ADR-0112)"
 ---
 # 실험과 결과 분석 (REQ-015, REQ-030~033, REQ-037~040)
 
@@ -46,7 +49,7 @@ verification_log:
   또 에이전트가 스스로 밝힌 정보가 가장 새 버전과 다르면 새 버전(`agent-version.ts`)을 쓰고 실험에 그 번호(`agentVersion`)를 붙인다. 앞 버전과의 차이는 저장하지 않고 견주어 만든다(이름·모델·사실·연결 메타데이터·사람이 붙인 속성).
   번호는 오르기만 하고 다시 쓰이지 않는다. 포크는 부모의 에이전트가 아니라 지금 에이전트를 본다.
 - **스케줄러(REQ-032)**: [ADR-0024](adr/0024-fair-scheduling.md). 지금 가장 적게 돌리고 있는 사람의 실행부터, 서버·사람·하네스 한도 안에서.
-- **저장소 포트**: `ExperimentStore`. 메모리 구현(`MemoryStore`)은 테스트와 기본값, 서버는 SQLite 구현을 쓴다.
+- **저장소 포트**: `ExperimentStore`. 메모리 구현(`MemoryStore`)은 테스트와 기본값, 서버는 SQLite 구현을 쓴다. 세계·시나리오·실험·실행 말고 두 가지를 더 둔다(ADR-0112). **저장해 둔 것**(`PresetRecord`: 종류 `instruction`·`toolset`·`runbook`, 이름, 본문, 만든 때, 만든 사람; 세계·시나리오와 무관, 지우면 7일 뒤 정리)과, 운영 실행이 도는 동안 쌓는 **재개 기록**(`appendJournal`·`readJournal`·`deleteJournal`: 세션이 받은 입력과 호스트가 본 것, 실행이 끝나면 지운다. [운영 모드](operation-mode.md#서버-재시작-뒤-재개-결정-8-adr-0112)).
 
 ## 분석 (`core.analysis`)
 
@@ -60,7 +63,7 @@ verification_log:
 
 - **텔레메트리는 연결마다 어댑터로 붙는다**([ADR-0085](adr/0085-telemetry-adapters.md)). 실행기가 연결의 어댑터에서 `attach`로 하네스가 실어 보낼 것(`traceparent`, `run_id` 태그, 세션 ID)을 받고, 결과 화면이 같은 어댑터의 `fetch`로 읽는다. 실행을 묶는 열쇠는 도구마다 어댑터가 정한다(ClickStack은 트레이스 번호나 `run_id` 속성, Langfuse는 세션 ID, 트레이스 번호, 메타데이터 `run_id` 순). 서버 설정의 `telemetry`는 연결이 "서버 기본값"을 고르거나 아무것도 고르지 않은 옛 연결이 쓰는 기본값이다.
 - **실행 하나**(`analyzeRun`): 진단이 맞았나(원인 장비·고장 유형 따로), 진단까지 시뮬레이션 시간, 정답 장비를 처음 들여다본 시점,
-  같은 호출 반복, 실패한 호출, 금지 행동. 발견(findings)은 근거를 가리키는 한국어 문장이다("정답 장비(crah-1)를 한 번도 직접 살펴보지 않았다").
+  같은 호출 반복, 실패한 호출, 금지 행동. 운영 실행은 끝난 이유를 운영의 말로 `endLabel`에 적는다("운영 시간 끝(8시간)", "멈춤(사람)", "호출 상한(5,000회)", `endReasonLabel`). 발견(findings)은 근거를 가리키는 한국어 문장이다("정답 장비(crah-1)를 한 번도 직접 살펴보지 않았다").
 - **실험 하나**(`analyzeExperiment`): 완료된 실행만으로 합격률·진단 정확도·평균 점수(±95% 구간)·항목별 달성률을 낸다.
   실패·취소는 진행률에서 따로 센다. 포크면 원본과 비교한다.
 - **"분명한 차이"**: 두 평균의 95% 구간이 겹치지 않을 때만. 실행 1번끼리는 절대 아니다. [ADR-0023](adr/0023-benchmark-sets-and-comparison.md).
@@ -82,7 +85,7 @@ verification_log:
 | 툴 호출 `tool` | 누가(하네스·에이전트·모델은 조회 응답의 `who`), 무엇을(`tool`, `args`), 대상 장비(`targets`), 하는 일(`effect`: observe 조회, act 조치, wait 기다림, answer 답), 결과(`ok`, `error`), 한 줄 요약(`summary`: 무엇이 바뀌었나, 왜 실패했나), `t`, `real` |
 | 세계 사건 `world` | 고장·알람·전원·설정값 같은 세계 명령(`command`)과 누가 일으켰나(`cause`), `t`, `real`. 같은 순간이면 호출 앞의 사건, 호출, 호출이 낳은 사건 순서다 |
 | 사람 사건 `human` | 에이전트가 사람에게 물은 것 `asked`(요청문, 최근 툴 호출 5개), 사람이 세계에서 한 조치 `acted`(툴, 인자, 바뀐 것), 답 `answered`(누가: 사람·설정·아무도 아님, 어떻게: 글·조치·툴 더 줌·끝냄, 기다린 실제 초) (REQ-081) |
-| 연결 사건 `link` | 운영에서 에이전트가 하네스를 잃었다 `lost`(이유)가 다시 이어졌다 `back`. 세션이 아니라 실행기가 쓴다 |
+| 연결 사건 `link` | 운영에서 에이전트가 하네스를 잃었다 `lost`(이유)가 다시 이어졌다 `back`. 서버가 멈췄다가 실행을 다시 세웠으면 `lost`(서버가 멈췄어요) 다음에 `resumed`(멈춰 있던 실제 초 `gapSeconds`)가 온다. 세션이 아니라 실행기가 쓴다 |
 | 점수 사건 `score` | `agent_start`(과제를 받음, 세는 시작점 `scenarioStart`), `closed`(끝난 이유, 진단했나), `graded`(총점, 합격, 정답 장비 `rootCause`) |
 
 사람이 세계에서 한 조치는 세계 사건의 원인이 `human`이다. 그래서 에이전트의 행동으로 세어지지 않는다(채점은 에이전트의 툴 호출이 낳은 행동만 본다).

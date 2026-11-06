@@ -9,7 +9,9 @@ import { InvalidValueError } from "@terrarium/core/kernel";
 import {
   type Blueprint,
   BlueprintIndex,
+  builtChip,
   type Entity,
+  type LayerId,
   type Link,
   serviceProps,
   workloadProps,
@@ -18,9 +20,11 @@ import { generateCampus } from "./campus";
 import { DEFAULT_CAMPUS, SITE_CAMPUS_MIX } from "./campus-spec";
 import { generateWorld } from "./generate";
 import {
+  buildFor,
   buildOf,
   defaultCatalog,
   hostsOf,
+  layersOf,
   planShape,
   type ServiceDraft,
   type ShapePlan,
@@ -189,12 +193,13 @@ function nodesOn(
 
 function lay(bp: Blueprint, spec: ShapeSpec): Laying {
   const index = new BlueprintIndex(bp);
-  const build = buildOf(spec.layers);
   const pool = hostPool(index);
   const used = new Set<string>();
   const into: Laying = { entities: [], links: [] };
-  const storage = build.sharedStorage ? index.ofKind("storage")[0] : undefined;
   for (const draft of spec.services) {
+    // each service stands the way its own choices say: the building is the world's, the rest is the service's
+    const build = buildFor(spec.layers, draft);
+    const storage = build.sharedStorage ? index.ofKind("storage")[0] : undefined;
     const hosts = pickHosts(pool, hostsOf(draft, build) + (build.spareHosts ?? 0), used);
     const active = hosts.slice(0, hosts.length - (build.spareHosts ?? 0) || hosts.length);
     const standby = hosts.slice(active.length);
@@ -273,16 +278,34 @@ export function generateShaped(spec: ShapeSpec, catalog: Catalog = defaultCatalo
     name: spec.name,
     entities: [...base.entities, ...laid.entities],
     links: [...base.links, ...laid.links],
-    meta: { ...base.meta, generator: "shaped", layers: JSON.stringify(spec.layers) },
+    meta: {
+      ...base.meta,
+      generator: "shaped",
+      layers: JSON.stringify(spec.layers),
+      ...(spec.services.some((s) => s.layers)
+        ? {
+            serviceLayers: JSON.stringify(
+              Object.fromEntries(spec.services.map((s) => [s.key, layersOf(spec.layers, s)])),
+            ),
+          }
+        : {}),
+    },
   };
-  const notes = Object.entries(spec.layers).flatMap(([layer, id]) => {
-    const chip = blueprintChipNote(layer, id);
-    return chip ? [chip] : [];
-  });
+  const notes = [
+    ...Object.entries(spec.layers).flatMap(([layer, id]) => {
+      const chip = blueprintChipNote(layer, id);
+      return chip ? [chip] : [];
+    }),
+    ...spec.services.flatMap((s) =>
+      Object.entries(s.layers ?? {}).flatMap(([layer, id]) => {
+        const chip =
+          id === spec.layers[layer as LayerId] ? undefined : blueprintChipNote(layer, id);
+        return chip ? [`${s.name}: ${chip}`] : [];
+      }),
+    ),
+  ];
   return { blueprint, plan, counts: countOf(blueprint, plan), notes };
 }
-
-import { builtChip, type LayerId } from "@terrarium/core/world";
 
 function blueprintChipNote(layer: string, id: string): string | undefined {
   const built = builtChip(layer as LayerId, id);

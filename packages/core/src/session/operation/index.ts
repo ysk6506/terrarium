@@ -37,6 +37,7 @@ export {
   sourcesOf,
   templatesOf,
 } from "./generator";
+export { type InputTarget, replayInputs, type SessionInput } from "./journal";
 export {
   type MetricsInput,
   median,

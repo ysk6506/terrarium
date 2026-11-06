@@ -68,6 +68,32 @@ export const END_REASON_LABELS: Readonly<Record<EndReason, string>> = {
   cancelled: "멈춤",
 };
 
+/** What an operation run was held to, for saying how it ended: the hours it was given and its call limit. */
+export interface OperationEnd {
+  readonly hours: number;
+  readonly maxToolCalls: number;
+}
+
+const withCommas = (n: number) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+/** "8시간", "9분": the hours of an operation as a person reads them. */
+export function hoursText(hours: number): string {
+  if (hours < 1) return `${Math.max(1, Math.round(hours * 60))}분`;
+  return `${Number.isInteger(hours) ? hours : Math.round(hours * 10) / 10}시간`;
+}
+
+/**
+ * How a run ended, in words. An operation does not run out of a time limit, it uses its hours up: the words say
+ * so, and they say it was a person who stopped it, and which call limit it reached.
+ */
+export function endReasonLabel(reason: EndReason, operation?: OperationEnd): string {
+  if (!operation) return END_REASON_LABELS[reason];
+  if (reason === "time_limit") return `운영 시간 끝(${hoursText(operation.hours)})`;
+  if (reason === "cancelled") return "멈춤(사람)";
+  if (reason === "tool_budget") return `호출 상한(${withCommas(operation.maxToolCalls)}회)`;
+  return END_REASON_LABELS[reason];
+}
+
 export interface RunOutcome {
   readonly doc: ScenarioDoc;
   /** The world when the run ended: true state, not sensor readings. */
@@ -85,6 +111,8 @@ export interface RunOutcome {
   /** The world's clock when the run was scored, the last moment its events are read up to. */
   readonly endedAt?: number;
   readonly endReason: EndReason;
+  /** Set for an operation run: how it ended is then told in its own words. */
+  readonly operation?: OperationEnd;
 }
 
 export type Verdict = "pass" | "partial" | "fail" | "penalty" | "clean";
@@ -440,7 +468,7 @@ function summarize(
   items: readonly ScoreItem[],
   o: RunOutcome,
 ): string {
-  if (total === null) return `채점표 없음 · ${END_REASON_LABELS[o.endReason]}`;
+  if (total === null) return `채점표 없음 · ${endReasonLabel(o.endReason, o.operation)}`;
   const parts = [`${total}점 ${passed ? "합격" : "불합격"}`];
   const diagnosis = items.find((i) => i.kind === "diagnosis");
   if (diagnosis)
@@ -453,6 +481,6 @@ function summarize(
     );
   const penalties = items.filter((i) => i.verdict === "penalty").length;
   if (penalties > 0) parts.push(`금지 행동 ${penalties}종`);
-  parts.push(END_REASON_LABELS[o.endReason]);
+  parts.push(endReasonLabel(o.endReason, o.operation));
   return parts.join(" · ");
 }

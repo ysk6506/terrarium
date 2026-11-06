@@ -13,8 +13,12 @@ import {
   type Experiment,
   type ExperimentFilter,
   type ExperimentStore,
+  type Journal,
+  type JournalEntry,
   matchesMetadata,
   matchesText,
+  type PresetKind,
+  type PresetRecord,
   type RunRecord,
   type ScenarioRecord,
   type ShareRecord,
@@ -53,6 +57,12 @@ CREATE TABLE IF NOT EXISTS connections (
 CREATE TABLE IF NOT EXISTS agent_histories (
   harness_id TEXT NOT NULL, agent_id TEXT NOT NULL, record TEXT NOT NULL,
   PRIMARY KEY (harness_id, agent_id));
+CREATE TABLE IF NOT EXISTS run_journal (
+  run_id TEXT NOT NULL, seq INTEGER NOT NULL, at TEXT NOT NULL, entries TEXT NOT NULL,
+  PRIMARY KEY (run_id, seq));
+CREATE TABLE IF NOT EXISTS presets (
+  id TEXT PRIMARY KEY, owner TEXT NOT NULL, kind TEXT NOT NULL, created_at TEXT NOT NULL, record TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS presets_owner ON presets (owner, kind);
 `;
 
 type Row = Record<string, unknown>;
@@ -324,5 +334,52 @@ export class SqliteStore implements ExperimentStore {
     return Number(
       this.sql("DELETE FROM agent_histories WHERE harness_id = ?").run(harnessId).changes,
     );
+  }
+  async appendJournal(runId: string, entries: readonly JournalEntry[], at: string): Promise<void> {
+    if (entries.length === 0) return;
+    this.sql(
+      "INSERT INTO run_journal (run_id, seq, at, entries) VALUES (?, COALESCE((SELECT MAX(seq) + 1 FROM run_journal WHERE run_id = ?), 0), ?, ?)",
+    ).run(runId, runId, at, JSON.stringify(entries));
+  }
+
+  async readJournal(runId: string): Promise<Journal> {
+    const rows = this.sql("SELECT at, entries FROM run_journal WHERE run_id = ? ORDER BY seq").all(
+      runId,
+    ) as Row[];
+    const last = rows.at(-1);
+    return {
+      entries: rows.flatMap((r) => parse<JournalEntry[]>(r.entries)),
+      ...(last ? { lastAt: String(last.at) } : {}),
+    };
+  }
+
+  async deleteJournal(runId: string): Promise<void> {
+    this.sql("DELETE FROM run_journal WHERE run_id = ?").run(runId);
+  }
+
+  async putPreset(preset: PresetRecord): Promise<void> {
+    this.sql(
+      "INSERT OR REPLACE INTO presets (id, owner, kind, created_at, record) VALUES (?, ?, ?, ?, ?)",
+    ).run(preset.id, preset.owner, preset.kind, preset.createdAt, JSON.stringify(preset));
+  }
+
+  async getPreset(id: string): Promise<PresetRecord | undefined> {
+    const row = this.sql("SELECT record FROM presets WHERE id = ?").get(id) as Row | undefined;
+    return row && parse<PresetRecord>(row.record);
+  }
+
+  async listPresets(owner: string, kind?: PresetKind): Promise<PresetRecord[]> {
+    const rows = (
+      kind
+        ? this.sql(
+            "SELECT record FROM presets WHERE owner = ? AND kind = ? ORDER BY created_at, id",
+          ).all(owner, kind)
+        : this.sql("SELECT record FROM presets WHERE owner = ? ORDER BY created_at, id").all(owner)
+    ) as Row[];
+    return rows.map((r) => parse<PresetRecord>(r.record));
+  }
+
+  async deletePreset(id: string): Promise<boolean> {
+    return Number(this.sql("DELETE FROM presets WHERE id = ?").run(id).changes) > 0;
   }
 }

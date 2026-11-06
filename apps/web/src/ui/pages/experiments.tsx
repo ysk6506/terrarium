@@ -69,7 +69,8 @@ export function ExperimentTable({
                 <MetaTags metadata={s.experiment.metadata} />
               </td>
               <td>
-                <Status status={s.status} /> <span className="tiny muted">{progressText(s)}</span>
+                <Status status={s.status} operation={s.experiment.recipe.operation !== undefined} />{" "}
+                <span className="tiny muted">{progressText(s)}</span>
               </td>
               <td>{s.experiment.snapshot.scenarioName}</td>
               <td>

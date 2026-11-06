@@ -9,6 +9,7 @@ import type {
   TelemetryAdapterList,
   TryResult,
 } from "./connections";
+import type { PresetListView, PresetView } from "./presets";
 import type {
   CalibrationView,
   DryRunView,
@@ -48,6 +49,12 @@ export interface Responses {
   addAgentVersion: AgentHistoryView;
   editAgentVersion: AgentHistoryView;
   deleteAgentVersion: AgentHistoryView;
+  listPresets: PresetListView;
+  savePreset: PresetView;
+  importPresets: PresetListView;
+  renamePreset: PresetView;
+  deletePreset: { readonly deleted: boolean };
+  restorePreset: PresetView;
   listWorlds: WorldSummary[];
   listWorldTemplates: WorldSummary[];
   getWorld: WorldRecord;

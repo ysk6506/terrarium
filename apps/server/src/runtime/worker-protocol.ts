@@ -1,7 +1,13 @@
 /** Messages between the server's main thread and a session worker (ADR-0027). Plain data only. */
 import type { EndReason } from "@terrarium/core/oracle";
 import type { AgentTask } from "@terrarium/core/scenario";
-import type { CallResult, HumanAct, HumanResolution, RunResult } from "@terrarium/core/session";
+import type {
+  CallResult,
+  HumanAct,
+  HumanResolution,
+  RunResult,
+  SessionInput,
+} from "@terrarium/core/session";
 import type { ToolSpec } from "@terrarium/core/tools";
 import type { Blueprint, RunEvent } from "@terrarium/core/world";
 import type { PlainSessionConfig } from "./hosts";
@@ -65,6 +71,8 @@ export type FromWorker =
       readonly result: CallResult;
       /** What the run wrote while the call was made, apart from the answer: the agent never sees it. */
       readonly events: readonly RunEvent[];
+      /** What an operation session was given meanwhile (the clock's syncs, the call): the journal of a restart. */
+      readonly journal: readonly SessionInput[];
     }
   | {
       readonly kind: "humaned";
@@ -76,6 +84,7 @@ export type FromWorker =
       readonly result?: CallResult;
       readonly specs: readonly ToolSpec[];
       readonly events: readonly RunEvent[];
+      readonly journal: readonly SessionInput[];
     }
   | {
       readonly kind: "finished";
@@ -90,6 +99,11 @@ export type FromWorker =
       readonly error: WorkerError;
     }
   /** What a realtime session wrote on its own between calls (an operation's alarms come while the agent waits). */
-  | { readonly kind: "events"; readonly id: string; readonly events: readonly RunEvent[] }
+  | {
+      readonly kind: "events";
+      readonly id: string;
+      readonly events: readonly RunEvent[];
+      readonly journal: readonly SessionInput[];
+    }
   /** A realtime session ran out of time on its own. */
   | { readonly kind: "ended"; readonly id: string; readonly reason: EndReason };

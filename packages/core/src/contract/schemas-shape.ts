@@ -1,5 +1,5 @@
 /** "서비스부터" (REQ-094) shapes: workload, service draft, the whole shape spec. Split from schemas.ts for length. */
-import { type ShapeSpec, shapeProblem } from "@terrarium/core/sources/worldgen";
+import { SERVICE_LAYERS, type ShapeSpec, shapeProblem } from "@terrarium/core/sources/worldgen";
 import {
   DAY_PATTERNS,
   LAYER_IDS,
@@ -66,6 +66,11 @@ const ServiceDraftSchema = z
       )
       .max(6),
     workload: WorkloadSchema,
+    /** Its own choices for the four layers a service chooses (ADR-0108 item 5); absent: the world's shape. */
+    layers: z
+      .object(Object.fromEntries(SERVICE_LAYERS.map((l) => [l, z.string().max(40)])))
+      .strict()
+      .optional(),
   })
   .strict();
 

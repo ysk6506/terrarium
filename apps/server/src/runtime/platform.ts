@@ -18,6 +18,7 @@ import { executeRun, type ToolGateway } from "./executor";
 import { Experiments, summarize } from "./experiments";
 import type { SessionHost } from "./hosts";
 import { type Stamps, SYSTEM_STAMPS } from "./ids";
+import { Presets } from "./presets";
 import { Results } from "./results";
 import { Scenarios } from "./scenarios";
 import { Worlds } from "./worlds";
@@ -135,6 +136,8 @@ export class Platform {
   readonly dispatcher: Dispatcher;
   readonly connections: Connections;
   readonly agentVersions: AgentVersions;
+  /** What people saved under a name: instructions, tool sets, runbooks (ADR-0112). */
+  readonly presets: Presets;
   private readonly ctx: PlatformContext;
 
   constructor(private readonly options: PlatformOptions) {
@@ -179,6 +182,7 @@ export class Platform {
     this.worlds = new Worlds(this.ctx);
     this.scenarios = new Scenarios(this.ctx);
     this.agentVersions = new AgentVersions(this.ctx);
+    this.presets = new Presets(this.ctx);
     this.experiments = new Experiments(
       this.ctx,
       this.scenarios,

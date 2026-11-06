@@ -39,7 +39,8 @@ export class WorkerSessions {
   }
 
   private open(msg: Extract<ToWorker, { kind: "open" }>): void {
-    const { id, config, world, blueprint } = msg;
+    const { id, config: given, world, blueprint } = msg;
+    const { resume, ...config } = given;
     try {
       const prepared =
         this.worlds.get(world.key) ?? (blueprint && this.worlds.prepare(world, blueprint));
@@ -54,7 +55,8 @@ export class WorkerSessions {
       const local = new LocalSession(
         Session.create({ ...config, blueprint: prepared.blueprint, warm: this.warm, prepared }),
         (reason) => this.send({ kind: "ended", id, reason }),
-        (events) => this.send({ kind: "events", id, events }),
+        (events, journal) => this.send({ kind: "events", id, events, journal }),
+        resume,
       );
       this.sessions.set(id, local);
       this.send({
@@ -86,6 +88,7 @@ export class WorkerSessions {
           seq: msg.seq,
           result,
           events: session.takeEvents(),
+          journal: session.takeJournal(),
         });
       } else if (msg.kind === "human") {
         const act =
@@ -100,6 +103,7 @@ export class WorkerSessions {
           ...(result ? { result } : {}),
           specs: session.specs,
           events: session.takeEvents(),
+          journal: session.takeJournal(),
         });
       } else
         this.send({

@@ -1,6 +1,7 @@
 /**
  * Starts Terrarium: config → adapters → session workers → platform → HTTP. Stops cleanly on
- * SIGINT/SIGTERM: running runs end as "the server stopped", waiting ones are picked up next start.
+ * SIGINT/SIGTERM: running runs end as "the server stopped" (an operation is left running and picked up again from
+ * its journal), waiting ones are picked up next start.
  */
 import { availableParallelism, hostname } from "node:os";
 import path from "node:path";
