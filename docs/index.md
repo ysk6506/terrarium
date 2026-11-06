@@ -11,6 +11,7 @@ verification_log:
   - "2026-11-05: ADR-0082 링크를 더했다"
   - "2026-11-06: ADR-0104 링크를 더했다"
   - "2026-11-06: operation-mode.md, 운영 에이전트 설계 가이드, ADR-0110 링크를 더했다"
+  - "2026-11-06: ADR-0112 링크를 더했다"
 ---
 # 문서 색인
 
@@ -165,6 +166,7 @@ verification_log:
 - [0102 서비스·OS 층을 구현하면서 시험 다섯 개의 기대값을 고친다](design-docs/adr/0102-service-os-amend-tests.md)
 - [0111 데이터베이스 층과 스토리지 HA 층을 코어 모델로 올리면서 시험 열한 곳의 기대값을 고친다](design-docs/adr/0111-db-storage-layers-amend-tests.md)
 - [0109 세계 만들기 입구를 구현하면서 글 잣대 시험의 화면 목록 둘을 고친다](design-docs/adr/0109-world-entry-amend-tests.md)
+- [0112 서버가 멈춰도 운영은 이어 가고, 저장해 둔 것은 서버에 두고, 서비스마다 모양을 고르고, 운영의 끝은 운영의 말로 쓴다](design-docs/adr/0112-operation-resume-and-presets-amend-tests.md)
 - [0110 운영 모드를 구현하면서 ADR-0094의 강제 장치를 시험으로 잇는다](design-docs/adr/0110-operation-mode-amend-tests.md)
 - [0108 서비스부터는 IAP 하나로 시작하고, 사다리의 칩마다 그림·설명 카드가 있다 (0107 보정)](design-docs/adr/0108-world-entry-iap-and-chip-cards.md)
 - [0107 세계 만들기 입구를 둘로 가르고, 서비스부터는 층마다 HA 사다리에서 고른다 — 모르는 층은 알아서](design-docs/adr/0107-world-entry-two-doors-ha-ladders.md)

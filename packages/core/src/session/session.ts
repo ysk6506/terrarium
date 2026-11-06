@@ -47,7 +47,7 @@ import {
 } from "./operation";
 import { DEFAULT_RECORDER, MetricRecorder } from "./recorder";
 import { RunLog } from "./run-events";
-import { effectsSince, extrasOf, faultSkipper } from "./session-parts";
+import { effectsSince, extrasOf, faultSkipper, operationEndOf } from "./session-parts";
 import { buildTimeline } from "./timeline";
 import {
   type CallResult,
@@ -82,6 +82,8 @@ export class Session {
   private readonly ctx: ToolContext;
   private readonly time: TimePolicy;
   private readonly calls: ToolCallRecord[] = [];
+  /** Calls spent on the investigation (submitting the answer is free); counted as they come, so a long run is not read again each time. */
+  private spent = 0;
   private readonly log: RunLog;
   private readonly handOffs: HandOffs;
   private state: SessionStatus = "ready";
@@ -268,7 +270,7 @@ export class Session {
     if (this.line.waiting)
       return { ok: false, t, error: "the run is waiting for a person to answer your request" };
     const task = this.task as AgentTask;
-    if (tool !== "submit_diagnosis" && investigationCalls(this.calls) >= task.maxToolCalls) {
+    if (tool !== "submit_diagnosis" && this.spent >= task.maxToolCalls) {
       this.end("tool_budget");
       return {
         ok: false,
@@ -293,6 +295,7 @@ export class Session {
   /** Write a finished call into the record, with what it did to the world. */
   private record(tool: string, args: Args, result: ToolResult, t: number, before: number): void {
     const effects = effectsSince(this.world, before);
+    if (tool !== "submit_diagnosis") this.spent++;
     this.calls.push({
       t,
       tool,
@@ -432,6 +435,7 @@ export class Session {
       events: this.log.events,
       endedAt: this.world.time(),
       endReason: reason,
+      ...operationEndOf(this.config, task),
       agentStartedAt: task.startedAt,
       scenarioStart: this.scenarioStart,
       ...(this.diagnosis

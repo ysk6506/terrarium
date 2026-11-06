@@ -3565,6 +3565,37 @@ ol.elevation li:first-child .u-slot {
   text-decoration: underline;
   padding: 0 2px;
 }
+.we-same {
+  max-width: 560px;
+}
+.we-same h3 {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+.we-same ul {
+  list-style: none;
+  display: grid;
+  gap: 4px;
+  margin: 0 0 10px;
+  padding: 0;
+  font-size: 14px;
+}
+.we-same b {
+  display: inline-block;
+  min-width: 6.5em;
+  color: var(--ink-3);
+  font-weight: 600;
+}
+.we-linkbtn {
+  font: inherit;
+  color: var(--cobalt);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 6px 0 0;
+  font-weight: 600;
+}
 .we-own {
   display: flex;
   gap: 8px 16px;

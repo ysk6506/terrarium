@@ -19,8 +19,9 @@ export const STATUS_TONES: Readonly<Record<RunStatus, Tone>> = {
   cancelled: "neutral",
 };
 
-export function statusLabel(status: RunStatus | ExperimentStatus): string {
-  return RUN_STATUS_LABELS[status];
+/** "멈춤" is "멈춤(사람)" for an operation: it only ends by its hours, its call limit, or a person (ADR-0094 item 3). */
+export function statusLabel(status: RunStatus | ExperimentStatus, operation = false): string {
+  return operation && status === "cancelled" ? "멈춤(사람)" : RUN_STATUS_LABELS[status];
 }
 
 export const percent = (ratio: number, digits = 0) => `${(ratio * 100).toFixed(digits)}%`;

@@ -11,9 +11,12 @@ import {
   type ScopeKey,
 } from "@terrarium/core/scenario";
 import {
+  buildFor,
   buildOf,
   hostsOf,
+  layersOf,
   planShape,
+  SERVICE_LAYERS,
   type ServiceDraft,
   type ShapeSpec,
 } from "@terrarium/core/sources/worldgen";
@@ -68,20 +71,17 @@ function teamOf(problem: ScopeKey): string {
   return "벤더";
 }
 
-/** All the problems of a shape: what it stops comes first, then what it only slows. */
-function problemsOf(layers: Layers): { stops: ScopeKey[]; slows: ScopeKey[] } {
+/** All the problems of the shapes a world holds (the world's, and each service's own): what stops comes first, then what only slows. */
+function problemsOf(shapes: readonly Layers[]): { stops: ScopeKey[]; slows: ScopeKey[] } {
   const stops = new Set<ScopeKey>();
   const slows = new Set<ScopeKey>();
-  const dottedIds = new Set<string>();
-  for (const layer of LAYER_IDS) {
-    const chip = LADDER[layer].find((c) => c.id === layers[layer]);
-    if (!chip?.modeled) {
-      if (chip) dottedIds.add(chip.id);
-      continue;
+  for (const layers of shapes)
+    for (const layer of LAYER_IDS) {
+      const chip = LADDER[layer].find((c) => c.id === layers[layer]);
+      if (!chip?.modeled) continue;
+      for (const p of chip.stops) stops.add(p);
+      for (const p of chip.slows) slows.add(p);
     }
-    for (const p of chip.stops) stops.add(p);
-    for (const p of chip.slows) slows.add(p);
-  }
   for (const p of stops) slows.delete(p);
   return { stops: [...stops], slows: [...slows] };
 }
@@ -124,24 +124,34 @@ function waysOf(problems: readonly ScopeKey[]): string[] {
 const SERVER_COST_M = 15;
 const SWITCH_COST_M = 24;
 
+const costOf = (layer: (typeof LAYER_IDS)[number], id: string) =>
+  LADDER[layer].find((c) => c.id === id)?.costM ?? 0;
+
 export function shapeView(spec: ShapeSpec): ShapeView {
   const build = buildOf(spec.layers);
   const plan = planShape(spec);
-  const { stops, slows } = problemsOf(spec.layers);
+  // the world's shape, and the shape of each service that chose its own: all of them are in the world
+  const shapes = [
+    spec.layers,
+    ...spec.services.filter((s) => s.layers).map((s) => layersOf(spec.layers, s)),
+  ];
+  const { stops, slows } = problemsOf(shapes);
   const set = new Set<ScopeKey>([...stops, ...slows]);
   const templates = matching(set);
-  const own = spec.services.reduce((n, s) => n + hostsOf(s, build), 0);
+  const own = spec.services.reduce((n, s) => n + hostsOf(s, buildFor(spec.layers, s)), 0);
   const switches = Math.max(
     1,
     spec.services.reduce((n, s) => n + s.switches, 0) + ((build.spines ?? 2) - 2),
   );
-  const chips = LAYER_IDS.reduce(
-    (m, l) => m + (LADDER[l].find((c) => c.id === spec.layers[l])?.costM ?? 0),
-    0,
-  );
+  const chips =
+    LAYER_IDS.reduce((m, l) => m + costOf(l, spec.layers[l]), 0) +
+    spec.services.reduce(
+      (m, s) => m + SERVICE_LAYERS.reduce((k, l) => k + (s.layers ? costOf(l, s.layers[l]) : 0), 0),
+      0,
+    );
   return {
     hosts: own + plan.spareHosts,
-    vms: build.bare ? 0 : plan.serviceNodes,
+    vms: spec.services.reduce((n, s) => n + (buildFor(spec.layers, s).bare ? 0 : s.nodes), 0),
     switches,
     costM: (own + plan.spareHosts) * SERVER_COST_M + switches * SWITCH_COST_M + chips,
     stops: names(stops),
@@ -150,15 +160,21 @@ export function shapeView(spec: ShapeSpec): ShapeView {
     scenarios: templates.length,
     handover: handoverOf(templates),
     problems: [...set],
-    dotted: LAYER_IDS.filter(
-      (l) => LADDER[l].find((c) => c.id === spec.layers[l])?.modeled === false,
-    ).map((l) => cardOf(spec.layers[l])?.label ?? spec.layers[l]),
+    dotted: [
+      ...new Set(
+        shapes.flatMap((layers) =>
+          LAYER_IDS.filter((l) => LADDER[l].find((c) => c.id === layers[l])?.modeled === false).map(
+            (l) => cardOf(layers[l])?.label ?? layers[l],
+          ),
+        ),
+      ),
+    ],
   };
 }
 
 /** "3대" etc. for one service of the shape, for the line under the bar. */
 export const hostsText = (d: ServiceDraft, layers: Layers): string =>
-  `${hostsOf(d, buildOf(layers))}대`;
+  `${hostsOf(d, buildFor(layers, d))}대`;
 
 /** Money the way the screen says it: 억 above a hundred million, 만 below. */
 export const costText = (costM: number): string => won(costM);

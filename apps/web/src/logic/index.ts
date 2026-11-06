@@ -202,6 +202,7 @@ export {
   presetLayers,
   type Resolved,
   resolveLayers,
+  resolveServiceLayers,
   type ShapeView,
   shapeView,
   workloadView,

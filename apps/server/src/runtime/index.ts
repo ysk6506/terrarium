@@ -35,6 +35,7 @@ export {
 } from "./hosts";
 export { type Stamps, SYSTEM_STAMPS } from "./ids";
 export { Platform, type PlatformOptions, withCapacity } from "./platform";
+export { Presets } from "./presets";
 export { type ReportFormat, Results } from "./results";
 export { Scenarios } from "./scenarios";
 export { raise, WorkerHost, type WorkerHostOptions } from "./worker-host";

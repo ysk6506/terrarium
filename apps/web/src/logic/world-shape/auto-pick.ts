@@ -5,8 +5,8 @@
  * chosen for them.
  */
 
-import type { ServiceDraft } from "@terrarium/core/sources/worldgen";
-import { MIDDLE_LAYERS } from "@terrarium/core/sources/worldgen";
+import type { ServiceDraft, ServiceLayers } from "@terrarium/core/sources/worldgen";
+import { MIDDLE_LAYERS, SERVICE_LAYERS } from "@terrarium/core/sources/worldgen";
 import { LADDER, type LayerId, type Layers } from "@terrarium/core/world";
 import { cardOf } from "./ladders";
 
@@ -149,6 +149,21 @@ export function resolveLayers(
     why[layer] = `알아서 ${label(picked.id)}로 골랐어요 — ${picked.why}`;
   }
   return { layers: layers as Layers, why };
+}
+
+/**
+ * The four layers a service chooses for itself (ADR-0108 item 5): what the person pressed stays, and the rest is worked
+ * out for this service alone. Each one that is "알아서" says why.
+ */
+export function resolveServiceLayers(
+  service: ServiceDraft,
+  manual: Partial<Layers>,
+): { readonly layers: ServiceLayers; readonly why: Resolved["why"] } {
+  const { layers, why } = resolveLayers([service], manual);
+  return {
+    layers: Object.fromEntries(SERVICE_LAYERS.map((l) => [l, layers[l]])) as ServiceLayers,
+    why,
+  };
 }
 
 /** The layers of a preset. "알아서" is `resolveAuto`; the others are fixed rows that the person may then change one by one. */

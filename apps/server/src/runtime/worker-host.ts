@@ -12,7 +12,7 @@ import {
   UnsupportedError,
 } from "@terrarium/core/kernel";
 import type { EndReason } from "@terrarium/core/oracle";
-import type { CallResult, HumanAct, RunResult } from "@terrarium/core/session";
+import type { CallResult, HumanAct, RunResult, SessionInput } from "@terrarium/core/session";
 import type { ToolSpec } from "@terrarium/core/tools";
 import type { RunEvent } from "@terrarium/core/world";
 import { defaultThreadMb, Ledger, PROMISED_SHARE } from "./admission";
@@ -99,6 +99,8 @@ export class WorkerHost implements SessionHost {
   private readonly owner = new Map<string, Slot>();
   /** What each session has written, kept as it arrives (with calls, and on its own between them). */
   private readonly written = new Map<string, RunEvent[]>();
+  /** What each operation session was given, as it arrives (the journal of a restart). */
+  private readonly given = new Map<string, SessionInput[]>();
   private readonly waiters: Waiter[] = [];
   private readonly threadMb: number;
   private readonly promisedMb: number;
@@ -180,6 +182,7 @@ export class WorkerHost implements SessionHost {
     }
     if (msg.kind === "events") {
       this.written.get(msg.id)?.push(...msg.events);
+      this.given.get(msg.id)?.push(...msg.journal);
       return;
     }
     const key = "seq" in msg ? `${msg.id}#${msg.seq}` : `${msg.id}#open`;
@@ -285,6 +288,8 @@ export class WorkerHost implements SessionHost {
     let specs: readonly ToolSpec[] = opened.specs;
     const events: RunEvent[] = [...opened.events];
     this.written.set(id, events);
+    const journal: SessionInput[] = [];
+    this.given.set(id, journal);
     const host = this;
     const human = async (op: Extract<ToWorker, { kind: "human" }>["op"]) => {
       const msg = await this.send<Extract<FromWorker, { kind: "humaned" }>>(id, (seq) => ({
@@ -295,6 +300,7 @@ export class WorkerHost implements SessionHost {
       }));
       specs = msg.specs;
       events.push(...msg.events);
+      journal.push(...msg.journal);
       if (msg.result?.ended) ended = msg.result.ended;
       return msg;
     };
@@ -310,21 +316,24 @@ export class WorkerHost implements SessionHost {
         return ended ?? host.ended.get(id);
       },
       call: async (tool, args) => {
-        const msg = await this.send<{ result: CallResult; events: readonly RunEvent[] }>(
+        const msg = await this.send<{
+          result: CallResult;
+          events: readonly RunEvent[];
+          journal: readonly SessionInput[];
+        }>(id, (seq) => ({
+          kind: "call",
           id,
-          (seq) => ({
-            kind: "call",
-            id,
-            seq,
-            tool,
-            args,
-          }),
-        );
+          seq,
+          tool,
+          args,
+        }));
         if (msg.result.ended) ended = msg.result.ended;
         events.push(...msg.events);
+        journal.push(...msg.journal);
         return msg.result;
       },
       eventsSince: (count) => events.slice(count),
+      journalSince: (count) => journal.slice(count),
       finish: async (reason) => {
         const msg = await this.send<{ result: RunResult }>(id, (seq) => ({
           kind: "finish",
@@ -338,6 +347,7 @@ export class WorkerHost implements SessionHost {
         const slot = this.owner.get(id);
         this.ended.delete(id);
         this.written.delete(id);
+        this.given.delete(id);
         if (!slot) return;
         slot.worker.postMessage({ kind: "dispose", id } satisfies ToWorker);
         this.release(id, slot);

@@ -6,11 +6,10 @@
 import type { ScenarioRecord } from "@terrarium/core/experiments";
 import type { OperationConfig } from "@terrarium/core/session";
 import { templatesOf } from "@terrarium/core/session";
-import { useState } from "react";
 import { experiment, operationWords as op } from "../../logic";
-import { browserStore } from "../browser-store";
 import { useApp } from "../context";
-import { Button, Check, NumberField, Segmented, SelectField, TextField } from "../kit";
+import { Button, Check, NumberField, Segmented, TextField } from "../kit";
+import { PresetBar } from "../presets";
 
 type Draft = experiment.Draft;
 interface Props {
@@ -212,29 +211,6 @@ export function OperationSetup({
   );
 }
 
-const SAVED_KEY = "terrarium.operation.instructions";
-
-/** Instructions kept under a name, in this browser. */
-function useSaved(): [Record<string, string>, (name: string, text: string) => void] {
-  const [saved, setSaved] = useState<Record<string, string>>(() => {
-    try {
-      return JSON.parse(browserStore()?.getItem(SAVED_KEY) ?? "{}") as Record<string, string>;
-    } catch {
-      return {};
-    }
-  });
-  const save = (name: string, text: string) => {
-    const next = { ...saved, [name]: text };
-    setSaved(next);
-    try {
-      browserStore()?.setItem(SAVED_KEY, JSON.stringify(next));
-    } catch {
-      // storage refused: the name stays for this visit only
-    }
-  };
-  return [saved, save];
-}
-
 /** The recommended instruction's lines, each with why it is there. */
 function Reasons() {
   return (
@@ -253,38 +229,9 @@ function Reasons() {
   );
 }
 
-/** Keep the instruction under a name. */
-function SaveRow({
-  text,
-  onSave,
-}: {
-  readonly text: string;
-  readonly onSave: (name: string, text: string) => void;
-}) {
-  const [name, setName] = useState("");
-  return (
-    <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
-      <TextField label="이름 붙여 저장" value={name} maxLength={40} onChange={setName} />
-      <Button
-        size="small"
-        kind="quiet"
-        disabled={name.trim() === "" || text.trim() === ""}
-        why={name.trim() === "" ? "저장할 이름을 적어 주세요" : "저장할 지시문이 비어 있어요"}
-        onClick={() => {
-          onSave(name.trim(), text);
-          setName("");
-        }}
-      >
-        이 브라우저에 저장
-      </Button>
-    </div>
-  );
-}
-
 /** Step 3 when the experiment is an operation: what the agent is told, why each line is there, and the wake switch. */
 export function OperationInstruction({ draft, set }: Props) {
   const { meta } = useApp();
-  const [saved, save] = useSaved();
   const config = draft.operation;
   const harness = meta?.harnesses.find((h) => h.id === draft.harnessId);
   if (!config) return null;
@@ -308,17 +255,6 @@ export function OperationInstruction({ draft, set }: Props) {
         >
           권장안 넣기
         </Button>
-        {Object.keys(saved).length > 0 && (
-          <SelectField
-            label="저장해 둔 지시문"
-            value=""
-            options={[
-              { value: "", label: "골라서 불러오기" },
-              ...Object.keys(saved).map((k) => ({ value: k, label: k })),
-            ]}
-            onChange={(k) => k && patch({ instruction: saved[k] ?? "" })}
-          />
-        )}
       </div>
       <Reasons />
       <ul className="list-plain small muted">
@@ -326,7 +262,11 @@ export function OperationInstruction({ draft, set }: Props) {
           <li key={n}>{n}</li>
         ))}
       </ul>
-      <SaveRow text={config.instruction} onSave={save} />
+      <PresetBar<"instruction">
+        kind="instruction"
+        current={config.instruction}
+        onLoad={(instruction) => patch({ instruction })}
+      />
       <div className="stack" style={{ gap: 4 }}>
         <Check
           label="알람마다 깨우기"

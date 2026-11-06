@@ -4,6 +4,7 @@ export {
   type CriterionRate,
   type ExperimentAnalysis,
   type ExperimentInput,
+  endLabelOf,
   type ParentComparison,
 } from "./experiment";
 export {

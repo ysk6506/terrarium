@@ -35,13 +35,18 @@ export {
   MIDDLE_LAYERS,
 } from "./shaped-defaults";
 export {
+  buildFor,
   buildOf,
   type HarmTier,
   hostsOf,
+  layersOf,
   planShape,
   recount,
   SERVERS_PER_RACK,
+  SERVICE_LAYERS,
   type ServiceDraft,
+  type ServiceLayerId,
+  type ServiceLayers,
   type ServicePart,
   SHAPE_LIMITS,
   type ShapePlan,

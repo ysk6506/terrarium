@@ -3,65 +3,7 @@ import type { HumanSummary, SopResult } from "@terrarium/core/session";
 import { TOOL_NAMES } from "@terrarium/core/tools";
 import { describe, expect, test } from "vitest";
 import { sampleBlueprint } from "../../../../packages/core/src/world/test-support/sample";
-import { experiment, humanTalk, presets, runbook } from ".";
-
-const memory = () => {
-  const data = new Map<string, string>();
-  return {
-    getItem: (k: string) => data.get(k) ?? null,
-    setItem: (k: string, v: string) => void data.set(k, v),
-    removeItem: (k: string) => void data.delete(k),
-  };
-};
-
-const T0 = new Date("2026-11-06T09:00:00Z");
-const days = (n: number) => new Date(T0.getTime() + n * 86_400_000);
-
-describe("saved sets [REQ-080] [REQ-082]", () => {
-  test("a name on a set: save, load, and save again under the same name to change it", () => {
-    const store = memory();
-    expect(presets.listPresets(store, "tools")).toEqual([]);
-    presets.savePreset(store, "tools", "냉방만", ["list_alarms", "set_cooling_setpoint"], T0);
-    presets.savePreset(store, "tools", "  냉방만 ", ["list_alarms"], days(1));
-    const list = presets.listPresets<string[]>(store, "tools");
-    expect(list.map((p) => [p.name, p.data])).toEqual([["냉방만", ["list_alarms"]]]);
-  });
-
-  test("tool sets and runbooks are kept apart, newest first", () => {
-    const store = memory();
-    presets.savePreset(store, "tools", "가", ["wait"], T0);
-    presets.savePreset(store, "tools", "나", ["wait"], days(1));
-    presets.savePreset(store, "runbook", "절차", { title: "x", steps: [] }, T0);
-    expect(presets.listPresets(store, "tools").map((p) => p.name)).toEqual(["나", "가"]);
-    expect(presets.listPresets(store, "runbook").map((p) => p.name)).toEqual(["절차"]);
-  });
-
-  test("a set without a name is not saved", () => {
-    expect(presets.savePreset(memory(), "tools", "  ", ["wait"], T0)).toBeUndefined();
-  });
-
-  test("a deleted set can be brought back for seven days, and is gone after that", () => {
-    const store = memory();
-    const saved = presets.savePreset(store, "tools", "냉방만", ["wait"], T0);
-    presets.removePreset(store, "tools", saved?.id ?? "", days(1));
-    expect(presets.listPresets(store, "tools")).toEqual([]);
-    expect(presets.deletedPresets(store, "tools", days(3)).map((p) => p.name)).toEqual(["냉방만"]);
-    expect(presets.deletedPresets(store, "tools", days(9))).toEqual([]);
-    presets.restorePreset(store, "tools", saved?.id ?? "");
-    expect(presets.listPresets(store, "tools").map((p) => p.name)).toEqual(["냉방만"]);
-  });
-
-  test("a browser that keeps nothing, or a broken store, leaves an empty list and no error", () => {
-    expect(presets.listPresets(undefined, "tools")).toEqual([]);
-    const broken = {
-      getItem: () => "{not json",
-      setItem: () => undefined,
-      removeItem: () => undefined,
-    };
-    expect(presets.listPresets(broken, "tools")).toEqual([]);
-    expect(presets.savePreset(undefined, "tools", "x", [], T0)?.name).toBe("x");
-  });
-});
+import { experiment, humanTalk, runbook } from ".";
 
 describe("the form carries the settings [REQ-080] [REQ-081] [REQ-082]", () => {
   test("the defaults are a fixed answer, all faults and no runbook, and they leave the recipe as it was", () => {

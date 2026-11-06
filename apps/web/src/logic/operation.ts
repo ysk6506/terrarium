@@ -261,3 +261,16 @@ export function limitNote(
     ? `툴 호출 ${n}회 상한에 닿아 멈췄어요. 상한은 실험 만들기에서 바꿀 수 있어요`
     : undefined;
 }
+
+/** "서버가 다시 시작돼 3분 뒤 이어 갔어요": once for each time the server stopped and the operation was picked up (ADR-0094 item 8). */
+export function resumeNotes(events: readonly RunEvent[]): string[] {
+  return events.flatMap((e) => {
+    if (e.kind !== "link" || e.what !== "resumed") return [];
+    const s = e.gapSeconds ?? 0;
+    const after =
+      s < 60 ? `${Math.max(1, Math.round(s))}초` : formatDuration(Math.round(s / 60) * 60);
+    return [
+      `서버가 다시 시작돼 ${after} 뒤 이어 갔어요. 멈춰 있던 동안 세계 시간은 흐르지 않았어요`,
+    ];
+  });
+}

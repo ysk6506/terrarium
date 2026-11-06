@@ -82,8 +82,19 @@ export function Button({
   );
 }
 
-export function Status({ status }: { readonly status: RunStatus }) {
-  return <span className={`status status-${STATUS_TONES[status]}`}>{statusLabel(status)}</span>;
+export function Status({
+  status,
+  operation = false,
+}: {
+  readonly status: RunStatus;
+  /** An operation says "멈춤(사람)" where others say "멈춤". */
+  readonly operation?: boolean;
+}) {
+  return (
+    <span className={`status status-${STATUS_TONES[status]}`}>
+      {statusLabel(status, operation)}
+    </span>
+  );
 }
 
 export function ToneDot({ tone, children }: { readonly tone: Tone; readonly children: ReactNode }) {

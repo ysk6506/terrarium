@@ -8,7 +8,9 @@ import { Catalog } from "@terrarium/core/catalog";
 import {
   builtChip,
   type ChipBuild,
+  type LayerId,
   type Layers,
+  layersProblem,
   type ServiceKind,
   type WorkloadProfile,
 } from "@terrarium/core/world";
@@ -35,6 +37,20 @@ export interface HarmTier {
   readonly perHourKrw: number;
 }
 
+/**
+ * The layers a service chooses for itself (ADR-0108 item 5, ADR-0112): how its nodes stand on hosts, where it keeps
+ * its data, how its database and its app are made redundant. The network, the power, the cooling and the site are
+ * the building's, one for the whole world, and stay as the world's `layers` say.
+ */
+export const SERVICE_LAYERS = [
+  "compute",
+  "storage",
+  "database",
+  "app",
+] as const satisfies readonly LayerId[];
+export type ServiceLayerId = (typeof SERVICE_LAYERS)[number];
+export type ServiceLayers = Readonly<Record<ServiceLayerId, string>>;
+
 export interface ServiceDraft {
   readonly key: string;
   readonly name: string;
@@ -52,6 +68,8 @@ export interface ServiceDraft {
   readonly stops: readonly StopRow[];
   readonly harm: readonly HarmTier[];
   readonly workload: WorkloadProfile;
+  /** Its own choices when it is not shaped like the world's (the "따로 고르기"); absent: the same shape as `ShapeSpec.layers`. */
+  readonly layers?: ServiceLayers;
 }
 
 export interface ShapeSpec {
@@ -106,6 +124,16 @@ export function buildOf(layers: Layers): ChipBuild {
   return merged as ChipBuild;
 }
 
+/** The eight choices a service lives on: the world's, with its own four over them when it chose its own. */
+export const layersOf = (world: Layers, draft: Pick<ServiceDraft, "layers">): Layers => ({
+  ...world,
+  ...draft.layers,
+});
+
+/** What the service's choices ask of the build; the building's parts (spines, feeds, cooling, rooms) are the world's. */
+export const buildFor = (world: Layers, draft: Pick<ServiceDraft, "layers">): ChipBuild =>
+  buildOf(layersOf(world, draft));
+
 /** The counts of a service card, added up from its parts: nodes, hosts and switches. */
 export function recount(draft: ServiceDraft): ServiceDraft {
   const sum = (role: NonNullable<ServicePart["role"]>, fallback: number) => {
@@ -148,8 +176,11 @@ function placesFor(build: ChipBuild, computeRacks: number) {
 
 export function planShape(spec: ShapeSpec): ShapePlan {
   const build = buildOf(spec.layers);
-  const serviceHosts = spec.services.reduce((n, s) => n + hostsOf(s, build), 0);
-  const spareHosts = spec.services.length > 0 ? (build.spareHosts ?? 0) : 0;
+  const serviceHosts = spec.services.reduce((n, s) => n + hostsOf(s, buildFor(spec.layers, s)), 0);
+  const spareHosts = spec.services.reduce(
+    (n, s) => n + (buildFor(spec.layers, s).spareHosts ?? 0),
+    0,
+  );
   const serviceNodes = spec.services.reduce((n, s) => n + s.nodes, 0);
   // database instances of bare-metal worlds stand on servers of their own (virtualised ones share the service's hosts)
   const dbHosts = build.bare ? spec.services.length * (build.database?.instances ?? 0) : 0;
@@ -216,10 +247,15 @@ export function shapeProblem(spec: ShapeSpec): string | undefined {
   if (!spec.real && (spec.servers < servers.min || spec.servers > servers.max))
     return `서버는 ${servers.min}~${servers.max}대 사이로 정해요`;
   if (!sitePreset(spec.site)) return `알 수 없는 사업장 '${spec.site}'`;
-  for (const s of spec.services) {
-    if (s.name.trim() === "") return "서비스 이름이 비어 있어요";
-    if (s.nodes < 1 || s.nodes > 60) return `${s.name}: 노드는 1~60개 사이여야 해요`;
-  }
+  return spec.services.map((s) => serviceProblem(spec.layers, s)).find(Boolean);
+}
+
+/** What is wrong with one service of a spec, in words, or undefined. */
+function serviceProblem(world: Layers, s: ServiceDraft): string | undefined {
+  if (s.name.trim() === "") return "서비스 이름이 비어 있어요";
+  const own = s.layers && layersProblem(layersOf(world, s));
+  if (own) return `${s.name}: ${own}`;
+  if (s.nodes < 1 || s.nodes > 60) return `${s.name}: 노드는 1~60개 사이여야 해요`;
   return undefined;
 }
 

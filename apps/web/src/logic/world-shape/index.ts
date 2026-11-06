@@ -7,6 +7,7 @@ export {
   presetOf,
   type Resolved,
   resolveLayers,
+  resolveServiceLayers,
   STEADY_LAYERS,
 } from "./auto-pick";
 export {

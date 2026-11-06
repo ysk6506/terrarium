@@ -196,10 +196,10 @@ export function RunbookTab({ e }: { readonly e: ScenarioEditor }) {
       </div>
       <Drafting e={e} edit={set} />
       <Paste edit={set} />
-      <PresetBar<Runbook>
+      <PresetBar<"runbook">
         kind="runbook"
         current={book ?? rb.EMPTY_RUNBOOK}
-        onLoad={(loaded) => set(loaded)}
+        onLoad={(loaded) => set(loaded as Runbook)}
       />
       {!book && <Note>{W.NONE}</Note>}
       {book && (

@@ -5,6 +5,7 @@
  */
 
 import type { z } from "zod";
+import { ImportPresetsBody, PresetQuery, RenamePresetBody, SavePresetBody } from "./presets";
 import {
   AddAgentVersionBody,
   AddRunsBody,
@@ -148,6 +149,47 @@ export const ROUTES = {
     method: "DELETE",
     path: "/api/connections/:id/agents/:agentId/versions/:n",
     summary: "버전 지우기 (번호는 다시 쓰이지 않아요)",
+    produces: json,
+  },
+
+  listPresets: {
+    method: "GET",
+    path: "/api/presets",
+    summary: "저장해 둔 지시문·툴 묶음·절차서와, 7일 안에 되돌릴 수 있게 지운 것 (내 것만)",
+    query: PresetQuery,
+    produces: json,
+  },
+  savePreset: {
+    method: "POST",
+    path: "/api/presets",
+    summary: "이름 붙여 저장 (같은 종류에서 같은 이름이면 내용을 바꿔요)",
+    body: SavePresetBody,
+    produces: json,
+  },
+  importPresets: {
+    method: "POST",
+    path: "/api/presets/import",
+    summary: "이 브라우저에 있던 것을 서버로 한 번 옮기기 (이미 있는 이름은 건너뛰어요)",
+    body: ImportPresetsBody,
+    produces: json,
+  },
+  renamePreset: {
+    method: "PUT",
+    path: "/api/presets/:id",
+    summary: "저장해 둔 것의 이름 바꾸기",
+    body: RenamePresetBody,
+    produces: json,
+  },
+  deletePreset: {
+    method: "DELETE",
+    path: "/api/presets/:id",
+    summary: "저장해 둔 것 지우기 (7일 안에는 되돌릴 수 있어요)",
+    produces: json,
+  },
+  restorePreset: {
+    method: "POST",
+    path: "/api/presets/:id/restore",
+    summary: "지운 것 되돌리기",
     produces: json,
   },
 
