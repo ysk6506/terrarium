@@ -63,6 +63,13 @@ export const HANDLERS: Handlers = {
   deletePreset: (p, i) => p.presets.remove(i.viewer, id(i)),
   restorePreset: (p, i) => p.presets.restore(i.viewer, id(i)),
 
+  listModels: (p) => p.models.list(),
+  createModel: (p, i) => p.models.create(i.viewer, i.body),
+  updateModel: (p, i) => p.models.update(i.viewer, id(i), i.body),
+  deleteModel: (p, i) => p.models.remove(i.viewer, id(i)),
+  checkModel: (p, i) => p.models.check(id(i)),
+  setDefaultModel: (p, i) => p.models.setDefault(id(i)),
+
   listWorlds: (p) => p.worlds.list(),
   getWorld: (p, i) => p.worlds.get(id(i)),
   listWorldTemplates: (p) => p.worlds.templates(),

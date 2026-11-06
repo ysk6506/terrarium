@@ -2,6 +2,7 @@
 import type { Blueprint, EntityKind } from "@terrarium/core/world";
 import type { AgentHistory } from "./agent-version";
 import type { Journal, JournalEntry } from "./journal";
+import type { LlmModelRecord } from "./llm-models";
 import type { Experiment, RunRecord, ScenarioRecord, WorldRecord } from "./model";
 import type {
   ConnectionRecord,
@@ -72,6 +73,7 @@ export class MemoryStore implements ExperimentStore {
   private readonly histories = new Map<string, AgentHistory>();
   private readonly journals = new Map<string, { entries: JournalEntry[]; lastAt?: string }>();
   private readonly presets = new Map<string, PresetRecord>();
+  private readonly models = new Map<string, LlmModelRecord>();
 
   async putWorld(world: WorldRecord): Promise<void> {
     this.worlds.set(world.id, copy(world));
@@ -251,5 +253,24 @@ export class MemoryStore implements ExperimentStore {
 
   async deletePreset(id: string): Promise<boolean> {
     return this.presets.delete(id);
+  }
+
+  async putModel(model: LlmModelRecord): Promise<void> {
+    this.models.set(model.id, copy(model));
+  }
+
+  async getModel(id: string): Promise<LlmModelRecord | undefined> {
+    const m = this.models.get(id);
+    return m && copy(m);
+  }
+
+  async listModels(): Promise<LlmModelRecord[]> {
+    return [...this.models.values()]
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id))
+      .map(copy);
+  }
+
+  async deleteModel(id: string): Promise<boolean> {
+    return this.models.delete(id);
   }
 }

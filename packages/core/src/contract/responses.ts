@@ -9,6 +9,7 @@ import type {
   TelemetryAdapterList,
   TryResult,
 } from "./connections";
+import type { LlmModelView } from "./models";
 import type { PresetListView, PresetView } from "./presets";
 import type {
   CalibrationView,
@@ -55,6 +56,12 @@ export interface Responses {
   renamePreset: PresetView;
   deletePreset: { readonly deleted: boolean };
   restorePreset: PresetView;
+  listModels: LlmModelView[];
+  createModel: LlmModelView;
+  updateModel: LlmModelView;
+  deleteModel: { readonly deleted: boolean };
+  checkModel: LlmModelView;
+  setDefaultModel: LlmModelView;
   listWorlds: WorldSummary[];
   listWorldTemplates: WorldSummary[];
   getWorld: WorldRecord;

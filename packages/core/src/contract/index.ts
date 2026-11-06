@@ -30,6 +30,16 @@ export {
 } from "./errors";
 export { type ApiIssue, issuesOf, koreanErrorMap, type Parsed, parseWith, pathOf } from "./korean";
 export {
+  CreateModelBody,
+  type CreateModelRequest,
+  type LlmModelView,
+  MODEL_HEADERS_MAX,
+  MODEL_NAME_MAX,
+  type ModelCheckView,
+  UpdateModelBody,
+  type UpdateModelRequest,
+} from "./models";
+export {
   ImportPresetsBody,
   type ImportPresetsRequest,
   type PresetKind,

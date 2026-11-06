@@ -4,16 +4,11 @@ kind: reference
 status: active
 last_verified: 2026-11-06
 verification_log:
-  - "2026-11-06: sdn-network-layer.md와 ADR-0115 링크를 더했다"
-  - "2026-11-06: 시나리오 편집기 검토 링크 설명에 세 번째 검토를 더했다"
-  - "2026-11-06: db-storage-layers.md와 ADR-0111 링크를 더했다"
-  - "2026-11-06: tool-scope-and-sop.md와 ADR-0105 링크를 더했다"
-  - "2026-11-05: ADR-0101 링크를 더했다"
-  - "2026-11-05: harness-e2e.md 링크를 더했다"
-  - "2026-11-05: ADR-0082 링크를 더했다"
   - "2026-11-06: ADR-0104 링크를 더했다"
   - "2026-11-06: operation-mode.md, 운영 에이전트 설계 가이드, ADR-0110 링크를 더했다"
   - "2026-11-06: ADR-0112 링크를 더했다"
+  - "2026-11-06: LLM API 등록"
+  - "2026-11-06: LLM API 등록"
 ---
 # 문서 색인
 
@@ -41,6 +36,7 @@ verification_log:
 - [서비스와 OS 층 — 장비 위에서 무엇이 도는가, 가짜 셸, OS 고장](design-docs/service-os-layer.md)
 - [데이터베이스 층과 스토리지 HA 층 — 서비스가 기대는 두 겹, 고장 여덟, 자동 페일오버](design-docs/db-storage-layers.md)
 - [SDN 오버레이와 클라우드 네이티브 네트워크 층 — 리프-스파인 위의 가상 네트워크, 고장 일곱, 컨트롤러 전환](design-docs/sdn-network-layer.md)
+- [모델 등록 — LLM API를 워크스페이스에 등록하고 연결 확인까지 (REQ-099)](design-docs/model-registration.md)
 - [서버 운영 — 설치와 사내 시스템 연결](design-docs/operations.md)
 - [규모 키우기 — 스케일 업과 스케일 아웃](design-docs/scaling.md)
 - [용량 — 한 프로세스가 동시에 몇 개를 들고 있나](design-docs/capacity.md)
@@ -173,6 +169,7 @@ verification_log:
 - [0112 서버가 멈춰도 운영은 이어 가고, 저장해 둔 것은 서버에 두고, 서비스마다 모양을 고르고, 운영의 끝은 운영의 말로 쓴다](design-docs/adr/0112-operation-resume-and-presets-amend-tests.md)
 - [0110 운영 모드를 구현하면서 ADR-0094의 강제 장치를 시험으로 잇는다](design-docs/adr/0110-operation-mode-amend-tests.md)
 - [0117 흉내 OS를 깊게 — 작은 리눅스 흉내가 run_command에 답한다 (0116 대체)](design-docs/adr/0117-deep-os-simulation.md)
+- [0119 LLM API 등록 — 워크스페이스 단위 모델 연결, 키는 서버에만, 얇은 클라이언트](design-docs/adr/0119-llm-api-registration.md)
 - [0116 진짜 호스트 섞기 (폐기, 0117로 대체)](design-docs/adr/0116-real-hosts-in-the-world.md)
 - [0108 서비스부터는 IAP 하나로 시작하고, 사다리의 칩마다 그림·설명 카드가 있다 (0107 보정)](design-docs/adr/0108-world-entry-iap-and-chip-cards.md)
 - [0107 세계 만들기 입구를 둘로 가르고, 서비스부터는 층마다 HA 사다리에서 고른다 — 모르는 층은 알아서](design-docs/adr/0107-world-entry-two-doors-ha-ladders.md)

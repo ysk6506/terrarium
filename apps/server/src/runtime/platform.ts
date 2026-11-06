@@ -18,6 +18,7 @@ import { executeRun, type ToolGateway } from "./executor";
 import { Experiments, summarize } from "./experiments";
 import type { SessionHost } from "./hosts";
 import { type Stamps, SYSTEM_STAMPS } from "./ids";
+import { Models, type ModelsOptions } from "./models";
 import { Presets } from "./presets";
 import { Results } from "./results";
 import { Scenarios } from "./scenarios";
@@ -50,6 +51,8 @@ export interface PlatformOptions {
   readonly agentsTimeoutMs?: number;
   /** How "말 걸어 보기" waits (tests shorten this). */
   readonly tryOptions?: TryOptions;
+  /** How model APIs are reached and timed (tests hand in a fake `fetch`). */
+  readonly llm?: Pick<ModelsOptions, "fetch" | "now" | "timeoutMs">;
 }
 
 /** What the meta and the experiment form need of a connection: who it is and which agents it has. */
@@ -140,6 +143,8 @@ export class Platform {
   readonly agentVersions: AgentVersions;
   /** What people saved under a name: instructions, tool sets, runbooks (ADR-0112). */
   readonly presets: Presets;
+  /** The model APIs the workspace registered for later (REQ-099, ADR-0119). */
+  readonly models: Models;
   private readonly ctx: PlatformContext;
 
   constructor(private readonly options: PlatformOptions) {
@@ -185,6 +190,12 @@ export class Platform {
     this.scenarios = new Scenarios(this.ctx);
     this.agentVersions = new AgentVersions(this.ctx);
     this.presets = new Presets(this.ctx);
+    this.models = new Models(this.ctx, {
+      // Without a key on disk, sealed values live only as long as this process (tests, running without a disk).
+      box: options.adapters.secretBox ?? SecretBox.ephemeral(),
+      ...(options.llm ?? {}),
+      ...(options.adapters.allowedHosts ? { allowedHosts: options.adapters.allowedHosts } : {}),
+    });
     this.experiments = new Experiments(
       this.ctx,
       this.scenarios,
