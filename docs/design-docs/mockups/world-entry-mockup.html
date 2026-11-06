@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>세계 만들기 입구</title>
+<style>
+:root{
+  --paper:#f2f4f6;--surface:#fff;--fill:#f2f4f6;--fill-hover:#e5e8eb;--ink:#191f28;--ink-2:#4e5968;--ink-3:#5b6675;
+  --line:#e5e8eb;--line-strong:#d1d6db;--cobalt:#1b64da;--cobalt-soft:#e8f1ff;--primary:#1b64da;--on-primary:#fff;
+  --good:#0a7a5e;--good-soft:#e3f6ef;--warn:#8f5a00;--warn-soft:#fff3d9;--bad:#b8323a;--bad-soft:#fdecec;
+  --card-shadow:0 1px 3px rgb(25 31 40 / 4%);--shadow:0 8px 28px rgb(25 31 40 / 10%);--bar-shadow:0 -10px 30px rgb(25 31 40 / 8%);
+  --rc:14px;--rp:22px;--rail:84px;
+  --font:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#121317;--surface:#1c1e24;--fill:#262930;--fill-hover:#30343c;--ink:#f2f4f6;--ink-2:#b0b8c1;--ink-3:#8b95a1;
+  --line:#2b2e35;--line-strong:#3a3e47;--cobalt:#6fa8ff;--cobalt-soft:#1e2a4d;--primary:#2a62c9;--good:#4cc3a1;--good-soft:#10302a;
+  --warn:#f0b04a;--warn-soft:#3a2c13;--bad:#ff7b83;--bad-soft:#3d1d20;--card-shadow:0 1px 2px rgb(0 0 0 / 30%);--shadow:0 10px 30px rgb(0 0 0 / 45%);--bar-shadow:0 -10px 30px rgb(0 0 0 / 40%);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#121317;--surface:#1c1e24;--fill:#262930;--fill-hover:#30343c;--ink:#f2f4f6;--ink-2:#b0b8c1;--ink-3:#8b95a1;
+  --line:#2b2e35;--line-strong:#3a3e47;--cobalt:#6fa8ff;--cobalt-soft:#1e2a4d;--primary:#2a62c9;--good:#4cc3a1;--good-soft:#10302a;
+  --warn:#f0b04a;--warn-soft:#3a2c13;--bad:#ff7b83;--bad-soft:#3d1d20;--card-shadow:0 1px 2px rgb(0 0 0 / 30%);--shadow:0 10px 30px rgb(0 0 0 / 45%);--bar-shadow:0 -10px 30px rgb(0 0 0 / 40%);color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.note{max-width:1180px;margin:0 auto;padding:28px 16px 8px;color:var(--ink-3);font-size:14px}
+.note b{color:var(--ink);font-weight:600}
+.screen{max-width:1180px;margin:20px auto 44px;padding:0 16px}
+.caption{font-size:13px;color:var(--ink-3);margin:0 0 10px 4px}
+.frame{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:var(--rp);overflow:hidden;display:grid;grid-template-columns:var(--rail) 1fr;min-height:620px}
+.rail{background:var(--surface);border-right:1px solid var(--line);padding:18px 0;display:flex;flex-direction:column;align-items:center;gap:6px}
+.logo{width:28px;height:28px;border-radius:8px;background:var(--ink);margin-bottom:14px}
+.nav{width:64px;padding:8px 0;border-radius:12px;font-size:12px;color:var(--ink-3);text-align:center}
+.nav i{display:block;width:18px;height:18px;margin:0 auto 4px;border:2px solid currentColor;border-radius:5px;opacity:.75}
+.nav.on{background:var(--cobalt-soft);color:var(--cobalt)}
+.page{padding:34px 40px 110px;position:relative}
+h1{font-size:26px;font-weight:700;letter-spacing:-.01em;margin:0 0 6px}
+.sub{color:var(--ink-2);margin:0 0 26px}
+.doors{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.door{background:var(--surface);border:1px solid var(--line);border-radius:var(--rp);padding:26px 26px 22px;box-shadow:var(--card-shadow);display:grid;grid-template-rows:auto 1fr auto;gap:10px;min-height:250px;cursor:pointer}
+.door:hover{border-color:var(--line-strong);box-shadow:var(--shadow)}
+.door h2{font-size:20px;margin:0;font-weight:700}
+.door p{margin:0;color:var(--ink-2)}
+.door .meta{display:flex;gap:8px;align-items:center;color:var(--ink-3);font-size:13px}
+.door .meta b{color:var(--ink);font-weight:600}
+.door .go{color:var(--cobalt);font-weight:600;font-size:15px;margin-top:6px}
+.pic{height:88px;border-radius:14px;background:var(--fill);position:relative;overflow:hidden}
+.pic.svc::before{content:"";position:absolute;inset:18px 28px;background:
+  linear-gradient(var(--line-strong),var(--line-strong)) 0 50%/100% 2px no-repeat;}
+.pic.svc i{position:absolute;top:22px;width:40px;height:40px;border-radius:10px;background:var(--surface);border:1px solid var(--line-strong)}
+.pic.svc i:nth-child(1){left:28px;background:var(--cobalt);border-color:var(--cobalt)}
+.pic.svc i:nth-child(2){left:calc(50% - 20px)}.pic.svc i:nth-child(3){right:28px}
+.pic.diy i{position:absolute;bottom:14px;width:22px;background:var(--surface);border:1px solid var(--line-strong);border-radius:4px}
+.pic.diy i:nth-child(1){left:36px;height:46px}.pic.diy i:nth-child(2){left:66px;height:58px;background:var(--cobalt);border-color:var(--cobalt)}
+.pic.diy i:nth-child(3){left:96px;height:52px}.pic.diy i:nth-child(4){left:126px;height:30px;border-style:dashed;background:transparent}
+.saved{margin-top:28px}
+.saved h3{font-size:15px;color:var(--ink-2);font-weight:600;margin:0 0 10px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-size:14px;color:var(--ink)}
+.chip small{color:var(--ink-3);margin-left:6px}
+/* question screens */
+.qhead{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.step{font-size:13px;color:var(--ink-3)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 18px 16px;box-shadow:var(--card-shadow);position:relative}
+.card.on{border:2px solid var(--cobalt);padding:17px 17px 15px}
+.card.on::after{content:"";position:absolute;top:14px;right:14px;width:20px;height:20px;border-radius:50%;background:var(--cobalt);
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='10'/%3E%3Cpath d='M5.5 10.5l3 3 6-6' stroke='%23000' stroke-width='2' fill='none'/%3E%3C/svg%3E") center/contain no-repeat;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='10' fill='%23000'/%3E%3Cpath d='M5.5 10.5l3 3 6-6' stroke='white' stroke-width='2' fill='none'/%3E%3C/svg%3E") center/contain no-repeat}
+.card.on::after{background:var(--cobalt)}
+.card h4{margin:0 0 4px;font-size:16px;font-weight:700}
+.card p{margin:0;color:var(--ink-2);font-size:14px}
+.card .num{margin-top:12px;font-size:13px;color:var(--ink-3)}
+.card .num b{color:var(--ink);font-weight:600}
+.card .num{line-height:1.5}
+.hint{color:var(--ink-3);font-size:13px;margin:12px 4px 0}
+.card.ghost{border-style:dashed;background:transparent;box-shadow:none;color:var(--ink-3);display:flex;align-items:center;justify-content:center;font-size:15px}
+.arch{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.arch .diagram{height:72px;margin:6px 0 12px;position:relative}
+.box{position:absolute;width:38px;height:30px;border-radius:7px;background:var(--fill);border:1px solid var(--line-strong)}
+.box.sw{height:16px;border-radius:5px;background:var(--ink-2);border-color:var(--ink-2)}
+.box.vm{width:30px;height:24px;background:var(--cobalt-soft);border-color:var(--cobalt)}
+.box.spare{border-style:dashed;background:transparent}
+.wire{position:absolute;height:1.5px;background:var(--line-strong)}
+.wire.v{width:1.5px}
+.bar{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);box-shadow:var(--bar-shadow);padding:14px 40px;display:flex;align-items:center;gap:16px}
+.bar .sum{color:var(--ink-2)}
+.bar .sum b{color:var(--ink);font-weight:600}
+.spacer{flex:1}
+.btn{border:0;border-radius:var(--rc);padding:13px 22px;font:inherit;font-weight:600;font-size:15px;cursor:pointer}
+.btn.pri{background:var(--primary);color:var(--on-primary)}
+.btn.sec{background:var(--fill);color:var(--ink)}
+.btn.text{background:transparent;color:var(--ink-2);padding-left:8px;padding-right:8px}
+
+/* layers */
+.presets{display:flex;gap:8px;align-items:center;margin-bottom:14px}
+.pre{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-weight:600;color:var(--ink-2)}
+.pre.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.pre-hint{color:var(--ink-3);font-size:13px;margin-left:6px}
+.layers{display:grid;grid-template-columns:1fr 340px;gap:14px;align-items:start}
+.rcol{display:grid;gap:12px;position:sticky;top:12px}
+.lcol{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--card-shadow);padding:4px 18px}
+.layer{display:grid;grid-template-columns:130px 1fr;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.layer:first-child{border-top:0}
+.lname{font-weight:700;font-size:15px}.lname small{display:block;font-weight:400;color:var(--ink-3);font-size:12px}
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.o{display:block;border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-weight:600;font-size:14px;background:var(--fill)}
+.o small{display:block;font-weight:400;color:var(--ink-3);font-size:12px;line-height:1.35;margin-top:2px}
+.o.on{background:var(--cobalt-soft);border-color:var(--cobalt);color:var(--cobalt)}
+.o.on small{color:var(--ink-2)}
+.o.off{opacity:.45;border-style:dashed;background:transparent}
+.shape{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--card-shadow);padding:18px}
+.shape h4{margin:0 0 12px;font-size:15px;color:var(--ink-2);font-weight:600}
+.shape-n{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}
+.shape-n div{background:var(--fill);border-radius:10px;padding:8px 6px;text-align:center}
+.shape-n b{display:block;font-size:18px;font-weight:700}.shape-n small{color:var(--ink-3);font-size:12px}
+.sh{border-radius:12px;padding:10px 12px;font-size:13.5px;color:var(--ink-2);margin-bottom:8px;line-height:1.45}
+.sh b{display:block;font-weight:600;font-size:13px;margin-bottom:2px}
+.sh.bad{background:var(--bad-soft)}.sh.bad b{color:var(--bad)}
+.sh.warn{background:var(--warn-soft)}.sh.warn b{color:var(--warn)}
+.sh.good{background:var(--good-soft)}.sh.good b{color:var(--good)}
+.shape-foot{margin:10px 0 0;font-size:13px;color:var(--ink-3)}.shape-foot b{color:var(--ink);font-weight:600}
+@media (max-width:900px){.layers{grid-template-columns:1fr}.layer{grid-template-columns:1fr}.opts{grid-template-columns:1fr}}
+
+.layer{grid-template-columns:118px 1fr;grid-template-rows:auto auto;row-gap:6px}
+.lname{grid-row:1/3}
+.ladder{display:flex;flex-wrap:wrap;gap:6px}
+.ladder .o{padding:7px 11px;font-size:13.5px;border-radius:999px;background:var(--fill);border-color:transparent}
+.ladder .o.on{background:var(--ink);color:var(--surface)}
+.ladder .o.soon{background:transparent;border:1px dashed var(--line-strong);color:var(--ink-3)}
+.ladder .o.on.soon{background:var(--ink);color:var(--surface);border-style:dashed;border-color:var(--ink);opacity:.6}
+.why{grid-column:2;color:var(--ink-2);font-size:13px}
+.soonkey{border:1px dashed var(--line-strong);border-radius:999px;padding:1px 8px}
+.bigfield{display:flex;align-items:baseline;gap:6px;background:var(--fill);border-radius:12px;padding:10px 16px;margin-bottom:10px}
+.bigfield b{font-size:30px;font-weight:700;font-variant-numeric:tabular-nums}.bigfield small{color:var(--ink-3)}
+.quick{display:flex;gap:6px;margin-bottom:14px}.quick .chip{padding:6px 12px;font-size:13px}
+.result{grid-template-columns:repeat(3,1fr)}
+.result small{display:block;font-size:12px;line-height:1.3}
+
+.domain{display:inline-block;background:var(--cobalt-soft);color:var(--ink-2);border-radius:10px;padding:8px 12px;font-size:13.5px;margin:-12px 0 16px}
+.domain b{color:var(--cobalt);font-weight:600}
+.pre.auto{border-style:dashed}
+.ladder .o.auto{border:1px dashed var(--line-strong);background:transparent;color:var(--ink-2)}
+.ladder .o.auto.on{background:var(--cobalt-soft);border:1px solid var(--cobalt);color:var(--cobalt)}
+.ladder .o.picked{background:var(--cobalt-soft);color:var(--cobalt);border:1px solid transparent}
+.ladder .o.picked.soon{border:1px dashed var(--cobalt);background:transparent;opacity:.8}
+.why b{color:var(--cobalt);font-weight:600}
+
+.iap{background:var(--surface);border:2px solid var(--cobalt);border-radius:18px;padding:20px 22px;box-shadow:var(--card-shadow)}
+.iap-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:16px}
+.iap-head h4{margin:0 0 4px;font-size:20px;font-weight:700}.iap-head h4 small{font-weight:500;color:var(--ink-3);font-size:13px;margin-left:8px}
+.iap-head p{margin:0;color:var(--ink-2)}
+.picked-badge{background:var(--cobalt);color:#fff;border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600;white-space:nowrap}
+.iap-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.iap-col>b{display:block;font-size:13px;color:var(--ink-3);font-weight:600;margin-bottom:8px}
+.stack{background:var(--fill);border-radius:12px;padding:6px 12px}
+.s-row{display:grid;grid-template-columns:52px 1fr;gap:8px;padding:7px 0;border-top:1px solid var(--line);font-size:14px}
+.s-row:first-child{border-top:0}.s-k{color:var(--ink-3)}
+.dmg{display:grid;grid-template-columns:118px 1fr;gap:8px;padding:7px 10px;border-radius:10px;font-size:14px;color:var(--ink-2);margin-bottom:4px;background:var(--fill)}
+.d-k{font-weight:600;color:var(--ink)}
+.dmg.bad{background:var(--bad-soft)}.dmg.bad .d-k{color:var(--bad)}
+.iap-foot{margin-top:14px;font-size:13.5px;color:var(--ink-3)}.iap-foot b{color:var(--ink);font-weight:600}
+@media (max-width:760px){.iap-grid{grid-template-columns:1fr}}
+
+.detail{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--card-shadow);padding:16px 18px}
+.d-head{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+.d-layer{font-size:12px;color:var(--ink-3);background:var(--fill);border-radius:999px;padding:3px 9px}
+.d-head h4{margin:0;font-size:17px;font-weight:700}
+.dia{width:100%;height:auto;background:var(--fill);border-radius:12px;padding:6px;margin:4px 0 10px}
+.dia .w line{stroke:var(--line-strong);stroke-width:1.5}
+.dia .sw rect{fill:var(--ink-2)}.dia .lf rect{fill:var(--cobalt)}.dia .sv rect{fill:var(--surface);stroke:var(--line-strong)}
+.dia .t text{font-size:9px;fill:var(--ink-3);font-family:var(--font)}
+.dia .x line{stroke:var(--bad);stroke-width:2;stroke-dasharray:3 2}.dia .x circle{fill:var(--bad)}.dia .x text{font-size:10px;fill:#fff;font-weight:700;font-family:var(--font)}
+.d-what{margin:0 0 10px;font-size:13.5px;color:var(--ink-2);line-height:1.5}
+.d-kv{display:grid;grid-template-columns:92px 1fr;gap:5px 10px;font-size:13px;color:var(--ink-3)}
+.d-kv b{color:var(--ink);font-weight:600}
+.d-nav{display:flex;justify-content:space-between;margin-top:12px;font-size:13px;color:var(--cobalt)}
+/* size screen */
+.two{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--card-shadow)}
+.panel h4{margin:0 0 14px;font-size:15px;font-weight:600;color:var(--ink-2)}
+.seg{display:flex;background:var(--fill);border-radius:12px;padding:4px;gap:4px;margin-bottom:16px}
+.seg span{flex:1;text-align:center;padding:9px 0;border-radius:9px;font-weight:600;color:var(--ink-3)}
+.seg span.on{background:var(--surface);color:var(--ink);box-shadow:var(--card-shadow)}
+.result{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.result div{background:var(--fill);border-radius:12px;padding:12px 14px}
+.result b{display:block;font-size:20px;font-weight:700}
+.result small{color:var(--ink-3)}
+.row{display:grid;grid-template-columns:1fr auto;align-items:center;padding:12px 0;border-top:1px solid var(--line);gap:12px}
+.row:first-of-type{border-top:0}
+.row .name{font-weight:600}
+.row .name small{display:block;color:var(--ink-3);font-weight:400}
+.field{display:inline-flex;align-items:center;gap:6px;background:var(--fill);border-radius:10px;padding:8px 12px;font-variant-numeric:tabular-nums}
+.field b{font-weight:600}
+.field small{color:var(--ink-3)}
+.done{margin-top:16px;display:flex;gap:10px;align-items:center;background:var(--good-soft);color:var(--good);border-radius:12px;padding:12px 14px;font-weight:600}
+/* builder */
+.stage{position:absolute;inset:0;background:
+  radial-gradient(ellipse at 50% 70%, color-mix(in srgb,var(--surface) 70%,transparent), transparent 70%),var(--paper)}
+.crumb{position:absolute;top:18px;left:22px;display:flex;gap:6px;align-items:center;color:var(--ink-3);font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 14px}
+.crumb b{color:var(--ink);font-weight:600}
+.crumb i{font-style:normal;opacity:.5}
+.help{position:absolute;right:22px;bottom:92px;width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-2);font-weight:700}
+.rack{position:absolute;left:330px;top:70px;width:170px;height:420px;background:linear-gradient(180deg,#2a2f36,#1b1f25);border-radius:8px;box-shadow:0 20px 40px rgb(0 0 0 / 25%);padding:16px 14px}
+.rack .ghost{position:absolute;left:-120px;top:0;width:104px;height:100%;background:#2a2f36;opacity:.18;border-radius:8px}
+.rack .ghost.r{left:auto;right:-120px}
+.u{height:9px;margin:1.5px 0;border-radius:2px;background:#3b424b;border:1px solid #4a525c}
+.u.srv{background:#6d7681;border-color:#8a94a0}
+.u.srv.svc{background:#8fb4ff;border-color:#b7d0ff}
+.u.h2{height:19.5px}
+.u.empty{background:transparent;border:1px dashed #6b7480}
+.u.target{border:1.5px solid var(--cobalt);background:color-mix(in srgb,var(--cobalt) 35%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--cobalt) 30%,transparent)}
+.pop{position:absolute;left:530px;top:120px;width:300px;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:16px}
+.pop::before{content:"";position:absolute;left:-7px;top:26px;width:12px;height:12px;background:var(--surface);border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+.pop h5{margin:0 0 2px;font-size:15px;font-weight:700}
+.pop .where{color:var(--ink-3);font-size:13px;margin-bottom:12px}
+.opt{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;border-radius:12px;background:var(--fill);margin-bottom:8px;font-weight:600}
+.opt small{color:var(--ink-3);font-weight:400}
+.opt.on{background:var(--cobalt-soft);color:var(--cobalt)}
+.pop .btn{width:100%;margin-top:4px}
+.pop2{left:40px;top:120px;width:236px}
+.pop2::before{left:auto;right:-7px;transform:rotate(-135deg)}
+.pop2 .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px;color:var(--ink-2);margin-bottom:12px}
+.pop2 .kv b{color:var(--ink);font-weight:600}
+.pop2 .acts{display:flex;gap:8px}
+.pop2 .acts .btn{width:auto;flex:1;margin:0;padding:11px 0}
+.bbar{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);box-shadow:var(--bar-shadow);padding:12px 22px;display:flex;align-items:center;gap:8px}
+.stepc{padding:9px 14px;border-radius:999px;color:var(--ink-3);font-weight:600;font-size:14px}
+.stepc.on{background:var(--ink);color:var(--surface)}
+.stepc.done{color:var(--ink-2)}
+.bbar .sep{color:var(--line-strong)}
+.bbar .money{color:var(--ink-3);font-size:14px}
+.bbar .money b{color:var(--ink);font-weight:600}
+@media (max-width:760px){.frame{grid-template-columns:1fr}.rail{display:none}.doors,.grid3,.arch,.two,.result{grid-template-columns:1fr}.page{padding:24px 16px 120px}.rack{left:16px}.pop{left:200px;width:240px}.pop2{display:none}}
+</style>
+</head>
+<body>
+
+<p class="note"><b>세계 만들기, 입구를 둘로.</b> 실험이 목적인 사람은 서비스 셋만 고르고 세계는 대신 지어요. 직접 짓는 사람은 3D 안에서 누른 자리에 바로 넣어요. 오른쪽 패널은 없어요. 색·글꼴·모서리는 앱 토큰 그대로예요.</p>
+
+<!-- 1. 입구 -->
+<section class="screen">
+  <p class="caption">1 · 새 세계 — 첫 질문 하나</p>
+  <div class="frame">
+    <div class="rail"><div class="logo"></div><div class="nav"><i></i>홈</div><div class="nav on"><i></i>세계</div><div class="nav"><i></i>시나리오</div><div class="nav"><i></i>실험</div><div class="nav"><i></i>벤치마크</div><div class="nav"><i></i>연결</div></div>
+    <div class="page">
+      <h1>무엇을 하려고 하세요?</h1>
+      <p class="sub">나중에 바꿀 수 있어요.</p>
+      <div class="doors">
+        <div class="door">
+          <div class="pic svc"><i></i><i></i><i></i></div>
+          <div><h2>실험할 인프라가 필요해요</h2><p>멈추면 안 되는 서비스를 고르면, 그걸 떠받치는 데이터센터를 대신 지어요.</p></div>
+          <div class="meta"><b>3분</b>· 질문 셋 · 바로 실험으로</div>
+          <div class="go">서비스 고르기 →</div>
+        </div>
+        <div class="door">
+          <div class="pic diy"><i></i><i></i><i></i><i></i></div>
+          <div><h2>데이터센터를 직접 지어요</h2><p>부지를 사고 건물을 올리고 랙에 서버를 꽂아요. 실제 가격, 실제 크기예요.</p></div>
+          <div class="meta"><b>시간은 마음대로</b>· 부지 → 건물 → 서버룸 → 랙</div>
+          <div class="go">부지 고르기 →</div>
+        </div>
+      </div>
+      <div class="saved">
+        <h3>저장해 둔 세계에서 시작</h3>
+        <div class="chips"><span class="chip">화성 HPC센터 실측<small>랙 10,920</small></span><span class="chip">캠퍼스 표본<small>랙 48</small></span><span class="chip">네트워크 랩<small>랙 6</small></span><span class="chip">내 템플릿<small>2개</small></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. 서비스 고르기 -->
+<section class="screen">
+  <p class="caption">2 · 서비스부터 ① — 무엇을 떠받치나</p>
+  <div class="frame">
+    <div class="rail"><div class="logo"></div><div class="nav"><i></i>홈</div><div class="nav on"><i></i>세계</div><div class="nav"><i></i>시나리오</div><div class="nav"><i></i>실험</div><div class="nav"><i></i>벤치마크</div><div class="nav"><i></i>연결</div></div>
+    <div class="page">
+      <div class="qhead"><h1>무엇을 떠받치는 세계인가요?</h1><span class="step">1 / 3</span></div>
+      <p class="sub">클로즈 베타에는 IAP 하나가 들어 있어요. 다른 서비스는 아래에서 더하면 돼요.</p>
+      <div class="iap">
+        <div class="iap-head"><div><h4>IAP <small>IT Infra Agent Platform</small></h4><p>VM 위에 직접 만든 쿠버네티스 클러스터에서 도메인 에이전트·오케스트레이터·인프라 토폴로지 그래프가 돌아요. 파트원들이 쓰는 플랫폼이에요.</p></div><span class="picked-badge">고름</span></div>
+        <div class="iap-grid">
+          <div class="iap-col"><b>이렇게 생겼어요</b>
+            <div class="stack"><div class="s-row"><span class="s-k">위</span><span>오케스트레이터 · 도메인 에이전트 4 · 토폴로지 그래프 DB · GoClaw 코어</span></div><div class="s-row"><span class="s-k">가운데</span><span>쿠버네티스 — 컨트롤 플레인 VM 3 · 워커 VM 6</span></div><div class="s-row"><span class="s-k">아래</span><span>가상화 호스트 3대 · 공유 스토리지 · 스위치 2</span></div></div></div>
+          <div class="iap-col"><b>멈추면</b>
+            <div class="dmg"><span class="d-k">워커 VM 하나</span><span>파드가 옆으로 옮겨가요 · 잠깐 느림</span></div>
+            <div class="dmg"><span class="d-k">컨트롤 플레인</span><span>새 배포·스케줄이 멈춰요 · 돌던 파드는 돌아가요</span></div>
+            <div class="dmg"><span class="d-k">호스트 하나</span><span>그 위 VM 3대가 같이 멈춰요 → 에이전트 일부 응답 없음</span></div>
+            <div class="dmg bad"><span class="d-k">그래프 DB·스토리지</span><span>오케스트레이터가 답을 못 해요 · 파트 전체 멈춤</span></div></div>
+        </div>
+        <div class="iap-foot">시나리오 <b>14개</b>가 따라와요 · 멈추면 시간당 피해는 3단계에서 적어요</div>
+      </div>
+      <div class="chips" style="margin-top:14px"><span class="chip">+ 서비스 더하기<small>이름 · 무엇을 주나 · 멈추면 어떻게 되나</small></span></div>
+      <div class="bar"><span class="sum"><b>IAP</b> · 시나리오 14개</span><span class="spacer"></span><button class="btn text">이전</button><button class="btn pri">다음</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. 아키텍처 -->
+<section class="screen">
+  <p class="caption">3 · 서비스부터 ② — 층마다 HA 수준 하나씩</p>
+  <div class="frame">
+    <div class="rail"><div class="logo"></div><div class="nav"><i></i>홈</div><div class="nav on"><i></i>세계</div><div class="nav"><i></i>시나리오</div><div class="nav"><i></i>실험</div><div class="nav"><i></i>벤치마크</div><div class="nav"><i></i>연결</div></div>
+    <div class="page">
+      <div class="qhead"><h1>IAP는 어떻게 돌리나요?</h1><span class="step">2 / 3</span></div>
+      <p class="sub">층마다 하나씩 골라요. 왼쪽일수록 싸고 자주 멈추고, 오른쪽일수록 비싸고 잘 안 멈춰요. 누르면 오른쪽에 그림과 설명이 떠요. 모르는 층은 <b>알아서</b>를 누르면 돼요.</p>
+      <div class="domain">운영하는 층 <b>네트워크 · 컴퓨트</b> · 나머지 층은 알아서 골라져 있어요 · <span style="color:var(--cobalt)">바꾸기</span></div>
+      <div class="presets"><span class="pre auto">알아서</span><span class="pre">싸게</span><span class="pre on">보통</span><span class="pre">멈추지 않게</span><span class="pre-hint">누르면 여덟 층이 한꺼번에 바뀌어요 · <span class="soonkey">점선</span>은 아직 흉내 낼 수 없어요</span></div>
+      <div class="layers">
+        <div class="lcol"><div class="layer"><div class="lname">네트워크<small>어떻게 이어지나요</small></div><div class="ladder"><span class="o auto">알아서</span><span class="o">레거시 계층형</span><span class="o">3티어 + 이중화</span><span class="o on">리프-스파인(Clos)</span><span class="o soon">SDN 오버레이</span><span class="o soon">클라우드 네이티브</span><span class="o">AI 패브릭·자율 네트워크</span></div><div class="why">ECMP · 경로 여럿, 스파인 하나는 잃어도 돼요</div></div><div class="layer"><div class="lname">컴퓨트<small>서비스가 무엇 위에서 도나요</small></div><div class="ladder"><span class="o auto">알아서</span><span class="o">베어메탈 한 대</span><span class="o">베어메탈 + 핫 스페어</span><span class="o on">가상화 클러스터(HA)</span><span class="o soon">가상화 + 자동 재배치(DRS)</span><span class="o soon">컨테이너 오케스트레이션</span><span class="o soon">멀티클러스터·서버리스</span></div><div class="why">호스트 죽으면 VM이 다시 떠요 · 몇 분 멈춤</div></div><div class="layer"><div class="lname">스토리지<small>데이터는 어디에</small></div><div class="ladder"><span class="o auto on">알아서</span><span class="o">로컬 디스크</span><span class="o">로컬 RAID + 백업</span><span class="o picked">공유 SAN·NAS(컨트롤러 하나)</span><span class="o soon">듀얼 컨트롤러 + 멀티패스</span><span class="o soon">분산 스토리지(3벌)</span><span class="o soon">지역 복제</span></div><div class="why">알아서 <b>공유 SAN·NAS</b>로 골랐어요 — IAP(VM 위 쿠버네티스)와 다른 층에 맞춰서</div></div><div class="layer"><div class="lname">데이터베이스<small>상태는 어떻게 지키나요</small></div><div class="ladder"><span class="o auto on">알아서</span><span class="o soon">단일 인스턴스 + 백업</span><span class="o soon">액티브-패시브 클러스터</span><span class="o soon">공유 디스크 액티브-액티브</span><span class="o picked soon">프라이머리-세컨더리 복제</span><span class="o soon">자동 페일오버·다중 복제</span><span class="o soon">분산 SQL·합의</span><span class="o soon">클라우드 관리형 멀티 AZ</span></div><div class="why">알아서 <b>프라이머리-세컨더리 복제</b>로 골랐어요 — IAP(VM 위 쿠버네티스)와 다른 층에 맞춰서</div></div><div class="layer"><div class="lname">애플리케이션<small>요청은 어떻게 받나요</small></div><div class="ladder"><span class="o auto on">알아서</span><span class="o">프로세스 하나</span><span class="o picked">LB 뒤 N대(세션 있음)</span><span class="o soon">무상태 N대 + 외부 세션</span><span class="o soon">마이크로서비스 + 서킷 브레이커</span><span class="o soon">서비스 메시 + 자동 스케일</span><span class="o soon">멀티 리전 액티브-액티브</span></div><div class="why">알아서 <b>LB 뒤 N대</b>로 골랐어요 — IAP(VM 위 쿠버네티스)와 다른 층에 맞춰서</div></div><div class="layer"><div class="lname">전원<small>전기는 몇 줄</small></div><div class="ladder"><span class="o auto">알아서</span><span class="o">단일 피드</span><span class="o on">A+B 이중 피드</span><span class="o">2N UPS + 발전기</span><span class="o">2N + 자동 전환 + 연료 48시간</span></div><div class="why">한 줄 꺼져도 돌아요 · UPS 하나</div></div><div class="layer"><div class="lname">냉방<small>더워지면</small></div><div class="ladder"><span class="o auto">알아서</span><span class="o">N</span><span class="o on">N+1</span><span class="o">2N + 컨테인먼트</span><span class="o">액체 냉각 + 자동 절체</span></div><div class="why">하나는 쉬어도 돼요</div></div><div class="layer"><div class="lname">사이트·DR<small>자리는 어디에</small></div><div class="ladder"><span class="o auto on">알아서</span><span class="o picked">서버룸 하나</span><span class="o">서버룸 둘(같은 건물)</span><span class="o">건물 둘(같은 사업장)</span><span class="o soon">DR 사이트(웜)</span><span class="o soon">멀티 사이트 액티브-액티브</span></div><div class="why">알아서 <b>서버룸 하나</b>로 골랐어요 — IAP(VM 위 쿠버네티스)와 다른 층에 맞춰서</div></div></div>
+        <div class="rcol"><div class="detail">
+          <div class="d-head"><span class="d-layer">네트워크</span><h4>리프-스파인 (Clos)</h4></div>
+          <svg viewBox="0 0 280 150" class="dia" role="img" aria-label="스파인 2대 아래 리프 4대, 리프마다 서버가 붙고 리프와 스파인은 전부 이어져 있어요">
+            <g class="w"><line x1="40" y1="38" x2="240" y2="38" opacity="0"/>
+              <line x1="95" y1="34" x2="40" y2="78"/><line x1="95" y1="34" x2="100" y2="78"/><line x1="95" y1="34" x2="160" y2="78"/><line x1="95" y1="34" x2="220" y2="78"/>
+              <line x1="185" y1="34" x2="40" y2="78"/><line x1="185" y1="34" x2="100" y2="78"/><line x1="185" y1="34" x2="160" y2="78"/><line x1="185" y1="34" x2="220" y2="78"/>
+              <line x1="40" y1="90" x2="40" y2="120"/><line x1="100" y1="90" x2="100" y2="120"/><line x1="160" y1="90" x2="160" y2="120"/><line x1="220" y1="90" x2="220" y2="120"/></g>
+            <g class="sw"><rect x="70" y="22" width="50" height="14" rx="4"/><rect x="160" y="22" width="50" height="14" rx="4"/></g>
+            <g class="lf"><rect x="20" y="78" width="40" height="12" rx="3"/><rect x="80" y="78" width="40" height="12" rx="3"/><rect x="140" y="78" width="40" height="12" rx="3"/><rect x="200" y="78" width="40" height="12" rx="3"/></g>
+            <g class="sv"><rect x="26" y="120" width="28" height="18" rx="3"/><rect x="86" y="120" width="28" height="18" rx="3"/><rect x="146" y="120" width="28" height="18" rx="3"/><rect x="206" y="120" width="28" height="18" rx="3"/></g>
+            <g class="t"><text x="140" y="14" text-anchor="middle">스파인 2</text><text x="140" y="72" text-anchor="middle">리프 4 · 랙마다 하나</text><text x="140" y="148" text-anchor="middle">서버</text></g>
+            <g class="x"><line x1="185" y1="34" x2="220" y2="78"/><circle cx="202" cy="56" r="6"/><text x="202" y="59" text-anchor="middle">×</text></g>
+          </svg>
+          <p class="d-what">리프(랙 스위치)와 스파인이 전부 서로 이어져 있어요. 어느 서버에서 어느 서버로 가든 두 홉이고, 길이 여럿이라 트래픽이 나뉘어요(ECMP).</p>
+          <div class="d-kv"><span>잃어도 되는 것</span><b>스파인 하나 · 리프-스파인 링크 하나</b><span>잃으면 안 되는 것</span><b>리프 — 그 랙 서버가 다 끊겨요</b><span>생기는 고장</span><b>링크 끊김 · 스파인 다운 · 리프 다운 · ECMP 불균형</b><span>비용</span><b>스위치 6대 · 리프당 2,400만 원</b></div>
+          <div class="d-nav"><span>← 3티어 + 이중화</span><span>SDN 오버레이 →</span></div>
+        </div>
+        <div class="shape">
+          <h4>이 모양이면</h4>
+          <div class="shape-n"><div><b>3</b><small>호스트</small></div><div><b>9</b><small>VM</small></div><div><b>2</b><small>스위치</small></div><div><b>1.3</b><small>억 원</small></div></div>
+          <div class="shape-list">
+            <div class="sh bad"><b>멈추는 고장</b>SAN 게이트웨이(VM 전부) · 그래프 DB 디스크 · 서버룸 냉방 전체</div>
+            <div class="sh warn"><b>느려지는 고장</b>리프 하나 · 호스트 하나(VM 3대 재기동 3분) · 워커 VM 메모리 누수 · 컨트롤 플레인 1대 · NTP</div>
+            <div class="sh good"><b>살리는 길</b>VM 옮기기 · 파드 재스케줄(알아서) · 그래프 DB 수동 승격 · 다른 경로</div>
+          </div>
+          <p class="shape-foot">시나리오 <b>14개</b>가 이 모양에 맞아요. 3개는 넘겨야 풀려요(네트워크팀 1 · 벤더 2). 아직 흉내 못 내는 층은 시나리오가 안 생겨요.</p>
+        </div></div>
+      </div>
+      <div class="bar"><span class="sum">지금 모양: 가상화 클러스터 위 쿠버네티스 · <b>컨트롤 플레인 3 · 워커 6</b></span><span class="spacer"></span><button class="btn text">이전</button><button class="btn pri">다음</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. 규모·피해 -->
+<section class="screen">
+  <p class="caption">4 · 서비스부터 ③ — 서버 수를 말하면 나머지는 맞춰서</p>
+  <div class="frame">
+    <div class="rail"><div class="logo"></div><div class="nav"><i></i>홈</div><div class="nav on"><i></i>세계</div><div class="nav"><i></i>시나리오</div><div class="nav"><i></i>실험</div><div class="nav"><i></i>벤치마크</div><div class="nav"><i></i>연결</div></div>
+    <div class="page">
+      <div class="qhead"><h1>서버는 몇 대예요?</h1><span class="step">3 / 3</span></div>
+      <p class="sub">IAP가 쓰는 호스트는 3대예요. 나머지는 배경이고, 랙·스위치·PDU·냉방기는 고른 모양에 맞춰 세요. 배경이 클수록 에이전트가 찾을 곳이 많아져요.</p>
+      <div class="two">
+        <div class="panel"><h4>서버</h4>
+          <div class="bigfield"><b>480</b><small>대</small></div>
+          <div class="quick"><span class="chip">48</span><span class="chip">480</span><span class="chip">4,800</span><span class="chip">화성 실측 218,400</span></div>
+          <div class="result"><div><b>24</b><small>랙 · 20대씩</small></div><div><b>1</b><small>서버룸</small></div><div><b>50</b><small>스위치 · 리프 48 + 스파인 2</small></div><div><b>48</b><small>PDU · A+B</small></div><div><b>5</b><small>냉방기 · N+1</small></div><div><b>420</b><small>kW</small></div></div>
+          <p style="margin:14px 0 0;color:var(--ink-3);font-size:13px">토폴로지는 150타일 안에서 접혀요 · 첫 그림까지 1초 안</p>
+        </div>
+        <div class="panel"><h4>멈추면</h4>
+          <div class="row"><div class="name">IAP<small>컨트롤 플레인 멈춤 · 배포만 막힘</small></div><div class="field">시간당 <b>30</b><small>만 원</small></div></div>
+          <div class="row"><div class="name">&nbsp;<small>에이전트 응답 없음 · 파트원 40명</small></div><div class="field">시간당 <b>200</b><small>만 원</small></div></div>
+          <div class="row"><div class="name">&nbsp;<small>그래프 DB 멈춤 · 전부 멈춤</small></div><div class="field">시간당 <b>500</b><small>만 원</small></div></div>
+          <p style="margin:12px 0 0;color:var(--ink-3);font-size:13px">사고 비용 = 멈춘 시간 × 이 값. 결과 화면에 나와요.</p>
+        </div>
+      </div>
+      <div class="done">✓ &nbsp;세계를 다 지었어요 — 서버룸 1 · 랙 24 · 서버 480 · IAP(호스트 3 · VM 9) · 시나리오 14개</div>
+      <div class="bar"><span class="sum">세계 이름 <b>IAP 실험용</b></span><span class="spacer"></span><button class="btn sec">세계 둘러보기</button><button class="btn pri">바로 실험 만들기</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. 직접 짓기 -->
+<section class="screen">
+  <p class="caption">5 · 직접 짓기 — 패널 없이, 누른 자리에서</p>
+  <div class="frame">
+    <div class="rail"><div class="logo"></div><div class="nav"><i></i>홈</div><div class="nav on"><i></i>세계</div><div class="nav"><i></i>시나리오</div><div class="nav"><i></i>실험</div><div class="nav"><i></i>벤치마크</div><div class="nav"><i></i>연결</div></div>
+    <div class="page" style="padding:0">
+      <div class="stage">
+        <div class="crumb"><span>화성 HPC센터</span><i>›</i><span>1F-A 서버룸</span><i>›</i><b>랙 1F-A-0101</b></div>
+        <div class="rack">
+          <div class="ghost"></div><div class="ghost r"></div>
+          <div class="u srv svc h2"></div><div class="u srv svc h2"></div><div class="u srv"></div><div class="u srv"></div><div class="u srv"></div><div class="u srv"></div>
+          <div class="u empty target h2"></div>
+          <div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div><div class="u empty"></div>
+        </div>
+        <div class="pop">
+          <h5>서버 넣기</h5><div class="where">1F-A-0101 · 35U 자리 · 위로 28U 비어 있어요</div>
+          <div class="opt on"><span>GPU 서버 2U<br><small>H100 8장 · 10.2 kW</small></span><span>4,200만 원</span></div>
+          <div class="opt"><span>일반 서버 1U<br><small>CPU 2개 · 0.8 kW</small></span><span>900만 원</span></div>
+          <div class="opt"><span>스토리지 2U<br><small>24 TB · 0.6 kW</small></span><span>1,500만 원</span></div>
+          <button class="btn pri">여기에 넣기</button>
+        </div>
+        <div class="pop pop2">
+          <h5>hs1-1a-0101-01</h5><div class="where">GPU 서버 2U · 41~42U</div>
+          <div class="kv"><span>서비스</span><b>설계 검증 큐</b><span>전원</span><b>PDU-A · 10.2 kW</b><span>스위치</span><b>ToR-0101 · 25G ×2</b></div>
+          <div class="acts"><button class="btn sec">서비스 바꾸기</button><button class="btn sec">빼기</button></div>
+        </div>
+        <div class="help">?</div>
+        <div class="bbar"><span class="stepc done">부지</span><span class="sep">›</span><span class="stepc done">건물</span><span class="sep">›</span><span class="stepc done">서버룸</span><span class="sep">›</span><span class="stepc on">랙</span><span class="spacer"></span><span class="money">이 랙 <b>6대 · 1억 2,000만 원</b> · 서비스 2개</span><button class="btn sec">서버룸으로</button><button class="btn pri">다 지었어요</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<p class="note" style="padding-bottom:40px">왜 이렇게 — 토스의 원칙 그대로예요. <b>한 화면에 질문 하나</b>, <b>버튼이 다음에 일어날 일을 말함</b>("여기에 넣기", "바로 실험 만들기"), <b>숫자는 단위와 함께</b>, 설명 대신 결과(서버룸 1 · 랙 24 · 서버 480)를 보여요. 랙 패널의 U 띠(#22)는 5번 안의 랙 자체가 됐고, "서버 넣기"(#24)는 빈 U를 누르면 바로 뜨는 카드예요. 키보드 힌트(#23)는 오른쪽 아래 "?"예요.</p>
+</body>
+</html>
