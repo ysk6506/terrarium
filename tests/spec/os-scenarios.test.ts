@@ -92,7 +92,7 @@ describe("the right fix on the host pays nearly in full [REQ-087]", () => {
     const run = open(s.scenario, s.blueprint);
     expect(run.call("service_status", { service }).data).toMatchObject({ status: "degraded" });
     expect(sh(run, host, "df -h").data.output).toMatch(/100%/);
-    sh(run, host, "rm /var/log/journal/old.log");
+    sh(run, host, "find /var/log -size +1G | xargs rm");
     run.call("wait", { seconds: 30 });
     expect(run.call("service_status", { service }).data).toMatchObject({ status: "healthy" });
     report(run, host, "disk_full");

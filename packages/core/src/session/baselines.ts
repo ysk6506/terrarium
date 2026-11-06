@@ -14,6 +14,7 @@ import { type Expectation, requiredTools, type ScenarioDoc } from "@terrarium/co
 import { DEFAULT_TOOLSET, TOOL_NAMES } from "@terrarium/core/tools";
 import { type CommonReach, commonReach, type RecoveryPath, recoveryPath } from "./probes";
 import { Session, type SessionConfig } from "./session";
+import { type ShellReach, shellReach } from "./shell-reach";
 import { type ToolPickCheck, toolPickCheck } from "./tool-pick";
 
 export type BaselineId = "idle" | "guess" | "knows";
@@ -40,6 +41,8 @@ export interface Calibration {
   readonly commonReach?: CommonReach;
   /** Which tool a reference agent reaches for in each situation, and which pairs it cannot tell apart (ADR-0087 item 3). */
   readonly toolPick?: ToolPickCheck;
+  /** Whether the common shell commands (journalctl, ps, df, cat) on the host show the cause of an operating-system fault (ADR-0117 item 7). */
+  readonly shellReach?: ShellReach;
 }
 
 /** Without knowing anything, more than this many points means the scenario rewards doing nothing. */
@@ -121,11 +124,13 @@ export function withProbes(calibration: Calibration, config: Config): Calibratio
   const path = recoveryPath(config);
   const reach = commonReach(config);
   const pick = toolPickCheck([...new Set([...DEFAULT_TOOLSET, ...requiredTools(config.scenario)])]);
+  const shell = shellReach(config);
   const warnings = [
     ...calibration.warnings,
     ...pick.warnings,
     ...(path.ok ? [] : [`서비스를 옮겨서 복구하는 길이 없어요. ${path.note}`]),
     ...(reach && !reach.reached ? [NO_COMMON_PATH] : []),
+    ...(shell && !shell.reached ? [NO_COMMON_COMMANDS] : []),
   ];
   return {
     ...calibration,
@@ -133,11 +138,16 @@ export function withProbes(calibration: Calibration, config: Config): Calibratio
     recoveryPath: path,
     toolPick: pick,
     ...(reach ? { commonReach: reach } : {}),
+    ...(shell ? { shellReach: shell } : {}),
   };
 }
 
 /** What a card and a result say about a scenario whose answer the common tools never reach (ADR-0091 item 4). */
 export const NO_COMMON_PATH = "흔한 툴만으로는 원인에 닿을 수 없어요";
+
+/** What a card says about an operating-system fault whose cause the common shell commands never show (ADR-0117 item 7). */
+export const NO_COMMON_COMMANDS =
+  "흔한 명령(journalctl·ps·df·cat)만으로는 호스트 안에서 원인에 닿을 수 없어요";
 
 export const baselineRun = (
   id: BaselineId,

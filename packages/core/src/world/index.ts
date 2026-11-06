@@ -278,9 +278,21 @@ export {
   type OsLine,
   type OsProcess,
   type ProcessState,
+  pidOf,
   processCpuPct,
   processNamed,
 } from "./os";
+export {
+  type Cmd as ShellCmd,
+  changesWorld,
+  type Handler as ShellHandler,
+  instanceOn,
+  OS_EPOCH_MS,
+  type R as ShellCmdResult,
+  registerShellCommand,
+  runLine,
+  type ShellOutcome,
+} from "./os/index";
 export { outletConsumer, outletCount, outletOff } from "./outlets";
 export { type PreparedWorld, prepareWorld } from "./prepared";
 export {

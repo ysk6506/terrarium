@@ -10,11 +10,11 @@ import {
   scoreSop,
   type ToolCallRecord,
 } from "@terrarium/core/scenario";
-import type { Toolbox } from "@terrarium/core/tools";
+import type { Toolbox, ToolResult } from "@terrarium/core/tools";
 import type { FaultType, World, WorldEvent } from "@terrarium/core/world";
 import type { HumanLine } from "./human-line";
 import { HUMAN_CAUSE } from "./human-line";
-import type { RunResult, SessionConfig } from "./types";
+import type { RunResult, SessionConfig, ShellOutside } from "./types";
 
 /** Background faults that no tool the agent has can reach do not happen when faults are limited to the tools given. */
 export function faultSkipper(
@@ -39,18 +39,40 @@ export function operationEndOf(
     : {};
 }
 
-/** What the result shows apart from the score: escalation and runbook compliance. */
+/** The commands the fake shell could not do in a `run_command` call (ADR-0117 decision 6). */
+export function outsideOf(tool: string, result: ToolResult): { outside?: readonly string[] } {
+  if (tool !== "run_command" || !result.ok) return {};
+  const outside = (result.data as { outside?: unknown } | undefined)?.outside;
+  return Array.isArray(outside) && outside.length > 0 ? { outside: outside.map(String) } : {};
+}
+
+/** What the fake shell could not do in a run, counted from the calls (ADR-0117 decision 6); undefined when `run_command` was not used. */
+export function shellOutsideOf(calls: readonly ToolCallRecord[]): ShellOutside | undefined {
+  const shell = calls.filter((c) => c.tool === "run_command");
+  if (shell.length === 0) return undefined;
+  const counts = new Map<string, number>();
+  for (const what of shell.flatMap((c) => c.outside ?? []))
+    counts.set(what, (counts.get(what) ?? 0) + 1);
+  const items = [...counts]
+    .map(([what, n]) => ({ what, n }))
+    .sort((a, b) => b.n - a.n || a.what.localeCompare(b.what));
+  return { commands: shell.length, count: items.reduce((s, i) => s + i.n, 0), items };
+}
+
+/** What the result shows apart from the score: escalation, runbook compliance and where the fake shell was thin. */
 export function extrasOf(
   scenario: ScenarioDoc,
   sop: SessionConfig["sop"],
   toolbox: Toolbox,
   line: HumanLine,
   calls: readonly ToolCallRecord[],
-): Pick<RunResult, "human" | "sop"> {
+): Pick<RunResult, "human" | "sop" | "shellOutside"> {
   const runbook = scenario.runbook;
+  const outside = shellOutsideOf(calls);
   return {
     ...(toolbox.has("ask_human") ? { human: line.desk.summary() } : {}),
     ...(runbook ? { sop: { ...scoreSop(runbook, calls), mode: sop ?? "none" } } : {}),
+    ...(outside ? { shellOutside: outside } : {}),
   };
 }
 

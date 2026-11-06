@@ -116,7 +116,7 @@ describe("the fake shell prints what the state says, in the shape of Linux [REQ-
     inject("disk_full", "srv-a2");
     physics.run(MINUTE);
     expect(sh("srv-a2", "df -h")).toContain("100%");
-    expect(sh("srv-a2", "rm -f /etc/passwd")).toContain("아직 못 해요");
+    expect(sh("srv-a2", "rm -f /etc/passwd")).toContain("Operation not permitted");
     sh("srv-a2", "rm -f /var/log/licd/*.log");
     physics.run(MINUTE);
     expect(world.stateAs("srv-a2", "server").os?.diskPct).toBeLessThan(70);
@@ -157,8 +157,8 @@ describe("the fake shell prints what the state says, in the shape of Linux [REQ-
   test("a command outside the list is an answer, not an error; a host that is down cannot be logged in to", () => {
     const { call, sh, world, physics } = setup();
     const out = call("run_command", { host: "srv-a1", cmd: "vim /etc/hosts" });
-    expect(out).toMatchObject({ exitCode: 127 });
-    expect(out.output).toContain("되는 명령:");
+    expect(out).toMatchObject({ exitCode: 127, outside: ["vim"] });
+    expect(out.output).toBe("bash: vim: command not found");
     expect(sh("srv-a1", "ps aux | grep sshd")).toContain("sshd");
     world.apply({ type: "power.set", target: "srv-a1", on: false }, "scenario");
     physics.run(MINUTE);

@@ -99,7 +99,15 @@ const restartService: Handler = (ctx, args) => {
 const runCommand: Handler = (ctx, args) => {
   const host = str(args, "host");
   const result = runShell(ctx.world, host, str(args, "cmd"));
-  return { host, cmd: args.cmd, exitCode: result.exitCode, output: result.output };
+  return {
+    host,
+    cmd: args.cmd,
+    exitCode: result.exitCode,
+    output: result.output,
+    stdout: result.stdout,
+    stderr: result.stderr,
+    outside: result.outside,
+  };
 };
 
 export const SERVICE_HANDLERS: Readonly<Record<string, Handler>> = {

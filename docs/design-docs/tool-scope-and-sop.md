@@ -12,13 +12,13 @@ covers:
   - packages/core/src/session/human-line.ts
   - packages/core/src/session/tool-pick.ts
   - apps/server/src/runtime/escalations.ts
-covers_hash: 7512523b374e9df2
+covers_hash: f400de76f3edf7b2
 verification_log:
-  - "2026-11-06: 2a·2b 합치기"
   - "2026-11-06: 툴 40개와 고장 44가지의 필요한 툴 표를 catalog와 FAULT_TOOLS에 맞췄다 (REQ-095)"
   - "2026-11-06: 저장해 두기가 서버 보관으로 바뀐 것(툴 묶음·절차서·지시문)을 적고 정직한 한계를 고쳤다 (ADR-0112)"
   - "2026-11-06: 2c 보완 합치기"
   - "2026-11-06: 툴 49개, 고장 51가지와 실수 7가지의 표를 catalog와 FAULT_TOOLS에 맞췄다 (REQ-097)"
+  - "2026-11-06: run_command의 툴 설명(tools/docs.ts)이 깊은 OS 흉내로 바뀐 것을 확인했다. 표의 필요한 툴은 그대로다 (REQ-098)"
 ---
 # 툴 범위, 에스컬레이션, 절차서 (REQ-080~082, ADR-0087, ADR-0105)
 

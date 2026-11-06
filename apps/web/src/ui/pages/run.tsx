@@ -20,7 +20,7 @@ import { Failure, Figures, Loading, Note, PageHead, Section, Status, Tabs } from
 import { SeriesGrid, Timeline } from "../results";
 import { RunReplay } from "../topology/RunReplay";
 import { EscalationCards } from "./escalation";
-import { HumanBlock, SopBlock } from "./run-blocks";
+import { HumanBlock, OutsideBlock, SopBlock } from "./run-blocks";
 import { HandoffSection } from "./run-handoffs";
 import { OperationResult } from "./run-operation";
 import { CallsTable, DiagnosisCompare, ScoreSheet, TelemetryPanel } from "./run-parts";
@@ -245,6 +245,7 @@ export function RunPage({ id }: { readonly id: string }) {
           )}
           <HumanBlock result={view.run.result} />
           <SopBlock result={view.run.result} />
+          <OutsideBlock result={view.run.result} />
           {commonPathNote(view.commonReach) && (
             <Note tone="warn">{commonPathNote(view.commonReach)}</Note>
           )}

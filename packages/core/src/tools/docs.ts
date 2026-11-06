@@ -379,14 +379,15 @@ const BASE_DOCS: Readonly<Record<string, ToolDoc>> = {
   run_command: d({
     area: "server",
     realism: "common",
-    summary: "Run one shell command on a server or VM, as a person logged in over SSH.",
-    use: "you need the inside of a host: disk, memory, processes, logs, clock, name lookup; or to clean up, restart a unit, remount, reboot.",
+    summary:
+      "Run one shell command line on a server or VM, as a person logged in over SSH, in a small fake Linux.",
+    use: "you need the inside of a host: logs, processes, disk, memory, files, clock, name lookup; or to clean up, restart a unit, remount, reboot.",
     notUse: "you want a switch (use network_cli) or hardware sensors (use redfish_request).",
-    example: '{"host":"srv-a2","cmd":"df -h"}',
+    example: '{"host":"srv-a2","cmd":"journalctl -u api -n 50 | grep -i error"}',
     cost: "medium",
-    costWhy: "output can be long; pipe to grep or tail",
+    costWhy: "output can be long; pipe to grep, tail or awk",
     details:
-      "This is not a real shell: the output is made from the host's state in the shape of real Linux output. Allowed: df -h, free -m, top -bn1, ps aux, systemctl status|restart <unit>, journalctl -n <N> [-u <unit>] [-p err], dmesg, ping <host>, curl -I <url>, date, uptime, mount, chronyc tracking, rm <path under /var/log or /tmp>, logrotate -f /etc/logrotate.conf, reboot, mount -o remount,rw /, and on a database host pg_isready, psql -c 'select pg_is_in_recovery()' and psql -c 'select now() - pg_last_xact_replay_timestamp()', and multipath -ll. One pipe stage: | grep [-i|-v|-c] <text>, | tail [-n N], | head [-n N]. A command outside the list is answered with the list. rm, logrotate, systemctl restart, reboot and remount change the world (systemctl restart postgresql restarts the database instance of the host).",
+      "The host has a fake file system (/proc, /var/log, /etc, /tmp, /var/lib), a process table, systemd units and a journal, all made from the host's state and the world time; nothing really runs. The shell reads pipes (a | b | c), && || ;, > >> < 2> 2>&1, quotes and globs; there are no variables ($X), no $(...), no loops. Commands: cat ls du df free top ps ss netstat ip ping curl dig nslookup date uptime hostname mount lsblk lsof stat tail head grep egrep awk sed sort uniq wc cut tr xargs find which echo env kill pkill nice chronyc timedatectl openssl x509 systemctl journalctl dmesg logrotate rm truncate touch cp mv tee reboot, and on a database host pg_isready, psql -c and multipath -ll. grep, awk and sed do what they say. An unknown command answers 'bash: xyz: command not found' (exit 127); a feature the fake lacks (tail -f, a variable) is refused, and the result lists it in `outside` so the run can say how often the fake was out of its depth. Writes (rm, truncate, kill, systemctl start|stop|restart|enable|disable, logrotate, mount -o remount,rw, reboot, > file, sed -i) change the world and are recorded as actions. The result has stdout, stderr, exitCode and output (stdout then stderr).",
   }),
   ask_human: d({
     area: "act",

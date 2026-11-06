@@ -94,6 +94,16 @@ export interface CallResult extends ToolResult {
   readonly waiting?: HumanRequest;
 }
 
+/** Where the fake shell was thin during a run (ADR-0117 decision 6): what `run_command` was asked that it could not do. */
+export interface ShellOutside {
+  /** How many `run_command` calls the agent made. */
+  readonly commands: number;
+  /** How many times a command or a feature was outside the simulation. */
+  readonly count: number;
+  /** What it was, most frequent first. */
+  readonly items: ReadonlyArray<{ readonly what: string; readonly n: number }>;
+}
+
 export interface RunResult {
   readonly score: Score;
   readonly endReason: EndReason;
@@ -123,6 +133,8 @@ export interface RunResult {
   readonly human?: HumanSummary;
   /** How closely the agent followed the scenario's runbook, apart from the score (ADR-0087 item 6). */
   readonly sop?: SopResult;
+  /** "흉내 밖 명령": what the fake shell could not do (ADR-0117 decision 6); only when the agent used `run_command`. */
+  readonly shellOutside?: ShellOutside;
   /** What an operation run measured and how it was set up (ADR-0094); only for an operation run. */
   readonly operation?: OperationReport;
 }

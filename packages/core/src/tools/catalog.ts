@@ -383,7 +383,9 @@ const RAW_SPECS: readonly RawSpec[] = [
     inputSchema: obj(
       {
         host: str("Server or VM id"),
-        cmd: str("The command line, e.g. df -h or systemctl status licd"),
+        cmd: str(
+          "The command line, pipes allowed, e.g. df -h or journalctl -u licd -n 50 | grep -i error",
+        ),
       },
       ["host", "cmd"],
     ),

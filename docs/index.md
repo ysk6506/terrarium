@@ -173,6 +173,7 @@ verification_log:
 - [0112 서버가 멈춰도 운영은 이어 가고, 저장해 둔 것은 서버에 두고, 서비스마다 모양을 고르고, 운영의 끝은 운영의 말로 쓴다](design-docs/adr/0112-operation-resume-and-presets-amend-tests.md)
 - [0110 운영 모드를 구현하면서 ADR-0094의 강제 장치를 시험으로 잇는다](design-docs/adr/0110-operation-mode-amend-tests.md)
 - [0117 흉내 OS를 깊게 — 작은 리눅스 흉내가 run_command에 답한다 (0116 대체)](design-docs/adr/0117-deep-os-simulation.md)
+- [0118 깊은 OS 흉내를 구현하면서 시험 다섯 곳의 기대값을 고치고 시험을 더한다](design-docs/adr/0118-deep-os-tests.md)
 - [0116 진짜 호스트 섞기 (폐기, 0117로 대체)](design-docs/adr/0116-real-hosts-in-the-world.md)
 - [0108 서비스부터는 IAP 하나로 시작하고, 사다리의 칩마다 그림·설명 카드가 있다 (0107 보정)](design-docs/adr/0108-world-entry-iap-and-chip-cards.md)
 - [0107 세계 만들기 입구를 둘로 가르고, 서비스부터는 층마다 HA 사다리에서 고른다 — 모르는 층은 알아서](design-docs/adr/0107-world-entry-two-doors-ha-ladders.md)

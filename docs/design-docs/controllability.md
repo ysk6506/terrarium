@@ -8,12 +8,12 @@ covers:
   - packages/core/src/facades/bacnet-points.ts
   - packages/core/src/world/command-check.ts
 verification_log:
-  - "2026-11-06: 기본으로 받는 툴 절을 catalog.ts의 DEFAULT_TOOLSET(run_command 포함)과 대조해 더했다 (REQ-088)"
   - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: controls.ts의 새 줄 다섯과 고장 여덟의 응답, 드라이브 서른두 개를 대조해 고쳤다 (REQ-095)"
   - "2026-11-06: CONTROL_ROWS의 새 줄 여섯과 FAULT_RESPONSES의 새 일곱을 표에 더했다 (REQ-097)"
-covers_hash: a30fd9c7e9109dfc
+  - "2026-11-06: 호스트 조치 두 줄의 명령 예를 깊은 OS 흉내(ADR-0117)에 맞췄다: 지우기는 du·find로 찾은 큰 로그, 다시 시작에 stop·start·kill 추가"
+covers_hash: 5ff2607e1b9c2f0c
 ---
 # 제어 가능 요소표 (REQ-069, ADR-0066)
 
@@ -40,8 +40,8 @@ covers_hash: a30fd9c7e9109dfc
 | 차단기 리셋 | PDU, 분전반 | 고장 발생(차단기 트립) | 차단기 리셋, Redfish 요청 | 차단기 리셋 |
 | PDU 콘센트 | PDU | PDU 콘센트 끄기/켜기 | Redfish 요청 | 콘센트 끄기, 콘센트 켜기 |
 | 서버 펌웨어(BMC·BIOS) 올리기 | 서버 | 없음 — 시나리오는 올리기를 시키지 않고, 실패만 고장 발생 블록(펌웨어 올리기 실패)으로 만든다. | Redfish 요청(UpdateService의 SimpleUpdate) | 펌웨어 올리기 |
-| 호스트의 프로세스·서비스 다시 시작 (REQ-087) | 서버, VM | 없음 — 운영자의 조치로만 일어난다. 고장은 고장 발생 블록으로 만든다. | 호스트에서 명령 실행(`systemctl restart`), 서비스 다시 시작 | 프로세스 다시 시작, 서비스 다시 시작 |
-| 호스트 디스크 비우기 (REQ-087) | 서버, VM | 없음 | 호스트에서 명령 실행(`rm /var/log/…`, `logrotate -f`) | 디스크 비우기 |
+| 호스트의 프로세스·서비스 다시 시작 (REQ-087) | 서버, VM | 없음 — 운영자의 조치로만 일어난다. 고장은 고장 발생 블록으로 만든다. | 호스트에서 명령 실행(`systemctl restart`·`stop`·`start`, `kill -9`), 서비스 다시 시작 | 프로세스 다시 시작, 서비스 다시 시작 |
+| 호스트 디스크 비우기 (REQ-087) | 서버, VM | 없음 | 호스트에서 명령 실행(`du`·`find`로 큰 로그를 찾아 `rm`, `logrotate -f`) | 디스크 비우기 |
 | 파일시스템 다시 마운트 (REQ-087) | 서버, VM | 없음 | 호스트에서 명령 실행(`mount -o remount,rw /`) | 파일시스템 다시 마운트 |
 | 호스트 재부팅 (REQ-087) | 서버, VM | 없음 | 호스트에서 명령 실행(`reboot`) | 재시작 |
 | 데이터베이스 인스턴스 다시 시작 (REQ-095) | 서버, VM | 없음 — 고장은 고장 발생 블록(세컨더리 다운, 복제 끊김)으로 만든다. | 호스트에서 명령 실행(`systemctl restart postgresql`) | 프로세스 다시 시작 |

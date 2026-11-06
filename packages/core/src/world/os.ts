@@ -56,6 +56,12 @@ export interface HostOs {
   log: OsLine[];
   /** While down: the world time the system is up again. */
   downUntil?: number;
+  /** Files an operator wrote with `>`, `>>` or `tee` (ADR-0117): path to content. */
+  files?: Record<string, { t: number; text: string }>;
+  /** Paths an operator removed. */
+  removed?: string[];
+  /** Units an operator disabled (`systemctl disable`). */
+  disabled?: string[];
 }
 
 export const LOG_KEEP = 60;
@@ -178,6 +184,9 @@ export function logTo(os: HostOs, entry: OsLine): void {
   os.log.push(entry);
   if (os.log.length > LOG_KEEP) os.log.splice(0, os.log.length - LOG_KEEP);
 }
+
+/** The PID a process has now: it changes with every restart (ADR-0117 decision 2). */
+export const pidOf = (p: OsProcess): number => p.pid + p.restarts * 1009;
 
 export const processNamed = (os: HostOs, name: string): OsProcess | undefined =>
   os.processes.find((p) => p.name === name);

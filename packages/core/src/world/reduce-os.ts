@@ -27,6 +27,7 @@ export interface OsWorld extends WorldReader {
 
 function hostContext(world: OsWorld, id: string): HostActContext {
   return {
+    id,
     t: world.time(),
     os: world.ensureHostOs(id),
     faults: world.faultsOn(id),
@@ -83,7 +84,7 @@ export function reduceHostAndService(world: OsWorld, command: WorldCommand): voi
   };
   switch (command.type) {
     case "host.act":
-      actOnHost(hostContext(world, command.target), command.action, command.arg);
+      actOnHost(hostContext(world, command.target), command.action, command.arg, command.data);
       afterRestart(world, command);
       return;
     case "db.promote":

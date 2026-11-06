@@ -44,7 +44,7 @@ const shell = (run: Run, host: string, cmd: string) => run.call("run_command", {
 function fixOnHost(run: Run, a: About): void {
   switch (a.id) {
     case "os-disk-full":
-      shell(run, a.host, "rm /var/log/journal/old.log");
+      shell(run, a.host, "rm -f /var/log/*/*.log");
       return;
     case "os-fs-readonly":
       shell(run, a.host, "mount -o remount,rw /");
