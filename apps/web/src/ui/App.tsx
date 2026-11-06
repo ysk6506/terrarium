@@ -43,6 +43,9 @@ const ScenarioEditorPage = lazy(() => import("./scenario/ScenarioEditorPage"));
 const AgentVersionsPage = lazy(() =>
   import("./pages/agent-versions").then((m) => ({ default: m.AgentVersionsPage })),
 );
+const OperationGuidePage = lazy(() =>
+  import("./pages/operation-guide").then((m) => ({ default: m.OperationGuidePage })),
+);
 const BenchmarksPage = lazy(() =>
   import("./pages/benchmarks").then((m) => ({ default: m.BenchmarksPage })),
 );
@@ -104,7 +107,15 @@ function pageView(page: Page): ReactNode {
 function otherView(
   page: Extract<
     Page,
-    { name: "benchmarks" | "connections" | "agentVersions" | "settings" | "notFound" }
+    {
+      name:
+        | "benchmarks"
+        | "connections"
+        | "agentVersions"
+        | "operationGuide"
+        | "settings"
+        | "notFound";
+    }
   >,
 ): ReactNode {
   switch (page.name) {
@@ -114,6 +125,8 @@ function otherView(
       return <ConnectionsPage />;
     case "agentVersions":
       return <AgentVersionsPage connectionId={page.connectionId} agentId={page.agentId} />;
+    case "operationGuide":
+      return <OperationGuidePage />;
     case "settings":
       return <SettingsPage />;
     case "notFound":

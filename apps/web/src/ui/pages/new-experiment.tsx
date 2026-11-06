@@ -5,7 +5,7 @@
 import type { ExperimentView } from "@terrarium/core/contract";
 import type { ScenarioRecord, WorldSummary } from "@terrarium/core/experiments";
 import { useCallback, useEffect, useState } from "react";
-import { experiment, metaProblems } from "../../logic";
+import { experiment, metaProblems, operationWords } from "../../logic";
 import { Go, messageOf, useApp, useAsync } from "../context";
 import { Button, Failure, Loading, Note, PageHead } from "../kit";
 import { HowStep, NameStep, WhatStep, WhoStep } from "./experiment-steps";
@@ -79,7 +79,12 @@ function RunLine({ draft }: { readonly draft: Draft }) {
   return (
     <p className="small">
       {draft.runs}회 실행. 툴 {experiment.countTools(draft)}개
-      {draft.time.kind === "lockstep" ? ", 결과가 재현돼요" : ", 실제 시간"}.
+      {draft.operation
+        ? `, ${operationWords.paceNote(draft.operation)}`
+        : draft.time.kind === "lockstep"
+          ? ", 결과가 재현돼요"
+          : ", 실제 시간"}
+      .
     </p>
   );
 }

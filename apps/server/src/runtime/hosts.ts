@@ -55,6 +55,7 @@ export interface SessionHost {
 }
 
 const REALTIME_TICK_MS = 1000;
+const HOLD_POLL_MS = 250;
 
 /**
  * One session driven on this thread. Realtime sessions are synced to the wall clock on a timer;
@@ -70,6 +71,8 @@ export class LocalSession implements HostedSession {
   constructor(
     private readonly session: Session,
     private readonly onEnd?: (reason: EndReason) => void,
+    /** Told what the session wrote on its own between calls (the worker sends it on). */
+    private readonly onEvents?: (events: readonly RunEvent[]) => void,
   ) {
     this.task = session.start();
     this.timer =
@@ -96,6 +99,8 @@ export class LocalSession implements HostedSession {
   /** Catch simulated time up with the wall clock (realtime policy). */
   sync(): void {
     this.markEnded(this.session.sync((wallClockMs() - this.startedWall) / 1000));
+    const fresh = this.onEvents ? this.takeEvents() : [];
+    if (fresh.length > 0) this.onEvents?.(fresh);
   }
 
   eventsSince(count: number): readonly RunEvent[] {
@@ -109,8 +114,24 @@ export class LocalSession implements HostedSession {
     return fresh;
   }
 
+  /** An operation's `wait`: real time passes (at the clock driver's pace) until the world has moved that far. */
+  private async hold(seconds: unknown): Promise<void> {
+    const wanted = typeof seconds === "number" && seconds > 0 ? seconds : 0;
+    const until = Math.min(
+      this.session.worldTime + wanted,
+      this.session.worldTime + this.session.remaining(),
+    );
+    while (
+      this.session.status === "running" &&
+      this.session.worldTime < until &&
+      this.ended === undefined
+    )
+      await new Promise((resolve) => setTimeout(resolve, HOLD_POLL_MS));
+  }
+
   async call(tool: string, args: Record<string, unknown>): Promise<CallResult> {
     if (this.timer) this.sync();
+    if (tool === "wait" && this.session.operating) await this.hold(args.seconds);
     const result = this.session.call(tool, args);
     this.markEnded(result.ended);
     return result;

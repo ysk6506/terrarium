@@ -117,6 +117,7 @@ export {
   MAX_LIVE_CALLS,
   parseEvent,
 } from "./live";
+export * as miniMarkdown from "./mini-markdown";
 export {
   NARROW_ABOVE,
   NARROW_LIMIT,
@@ -135,6 +136,7 @@ export {
   type TourStep,
   tourLabel,
 } from "./next-step";
+export * as operationWords from "./operation";
 export * as presets from "./presets";
 export {
   commonPathNote,

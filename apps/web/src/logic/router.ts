@@ -30,6 +30,7 @@ export type Page =
   | { readonly name: "benchmarks"; readonly set?: string }
   | { readonly name: "connections" }
   | { readonly name: "settings" }
+  | { readonly name: "operationGuide" }
   | { readonly name: "agentVersions"; readonly connectionId: string; readonly agentId: string }
   | { readonly name: "notFound"; readonly path: string };
 
@@ -61,7 +62,7 @@ export const SECTIONS: ReadonlyArray<{
     key: "connections",
     label: "연결",
     page: { name: "connections" },
-    owns: ["connections", "agentVersions"],
+    owns: ["connections", "agentVersions", "operationGuide"],
   },
 ];
 
@@ -121,6 +122,7 @@ const PATTERNS: ReadonlyArray<[RegExp, (m: RegExpExecArray, q: URLSearchParams) 
   ],
   [/^\/connections\/?$/, () => ({ name: "connections" })],
   [/^\/settings\/?$/, () => ({ name: "settings" })],
+  [/^\/guides\/operation\/?$/, () => ({ name: "operationGuide" })],
   [
     new RegExp(`^/connections/${ID}/agents/${ID}/versions$`),
     (m) => ({
@@ -169,6 +171,7 @@ const HREFS: { readonly [N in PageName]: (page: Of<N>) => string } = {
   benchmarks: (p) => withQuery("/benchmarks", { set: p.set }),
   connections: () => "/connections",
   settings: () => "/settings",
+  operationGuide: () => "/guides/operation",
   agentVersions: (p) => `/connections/${enc(p.connectionId)}/agents/${enc(p.agentId)}/versions`,
   notFound: (p) => p.path,
 };

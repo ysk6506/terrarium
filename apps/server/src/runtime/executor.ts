@@ -15,23 +15,38 @@
 import type { ActivityEvent, ActivityWho, ExperimentEvent } from "@terrarium/core/contract";
 import {
   type AgentRunOutcome,
+  type AgentRunRequest,
   applyRunEvent,
   type Experiment,
   type ExperimentStore,
   type HarnessPort,
   type HarnessRunInfo,
+  OPERATION_SCENARIO_ID,
   type RunRecord,
   type ToolCallOutcome,
   type ToolEndpoint,
 } from "@terrarium/core/experiments";
 import { randomToken } from "@terrarium/core/kernel";
 import type { EndReason } from "@terrarium/core/oracle";
-import { type CallResult, DEFAULT_AUTO_REPLY, stampReal } from "@terrarium/core/session";
+import {
+  type CallResult,
+  DEFAULT_AUTO_REPLY,
+  operationScenario,
+  stampReal,
+} from "@terrarium/core/session";
 import { callEffect, callTargets } from "@terrarium/core/tools";
 import type { BlueprintCache } from "./blueprint-cache";
 import type { HarnessDirectory } from "./context";
 import type { Escalations } from "./escalations";
 import type { RunLogs } from "./events";
+import {
+  type LinkDraft,
+  operationOf,
+  pump,
+  runAgent,
+  type Waiter,
+  withLinks,
+} from "./executor-operation";
 import type { HostedSession, SessionHost } from "./hosts";
 import type { Stamps } from "./ids";
 
@@ -74,6 +89,7 @@ export type StopReason = "cancelled" | "shutdown";
 const DEFAULT_WALL_LIMIT_MS = 30 * 60_000;
 const DEFAULT_GRACE_MS = 15_000;
 const WATCH_MS = 200;
+const OPERATION_SLACK_MS = 10 * 60_000;
 
 export function summaryOf(run: RunRecord) {
   return {
@@ -105,7 +121,10 @@ async function versions(deps: ExecutorDeps, e: Experiment) {
   const read = () => deps.store.worldVersion(worldId, digest);
   const key = `${worldId}@${digest}`;
   const blueprint = await (deps.blueprints ? deps.blueprints.get(key, read) : read());
-  const scenario = await deps.store.scenarioVersion(e.recipe.scenarioId, e.snapshot.scenarioDigest);
+  const { operation } = e.recipe;
+  const scenario = operation
+    ? operationScenario(OPERATION_SCENARIO_ID, worldId, operation)
+    : await deps.store.scenarioVersion(e.recipe.scenarioId, e.snapshot.scenarioDigest);
   if (!blueprint) throw new Error("실험이 가리키는 세계 버전을 찾을 수 없어요");
   if (!scenario) throw new Error("실험이 가리키는 시나리오 버전을 찾을 수 없어요");
   return { blueprint, scenario, world: { key, digest } };
@@ -128,6 +147,7 @@ function watch(
   session: HostedSession,
   outside: AbortSignal,
   pace: Pace,
+  limitMs: number,
 ): Watch {
   const controller = new AbortController();
   let timedOut = false;
@@ -138,8 +158,7 @@ function watch(
   const timer = setInterval(() => {
     const now = Date.now();
     if (session.endedBy !== undefined) endedAt ??= now;
-    if (now - started - pace.pausedMs > (deps.wallLimitMs ?? DEFAULT_WALL_LIMIT_MS))
-      timedOut = true;
+    if (now - started - pace.pausedMs > limitMs) timedOut = true;
     if (timedOut || (endedAt !== undefined && now - endedAt > (deps.graceMs ?? DEFAULT_GRACE_MS)))
       controller.abort();
   }, WATCH_MS);
@@ -198,6 +217,7 @@ async function openSession(
       ...(experiment.recipe.sop ? { sop: experiment.recipe.sop } : {}),
       ...(experiment.recipe.domains ? { domains: experiment.recipe.domains } : {}),
       ...(experiment.recipe.leadTimes ? { leadTimes: experiment.recipe.leadTimes } : {}),
+      ...(experiment.recipe.operation ? { operation: experiment.recipe.operation } : {}),
     });
   } catch (err) {
     return `세션을 열 수 없어요: ${(err as Error).message}`;
@@ -228,14 +248,6 @@ export async function whoIs(experiment: Experiment, harness: HarnessPort): Promi
     agent: agent?.name ?? agentId,
     ...(agent?.model ? { model: agent.model } : {}),
   };
-}
-
-/** Where a run stands, for the parts that park its calls; `signal` is read when needed, the watch is made later. */
-interface Waiter {
-  readonly run: RunRecord;
-  readonly experiment: Experiment;
-  readonly session: HostedSession;
-  readonly signal: () => AbortSignal;
 }
 
 /** A call that asked a person: the run waits here until they answer (or the setup answers for them). */
@@ -277,23 +289,7 @@ function endpointFor(deps: ExecutorDeps, at: Waiter, pace: Pace) {
     call: async (name: string, args: Record<string, unknown>): Promise<ToolCallOutcome> => {
       const r = await awaitPerson(deps, await session.call(name, args), at, pace);
       counter.calls++;
-      const fresh = session.eventsSince?.(deps.logs?.count(run.id) ?? 0) ?? [];
-      deps.logs?.record(run.id, fresh, { t: r.t, tool: name, real: deps.stamps.now() });
-      for (const event of fresh) {
-        if (event.kind !== "counterpart" || event.what === "handed") continue;
-        deps.activity?.(worldId, {
-          type: "partner",
-          runId: run.id,
-          t: event.t,
-          handoff: event.handoff,
-          device: event.fault.target,
-          what: event.what,
-          team: event.team,
-          who: event.fault.who,
-          replacing: event.fault.kind === "replace",
-          onSite: event.fault.onSite,
-        });
-      }
+      pump(deps, at, { t: r.t, tool: name, real: deps.stamps.now() });
       const effect = callEffect(name, args);
       const targets = callTargets(name, args);
       deps.emit(run.experimentId, {
@@ -324,6 +320,7 @@ function endpointFor(deps: ExecutorDeps, at: Waiter, pace: Pace) {
 }
 
 interface Ending {
+  readonly links: readonly LinkDraft[];
   readonly run: RunRecord;
   readonly session: HostedSession;
   readonly outcome: AgentRunOutcome;
@@ -350,7 +347,10 @@ async function conclude(deps: ExecutorDeps, e: Ending): Promise<RunRecord> {
   const finished = await e.session.finish(endReasonOf(e.session, e.outcome, e.timedOut));
   const calls = deps.logs?.callsOf(e.run.id) ?? [];
   const result = finished.events
-    ? { ...finished, events: stampReal(finished.events, calls, e.run.startedAt) }
+    ? {
+        ...finished,
+        events: withLinks(stampReal(finished.events, calls, e.run.startedAt), e.links),
+      }
     : finished;
   e.session.dispose();
   return save(deps, applyRunEvent(e.run, { type: "complete", at, result, harness: e.info }));
@@ -377,11 +377,9 @@ export async function executeRun(
   deps.activity?.(worldId, { type: "start", runId: run.id, who: await who });
   const pace: Pace = { pausedMs: 0 };
   let w: Watch | undefined;
-  const { endpoint, counter } = endpointFor(
-    deps,
-    { run, experiment, session, signal: () => (w as Watch).controller.signal },
-    pace,
-  );
+  const at: Waiter = { run, experiment, session, signal: () => (w as Watch).controller.signal };
+  const { endpoint, counter } = endpointFor(deps, at, pace);
+  const operation = operationOf(deps, at, harness);
   const exposed =
     harness.info.toolTransport === "mcp"
       ? deps.gateway?.open(run.id, endpoint, harness.info.mcpSlot)
@@ -391,30 +389,34 @@ export async function executeRun(
     .telemetryOf?.(experiment.recipe.harnessId)
     ?.attach({ runId: run.id });
   const traceparent = attachment?.traceparent ?? newTraceparent();
-  const watched = watch(deps, session, outside, pace);
+  // an operation lasts its hours in real time at worst (an alarm slows a fast-forward run to real speed)
+  const limitMs = experiment.recipe.operation
+    ? experiment.recipe.operation.hours * 3_600_000 + OPERATION_SLACK_MS
+    : (deps.wallLimitMs ?? DEFAULT_WALL_LIMIT_MS);
+  const watched = watch(deps, session, outside, pace, limitMs);
   w = watched;
+  const links: LinkDraft[] = [];
   try {
-    const outcome = await harness
-      .run({
-        runId: run.id,
-        seed: run.seed,
-        agentId: experiment.recipe.agentId,
-        prompt: session.task.prompt,
-        limits: {
-          maxToolCalls: session.task.maxToolCalls,
-          timeLimitSeconds: session.task.timeLimitSeconds,
-        },
-        tools: { ...endpoint, ...(exposed ? { mcpUrl: exposed.url } : {}) },
-        signal: w.controller.signal,
-        traceparent,
-        ...(attachment ? { telemetry: attachment } : {}),
-      })
-      .catch(
-        (err: unknown): AgentRunOutcome => ({ status: "error", message: (err as Error).message }),
-      );
+    const request: AgentRunRequest = {
+      runId: run.id,
+      seed: run.seed,
+      agentId: experiment.recipe.agentId,
+      prompt: session.task.prompt,
+      limits: {
+        maxToolCalls: session.task.maxToolCalls,
+        timeLimitSeconds: session.task.timeLimitSeconds,
+      },
+      ...(operation ? { operation: operation.info } : {}),
+      tools: { ...endpoint, ...(exposed ? { mcpUrl: exposed.url } : {}) },
+      signal: w.controller.signal,
+      traceparent,
+      ...(attachment ? { telemetry: attachment } : {}),
+    };
+    const outcome = await runAgent(harness, request, { at, calls: counter, links });
     return await conclude(deps, {
       run,
       session,
+      links,
       outcome,
       info: harnessInfo(harness, outcome, traceparent, attachment !== undefined),
       calls: counter.calls,
@@ -426,6 +428,7 @@ export async function executeRun(
     return fail(`실행 중 오류: ${(err as Error).message}`);
   } finally {
     w.stop();
+    operation?.stop();
     exposed?.close();
     deps.logs?.close(run.id);
     deps.activity?.(worldId, { type: "end", runId: run.id });

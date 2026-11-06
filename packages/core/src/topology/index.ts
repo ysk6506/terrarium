@@ -15,6 +15,12 @@ export {
 } from "./impact";
 export { chainOf, isSpace, type LayerShape, layerShape } from "./layers";
 export {
+  type IncidentSpan,
+  incidentSpans,
+  isOperation,
+  operationMarks,
+} from "./operation-marks";
+export {
   countAt,
   type ReplayState,
   replaySource,

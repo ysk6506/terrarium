@@ -12,7 +12,7 @@ import {
   SCENARIO_SCHEMA_VERSION,
   type ScenarioDoc,
 } from "@terrarium/core/scenario";
-import type { TimePolicy } from "@terrarium/core/session";
+import type { OperationConfig, TimePolicy } from "@terrarium/core/session";
 import {
   CAMPUS_PROFILE_LABELS,
   type CampusSpec,
@@ -297,7 +297,7 @@ export const TimePolicySchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("realtime"), speed: z.number().finite().min(0.1).max(600) }).strict(),
 ]) as z.ZodType<TimePolicy>;
 
-const SITE_IDS = SITE_PRESETS.map((p) => p.id) as [string, ...string[]];
+export const SITE_IDS = SITE_PRESETS.map((p) => p.id) as [string, ...string[]];
 const choices = <K extends keyof typeof CHOICE_LABELS>(k: K) =>
   z.enum(Object.keys(CHOICE_LABELS[k]) as [string, ...string[]]);
 
@@ -328,88 +328,6 @@ export const WorldgenSpecSchema = z
     for (const message of specProblems(spec as WorldgenSpec))
       ctx.addIssue({ code: z.ZodIssueCode.custom, message });
   }) as unknown as z.ZodType<WorldgenSpec>;
-
-const Share = z.number().min(0).max(1);
-
-const WorkloadSchema = z
-  .object({
-    kind: z.enum(WORKLOAD_KINDS as unknown as [string, ...string[]]),
-    perMinute: z.number().min(1).max(1_000_000),
-    pattern: z.enum(DAY_PATTERNS as unknown as [string, ...string[]]),
-    shares: z.object(Object.fromEntries(RESOURCES.map((r) => [r, Share]))).strict(),
-  })
-  .strict();
-
-const ServiceDraftSchema = z
-  .object({
-    key: IdSchema,
-    name: NameSchema,
-    gives: z.string().trim().max(400),
-    stopsText: z.string().trim().max(400),
-    kind: z.enum(["request", "batch", "stateful"]),
-    nodes: z.number().int().min(1).max(60),
-    hosts: z.number().int().min(0).max(60),
-    switches: z.number().int().min(0).max(20),
-    parts: z
-      .array(
-        z
-          .object({
-            label: z.string().trim().min(1).max(80),
-            count: z.number().int().min(0).max(999).optional(),
-            tier: z.union([z.literal(0), z.literal(1), z.literal(2)]).optional(),
-            role: z.enum(["node", "host", "switch"]).optional(),
-          })
-          .strict(),
-      )
-      .max(20),
-    stops: z
-      .array(
-        z
-          .object({
-            what: z.string().trim().min(1).max(80),
-            result: z.string().trim().max(200),
-            bad: z.boolean().optional(),
-          })
-          .strict(),
-      )
-      .max(8),
-    harm: z
-      .array(
-        z
-          .object({
-            name: z.string().trim().min(1).max(120),
-            perHourKrw: z.number().min(0).max(1e12),
-          })
-          .strict(),
-      )
-      .max(6),
-    workload: WorkloadSchema,
-  })
-  .strict();
-
-/** "서비스부터" (REQ-094): shape here; the meaning (limits, ids of the ladders) is checked after, in Korean. */
-export const ShapeSpecSchema = z
-  .object({
-    name: NameSchema,
-    seed: z
-      .number()
-      .int()
-      .min(0)
-      .max(2 ** 31 - 1),
-    site: z.enum(SITE_IDS),
-    servers: z.number().int().min(1).max(250_000),
-    real: z.boolean().optional(),
-    layers: z.object(Object.fromEntries(LAYER_IDS.map((l) => [l, z.string().max(40)]))).strict(),
-    services: z.array(ServiceDraftSchema).max(12),
-  })
-  .strict()
-  .superRefine((spec, ctx) => {
-    const problem =
-      layersProblem(spec.layers as never) ??
-      shapeProblem(spec as unknown as ShapeSpec) ??
-      spec.services.map((s) => workloadProblem(s.workload as never)).find(Boolean);
-    if (problem) ctx.addIssue({ code: z.ZodIssueCode.custom, message: problem });
-  }) as unknown as z.ZodType<ShapeSpec>;
 
 /** A whole campus (REQ-077): shape here; ranges and the rack ceilings come from `campusProblems`, in Korean. */
 export const CampusSpecSchema = z
@@ -460,6 +378,44 @@ export const DomainsSchema = z
   .array(z.enum(["service_os", "virtualization", "server", "network", "storage", "facility"]))
   .max(6)
   .refine((d) => new Set(d).size === d.length, { message: "같은 도메인이 두 번 들어 있어요" });
+
+const FaultTemplateSchema = z
+  .object({
+    type: z.string().min(1).max(64),
+    target: IdSchema,
+    params: z.record(z.string(), z.number().finite()).optional(),
+  })
+  .strict();
+
+/** An operation: how long, how time moves, where the faults come from, what the agent is told (REQ-090, ADR-0094). */
+export const OperationSchema = z
+  .object({
+    hours: z.number().min(1).max(96),
+    pace: z.discriminatedUnion("mode", [
+      z.object({ mode: z.literal("realtime") }).strict(),
+      z.object({ mode: z.literal("fast"), speed: z.number().min(10).max(60) }).strict(),
+    ]),
+    source: z.discriminatedUnion("kind", [
+      z.object({ kind: z.literal("preset"), preset: z.enum(["quiet", "normal", "busy"]) }).strict(),
+      z
+        .object({ kind: z.literal("set"), faults: z.array(FaultTemplateSchema).min(1).max(500) })
+        .strict(),
+    ]),
+    rateScale: z.number().min(0.1).max(100).optional(),
+    cascadeChance: z.number().min(0).max(1),
+    simultaneousChance: z.number().min(0).max(1),
+    wakeOnAlarm: z.boolean(),
+    instruction: z.string().max(4000),
+    budget: z
+      .object({
+        maxToolCalls: z.number().int().min(1).max(100_000).optional(),
+        maxTokens: z.number().int().min(1).max(1_000_000_000).optional(),
+        maxCostUsd: z.number().min(0.01).max(100_000).optional(),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict() as unknown as z.ZodType<OperationConfig>;
 
 /** The vendor SLA, spare parts and surcharge the teams' waits are worked out from (REQ-093). */
 export const LeadTimesSchema = z

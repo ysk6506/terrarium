@@ -33,6 +33,7 @@ import {
   RunsTable,
 } from "./experiment-parts";
 import { SubjectPanel } from "./experiment-subject";
+import { OperationCards } from "./operation-card";
 import { useLive } from "./useLive";
 
 const ACTIVE = new Set(["queued", "running"]);
@@ -274,7 +275,21 @@ export function ExperimentPage({ id }: { readonly id: string }) {
     <div className="page page-full" data-status={status}>
       <Head view={{ ...view, status }} onChange={state.set} />
       <EscalationCards experimentId={id} />
-      <ResultFigures a={view.analysis} />
+      {view.experiment.recipe.operation && (
+        <OperationCards
+          runs={runs}
+          worldId={view.experiment.recipe.worldId}
+          hours={view.experiment.recipe.operation.hours}
+        />
+      )}
+      {view.experiment.recipe.operation ? (
+        <p className="small muted">
+          운영 실험은 실행마다 결과 화면에서 서비스 가용률, 놓친 알람, 탐지 지연을 봐요. 합격이나
+          점수는 없어요.
+        </p>
+      ) : (
+        <ResultFigures a={view.analysis} />
+      )}
       <p className="sr-only" aria-live="polite">
         {statusLabel(status)}, {view.progress.finished}/{view.progress.total}회 끝
       </p>

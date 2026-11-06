@@ -18,14 +18,10 @@ import { type EndReason, investigationCalls, ORACLE_VERSION, score } from "@terr
 import { DEFAULT_PHYSICS, Physics } from "@terrarium/core/physics";
 import {
   type AgentTask,
-  actionsOf,
   type Diagnosis,
   hasErrors,
-  mainProblems,
-  reaches,
   ScenarioRunner,
   scenarioDigest,
-  scoreSop,
   type ToolCallRecord,
   validateScenario,
 } from "@terrarium/core/scenario";
@@ -38,18 +34,20 @@ import {
   type ToolResult,
   type ToolSpec,
 } from "@terrarium/core/tools";
-import {
-  blueprintDigest,
-  type FaultType,
-  type RunEvent,
-  World,
-  type WorldEvent,
-} from "@terrarium/core/world";
+import { blueprintDigest, type RunEvent, World } from "@terrarium/core/world";
 import { HandOffs, scopeOf } from "./hand-offs";
 import type { HumanAct, HumanRequest, HumanResolution } from "./human";
-import { HUMAN_CAUSE, HumanLine } from "./human-line";
-import { DEFAULT_RECORDER, MetricRecorder, type MetricSeries, RECORDED_METRICS } from "./recorder";
+import { HumanLine } from "./human-line";
+import { keySeries } from "./key-series";
+import {
+  attachOperation,
+  DEFAULT_OPERATION_CALLS,
+  type OperationDriver,
+  operationReport,
+} from "./operation";
+import { DEFAULT_RECORDER, MetricRecorder } from "./recorder";
 import { RunLog } from "./run-events";
+import { effectsSince, extrasOf, faultSkipper } from "./session-parts";
 import { buildTimeline } from "./timeline";
 import {
   type CallResult,
@@ -64,6 +62,7 @@ export {
   type CallResult,
   DEFAULT_TIME,
   type FaultScope,
+  type OperationReport,
   type RunResult,
   type SessionConfig,
   type SessionStatus,
@@ -73,14 +72,6 @@ export {
 } from "./types";
 
 const ALWAYS_TOOLS = ["submit_diagnosis"];
-const MAX_SERIES = 24;
-
-/** World events the agent caused (tools and protocol facades), as opposed to scenario and physics. */
-const byAgent = (e: WorldEvent) =>
-  e.cause !== "physics" &&
-  !e.cause.startsWith("scenario:") &&
-  !e.cause.startsWith("counterpart:") &&
-  e.cause !== HUMAN_CAUSE;
 
 export class Session {
   readonly world: World;
@@ -101,6 +92,8 @@ export class Session {
   private scenarioStart = 0;
   private result: RunResult | undefined;
   private readonly line: HumanLine;
+  /** Set for an operation run (ADR-0094): the fault generator and the clock. */
+  private readonly operation: OperationDriver | undefined;
 
   private constructor(
     private readonly config: SessionConfig,
@@ -109,7 +102,7 @@ export class Session {
     this.world = world;
     this.log = new RunLog(world, (id) => world.index.find(id)?.name ?? id);
     this.physics = new Physics(world);
-    this.time = config.time ?? DEFAULT_TIME;
+    this.time = config.operation ? { kind: "realtime", speed: 1 } : (config.time ?? DEFAULT_TIME);
     const finder = config.sop === "search" ? ["search_runbooks"] : [];
     this.toolbox = new Toolbox([
       ...new Set([...scopeTools(config.tools, config.domains), ...ALWAYS_TOOLS, ...finder]),
@@ -149,14 +142,24 @@ export class Session {
         diagnosis: () => this.diagnosis,
         scenarioStart: () => this.scenarioStart,
       },
-      { skipFault: this.faultSkipper() },
+      { skipFault: faultSkipper(config, this.toolbox) },
     );
+    const skip = faultSkipper(config, this.toolbox);
+    this.operation = config.operation
+      ? attachOperation(config.operation, {
+          world,
+          seed: config.seed,
+          events: () => this.log.events,
+          ...(skip ? { skip } : {}),
+        })
+      : undefined;
     this.ctx = {
       world,
       facades: createFacades(world, config.profiles),
       metrics: this.recorder,
       runbooks: config.sop === "search" && config.scenario.runbook ? [config.scenario.runbook] : [],
-      wait: (seconds) => this.advance(Math.min(seconds, this.remaining())),
+      // in an operation the host lets the real time pass before it makes the call (the world follows the clock)
+      wait: (seconds) => !this.operation && this.advance(Math.min(seconds, this.remaining())),
       submit: (d) => {
         this.diagnosis = d;
         this.diagnosedAt = world.time();
@@ -207,13 +210,20 @@ export class Session {
         throw new InvalidValueError("the scenario did not hand the task to the agent in time");
       this.advance(DEFAULT_PHYSICS.stepSeconds);
     }
-    const task = this.runner.agentTask;
+    // an operation has its own call limit (the scenario editor's range stops at 500)
+    const task = this.operation
+      ? {
+          ...this.runner.agentTask,
+          maxToolCalls: this.config.operation?.budget?.maxToolCalls ?? DEFAULT_OPERATION_CALLS,
+        }
+      : this.runner.agentTask;
     const runbook = this.config.scenario.runbook;
     this.task =
       this.config.sop === "given" && runbook
         ? { ...task, prompt: task.prompt + runbookPrompt(runbook) }
         : task;
     this.state = "running";
+    this.operation?.begin(this.task.startedAt);
     this.log.agentStart(this.task.startedAt, this.scenarioStart);
     return this.task;
   }
@@ -274,6 +284,7 @@ export class Session {
     const t = this.world.time();
     const refused = this.refusal(tool, t);
     if (refused) return refused;
+    this.operation?.touch();
     if (tool === "ask_human" && this.toolbox.has(tool)) return this.line.ask(args, t);
     const before = this.world.lastSeq();
     return this.conclude(tool, args, this.toolbox.call(tool, args, this.ctx), t, before);
@@ -281,10 +292,7 @@ export class Session {
 
   /** Write a finished call into the record, with what it did to the world. */
   private record(tool: string, args: Args, result: ToolResult, t: number, before: number): void {
-    const effects = actionsOf(this.world.events(before).filter(byAgent), (id, end) => {
-      const link = this.world.index.link(id);
-      return end === "from" ? link.from : link.to;
-    });
+    const effects = effectsSince(this.world, before);
     this.calls.push({
       t,
       tool,
@@ -341,6 +349,7 @@ export class Session {
     if (this.state !== "running" || this.time.kind !== "realtime") return undefined;
     // time stands still while the run waits for a person, and what they kept it waiting is not counted afterwards
     if (this.line.waiting) return undefined;
+    if (this.operation) return this.syncOperation(this.operation, elapsedSeconds);
     const target =
       (this.task as AgentTask).startedAt +
       (elapsedSeconds - this.line.pausedSeconds) * this.time.speed;
@@ -352,14 +361,23 @@ export class Session {
     return "time_limit";
   }
 
-  /** Background faults that no tool the agent has can reach do not happen when faults are limited to the tools given. */
-  private faultSkipper(): ((type: FaultType) => boolean) | undefined {
-    if (this.config.faultScope !== "inside") return undefined;
-    const main = new Set<string>(mainProblems(this.config.scenario));
-    return (type) => {
-      const have = new Set(this.toolbox.list().map((t) => t.name));
-      return !main.has(type) && !reaches(type, have);
-    };
+  /** An operation: the clock driver says how much world time the real time since the last sync is worth. */
+  private syncOperation(op: OperationDriver, elapsedSeconds: number): EndReason | undefined {
+    const step = op.step(elapsedSeconds - this.line.pausedSeconds);
+    if (step.worldSeconds > 0) this.advance(Math.min(step.worldSeconds, this.remaining()));
+    this.log.flush();
+    if (this.remaining() > 0) return undefined;
+    this.end("time_limit");
+    return "time_limit";
+  }
+
+  /** The world's time now, and whether this is an operation (its host lets real time pass for `wait`). */
+  get worldTime(): number {
+    return this.world.time();
+  }
+
+  get operating(): boolean {
+    return this.operation !== undefined;
   }
 
   /** End the run (if it has not ended) and return the scored result. */
@@ -384,12 +402,15 @@ export class Session {
   private advance(seconds: number): void {
     const end = this.world.time() + seconds;
     for (let now = this.world.time(); now < end - 1e-9; now = this.world.time()) {
-      const wakes = [this.runner.nextWakeAt(), this.handOffs.nextWakeAt(now)].filter(
-        (w): w is number => w !== undefined && w > now,
-      );
+      const wakes = [
+        this.runner.nextWakeAt(),
+        this.handOffs.nextWakeAt(now),
+        this.operation?.nextWakeAt(),
+      ].filter((w): w is number => w !== undefined && w > now);
       const toWake = wakes.length > 0 ? Math.min(...wakes) - now : Number.POSITIVE_INFINITY;
       this.physics.step(Math.min(DEFAULT_PHYSICS.stepSeconds, end - now, toWake));
       this.runner.tick();
+      this.operation?.tick();
       this.handOffs.tick();
       this.recorder.sampleIfDue();
     }
@@ -446,7 +467,13 @@ export class Session {
         (id) => this.world.index.find(id)?.name ?? id,
       ),
       events: this.log.events,
-      series: this.keySeries(),
+      series: keySeries({
+        world: this.world,
+        recorder: this.recorder,
+        scenario: this.config.scenario,
+        calls: this.calls,
+        scenarioStart: this.scenarioStart,
+      }),
       digests: {
         world: this.worldDigest(),
         scenario: scenarioDigest(this.config.scenario),
@@ -456,45 +483,10 @@ export class Session {
       ...scopeOf(this.config.domains, this.config.leadTimes),
       simTime: { scenarioStart: this.scenarioStart, agentStart: task.startedAt, end: endedAt },
       recorderBytes: this.recorder.bytes,
-      ...this.extras(),
-    };
-  }
-
-  /** What the result shows apart from the score: escalation and runbook compliance. */
-  private extras(): Pick<RunResult, "human" | "sop"> {
-    const runbook = this.config.scenario.runbook;
-    return {
-      ...(this.toolbox.has("ask_human") ? { human: this.line.desk.summary() } : {}),
-      ...(runbook
-        ? { sop: { ...scoreSop(runbook, this.calls), mode: this.config.sop ?? "none" } }
+      ...extrasOf(this.config.scenario, this.config.sop, this.toolbox, this.line, this.calls),
+      ...(this.operation
+        ? { operation: operationReport(this.operation, this.world, this.log.events, endedAt) }
         : {}),
     };
-  }
-
-  /** Entities worth charting: the answer, what the agent acted on, and what raised alarms. */
-  private keyEntities(): Set<string> {
-    const answers = this.config.scenario.expectations.flatMap((e) =>
-      e.kind === "diagnosis" ? e.rootCause : [],
-    );
-    const touched = this.calls.flatMap((c) => (c.effects ?? []).map((e) => e.target));
-    const alarmed = this.world
-      .events()
-      .flatMap((e) =>
-        e.type === "alarm.raise" && e.t >= this.scenarioStart ? [e.alarm.entityId] : [],
-      );
-    return new Set([...answers, ...touched, ...alarmed]);
-  }
-
-  /** Their recorded series since the scenario started, at most MAX_SERIES. */
-  private keySeries(): MetricSeries[] {
-    const pairs = [...this.keyEntities()].flatMap((id) => {
-      const kind = this.world.index.find(id)?.kind;
-      return (kind ? (RECORDED_METRICS[kind] ?? []) : []).map((metric) => [id, metric] as const);
-    });
-    return pairs.slice(0, MAX_SERIES).map(([entityId, metric]) => ({
-      entityId,
-      metric,
-      points: this.recorder.series(entityId, metric, this.scenarioStart),
-    }));
   }
 }

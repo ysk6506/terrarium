@@ -4,19 +4,20 @@ kind: spec
 status: active
 last_verified: 2026-11-06
 covers:
+  - packages/core/src/session/operation/metrics.ts
   - packages/core/src/oracle/oracle.ts
   - packages/core/src/oracle/recovery.ts
   - packages/core/src/oracle/recovery-score.ts
   - packages/core/src/session/baselines.ts
   - packages/core/src/session/probes.ts
   - packages/core/src/oracle/handoff.ts
-covers_hash: f47522988340386a
+covers_hash: 49e78bfb0a8f525f
 verification_log:
-  - "2026-11-04: 운영 채점 셋, 기준 에이전트 점수, 알려진 한계(만점 시나리오 셋, 냉방기 90.9)를 oracle.ts와 대조해 고침 (REQ-073, ADR-0075)"
   - "2026-11-06: oracle.ts의 scoring 분기와 recovery.ts, recovery-score.ts의 네 축 배점, 사고 비용, 악화 규칙, baselines.ts와 probes.ts의 두 점검을 코드와 대조해 3절과 점검 절을 더했다 (REQ-088, ADR-0104)"
   - "2026-11-06: baselines.ts의 toolPick 경고와 session.ts의 human·sop 결과 블록(점수에 섞이지 않음)을 대조해 툴 고르기 점검과 SOP 준수 절을 더했다 (REQ-080, REQ-082)"
   - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: 2a·2b 합치기"
+  - "2026-11-06: 운영 지표 절을 더하고 metrics.ts의 계산식, discrimination.test.ts의 값과 대조했다 (REQ-090)"
 ---
 # 측정의 신뢰 (REQ-070, ADR-0067)
 
@@ -136,6 +137,14 @@ verification_log:
 | 넘긴 근거 | 넘긴 고장이 내 도메인에 속하고 그 도메인의 툴로 고칠 수 있는 종류(`FAULT_RESPONSES`의 `fix`)인가. 고장 없이 넘긴 것도 한 건 | 한 건에 −5점, 최대 −15점 (항목 `handoff-needless`) |
 
 내 도메인을 안 골랐으면 "내 도메인의 고장"을 알 수 없어 감점이 없다. 결과(`Score.handoff`)에 넘긴 일마다 이 숫자들이 들어 있고 결과 화면의 "넘긴 일"이 말로 풀어 준다. 채점 버전(`ORACLE_VERSION`)은 그대로 "3"이다: 넘긴 일이 없는 실행의 점수는 달라지지 않는다.
+
+## 운영을 어떻게 재나 (REQ-090, ADR-0094)
+
+운영 모드는 점수 대신 **지표 아홉**을 낸다: 서비스 가용률, 사건별 복구 시간(최소·중앙·최대), 놓친 알람, 탐지 지연, 악화, 에스컬레이션, 사건당 비용, 조용할 때 쓴 비용, 감시 주기. 전부 사건 기록 하나에서 계산하고(복구 우선 채점과 같은 서비스 타임라인을 읽는다), 계산식은 [운영 모드](operation-mode.md)에 있다. 첫 숫자 셋은 **가용률 · 놓친 알람 · 탐지 지연**이다. 지표끼리 줄다리기가 설계다: 자주 볼수록 놓친 알람과 탐지 지연이 줄고 비용과 조용할 때 쓴 호출이 는다.
+
+**잣대를 믿는 근거**는 가짜 에이전트 넷으로 8시간 빨리 감기 운영을 돌려 지표가 의도대로 줄 서는지 보는 시험이다(`operation/discrimination.test.ts`): 아무것도 안 하는 에이전트는 알람을 전부 놓치고 가용률 79.7%, 5분마다 조회만 하면 놓친 알람이 0이 되지만 가용률은 그대로, 조회와 복구를 하면 가용률 99.2%에 열린 사건 0, 1분마다 폭주하면 탐지는 2분 38초에서 41초로 빨라지지만 호출이 96회에서 944회로 늘고 거의 전부 조용할 때 쓴다. 이 시험의 "복구"는 에이전트의 복구 툴이 아니라 떠 있는 고장을 지우는 대용품이다.
+
+**한계(정직하게).** 탐지 지연은 알람이 올라오는 데 걸리는 물리적 시간을 포함한다(같은 세계에서는 모두에게 같다). 조용할 때 쓴 토큰은 호출 수로 나눈 어림이다. 장비가 적은 세계는 고장이 드물어 지표가 거칠다. 빨리 감기 결과는 공식 점수가 아니다.
 
 ## 4. 재현성 (시험으로 못 박은 것)
 

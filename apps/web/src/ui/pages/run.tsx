@@ -22,6 +22,7 @@ import { RunReplay } from "../topology/RunReplay";
 import { EscalationCards } from "./escalation";
 import { HumanBlock, SopBlock } from "./run-blocks";
 import { HandoffSection } from "./run-handoffs";
+import { OperationResult } from "./run-operation";
 import { CallsTable, DiagnosisCompare, ScoreSheet, TelemetryPanel } from "./run-parts";
 
 type Tab = "timeline" | "calls" | "metrics" | "harness";
@@ -236,7 +237,11 @@ export function RunPage({ id }: { readonly id: string }) {
           <RunHead view={view} />
           {view.run.error && <Note tone="bad">{view.run.error}</Note>}
           <EscalationCards runId={id} />
-          <RunFigures view={view} />
+          {view.run.result?.operation ? (
+            <OperationResult view={view} />
+          ) : (
+            <RunFigures view={view} />
+          )}
           <HumanBlock result={view.run.result} />
           <SopBlock result={view.run.result} />
           {commonPathNote(view.commonReach) && (
@@ -244,7 +249,7 @@ export function RunPage({ id }: { readonly id: string }) {
           )}
           <Replay view={view} reload={state.reload} />
           <HandoffSection view={view} live={view.run.status === "running"} />
-          <Verdicts view={view} />
+          {!view.run.result?.operation && <Verdicts view={view} />}
           <Records view={view} />
         </>
       )}

@@ -60,6 +60,7 @@ function harnessViewOf(v: ConnectionView): HarnessView {
     description: v.description,
     toolTransport: v.toolTransport,
     telemetry: v.telemetry,
+    ...(v.wakeable ? { wakeable: true } : {}),
     agents: v.agents,
     status: v.status,
     ...(v.error === undefined ? {} : { error: v.error }),

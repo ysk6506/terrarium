@@ -4,6 +4,7 @@ kind: spec
 status: active
 last_verified: 2026-11-06
 covers:
+  - packages/core/src/topology/operation-marks.ts
   - packages/core/src/topology/types.ts
   - packages/core/src/topology/shape.ts
   - packages/core/src/topology/layers.ts
@@ -25,13 +26,13 @@ covers:
   - packages/core/src/topology/replay-words.ts
   - packages/core/src/topology/story.ts
   - apps/web/src/logic/topology/replay.ts
-covers_hash: 287f2b870149cb45
+covers_hash: 99d43b2ef79d1f50
 verification_log:
-  - "2026-11-06: 2차 2a·2b 합치기: 서비스 층과 토폴로지 ② 절을 함께 둠"
   - "2026-11-06: 2차 합치기: 서비스 층과 ② 절을 함께 둠"
   - "2026-11-06: topology/story.ts의 servicesLine(결과 첫 줄의 서비스 칸)을 코드와 대조해 첫 줄 절에 더했다 (REQ-088)"
   - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
+  - "2026-11-06: 운영의 시간 막대 절을 더하고 operation-marks.ts와 대조했다 (REQ-090)"
 ---
 # 토폴로지 보기 (REQ-078, [ADR-0084](adr/0084-topology-view.md))
 
@@ -120,6 +121,9 @@ verification_log:
 - **시간 막대는 하나다.** 실행 화면, 결과 화면, 나란히 보기, 빌더의 "돌려 보기"가 같은 막대(`ui/replay/ReplayBar`)를 쓰고, 공기 흐름 지도와 토폴로지는 같은 순간을 그린다. 재생과 멈춤, 5·10·30·60배속(기본 10배속), 끌기, 키보드(←→ 5초, Home·End)를 쓴다. 슬라이더는 `aria-valuetext`로 "4분 20초 / 9분 30초"를 읽는다.
 - **실시간**: 실행 중에는 세계 활동 스트림(SSE)이 호출이 왔다고 알리면 사건을 다시 받아 오고, 막대는 가장 새 순간을 따라간다. 끌어서 뒤로 가면 그 자리에 선다.
 - **나란히 보기**: 같은 시나리오의 실행 둘을 골라 보드 둘을 한 막대로 같은 `t`에 그린다. 막대의 표식은 왼쪽 실행의 것이다.
+
+## 운영의 시간 막대 (REQ-090, `operation-marks.ts`)
+사건 기록에 발생기가 낸 고장(원인 `generator`)이 있으면 시간 막대가 운영 모양이 된다. 표식은 고장·알람·**봤다**(`events_since`·`list_alarms`·`service_status`·`list_services`·`get_impact` 호출, 모든 조회를 점으로 찍으면 몇백 개가 되므로 이것만)·조치·**사람 개입**(`ask_human`으로 물음, 사람이 조치함)·**연결 끊김**(하네스를 잃음)·담당자·회복의 순서이고, 막대 아래에는 사건마다 발생에서 끝(고장이 사라지거나 그 장비의 알람이 모두 풀림)까지의 가는 막대가 놓인다(끝나지 않은 사건은 빨강, 끝까지 이어진다). 사건 계산은 측정과 같은 `world/incidents.ts`를 읽는다.
 
 ## 다른 팀이 일하는 곳 (REQ-093)
 `escalate`한 일이 현장이나 원격으로 마지막 구간에 들어가면(`counterpart`의 `started`) 그 장비 타일에 **보라색 점선 테두리**와 "교체 중 · 벤더"(원격이면 "작업 중 · 네트워크 팀")가 나오고, 끝나면(`done`) 사라진다. 타일 줄이 평소 상태 대신 이 말을 보이고, 혼자 서는 타일이 된다(접히지 않는다). 상태 색이 아니라 하나 더한 신호라서 색은 `--topo-partner` 하나이고 범례에 "다른 팀이 작업 중인 곳"이 있다. 시간 막대에는 팀이 끝난 때 "벤더: 교체 완료" 표식(`partner`)이 서고, 첫 줄에 "넘긴 일 N건"이 붙는다. 리플레이는 사건만 읽으므로 이것도 그대로 다시 보인다.

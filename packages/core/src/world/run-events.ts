@@ -173,10 +173,23 @@ export interface TicketEvent extends Stamp {
   readonly auto: boolean;
 }
 
+/**
+ * The agent's connection to the harness, in an operation (ADR-0094 item 8): it was lost (the harness stopped or failed
+ * while the hours were not used up) and it came back (the executor reached the harness again and the agent went on).
+ * The host writes it; the session's own record of the world is not touched.
+ */
+export interface LinkEvent extends Stamp {
+  readonly kind: "link";
+  readonly what: "lost" | "back";
+  /** Why, in a few words (the harness's own message). */
+  readonly reason?: string;
+}
+
 export type RunEvent =
   | ToolEvent
   | WorldRunEvent
   | ScoreEvent
   | HumanEvent
   | CounterpartEvent
-  | TicketEvent;
+  | TicketEvent
+  | LinkEvent;

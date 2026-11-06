@@ -21,7 +21,7 @@ export const OPERATOR_AGENT: AgentInfo = {
   id: "operator",
   name: "운영 (규칙 기반)",
   description:
-    "멈춘 서비스를 임시로 살리고, 내 도메인 밖의 원인은 맡은 팀에 넘겨요. 팀이 끝내면 옮긴 것을 되돌려요.",
+    "멈춘 서비스를 임시로 살리고, 내 도메인 밖의 원인은 맡은 팀에 넘겨요. 팀이 끝내면 옮긴 것을 되돌려요. 운영 모드에서는 5분마다 새 알람을 확인하며 계속 지켜봐요.",
 };
 
 interface ServiceRow {
@@ -135,7 +135,102 @@ async function handOver(
   for (const u of undo) await tools.call(u.tool, u.args);
 }
 
+/** The five-minute rhythm of the resident loop (ADR-0094 item 5): short enough to see an alarm soon, long enough to be cheap. */
+export const WATCH_SECONDS = 300;
+const WAKE_SLICE_SECONDS = 60;
+
+/** One domain's open hand-over: what was moved to keep services alive, to be put back when the team is done. */
+interface Open {
+  readonly undo: Undo[];
+  readonly services: Set<string>;
+}
+
+/** Sleep until it is time to look again; with alarms pushed, a new alarm cuts the sleep short. */
+async function sleepUntilLook(req: AgentRunRequest, woken: { value: boolean }): Promise<boolean> {
+  const slice = req.operation?.wake ? WAKE_SLICE_SECONDS : WATCH_SECONDS;
+  for (let slept = 0; slept < WATCH_SECONDS && !req.signal.aborted; slept += slice) {
+    const r = await req.tools.call("wait", { seconds: slice });
+    if (r.ended || (!r.ok && /ended/.test(r.error ?? ""))) return false;
+    if (woken.value) break;
+  }
+  woken.value = false;
+  return !req.signal.aborted;
+}
+
+/** The services in trouble, with the reason each gives. */
+async function hurtRows(tools: ToolEndpoint): Promise<ServiceRow[]> {
+  const hurt = await troubled(tools);
+  return Promise.all(
+    hurt.map((h) =>
+      data<ServiceRow>(tools, "service_status", { service: h.id }).then((s) => s ?? h),
+    ),
+  );
+}
+
+/** Keep each hurt service alive once, and hand the cause over to its team the first time it is seen. */
+async function keepAndHandOver(
+  tools: ToolEndpoint,
+  rows: readonly ServiceRow[],
+  open: Map<string, Open>,
+): Promise<void> {
+  const cause = causeOf(rows);
+  const mine = cause ? (open.get(cause.domain) ?? { undo: [], services: new Set() }) : undefined;
+  for (const row of rows) {
+    if (mine?.services.has(row.id)) continue;
+    const done = await keepAlive(tools, row);
+    mine?.services.add(row.id);
+    if (done) mine?.undo.push(done);
+  }
+  if (!cause || !mine || open.has(cause.domain) || !has(tools, "escalate")) return;
+  open.set(cause.domain, mine);
+  await tools.call("escalate", {
+    domain: cause.domain,
+    note: `${rows.map((r) => r.id).join(", ")}가 멈췄어요`,
+  });
+}
+
+/** Look at what is new; keep what is hurt alive; hand the cause over once; put things back when a team is done. */
+async function lookAndAct(
+  req: AgentRunRequest,
+  state: { cursor: number; open: Map<string, Open> },
+): Promise<void> {
+  const { tools } = req;
+  const news = await data<{ cursor: number; events: Array<{ type: string }> }>(
+    tools,
+    "events_since",
+    { cursor: state.cursor },
+  );
+  state.cursor = news?.cursor ?? state.cursor;
+  await keepAndHandOver(tools, await hurtRows(tools), state.open);
+  if (!news?.events.some((e) => e.type === "done")) return;
+  for (const [domain, open] of state.open) {
+    for (const u of open.undo) await tools.call(u.tool, u.args);
+    state.open.delete(domain);
+  }
+}
+
+/**
+ * The resident loop of an operation (ADR-0094 items 5 and 6): every five minutes, `events_since`; services first, then
+ * the cause; hand over what is not mine; put back what was moved; otherwise `wait`. It never answers with a diagnosis:
+ * an operation ends when its hours are used or a person stops it.
+ */
+async function resident(req: AgentRunRequest): Promise<AgentRunOutcome> {
+  const state = { cursor: 0, open: new Map<string, Open>() };
+  const woken = { value: false };
+  const off = req.operation?.wake?.subscribe(() => {
+    woken.value = true;
+  });
+  try {
+    await lookAndAct(req, state);
+    while (await sleepUntilLook(req, woken)) await lookAndAct(req, state);
+  } finally {
+    off?.();
+  }
+  return { status: "finished", message: "운영 시간이 끝나 멈췄어요" };
+}
+
 export async function operator(req: AgentRunRequest): Promise<AgentRunOutcome> {
+  if (req.operation) return resident(req);
   const { tools } = req;
   const hurt = await firstTrouble(tools, req.signal);
   if (hurt.length === 0)
@@ -153,7 +248,17 @@ export async function operator(req: AgentRunRequest): Promise<AgentRunOutcome> {
   const cause = causeOf(rows);
   if (cause && has(tools, "escalate") && has(tools, "events_since"))
     await handOver(req, rows, cause, undo);
-  await tools.call("submit_diagnosis", {
+  await tools.call("submit_diagnosis", diagnosisOf(cause, rows, undo));
+  return { status: "finished" };
+}
+
+/** What the operator answers with when it has done what it can. */
+function diagnosisOf(
+  cause: ReturnType<typeof causeOf>,
+  rows: readonly ServiceRow[],
+  undo: readonly Undo[],
+) {
+  return {
     rootCause: cause?.rootCause ?? rows[0]?.runsOn[0] ?? "알 수 없음",
     faultType: cause?.faultType ?? "unknown",
     summary: cause
@@ -161,6 +266,5 @@ export async function operator(req: AgentRunRequest): Promise<AgentRunOutcome> {
       : "서비스를 옮겨 살렸어요. 원인은 찾지 못했어요.",
     actions: undo.map((u) => u.tool),
     confidence: cause ? 0.8 : 0.2,
-  });
-  return { status: "finished" };
+  };
 }

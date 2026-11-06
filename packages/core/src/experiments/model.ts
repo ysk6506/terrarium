@@ -8,6 +8,7 @@ import type { ScenarioDoc } from "@terrarium/core/scenario";
 import type {
   EscalationPolicy,
   FaultScope,
+  OperationConfig,
   RunResult,
   SopMode,
   TimePolicy,
@@ -61,7 +62,15 @@ export interface Recipe {
   readonly domains?: readonly Domain[];
   /** Vendor SLA, spare parts and surcharge the teams' waits are worked out from; left out, the defaults. */
   readonly leadTimes?: LeadTimeSettings;
+  /**
+   * An operation (REQ-090, ADR-0094): the world runs for hours with generated faults and the agent stays on. The
+   * scenario is then not a stored one (its id is `OPERATION_SCENARIO_ID`) and `time` is not used.
+   */
+  readonly operation?: OperationConfig;
 }
+
+/** The scenario id an operation recipe carries: there is no stored scenario behind it. */
+export const OPERATION_SCENARIO_ID = "operation";
 
 /** Names and values people attach to tell results apart: team, version, a prompt variant (REQ-052). */
 export type Metadata = Readonly<Record<string, string>>;

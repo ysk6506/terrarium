@@ -118,6 +118,8 @@ export class HttpHarness implements HarnessPort {
       seed: req.seed,
       prompt: req.prompt,
       limits: req.limits,
+      // an operation is open for hours; the harness may need to know it will not be asked to answer once and stop
+      ...(req.operation ? { operation: { hours: req.operation.hours } } : {}),
       tools: { mcpUrl: req.tools.mcpUrl, specs: req.tools.specs },
       ...(req.traceparent ? { traceparent: req.traceparent } : {}),
     });

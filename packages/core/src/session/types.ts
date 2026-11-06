@@ -17,6 +17,7 @@ import type {
   RunEvent,
 } from "@terrarium/core/world";
 import type { EscalationPolicy, HumanRequest, HumanSummary } from "./human";
+import type { OperationConfig, OperationMetrics } from "./operation";
 import type { MetricSeries } from "./recorder";
 import type { TimelineEntry } from "./timeline";
 import type { WarmStartCache } from "./warm";
@@ -69,6 +70,11 @@ export interface SessionConfig {
   readonly sop?: SopMode;
   /** `inside`: a background fault the given tools cannot reach does not happen (default: all happen). */
   readonly faultScope?: FaultScope;
+  /**
+   * An operation run (REQ-090, ADR-0094): the world runs for the configured hours, faults come from the generator and
+   * time follows the pace. The host syncs it to the wall clock like a realtime session.
+   */
+  readonly operation?: OperationConfig;
 }
 
 /** Whether the agent gets the team's runbook (ADR-0087 item 6): not at all, in its task, or by searching for it. */
@@ -117,6 +123,23 @@ export interface RunResult {
   readonly human?: HumanSummary;
   /** How closely the agent followed the scenario's runbook, apart from the score (ADR-0087 item 6). */
   readonly sop?: SopResult;
+  /** What an operation run measured and how it was set up (ADR-0094); only for an operation run. */
+  readonly operation?: OperationReport;
+}
+
+/** An operation run's numbers; the host works them out again with the tokens the harness reports. */
+export interface OperationReport {
+  readonly config: OperationConfig;
+  readonly metrics: OperationMetrics;
+  /** The services and what they cost when stopped, so the metrics can be read again from the events. */
+  readonly harms: ReadonlyArray<{
+    readonly id: string;
+    readonly perHourKrw?: number;
+    readonly delayHours?: number;
+  }>;
+  /** How many faults the generator planned, and how many of them did not happen (left out by the tool scope). */
+  readonly planned: number;
+  readonly left: number;
 }
 
 /** Runbook compliance with the way the runbook was offered. */

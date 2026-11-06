@@ -12,6 +12,7 @@ import { useApp, useAsync } from "../context";
 
 export const replayCatalog = new Catalog();
 const BEAT_MS = 300;
+const SLOW_BEAT_MS = 5000;
 
 export interface RunData {
   readonly index: BlueprintIndex;
@@ -48,8 +49,11 @@ function useCallBeat(
       }, BEAT_MS);
     };
     for (const type of ["call", "end"]) source.addEventListener(type, onMessage as EventListener);
+    // an operation can go an hour without a call while alarms come and go: look again now and then
+    const slow = setInterval(() => latest.current.reload(), SLOW_BEAT_MS);
     return () => {
       if (timer) clearTimeout(timer);
+      clearInterval(slow);
       source.close();
     };
   }, [api, worldId, runId, live]);

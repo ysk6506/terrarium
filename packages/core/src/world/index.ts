@@ -119,6 +119,14 @@ export {
   RESTART_SECONDS,
   servicesOnHost,
 } from "./host-os";
+export {
+  ALARM_TOOLS,
+  type AlarmLife,
+  alarmLives,
+  GENERATOR_CAUSE,
+  type Incident,
+  incidents,
+} from "./incidents";
 export { KIND_LABELS, kindList, LINK_LABELS } from "./labels";
 export {
   builtChip,

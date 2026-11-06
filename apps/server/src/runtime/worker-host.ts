@@ -97,6 +97,8 @@ export class WorkerHost implements SessionHost {
   private readonly pending = new Map<string, Pending>();
   private readonly ended = new Map<string, EndReason>();
   private readonly owner = new Map<string, Slot>();
+  /** What each session has written, kept as it arrives (with calls, and on its own between them). */
+  private readonly written = new Map<string, RunEvent[]>();
   private readonly waiters: Waiter[] = [];
   private readonly threadMb: number;
   private readonly promisedMb: number;
@@ -174,6 +176,10 @@ export class WorkerHost implements SessionHost {
   private receive(msg: FromWorker): void {
     if (msg.kind === "ended") {
       this.ended.set(msg.id, msg.reason);
+      return;
+    }
+    if (msg.kind === "events") {
+      this.written.get(msg.id)?.push(...msg.events);
       return;
     }
     const key = "seq" in msg ? `${msg.id}#${msg.seq}` : `${msg.id}#open`;
@@ -278,6 +284,7 @@ export class WorkerHost implements SessionHost {
     let ended: EndReason | undefined;
     let specs: readonly ToolSpec[] = opened.specs;
     const events: RunEvent[] = [...opened.events];
+    this.written.set(id, events);
     const host = this;
     const human = async (op: Extract<ToWorker, { kind: "human" }>["op"]) => {
       const msg = await this.send<Extract<FromWorker, { kind: "humaned" }>>(id, (seq) => ({
@@ -330,6 +337,7 @@ export class WorkerHost implements SessionHost {
       dispose: () => {
         const slot = this.owner.get(id);
         this.ended.delete(id);
+        this.written.delete(id);
         if (!slot) return;
         slot.worker.postMessage({ kind: "dispose", id } satisfies ToWorker);
         this.release(id, slot);

@@ -2,16 +2,16 @@
 title: 하네스 프로토콜 (terrarium.harness/1)
 kind: spec
 status: active
-last_verified: 2026-11-05
+last_verified: 2026-11-06
 covers:
   - apps/server/src/adapters/harness/http.ts
-covers_hash: addb8d1583b2a90e
+covers_hash: 1f206215a1387d9a
 verification_log:
-  - "2026-10-29: first version, checked against HttpHarness (start, poll, stop, usage)"
   - "2026-10-30: 2026-10-30: http.ts의 설정 타입 위치와 ADR 번호만 바뀌었다. 엔드포인트와 필드는 코드와 같다. 화면 연결, 직접 입력한 토큰, 커스텀 헤더 안내를 더했다"
   - "2026-11-03: 서버·core가 사람에게 돌려주는 안내 문장이 해요체로 바뀐 것만 확인했다. 동작과 본문은 그대로 (ADR-0050)"
   - "2026-11-04: 2026-11-04: ADR-0073. 연결 오류 문장이 '닿을 수 없어요'에서 '연결할 수 없어요'로 바뀐 것에 맞춰 글을 고쳤다. 프로토콜은 그대로"
   - "2026-11-05: ADR-0085: 트레이스를 쌓는 곳이 연결마다 정해진다는 문장을 더했다. 덮는 코드의 동작은 그대로"
+  - "2026-11-06: POST /runs의 operation 필드 설명을 더하고 http.ts와 대조했다 (REQ-090)"
 ---
 # 하네스 프로토콜 `terrarium.harness/1`
 
@@ -57,6 +57,7 @@ verification_log:
 }
 ```
 - 2xx로 바로 답하고, 에이전트는 비동기로 돌린다.
+- **운영 모드**(ADR-0094)면 `"operation": {"hours": 8}`이 더해진다. 이 실행은 진단을 내고 끝나지 않고 `hours` 동안(실시간이면 실제로 그만큼) 이어진다. `limits.timeLimitSeconds`가 그 시간이다. 에이전트는 `events_since`·`wait`로 계속 지켜보다가 테라리움이 끝내면(마지막 호출이 "실행이 끝났다"를 돌려준다) 멈춘다. 몇 시간짜리 요청을 받을 수 있게 프록시와 게이트웨이의 시간 제한을 먼저 확인하고, 상세는 [운영 에이전트 설계 가이드](../guides/operation-agent-guide.md)에 있다.
 - `tools.mcpUrl`은 Streamable HTTP MCP 엔드포인트다. 이 실행에서 고른 툴만 있고, URL 자체가 비밀이다(다른 실행의 툴은 부를 수 없다).
 - 툴의 `description`은 모든 툴이 같은 순서로 쓴다(ADR-0087): 한 줄 요약, `Use when:`, `Don't use when:`(대신 쓸 툴을 `(use X)`로), `Example:`(입력 예 하나), `Access:`(`read-only` 또는 `changes the world`), `Cost:`. 에이전트가 읽는 이 글은 테라리움 카탈로그의 `TOOL_DOCS`에서 만들어서 화면과 같다([툴 범위, 에스컬레이션, 절차서](tool-scope-and-sop.md)).
 - 실험이 `ask_human`을 켰다면 에이전트는 이 툴로 사람에게 묻는다(`request`: 찾은 것, 해 본 것, 필요한 것). **응답이 늦을 수 있다.** 실험이 "사람 기다림"이면 사람이 답할 때까지 호출이 열려 있다. 하네스는 이 툴 호출에 시간 제한을 걸지 말아야 한다(테라리움의 실제 시간 제한은 기다린 시간을 빼고 센다). 답은 `{reply, from}`이고, 사람이 대신 조치했으면 `changes`, 툴을 더 줬으면 `newTools`가 같이 온다. MCP로 붙은 하네스는 `tools/list`를 다시 부르면 늘어난 툴이 보인다.

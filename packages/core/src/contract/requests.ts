@@ -9,14 +9,15 @@ import {
   LeadTimesSchema,
   NameSchema,
   NoteSchema,
+  OperationSchema,
   ProfilesSchema,
   ScenarioDocSchema,
   SeedsSchema,
-  ShapeSpecSchema,
   TimePolicySchema,
   ToolsSchema,
   WorldgenSpecSchema,
 } from "./schemas";
+import { ShapeSpecSchema } from "./schemas-shape";
 
 /** Query strings arrive as text; numbers are converted, blanks are treated as absent. */
 const blankToUndefined = (v: unknown) => (v === "" ? undefined : v);
@@ -134,6 +135,8 @@ export const RecipeBody = z
     domains: DomainsSchema.optional(),
     /** Vendor SLA, spare parts and surcharge; left out, the defaults of lead-times.md. */
     leadTimes: LeadTimesSchema.optional(),
+    /** An operation instead of one incident (ADR-0094): the scenario is then not used. */
+    operation: OperationSchema.optional(),
   })
   .strict()
   .refine((r) => !(r.seeds && r.runs), {
@@ -168,6 +171,7 @@ export const ForkBody = z
         sop: z.enum(["none", "given", "search"]).optional(),
         domains: DomainsSchema.optional(),
         leadTimes: LeadTimesSchema.optional(),
+        operation: OperationSchema.optional(),
       })
       .strict(),
     name: NameSchema.optional(),

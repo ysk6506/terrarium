@@ -16,7 +16,9 @@ export {
 export { cutTo, pathFor } from "./path";
 export {
   advance,
+  type Bar,
   type Bubble,
+  barsOf,
   bubbleOf,
   clamp,
   DEFAULT_SPEED,

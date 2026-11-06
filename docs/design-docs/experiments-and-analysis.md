@@ -11,14 +11,16 @@ covers:
   - packages/core/src/analysis/leaderboard.ts
   - packages/core/src/analysis/twin.ts
   - packages/core/src/world/run-events.ts
+  - packages/core/src/world/incidents.ts
+  - apps/server/src/runtime/executor-operation.ts
   - packages/core/src/session/run-events.ts
-covers_hash: ca6f4241fe4a18cd
+covers_hash: 09679a0e2c54de08
 verification_log:
-  - "2026-11-06: 사건 기록 절(RunEvent 세 종류, 두 시계, 조회 경로)을 world/run-events.ts와 session/run-events.ts와 대조해 더했다"
-  - "2026-11-06: 사건 기록 절에 서비스 복구를 사건에서 읽는다는 문단을 더했고 service-events.ts, recovery.ts와 대조했다 (REQ-088)"
   - "2026-11-06: 레시피의 선택 칸 셋(escalation, faultScope, sop)과 벤치마크 키 규칙, 포크 차이 문구를 recipe.ts·lineage.ts와, 사건 기록의 human 사건과 원인 human을 world/run-events.ts·session/run-events.ts와 대조해 더했다 (REQ-080~083)"
   - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: 2a·2b 합치기"
+  - "2026-11-06: 운영 실험 절과 link 사건 행을 더하고 recipe.ts의 벤치마크 키(operation)·lineage.ts의 운영 문구와 대조했다 (REQ-090)"
+  - "2026-11-06: 마지막 구현(연결 사건 link, executor-operation, 운영 툴 필수 검사, operator 설명)과 다시 대조했다. 본문은 그대로 맞다 (REQ-090)"
 ---
 # 실험과 결과 분석 (REQ-015, REQ-030~033, REQ-037~040)
 
@@ -66,6 +68,9 @@ verification_log:
 ## 내 도메인과 담당자 설정 (REQ-093)
 레시피에 `domains`(내 도메인, 없으면 모든 도메인)와 `leadTimes`(벤더 SLA·예비 부품·야간 가산·일을 맡는 때)가 선택으로 있다. 둘 다 과제를 바꾸므로 **벤치마크 키에 들어간다**(안 정한 레시피의 키는 그대로다). 포크 비교는 "내 도메인", "담당자·벤더 설정"으로 바뀐 것을 말하고 세트가 갈린다고 알린다. 실행 결과(`RunResult.scope`)는 도메인과 설정을 남기고, 점수(`Score.handoff`)는 넘긴 일을 남긴다. 자세히는 [도메인과 가상 담당자](domains-and-counterparts.md).
 
+## 운영 실험 (REQ-090)
+레시피에 `operation`(운영 시간·시간 방식·고장 출처·연쇄/동시 확률·알람마다 깨우기·지시문·호출 상한)이 있으면 그 실험은 **운영**이다. 시나리오가 없고(`scenarioId`는 `operation`) 시간 정책은 쓰이지 않는다. 한 시드가 하루이므로 "실행 n번"은 "n개의 다른 하루"다. **벤치마크 키**에는 길이·시간 방식(실시간/빨리 감기 N배)·고장 출처·고장률·연쇄·동시가 들어가고 지시문과 알람마다 깨우기는 안 들어간다(에이전트의 조건). 결과(`RunResult.operation`)는 설정, 지표, 서비스 피해 값, 계획한 고장 수와 일어나지 않게 한 수를 담고, 지표는 사건 기록에서 다시 계산할 수 있다(하네스가 토큰을 알려 주면 화면이 토큰을 넣어 다시 센다). 실험 화면에는 합격·점수가 없고 실행 화면 첫 줄이 가용률·놓친 알람·탐지 지연이다. 자세한 규칙은 [운영 모드](operation-mode.md).
+
 ## 사건 기록 (REQ-083)
 
 실행은 끝나면 **사건의 나열**이 된다([ADR-0088](adr/0088-data-reuse.md) 1번). 세션이 쓰는 대로 한 줄씩 덧붙이고(`RunLog`) 고치거나 덮어쓰지 않는다. 다시 보기(시간 막대, 토폴로지), 결과 화면 첫 줄, 나중의 학습 데이터가 모두 이 하나를 읽는다. 조회는 `GET /api/runs/:id/events?from&to`(세계 초 구간)이고, 실행 중에는 지금까지 쌓인 것을 `live: true`로 준다. 끝난 실행의 기록은 결과(`RunResult.events`)에 들어 있다. 기록이 생기기 전에 저장된 실행은 툴 호출과 끝난 이유만으로 만들어 준다(`legacyEvents`, 세계 사건이 없다).
@@ -77,6 +82,7 @@ verification_log:
 | 툴 호출 `tool` | 누가(하네스·에이전트·모델은 조회 응답의 `who`), 무엇을(`tool`, `args`), 대상 장비(`targets`), 하는 일(`effect`: observe 조회, act 조치, wait 기다림, answer 답), 결과(`ok`, `error`), 한 줄 요약(`summary`: 무엇이 바뀌었나, 왜 실패했나), `t`, `real` |
 | 세계 사건 `world` | 고장·알람·전원·설정값 같은 세계 명령(`command`)과 누가 일으켰나(`cause`), `t`, `real`. 같은 순간이면 호출 앞의 사건, 호출, 호출이 낳은 사건 순서다 |
 | 사람 사건 `human` | 에이전트가 사람에게 물은 것 `asked`(요청문, 최근 툴 호출 5개), 사람이 세계에서 한 조치 `acted`(툴, 인자, 바뀐 것), 답 `answered`(누가: 사람·설정·아무도 아님, 어떻게: 글·조치·툴 더 줌·끝냄, 기다린 실제 초) (REQ-081) |
+| 연결 사건 `link` | 운영에서 에이전트가 하네스를 잃었다 `lost`(이유)가 다시 이어졌다 `back`. 세션이 아니라 실행기가 쓴다 |
 | 점수 사건 `score` | `agent_start`(과제를 받음, 세는 시작점 `scenarioStart`), `closed`(끝난 이유, 진단했나), `graded`(총점, 합격, 정답 장비 `rootCause`) |
 
 사람이 세계에서 한 조치는 세계 사건의 원인이 `human`이다. 그래서 에이전트의 행동으로 세어지지 않는다(채점은 에이전트의 툴 호출이 낳은 행동만 본다).
