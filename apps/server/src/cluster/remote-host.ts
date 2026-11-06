@@ -4,7 +4,7 @@
  * cannot tell a node on another machine from a thread in this process.
  */
 import type { EndReason } from "@terrarium/core/oracle";
-import type { CallResult, RunResult } from "@terrarium/core/session";
+import type { CallResult, HumanAct, HumanResolution, RunResult } from "@terrarium/core/session";
 import {
   type HostedSession,
   identityOf,
@@ -14,6 +14,7 @@ import {
 } from "../runtime";
 import {
   type ErrorReply,
+  type HumanReply,
   NEED_BLUEPRINT,
   NODE_DRAINING,
   NODE_FULL,
@@ -151,7 +152,7 @@ export class RemoteNode {
 
 export class RemoteSession implements HostedSession {
   readonly task: OpenReply["task"];
-  readonly specs: OpenReply["specs"];
+  specs: OpenReply["specs"];
   private ended: EndReason | undefined;
   private gone = false;
   private readonly timer: ReturnType<typeof setInterval> | undefined;
@@ -199,6 +200,25 @@ export class RemoteSession implements HostedSession {
     } catch (err) {
       throw this.node.translate(err);
     }
+  }
+
+  private async human(op: object): Promise<HumanReply> {
+    try {
+      const reply = await this.node.request<HumanReply>("POST", this.path("/human"), op);
+      this.specs = reply.specs;
+      if (reply.result?.ended !== undefined) this.ended = reply.result.ended;
+      return reply;
+    } catch (err) {
+      throw this.node.translate(err);
+    }
+  }
+
+  async humanAct(tool: string, args: Record<string, unknown>): Promise<HumanAct> {
+    return (await this.human({ kind: "act", tool, args })).act as HumanAct;
+  }
+
+  async resolveHuman(resolution: HumanResolution): Promise<CallResult> {
+    return (await this.human({ kind: "resolve", resolution })).result as CallResult;
   }
 
   async finish(reason?: EndReason): Promise<RunResult> {

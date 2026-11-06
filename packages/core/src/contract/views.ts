@@ -26,12 +26,14 @@ import type { ScenarioIssue } from "@terrarium/core/scenario";
 import type {
   Calibration,
   CommonReach,
+  HumanAct,
+  HumanRequest,
   MetricSeries,
   TimelineEntry,
 } from "@terrarium/core/session";
 import type { ImportReport } from "@terrarium/core/sources/realimport";
 import type { WorldgenResult } from "@terrarium/core/sources/worldgen";
-import type { CallEffect } from "@terrarium/core/tools";
+import type { CallEffect, Runbook } from "@terrarium/core/tools";
 import type { Blueprint, Issue, RunEvent } from "@terrarium/core/world";
 
 export interface HarnessView extends HarnessInfo {
@@ -236,5 +238,38 @@ export type ActivityEvent =
       readonly targets: readonly string[];
     }
   | { readonly type: "end"; readonly runId: string };
+
+/** A first draft of a runbook from the best run of a scenario, and where it came from; empty when no run is finished. */
+export interface RunbookDraftView {
+  readonly runbook?: Runbook;
+  readonly from?: {
+    readonly runId: string;
+    readonly experimentId: string;
+    readonly experimentName: string;
+    readonly score: number;
+  };
+}
+
+/** A run that waits for a person to answer its `ask_human` (ADR-0087 item 4), as the card shows it. */
+export interface EscalationCard {
+  readonly runId: string;
+  readonly experimentId: string;
+  readonly experimentName: string;
+  readonly owner: string;
+  readonly agent: string;
+  /** When the agent asked (ISO, wall clock). */
+  readonly since: string;
+  readonly request: HumanRequest;
+  /** The tools the agent has now, and the ones a person could hand over. */
+  readonly tools: readonly string[];
+  readonly grantable: readonly { readonly name: string; readonly title: string }[];
+  /** What people already did for it while it waited. */
+  readonly acts: readonly HumanAct[];
+}
+
+/** What came of an answer: the card again while the run still waits (after a person's action), nothing once it goes on. */
+export interface EscalationAnswered {
+  readonly card?: EscalationCard;
+}
 
 export type { WorldSummary };

@@ -6,6 +6,7 @@
 import { timingSafeEqual } from "node:crypto";
 import type { EndReason } from "@terrarium/core/oracle";
 import type { AgentTask } from "@terrarium/core/scenario";
+import type { CallResult, HumanAct, HumanResolution } from "@terrarium/core/session";
 import type { ToolSpec } from "@terrarium/core/tools";
 import type { Blueprint } from "@terrarium/core/world";
 import type { PlainSessionConfig, WorkerError } from "../runtime";
@@ -41,6 +42,18 @@ export interface OpenRequest {
 export interface OpenReply {
   readonly id: string;
   readonly task: AgentTask;
+  readonly specs: readonly ToolSpec[];
+}
+
+/** What a person does for a waiting agent on a session that lives on a node (ADR-0087 item 4). */
+export type HumanOp =
+  | { readonly kind: "act"; readonly tool: string; readonly args: Record<string, unknown> }
+  | { readonly kind: "resolve"; readonly resolution: HumanResolution };
+
+export interface HumanReply {
+  readonly act?: HumanAct;
+  readonly result?: CallResult;
+  /** The tools the agent has now. */
   readonly specs: readonly ToolSpec[];
 }
 

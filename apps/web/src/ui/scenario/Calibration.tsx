@@ -6,6 +6,7 @@
 import type { BaselineRun, Calibration as CalibrationResult } from "@terrarium/core/session";
 import { probeLines, scenario } from "../../logic";
 import { Button, Note } from "../kit";
+import { ToolPickMatrix } from "./ToolPickMatrix";
 import type { ScenarioEditor } from "./useScenario";
 
 function score(total: number | null): string {
@@ -43,6 +44,44 @@ function ProbeList({ view }: { readonly view: CalibrationResult }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+/** The warnings of the check, or the good news when there are none, and what to do about them. */
+function Warnings({
+  view,
+  asksNoAction,
+  addAction,
+  openSheet,
+}: {
+  readonly view: CalibrationResult;
+  readonly asksNoAction: boolean;
+  readonly addAction: () => void;
+  readonly openSheet: () => void;
+}) {
+  if (view.warnings.length === 0)
+    return <Note tone="good">모르는 쪽과 아는 쪽의 점수가 확실히 갈려요.</Note>;
+  return (
+    <>
+      <ul className="issues" aria-label="점검 결과">
+        {view.warnings.map((w) => (
+          <li key={w} className="issue issue-static">
+            <span className="issue-mark" />
+            <span>{w}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="row" style={{ gap: 8 }}>
+        {asksNoAction && (
+          <Button size="small" icon="plus" onClick={addAction}>
+            조치 항목 더하기
+          </Button>
+        )}
+        <Button kind="quiet" size="small" onClick={openSheet}>
+          채점표 열기
+        </Button>
+      </div>
+    </>
   );
 }
 
@@ -91,30 +130,13 @@ export function Calibration({
             ))}
           </ul>
           <ProbeList view={view} />
-          {view.warnings.length === 0 ? (
-            <Note tone="good">모르는 쪽과 아는 쪽의 점수가 확실히 갈려요.</Note>
-          ) : (
-            <>
-              <ul className="issues" aria-label="점검 결과">
-                {view.warnings.map((w) => (
-                  <li key={w} className="issue issue-static">
-                    <span className="issue-mark" />
-                    <span>{w}</span>
-                  </li>
-                ))}
-              </ul>
-              <div className="row" style={{ gap: 8 }}>
-                {asksNoAction && (
-                  <Button size="small" icon="plus" onClick={addAction}>
-                    조치 항목 더하기
-                  </Button>
-                )}
-                <Button kind="quiet" size="small" onClick={openSheet}>
-                  채점표 열기
-                </Button>
-              </div>
-            </>
-          )}
+          {view.toolPick && <ToolPickMatrix check={view.toolPick} />}
+          <Warnings
+            view={view}
+            asksNoAction={asksNoAction}
+            addAction={addAction}
+            openSheet={openSheet}
+          />
         </>
       )}
     </div>

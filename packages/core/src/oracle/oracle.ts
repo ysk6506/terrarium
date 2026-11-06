@@ -53,6 +53,7 @@ export type EndReason =
   | "tool_budget"
   | "agent_finished"
   | "agent_error"
+  | "escalated"
   | "cancelled";
 
 export const END_REASON_LABELS: Readonly<Record<EndReason, string>> = {
@@ -61,6 +62,7 @@ export const END_REASON_LABELS: Readonly<Record<EndReason, string>> = {
   tool_budget: "툴 호출 상한 도달",
   agent_finished: "진단 없이 종료",
   agent_error: "에이전트 오류",
+  escalated: "사람에게 넘기다 끝남",
   cancelled: "멈춤",
 };
 

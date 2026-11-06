@@ -12,7 +12,12 @@ function started(): Session {
     "sample",
   );
   if (!scenario) throw new Error("template");
-  const session = Session.create({ blueprint, scenario, tools: DEFAULT_TOOLSET, seed: 7 });
+  const session = Session.create({
+    blueprint,
+    scenario,
+    tools: [...DEFAULT_TOOLSET, "get_impact"],
+    seed: 7,
+  });
   session.start();
   return session;
 }

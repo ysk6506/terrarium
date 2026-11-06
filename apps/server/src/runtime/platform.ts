@@ -12,6 +12,7 @@ import type { TryOptions } from "./connection-try";
 import { Connections } from "./connections";
 import type { PlatformContext, Viewer } from "./context";
 import { Dispatcher } from "./dispatcher";
+import { Escalations } from "./escalations";
 import { EventBus, RunLogs } from "./events";
 import { executeRun, type ToolGateway } from "./executor";
 import { Experiments, summarize } from "./experiments";
@@ -128,6 +129,8 @@ export class Platform {
   readonly results: Results;
   readonly events = new EventBus();
   readonly logs = new RunLogs();
+  /** Runs that wait for a person to answer their `ask_human` (ADR-0087 item 4). */
+  readonly escalations = new Escalations();
   readonly dispatcher: Dispatcher;
   readonly connections: Connections;
   readonly agentVersions: AgentVersions;
@@ -155,6 +158,7 @@ export class Platform {
       host: options.host,
       stamps,
       logs: this.logs,
+      escalations: this.escalations,
       emit: (id: string, e: Parameters<EventBus["emit"]>[1]) => this.events.emit(id, e),
       activity: (worldId: string, e: Parameters<EventBus["emitWorld"]>[1]) =>
         this.events.emitWorld(worldId, e),

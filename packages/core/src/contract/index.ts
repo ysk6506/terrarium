@@ -29,6 +29,7 @@ export {
   UnavailableError,
 } from "./errors";
 export { type ApiIssue, issuesOf, koreanErrorMap, type Parsed, parseWith, pathOf } from "./korean";
+export type { EscalationAnswerRequest } from "./requests";
 export {
   AddAgentVersionBody,
   type AddAgentVersionRequest,
@@ -117,6 +118,8 @@ export type {
   ActivityWho,
   CalibrationView,
   DryRunView,
+  EscalationAnswered,
+  EscalationCard,
   ExperimentEvent,
   ExperimentSummary,
   ExperimentView,
@@ -125,6 +128,7 @@ export type {
   ImportedWorld,
   LeaderboardView,
   MetaView,
+  RunbookDraftView,
   RunEventsView,
   RunSummary,
   RunView,

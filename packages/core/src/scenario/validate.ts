@@ -12,6 +12,7 @@
  * SC021 answer not caused by any block (warn)
  */
 import { josa, type Particle, withJosa } from "@terrarium/core/kernel";
+import { runbookProblems } from "@terrarium/core/tools";
 import { diagnosisLabel, isDiagnosisType, isTaskType } from "@terrarium/core/world";
 import { BLOCK_SPECS, blockSpec, outputsOf, type ParamSpec } from "./blocks";
 import { MISTAKE_OF_BLOCK } from "./blocks-net";
@@ -84,6 +85,7 @@ export function validateScenario(doc: ScenarioDoc, env: ScenarioEnv): ScenarioIs
     ...checkGraph(doc),
     ...doc.expectations.flatMap((e) => checkExpectation(e, env)),
     ...scoringWarnings(doc),
+    ...runbookWarnings(doc),
   ];
 }
 
@@ -309,6 +311,13 @@ function checkExpectation(e: Expectation, env: ScenarioEnv): ScenarioIssue[] {
       expectationId: e.id,
     }),
   ];
+}
+
+/** A runbook with an empty step or a tool that does not exist still runs, but it cannot be followed as written. */
+function runbookWarnings(doc: ScenarioDoc): ScenarioIssue[] {
+  return doc.runbook
+    ? runbookProblems(doc.runbook).map((message) => warning("SC022", `절차서: ${message}`))
+    : [];
 }
 
 const faultLabel = (type: string) => (isDiagnosisType(type) ? diagnosisLabel(type) : type);

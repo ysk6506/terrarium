@@ -8,6 +8,7 @@
  * Entities are referenced by id, so a scenario belongs to one world (`worldId`). Positions and labels
  * are layout only: they never change the scenario's digest (see digest.ts).
  */
+import type { Runbook } from "@terrarium/core/tools";
 
 export const SCENARIO_SCHEMA_VERSION = 1;
 
@@ -205,6 +206,8 @@ export interface ScenarioDoc {
   readonly scoring?: "recovery";
   /** Which built-in template it came from, if any (informational). */
   readonly template?: string;
+  /** The team's way of handling this situation (ADR-0087 item 6); the experiment decides whether the agent gets it. */
+  readonly runbook?: Runbook;
 }
 
 /** An empty scenario with just a start block, as the editor creates it. */

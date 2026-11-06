@@ -7,12 +7,14 @@ import type {
   CalibrationView,
   CreateScenarioRequest,
   DryRunView,
+  RunbookDraftView,
   SavedScenario,
   UpdateScenarioRequest,
 } from "@terrarium/core/contract";
-import type { ScenarioRecord } from "@terrarium/core/experiments";
+import type { Experiment, RunRecord, ScenarioRecord } from "@terrarium/core/experiments";
 import { ConflictError, InvalidValueError } from "@terrarium/core/kernel";
 import {
+  draftFromCalls,
   emptyScenario,
   hasErrors,
   type ScenarioDoc,
@@ -50,6 +52,31 @@ export class Scenarios {
 
   async get(id: string): Promise<ScenarioRecord> {
     return must(await this.ctx.store.getScenario(id), `시나리오 ${id}`);
+  }
+
+  /**
+   * A first draft of the scenario's runbook from the best run so far (ADR-0087 item 6): among the runs of every
+   * experiment on this scenario, the one with the highest score (the earliest on a tie), as its tool calls in order.
+   */
+  async runbookDraft(id: string): Promise<RunbookDraftView> {
+    const scenario = await this.get(id);
+    let best: { score: number; run: RunRecord; experiment: Experiment } | undefined;
+    for (const experiment of await this.ctx.store.listExperiments({ scenarioId: id }))
+      for (const run of await this.ctx.store.listRuns(experiment.id)) {
+        const score = run.result?.score.total;
+        if (run.status !== "completed" || typeof score !== "number") continue;
+        if (!best || score > best.score) best = { score, run, experiment };
+      }
+    if (!best || !best.run.result) return {};
+    return {
+      runbook: draftFromCalls(best.run.result.toolCalls, `${scenario.name} 절차서 초안`),
+      from: {
+        runId: best.run.id,
+        experimentId: best.experiment.id,
+        experimentName: best.experiment.name,
+        score: best.score,
+      },
+    };
   }
 
   async issuesOf(doc: ScenarioDoc): Promise<ScenarioIssue[]> {

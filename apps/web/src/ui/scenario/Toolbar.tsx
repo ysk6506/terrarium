@@ -8,7 +8,7 @@ import { Icon } from "../icons";
 import { Button } from "../kit";
 import type { ScenarioEditor } from "./useScenario";
 
-export type Tab = "flow" | "sheet";
+export type Tab = "flow" | "sheet" | "runbook";
 
 function Name({ e }: { readonly e: ScenarioEditor }) {
   const [name, setName] = useState(e.record.name);
@@ -39,12 +39,14 @@ function ModeSwitch({
   const tabs: ReadonlyArray<readonly [Tab, string]> = [
     ["flow", "흐름"],
     ["sheet", `채점표 (${e.doc.expectations.length})`],
+    ["runbook", `절차서${e.doc.runbook ? ` (${e.doc.runbook.steps.length})` : ""}`],
   ];
-  // Arrow keys move between the two, as in every tab list; only the chosen one is a tab stop.
+  // Arrow keys move between the tabs, as in every tab list; only the chosen one is a tab stop.
   const move = (ev: ReactKeyboardEvent<HTMLDivElement>) => {
     if (ev.key !== "ArrowRight" && ev.key !== "ArrowLeft") return;
     ev.preventDefault();
-    const next = tab === "flow" ? 1 : 0;
+    const at = tabs.findIndex(([id]) => id === tab);
+    const next = (at + (ev.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
     setTab(tabs[next]?.[0] ?? tab);
     (ev.currentTarget.querySelectorAll("button")[next] as HTMLElement | undefined)?.focus();
   };

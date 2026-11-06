@@ -113,11 +113,15 @@ export class ClusterHost implements SessionHost {
     };
     return {
       task: session.task,
-      specs: session.specs,
+      get specs() {
+        return session.specs;
+      },
       get endedBy() {
         return session.endedBy;
       },
       call: (tool, args) => session.call(tool, args),
+      humanAct: (tool, args) => session.humanAct(tool, args),
+      resolveHuman: (resolution) => session.resolveHuman(resolution),
       finish: (reason) => session.finish(reason),
       dispose: () => {
         free();

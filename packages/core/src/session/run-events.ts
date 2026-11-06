@@ -5,7 +5,17 @@
  */
 import { ACTION_LABELS, type ToolCallRecord } from "@terrarium/core/scenario";
 import { callEffect, callTargets } from "@terrarium/core/tools";
-import type { RunEvent, ToolEvent, World, WorldCommand, WorldEvent } from "@terrarium/core/world";
+import type {
+  HumanEvent,
+  RunEvent,
+  ToolEvent,
+  World,
+  WorldCommand,
+  WorldEvent,
+} from "@terrarium/core/world";
+
+/** A person's event as it is written: the log numbers it. */
+type HumanInput = HumanEvent extends infer E ? (E extends unknown ? Omit<E, "seq"> : never) : never;
 
 /** What came of a call in a few words: why it failed, or what it changed (names, not ids, when given). */
 function summaryOf(call: ToolCallRecord, nameOf: (id: string) => string): string {
@@ -76,6 +86,11 @@ export class RunLog {
       summary: summaryOf(call, this.nameOf),
     };
     this.add([...before, event, ...after]);
+  }
+
+  /** The agent asked a person, a person did something for it, or the question was answered (ADR-0087 item 4). */
+  human(event: HumanInput): void {
+    this.add([...this.worldEvents(), { ...event, seq: 0 } as RunEvent]);
   }
 
   /** World events that happened with no call to carry them (time passing on its own). */

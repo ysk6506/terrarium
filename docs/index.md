@@ -4,6 +4,7 @@ kind: reference
 status: active
 last_verified: 2026-11-06
 verification_log:
+  - "2026-11-06: tool-scope-and-sop.md와 ADR-0105 링크를 더했다"
   - "2026-11-05: ADR-0101 링크를 더했다"
   - "2026-11-05: harness-e2e.md 링크를 더했다"
   - "2026-11-05: ADR-0082 링크를 더했다"
@@ -28,6 +29,7 @@ verification_log:
 - [시나리오 모델](design-docs/scenario-model.md)
 - [세계 소스 — 생성과 가져오기](design-docs/world-sources.md)
 - [실험과 결과 분석](design-docs/experiments-and-analysis.md)
+- [툴 범위, 에스컬레이션, 절차서 — 실험 설계자가 정하는 세 가지 변수](design-docs/tool-scope-and-sop.md)
 - [HTTP API 계약](design-docs/http-api.md)
 - [하네스 프로토콜](design-docs/harness-protocol.md)
 - [진짜 하네스로 끝까지 — LangGraph, OpenCode, OpenClaw 실측과 재현 절차](design-docs/harness-e2e.md)
@@ -158,6 +160,7 @@ verification_log:
 - [0086 세계 만들기 재설계로 달라진 글과 흐름의 시험 기대값을 고친다](design-docs/adr/0086-world-making-amend-tests.md)
 - [0082 느린 기계에서는 멈추지 않고 줄인다 — 품질·부하 시험 기대값을 고친다](design-docs/adr/0082-quality-degrade-amend-tests.md)
 - [0104 복구 우선 채점을 구현하면서 시험 세 개의 기대값을 고친다](design-docs/adr/0104-recovery-scoring-amend-tests.md)
+- [0105 툴 범위·에스컬레이션·절차서를 구현하면서 시험의 기대값을 고친다](design-docs/adr/0105-tool-scope-sop-amend-tests.md)
 - [0097 토폴로지 보기 ①이 건드리는 보호 경로 — 새 코어 단위, UX 여정, 두 문서의 앞부분](design-docs/adr/0097-topology-amend-tests.md)
 
 ## 계획과 부채

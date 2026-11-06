@@ -9,6 +9,8 @@ import type { EndReason } from "@terrarium/core/oracle";
 import type { AgentTask } from "@terrarium/core/scenario";
 import {
   type CallResult,
+  type HumanAct,
+  type HumanResolution,
   type RunResult,
   Session,
   type SessionConfig,
@@ -28,10 +30,15 @@ export type PlainSessionConfig = Omit<SessionConfig, "catalog" | "warm" | "prepa
 
 export interface HostedSession {
   readonly task: AgentTask;
+  /** The tools the agent has now; a person who is asked for help can hand over more (ADR-0087 item 4). */
   readonly specs: readonly ToolSpec[];
   /** Set once the session has ended (diagnosis, budget, time), before finish() is called. */
   readonly endedBy: EndReason | undefined;
   call(tool: string, args: Record<string, unknown>): Promise<CallResult>;
+  /** A person changes the world for the agent while its `ask_human` call waits (ADR-0087 item 4). */
+  humanAct(tool: string, args: Record<string, unknown>): Promise<HumanAct>;
+  /** A person has answered: the waiting call gets its result and the run goes on. */
+  resolveHuman(resolution: HumanResolution): Promise<CallResult>;
   finish(reason?: EndReason): Promise<RunResult>;
   /** The run's events after the first `count` of them, as far as the host has seen (the live topology view, REQ-083); a session on another cluster node has none. */
   eventsSince?(count: number): readonly RunEvent[];
@@ -55,7 +62,6 @@ const REALTIME_TICK_MS = 1000;
  */
 export class LocalSession implements HostedSession {
   readonly task: AgentTask;
-  readonly specs: readonly ToolSpec[];
   private ended: EndReason | undefined;
   private readonly timer: ReturnType<typeof setInterval> | undefined;
   private readonly startedWall = wallClockMs();
@@ -66,11 +72,14 @@ export class LocalSession implements HostedSession {
     private readonly onEnd?: (reason: EndReason) => void,
   ) {
     this.task = session.start();
-    this.specs = session.toolSpecs();
     this.timer =
       session.timePolicy.kind === "realtime"
         ? setInterval(() => this.sync(), REALTIME_TICK_MS)
         : undefined;
+  }
+
+  get specs(): readonly ToolSpec[] {
+    return this.session.toolSpecs();
   }
 
   get endedBy(): EndReason | undefined {
@@ -103,6 +112,16 @@ export class LocalSession implements HostedSession {
   async call(tool: string, args: Record<string, unknown>): Promise<CallResult> {
     if (this.timer) this.sync();
     const result = this.session.call(tool, args);
+    this.markEnded(result.ended);
+    return result;
+  }
+
+  async humanAct(tool: string, args: Record<string, unknown>): Promise<HumanAct> {
+    return this.session.humanAct(tool, args);
+  }
+
+  async resolveHuman(resolution: HumanResolution): Promise<CallResult> {
+    const result = this.session.resolveHuman(resolution);
     this.markEnded(result.ended);
     return result;
   }
@@ -142,11 +161,15 @@ export class InProcessHost implements SessionHost {
     };
     return {
       task: local.task,
-      specs: local.specs,
+      get specs() {
+        return local.specs;
+      },
       get endedBy() {
         return local.endedBy;
       },
       call: (tool, args) => local.call(tool, args),
+      humanAct: (tool, args) => local.humanAct(tool, args),
+      resolveHuman: (resolution) => local.resolveHuman(resolution),
       finish: (reason) => local.finish(reason),
       eventsSince: (count) => local.eventsSince(count),
       dispose,

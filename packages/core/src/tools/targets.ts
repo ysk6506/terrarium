@@ -37,6 +37,8 @@ export const TARGET_ARGS: Readonly<Record<string, readonly string[]>> = {
   run_command: ["host"],
   wait: [],
   submit_diagnosis: ["rootCause"],
+  ask_human: [],
+  search_runbooks: [],
 };
 
 /** The entity ids a call names, in argument order, without repeats; nothing for a tool that names none. */

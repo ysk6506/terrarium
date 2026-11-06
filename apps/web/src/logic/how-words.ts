@@ -4,6 +4,7 @@
  * kept here, apart from the screen, so a test can hold them to the style rules in the glossary.
  */
 import type { ToolCategory } from "@terrarium/core/tools";
+import { toolTexts } from "./tool-words";
 
 /** How many times a scenario is run when nobody says: enough to tell skill from luck, still quick. */
 export const RECOMMENDED_RUNS = 5;
@@ -68,5 +69,6 @@ export function howTexts(): string[] {
     REALTIME_LABEL,
     REALTIME_HELP,
     VERSION_HELP,
+    ...toolTexts(),
   ];
 }

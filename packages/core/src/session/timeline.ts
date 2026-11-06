@@ -31,8 +31,12 @@ const WHAT: Readonly<Record<TraceEntry["what"], string>> = {
   timeout: "시간 초과",
   chose: "선택",
   expired: "고장 자동 복구",
+  skipped: "일어나지 않음(준 툴로 풀 수 없는 고장)",
   error: "실행 못 함",
 };
+
+/** Entries whose detail is an internal id and so is not shown. */
+const DETAIL_IS_INTERNAL: ReadonlySet<TraceEntry["what"]> = new Set(["expired", "skipped"]);
 
 /** How an entity is named on screen; without a lookup, by its id. */
 export type NameOf = (id: string) => string;
@@ -50,8 +54,8 @@ function scenarioText(doc: ScenarioDoc, entry: TraceEntry, nameOf: NameOf): stri
   const detail =
     entry.what === "chose"
       ? choiceText(node?.type, entry.detail)
-      : entry.what === "expired"
-        ? undefined // the detail is the fault's internal id
+      : DETAIL_IS_INTERNAL.has(entry.what)
+        ? undefined // the detail is the fault's internal id or type
         : entry.detail;
   return detail ? `${base}: ${detail}` : base;
 }

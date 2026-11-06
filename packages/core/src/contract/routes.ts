@@ -4,16 +4,7 @@
  * renamed field or path breaks the type check instead of a user's click.
  */
 
-import type { ScenarioRecord, WorldRecord } from "@terrarium/core/experiments";
 import type { z } from "zod";
-import type {
-  AgentHistoryView,
-  ConnectionCheck,
-  ConnectionView,
-  ConnectorSpec,
-  TelemetryAdapterList,
-  TryResult,
-} from "./connections";
 import {
   AddAgentVersionBody,
   AddRunsBody,
@@ -25,6 +16,7 @@ import {
   CreateWorldBody,
   DryRunBody,
   EditAgentVersionBody,
+  EscalationAnswerBody,
   ExperimentQuery,
   ForkBody,
   GenerateWorldBody,
@@ -39,24 +31,8 @@ import {
   UpdateScenarioBody,
   UpdateWorldBody,
 } from "./requests";
-import type {
-  CalibrationView,
-  DryRunView,
-  ExperimentSummary,
-  ExperimentView,
-  GeneratedWorld,
-  ImportedWorld,
-  LeaderboardView,
-  MetaView,
-  RunEventsView,
-  RunView,
-  RunWorldView,
-  SavedScenario,
-  SavedWorld,
-  ShareView,
-  TelemetryView,
-  WorldSummary,
-} from "./views";
+
+export type { Responses } from "./responses";
 
 export type Method = "GET" | "POST" | "PUT" | "DELETE";
 /** What the response body is; anything but json is a document to show or download. */
@@ -350,6 +326,25 @@ export const ROUTES = {
     summary: "실행 하나: 결과, 분석, 타임라인",
     produces: json,
   },
+  runbookDraft: {
+    method: "GET",
+    path: "/api/scenarios/:id/runbook-draft",
+    summary: "최고 점수 실행의 툴 호출 순서로 만든 절차서 초안",
+    produces: json,
+  },
+  listEscalations: {
+    method: "GET",
+    path: "/api/escalations",
+    summary: "사람을 기다리는 실행들 (에이전트가 ask_human으로 물은 것)",
+    produces: json,
+  },
+  answerEscalation: {
+    method: "POST",
+    path: "/api/runs/:id/escalation",
+    summary: "기다리는 실행에 답하기: 글로 답, 대신 조치, 툴 더 주기, 끝내기",
+    body: EscalationAnswerBody,
+    produces: json,
+  },
   runEvents: {
     method: "GET",
     path: "/api/runs/:id/events",
@@ -404,59 +399,6 @@ export const ROUTES = {
 } as const satisfies Record<string, RouteSpec>;
 
 export type RouteName = keyof typeof ROUTES;
-
-/** JSON response of each route; document routes answer with text. */
-export interface Responses {
-  meta: MetaView;
-  listConnectors: ConnectorSpec[];
-  listTelemetryAdapters: TelemetryAdapterList;
-  listConnections: ConnectionView[];
-  tryConnection: TryResult;
-  checkConnection: ConnectionCheck;
-  createConnection: ConnectionView;
-  updateConnection: ConnectionView;
-  keepConnection: ConnectionView;
-  recheckConnection: ConnectionView;
-  deleteConnection: { readonly deleted: boolean };
-  listAgentVersions: AgentHistoryView;
-  addAgentVersion: AgentHistoryView;
-  editAgentVersion: AgentHistoryView;
-  deleteAgentVersion: AgentHistoryView;
-  listWorlds: WorldSummary[];
-  getWorld: WorldRecord;
-  createWorld: SavedWorld;
-  generateWorld: GeneratedWorld;
-  importWorld: ImportedWorld;
-  updateWorld: SavedWorld;
-  deleteWorld: { readonly deleted: boolean };
-  listScenarios: ScenarioRecord[];
-  getScenario: ScenarioRecord;
-  createScenario: SavedScenario;
-  updateScenario: SavedScenario;
-  deleteScenario: { readonly deleted: boolean };
-  dryRunScenario: DryRunView;
-  calibrateScenario: CalibrationView;
-  listExperiments: ExperimentSummary[];
-  getExperiment: ExperimentView;
-  createExperiment: ExperimentView;
-  cancelExperiment: ExperimentView;
-  forkExperiment: ExperimentView;
-  addRuns: ExperimentView;
-  experimentEvents: string;
-  worldActivity: string;
-  experimentReport: string;
-  experimentDiagnoses: string;
-  createShare: ShareView;
-  deleteShare: { readonly deleted: boolean };
-  getRun: RunView;
-  runEvents: RunEventsView;
-  runWorld: RunWorldView;
-  runTelemetry: TelemetryView;
-  leaderboards: LeaderboardView[];
-  twinDiagnoses: string;
-  twinBrief: string;
-  sharedReport: string;
-}
 
 type Spec<N extends RouteName> = (typeof ROUTES)[N];
 export type BodyOf<N extends RouteName> = Spec<N> extends { body: z.ZodTypeAny }

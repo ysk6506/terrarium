@@ -65,7 +65,7 @@ export function play(script: Script, seed = 1, templateId = "cooling-failure"): 
   const session = Session.create({
     blueprint,
     scenario: template.build(new BlueprintIndex(blueprint), "sample"),
-    tools: DEFAULT_TOOLSET,
+    tools: [...DEFAULT_TOOLSET, "get_impact"],
     seed,
   });
   session.start();

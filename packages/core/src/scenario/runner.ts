@@ -22,7 +22,16 @@ export interface AgentTask {
 export interface TraceEntry {
   readonly t: number;
   readonly nodeId: string;
-  readonly what: "ran" | "waiting" | "resumed" | "met" | "timeout" | "chose" | "expired" | "error";
+  readonly what:
+    | "ran"
+    | "waiting"
+    | "resumed"
+    | "met"
+    | "timeout"
+    | "chose"
+    | "expired"
+    | "skipped"
+    | "error";
   readonly detail?: string;
 }
 
@@ -41,6 +50,14 @@ interface Token {
 
 const MAX_STEPS_PER_TICK = 10_000;
 
+export interface RunnerOptions {
+  /**
+   * Whether a fault is left out of the run (ADR-0087 item 5): an experiment that limits faults to the tools it gave
+   * does not let a background fault happen that none of those tools can reach.
+   */
+  readonly skipFault?: (type: FaultType) => boolean;
+}
+
 export class ScenarioRunner {
   private readonly nodes: ReadonlyMap<string, ScenarioNode>;
   private tokens: Token[] = [];
@@ -55,6 +72,7 @@ export class ScenarioRunner {
     private readonly world: WorldPort,
     private readonly seed: number,
     private readonly agent: AgentSignals,
+    private readonly options: RunnerOptions = {},
   ) {
     this.nodes = new Map(doc.nodes.map((n) => [n.id, n]));
   }
@@ -258,6 +276,10 @@ export class ScenarioRunner {
     const id = visit === 1 ? `scn:${node.id}` : `scn:${node.id}#${visit}`;
     const params = (node.params.faultParams ?? {}) as Readonly<Record<string, number>>;
     const type = node.params.faultType as FaultType;
+    if (this.options.skipFault?.(type)) {
+      this.note(node.id, "skipped", type);
+      return;
+    }
     this.world.apply(
       { type: "fault.add", fault: { id, type, target: String(node.params.target), params } },
       `scenario:${node.id}`,

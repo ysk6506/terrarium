@@ -14,6 +14,7 @@ import { Calibration } from "./Calibration";
 import { Canvas } from "./Canvas";
 import { NodeInspector } from "./NodeInspector";
 import { Palette, paletteItem } from "./Palette";
+import { RunbookTab } from "./Runbook";
 import { Sheet } from "./Sheet";
 import { Bar, type Tab } from "./Toolbar";
 import { type ScenarioEditor, useScenario } from "./useScenario";
@@ -182,6 +183,7 @@ function EditorScreen({
         </div>
       )}
       {tab === "sheet" && <Sheet e={e} />}
+      {tab === "runbook" && <RunbookTab e={e} />}
     </div>
   );
 }

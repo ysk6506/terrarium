@@ -19,6 +19,8 @@ import { Go, useApp, useAsync, usePageTitle } from "../context";
 import { Failure, Figures, Loading, Note, PageHead, Section, Status, Tabs } from "../kit";
 import { SeriesGrid, Timeline } from "../results";
 import { RunReplay } from "../topology/RunReplay";
+import { EscalationCards } from "./escalation";
+import { HumanBlock, SopBlock } from "./run-blocks";
 import { CallsTable, DiagnosisCompare, ScoreSheet, TelemetryPanel } from "./run-parts";
 
 type Tab = "timeline" | "calls" | "metrics" | "harness";
@@ -232,7 +234,10 @@ export function RunPage({ id }: { readonly id: string }) {
         <>
           <RunHead view={view} />
           {view.run.error && <Note tone="bad">{view.run.error}</Note>}
+          <EscalationCards runId={id} />
           <RunFigures view={view} />
+          <HumanBlock result={view.run.result} />
+          <SopBlock result={view.run.result} />
           {commonPathNote(view.commonReach) && (
             <Note tone="warn">{commonPathNote(view.commonReach)}</Note>
           )}

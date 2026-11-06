@@ -75,7 +75,27 @@ export {
 } from "./model";
 export { builtinCatalog, type NetChoice, netChoices, netEmptyText } from "./net-blocks";
 export { defaultParams, FAULT_DOMAIN_LABELS, type PaletteItem, paletteFor } from "./palette";
-export { type AgentTask, ScenarioRunner, type TraceEntry } from "./runner";
+export { type AgentTask, type RunnerOptions, ScenarioRunner, type TraceEntry } from "./runner";
+export {
+  draftFromCalls,
+  type SopCall,
+  type SopCompliance,
+  type SopStepResult,
+  scoreSop,
+} from "./sop";
+export {
+  BASE_TOOLS,
+  FAULT_TOOLS,
+  mainProblems,
+  problemName,
+  reaches,
+  requiredTools,
+  type ScopeCheck,
+  type ScopeKey,
+  scenarioProblems,
+  scopeCheck,
+  type ToolNeed,
+} from "./tool-scope";
 export { minutesText, toMinutes, toSeconds } from "./units";
 export {
   hasErrors,

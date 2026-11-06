@@ -12,6 +12,8 @@ import { errorOf, type HostedSession, type SessionHost } from "../runtime";
 import {
   bearerMatches,
   type ErrorReply,
+  type HumanOp,
+  type HumanReply,
   NEED_BLUEPRINT,
   NODE_DRAINING,
   NODE_FULL,
@@ -198,6 +200,25 @@ export class NodeServer {
         return this.failWith(reply, err);
       }
     });
+    app.post(`${NODE_PATH}/sessions/:id/human`, async (req, reply) => {
+      const h = this.find((req.params as { id: string }).id, reply);
+      if (!h) return reply;
+      const op = req.body as HumanOp;
+      try {
+        const act =
+          op.kind === "act" ? await h.session.humanAct(op.tool, op.args ?? {}) : undefined;
+        const result =
+          op.kind === "resolve" ? await h.session.resolveHuman(op.resolution) : undefined;
+        const out: HumanReply = {
+          ...(act ? { act } : {}),
+          ...(result ? { result } : {}),
+          specs: h.session.specs,
+        };
+        return out;
+      } catch (err) {
+        return this.failWith(reply, err);
+      }
+    });
     app.post(`${NODE_PATH}/sessions/:id/finish`, async (req, reply) => {
       const id = (req.params as { id: string }).id;
       const h = this.find(id, reply);
@@ -225,6 +246,12 @@ const PENDING: HostedSession = {
     throw new Error("세션이 아직 열리는 중이에요");
   },
   finish: async () => {
+    throw new Error("세션이 아직 열리는 중이에요");
+  },
+  humanAct: async () => {
+    throw new Error("세션이 아직 열리는 중이에요");
+  },
+  resolveHuman: async () => {
     throw new Error("세션이 아직 열리는 중이에요");
   },
   dispose: () => undefined,

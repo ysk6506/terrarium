@@ -2,18 +2,18 @@
 title: 규모 키우기 — 스케일 업과 스케일 아웃
 kind: guide
 status: active
-last_verified: 2026-11-04
+last_verified: 2026-11-06
 covers:
   - apps/server/src/cluster/protocol.ts
   - apps/server/src/cluster/control-routes.ts
   - apps/server/src/cluster/cluster-host.ts
-covers_hash: c4d3826d8f776edb
+covers_hash: e88493d289941b13
 verification_log:
-  - "2026-10-29: first version, checked against the cluster code and deploy/ (ADR-0032)"
   - "2026-10-29: 역할, 지표 이름, 하트비트·비우기 동작을 protocol.ts, control-routes.ts, main.ts와 대조했다"
   - "2026-10-29: 용량 문서 링크 추가"
   - "2026-11-03: 서버·core가 사람에게 돌려주는 안내 문장이 해요체로 바뀐 것만 확인했다. 동작과 본문은 그대로 (ADR-0050)"
   - "2026-11-04: 2026-11-04: 자리 잡기와 재시도, 메모리 약속 설명을 cluster-host.ts, admission.ts와 대조했다 (ADR-0056)"
+  - "2026-11-06: cluster/protocol.ts·node-server.ts·remote-host.ts에 사람 응답 경로(/sessions/:id/human)가 생긴 것을 4번 문장에 더했다. 나머지 구조는 그대로 (ADR-0087)"
 ---
 # 규모 키우기 (REQ-042, [ADR-0032](adr/0032-scale-out-workers.md))
 
@@ -68,7 +68,7 @@ verification_log:
 2. 스케줄러가 자리가 있고 공정한 차례인 실행을 고른다(ADR-0024).
 3. `ClusterHost`가 가장 한가한 곳(자기 스레드 또는 노드)을 고르고, 열기를 시작하는 순간 그 자리를 잡는다(동시에 열리는 세션들이 한 노드로 몰리지 않게). 노드가 가득 찼거나 비우는 중이거나 응답이 없으면 다음 곳.
    컨트롤은 자리가 있다고 세는데 노드가 가득 찼다고 거절하면(노드가 방금 끝난 세션을 아직 모르는 잠깐) 30초까지 다시 시도하고, 그래도 없으면 "세션을 돌릴 자리가 없어요"로 알린다.
-4. 세션은 그 노드에서 열린다. 한 스레드 안에서는 [메모리 약속](capacity.md)이 입장을 다시 한 번 거른다(모자라면 줄을 선다). 세계는 노드가 모를 때만 한 번 보낸다. 에이전트의 툴 호출은 컨트롤을 거쳐 그 노드의 세션으로 간다.
+4. 세션은 그 노드에서 열린다(사람을 기다리는 `ask_human` 호출도 같은 길이다: 컨트롤이 노드의 세션에 "사람이 이렇게 답했어요"와 "사람이 이렇게 조치했어요"를 `POST /node/v1/sessions/:id/human`으로 보낸다. [ADR-0087](adr/0087-tool-scope-escalation-sop.md)). 한 스레드 안에서는 [메모리 약속](capacity.md)이 입장을 다시 한 번 거른다(모자라면 줄을 선다). 세계는 노드가 모를 때만 한 번 보낸다. 에이전트의 툴 호출은 컨트롤을 거쳐 그 노드의 세션으로 간다.
 5. 끝나면 결과가 컨트롤로 돌아와 저장된다.
 
 ## 노드가 사라지면

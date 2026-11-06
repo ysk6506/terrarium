@@ -5,15 +5,16 @@ status: active
 last_verified: 2026-11-06
 covers:
   - packages/core/src/contract/routes.ts
+  - packages/core/src/contract/responses.ts
   - packages/core/src/contract/errors.ts
   - packages/core/src/contract/views.ts
-covers_hash: e886b16cef02ee6f
+covers_hash: 2ce97a0374ba4f83
 verification_log:
-  - "2026-11-04: calibrate 경로를 contract/routes.ts와 대조해 표에 더했다"
   - "2026-11-04: 2026-11-04: ADR-0073. 서버 오류 문장과 라우트 요약의 말(툴, 더하기, 멈추기, 지우기)만 바뀌었다. 경로와 본문 모양은 그대로, 안내 문구만 도구에서 툴로 고쳤다"
   - "2026-11-05: routes.ts의 telemetry-adapters와 connections/:id/try 두 경로, 확인 응답의 census·hiddenAgents와 traces를 표와 연결 절에 대조해 더했다 (REQ-079)"
   - "2026-11-06: routes.ts의 runEvents, runWorld 두 경로를 표에 더했고 views.ts의 RunEventsView, RunWorldView와 대조했다"
   - "2026-11-06: RunView의 commonReach와 calibrate 응답의 recoveryPath, commonReach를 views.ts와 대조해 표에 적었다 (REQ-088)"
+  - "2026-11-06: listEscalations, answerEscalation, runbookDraft 세 경로와 레시피 선택 칸, calibrate 응답의 toolPick을 routes.ts, responses.ts(Responses를 옮김), views.ts와 대조해 표에 더했다 (REQ-080~082)"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -67,14 +68,17 @@ verification_log:
 | `PUT /api/scenarios/:id` | 시나리오 고쳐 저장 (버전 확인) | |
 | `DELETE /api/scenarios/:id` | 시나리오 숨기기 | |
 | `POST /api/scenarios/:id/dry-run` | 에이전트 없이 미리 돌려 보기 | |
-| `POST /api/scenarios/:id/calibrate` | 시험지 점검: 아무것도 안 하는·찍는·정답만 아는 에이전트로 점수 재 보기. 서비스를 옮겨 복구하는 길(`recoveryPath`)과 흔한 툴만으로 원인에 닿는 길(`commonReach`)도 함께 답한다 | |
+| `POST /api/scenarios/:id/calibrate` | 시험지 점검: 아무것도 안 하는·찍는·정답만 아는 에이전트로 점수 재 보기. 서비스를 옮겨 복구하는 길(`recoveryPath`)과 흔한 툴만으로 원인에 닿는 길(`commonReach`)도 함께 답한다. 또 툴 설명만 읽는 기준 에이전트가 상황마다 고른 툴과 모호한 쌍(`toolPick`)도 답한다 | |
+| `GET /api/scenarios/:id/runbook-draft` | 이 시나리오로 끝난 실행 가운데 점수가 가장 높은 것의 툴 호출 순서로 만든 절차서 초안과 어느 실행에서 나왔는지 (끝난 실행이 없으면 빈 답) | |
 | `GET /api/experiments` | 실험 목록 (최신순) | |
 | `GET /api/experiments/:id` | 실험 하나: 실행, 분석, 계보 | |
-| `POST /api/experiments` | 실험 만들고 대기열에 넣기 | |
+| `POST /api/experiments` | 실험 만들고 대기열에 넣기. 레시피의 선택 칸: `escalation`(`{mode: wait/auto/fail, reply?}`), `faultScope`(`inside`나 `all`), `sop`(`none`, `given`, `search`). `faultScope: inside`인데 준 툴로 풀 수 없는 시나리오는 이유와 함께 거절 | |
 | `POST /api/experiments/:id/cancel` | 남은 실행 취소 | |
 | `POST /api/experiments/:id/fork` | 조건만 바꿔 다시 실행 | |
 | `POST /api/experiments/:id/runs` | 같은 조건으로 실행 추가 | |
 | `GET /api/experiments/:id/events` | 진행 상황 실시간 (SSE) | |
+| `GET /api/escalations` | 사람을 기다리는 실행들: 요청문, 최근 툴 호출 5개, 지금 가진 툴, 줄 수 있는 툴, 이미 한 조치 | |
+| `POST /api/runs/:id/escalation` | 기다리는 실행에 답하기: `{kind: reply, text}` 글로 답, `{kind: act, tool, args}` 대신 조치(계속 기다림), `{kind: acted}` 조치를 마치고 돌려주기, `{kind: more_tools, tools}` 툴 더 주기, `{kind: end}` 끝내기. 실험을 돌린 사람만 | |
 | `GET /api/worlds/:id/activity` | 이 세계에서 지금 일하는 에이전트들 (SSE) | |
 | `GET /api/experiments/:id/report` | 보고서 (HTML·Markdown·텍스트) | |
 | `GET /api/experiments/:id/diagnoses` | 진단 기록 (JSON Lines) | |

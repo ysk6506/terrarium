@@ -84,6 +84,8 @@ export {
   TRANSPORT_LABELS,
 } from "./connections";
 export * as hallCrew from "./crew";
+export * as humanTalk from "./escalation";
+export { CARD_WORDS, HUMAN_ACTIONS } from "./escalation";
 export * as experiment from "./experiment";
 export {
   celsius,
@@ -132,6 +134,7 @@ export {
   type TourStep,
   tourLabel,
 } from "./next-step";
+export * as presets from "./presets";
 export {
   commonPathNote,
   NO_COMMON_PATH_TEXT,
@@ -149,6 +152,7 @@ export {
   sectionOf,
   titleOf,
 } from "./router";
+export * as runbook from "./runbook";
 export * as scenario from "./scenario";
 export {
   DEFAULT_SETTINGS,
@@ -162,6 +166,8 @@ export {
   type ThemeChoice,
   themeAttribute,
 } from "./settings";
+export * as toolPicker from "./tool-picker";
+export { HUMAN_WORDS, TOOL_WORDS } from "./tool-words";
 export * as hallTopology from "./topology";
 export {
   advanceTour,

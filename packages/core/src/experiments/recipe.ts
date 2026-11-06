@@ -8,6 +8,7 @@ import { TOOL_NAMES } from "@terrarium/core/tools";
 import type { Recipe, Snapshot } from "./model";
 
 export const MAX_SEEDS = 20;
+export const MAX_REPLY = 1000;
 export const DEFAULT_SEEDS: readonly number[] = [1, 2, 3];
 
 export interface RecipeContext {
@@ -49,6 +50,22 @@ function timeProblems(time: Recipe["time"]): string[] {
   return [`알 수 없는 시간 정책 '${(time as { kind: string }).kind}'`];
 }
 
+function humanProblems(recipe: Recipe): string[] {
+  const out: string[] = [];
+  const mode = recipe.escalation?.mode;
+  if (mode !== undefined && !["wait", "auto", "fail"].includes(mode))
+    out.push(`알 수 없는 에스컬레이션 처리 '${mode}'`);
+  if ((recipe.escalation?.reply ?? "").length > MAX_REPLY)
+    out.push(`정해 둔 답은 ${MAX_REPLY}자까지 쓸 수 있어요`);
+  if (recipe.faultScope !== undefined && !["inside", "all"].includes(recipe.faultScope))
+    out.push(`알 수 없는 고장 범위 '${recipe.faultScope}'`);
+  if (recipe.sop !== undefined && !["none", "given", "search"].includes(recipe.sop))
+    out.push(`알 수 없는 절차서 방식 '${recipe.sop}'`);
+  if (recipe.tools.includes("search_runbooks") && recipe.sop !== "search")
+    out.push("절차서 찾기 툴은 절차서를 '찾게 함'으로 할 때만 써요");
+  return out;
+}
+
 function profileProblems(recipe: Recipe, ctx: RecipeContext): string[] {
   const out: string[] = [];
   const { vcenter, vrops } = recipe.profiles;
@@ -65,6 +82,7 @@ export function recipeProblems(recipe: Recipe, ctx: RecipeContext): string[] {
     ...toolProblems(recipe.tools),
     ...seedProblems(recipe.seeds),
     ...timeProblems(recipe.time),
+    ...humanProblems(recipe),
     ...profileProblems(recipe, ctx),
   ];
   if (!recipe.harnessId) out.push("하네스를 골라야 해요");
@@ -77,7 +95,7 @@ export function recipeProblems(recipe: Recipe, ctx: RecipeContext): string[] {
 /** The comparable task: same world and scenario versions, same scoring, same time and product versions. */
 export function benchmarkKey(
   snapshot: Snapshot,
-  recipe: Pick<Recipe, "time" | "profiles">,
+  recipe: Pick<Recipe, "time" | "profiles" | "faultScope">,
 ): string {
   return hashValue({
     world: snapshot.worldDigest,
@@ -85,6 +103,9 @@ export function benchmarkKey(
     oracle: snapshot.oracle,
     time: recipe.time,
     profiles: { vcenter: recipe.profiles.vcenter ?? null, vrops: recipe.profiles.vrops ?? null },
+    // which faults can happen shapes the task; how escalation is answered and whether a runbook is given are
+    // conditions of the agent, like its tools, so they stay out of the key (only where set, so old keys stay)
+    ...(recipe.faultScope === "inside" ? { faultScope: "inside" } : {}),
   });
 }
 

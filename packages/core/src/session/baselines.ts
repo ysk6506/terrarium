@@ -10,10 +10,11 @@
  * marks asks for no action, so it measures diagnosis and not operation. Both are worth knowing before a
  * leaderboard is built on the scenario. `calibrate` says so in plain words.
  */
-import type { Expectation, ScenarioDoc } from "@terrarium/core/scenario";
-import { TOOL_NAMES } from "@terrarium/core/tools";
+import { type Expectation, requiredTools, type ScenarioDoc } from "@terrarium/core/scenario";
+import { DEFAULT_TOOLSET, TOOL_NAMES } from "@terrarium/core/tools";
 import { type CommonReach, commonReach, type RecoveryPath, recoveryPath } from "./probes";
 import { Session, type SessionConfig } from "./session";
+import { type ToolPickCheck, toolPickCheck } from "./tool-pick";
 
 export type BaselineId = "idle" | "guess" | "knows";
 
@@ -37,6 +38,8 @@ export interface Calibration {
   readonly recoveryPath?: RecoveryPath;
   /** Whether the tools a real operations team has are enough to get to the equipment the answer names. */
   readonly commonReach?: CommonReach;
+  /** Which tool a reference agent reaches for in each situation, and which pairs it cannot tell apart (ADR-0087 item 3). */
+  readonly toolPick?: ToolPickCheck;
 }
 
 /** Without knowing anything, more than this many points means the scenario rewards doing nothing. */
@@ -117,12 +120,20 @@ export function calibrate(config: Config): Calibration {
 export function withProbes(calibration: Calibration, config: Config): Calibration {
   const path = recoveryPath(config);
   const reach = commonReach(config);
+  const pick = toolPickCheck([...new Set([...DEFAULT_TOOLSET, ...requiredTools(config.scenario)])]);
   const warnings = [
     ...calibration.warnings,
+    ...pick.warnings,
     ...(path.ok ? [] : [`서비스를 옮겨서 복구하는 길이 없어요. ${path.note}`]),
     ...(reach && !reach.reached ? [NO_COMMON_PATH] : []),
   ];
-  return { ...calibration, warnings, recoveryPath: path, ...(reach ? { commonReach: reach } : {}) };
+  return {
+    ...calibration,
+    warnings,
+    recoveryPath: path,
+    toolPick: pick,
+    ...(reach ? { commonReach: reach } : {}),
+  };
 }
 
 /** What a card and a result say about a scenario whose answer the common tools never reach (ADR-0091 item 4). */

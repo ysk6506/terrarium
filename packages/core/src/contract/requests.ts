@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   BlueprintSchema,
   CampusSpecSchema,
+  EscalationSchema,
   IdSchema,
   NameSchema,
   NoteSchema,
@@ -115,6 +116,9 @@ export const RecipeBody = z
     runs: z.number().int().min(1).max(20).optional(),
     time: TimePolicySchema.optional(),
     profiles: ProfilesSchema.optional(),
+    escalation: EscalationSchema.optional(),
+    faultScope: z.enum(["inside", "all"]).optional(),
+    sop: z.enum(["none", "given", "search"]).optional(),
   })
   .strict()
   .refine((r) => !(r.seeds && r.runs), {
@@ -144,6 +148,9 @@ export const ForkBody = z
         seeds: SeedsSchema.optional(),
         time: TimePolicySchema.optional(),
         profiles: ProfilesSchema.optional(),
+        escalation: EscalationSchema.optional(),
+        faultScope: z.enum(["inside", "all"]).optional(),
+        sop: z.enum(["none", "given", "search"]).optional(),
       })
       .strict(),
     name: NameSchema.optional(),
@@ -152,6 +159,26 @@ export const ForkBody = z
     metadata: MetadataBody.optional(),
   })
   .strict();
+
+/** A person answers a run that waits for them (ADR-0087 item 4). */
+export const EscalationAnswerBody = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("reply"), text: z.string().trim().min(1).max(2000) }).strict(),
+  z
+    .object({
+      kind: z.literal("act"),
+      tool: z.string().min(1).max(64),
+      args: z.record(z.string().max(64), z.unknown()),
+    })
+    .strict(),
+  z.object({ kind: z.literal("acted") }).strict(),
+  z
+    .object({
+      kind: z.literal("more_tools"),
+      tools: z.array(z.string().min(1).max(64)).min(1).max(30),
+    })
+    .strict(),
+  z.object({ kind: z.literal("end") }).strict(),
+]);
 
 export const AddRunsBody = z
   .object({ count: z.number().int().min(1).max(20).optional(), seeds: SeedsSchema.optional() })
@@ -224,6 +251,7 @@ export type RecipeRequest = z.infer<typeof RecipeBody>;
 export type CreateExperimentRequest = z.infer<typeof CreateExperimentBody>;
 export type ForkRequest = z.infer<typeof ForkBody>;
 export type AddRunsRequest = z.infer<typeof AddRunsBody>;
+export type EscalationAnswerRequest = z.infer<typeof EscalationAnswerBody>;
 export type ExperimentQueryParams = z.infer<typeof ExperimentQuery>;
 export type LeaderboardQueryParams = z.infer<typeof LeaderboardQuery>;
 export type RunEventsQueryParams = z.infer<typeof RunEventsQuery>;

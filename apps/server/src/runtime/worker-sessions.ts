@@ -86,6 +86,20 @@ export class WorkerSessions {
           result,
           events: session.takeEvents(),
         });
+      } else if (msg.kind === "human") {
+        const act =
+          msg.op.kind === "act" ? await session.humanAct(msg.op.tool, msg.op.args) : undefined;
+        const result =
+          msg.op.kind === "resolve" ? await session.resolveHuman(msg.op.resolution) : undefined;
+        this.send({
+          kind: "humaned",
+          id: msg.id,
+          seq: msg.seq,
+          ...(act ? { act } : {}),
+          ...(result ? { result } : {}),
+          specs: session.specs,
+          events: session.takeEvents(),
+        });
       } else
         this.send({
           kind: "finished",
