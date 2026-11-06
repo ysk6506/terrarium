@@ -8,6 +8,7 @@
 import type { ServerModel } from "@terrarium/core/catalog";
 import { InvalidValueError } from "@terrarium/core/kernel";
 import {
+  DB_PROCESS,
   type HostOs,
   hostOsOf,
   hostVerdict,
@@ -16,6 +17,7 @@ import {
   switchAlive,
   type WorldPort,
 } from "@terrarium/core/world";
+import { instanceOn, multipath, pgIsReady, psql } from "./shell-db";
 import {
   chronycOutput,
   dateLine,
@@ -57,6 +59,9 @@ export const SHELL_COMMANDS: readonly string[] = [
   "logrotate -f /etc/logrotate.conf",
   "reboot",
   "mount -o remount,rw /",
+  "pg_isready (database host)",
+  'psql -c "select pg_is_in_recovery()" (database host)',
+  "multipath -ll (database host)",
 ];
 
 const MAX_LINES = 400;
@@ -302,6 +307,11 @@ function curl(c: Cmd): ShellResult {
   return serviceReply(c, found.service, host, port);
 }
 
+const asShell = (r: { output: string; exitCode: number }): ShellResult => ({
+  ...r,
+  supported: true,
+});
+
 const header = (code: string, extra: string[] = []): string =>
   [`HTTP/1.1 ${code}`, "Server: nginx", "Content-Type: text/html", ...extra].join("\n");
 
@@ -345,6 +355,12 @@ function restart(c: Cmd): ShellResult {
   const unit = (c.argv[2] ?? "").replace(/\.service$/, "");
   if (!c.view.os.processes.some((p) => p.name === unit))
     return fail(`Failed to restart ${unit}.service: Unit ${unit}.service not found.`, 5);
+  const db = unit === DB_PROCESS ? instanceOn(c.world, c.id) : undefined;
+  if (db && c.world.faultsOn(db.id).some((f) => f.type === "db_primary_down"))
+    return fail(
+      'Job for postgresql.service failed because the control process exited with error code.\nSee "systemctl status postgresql.service" and "journalctl -xeu postgresql.service" for details.',
+      1,
+    );
   write(c, "restart", unit);
   return ok("");
 }
@@ -406,6 +422,12 @@ const SIMPLE: Readonly<Record<string, (c: Cmd) => ShellResult>> = {
     write(c, "reboot");
     return ok(`Connection to ${c.view.name} closed by remote host.`);
   },
+  pg_isready: (c) => asShell(pgIsReady(c.world, c.id)),
+  psql: (c) => {
+    const at = c.argv.indexOf("-c");
+    return asShell(psql(c.world, c.id, at >= 0 ? c.argv[at + 1] : undefined));
+  },
+  multipath: (c) => asShell(multipath(c.world, c.id)),
   chronyc: (c) =>
     c.argv[1] === "tracking" ? ok(chronycOutput(c.view)) : NOT_YET(c.argv.join(" ")),
   systemctl: (c) =>

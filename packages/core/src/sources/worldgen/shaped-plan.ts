@@ -151,7 +151,9 @@ export function planShape(spec: ShapeSpec): ShapePlan {
   const serviceHosts = spec.services.reduce((n, s) => n + hostsOf(s, build), 0);
   const spareHosts = spec.services.length > 0 ? (build.spareHosts ?? 0) : 0;
   const serviceNodes = spec.services.reduce((n, s) => n + s.nodes, 0);
-  const servers = Math.max(spec.servers, serviceHosts + spareHosts);
+  // database instances of bare-metal worlds stand on servers of their own (virtualised ones share the service's hosts)
+  const dbHosts = build.bare ? spec.services.length * (build.database?.instances ?? 0) : 0;
+  const servers = Math.max(spec.servers, serviceHosts + spareHosts + dbHosts);
   const computeRacks = Math.max(3, Math.ceil(servers / SERVERS_PER_RACK));
   const places = placesFor(build, computeRacks);
   const perRoom = Math.ceil(computeRacks / places.rooms);

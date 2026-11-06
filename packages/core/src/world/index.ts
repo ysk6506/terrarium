@@ -39,6 +39,47 @@ export {
   FIT_OUT_RATE_M_PER_M2,
   structureCostM,
 } from "./construction";
+export {
+  clusterOf,
+  controllersOf,
+  DB_ROLE_LABELS,
+  DB_SHAPE_LABELS,
+  DB_SHAPES,
+  type DbClusterDef,
+  type DbRole,
+  type DbShape,
+  type DbStatus,
+  DEFAULT_REBUILD_S,
+  dbClusterDef,
+  dbClusterProps,
+  dependenciesOf,
+  hostedOn,
+  instancesOf,
+  MULTIPATH_SWITCH_S,
+  nodesOfPool,
+  type PoolDef,
+  poolDef,
+  poolOfInstance,
+  poolProps,
+  RESTORE_FAIL_S,
+  RESTORE_S,
+  roleOfProps,
+  STANDBY_START_S,
+} from "./db";
+export {
+  backupAgeS,
+  backupNumber,
+  bestCandidate,
+  type DbCommand,
+  isDbCommand,
+} from "./db-act";
+export {
+  clusterSummary,
+  clusterVerdict,
+  type DepVerdict,
+  dependencyVerdict,
+  poolVerdict,
+} from "./db-health";
 export { blueprintDigest } from "./digest";
 export {
   DOMAIN_IDS,
@@ -109,6 +150,7 @@ export {
 } from "./geometry";
 export { BlueprintIndex } from "./graph";
 export {
+  DB_PROCESS,
   FREED_PCT,
   freshHostOs,
   HOST_ACTIONS,
@@ -135,12 +177,14 @@ export {
   type ChipMech,
   chipById,
   chipsOf,
+  type DatabaseBuild,
   LADDER,
   LAYER_COUNT,
   LAYER_IDS,
   type LayerId,
   type Layers,
   layersProblem,
+  type PoolBuild,
   type Problem,
 } from "./ladder";
 export {
@@ -322,6 +366,8 @@ export {
   type Alarm,
   AMBIENT_C,
   type CoolingState,
+  type DbClusterState,
+  type DbInstanceState,
   DEFAULT_OUTDOOR_C,
   type EntityState,
   type Health,
@@ -334,6 +380,8 @@ export {
   type ServiceState,
   type SiteState,
   type StateOf,
+  type StorageControllerState,
+  type StoragePoolState,
   type StorageState,
   type SwitchState,
   type UpsState,

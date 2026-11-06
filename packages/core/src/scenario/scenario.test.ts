@@ -123,6 +123,13 @@ describe("scenario palette [REQ-034]", () => {
       "cdu_failure",
       "cdu_pump_failure",
       "generator_start_failure",
+      "db_primary_down",
+      "db_secondary_down",
+      "db_replication_broken",
+      "db_split_brain",
+      "db_backup_corrupt",
+      "storage_path_cut",
+      "storage_controller_failure",
     ]);
     // In the campus sample every supported fault has something to act on.
     const campus = paletteFor(new BlueprintIndex(campusBlueprint()));

@@ -1,4 +1,6 @@
 /** Pieces of a session's setup and result that need nothing of its state, kept out of `session.ts` (500-line limit). */
+
+import { CLUSTER_CAUSE } from "@terrarium/core/physics";
 import {
   actionsOf,
   mainProblems,
@@ -44,6 +46,7 @@ export function extrasOf(
 /** World events the agent caused (tools and protocol facades), as opposed to scenario, physics, the generator and the teams. */
 const byAgent = (e: WorldEvent) =>
   e.cause !== "physics" &&
+  e.cause !== CLUSTER_CAUSE &&
   e.cause !== "generator" &&
   !e.cause.startsWith("scenario:") &&
   !e.cause.startsWith("counterpart:") &&

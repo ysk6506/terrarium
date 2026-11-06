@@ -5,6 +5,7 @@
  * world, and which faults its structure makes possible. The words, pictures and cards of each choice belong to
  * the screen (apps/web/src/logic/world-shape/ladders.ts); a test keeps the two lists in step.
  */
+import type { DbShape } from "./db";
 import type { FaultType, MistakeType } from "./faults";
 
 /** A fault or a mistake: both are things that go wrong. */
@@ -49,6 +50,32 @@ export interface ChipBuild {
   /** Server rooms, and whether they stand in separate buildings. */
   readonly rooms?: number;
   readonly buildings?: number;
+  /** The storage pool the storage choice builds, and the database the database choice builds. */
+  readonly pool?: PoolBuild;
+  readonly database?: DatabaseBuild;
+}
+
+/** The storage pool a chip builds (REQ-095): two controllers and two paths, or nodes holding copies. */
+export interface PoolBuild {
+  readonly mode: "dual" | "distributed";
+  /** Whether the hosts switch to the other path by themselves (a dual pool). */
+  readonly multipath?: boolean;
+  /** Nodes of a distributed pool: one more than the copies, so a lost node can be made again. */
+  readonly nodes?: number;
+  readonly copies?: number;
+}
+
+/** The database cluster a chip builds for every service (REQ-095). */
+export interface DatabaseBuild {
+  readonly shape: DbShape;
+  /** Instances, the primary included. */
+  readonly instances: number;
+  readonly failover: "manual" | "auto";
+  readonly detectS?: number;
+  /** Voting members; a witness counts as one. */
+  readonly quorum?: number;
+  /** The instances keep their data on one shared disk (a storage pool) and not on their own. */
+  readonly sharedDisk?: boolean;
 }
 
 export interface ChipMech {
@@ -146,23 +173,81 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       costM: 5,
     }),
     c("storage", "sto-shared", {
-      build: { sharedStorage: true },
-      stops: ["disk_failure", "disk_full", "fs_readonly"],
+      build: { sharedStorage: true, pool: { mode: "dual", multipath: false } },
+      stops: [
+        "disk_failure",
+        "disk_full",
+        "fs_readonly",
+        "storage_controller_failure",
+        "storage_path_cut",
+      ],
       slows: [],
       costM: 25,
     }),
-    dotted("storage", "sto-dual-controller", "sto-shared", 60),
-    dotted("storage", "sto-distributed", "sto-shared", 90),
-    dotted("storage", "sto-geo", "sto-shared", 150),
+    c("storage", "sto-dual-controller", {
+      build: { sharedStorage: true, pool: { mode: "dual", multipath: true } },
+      stops: ["disk_full", "fs_readonly"],
+      slows: ["disk_failure", "storage_controller_failure", "storage_path_cut"],
+      costM: 60,
+    }),
+    c("storage", "sto-distributed", {
+      build: { pool: { mode: "distributed", nodes: 4, copies: 3 } },
+      stops: ["disk_full", "fs_readonly"],
+      slows: ["disk_failure", "storage_node_lost"],
+      costM: 90,
+    }),
+    dotted("storage", "sto-geo", "sto-dual-controller", 150),
   ],
   database: [
-    dotted("database", "db-single", "db-single", 0),
-    dotted("database", "db-active-passive", "db-single", 15),
-    dotted("database", "db-shared-aa", "db-single", 40),
-    dotted("database", "db-primary-secondary", "db-single", 30),
-    dotted("database", "db-auto-failover", "db-single", 45),
-    dotted("database", "db-distributed-sql", "db-single", 80),
-    dotted("database", "db-managed-multiaz", "db-single", 120),
+    c("database", "db-single", {
+      build: { database: { shape: "single", instances: 1, failover: "manual" } },
+      stops: ["db_primary_down", "db_backup_corrupt", "disk_full"],
+      slows: [],
+    }),
+    c("database", "db-active-passive", {
+      build: {
+        database: {
+          shape: "active_passive",
+          instances: 2,
+          failover: "auto",
+          detectS: 30,
+          sharedDisk: true,
+        },
+      },
+      stops: ["disk_full"],
+      slows: ["db_primary_down"],
+      costM: 15,
+    }),
+    c("database", "db-shared-aa", {
+      build: {
+        database: { shape: "shared_aa", instances: 3, failover: "manual", sharedDisk: true },
+      },
+      stops: ["disk_full"],
+      slows: ["db_primary_down"],
+      costM: 40,
+    }),
+    c("database", "db-primary-secondary", {
+      build: { database: { shape: "replicated", instances: 2, failover: "manual" } },
+      stops: ["db_primary_down", "disk_full"],
+      slows: ["db_replication_broken"],
+      costM: 30,
+    }),
+    c("database", "db-auto-failover", {
+      build: {
+        database: {
+          shape: "auto_failover",
+          instances: 3,
+          failover: "auto",
+          detectS: 30,
+          quorum: 3,
+        },
+      },
+      stops: ["db_split_brain", "disk_full"],
+      slows: ["db_primary_down", "db_replication_broken"],
+      costM: 45,
+    }),
+    dotted("database", "db-distributed-sql", "db-auto-failover", 80),
+    dotted("database", "db-managed-multiaz", "db-auto-failover", 120),
   ],
   app: [
     c("app", "app-single", { stops: ["process_crashloop", "memory_leak", "cert_expired"] }),

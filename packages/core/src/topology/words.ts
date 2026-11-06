@@ -45,6 +45,10 @@ const COUNTING: Readonly<Record<TopoKind, readonly [string, string]>> = {
   vm: ["VM", "대"],
   cluster: ["클러스터", "개"],
   service: ["서비스", "개"],
+  db_cluster: ["데이터베이스 클러스터", "개"],
+  db_instance: ["DB 인스턴스", "개"],
+  storage_pool: ["스토리지 풀", "개"],
+  storage_controller: ["스토리지 컨트롤러", "개"],
 };
 
 /** What a kind of equipment is called when counted ("랙", "냉방기"). */

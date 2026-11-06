@@ -22,6 +22,9 @@ export const HOST_REBOOT_SECONDS = 120;
 /** How much disk a clean-up of old logs frees, percentage points. */
 export const FREED_PCT = 35;
 
+/** The process of a database instance, as `systemctl` names it. */
+export const DB_PROCESS = "postgresql";
+
 export const isHost = (kind: string): boolean => kind === "server" || kind === "vm";
 
 /** The services that run on a host now (by their state, so a failover is followed). */
@@ -46,7 +49,12 @@ export function freshHostOs(world: WorldReader, id: string): HostOs {
     id,
     name: entity.name,
     t: world.time(),
-    serviceProcesses: servicesOnHost(world, id).map((s) => serviceDef(s).process),
+    serviceProcesses: [
+      ...servicesOnHost(world, id).map((s) => serviceDef(s).process),
+      ...(world.index.incoming(id, "hosted_on").some((l) => l.kind === "hosted_on")
+        ? [DB_PROCESS]
+        : []),
+    ],
     cpuPct: cpuOf(world.stateOf(id)),
   });
 }

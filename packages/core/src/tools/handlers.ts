@@ -15,6 +15,7 @@ import {
   reportedInletC,
   type WorldPort,
 } from "@terrarium/core/world";
+import { DB_HANDLERS } from "./handlers-db";
 import { OPS_HANDLERS, type OpsPort } from "./handlers-ops";
 import { SERVICE_HANDLERS } from "./handlers-service";
 import { type Runbook, searchRunbooks } from "./runbook";
@@ -451,6 +452,7 @@ const searchRunbooksTool: Handler = (ctx, args) => {
 export const HANDLERS: Readonly<Record<string, Handler>> = {
   ...SERVICE_HANDLERS,
   ...OPS_HANDLERS,
+  ...DB_HANDLERS,
   list_alarms: listAlarms,
   list_entities: listEntities,
   get_entity: getEntity,

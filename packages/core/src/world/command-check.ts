@@ -5,6 +5,7 @@
 import { ConflictError, InvalidValueError, NotFoundError } from "@terrarium/core/kernel";
 import type { EntityKind } from "./blueprint";
 import { isBulkRack } from "./bulk";
+import { checkDbCommand, type DbCommand, isDbCommand } from "./db-act";
 import { type Fault, faultSpec } from "./faults";
 import { FIRMWARE_COMPONENTS, type FirmwareComponent } from "./firmware";
 import { HOST_ACTIONS } from "./host-os";
@@ -133,7 +134,8 @@ function checkHostAct(world: WorldReader, target: string, action: string): void 
 
 /** The commands of the layers above the equipment: host and service actions (ADR-0091), then firmware (ADR-0101). */
 function checkLayerCommand(world: WorldReader, command: WorldCommand): void {
-  if (command.type === "host.act") checkHostAct(world, command.target, command.action);
+  if (isDbCommand(command.type)) checkDbCommand(world, command as DbCommand);
+  else if (command.type === "host.act") checkHostAct(world, command.target, command.action);
   else if (command.type === "vm.migrate" || command.type.startsWith("service."))
     checkServiceCommand(world, command as Parameters<typeof checkServiceCommand>[1]);
   else checkFirmwareCommand(world, command);

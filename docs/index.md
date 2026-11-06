@@ -4,6 +4,8 @@ kind: reference
 status: active
 last_verified: 2026-11-06
 verification_log:
+  - "2026-11-06: db-storage-layers.md와 ADR-0111 링크를 더했다"
+  - "2026-11-06: tool-scope-and-sop.md와 ADR-0105 링크를 더했다"
   - "2026-11-05: ADR-0101 링크를 더했다"
   - "2026-11-05: harness-e2e.md 링크를 더했다"
   - "2026-11-05: ADR-0082 링크를 더했다"
@@ -34,6 +36,7 @@ verification_log:
 - [하네스 프로토콜](design-docs/harness-protocol.md)
 - [진짜 하네스로 끝까지 — LangGraph, OpenCode, OpenClaw 실측과 재현 절차](design-docs/harness-e2e.md)
 - [서비스와 OS 층 — 장비 위에서 무엇이 도는가, 가짜 셸, OS 고장](design-docs/service-os-layer.md)
+- [데이터베이스 층과 스토리지 HA 층 — 서비스가 기대는 두 겹, 고장 여덟, 자동 페일오버](design-docs/db-storage-layers.md)
 - [서버 운영 — 설치와 사내 시스템 연결](design-docs/operations.md)
 - [규모 키우기 — 스케일 업과 스케일 아웃](design-docs/scaling.md)
 - [용량 — 한 프로세스가 동시에 몇 개를 들고 있나](design-docs/capacity.md)
@@ -160,6 +163,7 @@ verification_log:
 - [0100 에스컬레이트는 도메인 하나만 받는다 — 그 도메인 고장이 종류별 리드타임 뒤에 사라진다 (0098·0099 단순화)](design-docs/adr/0100-escalate-by-domain.md)
 - [0101 랙 실장 장면, 컨테인먼트 안, 펌웨어 올리기 — 시험 세 개의 기대값을 고친다](design-docs/adr/0101-rack-containment-firmware-amend-tests.md)
 - [0102 서비스·OS 층을 구현하면서 시험 다섯 개의 기대값을 고친다](design-docs/adr/0102-service-os-amend-tests.md)
+- [0111 데이터베이스 층과 스토리지 HA 층을 코어 모델로 올리면서 시험 열한 곳의 기대값을 고친다](design-docs/adr/0111-db-storage-layers-amend-tests.md)
 - [0109 세계 만들기 입구를 구현하면서 글 잣대 시험의 화면 목록 둘을 고친다](design-docs/adr/0109-world-entry-amend-tests.md)
 - [0110 운영 모드를 구현하면서 ADR-0094의 강제 장치를 시험으로 잇는다](design-docs/adr/0110-operation-mode-amend-tests.md)
 - [0108 서비스부터는 IAP 하나로 시작하고, 사다리의 칩마다 그림·설명 카드가 있다 (0107 보정)](design-docs/adr/0108-world-entry-iap-and-chip-cards.md)

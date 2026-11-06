@@ -36,7 +36,11 @@ export type ActionKind =
   | "process_restart"
   | "disk_cleanup"
   | "fs_remount"
-  | "vm_migrate";
+  | "vm_migrate"
+  | "db_promote"
+  | "db_failover"
+  | "db_restore"
+  | "path_switch";
 
 export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   power_off: "전원 끄기",
@@ -56,6 +60,10 @@ export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   disk_cleanup: "디스크 비우기",
   fs_remount: "파일시스템 다시 마운트",
   vm_migrate: "VM 다른 서버로 옮기기",
+  db_promote: "인스턴스 승격",
+  db_failover: "클러스터 페일오버",
+  db_restore: "백업에서 복원",
+  path_switch: "스토리지 경로 전환",
 };
 
 export const ACTION_KINDS = Object.keys(ACTION_LABELS) as ActionKind[];

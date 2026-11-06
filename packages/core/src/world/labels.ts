@@ -24,6 +24,10 @@ export const KIND_LABELS: Readonly<Record<EntityKind, string>> = {
   vm: "VM",
   datastore: "데이터스토어",
   service: "서비스",
+  db_cluster: "데이터베이스 클러스터",
+  db_instance: "데이터베이스 인스턴스",
+  storage_pool: "스토리지 풀",
+  storage_controller: "스토리지 컨트롤러",
 };
 
 export const LINK_LABELS: Readonly<Record<LinkKind, string>> = {
@@ -37,6 +41,8 @@ export const LINK_LABELS: Readonly<Record<LinkKind, string>> = {
   backed_by: "스토리지 백엔드",
   service_on: "서비스가 도는 곳",
   service_via: "서비스 경로",
+  depends_on: "기대는 곳",
+  hosted_on: "올라간 곳",
 };
 
 /** "냉방기·분전반" style list of kind labels; "link" (a network link target) reads as "네트워크 링크". */

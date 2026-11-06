@@ -1,5 +1,13 @@
 /** Cards of the storage, database and application ladders (ADR-0107 item 3). */
+import { problemName } from "@terrarium/core/scenario";
+import { chipById } from "@terrarium/core/world";
 import { type ChipCard, rows } from "./card-types";
+
+/** The faults a modelled choice has, named as the core names them: what it stops, then what it only slows (REQ-095). */
+function faultsOf(id: string): string {
+  const chip = chipById(id);
+  return chip ? [...chip.stops, ...chip.slows].map(problemName).join(" · ") : "";
+}
 
 export const STORAGE_CARDS: readonly ChipCard[] = [
   {
@@ -44,18 +52,18 @@ export const STORAGE_CARDS: readonly ChipCard[] = [
   {
     id: "sto-shared",
     layer: "storage",
-    label: "공유 SAN·NAS(컨트롤러 하나)",
-    what: "여러 호스트가 어레이 하나의 데이터를 같이 써요. VM을 호스트 사이로 옮기려면 있어야 해요. 컨트롤러가 하나라 그게 멈추면 모두 멈춰요.",
-    canLose: "디스크 몇 개 (RAID)",
-    mustNot: "컨트롤러 — 이 어레이를 쓰는 VM 전부가 멈춰요",
-    faults: "컨트롤러 정지 · 디스크 가득 · 데이터스토어 읽기 전용",
+    label: "공유 SAN·NAS",
+    what: "여러 호스트가 어레이 하나의 데이터를 같이 써요. VM을 호스트 사이로 옮기려면 있어야 해요. 컨트롤러가 둘이지만 호스트가 길을 알아서 못 바꿔서, 쓰던 길이 끊기면 사람이 다른 길로 바꿔 줘야 이어져요.",
+    canLose: "디스크 몇 개 (RAID) · 컨트롤러 하나 (사람이 길을 바꾸면)",
+    mustNot: "길을 바꿔 줄 사람 — 바꾸기 전까지 이 어레이를 쓰는 데이터베이스가 멈춰요",
+    faults: faultsOf("sto-shared"),
     cost: "어레이 1대 · 2,500만 원쯤",
-    result: "컨트롤러 하나라 그게 멈추면 VM 전부가 멈춰요",
+    result: "쓰던 길이 끊기면 사람이 다른 컨트롤러 길로 바꿔야 이어져요",
     diagram: rows(
-      "호스트 셋이 어레이 컨트롤러 하나로 모이고 컨트롤러가 끊김",
+      "호스트 셋이 컨트롤러 둘 가운데 하나로만 이어지고 쓰던 컨트롤러가 끊김",
       [
         ["호스트", 3],
-        ["컨트롤러", 1, "mesh"],
+        ["컨트롤러", 2, "mesh"],
         ["디스크", 4, "mesh"],
       ],
       [1, 0],
@@ -68,9 +76,9 @@ export const STORAGE_CARDS: readonly ChipCard[] = [
     what: "어레이에 컨트롤러가 둘이고 호스트가 길을 둘로 이어요. 한쪽이 멈추면 다른 길로 같은 데이터를 읽어요.",
     canLose: "컨트롤러 하나 · 경로 하나",
     mustNot: "어레이 전체 · 두 컨트롤러가 함께",
-    faults: "컨트롤러 정지 · 경로 끊김 · 쓰기 캐시 유실",
+    faults: faultsOf("sto-dual-controller"),
     cost: "어레이 3,500만 원쯤 · 호스트에 HBA",
-    result: "공유 어레이 모양으로 지어요. 이중 컨트롤러는 아직 흉내 낼 수 없어요",
+    result: "컨트롤러 하나가 죽어도 호스트가 알아서 다른 길로 바꿔요 · 잠깐 느려요",
     diagram: rows(
       "호스트 둘이 컨트롤러 둘로 이어지고 컨트롤러 하나가 끊김",
       [
@@ -85,12 +93,12 @@ export const STORAGE_CARDS: readonly ChipCard[] = [
     id: "sto-distributed",
     layer: "storage",
     label: "분산 스토리지(3벌)",
-    what: "데이터를 서버 세 곳에 나눠 세 벌씩 둬요. 어레이 장비 없이 서버 디스크를 모아 쓰고, 한 곳이 죽으면 남은 두 벌에서 다시 세 벌로 채워요.",
+    what: "데이터를 노드 세 곳에 나눠 세 벌씩 두고, 한 곳이 더 있어서 노드를 잃으면 남은 두 벌에서 다시 세 벌로 채워요. 채우는 동안은 느려요.",
     canLose: "노드 하나 (두 벌 남음)",
-    mustNot: "노드 둘이 동시에",
-    faults: "노드 다운 · 재구성 폭주(네트워크 포화) · 디스크 가득",
+    mustNot: "노드 둘이 동시에 — 복제본이 한 벌이면 쓰기가 막혀요",
+    faults: faultsOf("sto-distributed"),
     cost: "노드 3대 이상 · 용량은 3배 필요",
-    result: "공유 어레이 모양으로 지어요. 분산 3벌은 아직 흉내 낼 수 없어요",
+    result: "노드 하나를 잃어도 이어가요 · 복제본을 다시 만드는 동안 느려요",
     diagram: rows(
       "노드 셋이 서로 이어져 같은 데이터를 세 벌 갖고 노드 하나가 끊김",
       [
@@ -129,7 +137,7 @@ export const DATABASE_CARDS: readonly ChipCard[] = [
     what: "데이터베이스 한 대에 밤마다 백업을 떠요. 죽으면 백업에서 되살리는 동안 멈춰요. 마지막 백업 뒤에 쓴 데이터는 사라져요.",
     canLose: "아무것도 · 백업 이후 데이터는 잃어요",
     mustNot: "그 한 대",
-    faults: "DB 정지 · 디스크 가득 · 복구 실패",
+    faults: faultsOf("db-single"),
     cost: "서버 한 대 + 백업",
     result: "한 대가 죽으면 백업에서 되살릴 때까지 멈춰요",
     diagram: rows(
@@ -148,7 +156,7 @@ export const DATABASE_CARDS: readonly ChipCard[] = [
     what: "DB 둘이 같은 디스크를 두고 하나만 일해요. 일하는 쪽이 멈추면 쉬던 쪽이 디스크를 넘겨받아 이어서 일해요. 몇 분 멈춰요.",
     canLose: "DB 한 대",
     mustNot: "공유 디스크 — 둘 다 멈춰요",
-    faults: "DB 정지 · 전환 실패 · 공유 디스크 고장",
+    faults: faultsOf("db-active-passive"),
     cost: "서버 두 대 + 공유 스토리지",
     result: "DB가 둘이라 하나가 죽으면 쉬던 쪽이 이어받아요",
     diagram: rows(
@@ -167,7 +175,7 @@ export const DATABASE_CARDS: readonly ChipCard[] = [
     what: "DB 여럿이 같은 디스크를 두고 동시에 일해요. 하나가 죽어도 나머지가 계속 받아서 멈춤이 거의 없어요. 디스크가 한 곳이라는 점은 그대로예요.",
     canLose: "DB 노드 하나",
     mustNot: "공유 디스크",
-    faults: "노드 퇴출 · 락 경합 · 공유 디스크 고장",
+    faults: faultsOf("db-shared-aa"),
     cost: "서버 셋 + 전용 클러스터 라이선스",
     result: "노드 하나가 죽어도 나머지가 받아요. 공유 디스크는 그대로 한 곳이에요",
     diagram: rows(
@@ -186,14 +194,14 @@ export const DATABASE_CARDS: readonly ChipCard[] = [
     what: "프라이머리에 쓰면 세컨더리가 따라 복제해요. 프라이머리가 죽으면 사람이 세컨더리를 승격시켜요. 복제가 늦으면 그만큼 잃어요.",
     canLose: "프라이머리 (승격하면)",
     mustNot: "승격을 못 하는 상황 · 복제 지연만큼의 최신 데이터",
-    faults: "프라이머리 정지 · 복제 지연 · 복제 끊김",
+    faults: faultsOf("db-primary-secondary"),
     cost: "서버 두 대 · 디스크 각각",
     result: "프라이머리가 죽으면 사람이 승격시켜야 해요",
     diagram: rows(
       "프라이머리가 세컨더리로 복제하고 프라이머리가 끊김",
       [
         ["프라이머리", 1],
-        ["세컨더리", 2, "mesh"],
+        ["세컨더리", 1, "mesh"],
       ],
       [0, 0],
     ),
@@ -205,7 +213,7 @@ export const DATABASE_CARDS: readonly ChipCard[] = [
     what: "복제본이 여럿이고, 감시자가 프라이머리의 죽음을 알아채면 가장 최신 복제본을 스스로 승격해요. 사람 손 없이 몇십 초 안에 이어져요.",
     canLose: "프라이머리 · 복제본 하나",
     mustNot: "감시자 과반 · 복제본 전부",
-    faults: "프라이머리 정지 · 스플릿 브레인 · 감시자 오판",
+    faults: faultsOf("db-auto-failover"),
     cost: "서버 셋 + 감시자",
     result: "프라이머리가 죽어도 스스로 승격해서 이어가요",
     diagram: rows(

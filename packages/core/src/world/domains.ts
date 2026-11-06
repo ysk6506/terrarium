@@ -29,7 +29,7 @@ export const DOMAINS: readonly DomainInfo[] = [
     id: "service_os",
     label: "서비스/OS",
     team: "서비스/OS 팀",
-    covers: "서비스, 호스트의 운영 체제와 프로세스",
+    covers: "서비스, 호스트의 운영 체제와 프로세스, 데이터베이스",
   },
   { id: "virtualization", label: "가상화", team: "가상화 팀", covers: "VM, 클러스터, 호스트 배치" },
   {
@@ -39,7 +39,12 @@ export const DOMAINS: readonly DomainInfo[] = [
     covers: "서버 하드웨어(메모리, 팬, 전원 공급 장치, BMC)",
   },
   { id: "network", label: "네트워크", team: "네트워크 팀", covers: "스위치, 링크, VLAN, 라우팅" },
-  { id: "storage", label: "스토리지", team: "스토리지 팀", covers: "스토리지와 디스크" },
+  {
+    id: "storage",
+    label: "스토리지",
+    team: "스토리지 팀",
+    covers: "스토리지와 디스크, 컨트롤러와 경로, 분산 스토리지",
+  },
   {
     id: "facility",
     label: "데이터센터 인프라",
@@ -105,6 +110,14 @@ export const FAULT_DOMAIN: Readonly<Record<FaultType, Domain>> = {
   dns_failure: "service_os",
   kernel_panic: "service_os",
   cert_expired: "service_os",
+  db_primary_down: "service_os",
+  db_secondary_down: "service_os",
+  db_replication_broken: "service_os",
+  db_split_brain: "service_os",
+  db_backup_corrupt: "service_os",
+  storage_path_cut: "storage",
+  storage_controller_failure: "storage",
+  storage_node_lost: "storage",
 };
 
 /** The domain of the mistakes people make (a wrong VLAN, a shut port, a PDU outlet switched off). */

@@ -36,14 +36,7 @@ describe("HA 사다리: 선택지와 카드 [REQ-094]", () => {
       "cmp-drs",
       "cmp-containers",
       "cmp-multicluster",
-      "sto-dual-controller",
-      "sto-distributed",
       "sto-geo",
-      "db-single",
-      "db-active-passive",
-      "db-shared-aa",
-      "db-primary-secondary",
-      "db-auto-failover",
       "db-distributed-sql",
       "db-managed-multiaz",
       "app-stateless",
@@ -120,7 +113,10 @@ describe("이 모양이면 [REQ-094]", () => {
     expect(sdn.scenarios).toBeLessThanOrEqual(leaf.scenarios);
     expect(sdn.dotted.length).toBeGreaterThan(leaf.dotted.length);
     const onlyDb = shapeView(specWith({ database: "db-managed-multiaz" }));
-    expect(onlyDb.problems).toEqual(shapeView(specWith({ database: "db-single" })).problems);
+    const ownDb = (v: { problems: readonly string[] }) =>
+      v.problems.filter((p) => p.startsWith("db_"));
+    expect(ownDb(onlyDb)).toEqual([]);
+    expect(ownDb(shapeView(specWith({ database: "db-single" }))).length).toBeGreaterThan(0);
   });
 
   test("베어메탈 + 핫 스페어는 호스트를 한 대 더하고 VM이 없다", () => {

@@ -7,6 +7,9 @@ enforced_by:
   - apps/web/src/logic/world-shape/world-shape.test.ts
   - packages/core/src/sources/worldgen/shaped.test.ts
   - packages/core/src/world/workload.test.ts
+  - tests/spec/db-physics.test.ts
+  - tests/spec/db-worldgen.test.ts
+  - tests/spec/db-scenarios.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 3941f276858239b0

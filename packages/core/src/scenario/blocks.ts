@@ -4,6 +4,7 @@
  * honour yet is listed with `status: "planned"` and the reason, so people see it but cannot use it.
  */
 import type { EntityKind } from "@terrarium/core/world";
+import { DB_CONDITION_FIELDS } from "./blocks-db";
 import { NET_BLOCK_SPECS } from "./blocks-net";
 import { SERVICE_FIELDS } from "./blocks-service";
 import { bool, type FieldSpec, HEALTH, num, version } from "./field-spec";
@@ -490,4 +491,5 @@ export const CONDITION_FIELDS: Readonly<Record<EntityKind, Readonly<Record<strin
   },
   datastore: { health: HEALTH },
   service: SERVICE_FIELDS,
+  ...DB_CONDITION_FIELDS,
 };

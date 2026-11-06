@@ -14,13 +14,13 @@ covers:
   - packages/core/src/world/incidents.ts
   - apps/server/src/runtime/executor-operation.ts
   - packages/core/src/session/run-events.ts
-covers_hash: 09679a0e2c54de08
+covers_hash: b828fcac9877f2a0
 verification_log:
-  - "2026-11-06: 레시피의 선택 칸 셋(escalation, faultScope, sop)과 벤치마크 키 규칙, 포크 차이 문구를 recipe.ts·lineage.ts와, 사건 기록의 human 사건과 원인 human을 world/run-events.ts·session/run-events.ts와 대조해 더했다 (REQ-080~083)"
   - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: 2a·2b 합치기"
   - "2026-11-06: 운영 실험 절과 link 사건 행을 더하고 recipe.ts의 벤치마크 키(operation)·lineage.ts의 운영 문구와 대조했다 (REQ-090)"
   - "2026-11-06: 마지막 구현(연결 사건 link, executor-operation, 운영 툴 필수 검사, operator 설명)과 다시 대조했다. 본문은 그대로 맞다 (REQ-090)"
+  - "2026-11-06: 2e 합치기"
 ---
 # 실험과 결과 분석 (REQ-015, REQ-030~033, REQ-037~040)
 
@@ -84,6 +84,8 @@ verification_log:
 | 사람 사건 `human` | 에이전트가 사람에게 물은 것 `asked`(요청문, 최근 툴 호출 5개), 사람이 세계에서 한 조치 `acted`(툴, 인자, 바뀐 것), 답 `answered`(누가: 사람·설정·아무도 아님, 어떻게: 글·조치·툴 더 줌·끝냄, 기다린 실제 초) (REQ-081) |
 | 연결 사건 `link` | 운영에서 에이전트가 하네스를 잃었다 `lost`(이유)가 다시 이어졌다 `back`. 세션이 아니라 실행기가 쓴다 |
 | 점수 사건 `score` | `agent_start`(과제를 받음, 세는 시작점 `scenarioStart`), `closed`(끝난 이유, 진단했나), `graded`(총점, 합격, 정답 장비 `rootCause`) |
+
+클러스터와 스토리지가 스스로 한 일(자동 페일오버의 승격, 멀티패스의 경로 전환, 분산 풀이 복제본을 다시 채운 것, REQ-095)은 세계 사건의 원인이 `cluster`다. 승격은 `db.promote`이고, 나머지 둘은 말로만 남는 `note`라서 사건 기록은 `note` 가운데 원인이 `cluster`인 것만 싣는다(다른 `note`는 예전처럼 뺀다). 채점은 이 사건으로 "클러스터가 알아서 한 복구"를 에이전트가 한 복구와 가른다.
 
 사람이 세계에서 한 조치는 세계 사건의 원인이 `human`이다. 그래서 에이전트의 행동으로 세어지지 않는다(채점은 에이전트의 툴 호출이 낳은 행동만 본다).
 

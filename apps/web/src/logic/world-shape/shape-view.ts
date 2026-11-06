@@ -36,6 +36,10 @@ const WAYS: Readonly<Record<string, string>> = {
   eapi_request: "스위치 설정 고치기",
   nxapi_request: "스위치 설정 고치기",
   snmp_request: "스위치 설정 고치기",
+  db_promote: "복제본 승격하기",
+  db_failover: "페일오버하기",
+  db_restore: "백업에서 복원하기",
+  storage_path_switch: "스토리지 경로 바꾸기",
 };
 
 export interface ShapeView {
@@ -59,6 +63,8 @@ export interface ShapeView {
 function teamOf(problem: ScopeKey): string {
   if (problem === "link_down" || problem === "switch_failure") return "네트워크팀";
   if (problem === "ups_battery_degraded" || problem === "cert_expired") return "시설팀";
+  if (problem === "storage_node_lost" || problem === "disk_failure") return "스토리지팀";
+  if (problem === "db_backup_corrupt") return "서비스/OS팀";
   return "벤더";
 }
 

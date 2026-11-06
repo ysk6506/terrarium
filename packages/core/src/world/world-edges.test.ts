@@ -31,7 +31,17 @@ describe("lookups and labels at the edges [REQ-001]", () => {
 
   test("only the four virtual kinds are virtual", () => {
     const virtual = ENTITY_KINDS.filter(isVirtualKind);
-    expect(virtual).toEqual(["vcenter", "cluster", "vm", "datastore", "service"]);
+    expect(virtual).toEqual([
+      "vcenter",
+      "cluster",
+      "vm",
+      "datastore",
+      "service",
+      "db_cluster",
+      "db_instance",
+      "storage_pool",
+      "storage_controller",
+    ]);
   });
 
   test("the index answers by id and says plainly what it does not know", () => {
