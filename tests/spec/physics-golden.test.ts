@@ -18,6 +18,7 @@ import {
 } from "@terrarium/core/sources/worldgen";
 import { type Blueprint, FAULT_SPECS, type FaultType, World } from "@terrarium/core/world";
 import { describe, expect, test } from "vitest";
+import { k8sLab } from "../../packages/core/src/world/test-support/k8s-lab";
 import { sampleBlueprint } from "../../packages/core/src/world/test-support/sample";
 
 const FILE = new URL("./physics-golden.json", import.meta.url);
@@ -57,6 +58,8 @@ const worlds: ReadonlyArray<readonly [string, () => Blueprint]> = [
         detail: 0.3,
       }).blueprint,
   ],
+  // the container layer (REQ-096): a cluster of three control-plane nodes and three workers, and a second cluster
+  ["container cluster", () => k8sLab({ second: true })],
 ];
 
 const stateHash = (world: World): string =>

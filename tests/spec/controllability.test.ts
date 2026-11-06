@@ -20,9 +20,16 @@ import {
 } from "@terrarium/core/scenario";
 import { Session } from "@terrarium/core/session";
 import { TOOL_NAMES, TOOL_SPECS } from "@terrarium/core/tools";
-import { type Blueprint, FAULT_SPECS, World, type WorldCommand } from "@terrarium/core/world";
+import {
+  type Blueprint,
+  FAULT_SPECS,
+  podSuffix,
+  World,
+  type WorldCommand,
+} from "@terrarium/core/world";
 import { describe, expect, test } from "vitest";
 import { dbLab } from "../../packages/core/src/world/test-support/db-lab";
+import { k8sLab } from "../../packages/core/src/world/test-support/k8s-lab";
 import { networkLab } from "../../packages/core/src/world/test-support/net-lab";
 import { campusBlueprint } from "../../packages/core/src/world/test-support/sample-campus";
 import { serviceLab } from "../../packages/core/src/world/test-support/service-lab";
@@ -70,6 +77,11 @@ describe("the list of what can be controlled is made of real things [REQ-069]", 
       "db.restore",
       "firmware.update",
       "host.act",
+      "k8s.cordon",
+      "k8s.delete_pod",
+      "k8s.drain",
+      "k8s.rollout_restart",
+      "k8s.scale",
       "link.admin",
       "load.set",
       "net.set",
@@ -167,6 +179,21 @@ describe("the kinds a row says it acts on are the kinds the world accepts [REQ-0
     [
       "storage.path_switch",
       (id: string): WorldCommand => ({ type: "storage.path_switch", target: id }),
+    ],
+    [
+      "k8s.rollout_restart",
+      (id: string): WorldCommand => ({ type: "k8s.rollout_restart", target: id }),
+    ],
+    ["k8s.scale", (id: string): WorldCommand => ({ type: "k8s.scale", target: id, replicas: 1 })],
+    ["k8s.cordon", (id: string): WorldCommand => ({ type: "k8s.cordon", target: id, on: true })],
+    ["k8s.drain", (id: string): WorldCommand => ({ type: "k8s.drain", target: id })],
+    [
+      "k8s.delete_pod",
+      (id: string): WorldCommand => ({
+        type: "k8s.delete_pod",
+        target: id,
+        pod: `kw-c-${podSuffix("kw-c|1")}-${podSuffix("kw-c|1|1")}`,
+      }),
     ],
   ])("%s", (name, command) => {
     expect(accepted(command)).toEqual(claimed(name));
@@ -531,6 +558,55 @@ Object.assign(DRIVES, {
     args: { controller: "ctl-b" },
     changed: happened("storage.path_switch", "ctl-b"),
     action: { kind: "path_switch", target: "ctl-b" },
+  },
+  "host.kubelet|run_command": {
+    world: () => k8sLab(),
+    tool: "run_command",
+    args: { host: "vm-main-w1", cmd: "systemctl restart kubelet" },
+    changed: hostAct("vm-main-w1", "restart"),
+    action: { kind: "process_restart", target: "vm-main-w1" },
+  },
+  "k8s.rollout_restart|kubectl_rollout_restart": {
+    world: () => k8sLab(),
+    tool: "kubectl_rollout_restart",
+    args: { workload: "web" },
+    changed: happened("k8s.rollout_restart", "web"),
+    action: { kind: "k8s_rollout_restart", target: "web" },
+  },
+  "k8s.scale|kubectl_scale": {
+    world: () => k8sLab(),
+    tool: "kubectl_scale",
+    args: { workload: "report", replicas: 1 },
+    changed: happened("k8s.scale", "report"),
+    action: { kind: "k8s_scale", target: "report" },
+  },
+  "k8s.cordon|kubectl_cordon": {
+    world: () => k8sLab(),
+    tool: "kubectl_cordon",
+    args: { node: "main-w2" },
+    changed: happened("k8s.cordon", "main-w2"),
+    action: { kind: "k8s_cordon", target: "main-w2" },
+  },
+  "k8s.cordon|kubectl_uncordon": {
+    world: () => k8sLab(),
+    tool: "kubectl_uncordon",
+    args: { node: "main-w2" },
+    changed: happened("k8s.cordon", "main-w2"),
+    action: { kind: "k8s_cordon", target: "main-w2" },
+  },
+  "k8s.drain|kubectl_drain": {
+    world: () => k8sLab(),
+    tool: "kubectl_drain",
+    args: { node: "main-w2" },
+    changed: happened("k8s.drain", "main-w2"),
+    action: { kind: "k8s_drain", target: "main-w2" },
+  },
+  "k8s.delete_pod|kubectl_delete_pod": {
+    world: () => k8sLab(),
+    tool: "kubectl_delete_pod",
+    args: { pod: `web-${podSuffix("web|1")}-${podSuffix("web|1|1")}` },
+    changed: happened("k8s.delete_pod", "web"),
+    action: { kind: "k8s_delete_pod", target: "web" },
   },
 } satisfies Record<string, Drive>);
 

@@ -4,11 +4,14 @@
  * switches above are told apart by how many steps they are from a ToR. A world with no virtual machines ends at
  * the servers, because a stage with nothing in it is not drawn.
  */
-import type { BlueprintIndex } from "@terrarium/core/world";
+import type { BlueprintIndex, Link } from "@terrarium/core/world";
 import { type LayerShape, ShapeBuilder } from "./shape";
 
 const STAGES = [
   { id: "service", label: "서비스" },
+  { id: "workload", label: "워크로드·파드" },
+  { id: "cluster", label: "쿠버네티스 클러스터" },
+  { id: "knode", label: "쿠버네티스 노드" },
   { id: "database", label: "데이터베이스" },
   { id: "instance", label: "DB 인스턴스" },
   { id: "pool", label: "스토리지 풀·컨트롤러" },
@@ -20,14 +23,17 @@ const STAGES = [
 ] as const;
 
 const SERVICE = 0;
-const DATABASE = 1;
-const INSTANCE = 2;
-const POOL = 3;
-const CORE = 4;
-const SPINE = 5;
-const TOR = 6;
-const HOST = 7;
-const VIRTUAL = 8;
+const WORKLOAD = 1;
+const CLUSTER = 2;
+const KNODE = 3;
+const DATABASE = 4;
+const INSTANCE = 5;
+const POOL = 6;
+const CORE = 7;
+const SPINE = 8;
+const TOR = 9;
+const HOST = 10;
+const VIRTUAL = 11;
 
 /** Steps from a switch down to the nearest ToR: 0 for a ToR (or a switch nothing leans on), then 1, 2... */
 function depthsOf(index: BlueprintIndex): Map<string, number> {
@@ -62,6 +68,14 @@ function addEquipment(index: BlueprintIndex, b: ShapeBuilder): void {
   for (const e of index.ofKind("cluster")) b.add(e.id, VIRTUAL, "cluster");
   for (const e of index.ofKind("service")) b.add(e.id, SERVICE, "service");
   addDatabase(index, b);
+  addContainers(index, b);
+}
+
+/** The container stages next to the services (REQ-096): workloads with their pods, the clusters, their nodes. */
+function addContainers(index: BlueprintIndex, b: ShapeBuilder): void {
+  for (const e of index.ofKind("k8s_workload")) b.add(e.id, WORKLOAD, "k8s_workload");
+  for (const e of index.ofKind("k8s_cluster")) b.add(e.id, CLUSTER, "k8s_cluster");
+  for (const e of index.ofKind("k8s_node")) b.add(e.id, KNODE, "k8s_node");
 }
 
 /** The database and storage-HA stages next to the services (REQ-095). */
@@ -72,22 +86,37 @@ function addDatabase(index: BlueprintIndex, b: ShapeBuilder): void {
   for (const e of index.ofKind("storage_controller")) b.add(e.id, POOL, "storage_controller");
 }
 
+/** Which way a link is drawn: `[from, to]` of the shape, or undefined when it is not drawn. */
+function drawn(index: BlueprintIndex, l: Link): [string, string] | undefined {
+  const [from, to] = [index.find(l.from)?.kind, index.find(l.to)?.kind];
+  switch (l.kind) {
+    // The switch carries the traffic of what is cabled to it, and the server carries the VM that runs on it.
+    case "network":
+    case "runs_on":
+      return [l.to, l.from];
+    // A cluster is drawn after its servers (they are its members), though the link says the server depends on it.
+    case "member_of":
+      if (to === "cluster" || from === "k8s_workload") return [l.from, l.to];
+      return [l.to, l.from];
+    // The top of the layer: a service leans on the VMs and servers it runs on, and (REQ-095, REQ-096) on the
+    // clusters, pools and workloads it needs; an instance or node runs on a VM or server, a pool is storage nodes.
+    case "service_on":
+    case "depends_on":
+    case "hosted_on":
+    case "stored_on":
+    case "backed_by":
+      return [l.from, l.to];
+    default:
+      return undefined;
+  }
+}
+
 export function networkShape(index: BlueprintIndex): LayerShape {
   const b = new ShapeBuilder(STAGES);
   addEquipment(index, b);
   for (const l of index.allLinks()) {
-    // The switch carries the traffic of what is cabled to it, and the server carries the VM that runs on it.
-    // A cluster is drawn after its servers (they are its members), though the link says the server depends on it.
-    if (l.kind === "network" || l.kind === "runs_on") b.link(l.to, l.from);
-    else if (l.kind === "member_of" && index.find(l.to)?.kind === "cluster") b.link(l.from, l.to);
-    else if (l.kind === "member_of") b.link(l.to, l.from);
-    // The top of the layer: a service leans on the VMs and servers it runs on.
-    else if (l.kind === "service_on") b.link(l.from, l.to);
-    // The database and storage layers (REQ-095): a service leans on a cluster or a pool, a cluster is its
-    // instances, an instance runs on a VM or server and keeps its data in a pool, a pool is storage nodes.
-    else if (l.kind === "depends_on") b.link(l.from, l.to);
-    else if (l.kind === "hosted_on" || l.kind === "stored_on") b.link(l.from, l.to);
-    else if (l.kind === "backed_by") b.link(l.from, l.to);
+    const ends = drawn(index, l);
+    if (ends) b.link(ends[0], ends[1]);
   }
   return b.build();
 }

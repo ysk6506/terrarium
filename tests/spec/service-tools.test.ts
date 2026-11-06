@@ -42,7 +42,7 @@ describe("every tool is described in the standard order and tagged with how real
     expect(realism("get_impact")).toBe("ideal");
     expect(realism("list_alarms")).toBe("common");
     expect(realism("service_status")).toBe("common");
-    expect(TOOL_SPECS).toHaveLength(40);
+    expect(TOOL_SPECS).toHaveLength(49);
   });
 });
 

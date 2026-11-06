@@ -43,6 +43,9 @@ const WAYS: Readonly<Record<string, string>> = {
   db_failover: "페일오버하기",
   db_restore: "백업에서 복원하기",
   storage_path_switch: "스토리지 경로 바꾸기",
+  kubectl_rollout_restart: "롤아웃 재시작하기",
+  kubectl_scale: "레플리카 줄이기",
+  kubectl_drain: "노드 비우기",
 };
 
 export interface ShapeView {
@@ -151,7 +154,10 @@ export function shapeView(spec: ShapeSpec): ShapeView {
     );
   return {
     hosts: own + plan.spareHosts,
-    vms: spec.services.reduce((n, s) => n + (buildFor(spec.layers, s).bare ? 0 : s.nodes), 0),
+    vms: spec.services.reduce((n, s) => {
+      const build = buildFor(spec.layers, s);
+      return n + (build.bare ? 0 : s.nodes * (build.k8s?.clusters ?? 1));
+    }, 0),
     switches,
     costM: (own + plan.spareHosts) * SERVER_COST_M + switches * SWITCH_COST_M + chips,
     stops: names(stops),

@@ -18,13 +18,13 @@ covers:
   - packages/core/src/sources/worldgen/shaped-plan.ts
   - packages/core/src/sources/realimport/mapping.ts
   - packages/core/src/sources/realimport/synthesize.ts
-covers_hash: ffc4a50bfceb5b38
+covers_hash: ae3ea7d05503e437
 verification_log:
-  - "2026-11-06: 서비스마다 다른 모양(ServiceDraft.layers, buildFor, layersOf)에 맞춰 shaped-plan.ts·shaped.ts와 대조해 해당 절을 고쳤다 (REQ-094, ADR-0108 결정 5)"
-  - "2026-11-06: REQ-094 세계 만들기 입구·서비스부터·패널 없는 직접 짓기(ADR-0107~0109)를 코드와 대조해 해당 절을 더하거나 고쳤다"
   - "2026-11-06: shaped.ts·shaped-plan.ts의 데이터베이스·풀 생성과 dbHosts를 더했다 (REQ-095)"
   - "2026-11-06: 서비스가 따로 고른 모양(buildFor)으로 얹는 규칙을 shaped-plan.ts, shaped.ts와 대조해 서비스부터 절에 적었다 (REQ-094, ADR-0112)"
   - "2026-11-06: 2c 보완 합치기"
+  - "2026-11-06: REQ-096: worldgen의 shaped-k8s.ts 추가가 소스 문서의 말(생성기 입력·출력)을 바꾸지 않음을 확인했다. 컨테이너 세계 생성은 container-layer.md에 있다"
+  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
 ---
 # 세계 소스 (REQ-009~013, REQ-035, REQ-043~049)
 

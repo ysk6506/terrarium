@@ -10,6 +10,9 @@ enforced_by:
   - tests/spec/db-physics.test.ts
   - tests/spec/db-worldgen.test.ts
   - tests/spec/db-scenarios.test.ts
+  - tests/spec/k8s-physics.test.ts
+  - tests/spec/k8s-scenarios.test.ts
+  - tests/spec/k8s-worldgen.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 3941f276858239b0

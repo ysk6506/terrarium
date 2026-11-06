@@ -31,6 +31,7 @@ export {
   DEFAULT_SHAPE,
   IAP_DRAFT,
   IAP_HARM,
+  IAP_LAYERS,
   IAP_WORKLOAD,
   MIDDLE_LAYERS,
 } from "./shaped-defaults";

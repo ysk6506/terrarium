@@ -5,6 +5,7 @@
  */
 import type { EntityKind } from "@terrarium/core/world";
 import { DB_CONDITION_FIELDS } from "./blocks-db";
+import { K8S_CONDITION_FIELDS } from "./blocks-k8s";
 import { NET_BLOCK_SPECS } from "./blocks-net";
 import { SERVICE_FIELDS } from "./blocks-service";
 import { bool, type FieldSpec, HEALTH, num, version } from "./field-spec";
@@ -492,4 +493,5 @@ export const CONDITION_FIELDS: Readonly<Record<EntityKind, Readonly<Record<strin
   datastore: { health: HEALTH },
   service: SERVICE_FIELDS,
   ...DB_CONDITION_FIELDS,
+  ...K8S_CONDITION_FIELDS,
 };

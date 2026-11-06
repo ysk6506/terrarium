@@ -33,6 +33,11 @@ export const EVENT_LABELS: Readonly<Record<Exclude<EventType, "note">, string>> 
   "db.failover": "클러스터를 페일오버한 적",
   "db.restore": "백업에서 복원을 시작한 적",
   "storage.path_switch": "스토리지 경로를 바꾼 적",
+  "k8s.rollout_restart": "워크로드를 롤아웃 재시작한 적",
+  "k8s.scale": "워크로드의 레플리카 수를 바꾼 적",
+  "k8s.cordon": "노드를 cordon·uncordon 한 적",
+  "k8s.drain": "노드를 drain 한 적",
+  "k8s.delete_pod": "파드를 지운 적",
 };
 
 export const EVENT_TYPES = Object.keys(EVENT_LABELS) as (keyof typeof EVENT_LABELS)[];

@@ -229,6 +229,35 @@ const Pool = ({ state }: GlyphProps) => (
   </>
 );
 
+/** A Kubernetes cluster: a ring of small boxes round one in the middle (the control plane). */
+const K8sCluster = ({ state }: GlyphProps) => (
+  <>
+    {[-10, 10].map((x) => (
+      <Box key={x} x={x} y={8} w={10} d={8} z={6} tone="blue" />
+    ))}
+    <Box x={0} y={-2} w={12} d={9} z={9} tone="steel" />
+    <Led x={-5} y={-8} state={state} />
+  </>
+);
+
+/** A node: one box with a light, the machine a pod runs on. */
+const K8sNode = ({ state }: GlyphProps) => (
+  <>
+    <Box x={0} y={6} w={16} d={10} z={7} tone="blue" />
+    <Led x={-5} y={-1} state={state} />
+  </>
+);
+
+/** A workload: a few small pods side by side. */
+const K8sWorkload = ({ state }: GlyphProps) => (
+  <>
+    {[-9, 0, 9].map((x) => (
+      <Box key={x} x={x} y={6} w={7} d={7} z={7} tone="olive" />
+    ))}
+    <Led x={-10} y={-4} state={state} />
+  </>
+);
+
 const Controller = ({ state }: GlyphProps) => (
   <>
     <Box x={0} y={6} w={22} d={10} z={6} tone="steel" />
@@ -256,6 +285,9 @@ const SINGLE: Readonly<Record<TopoKind, Glyph>> = {
   vm: Vm,
   cluster: Cluster,
   service: Service,
+  k8s_cluster: K8sCluster,
+  k8s_node: K8sNode,
+  k8s_workload: K8sWorkload,
   db_cluster: Database,
   db_instance: DbInstance,
   storage_pool: Pool,

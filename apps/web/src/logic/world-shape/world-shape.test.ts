@@ -33,9 +33,6 @@ describe("HA 사다리: 선택지와 카드 [REQ-094]", () => {
     expect(dotted).toEqual([
       "net-sdn",
       "net-cloud-native",
-      "cmp-drs",
-      "cmp-containers",
-      "cmp-multicluster",
       "sto-geo",
       "db-distributed-sql",
       "db-managed-multiaz",

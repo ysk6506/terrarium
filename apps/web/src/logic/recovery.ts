@@ -35,7 +35,7 @@ export function recoveryFigures(score: Score | undefined): readonly Figure[] {
       label: "사람 없이 복구한 비율",
       value: r.byAgent ? "복구됨" : r.byCluster ? "클러스터가 알아서 복구" : "안 됨",
       hint: r.byCluster
-        ? `클러스터가 ${formatDuration(Math.round(r.clusterAfterSeconds ?? 0))} 만에 스스로 승격해서 돌아왔어요. 에이전트가 한 복구가 아니라서 세지 않아요`
+        ? `클러스터가 ${formatDuration(Math.round(r.clusterAfterSeconds ?? 0))} 만에 스스로 복구해서 돌아왔어요. 에이전트가 한 복구가 아니라서 세지 않아요`
         : "이 실행 하나는 복구됨 아니면 안 됨이에요. 같은 시나리오를 여러 번 돌리면 비율이 돼요",
     },
     {

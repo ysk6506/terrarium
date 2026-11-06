@@ -35,10 +35,10 @@ export const IAP_DRAFT: ServiceDraft = {
   hosts: 3,
   switches: 2,
   parts: [
-    { label: "오케스트레이터", tier: 0 },
-    { label: "도메인 에이전트", count: 4, tier: 0 },
-    { label: "토폴로지 그래프 DB", tier: 0 },
-    { label: "GoClaw 코어", tier: 0 },
+    { label: "오케스트레이터", tier: 0, workload: "orchestrator" },
+    { label: "도메인 에이전트", count: 4, tier: 0, workload: "domain-agents" },
+    { label: "토폴로지 그래프 DB", tier: 0, workload: "topology-graph" },
+    { label: "GoClaw 코어", tier: 0, workload: "goclaw-core" },
     { label: "컨트롤 플레인 VM", count: 3, tier: 1, role: "node" },
     { label: "워커 VM", count: 6, tier: 1, role: "node" },
     { label: "가상화 호스트", count: 3, tier: 2, role: "host" },
@@ -71,12 +71,15 @@ export const MIDDLE_LAYERS: Layers = {
   site: "site-one-room",
 };
 
+/** IAP is a Kubernetes built by hand on VMs (REQ-096): its world starts with the container choice for compute. */
+export const IAP_LAYERS: Layers = { ...MIDDLE_LAYERS, compute: "cmp-containers" };
+
 export const DEFAULT_SHAPE: ShapeSpec = {
   name: "IAP 실험용",
   seed: 1,
   site: "hwaseong",
   servers: 480,
-  layers: MIDDLE_LAYERS,
+  layers: IAP_LAYERS,
   services: [IAP_DRAFT],
 };
 

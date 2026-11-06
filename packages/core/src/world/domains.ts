@@ -29,7 +29,7 @@ export const DOMAINS: readonly DomainInfo[] = [
     id: "service_os",
     label: "서비스/OS",
     team: "서비스/OS 팀",
-    covers: "서비스, 호스트의 운영 체제와 프로세스, 데이터베이스",
+    covers: "서비스, 호스트의 운영 체제와 프로세스, 데이터베이스, 쿠버네티스(노드·파드)",
   },
   { id: "virtualization", label: "가상화", team: "가상화 팀", covers: "VM, 클러스터, 호스트 배치" },
   {
@@ -118,6 +118,14 @@ export const FAULT_DOMAIN: Readonly<Record<FaultType, Domain>> = {
   storage_path_cut: "storage",
   storage_controller_failure: "storage",
   storage_node_lost: "storage",
+  k8s_node_notready: "service_os",
+  k8s_control_plane_down: "service_os",
+  k8s_etcd_quorum_lost: "service_os",
+  k8s_pod_crashloop: "service_os",
+  k8s_resource_exhausted: "service_os",
+  k8s_image_pull_failure: "service_os",
+  k8s_disk_pressure: "service_os",
+  k8s_cni_failure: "service_os",
 };
 
 /** The domain of the mistakes people make (a wrong VLAN, a shut port, a PDU outlet switched off). */

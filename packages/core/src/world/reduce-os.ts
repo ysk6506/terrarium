@@ -4,6 +4,7 @@
  */
 import { failoverCluster, promote, restartDatabase, startRestore, switchPath } from "./db-act";
 import { actOnHost, type HostActContext } from "./host-os";
+import { cordon, deletePod, drain, restartKubelet, rolloutRestart, scale } from "./k8s-act";
 import type { HostOs } from "./os";
 import { failover, restartService, type ServiceActContext } from "./service-act";
 import type { WorldCommand, WorldReader } from "./world";
@@ -30,7 +31,66 @@ const dbContext = (world: OsWorld) => ({
   dropFault: (id: string) => world.dropFault(id),
 });
 
+/** The container-layer commands (REQ-096): what each does to the state. */
+function reduceK8s(world: OsWorld, command: WorldCommand): void {
+  const ctx = dbContext(world);
+  switch (command.type) {
+    case "k8s.rollout_restart":
+      rolloutRestart(ctx, command.target);
+      return;
+    case "k8s.scale":
+      scale(ctx, command.target, command.replicas);
+      return;
+    case "k8s.cordon":
+      cordon(ctx, command.target, command.on);
+      return;
+    case "k8s.drain":
+      drain(ctx, command.target);
+      return;
+    case "k8s.delete_pod":
+      deletePod(ctx, command.target, command.pod);
+      return;
+    default:
+      return;
+  }
+}
+
+/** A restart of a database or of a node's kubelet or containerd also ends the faults a restart can end. */
+function afterRestart(world: OsWorld, host: string, unit: string | undefined): void {
+  if (unit === "postgresql") restartDatabase(dbContext(world), host);
+  if (unit === "kubelet" || unit === "containerd") restartKubelet(dbContext(world), host);
+}
+
+/** The database and storage commands (REQ-095). */
+function reduceDb(world: OsWorld, command: WorldCommand): void {
+  const ctx = dbContext(world);
+  switch (command.type) {
+    case "db.promote":
+      promote(ctx, command.target);
+      return;
+    case "db.failover":
+      failoverCluster(ctx, command.target);
+      return;
+    case "db.restore":
+      startRestore(ctx, command.target, command.backup);
+      return;
+    case "storage.path_switch":
+      switchPath(ctx, command.target);
+      return;
+    default:
+      return;
+  }
+}
+
 export function reduceHostAndService(world: OsWorld, command: WorldCommand): void {
+  if (command.type.startsWith("k8s.")) {
+    reduceK8s(world, command);
+    return;
+  }
+  if (command.type.startsWith("db.") || command.type.startsWith("storage.")) {
+    reduceDb(world, command);
+    return;
+  }
   const ctx: ServiceActContext = {
     world,
     t: world.time(),
@@ -39,20 +99,7 @@ export function reduceHostAndService(world: OsWorld, command: WorldCommand): voi
   switch (command.type) {
     case "host.act":
       actOnHost(hostContext(world, command.target), command.action, command.arg);
-      if (command.action === "restart" && command.arg === "postgresql")
-        restartDatabase(dbContext(world), command.target);
-      return;
-    case "db.promote":
-      promote(dbContext(world), command.target);
-      return;
-    case "db.failover":
-      failoverCluster(dbContext(world), command.target);
-      return;
-    case "db.restore":
-      startRestore(dbContext(world), command.target, command.backup);
-      return;
-    case "storage.path_switch":
-      switchPath(dbContext(world), command.target);
+      afterRestart(world, command.target, command.action === "restart" ? command.arg : undefined);
       return;
     case "service.failover":
       failover(ctx, command.target);

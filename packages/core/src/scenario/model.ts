@@ -40,7 +40,12 @@ export type ActionKind =
   | "db_promote"
   | "db_failover"
   | "db_restore"
-  | "path_switch";
+  | "path_switch"
+  | "k8s_rollout_restart"
+  | "k8s_scale"
+  | "k8s_cordon"
+  | "k8s_drain"
+  | "k8s_delete_pod";
 
 export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   power_off: "전원 끄기",
@@ -64,6 +69,11 @@ export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   db_failover: "클러스터 페일오버",
   db_restore: "백업에서 복원",
   path_switch: "스토리지 경로 전환",
+  k8s_rollout_restart: "롤아웃 재시작",
+  k8s_scale: "레플리카 수 바꾸기",
+  k8s_cordon: "노드 cordon·uncordon",
+  k8s_drain: "노드 drain",
+  k8s_delete_pod: "파드 지우기",
 };
 
 export const ACTION_KINDS = Object.keys(ACTION_LABELS) as ActionKind[];

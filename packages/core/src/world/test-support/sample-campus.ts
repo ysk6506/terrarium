@@ -5,6 +5,7 @@
  */
 import type { Blueprint, Entity, Link } from "../blueprint";
 import { dbClusterProps, poolProps } from "../db";
+import { k8sClusterProps, k8sNodeProps, k8sWorkloadProps } from "../k8s";
 import { serviceProps } from "../service";
 import { sampleBlueprint } from "./sample";
 
@@ -51,6 +52,12 @@ export const CAMPUS_ENTITY_IDS = [
   "stor-d1",
   "stor-d2",
   "stor-d3",
+  "k8s-c",
+  "kn-c1",
+  "kn-c2",
+  "kn-c3",
+  "kn-c4",
+  "kw-c",
 ] as const;
 
 export function campusBlueprint(): Blueprint {
@@ -157,6 +164,34 @@ export function campusBlueprint(): Blueprint {
     // a single instance with backups
     { id: "db-s", kind: "db_cluster", name: "DB 단일", props: dbClusterProps({ shape: "single" }) },
     { id: "db-s1", kind: "db_instance", name: "db-s1", props: { role: "primary" } },
+    // the container layer (REQ-096): a cluster on two servers (bare-metal nodes), one workload a service leans on
+    { id: "k8s-c", kind: "k8s_cluster", name: "k8s-c", props: k8sClusterProps() },
+    {
+      id: "kn-c1",
+      kind: "k8s_node",
+      name: "kn-c1",
+      props: k8sNodeProps({ role: "control-plane", cpuMilli: 7800, memMiB: 30_000 }),
+    },
+    {
+      id: "kn-c2",
+      kind: "k8s_node",
+      name: "kn-c2",
+      props: k8sNodeProps({ role: "worker", cpuMilli: 7800, memMiB: 30_000 }),
+    },
+    ...["kn-c3", "kn-c4"].map(
+      (id): Entity => ({
+        id,
+        kind: "k8s_node",
+        name: id,
+        props: k8sNodeProps({ role: "worker", cpuMilli: 7800, memMiB: 30_000 }),
+      }),
+    ),
+    {
+      id: "kw-c",
+      kind: "k8s_workload",
+      name: "kw-c",
+      props: k8sWorkloadProps({ replicas: 4, cpuMilli: 500, memMiB: 1024, namespace: "default" }),
+    },
     ...[1, 2, 3].map(
       (n): Entity =>
         ent(
@@ -196,6 +231,16 @@ export function campusBlueprint(): Blueprint {
       link("network", `stor-d${n}`, "tor-a"),
     ]),
     link("depends_on", "svc-portal", "db-a"),
+    link("member_of", "kn-c1", "k8s-c"),
+    link("member_of", "kn-c2", "k8s-c"),
+    link("member_of", "kw-c", "k8s-c"),
+    link("hosted_on", "kn-c1", "srv-l1"),
+    link("hosted_on", "kn-c2", "srv-t1"),
+    link("member_of", "kn-c3", "k8s-c"),
+    link("member_of", "kn-c4", "k8s-c"),
+    link("hosted_on", "kn-c3", "srv-a1"),
+    link("hosted_on", "kn-c4", "srv-b1"),
+    link("depends_on", "svc-portal", "kw-c"),
     link("member_of", "db-s1", "db-s"),
     link("hosted_on", "db-s1", "srv-l1"),
     link("depends_on", "svc-portal", "db-s"),

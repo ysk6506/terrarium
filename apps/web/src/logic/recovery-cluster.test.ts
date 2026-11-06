@@ -34,7 +34,7 @@ describe("클러스터가 알아서 한 복구는 결과 화면에서 따로 말
   test("에이전트가 한 복구가 아니고 클러스터가 승격한 것이라고 적는다", () => {
     const figure = recoveryFigures(scored({ byCluster: true, clusterAfterSeconds: 30 }))[1];
     expect(figure?.value).toBe("클러스터가 알아서 복구");
-    expect(figure?.hint).toContain("30초 만에 스스로 승격");
+    expect(figure?.hint).toContain("30초 만에 스스로 복구");
     expect(figure?.hint).toContain("에이전트가 한 복구가 아니라서");
   });
 

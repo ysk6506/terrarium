@@ -28,7 +28,11 @@ export type VirtualKind =
   | "db_cluster"
   | "db_instance"
   | "storage_pool"
-  | "storage_controller";
+  | "storage_controller"
+  /** Container layer (REQ-096, ADR-0107 item 6): a cluster, its nodes, and the workloads whose pods run on them. */
+  | "k8s_cluster"
+  | "k8s_node"
+  | "k8s_workload";
 export type EntityKind =
   | SpaceKind
   | "rack"
@@ -64,6 +68,9 @@ export const ENTITY_KINDS: readonly EntityKind[] = [
   "db_instance",
   "storage_pool",
   "storage_controller",
+  "k8s_cluster",
+  "k8s_node",
+  "k8s_workload",
 ]; // prettier-ignore
 
 export const MODELLED_KINDS: ReadonlySet<EntityKind> = new Set([
@@ -107,6 +114,9 @@ export const ALLOWED_PARENTS: Readonly<Record<EntityKind, readonly EntityKind[]>
   db_instance: [],
   storage_pool: [],
   storage_controller: [],
+  k8s_cluster: [],
+  k8s_node: [],
+  k8s_workload: [],
 };
 
 /** Where something is, relative to its parent. Units are metres; racks use units (U). */
@@ -153,6 +163,9 @@ export const PLACEMENT_OF: Readonly<Record<EntityKind, Placement["type"] | undef
   db_instance: undefined,
   storage_pool: undefined,
   storage_controller: undefined,
+  k8s_cluster: undefined,
+  k8s_node: undefined,
+  k8s_workload: undefined,
 };
 
 export type PropValue = string | number | boolean;
@@ -183,7 +196,7 @@ export type LinkKind =
   | "service_via"
   /** A service needs this database or storage pool (REQ-095): it reads its state, not its host. */
   | "depends_on"
-  /** A database instance runs on this VM or server; a storage controller sits in this storage array. */
+  /** A database instance runs on this VM or server; a storage controller sits in this storage array; a Kubernetes node is this VM or server. */
   | "hosted_on";
 
 /** Allowed (from kinds, to kinds) per link kind. `from` depends on `to`. */
@@ -209,16 +222,22 @@ export const LINK_RULES: Readonly<
   cooling: { from: ["rack", "cooling_unit", "cdu"], to: ["cooling_unit", "cdu", "chiller"] },
   runs_on: { from: ["vm"], to: ["server"] },
   member_of: {
-    from: ["server", "db_instance", "storage_controller"],
-    to: ["cluster", "db_cluster", "storage_pool"],
+    from: ["server", "db_instance", "storage_controller", "k8s_node", "k8s_workload"],
+    to: ["cluster", "db_cluster", "storage_pool", "k8s_cluster"],
   },
   managed_by: { from: ["cluster"], to: ["vcenter"] },
   stored_on: { from: ["vm", "db_instance"], to: ["datastore", "storage_pool"] },
   backed_by: { from: ["datastore", "storage_pool"], to: ["storage"] },
   service_on: { from: ["service"], to: ["vm", "server", "storage"] },
   service_via: { from: ["service"], to: ["switch"] },
-  depends_on: { from: ["service"], to: ["db_cluster", "db_instance", "storage_pool"] },
-  hosted_on: { from: ["db_instance", "storage_controller"], to: ["vm", "server", "storage"] },
+  depends_on: {
+    from: ["service"],
+    to: ["db_cluster", "db_instance", "storage_pool", "k8s_workload"],
+  },
+  hosted_on: {
+    from: ["db_instance", "storage_controller", "k8s_node"],
+    to: ["vm", "server", "storage"],
+  },
 };
 
 export interface Link {
@@ -261,4 +280,7 @@ export const isVirtualKind = (kind: EntityKind): kind is VirtualKind =>
   kind === "db_cluster" ||
   kind === "db_instance" ||
   kind === "storage_pool" ||
-  kind === "storage_controller";
+  kind === "storage_controller" ||
+  kind === "k8s_cluster" ||
+  kind === "k8s_node" ||
+  kind === "k8s_workload";

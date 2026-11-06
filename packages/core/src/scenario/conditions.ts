@@ -35,15 +35,26 @@ const SIMPLE_ACTIONS: Partial<Record<WorldCommand["type"], ActionKind>> = {
 /** The switch (or server) at one end of a network link, which the session reads off the blueprint. */
 export type LinkEnd = (linkId: string, end: "from" | "to") => string | undefined;
 
+/** Commands that are one action each on their target: the service, database, storage and container layers. */
+const PLAIN_ACTIONS: Readonly<Record<string, AgentAction["action"]>> = {
+  "service.failover": "service_failover",
+  "service.restart": "service_restart",
+  "vm.migrate": "vm_migrate",
+  "db.promote": "db_promote",
+  "db.failover": "db_failover",
+  "db.restore": "db_restore",
+  "storage.path_switch": "path_switch",
+  "k8s.rollout_restart": "k8s_rollout_restart",
+  "k8s.scale": "k8s_scale",
+  "k8s.cordon": "k8s_cordon",
+  "k8s.drain": "k8s_drain",
+  "k8s.delete_pod": "k8s_delete_pod",
+};
+
 /** Commands of the service and operating-system layers (ADR-0091); a reboot is a restart of the host. */
 function serviceAction(c: WorldCommand): AgentAction | undefined {
-  if (c.type === "service.failover") return { action: "service_failover", target: c.target };
-  if (c.type === "service.restart") return { action: "service_restart", target: c.target };
-  if (c.type === "vm.migrate") return { action: "vm_migrate", target: c.target };
-  if (c.type === "db.promote") return { action: "db_promote", target: c.target };
-  if (c.type === "db.failover") return { action: "db_failover", target: c.target };
-  if (c.type === "db.restore") return { action: "db_restore", target: c.target };
-  if (c.type === "storage.path_switch") return { action: "path_switch", target: c.target };
+  const plain = PLAIN_ACTIONS[c.type];
+  if (plain) return { action: plain, target: (c as { target: string }).target };
   if (c.type !== "host.act") return undefined;
   const kind = {
     restart: "process_restart",

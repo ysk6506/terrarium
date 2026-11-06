@@ -9,6 +9,7 @@ import { DB_TEMPLATES } from "./library-db";
 import { DOMAIN_TEMPLATES } from "./library-domains";
 import { FACILITY_TEMPLATES } from "./library-facility";
 import { FIRMWARE_TEMPLATES } from "./library-firmware";
+import { K8S_TEMPLATES } from "./library-k8s";
 import {
   agent,
   allOf,
@@ -456,6 +457,9 @@ export { OS_TEMPLATES };
 /** Faults of the database and storage-HA layers, seen as a service that slows or stops (REQ-095). */
 export { DB_TEMPLATES };
 
+/** Faults of the container layer, seen as a service that slows or stops (REQ-096). */
+export { K8S_TEMPLATES };
+
 /** Faults whose cause is in another domain than the one the agent looks after (REQ-093). */
 export { DOMAIN_TEMPLATES };
 
@@ -467,12 +471,13 @@ export const ALL_SCENARIO_TEMPLATES: readonly ScenarioTemplate[] = [
   ...FIRMWARE_TEMPLATES,
   ...OS_TEMPLATES,
   ...DB_TEMPLATES,
+  ...K8S_TEMPLATES,
   ...DOMAIN_TEMPLATES,
 ];
 
 /** How the new-scenario picker groups the templates: equipment first, then changes people make to settings. */
 export const TEMPLATE_GROUPS: readonly {
-  readonly id: "facility" | "network" | "firmware" | "os" | "database" | "domains";
+  readonly id: "facility" | "network" | "firmware" | "os" | "database" | "containers" | "domains";
   readonly label: string;
   readonly templates: readonly ScenarioTemplate[];
 }[] = [
@@ -481,6 +486,7 @@ export const TEMPLATE_GROUPS: readonly {
   { id: "firmware", label: "펌웨어 작업", templates: FIRMWARE_TEMPLATES },
   { id: "os", label: "OS 고장", templates: OS_TEMPLATES },
   { id: "database", label: "데이터베이스·스토리지 HA", templates: DB_TEMPLATES },
+  { id: "containers", label: "컨테이너(쿠버네티스)", templates: K8S_TEMPLATES },
   { id: "domains", label: "내 도메인 밖이 원인", templates: DOMAIN_TEMPLATES },
 ];
 

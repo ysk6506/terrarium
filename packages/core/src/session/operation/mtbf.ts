@@ -38,6 +38,15 @@ export const MTBF_TABLE: readonly Mtbf[] = [
   { type: "dns_failure", kinds: ["server", "vm"], hours: 6_000 },
   { type: "kernel_panic", kinds: ["server", "vm"], hours: 5_000 },
   { type: "cert_expired", kinds: ["server", "vm"], hours: 8_000 },
+  // the container layer (REQ-096): per node, per cluster, per workload
+  { type: "k8s_node_notready", kinds: ["k8s_node"], hours: 1_500 },
+  { type: "k8s_control_plane_down", kinds: ["k8s_node"], hours: 4_000 },
+  { type: "k8s_etcd_quorum_lost", kinds: ["k8s_cluster"], hours: 9_000 },
+  { type: "k8s_pod_crashloop", kinds: ["k8s_workload"], hours: 900 },
+  { type: "k8s_resource_exhausted", kinds: ["k8s_cluster"], hours: 6_000 },
+  { type: "k8s_image_pull_failure", kinds: ["k8s_cluster"], hours: 5_000 },
+  { type: "k8s_disk_pressure", kinds: ["k8s_node"], hours: 2_000 },
+  { type: "k8s_cni_failure", kinds: ["k8s_node"], hours: 3_000 },
 ];
 
 /**

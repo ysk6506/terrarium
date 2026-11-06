@@ -40,7 +40,10 @@ export type TopoKind =
   | "db_cluster"
   | "db_instance"
   | "storage_pool"
-  | "storage_controller";
+  | "storage_controller"
+  | "k8s_cluster"
+  | "k8s_node"
+  | "k8s_workload";
 
 /** What the board reads of a world: the part of `WorldReader` that tells what is, and how it is doing. */
 export interface TopologySource {

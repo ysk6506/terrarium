@@ -16,8 +16,19 @@ import {
   type StorageControllerState,
   type StoragePoolState,
 } from "./state-db";
+import {
+  K8S_FACTORIES,
+  type K8sClusterState,
+  type K8sNodeState,
+  type K8sWorkloadState,
+  type PodPhase,
+  type PodState,
+  placeK8sEntity,
+  placePods,
+} from "./state-k8s";
 
 export type { DbClusterState, DbInstanceState, StorageControllerState, StoragePoolState };
+export type { K8sClusterState, K8sNodeState, K8sWorkloadState, PodPhase, PodState };
 
 export type Health = "ok" | "warning" | "critical";
 
@@ -169,6 +180,8 @@ export interface VmState extends Base {
   memUtil: number;
   /** The server it runs on after a migration (`migrate_vm`); absent while it is where the blueprint put it. */
   hostId?: string;
+  /** Until this world time the VM is being moved to another server by the cluster (DRS) and is slow. */
+  migratingUntil?: number;
   /** The operating system, once something needed it (see os.ts). */
   os?: HostOs;
 }
@@ -219,6 +232,9 @@ export type EntityState =
   | DbClusterState
   | StorageControllerState
   | StoragePoolState
+  | K8sClusterState
+  | K8sNodeState
+  | K8sWorkloadState
   | SiteState
   | PlainState;
 
@@ -390,6 +406,7 @@ const FACTORIES: Partial<Record<EntityKind, Factory>> = {
     memUtil: 0.5,
   }),
   ...DB_FACTORIES,
+  ...K8S_FACTORIES,
 };
 
 /** A blueprint can say how loaded a server is and which firmware versions it was built with. */
@@ -420,6 +437,7 @@ export function initialState(index: BlueprintIndex, catalog: Catalog): WorldStat
     if (state.kind === "service") placeService(state, entity.id, index);
     if (state.kind === "server") applyServerProps(state, entity.props);
     placeDatabase(state, entity, index);
+    placeK8sEntity(state, entity, index);
     if (state.kind === "rack") state.util = bulkOf(entity)?.util ?? 0;
     if (state.kind === "cooling_unit" && typeof entity.props.setpointC === "number")
       state.setpointC = entity.props.setpointC;
@@ -427,5 +445,6 @@ export function initialState(index: BlueprintIndex, catalog: Catalog): WorldStat
   }
   const links: WorldState["links"] = {};
   for (const link of index.allLinks()) if (link.kind === "network") links[link.id] = { up: true };
+  placePods(entities, index);
   return { t: 0, entities, links, faults: {}, alarms: {} };
 }

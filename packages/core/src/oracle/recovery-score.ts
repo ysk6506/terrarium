@@ -90,7 +90,7 @@ function timeAxis(r: RecoveryReport, share: number): RecoveryAxis {
       id,
       label,
       max,
-      "클러스터가 알아서 승격해서 돌아왔어요. 에이전트가 한 복구가 아니라서 점수가 없어요",
+      "클러스터가 알아서 복구해서 돌아왔어요. 에이전트가 한 복구가 아니라서 점수가 없어요",
     );
   if (!r.byAgent)
     return nothing(id, label, max, "조치한 것이 없는데 저절로 돌아와서 점수가 없어요");

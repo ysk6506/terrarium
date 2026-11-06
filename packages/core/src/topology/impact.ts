@@ -11,6 +11,7 @@
 import { RACK_CRITICAL_C } from "@terrarium/core/physics";
 import { type BlueprintIndex, type LinkKind, serviceDef } from "@terrarium/core/world";
 import { type Causes, causesOf } from "./causes";
+import { k8sRollUp } from "./impact-k8s";
 import { rackServers } from "./shape";
 import type { TopologySource } from "./types";
 
@@ -34,6 +35,8 @@ const TAKES_AWAY = new Set([
   "storage_controller_failure",
   "storage_path_cut",
   "storage_node_lost",
+  "k8s_node_notready",
+  "k8s_control_plane_down",
 ]);
 
 /**
@@ -43,6 +46,7 @@ const TAKES_AWAY = new Set([
  */
 const DEPENDS: readonly LinkKind[] = ["hosted_on", "stored_on", "backed_by", "depends_on"];
 const DEPENDENTS: ReadonlySet<string> = new Set([
+  "k8s_node",
   "db_instance",
   "storage_pool",
   "storage_controller",
@@ -117,6 +121,7 @@ function startingDown(source: TopologySource, causes: Causes): Set<string> {
     "db_cluster",
     "storage_pool",
     "storage_controller",
+    "k8s_node",
   ] as const)
     for (const e of index.ofKind(kind)) if (stateSaysDown(source, e.id)) down.add(e.id);
   return down;
@@ -127,6 +132,7 @@ function stateSaysDown(source: TopologySource, id: string): boolean {
   if (!source.index.has(id)) return false;
   const s = source.stateOf(id) as unknown as Record<string, unknown>;
   if (s.kind === "db_cluster") return clusterIsDown(source, s);
+  if (s.kind === "k8s_node") return s.status === "NotReady" || s.reachable === false;
   if (s.kind === "db_instance" || s.kind === "storage_pool" || s.kind === "storage_controller")
     return s.status === "down";
   return s.running === false || s.powered === false || s.tripped === true || s.phase === "failed";
@@ -163,6 +169,7 @@ function spread(source: TopologySource, start: ReadonlySet<string>): Spread {
   while (queue.length > 0) {
     const lost = queue.pop() as string;
     rollUp(index, lost, lostOf, result, queue);
+    k8sRollUp(source, lost, result, queue);
     for (const kind of [...KINDS, ...DEPENDS]) {
       for (const l of index.incoming(lost, kind)) {
         if (DEPENDS.includes(kind) && !DEPENDENTS.has(index.find(l.from)?.kind ?? "")) continue;

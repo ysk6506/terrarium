@@ -49,6 +49,9 @@ const COUNTING: Readonly<Record<TopoKind, readonly [string, string]>> = {
   db_instance: ["DB 인스턴스", "개"],
   storage_pool: ["스토리지 풀", "개"],
   storage_controller: ["스토리지 컨트롤러", "개"],
+  k8s_cluster: ["쿠버네티스 클러스터", "개"],
+  k8s_node: ["쿠버네티스 노드", "개"],
+  k8s_workload: ["워크로드", "개"],
 };
 
 /** What a kind of equipment is called when counted ("랙", "냉방기"). */

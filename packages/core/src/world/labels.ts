@@ -28,6 +28,9 @@ export const KIND_LABELS: Readonly<Record<EntityKind, string>> = {
   db_instance: "데이터베이스 인스턴스",
   storage_pool: "스토리지 풀",
   storage_controller: "스토리지 컨트롤러",
+  k8s_cluster: "쿠버네티스 클러스터",
+  k8s_node: "쿠버네티스 노드",
+  k8s_workload: "워크로드",
 };
 
 export const LINK_LABELS: Readonly<Record<LinkKind, string>> = {

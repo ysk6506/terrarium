@@ -42,16 +42,21 @@ interface Need {
   readonly perHour: number;
   readonly kind: ServiceDraft["kind"];
   readonly name: string;
+  /** The service is a Kubernetes built on its VMs (its card has a control plane among its nodes). */
+  readonly k8s: boolean;
 }
+
+const isCluster = (s: ServiceDraft): boolean =>
+  s.parts.some((p) => p.role === "node" && p.label.includes("컨트롤 플레인"));
 
 function needOf(services: readonly ServiceDraft[]): Need {
   const top = services.reduce<Need | undefined>((best, s) => {
     const perHour = s.harm.reduce((m, t) => Math.max(m, t.perHourKrw), 0);
     return !best || perHour > best.perHour
-      ? { nodes: s.nodes, perHour, kind: s.kind, name: s.name }
+      ? { nodes: s.nodes, perHour, kind: s.kind, name: s.name, k8s: isCluster(s) }
       : best;
   }, undefined);
-  return top ?? { nodes: 1, perHour: 0, kind: "request", name: "서비스" };
+  return top ?? { nodes: 1, perHour: 0, kind: "request", name: "서비스", k8s: false };
 }
 
 const label = (id: string): string => cardOf(id)?.label ?? id;
@@ -73,9 +78,14 @@ const CHOOSERS: Readonly<Record<LayerId, Chooser>> = {
     why: `${given}가 랙 사이를 오가서 길이 여럿인 모양으로`,
   }),
   compute: (need, _, given) =>
-    need.nodes >= 3
-      ? { id: "cmp-virt-ha", why: `${given}를 호스트 몇 대에 나눠 올릴 수 있어서` }
-      : { id: "cmp-bare-spare", why: `${given}라 서버째 두고 예비 한 대만 두려고` },
+    need.k8s
+      ? {
+          id: "cmp-containers",
+          why: `${given}가 VM 위에 직접 만든 쿠버네티스라서 파드를 옮길 수 있게`,
+        }
+      : need.nodes >= 3
+        ? { id: "cmp-virt-ha", why: `${given}를 호스트 몇 대에 나눠 올릴 수 있어서` }
+        : { id: "cmp-bare-spare", why: `${given}라 서버째 두고 예비 한 대만 두려고` },
   storage: (_, chosen) =>
     isVirtual(chosen)
       ? { id: "sto-shared", why: "VM을 호스트 사이로 옮기려면 공유 저장소가 있어야 해서" }

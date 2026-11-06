@@ -41,6 +41,9 @@ describe("lookups and labels at the edges [REQ-001]", () => {
       "db_instance",
       "storage_pool",
       "storage_controller",
+      "k8s_cluster",
+      "k8s_node",
+      "k8s_workload",
     ]);
   });
 

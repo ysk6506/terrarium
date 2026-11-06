@@ -24,6 +24,11 @@ export const FREED_PCT = 35;
 
 /** The process of a database instance, as `systemctl` names it. */
 export const DB_PROCESS = "postgresql";
+/** The processes of a Kubernetes node, as `systemctl` names them. */
+export const K8S_PROCESSES: readonly string[] = ["kubelet", "containerd"];
+
+const hostsKind = (world: WorldReader, id: string, kind: string): boolean =>
+  world.index.incoming(id, "hosted_on").some((l) => world.index.find(l.from)?.kind === kind);
 
 export const isHost = (kind: string): boolean => kind === "server" || kind === "vm";
 
@@ -51,9 +56,8 @@ export function freshHostOs(world: WorldReader, id: string): HostOs {
     t: world.time(),
     serviceProcesses: [
       ...servicesOnHost(world, id).map((s) => serviceDef(s).process),
-      ...(world.index.incoming(id, "hosted_on").some((l) => l.kind === "hosted_on")
-        ? [DB_PROCESS]
-        : []),
+      ...(hostsKind(world, id, "db_instance") ? [DB_PROCESS] : []),
+      ...(hostsKind(world, id, "k8s_node") ? K8S_PROCESSES : []),
     ],
     cpuPct: cpuOf(world.stateOf(id)),
   });

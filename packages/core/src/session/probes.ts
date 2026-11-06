@@ -10,7 +10,7 @@
  */
 import type { ScenarioDoc } from "@terrarium/core/scenario";
 import { TOOL_SPECS } from "@terrarium/core/tools";
-import { domainInfo, faultDomain, formatSpan } from "@terrarium/core/world";
+import { domainInfo, faultDomain, formatSpan, standsOnCluster } from "@terrarium/core/world";
 import { Session, type SessionConfig } from "./session";
 
 type Config = Omit<SessionConfig, "tools" | "seed"> & { readonly seed?: number };
@@ -51,6 +51,10 @@ export interface RecoveryPath {
     | "db_promote"
     | "storage_path_switch"
     | "db_restore"
+    | "kubectl_rollout_restart"
+    | "kubectl_scale"
+    | "kubectl_drain"
+    | "run_command"
     | "escalate";
   /** In plain Korean: how it works, or what is missing. */
   readonly note: string;
@@ -88,6 +92,10 @@ const RESTORE_SETTLE_SECONDS = 1500;
  * when the newest turns out damaged). Returns the first that brings every service back.
  */
 function databasePath(config: Config): RecoveryPath | undefined {
+  const world = open(config, ALL_TOOLS).world.index;
+  // a world without a database has nothing to fail over, and waiting here would only let a cluster heal by itself
+  if (world.ofKind("db_cluster").length === 0 && world.ofKind("storage_pool").length === 0)
+    return undefined;
   const tries: Array<[RecoveryPath["how"], string, (s: Session) => void]> = [
     [
       "db_failover",
@@ -142,6 +150,82 @@ function databasePath(config: Config): RecoveryPath | undefined {
     : undefined;
 }
 
+/** How long the container tools need to settle: a new pod pulls its image and starts, a rollout goes pod by pod. */
+const K8S_SETTLE_SECONDS = 120;
+
+/**
+ * The ways back that are the cluster's own (REQ-096): restart the rollout of every workload, make room by scaling a
+ * batch workload to nothing, drain a node one at a time, restart the kubelet and the network plugin on a node, clean the
+ * disk of a node and let it take pods again. Returns the first that brings every service back.
+ */
+function k8sPath(config: Config): RecoveryPath | undefined {
+  const index = open(config, ALL_TOOLS).world.index;
+  const nodes = index.ofKind("k8s_node").map((n) => n.id);
+  if (nodes.length === 0) return undefined;
+  const workloads = index.ofKind("k8s_workload");
+  const hostOf = (node: string) => index.outgoing(node, "hosted_on")[0]?.to as string;
+  const tries: Array<[NonNullable<RecoveryPath["how"]>, string, Array<(s: Session) => void>]> = [
+    [
+      "kubectl_rollout_restart",
+      "워크로드를 롤아웃 재시작하면 돌아와요",
+      [
+        (s) => {
+          for (const w of workloads) s.call("kubectl_rollout_restart", { workload: w.id });
+        },
+      ],
+    ],
+    [
+      "kubectl_scale",
+      "덜 중요한 워크로드를 줄여 자리를 만들면 돌아와요",
+      [
+        (s) => {
+          for (const w of workloads.filter((x) => x.name === "batch" || x.name === "report"))
+            s.call("kubectl_scale", { workload: w.id, replicas: 0 });
+        },
+      ],
+    ],
+    [
+      "run_command",
+      "노드의 kubelet·containerd를 다시 시작하면 돌아와요",
+      nodes.map((n) => (s: Session) => {
+        for (const unit of ["kubelet", "containerd"])
+          s.call("run_command", { host: hostOf(n), cmd: `systemctl restart ${unit}` });
+      }),
+    ],
+    [
+      "run_command",
+      "노드의 디스크를 비우고 uncordon 하면 돌아와요",
+      nodes.map((n) => (s: Session) => {
+        s.call("run_command", { host: hostOf(n), cmd: "rm /var/log/messages-old" });
+        s.call("kubectl_uncordon", { node: n });
+      }),
+    ],
+    [
+      "kubectl_drain",
+      "고장 난 노드를 drain 하면 돌아와요",
+      nodes.map((n) => (s: Session) => s.call("kubectl_drain", { node: n })),
+    ],
+  ];
+  for (const [how, note, acts] of tries) {
+    // a step is tried alone when there are several (one node after the other), and all together once
+    for (const act of acts.length > 1
+      ? [
+          ...acts,
+          (s: Session) => {
+            for (const a of acts) a(s);
+          },
+        ]
+      : acts) {
+      const s = open(config, ALL_TOOLS);
+      if (troubled(s).length === 0) return undefined;
+      act(s);
+      s.call("wait", { seconds: K8S_SETTLE_SECONDS });
+      if (troubled(s).length === 0) return { applicable: true, ok: true, how, note };
+    }
+  }
+  return undefined;
+}
+
 /**
  * Hand each domain that has a fault to its team and wait out the longest lead time (ADR-0100 item 5): the way back
  * for a fault that nothing the agent's own tools do can clear. Not ok when the task's time limit comes first.
@@ -175,6 +259,12 @@ function handOver(config: Config): RecoveryPath | undefined {
     : undefined;
 }
 
+const NO_WAY: RecoveryPath = {
+  applicable: true,
+  ok: false,
+  note: "서비스를 옮길 길(대기 쪽이나 다른 서버)도, 그 고장의 도메인 팀에 넘겨서 돌아오는 길도 없어요",
+};
+
 /** Try the ways of moving a service that need no repair of the machine, and say which one works. */
 export function recoveryPath(config: Config): RecoveryPath {
   if (config.scenario.scoring !== "recovery")
@@ -183,6 +273,16 @@ export function recoveryPath(config: Config): RecoveryPath {
   const hurt = troubled(s);
   if (hurt.length === 0)
     return { applicable: true, ok: false, note: "시작할 때 멈추거나 느린 서비스가 없어요" };
+  // a service that stands on pods has no standby and no VM of its own to move: the cluster's tools are its way back
+  if (hurt.every((row) => standsOnCluster(s.world, row.id)))
+    return databasePath(config) ?? k8sPath(config) ?? handOver(config) ?? NO_WAY;
+  return (
+    moveService(s, hurt) ?? databasePath(config) ?? k8sPath(config) ?? handOver(config) ?? NO_WAY
+  );
+}
+
+/** Move the services to their standby, and failing that move their VMs; undefined when neither brings them back. */
+function moveService(s: Session, hurt: readonly ServiceRow[]): RecoveryPath | undefined {
   for (const row of hurt) s.call("failover_service", { service: row.id });
   s.call("wait", { seconds: SETTLE_SECONDS });
   if (troubled(s).length === 0)
@@ -202,14 +302,7 @@ export function recoveryPath(config: Config): RecoveryPath {
         note: "VM을 다른 서버로 옮기면 돌아와요",
       };
   }
-  return (
-    databasePath(config) ??
-    handOver(config) ?? {
-      applicable: true,
-      ok: false,
-      note: "서비스를 옮길 길(대기 쪽이나 다른 서버)도, 그 고장의 도메인 팀에 넘겨서 돌아오는 길도 없어요",
-    }
-  );
+  return undefined;
 }
 
 export interface CommonReach {

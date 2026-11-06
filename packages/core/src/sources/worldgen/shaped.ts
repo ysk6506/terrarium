@@ -21,6 +21,7 @@ import { generateCampus } from "./campus";
 import { DEFAULT_CAMPUS, SITE_CAMPUS_MIX } from "./campus-spec";
 import { generateWorld } from "./generate";
 import { contentsOf, type Laying, layCluster, layPool, link, slugOf } from "./shaped-db";
+import { dependsOn, layK8s } from "./shaped-k8s";
 import {
   buildFor,
   buildOf,
@@ -195,6 +196,26 @@ function nodesOn(
   );
 }
 
+/** The VMs of every Kubernetes cluster of a service: each cluster on its own share of the hosts, so two do not fall together. */
+function clusterNodes(
+  into: Laying,
+  index: BlueprintIndex,
+  draft: ServiceDraft,
+  hosts: readonly Entity[],
+  clusters: number,
+): string[] {
+  const per = Math.floor(hosts.length / clusters);
+  return Array.from({ length: clusters }, (_, k) =>
+    nodesOn(
+      into,
+      index,
+      { ...draft, key: k === 0 ? draft.key : `${draft.key}${"b".repeat(k)}` },
+      per > 0 ? hosts.slice(k * per, (k + 1) * per) : hosts,
+      false,
+    ),
+  ).flat();
+}
+
 /** The cluster of a service: instances on servers no service uses (in other racks when there are racks to spare). */
 function layDatabase(
   into: Laying,
@@ -251,18 +272,17 @@ function lay(bp: Blueprint, spec: ShapeSpec, catalog: Catalog): Laying {
     const hosts = pickHosts(pool, hostsOf(draft, build) + (build.spareHosts ?? 0), used);
     const active = hosts.slice(0, hosts.length - (build.spareHosts ?? 0) || hosts.length);
     const standby = hosts.slice(active.length);
-    const nodes = nodesOn(
-      into,
-      index,
-      draft,
-      active.length > 0 ? active : hosts,
-      Boolean(build.bare),
-    );
+    const k8s = build.k8s;
+    const lead = active.length > 0 ? active : hosts;
+    const nodes = k8s
+      ? clusterNodes(into, index, draft, lead, k8s.clusters)
+      : nodesOn(into, index, draft, lead, Boolean(build.bare));
     const id = addService(into, index, draft, {
       nodes,
       standby: standby.map((h) => h.id),
       on: storage ? [storage.id] : [],
     });
+    if (k8s) dependsOn(into, id, layK8s(into, draft, nodes, k8s.clusters));
     layDatabase(into, index, { pool, used, build, poolId }, draft, id);
   }
   return into;
@@ -276,6 +296,17 @@ function trimSpines(bp: Blueprint, spines: number): Blueprint {
     ...bp,
     entities: bp.entities.filter((e) => !gone.has(e.id)),
     links: bp.links.filter((l) => !gone.has(l.from) && !gone.has(l.to)),
+  };
+}
+
+/** Automatic VM placement (REQ-096): the virtualisation clusters of the world move VMs by themselves. */
+function withDrs(bp: Blueprint, drs: boolean): Blueprint {
+  if (!drs) return bp;
+  return {
+    ...bp,
+    entities: bp.entities.map((e) =>
+      e.kind === "cluster" ? { ...e, props: { ...e.props, drs: true } } : e,
+    ),
   };
 }
 
@@ -317,9 +348,9 @@ export function generateShaped(spec: ShapeSpec, catalog: Catalog = defaultCatalo
   const problem = shapeProblem(spec);
   if (problem) throw new InvalidValueError(`세계를 만들 수 없어요: ${problem}`);
   const plan = planShape(spec);
-  const base = trimSpines(
-    withoutServices(baseOf(spec, plan, catalog)),
-    buildOf(spec.layers).spines ?? 2,
+  const base = withDrs(
+    trimSpines(withoutServices(baseOf(spec, plan, catalog)), buildOf(spec.layers).spines ?? 2),
+    spec.services.some((s) => buildFor(spec.layers, s).drs),
   );
   const laid = lay(base, spec, catalog);
   const blueprint: Blueprint = {
