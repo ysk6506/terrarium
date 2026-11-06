@@ -36,14 +36,23 @@ const SIMPLE_ACTIONS: Partial<Record<WorldCommand["type"], ActionKind>> = {
 export type LinkEnd = (linkId: string, end: "from" | "to") => string | undefined;
 
 /** Commands of the service and operating-system layers (ADR-0091); a reboot is a restart of the host. */
+const TARGET_ACTIONS: Partial<Record<WorldCommand["type"], ActionKind>> = {
+  "service.failover": "service_failover",
+  "service.restart": "service_restart",
+  "vm.migrate": "vm_migrate",
+  "db.promote": "db_promote",
+  "db.failover": "db_failover",
+  "db.restore": "db_restore",
+  "storage.path_switch": "path_switch",
+  "sdn.sync": "sdn_sync",
+  "sdn.failover": "sdn_failover",
+  "policy.revert": "policy_revert",
+  "ingress.restart": "ingress_restart",
+};
+
 function serviceAction(c: WorldCommand): AgentAction | undefined {
-  if (c.type === "service.failover") return { action: "service_failover", target: c.target };
-  if (c.type === "service.restart") return { action: "service_restart", target: c.target };
-  if (c.type === "vm.migrate") return { action: "vm_migrate", target: c.target };
-  if (c.type === "db.promote") return { action: "db_promote", target: c.target };
-  if (c.type === "db.failover") return { action: "db_failover", target: c.target };
-  if (c.type === "db.restore") return { action: "db_restore", target: c.target };
-  if (c.type === "storage.path_switch") return { action: "path_switch", target: c.target };
+  const direct = TARGET_ACTIONS[c.type];
+  if (direct) return { action: direct, target: (c as { target: string }).target };
   if (c.type !== "host.act") return undefined;
   const kind = {
     restart: "process_restart",

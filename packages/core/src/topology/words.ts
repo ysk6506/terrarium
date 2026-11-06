@@ -49,6 +49,13 @@ const COUNTING: Readonly<Record<TopoKind, readonly [string, string]>> = {
   db_instance: ["DB 인스턴스", "개"],
   storage_pool: ["스토리지 풀", "개"],
   storage_controller: ["스토리지 컨트롤러", "개"],
+  sdn_controller: ["SDN 컨트롤러", "개"],
+  vtep: ["VTEP", "개"],
+  overlay_segment: ["오버레이 세그먼트", "개"],
+  nfv_function: ["가상 방화벽", "개"],
+  cni: ["CNI 플러그인", "개"],
+  network_policy: ["네트워크 정책", "개"],
+  ingress: ["인그레스", "개"],
 };
 
 /** What a kind of equipment is called when counted ("랙", "냉방기"). */

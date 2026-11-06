@@ -13,11 +13,13 @@ import { describe, expect, test } from "vitest";
 import { gpuLab } from "../../packages/core/src/world/test-support/gpu-lab";
 import { networkLab } from "../../packages/core/src/world/test-support/net-lab";
 import { campusBlueprint } from "../../packages/core/src/world/test-support/sample-campus";
+import { sdnLab } from "../../packages/core/src/world/test-support/sdn-lab";
 
 const WORLDS: ReadonlyArray<{ name: string; blueprint: () => Blueprint }> = [
   { name: "campus", blueprint: campusBlueprint },
   { name: "network", blueprint: networkLab },
   { name: "gpu", blueprint: gpuLab },
+  { name: "sdn", blueprint: () => sdnLab({ cloudNative: true }) },
 ];
 
 const KNOWN_FLOOR: Readonly<Record<string, number>> = { "cooling-failure": 20 };

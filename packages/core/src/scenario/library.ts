@@ -23,6 +23,7 @@ import {
 } from "./library-kit";
 import { NETWORK_TEMPLATES } from "./library-network";
 import { OS_TEMPLATES } from "./library-os";
+import { SDN_TEMPLATES } from "./library-sdn";
 import type { Condition, Expectation } from "./model";
 
 export { allOf, type ScenarioTemplate };
@@ -441,23 +442,21 @@ export const SCENARIO_TEMPLATES: readonly ScenarioTemplate[] = [
   noisyNeighbour,
 ];
 
-/** Incidents that need a plant, liquid cooling or a generator: only worlds that have them can use these. */
-export { FACILITY_TEMPLATES };
-
-/** Changes people make to the network and to PDUs (REQ-068): a wrong VLAN, a shut port, a deleted route. */
-export { NETWORK_TEMPLATES };
-
-/** Work an operator does in a maintenance window (REQ-071): raising the firmware of servers. */
-export { FIRMWARE_TEMPLATES };
-
-/** Faults of the operating system of a host, seen as a service that slows or stops (REQ-087). */
-export { OS_TEMPLATES };
-
-/** Faults of the database and storage-HA layers, seen as a service that slows or stops (REQ-095). */
-export { DB_TEMPLATES };
-
-/** Faults whose cause is in another domain than the one the agent looks after (REQ-093). */
-export { DOMAIN_TEMPLATES };
+/**
+ * The groups of built-in templates: incidents that need a plant (facility), changes people make to the network and PDUs
+ * (REQ-068), work in a maintenance window (REQ-071), faults of a host's operating system (REQ-087), of the database and
+ * storage-HA layers (REQ-095), of the SDN overlay and the cloud-native network (REQ-097), and faults whose cause is in
+ * another domain than the one the agent looks after (REQ-093).
+ */
+export {
+  DB_TEMPLATES,
+  DOMAIN_TEMPLATES,
+  FACILITY_TEMPLATES,
+  FIRMWARE_TEMPLATES,
+  NETWORK_TEMPLATES,
+  OS_TEMPLATES,
+  SDN_TEMPLATES,
+};
 
 /** Every built-in template, the facility ones and then the configuration ones last. */
 export const ALL_SCENARIO_TEMPLATES: readonly ScenarioTemplate[] = [
@@ -467,12 +466,20 @@ export const ALL_SCENARIO_TEMPLATES: readonly ScenarioTemplate[] = [
   ...FIRMWARE_TEMPLATES,
   ...OS_TEMPLATES,
   ...DB_TEMPLATES,
+  ...SDN_TEMPLATES,
   ...DOMAIN_TEMPLATES,
 ];
 
 /** How the new-scenario picker groups the templates: equipment first, then changes people make to settings. */
 export const TEMPLATE_GROUPS: readonly {
-  readonly id: "facility" | "network" | "firmware" | "os" | "database" | "domains";
+  readonly id:
+    | "facility"
+    | "network"
+    | "firmware"
+    | "os"
+    | "database"
+    | "network_overlay"
+    | "domains";
   readonly label: string;
   readonly templates: readonly ScenarioTemplate[];
 }[] = [
@@ -481,6 +488,7 @@ export const TEMPLATE_GROUPS: readonly {
   { id: "firmware", label: "펌웨어 작업", templates: FIRMWARE_TEMPLATES },
   { id: "os", label: "OS 고장", templates: OS_TEMPLATES },
   { id: "database", label: "데이터베이스·스토리지 HA", templates: DB_TEMPLATES },
+  { id: "network_overlay", label: "SDN·클라우드 네이티브 네트워크", templates: SDN_TEMPLATES },
   { id: "domains", label: "내 도메인 밖이 원인", templates: DOMAIN_TEMPLATES },
 ];
 

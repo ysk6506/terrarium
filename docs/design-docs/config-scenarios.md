@@ -11,12 +11,12 @@ covers:
   - apps/web/src/logic/scenario/fields.ts
   - apps/web/src/logic/scenario/flow.ts
 verification_log:
-  - "2026-11-04: 2026-11-04: ADR-0073. 덮는 코드에서 사람이 읽는 말(알람 해요체, 에이전트 지시문 한다체, 툴·멈춤·상한 등)만 바뀌었고 문서가 말하는 구조와 규칙은 그대로다"
-  - "2026-11-04: 조치를 채점하는 내장 템플릿과 시설 시나리오의 관계 한 줄을 더하고 블록·fields 변경 없음을 확인 (REQ-073)"
   - "2026-11-05: ADR-0101: 펌웨어 작업 템플릿 셋 절을 library-firmware.ts와 기준 에이전트 점수(firmware-scenarios.test.ts)에 맞춰 더했다"
   - "2026-11-06: 2026-11-06: ADR-0091(결정 1·2)·ADR-0102 구현: 서비스 층·OS 층 1차를 코드와 대조해 해당 절을 더하거나 고쳤다. 이 문서가 말하는 나머지 구조는 그대로다"
   - "2026-11-06: 2f: flow.ts에 블록 이름을 읽는 titleOf를 더했고 캔버스 변환은 그대로다. 블록·fields·템플릿 규칙은 바뀌지 않았음을 확인했다"
-covers_hash: 84b323ea472a3f09
+  - "2026-11-06: blocks-net.ts의 policy_set 블록과 network_policy_deny 실수 이름만 더해졌다. 나머지 설정 실수는 그대로 맞다 (REQ-097)"
+  - "2026-11-06: net-blocks.ts의 정리(네 갈래를 한 함수로 뺌)는 동작이 같다. 문서의 설정 실수 설명은 그대로 맞다 (REQ-097)"
+covers_hash: dbd54c0a3f666378
 ---
 # 설정 변경 시나리오 (REQ-068, ADR-0065)
 
@@ -64,6 +64,8 @@ covers_hash: 84b323ea472a3f09
 - **채점**: 에이전트가 `network_cli`로 스위치 설정을 바꾸면 행동 `config_change`가 된다. 포트 끄기·켜기는 `port_off`/`port_on`이고 케이블 대상 또는 스위치 이름으로 맞는다.
 
 ## 실수에 이름이 있다
+
+여섯 가지 실수 이름에 하나가 더해졌다: `network_policy_deny`(잘못된 네트워크 정책 배포). 설정 블록 `policy_set`이 만들고 `policy_revert`가 되돌린다([SDN 오버레이와 클라우드 네이티브 네트워크 층](sdn-network-layer.md)).
 
 `MISTAKE_SPECS`는 엉뚱한 VLAN, 꺼진 포트, 꺼진 SVI, 꺼진 BGP 이웃, 지워진 경로, 꺼진 콘센트를 가진다. 고장 종류와 같은 자리(진단의 정답)에 들어간다. 오라클은 ID나 한국어 이름 둘 다 정답으로 센다.
 

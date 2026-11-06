@@ -14,6 +14,7 @@ import { dependenciesOf } from "./db";
 import { dependencyVerdict } from "./db-health";
 import { cutOffHosts } from "./net-reach";
 import { AUTH_SKEW_S, DISK_FULL_PCT, type HostOs } from "./os";
+import { sdnHealth } from "./sdn-health";
 import { type ServiceDef, type ServiceKind, type ServiceStatus, serviceDef } from "./service";
 import type { WorldReader } from "./world";
 
@@ -317,11 +318,16 @@ export function serviceHealth(world: WorldReader, serviceId: string): ServiceHea
   const verdicts = state.runsOn.map((id) => hostVerdict(world, id, def));
   const path = fromPath(world, entity);
   const deps = fromDeps(world, entity, def);
-  const status = worse(worse(fromHosts(def.kind, verdicts), path.status), deps.status);
+  const overlay = sdnHealth(world, entity, def);
+  const status = worse(
+    worse(worse(fromHosts(def.kind, verdicts), path.status), deps.status),
+    overlay.status,
+  );
   const reasons = [
     ...verdicts.flatMap((v) => (v.why ? [v.why] : [])),
     ...(path.reason ? [path.reason] : []),
     ...deps.reasons,
+    ...overlay.reasons,
   ];
   return {
     status,

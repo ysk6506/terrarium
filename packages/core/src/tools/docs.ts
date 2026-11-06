@@ -9,6 +9,7 @@
  */
 import { DB_DOCS } from "./catalog-db";
 import { OPS_DOCS } from "./catalog-ops";
+import { SDN_DOCS } from "./catalog-sdn";
 
 export type Realism = "common" | "rare" | "ideal";
 export type Cost = "low" | "medium" | "high";
@@ -422,4 +423,5 @@ export const TOOL_DOCS: Readonly<Record<string, ToolDoc>> = {
   ...BASE_DOCS,
   ...OPS_DOCS,
   ...DB_DOCS,
+  ...SDN_DOCS,
 };

@@ -104,6 +104,14 @@ export const LEAD_ROWS: Readonly<Record<FaultType, LeadRow>> = {
   storage_path_cut: visit([30 * M, 1 * H, 4 * H]),
   storage_controller_failure: replace([2 * H, 4 * H, 1 * D], [8 * H, 1 * D, 3 * D], false),
   storage_node_lost: replace([2 * H, 6 * H, 1 * D], [8 * H, 1 * D, 3 * D], false),
+  // SDN 오버레이·클라우드 네이티브 네트워크 (네트워크 팀)
+  sdn_controller_down: remote([30 * M, 1 * H, 4 * H]),
+  sdn_sync_failed: remote([15 * M, 30 * M, 2 * H]),
+  vxlan_tunnel_down: visit([30 * M, 1 * H, 4 * H]),
+  evpn_session_flap: remote([30 * M, 1 * H, 4 * H]),
+  ingress_controller_down: remote([15 * M, 30 * M, 2 * H]),
+  cni_plugin_failure: remote([15 * M, 45 * M, 2 * H]),
+  nfv_firewall_overload: remote([1 * H, 4 * H, 1 * D]),
 };
 
 // ---------- what the experiment sets ----------

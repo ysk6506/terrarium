@@ -2,7 +2,7 @@
 title: 네트워크의 두 가지 모양 — 레거시(VLAN·스패닝 트리)와 클라우드(leaf-spine·BGP)
 kind: spec
 status: active
-last_verified: 2026-11-04
+last_verified: 2026-11-06
 covers:
   - packages/core/src/world/net-bgp.ts
   - packages/core/src/world/net-stp.ts
@@ -12,12 +12,12 @@ covers:
   - packages/core/src/facades/netos-routes.ts
   - packages/core/src/sources/worldgen/campus-families.ts
 verification_log:
-  - "2026-11-04: net-bgp·net-stp·netos-bgp·bgp-config·stp·routes와 campus-families를 문서와 대조"
   - "2026-11-04: 최종 코드와 대조"
   - "2026-11-04: net-stp의 함수 분리(동작 동일)를 확인"
   - "2026-11-04: fabric gpu 값과 GPU 백엔드 문서 링크를 net-bgp(레거시만 건너뜀)·netos-bgp(overlayOn)와 대조"
   - "2026-11-04: net-design의 함수 분리(동작 동일)를 확인"
-covers_hash: ad1366d1c19b4e7b
+  - "2026-11-06: 리프-스파인 설계는 그대로이고 그 위에 오버레이가 얹힌다는 한 줄만 더했다 (REQ-097)"
+covers_hash: 0317c67f32d97f9a
 ---
 # 네트워크의 두 가지 모양 (REQ-065, ADR-0062)
 
@@ -101,7 +101,7 @@ eAPI(EOS)와 NX-API(NX-OS)는 `show ip bgp summary`를 JSON으로도 준다.
 
 - 세션 협상과 타이머, 경로 속성(MED, 커뮤니티, AS-path), 경로 필터, 시간에 따른 수렴. 세션은 즉시 서고 즉시 끊긴다.
 - `no router bgp`, 새 이웃 추가. 이웃과 AS는 케이블에서 정해진다.
-- EVPN 경로 교환. 경로 수는 서버 수에서 센 추정값이고 VNI는 10000+VLAN으로 정했다.
+- EVPN 경로 교환. 경로 수는 서버 수에서 센 추정값이고 VNI는 10000+VLAN으로 정했다. 서비스마다 덮는 오버레이(VTEP·세그먼트·컨트롤러)는 이 설계 위의 별개 층이다. 스위치 CLI의 `show nve peers`·`show vxlan vni`·EVPN 요약은 그 층의 상태를 따라간다([SDN 오버레이와 클라우드 네이티브 네트워크 층](sdn-network-layer.md)).
 - VLAN별로 다른 STP 루트, 루트 가드, BPDU 가드, 포트패스트. 메시지 수와 가동 시간은 이름에서 만든 값이다.
 - InfiniBand와 사이트 사이 전용선은 아직 없다. GPU 백엔드(RoCE 이더넷)는 [다른 문서](gpu-fabric.md)(REQ-067, ADR-0064)가 다룬다. 클라우드와 같은 설계에서 VXLAN만 뺀 모양이다.
 

@@ -10,6 +10,7 @@ import type { BgpNeighbor, BgpPlan } from "@terrarium/core/world";
 import { showBgpSummary, showVni } from "./netos-bgp";
 import type { Call, Maker, Mode, Spec } from "./netos-cli";
 import type { Os } from "./netos-model";
+import { evpnSummaryText, showNvePeers, showSegmentVnis } from "./netos-sdn";
 import { showSpanningTree } from "./netos-stp";
 
 /** Where a BGP section can be entered from: any configuration mode. */
@@ -96,13 +97,26 @@ export function bgpShowSpecs(s: Maker, os: Os, shows: readonly Mode[]): Spec[] {
   if (os === "eos")
     return [
       ...summary,
-      s("show bgp evpn summary", shows, (c) => showBgpSummary(c.v, c.session.model(), "evpn")),
-      s("show vxlan vni", shows, (c) => showVni(c.v, c.session.model())),
+      s("show bgp evpn summary", shows, (c) =>
+        evpnSummaryText(c.v, c.session.world, showBgpSummary(c.v, c.session.model(), "evpn")),
+      ),
+      s("show vxlan vni", shows, (c) =>
+        showSegmentVnis(c.v, c.session.world, showVni(c.v, c.session.model())),
+      ),
+      s("show vxlan vtep", shows, (c) => showNvePeers(c.v, c.session.world, c.session.model())),
     ];
   return [
     ...summary,
-    s("show bgp l2vpn evpn summary", shows, (c) => showBgpSummary(c.v, c.session.model(), "evpn")),
-    s("show nve vni", shows, (c) => showVni(c.v, c.session.model())),
+    s("show bgp l2vpn evpn summary", shows, (c) =>
+      evpnSummaryText(c.v, c.session.world, showBgpSummary(c.v, c.session.model(), "evpn")),
+    ),
+    s("show nve vni", shows, (c) =>
+      showSegmentVnis(c.v, c.session.world, showVni(c.v, c.session.model())),
+    ),
+    s("show vxlan vni", shows, (c) =>
+      showSegmentVnis(c.v, c.session.world, showVni(c.v, c.session.model())),
+    ),
+    s("show nve peers", shows, (c) => showNvePeers(c.v, c.session.world, c.session.model())),
   ];
 }
 

@@ -4,6 +4,7 @@ kind: reference
 status: active
 last_verified: 2026-11-06
 verification_log:
+  - "2026-11-06: sdn-network-layer.md와 ADR-0115 링크를 더했다"
   - "2026-11-06: 시나리오 편집기 검토 링크 설명에 세 번째 검토를 더했다"
   - "2026-11-06: db-storage-layers.md와 ADR-0111 링크를 더했다"
   - "2026-11-06: tool-scope-and-sop.md와 ADR-0105 링크를 더했다"
@@ -39,6 +40,7 @@ verification_log:
 - [진짜 하네스로 끝까지 — LangGraph, OpenCode, OpenClaw 실측과 재현 절차](design-docs/harness-e2e.md)
 - [서비스와 OS 층 — 장비 위에서 무엇이 도는가, 가짜 셸, OS 고장](design-docs/service-os-layer.md)
 - [데이터베이스 층과 스토리지 HA 층 — 서비스가 기대는 두 겹, 고장 여덟, 자동 페일오버](design-docs/db-storage-layers.md)
+- [SDN 오버레이와 클라우드 네이티브 네트워크 층 — 리프-스파인 위의 가상 네트워크, 고장 일곱, 컨트롤러 전환](design-docs/sdn-network-layer.md)
 - [서버 운영 — 설치와 사내 시스템 연결](design-docs/operations.md)
 - [규모 키우기 — 스케일 업과 스케일 아웃](design-docs/scaling.md)
 - [용량 — 한 프로세스가 동시에 몇 개를 들고 있나](design-docs/capacity.md)
@@ -166,6 +168,7 @@ verification_log:
 - [0101 랙 실장 장면, 컨테인먼트 안, 펌웨어 올리기 — 시험 세 개의 기대값을 고친다](design-docs/adr/0101-rack-containment-firmware-amend-tests.md)
 - [0102 서비스·OS 층을 구현하면서 시험 다섯 개의 기대값을 고친다](design-docs/adr/0102-service-os-amend-tests.md)
 - [0111 데이터베이스 층과 스토리지 HA 층을 코어 모델로 올리면서 시험 열한 곳의 기대값을 고친다](design-docs/adr/0111-db-storage-layers-amend-tests.md)
+- [0115 SDN 오버레이와 클라우드 네이티브 네트워크 층을 코어 모델로 올리면서 시험의 기대값을 고친다](design-docs/adr/0115-sdn-network-layer-amend-tests.md)
 - [0109 세계 만들기 입구를 구현하면서 글 잣대 시험의 화면 목록 둘을 고친다](design-docs/adr/0109-world-entry-amend-tests.md)
 - [0112 서버가 멈춰도 운영은 이어 가고, 저장해 둔 것은 서버에 두고, 서비스마다 모양을 고르고, 운영의 끝은 운영의 말로 쓴다](design-docs/adr/0112-operation-resume-and-presets-amend-tests.md)
 - [0110 운영 모드를 구현하면서 ADR-0094의 강제 장치를 시험으로 잇는다](design-docs/adr/0110-operation-mode-amend-tests.md)

@@ -41,6 +41,13 @@ describe("lookups and labels at the edges [REQ-001]", () => {
       "db_instance",
       "storage_pool",
       "storage_controller",
+      "sdn_controller",
+      "vtep",
+      "overlay_segment",
+      "nfv_function",
+      "cni",
+      "network_policy",
+      "ingress",
     ]);
   });
 

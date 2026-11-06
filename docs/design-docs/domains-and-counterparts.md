@@ -19,13 +19,13 @@ covers:
   - apps/web/src/logic/handoffs.ts
   - apps/web/src/ui/pages/run-handoffs.tsx
   - apps/web/src/ui/pages/experiment-domains.tsx
-covers_hash: 7e209880fc620c45
+covers_hash: 86f21fad6451151f
 verification_log:
-  - "2026-11-06: 2a·2b 합치기"
   - "2026-11-06: 2a·2b 합치기: escalate는 세계를 바꾸지 않는 툴(mutating false)로 표시"
   - "2026-11-06: operator의 운영 모드 상주 루프 한 문장을 더하고 scripted-operator.ts와 대조했다 (REQ-090)"
   - "2026-11-06: 마지막 구현(연결 사건 link, executor-operation, 운영 툴 필수 검사, operator 설명)과 다시 대조했다. 본문은 그대로 맞다 (REQ-090)"
   - "2026-11-06: 2e 합치기"
+  - "2026-11-06: 네트워크 도메인의 툴 아홉과 고장을 TOOL_DOMAIN·FAULT_DOMAIN과 대조해 더했다 (REQ-097)"
 ---
 # 도메인과 가상 담당자 (REQ-093, [ADR-0098](adr/0098-domains-virtual-counterparts-tickets.md)·[0099](adr/0099-counterparts-deterministic.md)·[0100](adr/0100-escalate-by-domain.md))
 
@@ -53,7 +53,7 @@ IT 운영은 도메인별로 나뉘어 있어서, 실험은 "내 도메인"만 �
 | service_os | `list_services` `service_status` `failover_service` `restart_service` `run_command` `db_status` `db_promote` `db_failover` `db_restore` |
 | virtualization | `vcenter_request` `vrops_request` `migrate_vm` |
 | server | `redfish_request` `power_server` |
-| network | `network_cli` `eapi_request` `nxapi_request` |
+| network | `network_cli` `eapi_request` `nxapi_request` `sdn_status` `sdn_sync` `sdn_failover` `overlay_trace` `evpn_sessions` `policy_list` `policy_revert` `ingress_status` `ingress_restart` (REQ-097, [SDN 오버레이와 클라우드 네이티브 네트워크 층](sdn-network-layer.md)). 컨트롤러·VTEP·인그레스·CNI·가상 방화벽의 고장과 잘못된 정책도 이 도메인의 일이다 |
 | storage | `storage_status` `storage_path_switch` (REQ-095 이전에는 스토리지 전용 툴이 없어서 이 도메인의 고장은 넘기는 길로만 풀렸다. 디스크 고장은 지금도 넘기는 길뿐이다) |
 | facility | `facility_status` `bacnet_request` `snmp_request` `set_cooling_setpoint` `restart_cooling_unit` `reset_breaker` |
 

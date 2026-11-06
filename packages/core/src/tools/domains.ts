@@ -51,6 +51,15 @@ export const TOOL_DOMAIN: Readonly<Record<string, ToolDomain>> = {
   db_restore: "service_os",
   storage_status: "storage",
   storage_path_switch: "storage",
+  sdn_status: "network",
+  sdn_sync: "network",
+  sdn_failover: "network",
+  overlay_trace: "network",
+  evpn_sessions: "network",
+  policy_list: "network",
+  policy_revert: "network",
+  ingress_status: "network",
+  ingress_restart: "network",
 };
 
 export const toolDomain = (name: string): ToolDomain => TOOL_DOMAIN[name] ?? "common";

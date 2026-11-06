@@ -132,12 +132,12 @@ function portTo(world: WorldReader, sw: string, peer: string): number {
 
 const ROUTE = /^(\S+)\/(\d{1,2}) via (\S+)$/;
 
-/** The operator commands the block stands for, in the world as it is. */
-export function netCommands(node: ScenarioNode, world: WorldReader): WorldCommand[] {
-  const target = text(node, "target");
-  const net = (change: Extract<WorldCommand, { type: "net.set" }>["change"]): WorldCommand[] => [
-    { type: "net.set", target, change },
-  ];
+/** The blocks that are one command or one command per cable: a port, an outlet, a network policy. */
+function directCommands(
+  node: ScenarioNode,
+  world: WorldReader,
+  target: string,
+): WorldCommand[] | undefined {
   switch (node.type) {
     case "port_admin":
       return cablesBetween(world.index, target, text(node, "peer")).map((l) => ({
@@ -146,10 +146,26 @@ export function netCommands(node: ScenarioNode, world: WorldReader): WorldComman
         end: l.from === target ? "from" : "to",
         down: down(node),
       }));
+    case "policy_set":
+      return [{ type: "policy.set", target, rule: node.params.deny === false ? "allow" : "deny" }];
     case "outlet_set":
       return [
         { type: "outlet.set", target, outlet: whole(node, "outlet"), on: node.params.on === true },
       ];
+    default:
+      return undefined;
+  }
+}
+
+/** The operator commands the block stands for, in the world as it is. */
+export function netCommands(node: ScenarioNode, world: WorldReader): WorldCommand[] {
+  const target = text(node, "target");
+  const direct = directCommands(node, world, target);
+  if (direct) return direct;
+  const net = (change: Extract<WorldCommand, { type: "net.set" }>["change"]): WorldCommand[] => [
+    { type: "net.set", target, change },
+  ];
+  switch (node.type) {
     case "port_vlan":
       return net({
         op: "port",

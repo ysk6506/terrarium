@@ -21,6 +21,7 @@ import { setLinkAdmin, setLoad, setOutlet } from "./operator";
 import { type HostOs, OS_FAULT_TYPES } from "./os";
 import { type PreparedWorld, prepareWorld } from "./prepared";
 import { reduceHostAndService } from "./reduce-os";
+import type { SdnCommand } from "./sdn-act";
 import type { ServiceCommand } from "./service-act";
 import {
   type Alarm,
@@ -58,6 +59,7 @@ export type WorldCommand =
   | FirmwareCommand
   | ServiceCommand
   | DbCommand
+  | SdnCommand
   /** An operator acts on the operating system of a server or VM: restart a process, free disk, remount, reboot (ADR-0091). */
   | {
       readonly type: "host.act";

@@ -10,12 +10,12 @@ covers:
   - packages/core/src/scenario/library-facility.ts
   - packages/core/src/scenario/library-domains.ts
 verification_log:
-  - "2026-11-06: model.ts의 ScenarioDoc.scoring과 digest.ts, library-os.ts의 채점표(진단·재부팅 금지·끝에 정상)를 대조해 복구 우선 채점 절을 더했다 (REQ-088, ADR-0104)"
   - "2026-11-06: ScenarioDoc.runbook과 digest.ts의 해시 규칙, runner.ts의 skipFault를 절차서와 고장 범위 절에 대조해 더했다 (REQ-080, REQ-082)"
   - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: 2a·2b 합치기"
   - "2026-11-06: library-db.ts의 템플릿 여섯, blocks의 조건 필드, 행동 종류 넷을 더했다 (REQ-095)"
-covers_hash: a6a507c4c462118a
+  - "2026-11-06: 내장 묶음 SDN·클라우드 네이티브 여섯과 policy_set 블록, 행동 종류 넷을 더했다 (REQ-097)"
+covers_hash: d186c6010ff0d3b1
 ---
 # 시나리오 모델 (REQ-033, REQ-034)
 
@@ -119,7 +119,7 @@ VM 폭주). `FACILITY_TEMPLATES`는 플랜트·수랭·발전기가 있는 세�
 
 ## 내 도메인 밖이 원인인 시나리오 (REQ-093, [ADR-0100](adr/0100-escalate-by-domain.md))
 
-내장 묶음 "데이터베이스·스토리지 HA" 여섯(`scenario/library-db.ts`, REQ-095): 프라이머리 데이터베이스가 죽었어요, 복제가 끊겼어요, 스플릿 브레인, 공유 디스크 경로가 끊겼어요, 분산 스토리지 노드를 잃었어요, 단일 데이터베이스가 죽었고 최신 백업이 깨졌어요. 모두 복구 우선 채점이다. 조건 필드에 새 개체 넷의 상태(클러스터의 프라이머리·스플릿 브레인·승격 횟수, 인스턴스의 역할·상태·복제 지연·데이터 손실·쓰기 불가, 풀의 상태·복제본·재복제 진행, 컨트롤러의 활성·상태·경로)가 더해졌고, 행동 종류가 인스턴스 승격·클러스터 페일오버·백업에서 복원·스토리지 경로 전환 넷 늘었다. 이벤트 조건에도 `db.promote`·`db.failover`·`db.restore`·`storage.path_switch`가 있다. 시나리오와 채점은 [데이터베이스 층과 스토리지 HA 층](db-storage-layers.md#시나리오-여섯).
+내장 묶음 "SDN·클라우드 네이티브 네트워크" 여섯(`scenario/library-sdn.ts`, REQ-097): SDN 컨트롤러가 멈췄어요, 스위치 한 대에 옛 설정이 남았어요, VXLAN 터널이 끊겼어요, 네트워크 정책을 잘못 배포했어요, 인그레스가 닫혔어요, 노드의 CNI 플러그인이 죽었어요. 정책 배포 실수는 설정 블록 `policy_set`으로 만든다. 행동 종류 `sdn_sync`·`sdn_failover`·`policy_revert`·`ingress_restart`와 조건 필드(컨트롤러 역할·VTEP 세션·세그먼트 상태·정책 규칙·인그레스 상태)가 늘었다. 규칙은 [SDN 오버레이와 클라우드 네이티브 네트워크 층](sdn-network-layer.md#시나리오-여섯). 내장 묶음 "데이터베이스·스토리지 HA" 여섯(`scenario/library-db.ts`, REQ-095): 프라이머리 데이터베이스가 죽었어요, 복제가 끊겼어요, 스플릿 브레인, 공유 디스크 경로가 끊겼어요, 분산 스토리지 노드를 잃었어요, 단일 데이터베이스가 죽었고 최신 백업이 깨졌어요. 모두 복구 우선 채점이다. 조건 필드에 새 개체 넷의 상태(클러스터의 프라이머리·스플릿 브레인·승격 횟수, 인스턴스의 역할·상태·복제 지연·데이터 손실·쓰기 불가, 풀의 상태·복제본·재복제 진행, 컨트롤러의 활성·상태·경로)가 더해졌고, 행동 종류가 인스턴스 승격·클러스터 페일오버·백업에서 복원·스토리지 경로 전환 넷 늘었다. 이벤트 조건에도 `db.promote`·`db.failover`·`db.restore`·`storage.path_switch`가 있다. 시나리오와 채점은 [데이터베이스 층과 스토리지 HA 층](db-storage-layers.md#시나리오-여섯).
 
 내장 묶음 "내 도메인 밖이 원인" 둘(`scenario/library-domains.ts`): 서버 메모리 불량(`domain-memory-vendor`), 서버와 스위치를 잇는 포트 불량(`domain-port-network`). 둘 다 복구 우선 채점이고, 템플릿에 권장 내 도메인(`ownDomains`)과 원인의 도메인(`causeDomain`)이 있어 카드에 한 줄로 보인다. 벤더가 부품을 바꾸는 데 며칠 걸리므로 **`에이전트 투입`의 제한 시간 상한을 24시간에서 4일로 늘렸다**(분으로 5,760). 도메인과 리드타임은 [도메인과 가상 담당자](domains-and-counterparts.md)에 있다.
 

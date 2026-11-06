@@ -34,6 +34,7 @@ import {
   shapeProblem,
   worldgenSpecOf,
 } from "./shaped-plan";
+import { layOverlay, type PlacedService } from "./shaped-sdn";
 
 export interface ShapedResult {
   readonly blueprint: Blueprint;
@@ -235,6 +236,7 @@ function lay(bp: Blueprint, spec: ShapeSpec, catalog: Catalog): Laying {
   const index = new BlueprintIndex(bp);
   const pool = hostPool(index);
   const used = new Set<string>();
+  const placed: PlacedService[] = [];
   const into: Laying = { entities: [], links: [] };
   // the world has one pool; its shape follows the world-wide storage choice and the first service's database
   const first = buildFor(spec.layers, spec.services[0] ?? ({} as never));
@@ -264,8 +266,36 @@ function lay(bp: Blueprint, spec: ShapeSpec, catalog: Catalog): Laying {
       on: storage ? [storage.id] : [],
     });
     layDatabase(into, index, { pool, used, build, poolId }, draft, id);
+    placed.push({ id, name: draft.name, kind: draft.kind, nodes });
   }
+  layNetworkOverlay(into, index, { pool, used, spec, placed });
   return into;
+}
+
+/** The overlay and the cloud-native network, if the world's network choice asks for them. */
+function layNetworkOverlay(
+  into: Laying,
+  index: BlueprintIndex,
+  ctx: {
+    readonly pool: Map<string, Map<string, Entity[]>>;
+    readonly used: Set<string>;
+    readonly spec: ShapeSpec;
+    readonly placed: readonly PlacedService[];
+  },
+): void {
+  const overlay = buildOf(ctx.spec.layers).overlay;
+  if (!overlay) return;
+  const picked = pickHosts(ctx.pool, overlay.controllers, ctx.used);
+  const controllerHosts =
+    picked.length >= overlay.controllers
+      ? picked
+      : pickHosts(ctx.pool, overlay.controllers, new Set());
+  const firewallHosts = new Map<string, string>();
+  for (const svc of ctx.placed) {
+    const node = svc.nodes[0];
+    if (node) firewallHosts.set(svc.id, node);
+  }
+  layOverlay(into, { index, build: overlay, controllerHosts, firewallHosts }, ctx.placed);
 }
 
 /** Spine switches the network choice asks for: a legacy tree keeps one per room. */

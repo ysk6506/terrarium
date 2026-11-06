@@ -16,8 +16,28 @@ import {
   type StorageControllerState,
   type StoragePoolState,
 } from "./state-db";
+import {
+  type CniState,
+  type IngressState,
+  type NetworkPolicyState,
+  type NfvState,
+  type OverlaySegmentState,
+  placeSdn,
+  SDN_FACTORIES,
+  type SdnControllerState,
+  type VtepState,
+} from "./state-sdn";
 
 export type { DbClusterState, DbInstanceState, StorageControllerState, StoragePoolState };
+export type {
+  CniState,
+  IngressState,
+  NetworkPolicyState,
+  NfvState,
+  OverlaySegmentState,
+  SdnControllerState,
+  VtepState,
+};
 
 export type Health = "ok" | "warning" | "critical";
 
@@ -219,6 +239,13 @@ export type EntityState =
   | DbClusterState
   | StorageControllerState
   | StoragePoolState
+  | SdnControllerState
+  | VtepState
+  | OverlaySegmentState
+  | NfvState
+  | CniState
+  | NetworkPolicyState
+  | IngressState
   | SiteState
   | PlainState;
 
@@ -390,6 +417,7 @@ const FACTORIES: Partial<Record<EntityKind, Factory>> = {
     memUtil: 0.5,
   }),
   ...DB_FACTORIES,
+  ...SDN_FACTORIES,
 };
 
 /** A blueprint can say how loaded a server is and which firmware versions it was built with. */
@@ -420,6 +448,7 @@ export function initialState(index: BlueprintIndex, catalog: Catalog): WorldStat
     if (state.kind === "service") placeService(state, entity.id, index);
     if (state.kind === "server") applyServerProps(state, entity.props);
     placeDatabase(state, entity, index);
+    placeSdn(state, entity, index);
     if (state.kind === "rack") state.util = bulkOf(entity)?.util ?? 0;
     if (state.kind === "cooling_unit" && typeof entity.props.setpointC === "number")
       state.setpointC = entity.props.setpointC;

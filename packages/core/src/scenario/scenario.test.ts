@@ -130,6 +130,13 @@ describe("scenario palette [REQ-034]", () => {
       "db_backup_corrupt",
       "storage_path_cut",
       "storage_controller_failure",
+      "sdn_controller_down",
+      "sdn_sync_failed",
+      "vxlan_tunnel_down",
+      "evpn_session_flap",
+      "ingress_controller_down",
+      "cni_plugin_failure",
+      "nfv_firewall_overload",
     ]);
     // In the campus sample every supported fault has something to act on.
     const campus = paletteFor(new BlueprintIndex(campusBlueprint()));

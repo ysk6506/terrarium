@@ -34,6 +34,12 @@ const TAKES_AWAY = new Set([
   "storage_controller_failure",
   "storage_path_cut",
   "storage_node_lost",
+  "sdn_controller_down",
+  "sdn_sync_failed",
+  "vxlan_tunnel_down",
+  "evpn_session_flap",
+  "ingress_controller_down",
+  "cni_plugin_failure",
 ]);
 
 /**
@@ -46,12 +52,18 @@ const DEPENDENTS: ReadonlySet<string> = new Set([
   "db_instance",
   "storage_pool",
   "storage_controller",
+  "vtep",
+  "ingress",
+  "cni",
+  "sdn_controller",
+  "nfv_function",
   "service",
 ]);
 /** A group lost with its members: the cluster of its instances, the pool of its controllers. */
 const GROUP_OF: Readonly<Record<string, string>> = {
   db_instance: "db_cluster",
   storage_controller: "storage_pool",
+  vtep: "overlay_segment",
 };
 
 export interface Severe {
@@ -117,10 +129,27 @@ function startingDown(source: TopologySource, causes: Causes): Set<string> {
     "db_cluster",
     "storage_pool",
     "storage_controller",
+    "vtep",
+    "overlay_segment",
+    "ingress",
+    "cni",
+    "sdn_controller",
+    "nfv_function",
   ] as const)
     for (const e of index.ofKind(kind)) if (stateSaysDown(source, e.id)) down.add(e.id);
   return down;
 }
+
+/** The overlay and the cloud-native network (REQ-097): a VTEP cut off is down for its segment, a closed ingress is down. */
+const statusDown = (s: Record<string, unknown>): boolean => s.status === "down";
+const OVERLAY_DOWN: Readonly<Record<string, (s: Record<string, unknown>) => boolean>> = {
+  vtep: (s) => s.cut === true || s.evpn === "down",
+  overlay_segment: statusDown,
+  ingress: statusDown,
+  cni: statusDown,
+  sdn_controller: statusDown,
+  nfv_function: statusDown,
+};
 
 /** Whether a state says the equipment is gone: it does not run, it has no power, its breaker fell, it would not start. */
 function stateSaysDown(source: TopologySource, id: string): boolean {
@@ -129,6 +158,8 @@ function stateSaysDown(source: TopologySource, id: string): boolean {
   if (s.kind === "db_cluster") return clusterIsDown(source, s);
   if (s.kind === "db_instance" || s.kind === "storage_pool" || s.kind === "storage_controller")
     return s.status === "down";
+  const overlay = OVERLAY_DOWN[String(s.kind)];
+  if (overlay) return overlay(s);
   return s.running === false || s.powered === false || s.tripped === true || s.phase === "failed";
 }
 

@@ -43,6 +43,10 @@ const WAYS: Readonly<Record<string, string>> = {
   db_failover: "페일오버하기",
   db_restore: "백업에서 복원하기",
   storage_path_switch: "스토리지 경로 바꾸기",
+  sdn_sync: "스위치 설정 다시 밀기",
+  sdn_failover: "컨트롤러 넘기기",
+  policy_revert: "정책 되돌리기",
+  ingress_restart: "인그레스 다시 시작",
 };
 
 export interface ShapeView {
@@ -62,9 +66,17 @@ export interface ShapeView {
   readonly dotted: readonly string[];
 }
 
+const NETWORK_TEAM: ReadonlySet<ScopeKey> = new Set<ScopeKey>([
+  "link_down",
+  "switch_failure",
+  "vxlan_tunnel_down",
+  "nfv_firewall_overload",
+  "sdn_controller_down",
+]);
+
 /** Who a problem is handed to when no tool cures it. */
 function teamOf(problem: ScopeKey): string {
-  if (problem === "link_down" || problem === "switch_failure") return "네트워크팀";
+  if (NETWORK_TEAM.has(problem)) return "네트워크팀";
   if (problem === "ups_battery_degraded" || problem === "cert_expired") return "시설팀";
   if (problem === "storage_node_lost" || problem === "disk_failure") return "스토리지팀";
   if (problem === "db_backup_corrupt") return "서비스/OS팀";

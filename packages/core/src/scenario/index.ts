@@ -47,6 +47,7 @@ export {
   OS_TEMPLATES,
   SCENARIO_TEMPLATES,
   type ScenarioTemplate,
+  SDN_TEMPLATES,
   scenarioTemplate,
   TEMPLATE_GROUPS,
 } from "./library";

@@ -184,6 +184,7 @@ export {
   type LayerId,
   type Layers,
   layersProblem,
+  type OverlayBuild,
   type PoolBuild,
   type Problem,
 } from "./ladder";
@@ -323,6 +324,44 @@ export {
   type ToolEvent,
   type WorldRunEvent,
 } from "./run-events";
+export {
+  CNI_PROCESS,
+  cniOfHost,
+  EVPN_REESTABLISH_S,
+  INGRESS_PROCESS,
+  INGRESS_RESTART_S,
+  leafOfServer,
+  type PolicyRule,
+  policiesOf,
+  policyRuleOf,
+  SDN_DETECT_S,
+  SDN_PROCESS,
+  SDN_REVISION,
+  type SdnControllerDef,
+  sdnControllerDef,
+  sdnControllers,
+  sdnDependencies,
+  segmentsOfVtep,
+  serverUnder,
+  servicesLeaningOn,
+  switchOfVtep,
+  vtepOfSwitch,
+  vtepsOfSegment,
+} from "./sdn";
+export {
+  activeController,
+  isSdnCommand,
+  type SdnCommand,
+  vtepFor,
+} from "./sdn-act";
+export { type SdnVerdict, sdnHealth } from "./sdn-health";
+export {
+  deadUplinks,
+  liveCables,
+  reachableFrom,
+  type UnderlayPath,
+  underlayPath,
+} from "./sdn-underlay";
 export { reportedInletC } from "./sensors";
 export {
   SERVICE_KIND_LABELS,
@@ -365,17 +404,23 @@ export {
 export {
   type Alarm,
   AMBIENT_C,
+  type CniState,
   type CoolingState,
   type DbClusterState,
   type DbInstanceState,
   DEFAULT_OUTDOOR_C,
   type EntityState,
   type Health,
+  type IngressState,
   initialState,
+  type NetworkPolicyState,
+  type NfvState,
+  type OverlaySegmentState,
   type PanelState,
   type PduState,
   type RackState,
   type RoomState,
+  type SdnControllerState,
   type ServerState,
   type ServiceState,
   type SiteState,
@@ -386,6 +431,7 @@ export {
   type SwitchState,
   type UpsState,
   type VmState,
+  type VtepState,
   type WorldState,
 } from "./state";
 export { hasErrors, type Issue, validateBlueprint } from "./validate";

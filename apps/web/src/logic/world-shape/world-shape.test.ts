@@ -31,8 +31,6 @@ describe("HA 사다리: 선택지와 카드 [REQ-094]", () => {
   test("점선은 ADR-0107 결정 5의 목록 그대로다", () => {
     const dotted = LAYER_IDS.flatMap((l) => LADDER[l].filter((c) => !c.modeled).map((c) => c.id));
     expect(dotted).toEqual([
-      "net-sdn",
-      "net-cloud-native",
       "cmp-drs",
       "cmp-containers",
       "cmp-multicluster",
@@ -108,10 +106,10 @@ describe("이 모양이면 [REQ-094]", () => {
   });
 
   test("점선 칸은 고장도 시나리오도 더하지 않는다", () => {
-    const sdn = shapeView(specWith({ network: "net-sdn" }));
-    const leaf = shapeView(specWith({ network: "net-leaf-spine" }));
-    expect(sdn.scenarios).toBeLessThanOrEqual(leaf.scenarios);
-    expect(sdn.dotted.length).toBeGreaterThan(leaf.dotted.length);
+    const dr = shapeView(specWith({ site: "site-dr-warm" }));
+    const buildings = shapeView(specWith({ site: "site-two-buildings" }));
+    expect(dr.scenarios).toBeLessThanOrEqual(buildings.scenarios);
+    expect(dr.dotted.length).toBeGreaterThan(buildings.dotted.length);
     const onlyDb = shapeView(specWith({ database: "db-managed-multiaz" }));
     const ownDb = (v: { problems: readonly string[] }) =>
       v.problems.filter((p) => p.startsWith("db_"));

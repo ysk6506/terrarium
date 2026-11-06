@@ -26,6 +26,7 @@ import {
   updateBatteries,
   updateDevices,
 } from "./power";
+import { updateSdn } from "./sdn";
 import { updateServices } from "./services";
 import { updateThermal } from "./thermal";
 
@@ -83,6 +84,7 @@ export class Physics {
     if (events.length > 0) this.updateElectrical();
     events.push(...updateHostOs(this.world, dt));
     events.push(...updateDb(this.world, dt));
+    events.push(...updateSdn(this.world));
     updateServices(this.world, dt);
     events.push(...this.syncAlarms());
     this.updateHealth();

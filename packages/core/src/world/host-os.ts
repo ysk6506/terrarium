@@ -7,6 +7,7 @@
 import type { Entity } from "./blueprint";
 import type { Fault, FaultType } from "./faults";
 import { baselineOs, type HostOs, line, logTo, memoryOf, type OsProcess, processNamed } from "./os";
+import { CNI_PROCESS, INGRESS_PROCESS, SDN_PROCESS } from "./sdn";
 import { serviceDef } from "./service";
 import type { EntityState } from "./state";
 import type { WorldReader } from "./world";
@@ -42,6 +43,19 @@ function cpuOf(state: EntityState): number {
   return 0;
 }
 
+/** The processes of what is hosted on a host besides services: a database instance, a CNI plugin, an SDN controller, an ingress. */
+function hostedProcesses(world: WorldReader, id: string): string[] {
+  const kinds = new Set(
+    world.index.incoming(id, "hosted_on").map((l) => world.index.find(l.from)?.kind),
+  );
+  return [
+    ...(kinds.has("db_instance") ? [DB_PROCESS] : []),
+    ...(kinds.has("cni") ? [CNI_PROCESS] : []),
+    ...(kinds.has("sdn_controller") ? [SDN_PROCESS] : []),
+    ...(kinds.has("ingress") ? [INGRESS_PROCESS] : []),
+  ];
+}
+
 /** A healthy host as it would stand now. */
 export function freshHostOs(world: WorldReader, id: string): HostOs {
   const entity = world.index.entity(id);
@@ -51,9 +65,7 @@ export function freshHostOs(world: WorldReader, id: string): HostOs {
     t: world.time(),
     serviceProcesses: [
       ...servicesOnHost(world, id).map((s) => serviceDef(s).process),
-      ...(world.index.incoming(id, "hosted_on").some((l) => l.kind === "hosted_on")
-        ? [DB_PROCESS]
-        : []),
+      ...hostedProcesses(world, id),
     ],
     cpuPct: cpuOf(world.stateOf(id)),
   });

@@ -11,6 +11,7 @@ import { FIRMWARE_COMPONENTS, type FirmwareComponent } from "./firmware";
 import { HOST_ACTIONS } from "./host-os";
 import { checkNetChange } from "./net-check";
 import { outletCount } from "./outlets";
+import { checkSdnCommand, isSdnCommand, type SdnCommand } from "./sdn-act";
 import { checkServiceCommand } from "./service-act";
 import type { WorldCommand, WorldReader } from "./world";
 
@@ -135,6 +136,7 @@ function checkHostAct(world: WorldReader, target: string, action: string): void 
 /** The commands of the layers above the equipment: host and service actions (ADR-0091), then firmware (ADR-0101). */
 function checkLayerCommand(world: WorldReader, command: WorldCommand): void {
   if (isDbCommand(command.type)) checkDbCommand(world, command as DbCommand);
+  else if (isSdnCommand(command.type)) checkSdnCommand(world, command as SdnCommand);
   else if (command.type === "host.act") checkHostAct(world, command.target, command.action);
   else if (command.type === "vm.migrate" || command.type.startsWith("service."))
     checkServiceCommand(world, command as Parameters<typeof checkServiceCommand>[1]);

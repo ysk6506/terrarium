@@ -2,7 +2,7 @@
  * The status line under a tile's name: how that piece of equipment is doing, with one number in it. Plain
  * words and Arabic numerals with their units (the glossary's rules); a word, not a sentence.
  */
-import type { EntityState } from "@terrarium/core/world";
+import { type EntityState, SDN_REVISION } from "@terrarium/core/world";
 import type { LayerId } from "./types";
 
 const deg = (v: number): string => `${v.toFixed(1)}°C`;
@@ -100,6 +100,35 @@ const READERS: Readonly<Record<string, Reader>> = {
     if (s.status === "down") return "고장 났어요";
     if (s.path === "cut") return "경로가 끊겼어요";
     return s.active ? "경로 사용 중" : "대기";
+  },
+  sdn_controller: (s) => {
+    if (s.kind !== "sdn_controller") return undefined;
+    if (s.status === "down") return "멈췄어요";
+    return s.role === "active" ? `액티브 · 스위치 ${s.managed}대` : "스탠바이";
+  },
+  vtep: (s) => {
+    if (s.kind !== "vtep") return undefined;
+    if (s.evpn === "down") return "EVPN 세션이 내려갔어요";
+    if (s.revision < SDN_REVISION) return "옛 설정이에요";
+    return s.cut ? "세그먼트에서 끊겼어요" : "EVPN 정상";
+  },
+  overlay_segment: (s) => {
+    if (s.kind !== "overlay_segment") return undefined;
+    if (s.status === "down") return "끊겼어요";
+    return s.status === "degraded" ? `일부 끊김 ${s.cutVteps.length}곳` : "잘 돌아가요";
+  },
+  nfv_function: (s) => {
+    if (s.kind !== "nfv_function") return undefined;
+    if (s.status === "down") return "멈췄어요";
+    return s.status === "degraded" ? `지연 ${Math.round(s.latencyMs)}ms` : "잘 돌아가요";
+  },
+  cni: (s) => (s.kind === "cni" ? (s.status === "down" ? "죽었어요" : "정상") : undefined),
+  network_policy: (s) =>
+    s.kind === "network_policy" ? (s.rule === "deny" ? "차단 중" : "허용") : undefined,
+  ingress: (s) => {
+    if (s.kind !== "ingress") return undefined;
+    if (s.status === "down") return "닫혔어요";
+    return s.status === "degraded" ? "다시 뜨는 중" : "열려 있어요";
   },
   vm: (s) => (s.kind === "vm" ? (s.running ? `CPU ${pct(s.cpuUsage)}` : "꺼졌어요") : undefined),
 };
