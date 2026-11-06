@@ -28,6 +28,8 @@ export interface WorldRecord {
   readonly updatedAt: string;
   /** How it was made: worldgen spec, import report summary, etc. (shown, not interpreted). */
   readonly provenance?: Readonly<Record<string, unknown>>;
+  /** The template or world this one was made from (REQ-101); worlds built from scratch have none. */
+  readonly startedFrom?: string;
 }
 
 export interface ScenarioRecord {

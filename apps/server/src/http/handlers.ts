@@ -70,7 +70,10 @@ export const HANDLERS: Handlers = {
   checkModel: (p, i) => p.models.check(id(i)),
   setDefaultModel: (p, i) => p.models.setDefault(id(i)),
 
-  listWorlds: (p) => p.worlds.list(),
+  listWorlds: (p, i) => p.board.list(i.viewer, i.query.sort),
+  likeWorld: (p, i) => p.board.like(i.viewer, id(i)),
+  unlikeWorld: (p, i) => p.board.unlike(i.viewer, id(i)),
+  userTitles: async (p, i) => ({ user: id(i), titles: await p.titles.of(id(i)) }),
   getWorld: (p, i) => p.worlds.get(id(i)),
   listWorldTemplates: (p) => p.worlds.templates(),
   createWorld: (p, i) => p.worlds.create(i.viewer, i.body),

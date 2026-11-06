@@ -34,6 +34,7 @@ import { ExperimentsPage } from "./pages/experiments";
 import { HomePage } from "./pages/home";
 import { ScenariosPage } from "./pages/scenarios";
 import { WorldsPage } from "./pages/worlds";
+import { MyTitles } from "./titles";
 
 // The 3D builder and the flow editor bring three.js and React Flow; they load when opened (REQ-036).
 const WorldBuilderPage = lazy(() => import("./builder/WorldBuilderPage"));
@@ -315,6 +316,7 @@ function Rail({
       >
         {me ?? "이름 정하기"}
       </button>
+      {me && <MyTitles me={me} />}
     </nav>
   );
 }

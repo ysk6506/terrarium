@@ -21,13 +21,13 @@ covers:
   - apps/web/src/ui/pages/shape-same.tsx
   - apps/web/src/ui/pages/shape-flow.ts
   - apps/web/src/ui/builder/StageCards.tsx
-covers_hash: af9f568c58e4fd11
+covers_hash: a11265bc30b10ee9
 verification_log:
-  - "2026-11-06: 2c 보완 합치기"
   - "2026-11-06: 점선 열둘과 SDN 칩의 build.overlay·생성 규칙을 ladder.ts·shaped-sdn.ts와 대조해 고쳤다 (REQ-097)"
   - "2026-11-06: REQ-096: 점선 11개, 컴퓨트 세 칩의 build(drs·k8s)와 IAP 기본 카드를 ladder.ts·shaped-k8s.ts·shaped-defaults.ts와 대조해 적었다"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
+  - "2026-11-06: REQ-101: 저장소 포트·출발점(startedFrom) 반영, ADR-0122"
 ---
 # 세계 만들기 입구와 서비스부터 (REQ-094, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md), [ADR-0108](adr/0108-world-entry-iap-and-chip-cards.md), [ADR-0109](adr/0109-world-entry-amend-tests.md))
 
@@ -97,6 +97,7 @@ verification_log:
 ## 템플릿(저장해 두기)
 - 서버의 세계 기록의 출처 `template`. 서비스부터의 구성(`ShapeSpec`)이 `provenance.shape`에 들어 있고, 지은 세계도 함께 저장된다.
 - `POST /api/worlds/generate`의 본문에 `{ shape, template?: true, name? }`. 템플릿은 `listWorlds`에 안 나오고 `GET /api/world-templates`가 낸다.
+- 템플릿에서 시작해 만든 세계는 세계 기록에 `startedFrom`(템플릿 id)을 남긴다. 서버는 `POST /api/worlds/generate`의 `startedFrom`이 없는 id면 조용히 버린다. 다른 사람이 시작한 수는 그 세계의 인기 점수에 든다([설명](ranking-and-titles.md)).
 - 그대로 만들기: 입구의 카드에서 `/worlds/new?template=ID` → 마지막 화면(서버 수)으로 열려 한 번 누르면 같은 세계. 조금 바꿔서: `&change=1` → 첫 화면부터 채워져 있다. 바꾼 칸에 점은 찍지 않았다.
 - 입구의 "내 템플릿" 줄은 내가 저장한 것만 보인다. 팀 공개·버전·7일 되돌리기(ADR-0092 결정 3의 나머지)는 하지 않았다.
 

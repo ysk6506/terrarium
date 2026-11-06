@@ -35,6 +35,7 @@ import type { ImportReport } from "@terrarium/core/sources/realimport";
 import type { WorldgenResult } from "@terrarium/core/sources/worldgen";
 import type { CallEffect, Runbook } from "@terrarium/core/tools";
 import type { Blueprint, Issue, RunEvent } from "@terrarium/core/world";
+import type { TitleView } from "./community";
 
 export interface HarnessView extends HarnessInfo {
   readonly agents: readonly AgentInfo[];
@@ -105,6 +106,8 @@ export interface CalibrationView extends Calibration {
 
 export interface ExperimentSummary {
   readonly experiment: Experiment;
+  /** The owner's titles (REQ-101), filled in lists where owners are shown. */
+  readonly ownerTitles?: readonly TitleView[];
   readonly status: ExperimentStatus;
   readonly progress: Progress;
   readonly passRate: number;

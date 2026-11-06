@@ -312,7 +312,7 @@ export function ScenariosPage() {
     async (signal): Promise<ScenarioData> => {
       const [scenarios, worlds] = await Promise.all([
         api.call("listScenarios", { query: worldId ? { worldId } : {}, signal }),
-        api.call("listWorlds", { signal }),
+        api.call("listWorlds", { query: { sort: "new" }, signal }),
       ]);
       return { scenarios, worlds };
     },

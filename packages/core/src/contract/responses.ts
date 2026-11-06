@@ -1,6 +1,7 @@
 /** The JSON each route answers with (one line per route of the table in routes.ts). */
 
 import type { ScenarioRecord, WorldRecord } from "@terrarium/core/experiments";
+import type { LikeView, UserTitlesView, WorldCardView } from "./community";
 import type {
   AgentHistoryView,
   ConnectionCheck,
@@ -62,7 +63,10 @@ export interface Responses {
   deleteModel: { readonly deleted: boolean };
   checkModel: LlmModelView;
   setDefaultModel: LlmModelView;
-  listWorlds: WorldSummary[];
+  listWorlds: WorldCardView[];
+  likeWorld: LikeView;
+  unlikeWorld: LikeView;
+  userTitles: UserTitlesView;
   listWorldTemplates: WorldSummary[];
   getWorld: WorldRecord;
   createWorld: SavedWorld;

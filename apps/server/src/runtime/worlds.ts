@@ -80,6 +80,7 @@ export class Worlds {
     name: string,
     origin: WorldOrigin,
     provenance?: Record<string, unknown>,
+    startedFrom?: string,
   ) {
     return {
       id: this.ctx.stamps.id("w"),
@@ -88,6 +89,7 @@ export class Worlds {
       origin,
       createdAt: this.ctx.stamps.now(),
       ...(provenance ? { provenance } : {}),
+      ...(startedFrom ? { startedFrom } : {}),
     };
   }
 
@@ -104,12 +106,16 @@ export class Worlds {
     const stats: Partial<Record<EntityKind, number>> = {};
     for (const e of result.blueprint.entities) stats[e.kind] = (stats[e.kind] ?? 0) + 1;
     const origin = req.template ? "template" : "worldgen";
+    // where it started from is kept only when that place exists (REQ-101): a stale id is not a reason to refuse a save
+    const from = req.startedFrom ? await this.ctx.store.getWorld(req.startedFrom) : undefined;
     const saved = await this.save(
-      this.fresh(viewer, req.name ?? req.shape.name, origin, {
-        shape: req.shape,
-        counts: result.counts,
-        notes: result.notes,
-      }),
+      this.fresh(
+        viewer,
+        req.name ?? req.shape.name,
+        origin,
+        { shape: req.shape, counts: result.counts, notes: result.notes },
+        from?.id,
+      ),
       result.blueprint,
     );
     return { ...saved, stats };

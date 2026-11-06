@@ -23,6 +23,7 @@ function FromTemplate({ id, change }: { readonly id: string; readonly change: bo
     <ShapeScreen
       start={{ ...shape, name: `${shape.name} 사본` }}
       fromTemplate
+      startedFrom={id}
       {...(change ? {} : { startAt: "size" as const })}
       onLeave={() => navigate({ name: "newWorld" })}
     />

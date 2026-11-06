@@ -4621,3 +4621,191 @@ ol.elevation li:first-child .u-slot {
   padding: 4px 12px;
   font-size: 14px;
 }
+
+/* ── world cards, hearts and titles (REQ-101, ADR-0122) ───────────────────── */
+.world-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.world-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 20px 22px;
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+}
+
+.wc-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.wc-name {
+  min-width: 0;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.wc-evidence {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.wc-meta {
+  margin: 0;
+}
+
+.wc-foot {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-top: 8px;
+}
+
+.like {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 5px;
+  min-height: 36px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--fill);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.like:hover {
+  background: var(--fill-hover);
+  color: var(--ink);
+}
+
+.like[aria-pressed="true"] {
+  color: var(--cobalt);
+}
+
+.title-pills {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-inline-start: 6px;
+  vertical-align: middle;
+}
+
+.title-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--fill);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+button.title-pill {
+  cursor: pointer;
+}
+
+button.title-pill:hover {
+  background: var(--fill-hover);
+  color: var(--ink);
+}
+
+.title-pop {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 280px;
+  max-width: calc(100vw - 32px);
+  padding: 14px 16px;
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  font-size: 14px;
+  white-space: normal;
+}
+
+.title-pop ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.title-pop-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.title-pop-close {
+  align-self: flex-end;
+  padding: 2px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--cobalt);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* in the narrow rail the pills sit under the name and the popover opens to the right of the rail */
+.rail .title-pills {
+  justify-content: center;
+  margin: 0;
+  padding: 0 2px 6px;
+}
+
+.rail .title-pop {
+  top: auto;
+  bottom: 0;
+  left: calc(100% + 8px);
+}
+
+@media (max-width: 640px) {
+  .rail .title-pills {
+    display: none;
+  }
+
+  .title-pop {
+    left: auto;
+    right: 0;
+  }
+}
+
+.rail .title-pill {
+  justify-content: center;
+  max-width: 100%;
+  font-size: 11px;
+  text-align: center;
+  white-space: normal;
+}

@@ -9,6 +9,7 @@ import { Loading, Section } from "../kit";
 import { EscalationCards } from "./escalation";
 import { ExperimentTable } from "./experiments";
 import { OperationCards } from "./operation-card";
+import { WorldBoard } from "./world-board";
 
 const Vitrine = lazy(() => import("./Vitrine"));
 
@@ -110,7 +111,9 @@ function Recent() {
       {list.data?.length === 0 && (
         <p className="muted small">아직 실험이 없어요. 위의 세 단계를 차례로 해 보세요.</p>
       )}
-      {list.data && list.data.length > 0 && <ExperimentTable items={list.data} />}
+      {list.data && list.data.length > 0 && (
+        <ExperimentTable items={list.data} showTitles={false} />
+      )}
     </Section>
   );
 }
@@ -122,6 +125,7 @@ export function HomePage() {
       <Hero />
       <Starts />
       <Operating />
+      <WorldBoard limit={3} />
       <Recent />
     </div>
   );

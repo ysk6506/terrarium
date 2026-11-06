@@ -56,6 +56,7 @@ import type { Dispatcher } from "./dispatcher";
 import { summaryOf } from "./executor";
 import type { Scenarios } from "./scenarios";
 import { present, subjectOf } from "./subject";
+import type { Titles } from "./titles";
 
 const PROFILE_KEYS = {
   vcenter: BUILTIN_PROFILES.filter((p) => p.protocol === "vcenter").map((p) => p.key),
@@ -127,6 +128,7 @@ export class Experiments {
     private readonly scenarios: Scenarios,
     private readonly dispatcher: Dispatcher,
     private readonly versions: AgentVersions,
+    private readonly titles?: Titles,
   ) {}
 
   async get(id: string): Promise<Experiment> {
@@ -370,7 +372,17 @@ export class Experiments {
       if (query.status === undefined || summary.status === query.status) out.push(summary);
       if (out.length >= (query.limit ?? 50)) break;
     }
-    return out;
+    return this.withTitles(out);
+  }
+
+  /** The owners' titles, beside the lists where owners are shown (REQ-101). */
+  private async withTitles(list: ExperimentSummary[]): Promise<ExperimentSummary[]> {
+    if (!this.titles) return list;
+    const owned = await this.titles.ofMany(list.map((s) => s.experiment.owner));
+    return list.map((s) => {
+      const ownerTitles = owned.get(s.experiment.owner) ?? [];
+      return ownerTitles.length > 0 ? { ...s, ownerTitles } : s;
+    });
   }
 
   /** The experiment analysed (with harness telemetry when given), against its parent's when it is a fork. */

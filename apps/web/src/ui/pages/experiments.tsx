@@ -4,6 +4,7 @@ import { useState } from "react";
 import { percent, relativeTime, scoreText } from "../../logic";
 import { Go, useApp, useAsync, useNow } from "../context";
 import { Button, Empty, Failure, Loading, PageHead, Segmented, Status } from "../kit";
+import { TitlePills } from "../titles";
 
 export function progressText(s: ExperimentSummary): string {
   const p = s.progress;
@@ -29,9 +30,12 @@ export function MetaTags({ metadata }: { readonly metadata?: Readonly<Record<str
 export function ExperimentTable({
   items,
   showOwner = true,
+  showTitles = true,
 }: {
   readonly items: readonly ExperimentSummary[];
   readonly showOwner?: boolean;
+  /** 칭호 beside the owner's name (REQ-101); the home page leaves them out to stay quiet. */
+  readonly showTitles?: boolean;
 }) {
   const now = useNow();
   const { meta } = useApp();
@@ -87,7 +91,14 @@ export function ExperimentTable({
               </td>
               <td className="num">{s.progress.completed > 0 ? percent(s.passRate) : "—"}</td>
               <td className="num">{scoreText(s.meanScore)}</td>
-              {showOwner && <td>{s.experiment.owner}</td>}
+              {showOwner && (
+                <td>
+                  {s.experiment.owner}
+                  {showTitles && (
+                    <TitlePills who={s.experiment.owner} titles={s.ownerTitles ?? []} />
+                  )}
+                </td>
+              )}
               <td>{relativeTime(s.experiment.createdAt, now)}</td>
             </tr>
           ))}

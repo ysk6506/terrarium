@@ -5,6 +5,7 @@
  */
 
 import type { z } from "zod";
+import { COMMUNITY_ROUTES } from "./community-routes";
 import { MODEL_ROUTES } from "./model-routes";
 import { ImportPresetsBody, PresetQuery, RenamePresetBody, SavePresetBody } from "./presets";
 import {
@@ -195,8 +196,8 @@ export const ROUTES = {
   },
 
   ...MODEL_ROUTES,
+  ...COMMUNITY_ROUTES,
 
-  listWorlds: { method: "GET", path: "/api/worlds", summary: "세계 목록", produces: json },
   listWorldTemplates: {
     method: "GET",
     path: "/api/world-templates",

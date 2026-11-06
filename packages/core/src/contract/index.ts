@@ -1,5 +1,13 @@
 /** core.contract: the HTTP API contract shared by server and web — routes, request schemas, views, errors. */
 
+export {
+  type LikeView,
+  type TitleView,
+  type UserTitlesView,
+  type WorldCardView,
+  WorldListQuery,
+  type WorldListQueryParams,
+} from "./community";
 export type {
   AgentCensus,
   AgentHistoryView,
