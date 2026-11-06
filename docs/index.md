@@ -148,7 +148,7 @@ verification_log:
 - [0092 서비스부터 세계를 만들 수 있고, 만든 구성은 저장해 두고 다시 쓴다](design-docs/adr/0092-service-first-world-and-templates.md)
 - [0094 운영 모드 — 끝이 없는 실험, 당겨서 보는 모니터링, 실시간과 빨리 감기](design-docs/adr/0094-operation-mode.md)
 - [0095 현실의 쌍둥이는 네 단계로 가고, 세계의 모델은 플러그인으로 바꿀 수 있다](design-docs/adr/0095-digital-twin-and-model-plugins.md)
-- [0096 파워 캐핑 — 전기요금을 아끼면서 서비스를 지키는 줄다리기를 잰다](design-docs/adr/0096-power-capping.md)
+- [0096 파워 캐핑 — 전기요금을 아끼면서 서비스를 지키는 줄다리기를 잰다](design-docs/adr/0096-power-capping.md) · [참고: 팀이 실제로 검증한 랙 단위 자동 조정](design-docs/power-capping-reference.md)
 - [0098 도메인 범위, 가상 담당자, 작업 티켓 — 넘기고 기다리고 그동안 다른 일을 하는 운영을 잰다](design-docs/adr/0098-domains-virtual-counterparts-tickets.md)
 - [0099 가상 담당자는 거절하지 않고 결정론적이며, 티켓 툴은 선택이고, 교체 작업은 3D에 보인다 (0098 보정)](design-docs/adr/0099-counterparts-deterministic.md)
 - [0100 에스컬레이트는 도메인 하나만 받는다 — 그 도메인 고장이 종류별 리드타임 뒤에 사라진다 (0098·0099 단순화)](design-docs/adr/0100-escalate-by-domain.md)
