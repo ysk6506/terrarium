@@ -25,6 +25,10 @@ export const EVENT_LABELS: Readonly<Record<Exclude<EventType, "note">, string>> 
   "firmware.reboot": "펌웨어 때문에 재부팅한 적",
   "firmware.finish": "펌웨어 올리기를 마친 적",
   "firmware.fail": "펌웨어 올리기에 실패한 적",
+  "host.act": "호스트에서 조치한 적",
+  "service.failover": "서비스를 대기 쪽으로 옮긴 적",
+  "service.restart": "서비스를 다시 시작한 적",
+  "vm.migrate": "VM을 다른 서버로 옮긴 적",
 };
 
 export const EVENT_TYPES = Object.keys(EVENT_LABELS) as (keyof typeof EVENT_LABELS)[];

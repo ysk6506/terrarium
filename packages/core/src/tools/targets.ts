@@ -29,6 +29,12 @@ export const TARGET_ARGS: Readonly<Record<string, readonly string[]>> = {
   restart_cooling_unit: ["unitId"],
   reset_breaker: ["id"],
   power_server: ["id"],
+  list_services: [],
+  service_status: ["service"],
+  failover_service: ["service"],
+  migrate_vm: ["vm", "host"],
+  restart_service: ["service"],
+  run_command: ["host"],
   wait: [],
   submit_diagnosis: ["rootCause"],
 };
@@ -55,6 +61,8 @@ const eapiCommands = (args: Readonly<Record<string, unknown>>): unknown[] => {
 const WRITES: Readonly<Record<string, (args: Readonly<Record<string, unknown>>) => boolean>> = {
   snmp_request: (args) => args.operation === "set",
   bacnet_request: (args) => args.service === "write-property",
+  run_command: (args) =>
+    /^\s*(systemctl\s+restart|rm|logrotate|reboot|mount\s+.*-o)\b/.test(String(args.cmd ?? "")),
   network_cli: (args) =>
     args.configure === true ||
     (Array.isArray(args.commands) && args.commands.some((c) => !LOOKING.test(String(c)))),

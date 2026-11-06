@@ -181,6 +181,15 @@ const Storage = ({ state }: GlyphProps) => (
   </>
 );
 
+const Service = ({ state }: GlyphProps) => (
+  <>
+    <Box x={0} y={6} w={26} d={12} z={10} tone="blue" />
+    <Led x={-8} y={-2} state={state} />
+    <Led x={0} y={-2} state="ok" />
+    <Led x={8} y={-2} state="ok" />
+  </>
+);
+
 const Vm = () => <Box x={0} y={4} w={16} d={10} z={14} tone="blue" />;
 
 const Cluster = () => (
@@ -209,6 +218,7 @@ const SINGLE: Readonly<Record<TopoKind, Glyph>> = {
   storage: Storage,
   vm: Vm,
   cluster: Cluster,
+  service: Service,
 };
 
 /** Many of a kind: racks stand in a row, servers in a stack; the rest are the single glyph on a stack of bases. */

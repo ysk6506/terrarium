@@ -5,7 +5,14 @@
  */
 
 export { type Focus, type FoldOptions, fold } from "./fold";
-export { type Impact, impactOf, NO_IMPACT, type Severe } from "./impact";
+export {
+  type Impact,
+  impactOf,
+  NO_IMPACT,
+  type ServiceImpact,
+  type Severe,
+  servicesOf,
+} from "./impact";
 export { chainOf, isSpace, type LayerShape, layerShape } from "./layers";
 export {
   type Board,
@@ -23,4 +30,12 @@ export {
   type TopologySource,
   type TopoState,
 } from "./types";
-export { classLabel, groupName, impactCounts, impactWhen, nounOf, num } from "./words";
+export {
+  classLabel,
+  groupName,
+  impactCounts,
+  impactServices,
+  impactWhen,
+  nounOf,
+  num,
+} from "./words";

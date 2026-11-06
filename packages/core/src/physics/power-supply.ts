@@ -48,6 +48,7 @@ export class SupplyResolver {
   readonly plan: PowerPlan;
   readonly states: readonly EntityState[];
   readonly faults: ReadonlyArray<readonly Fault[]>;
+  readonly moves: ReadonlyMap<number, number> | undefined;
   private readonly memo: Int8Array;
   private readonly visiting: Uint8Array;
   /** Per power cable: it carries its consumer's load now. Worked out for a consumer when first asked. */
@@ -61,6 +62,7 @@ export class SupplyResolver {
     this.plan = powerPlanOf(world.index, world.catalog);
     this.states = world.stateList();
     this.faults = world.faultList();
+    this.moves = world.vmMoves();
     this.memo = new Int8Array(this.plan.ents.length);
     this.visiting = new Uint8Array(this.plan.ents.length);
     this.cut = cutCables(this.plan, this.states);

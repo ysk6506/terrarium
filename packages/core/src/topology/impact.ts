@@ -9,7 +9,7 @@
  * then what leans on it loses it in turn.
  */
 import { RACK_CRITICAL_C } from "@terrarium/core/physics";
-import type { BlueprintIndex, LinkKind } from "@terrarium/core/world";
+import { type BlueprintIndex, type LinkKind, serviceDef } from "@terrarium/core/world";
 import { type Causes, causesOf } from "./causes";
 import { rackServers } from "./shape";
 import type { TopologySource } from "./types";
@@ -41,7 +41,23 @@ export interface Severe {
   readonly at?: string;
 }
 
+/** What the services under the range are doing (ADR-0091): how many stopped or slowed, and the work waiting. */
+export interface ServiceImpact {
+  readonly down: number;
+  readonly degraded: number;
+  /** Batch services with work waiting, the most first. */
+  readonly waiting: ReadonlyArray<{
+    readonly name: string;
+    readonly items: number;
+    readonly unit: string;
+  }>;
+}
+
+export const NO_SERVICES: ServiceImpact = { down: 0, degraded: 0, waiting: [] };
+
 export interface Impact {
+  /** The services that stopped or slowed, and what piled up behind them. */
+  readonly services: ServiceImpact;
   readonly causes: Causes;
   /** Equipment that leans on something lost, apart from the equipment that is itself broken or alarming. */
   readonly affected: ReadonlySet<string>;
@@ -201,6 +217,22 @@ function severity(
   return hot;
 }
 
+/** Read the services off their state: the equipment below has already told them how to be. */
+export function servicesOf(source: TopologySource): ServiceImpact {
+  let down = 0;
+  let degraded = 0;
+  const waiting: Array<ServiceImpact["waiting"][number]> = [];
+  for (const e of source.index.ofKind("service")) {
+    const s = source.stateOf(e.id);
+    if (s.kind !== "service") continue;
+    if (s.status === "down") down++;
+    else if (s.status === "degraded") degraded++;
+    const queue = serviceDef(e).queue;
+    if (queue && s.backlog > 0) waiting.push({ name: e.name, items: s.backlog, unit: queue.unit });
+  }
+  return { down, degraded, waiting: waiting.sort((a, b) => b.items - a.items) };
+}
+
 /** The range of what is broken or alarming right now. */
 export function impactOf(source: TopologySource): Impact {
   const causes = causesOf(source);
@@ -210,7 +242,13 @@ export function impactOf(source: TopologySource): Impact {
   const reach = reachOf(source, reaching);
   const severe = severity(source, reach, down);
   const coloured = colouredBy(source, affected, reach, causes);
-  return { causes, affected: coloured, ...reach, ...(severe ? { severe } : {}) };
+  return {
+    causes,
+    affected: coloured,
+    ...reach,
+    services: servicesOf(source),
+    ...(severe ? { severe } : {}),
+  };
 }
 
 /** What the board paints grey: the dependents, the servers inside a dependent rack and the rooms they stand in. */
@@ -235,4 +273,5 @@ export const NO_IMPACT: Impact = {
   rooms: NONE,
   racks: NONE,
   servers: 0,
+  services: NO_SERVICES,
 };

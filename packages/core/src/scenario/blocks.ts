@@ -5,6 +5,11 @@
  */
 import type { EntityKind } from "@terrarium/core/world";
 import { NET_BLOCK_SPECS } from "./blocks-net";
+import { SERVICE_FIELDS } from "./blocks-service";
+import { bool, type FieldSpec, HEALTH, num, version } from "./field-spec";
+
+export type { FieldSpec };
+
 import type { ScenarioNode } from "./model";
 
 export type BlockCategory = "flow" | "fault" | "operation" | "agent";
@@ -377,19 +382,6 @@ export function outputsOf(node: Pick<ScenarioNode, "type" | "params">): string[]
   return [...(blockSpec(node.type)?.outputs ?? [])];
 }
 
-/** A field a condition can test, with how people read it. */
-export interface FieldSpec {
-  readonly label: string;
-  readonly type: "number" | "boolean" | "enum";
-  readonly unit?: string;
-  readonly values?: readonly string[];
-}
-
-const num = (label: string, unit: string): FieldSpec => ({ label, type: "number", unit });
-const bool = (label: string): FieldSpec => ({ label, type: "boolean" });
-const version = (label: string): FieldSpec => ({ label, type: "enum" });
-const HEALTH: FieldSpec = { label: "상태", type: "enum", values: ["ok", "warning", "critical"] };
-
 /** Condition fields per entity kind. A test checks every one exists in the world state. */
 export const CONDITION_FIELDS: Readonly<Record<EntityKind, Readonly<Record<string, FieldSpec>>>> = {
   site: { health: HEALTH, outdoorC: num("외기 온도", "°C") },
@@ -497,4 +489,5 @@ export const CONDITION_FIELDS: Readonly<Record<EntityKind, Readonly<Record<strin
     memUtil: num("메모리 사용률", "비율"),
   },
   datastore: { health: HEALTH },
+  service: SERVICE_FIELDS,
 };

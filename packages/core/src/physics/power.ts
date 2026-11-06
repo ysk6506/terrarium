@@ -36,12 +36,15 @@ export interface Pass {
   readonly plan: PowerPlan;
   readonly states: readonly EntityState[];
   readonly faults: ReadonlyArray<readonly Fault[]>;
+  /** VMs an operator moved to another server: the VM's position and its new host's (absent while none was moved). */
+  readonly moves?: ReadonlyMap<number, number> | undefined;
 }
 
 export const passOf = (world: World): Pass => ({
   plan: powerPlanOf(world.index, world.catalog),
   states: world.stateList(),
   faults: world.faultList(),
+  moves: world.vmMoves(),
 });
 
 const positionOf = (world: World, id: string): number => {
@@ -69,9 +72,14 @@ export function effectiveUtilAt(pass: Pass, i: number): number {
   const to = plan.vmStart[i + 1] as number;
   for (let q = plan.vmStart[i] as number; q < to; q++) {
     const v = plan.vmOn[q] as number;
+    if (pass.moves?.has(v)) continue; // moved away
     if ((states[v] as StateOf<"vm">).running)
       vmLoad += vmDemandAt(pass, v) * (plan.vcpus[v] as number);
   }
+  if (pass.moves)
+    for (const [v, host] of pass.moves)
+      if (host === i && (states[v] as StateOf<"vm">).running)
+        vmLoad += vmDemandAt(pass, v) * (plan.vcpus[v] as number);
   const runaway = faultParam(faults[i] as readonly Fault[], "cpu_runaway", "util") ?? 0;
   const util = Math.max(state.cpuUtil + vmLoad / (plan.cores[i] as number), runaway);
   return clamp(state.throttled ? Math.min(util, 0.7) : util, 0, 1);
@@ -181,7 +189,7 @@ BY_SLOT[SLOT.distribution] = updateDistribution;
 function updateVms(sup: SupplyResolver): void {
   const { plan, states } = sup;
   for (const v of plan.vms) {
-    const host = plan.vmHost[v] as number;
+    const host = sup.moves?.get(v) ?? (plan.vmHost[v] as number);
     const hostState = host >= 0 ? (states[host] as StateOf<"server">) : undefined;
     const hostUp = hostState ? hostState.powered && hostState.adminOn : true;
     const state = states[v] as StateOf<"vm">;

@@ -72,6 +72,11 @@ const READERS: Readonly<Record<string, Reader>> = {
   generator: (s) => (s.kind === "generator" ? PHASES[s.phase] : undefined),
   switch: (s) =>
     s.kind === "switch" ? (s.powered && s.adminOn ? "켜져 있어요" : "꺼졌어요") : undefined,
+  service: (s) => {
+    if (s.kind !== "service") return undefined;
+    if (s.status === "down") return "멈췄어요";
+    return s.status === "degraded" ? "느려졌어요" : "잘 돌아가요";
+  },
   vm: (s) => (s.kind === "vm" ? (s.running ? `CPU ${pct(s.cpuUsage)}` : "꺼졌어요") : undefined),
 };
 

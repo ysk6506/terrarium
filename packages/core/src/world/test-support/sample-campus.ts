@@ -4,6 +4,7 @@
  * off nothing in the original hall, so everything that holds for the sample still holds here.
  */
 import type { Blueprint, Entity, Link } from "../blueprint";
+import { serviceProps } from "../service";
 import { sampleBlueprint } from "./sample";
 
 const ent = (
@@ -69,6 +70,12 @@ export function campusBlueprint(): Blueprint {
       { modelId: "sm-tank-24u" },
     ),
     ent("srv-t1", "server", "tank-1", { type: "unit", u: 4 }, { modelId: "sm-2u-imm" }),
+    {
+      id: "svc-portal",
+      kind: "service",
+      name: "사내 포털",
+      props: serviceProps({ kind: "request", process: "portal", perHourKrw: 2_000_000 }),
+    },
     ent(
       "cdu-1",
       "cdu",
@@ -115,6 +122,8 @@ export function campusBlueprint(): Blueprint {
     link("cooling", "rack-l", "cdu-1"),
     link("cooling", "tank-1", "cdu-1"),
     link("cooling", "cdu-1", "chiller-1"),
+    { ...link("service_on", "svc-portal", "vm-web"), props: { role: "active" } },
+    { ...link("service_on", "svc-portal", "srv-b1"), props: { role: "standby" } },
   ];
   return {
     ...bp,

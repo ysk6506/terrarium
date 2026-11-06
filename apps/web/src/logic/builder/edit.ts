@@ -66,6 +66,7 @@ const ID_PREFIX: Readonly<Partial<Record<EntityKind, string>>> = {
   cluster: "cl",
   vm: "vm",
   datastore: "ds",
+  service: "svc",
 };
 
 /** The next free id with the kind's prefix: rack-7 after rack-6. */

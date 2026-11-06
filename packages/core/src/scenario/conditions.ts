@@ -35,6 +35,21 @@ const SIMPLE_ACTIONS: Partial<Record<WorldCommand["type"], ActionKind>> = {
 /** The switch (or server) at one end of a network link, which the session reads off the blueprint. */
 export type LinkEnd = (linkId: string, end: "from" | "to") => string | undefined;
 
+/** Commands of the service and operating-system layers (ADR-0091); a reboot is a restart of the host. */
+function serviceAction(c: WorldCommand): AgentAction | undefined {
+  if (c.type === "service.failover") return { action: "service_failover", target: c.target };
+  if (c.type === "service.restart") return { action: "service_restart", target: c.target };
+  if (c.type === "vm.migrate") return { action: "vm_migrate", target: c.target };
+  if (c.type !== "host.act") return undefined;
+  const kind = {
+    restart: "process_restart",
+    free_disk: "disk_cleanup",
+    remount_rw: "fs_remount",
+    reboot: "restart",
+  } as const;
+  return { action: kind[c.action], target: c.target };
+}
+
 /**
  * Switch-port, PDU-outlet and switch-configuration commands: one command, one action. The target of an
  * outlet is its PDU, of a configuration change its switch, of a port its network link (the switch is `device`).
@@ -52,7 +67,7 @@ function operatorAction(c: WorldCommand, endOf?: LinkEnd): AgentAction | undefin
     return { action: c.on ? "outlet_on" : "outlet_off", target: c.target };
   if (c.type === "net.set") return { action: "config_change", target: c.target };
   if (c.type === "firmware.update") return { action: "firmware_update", target: c.target };
-  return undefined;
+  return serviceAction(c);
 }
 
 /**

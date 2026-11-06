@@ -35,7 +35,8 @@ export type TopoKind =
   | "switch"
   | "storage"
   | "vm"
-  | "cluster";
+  | "cluster"
+  | "service";
 
 /** What the board reads of a world: the part of `WorldReader` that tells what is, and how it is doing. */
 export interface TopologySource {

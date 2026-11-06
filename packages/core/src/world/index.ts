@@ -56,6 +56,7 @@ export {
   type MistakeType,
   TASK_SPECS,
   type TaskType,
+  withParamDefaults,
 } from "./faults";
 export {
   FIRMWARE_COMPONENTS,
@@ -94,6 +95,17 @@ export {
   unitHeightM,
 } from "./geometry";
 export { BlueprintIndex } from "./graph";
+export {
+  FREED_PCT,
+  freshHostOs,
+  HOST_ACTIONS,
+  HOST_REBOOT_SECONDS,
+  type HostAction,
+  hostOsOf,
+  isHost,
+  RESTART_SECONDS,
+  servicesOnHost,
+} from "./host-os";
 export { KIND_LABELS, kindList, LINK_LABELS } from "./labels";
 export {
   LAND_MARKETS,
@@ -144,6 +156,21 @@ export {
   type Trace,
   trace,
 } from "./net-trace";
+export {
+  AUTH_SKEW_S,
+  DISK_FULL_PCT,
+  type HostOs,
+  LOG_KEEP,
+  line,
+  logTo,
+  memoryOf,
+  OS_FAULT_TYPES,
+  type OsLine,
+  type OsProcess,
+  type ProcessState,
+  processCpuPct,
+  processNamed,
+} from "./os";
 export { outletConsumer, outletCount, outletOff } from "./outlets";
 export { type PreparedWorld, prepareWorld } from "./prepared";
 export {
@@ -156,6 +183,7 @@ export {
   type RoomPurpose,
   roomPurposeOf,
 } from "./purpose";
+export { ReadOnlyWorldPort } from "./read-only";
 export {
   coveredBy,
   insideRoom,
@@ -172,6 +200,26 @@ export {
   sharedEdge,
 } from "./room-shape";
 export { reportedInletC } from "./sensors";
+export {
+  SERVICE_KIND_LABELS,
+  SERVICE_KINDS,
+  SERVICE_STATUS_LABELS,
+  type ServiceConditions,
+  type ServiceDef,
+  type ServiceKind,
+  type ServiceStatus,
+  serviceDef,
+  serviceProps,
+} from "./service";
+export type { ServiceCommand } from "./service-act";
+export {
+  type HostVerdict,
+  hostOfVm,
+  hostVerdict,
+  type ServiceHealth,
+  serviceHealth,
+  switchAlive,
+} from "./service-health";
 export {
   DESIGN_UTIL,
   designDrawW,
@@ -192,6 +240,7 @@ export {
   type RackState,
   type RoomState,
   type ServerState,
+  type ServiceState,
   type SiteState,
   type StateOf,
   type StorageState,
@@ -203,7 +252,6 @@ export {
 export { hasErrors, type Issue, validateBlueprint } from "./validate";
 export { isOwned, landProblem } from "./validate-campus";
 export {
-  ReadOnlyWorldPort,
   World,
   type WorldCheckpoint,
   type WorldCommand,

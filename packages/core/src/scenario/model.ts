@@ -29,7 +29,13 @@ export type ActionKind =
   | "outlet_off"
   | "outlet_on"
   | "config_change"
-  | "firmware_update";
+  | "firmware_update"
+  | "service_failover"
+  | "service_restart"
+  | "process_restart"
+  | "disk_cleanup"
+  | "fs_remount"
+  | "vm_migrate";
 
 export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   power_off: "전원 끄기",
@@ -43,6 +49,12 @@ export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   outlet_on: "콘센트 켜기",
   config_change: "스위치 설정 변경",
   firmware_update: "펌웨어 올리기",
+  service_failover: "서비스를 대기 쪽으로 옮기기",
+  service_restart: "서비스 다시 시작",
+  process_restart: "프로세스 다시 시작",
+  disk_cleanup: "디스크 비우기",
+  fs_remount: "파일시스템 다시 마운트",
+  vm_migrate: "VM 다른 서버로 옮기기",
 };
 
 export const ACTION_KINDS = Object.keys(ACTION_LABELS) as ActionKind[];

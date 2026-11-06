@@ -2,7 +2,7 @@
 title: 세계 소스 — 생성과 가져오기
 kind: spec
 status: active
-last_verified: 2026-11-05
+last_verified: 2026-11-06
 covers:
   - packages/core/src/sources/assembly.ts
   - packages/core/src/sources/assembly-site.ts
@@ -17,12 +17,12 @@ covers:
   - packages/core/src/sources/realimport/mapping.ts
   - packages/core/src/sources/realimport/synthesize.ts
 verification_log:
-  - "2026-11-05: REQ-076: HPC센터 층 구성(campus-floor, campus-locked-plan, campus-fit)과 건물 잠금, 사업장 수전 용량을 코드와 대조해 적었다"
   - "2026-11-05: REQ-076: 잠긴 건물의 홀은 방이 허락하는 만큼 놓되 podsPerHall개를 넘지 않는 것을 campus-plan.ts와 대조해 적었다"
   - "2026-11-05: podsPerHall 상한 문장을 campus-plan.ts와 대조해 고쳤다"
   - "2026-11-05: REQ-077 세계 만들기 재설계(작업 #90) 반영: 코드와 대조해 맞는 것을 확인했다"
   - "2026-11-05: 2026-11-05: 합친 뒤 코드(ADR-0081 실제 크기와 ADR-0083 세계 만들기 재설계)와 다시 대조: 크기와 모양 절, 냉방과 전기, m² 단위, 서버룸 이름이 맞다"
-covers_hash: d1ea874e7b031d4d
+  - "2026-11-06: 2026-11-06: ADR-0091(결정 1·2)·ADR-0102 구현: 서비스 층·OS 층 1차를 코드와 대조해 해당 절을 더하거나 고쳤다. 이 문서가 말하는 나머지 구조는 그대로다"
+covers_hash: af6e10593eaf35d7
 ---
 # 세계 소스 (REQ-009~013, REQ-035, REQ-043~049)
 
@@ -46,6 +46,8 @@ CRAH와 A/B 분전반, 층마다 A/B UPS, 서버룸마다 vSphere 클러스터. 
 (N+1 냉방은 한 대가 서도 버티고, A/B 전원은 한쪽 분전반이 트립해도 서버가 꺼지지 않는다).
 
 랙은 한 세계에 2000개까지다(`MAX_RACKS`). 용량 측정(REQ-032)에서 다시 정한다.
+
+**서비스를 까는 일** (REQ-086, [ADR-0091](adr/0091-service-os-layer-recovery-first.md)): `generateWorld`와 `generateCampus`는 만든 뒤 `withServices`(`worldgen/services.ts`)로 건물마다 서비스 묶음을 더한다. HPC센터는 설계 검증 큐(배치)·EDA 라이선스 서버(상태 유지)·스토리지 게이트웨이(상태 유지), 팹은 MES 연동(요청 처리)·설비 로그 수집(배치), 그 밖에는 사내 포털·로그 수집이다. 서비스는 건물의 VM(없으면 서버) 위에서 돌고, 대기 쪽은 다른 랙의 서버 중 같은 전원 공급을 가장 적게 나눠 쓰는 것이다. 시간당 피해는 어림한 값(추정 표시)이다. 서버가 없는 건물(묶음 랙뿐)에는 깔지 않는다. 자세한 표는 [서비스·OS 층](service-os-layer.md#서비스-생성-sourcesworldgenservicests).
 
 ### 캠퍼스 생성 (`generateCampus`, REQ-043~048)
 

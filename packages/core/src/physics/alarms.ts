@@ -21,9 +21,11 @@ import type {
 } from "@terrarium/core/world";
 import { type Draft, type Hit, NO_HITS, pushHits, type Scan } from "./alarm-scan";
 import { netAlarms } from "./net-alarms";
+import { osAlarms } from "./os-alarms";
 import { plantAlarms } from "./plant-alarms";
 import { effectiveUtilAt, type Pass, passOf } from "./power";
 import { faultParam, hasFault } from "./power-supply";
+import { serviceAlarms } from "./services";
 
 export const INLET_WARNING_C = 27;
 export const RACK_CRITICAL_C = 32;
@@ -283,5 +285,7 @@ export function desiredAlarms(world: World): Draft[] {
   }
   linkAlarms(scan, out);
   netAlarms(world, out);
+  osAlarms(world, out);
+  serviceAlarms(world, out);
   return out;
 }

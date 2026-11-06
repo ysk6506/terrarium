@@ -15,6 +15,7 @@ import {
   reportedInletC,
   type WorldPort,
 } from "@terrarium/core/world";
+import { SERVICE_HANDLERS } from "./handlers-service";
 
 export interface MetricSource {
   /** Samples [t, value] of `metric` on `entityId` since simulated time `sinceT`. */
@@ -86,7 +87,8 @@ const listAlarms: Handler = (ctx, args) => {
     .filter(
       (a) =>
         (args.severity === undefined || a.severity === args.severity) &&
-        (args.entityId === undefined || a.entityId === args.entityId),
+        (args.entityId === undefined || a.entityId === args.entityId) &&
+        (args.kind === undefined || a.kind === args.kind),
     )
     .sort(
       (a, b) =>
@@ -95,6 +97,7 @@ const listAlarms: Handler = (ctx, args) => {
     .map((a) => ({
       entityId: a.entityId,
       code: a.code,
+      ...(a.kind ? { kind: a.kind } : {}),
       severity: a.severity,
       message: a.message,
       since: a.since,
@@ -423,6 +426,7 @@ const submitDiagnosis: Handler = (ctx, args) => {
 };
 
 export const HANDLERS: Readonly<Record<string, Handler>> = {
+  ...SERVICE_HANDLERS,
   list_alarms: listAlarms,
   list_entities: listEntities,
   get_entity: getEntity,

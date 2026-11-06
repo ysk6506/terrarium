@@ -30,6 +30,7 @@ import {
 } from "./campus-spec";
 import { emitNetworkRoom, emitRoom, roomCooling } from "./campus-support";
 import type { CampusCtx, HallDraft } from "./campus-types";
+import { withServices } from "./services";
 import type { SiteSlot } from "./sites";
 import { type SitePreset, sitePreset } from "./spec";
 
@@ -249,7 +250,8 @@ export function generateCampus(spec: CampusSpec, catalog: Catalog = new Catalog(
   const ctx: CampusCtx = { asm, catalog, spec, siteId: preset.code, code: preset.code, placed };
   const backbone: string[] = [];
   const drafts = plan.buildings.flatMap((b) => buildBuilding(ctx, rng.fork(b.id), b, backbone));
-  const result = asm.build();
+  const built = asm.build();
+  const result = { ...built, blueprint: withServices(built.blueprint) };
   const stats: Partial<Record<EntityKind, number>> = {};
   for (const e of result.blueprint.entities) stats[e.kind] = (stats[e.kind] ?? 0) + 1;
   return { ...result, stats, halls: summarize(plan, drafts) };

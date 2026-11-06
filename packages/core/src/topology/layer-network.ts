@@ -8,6 +8,7 @@ import type { BlueprintIndex } from "@terrarium/core/world";
 import { type LayerShape, ShapeBuilder } from "./shape";
 
 const STAGES = [
+  { id: "service", label: "서비스" },
   { id: "core", label: "코어 스위치" },
   { id: "spine", label: "스파인 스위치" },
   { id: "tor", label: "ToR 스위치" },
@@ -15,11 +16,12 @@ const STAGES = [
   { id: "virtual", label: "VM·클러스터" },
 ] as const;
 
-const CORE = 0;
-const SPINE = 1;
-const TOR = 2;
-const HOST = 3;
-const VIRTUAL = 4;
+const SERVICE = 0;
+const CORE = 1;
+const SPINE = 2;
+const TOR = 3;
+const HOST = 4;
+const VIRTUAL = 5;
 
 /** Steps from a switch down to the nearest ToR: 0 for a ToR (or a switch nothing leans on), then 1, 2... */
 function depthsOf(index: BlueprintIndex): Map<string, number> {
@@ -52,6 +54,7 @@ function addEquipment(index: BlueprintIndex, b: ShapeBuilder): void {
   for (const e of index.ofKind("storage")) b.add(e.id, HOST, "storage");
   for (const e of index.ofKind("vm")) b.add(e.id, VIRTUAL, "vm");
   for (const e of index.ofKind("cluster")) b.add(e.id, VIRTUAL, "cluster");
+  for (const e of index.ofKind("service")) b.add(e.id, SERVICE, "service");
 }
 
 export function networkShape(index: BlueprintIndex): LayerShape {
@@ -62,6 +65,8 @@ export function networkShape(index: BlueprintIndex): LayerShape {
     // A cluster is drawn after its servers (they are its members), though the link says the server depends on it.
     if (l.kind === "network" || l.kind === "runs_on") b.link(l.to, l.from);
     else if (l.kind === "member_of") b.link(l.from, l.to);
+    // The top of the layer: a service leans on the VMs and servers it runs on.
+    else if (l.kind === "service_on") b.link(l.from, l.to);
   }
   return b.build();
 }

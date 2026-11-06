@@ -4,6 +4,7 @@
  * people can see them, but they cannot be used until physics implements them (REQ-034).
  */
 import type { EntityKind } from "./blueprint";
+import { OS_FAULT_SPECS } from "./faults-os";
 
 export type FaultType =
   | "cooling_unit_failure"
@@ -30,7 +31,17 @@ export type FaultType =
   | "immersion_circulation_failure"
   | "generator_start_failure"
   | "ats_stuck"
-  | "utility_outage";
+  | "utility_outage"
+  | "disk_full"
+  | "log_flood"
+  | "memory_leak"
+  | "process_crashloop"
+  | "zombie_pileup"
+  | "fs_readonly"
+  | "ntp_drift"
+  | "dns_failure"
+  | "kernel_panic"
+  | "cert_expired";
 
 /**
  * Things people do wrong, as opposed to things that break: a port put in the wrong VLAN, a gateway interface left
@@ -63,7 +74,7 @@ export interface FaultSpec {
   readonly targets: readonly (EntityKind | "link")[];
   readonly params: readonly FaultParamSpec[];
   readonly status: "supported" | "planned";
-  readonly domain: "facility" | "server" | "network" | "storage" | "virtual";
+  readonly domain: "facility" | "server" | "network" | "storage" | "virtual" | "os";
 }
 
 export interface Fault {
@@ -310,6 +321,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
     status: "supported",
     domain: "virtual",
   },
+  ...OS_FAULT_SPECS,
 ];
 
 /** The mistakes a scenario can make with its configuration blocks, named so a diagnosis can name them. */
@@ -374,6 +386,14 @@ export const MISTAKE_SPECS: ReadonlyArray<
 
 export function faultSpec(type: FaultType): FaultSpec {
   return FAULT_SPECS.find((s) => s.type === type) as FaultSpec;
+}
+
+/** The fault's own parameters, with the spec's default for each one it left out. */
+export function withParamDefaults(fault: Omit<Fault, "since">): Record<string, number> {
+  const params: Record<string, number> = {};
+  for (const spec of faultSpec(fault.type).params)
+    params[spec.name] = fault.params[spec.name] ?? spec.default;
+  return params;
 }
 
 export const isFaultType = (value: string): value is FaultType =>

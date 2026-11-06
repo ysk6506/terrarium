@@ -42,6 +42,7 @@ export {
   FACILITY_TEMPLATES,
   FIRMWARE_TEMPLATES,
   NETWORK_TEMPLATES,
+  OS_TEMPLATES,
   SCENARIO_TEMPLATES,
   type ScenarioTemplate,
   scenarioTemplate,
