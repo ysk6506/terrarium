@@ -2,16 +2,19 @@
 title: GPU 카탈로그 — H100부터 B300까지, 베라 루빈은 도입 예정
 kind: spec
 status: active
-last_verified: 2026-11-04
+last_verified: 2026-11-06
 covers:
   - packages/core/src/catalog/gpus.ts
   - packages/core/src/catalog/builtin/gpu-servers.ts
   - packages/core/src/facades/redfish-processors.ts
-  - apps/web/src/ui/builder/RackPanel.tsx
+  - apps/web/src/ui/builder/ServerCards.tsx
 verification_log:
   - "2026-11-04: 처음 썼다: 칩 사양표, 서버 5종, Redfish Processors, 빌더의 GPU 안내를 코드와 대조 (REQ-066, ADR-0063)"
   - "2026-11-04: 처음 쓴 문서를 gpus.ts, gpu-servers.ts, redfish-processors.ts, RackPanel.tsx와 대조"
-covers_hash: d7e4ef6ebbd66981
+  - "2026-11-06: REQ-094 세계 만들기 입구·서비스부터·패널 없는 직접 짓기(ADR-0107~0109)를 코드와 대조해 해당 절을 더하거나 고쳤다"
+  - "2026-11-06: REQ-094: CSS와 키보드 도움말(Toolbox의 조작법을 ? 도움말로 합침), 카드들을 코드와 다시 대조해 맞음"
+  - "2026-11-06: REQ-094 최종 확인: 카드·사다리·생성 규칙·CSS·키보드 도움말을 코드와 대조해 맞음"
+covers_hash: 24346444b4a34cf5
 ---
 # GPU 카탈로그 (REQ-066, ADR-0063)
 
@@ -59,9 +62,9 @@ covers_hash: d7e4ef6ebbd66981
 - 서버의 건강 상태와 전원을 따른다. 칩 하나만 고장 나는 일은 없다.
 - 없는 프로세서는 404다. 모든 응답은 DMTF 스키마(`Processor.v1_24_0`)로 기계가 대조한다.
 
-## 빌더에서 보이는 것 (`ui/builder/RackPanel.tsx`)
+## 빌더에서 보이는 것 (`ui/builder/ServerCards.tsx`)
 
-랙에 달 서버를 고르면 칩이 정해진 서버는 "칩 이름 8장 · 메모리 · 장당 전력"과 "도입 예정: 베라 루빈 (2027년)" 한 줄이 붙는다. 베라 루빈은 고를 수 없다.
+랙의 빈 U를 눌러 뜨는 "서버 넣기" 카드에서 서버를 고르면 칩이 정해진 서버는 "칩 이름 8장 · 메모리 · 장당 전력"과 "도입 예정: 베라 루빈 (2027년)" 한 줄이 붙는다. 베라 루빈은 고를 수 없다.
 
 ## 하지 않은 것
 

@@ -49,6 +49,7 @@ export interface Responses {
   editAgentVersion: AgentHistoryView;
   deleteAgentVersion: AgentHistoryView;
   listWorlds: WorldSummary[];
+  listWorldTemplates: WorldSummary[];
   getWorld: WorldRecord;
   createWorld: SavedWorld;
   generateWorld: GeneratedWorld;

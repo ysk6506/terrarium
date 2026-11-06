@@ -12,7 +12,7 @@ import type { Builder } from "./useBuilder";
 import { catalog } from "./useBuilder";
 import { widenRoom } from "./widen";
 
-function NameBox({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
+export function NameBox({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
   const [name, setName] = useState(entity.name);
   useEffect(() => setName(entity.name), [entity.name]);
   const commit = () => name !== entity.name && b.apply((bp) => builder.rename(bp, entity.id, name));

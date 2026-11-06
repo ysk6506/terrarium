@@ -1,20 +1,18 @@
 /**
- * Worlds (REQ-009, REQ-033, REQ-035, REQ-077): the list, and the new world dialog, which asks for the result
- * (a site as it is, or a small start) rather than the method. The dialog opens lazily with the planner it measures with.
+ * Worlds (REQ-009, REQ-033, REQ-035, REQ-077, REQ-094): the list, and the way to a new world, which is a page of its own
+ * with the first question (what are you here to do) and two doors.
  */
 import type { WorldOrigin, WorldSummary } from "@terrarium/core/experiments";
-import { lazy, Suspense, useState } from "react";
 import { count, relativeTime } from "../../logic";
 import { Go, useApp, useAsync, useNow } from "../context";
-import { Button, Empty, Failure, Loading, PageHead } from "../kit";
-
-const NewWorldDialog = lazy(() => import("./new-world"));
+import { Empty, Failure, Loading, PageHead } from "../kit";
 
 export const ORIGIN_LABELS: Readonly<Record<WorldOrigin, string>> = {
   builder: "직접 지음",
   worldgen: "생성",
   import: "현실에서 가져옴",
   sample: "예시",
+  template: "템플릿",
 };
 
 function scale(w: WorldSummary): string {
@@ -68,7 +66,6 @@ function WorldTable({ worlds }: { readonly worlds: readonly WorldSummary[] }) {
 export function WorldsPage() {
   const { api } = useApp();
   const worlds = useAsync((signal) => api.call("listWorlds", { signal }), []);
-  const [making, setMaking] = useState(false);
   const none = worlds.data?.length === 0;
   return (
     <div className="page">
@@ -79,9 +76,9 @@ export function WorldsPage() {
           ? {}
           : {
               actions: (
-                <Button kind="primary" icon="plus" onClick={() => setMaking(true)}>
+                <Go to={{ name: "newWorld" }} className="btn btn-primary">
                   새 세계
-                </Button>
+                </Go>
               ),
             })}
       />
@@ -91,20 +88,15 @@ export function WorldsPage() {
         <Empty
           title="아직 세계가 없어요"
           action={
-            <Button kind="primary" onClick={() => setMaking(true)}>
+            <Go to={{ name: "newWorld" }} className="btn btn-primary">
               새 세계 만들기
-            </Button>
+            </Go>
           }
         >
           세계를 만들면 에이전트가 일할 데이터센터가 생겨요.
         </Empty>
       )}
       {worlds.data && worlds.data.length > 0 && <WorldTable worlds={worlds.data} />}
-      {making && (
-        <Suspense fallback={null}>
-          <NewWorldDialog onClose={() => setMaking(false)} />
-        </Suspense>
-      )}
     </div>
   );
 }

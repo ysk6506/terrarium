@@ -8,13 +8,13 @@ covers:
   - packages/core/src/contract/responses.ts
   - packages/core/src/contract/errors.ts
   - packages/core/src/contract/views.ts
-covers_hash: 2ce97a0374ba4f83
+covers_hash: 77d1013b256de4da
 verification_log:
-  - "2026-11-04: 2026-11-04: ADR-0073. 서버 오류 문장과 라우트 요약의 말(툴, 더하기, 멈추기, 지우기)만 바뀌었다. 경로와 본문 모양은 그대로, 안내 문구만 도구에서 툴로 고쳤다"
   - "2026-11-05: routes.ts의 telemetry-adapters와 connections/:id/try 두 경로, 확인 응답의 census·hiddenAgents와 traces를 표와 연결 절에 대조해 더했다 (REQ-079)"
   - "2026-11-06: routes.ts의 runEvents, runWorld 두 경로를 표에 더했고 views.ts의 RunEventsView, RunWorldView와 대조했다"
   - "2026-11-06: RunView의 commonReach와 calibrate 응답의 recoveryPath, commonReach를 views.ts와 대조해 표에 적었다 (REQ-088)"
   - "2026-11-06: listEscalations, answerEscalation, runbookDraft 세 경로와 레시피 선택 칸, calibrate 응답의 toolPick을 routes.ts, responses.ts(Responses를 옮김), views.ts와 대조해 표에 더했다 (REQ-080~082)"
+  - "2026-11-06: REQ-094 세계 만들기 입구·서비스부터·패널 없는 직접 짓기(ADR-0107~0109)를 코드와 대조해 해당 절을 더하거나 고쳤다"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -58,7 +58,8 @@ verification_log:
 | `GET /api/worlds` | 세계 목록 | |
 | `GET /api/worlds/:id` | 세계 하나 (blueprint 포함) | |
 | `POST /api/worlds` | 빌더에서 지은 세계 저장 | |
-| `POST /api/worlds/generate` | 사업장 프리셋으로 세계 생성 | |
+| `POST /api/worlds/generate` | 사업장 프리셋으로 세계 생성. 본문이 `{ shape }`이면 서비스부터(REQ-094), `template: true`를 더하면 템플릿으로 저장 | |
+| `GET /api/world-templates` | 저장해 둔 세계 템플릿 목록(구성은 `provenance.shape`). `GET /api/worlds`에는 나오지 않는다 | |
 | `POST /api/worlds/import` | 현실(KG 등)에서 읽기 전용으로 가져오기 | |
 | `PUT /api/worlds/:id` | 세계 고쳐 저장 (버전 확인) | |
 | `DELETE /api/worlds/:id` | 세계 숨기기 (실험이 쓴 버전은 남는다) | |

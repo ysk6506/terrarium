@@ -4,7 +4,9 @@
  * before anything is built. The numbers that are left are folded under "더 정하기" in plain words, three groups.
  */
 import { Catalog } from "@terrarium/core/catalog";
+import type { ServiceDraft, ShapedResult, ShapePlan } from "@terrarium/core/sources/worldgen";
 import {
+  buildOf,
   type CampusSize,
   type CampusSpec,
   campusProblems,
@@ -17,6 +19,7 @@ import {
   type SiteId,
   sitePreset,
 } from "@terrarium/core/sources/worldgen";
+import type { Layers } from "@terrarium/core/world";
 import { count } from "./format";
 
 export type ScaleId = "small" | "medium" | "real";
@@ -308,3 +311,44 @@ export function stageAt(elapsedMs: number, racks: number): (typeof STAGES)[numbe
 
 /** "화성사업장" */
 export const siteName = (site: SiteId): string => sitePreset(site)?.name ?? "사업장";
+
+// ── "서비스부터": the server count and what comes of it (REQ-094, ADR-0107 item 7) ───────────────
+
+/** The quick choices of the server count; the last one is the site as it really is. */
+export const SERVER_QUICK: readonly number[] = [48, 480, 4800];
+
+/** The figures under the number, in the order the screen shows them: racks, rooms, switches, PDUs, cooling units, kW. */
+export function planFigures(
+  plan: ShapePlan,
+  layers: Layers,
+): ReadonlyArray<{
+  readonly value: string;
+  readonly unit: string;
+}> {
+  const build = buildOf(layers);
+  const sides = build.feeds === 1 ? "한 줄" : "A+B";
+  const cooling = build.cooling ?? "N+1";
+  const leaves = plan.leaves;
+  return [
+    { value: count(plan.racks), unit: `랙 · ${plan.perRack}대씩` },
+    { value: count(plan.rooms), unit: "서버룸" },
+    { value: count(plan.switches), unit: `스위치 · 리프 ${count(leaves)} + 스파인 ${plan.spines}` },
+    { value: count(plan.pdus), unit: `PDU · ${sides}` },
+    { value: count(plan.coolers), unit: `냉방기 · ${cooling}` },
+    { value: count(plan.kw), unit: "kW" },
+  ];
+}
+
+/** "세계를 다 지었어요 — 서버룸 1 · 랙 24 · 서버 480 · IAP(호스트 3 · VM 9) · 시나리오 14개" */
+export function doneLine(
+  counts: ShapedResult["counts"],
+  services: readonly ServiceDraft[],
+  scenarios: number,
+): string {
+  const names = services.map((s) => (counts.serviceVms > 0 ? s.name : s.name)).join(" · ");
+  const own =
+    counts.serviceVms > 0
+      ? `호스트 ${counts.serviceHosts} · VM ${counts.serviceVms}`
+      : `서버 ${counts.serviceHosts}`;
+  return `세계를 다 지었어요 — 서버룸 ${count(counts.rooms)} · 랙 ${count(counts.racks)} · 서버 ${count(counts.servers)} · ${names}(${own}) · 시나리오 ${scenarios}개`;
+}

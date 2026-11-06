@@ -57,6 +57,7 @@ export const HANDLERS: Handlers = {
 
   listWorlds: (p) => p.worlds.list(),
   getWorld: (p, i) => p.worlds.get(id(i)),
+  listWorldTemplates: (p) => p.worlds.templates(),
   createWorld: (p, i) => p.worlds.create(i.viewer, i.body),
   generateWorld: (p, i) => p.worlds.generate(i.viewer, i.body),
   importWorld: (p, i) => p.worlds.import(i.viewer, i.body),

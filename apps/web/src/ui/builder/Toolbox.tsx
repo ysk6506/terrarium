@@ -9,18 +9,6 @@ import { widenRoom } from "./widen";
 
 const same = (a: Tool, b: Tool) => JSON.stringify(a) === JSON.stringify(b);
 
-const KEYS: ReadonlyArray<readonly [string, string]> = [
-  ["끌기", "화면 돌리기"],
-  ["Shift+끌기", "화면 이동"],
-  ["휠", "확대, 축소"],
-  ["Q, E", "45도씩 돌리기"],
-  ["R", "놓을 것 돌리기"],
-  ["Delete", "지우기"],
-  ["Esc", "놓기 멈추기"],
-  ["Ctrl+Z", "되돌리기"],
-  ["Ctrl+Shift+Z", "다시 하기"],
-];
-
 const PLACE: Readonly<Record<builder.Level["kind"], string>> = {
   site: "사업장에서 할 일",
   floor: "이 층에서 할 일",
@@ -93,23 +81,6 @@ function Bundle({ bundle, b }: { readonly bundle: builder.ToolBundle; readonly b
   );
 }
 
-function Keys() {
-  return (
-    <details className="keys-help">
-      <summary>조작법 ?</summary>
-      <dl className="keys tiny">
-        {KEYS.map(([k, v]) => (
-          <div key={k}>
-            <dt>{k}</dt>
-            <dd>{v}</dd>
-          </div>
-        ))}
-      </dl>
-      <p className="tiny muted">건물이나 서버룸을 두 번 누르면 들어가요.</p>
-    </details>
-  );
-}
-
 export function Toolbox({ b }: { readonly b: Builder }) {
   const { level, tool } = b.state;
   const bundles = builder.toolsFor(level, catalog, viewOf(b));
@@ -132,9 +103,6 @@ export function Toolbox({ b }: { readonly b: Builder }) {
         {bundles.map((bundle) => (
           <Bundle key={bundle.id} bundle={bundle} b={b} />
         ))}
-      </div>
-      <div className="builder-block">
-        <Keys />
       </div>
     </aside>
   );

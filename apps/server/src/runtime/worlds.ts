@@ -17,10 +17,16 @@ import {
 import type { WorldOrigin, WorldRecord, WorldSummary } from "@terrarium/core/experiments";
 import { ConflictError, TerrariumError } from "@terrarium/core/kernel";
 import { importReality } from "@terrarium/core/sources/realimport";
-import { generateCampus, generateWorld, sitePreset } from "@terrarium/core/sources/worldgen";
+import {
+  generateCampus,
+  generateShaped,
+  generateWorld,
+  sitePreset,
+} from "@terrarium/core/sources/worldgen";
 import {
   type Blueprint,
   blueprintDigest,
+  type EntityKind,
   type Issue,
   validateBlueprint,
 } from "@terrarium/core/world";
@@ -36,8 +42,13 @@ export function blueprintIssues(issues: readonly Issue[]) {
 export class Worlds {
   constructor(private readonly ctx: PlatformContext) {}
 
-  list(): Promise<WorldSummary[]> {
-    return this.ctx.store.listWorlds();
+  /** The worlds to run; the templates kept for starting new ones are listed apart. */
+  async list(): Promise<WorldSummary[]> {
+    return (await this.ctx.store.listWorlds()).filter((w) => w.origin !== "template");
+  }
+
+  async templates(): Promise<WorldSummary[]> {
+    return (await this.ctx.store.listWorlds()).filter((w) => w.origin === "template");
   }
 
   async get(id: string): Promise<WorldRecord> {
@@ -84,7 +95,28 @@ export class Worlds {
     return this.save(this.fresh(viewer, req.name, "builder"), req.blueprint);
   }
 
+  /** A world from services (REQ-094): the spec is kept in the record, so a template can build the same world again. */
+  private async generateShape(
+    viewer: Viewer,
+    req: Extract<GenerateWorldRequest, { shape: unknown }>,
+  ): Promise<GeneratedWorld> {
+    const result = generateShaped(req.shape, this.ctx.catalog);
+    const stats: Partial<Record<EntityKind, number>> = {};
+    for (const e of result.blueprint.entities) stats[e.kind] = (stats[e.kind] ?? 0) + 1;
+    const origin = req.template ? "template" : "worldgen";
+    const saved = await this.save(
+      this.fresh(viewer, req.name ?? req.shape.name, origin, {
+        shape: req.shape,
+        counts: result.counts,
+        notes: result.notes,
+      }),
+      result.blueprint,
+    );
+    return { ...saved, stats };
+  }
+
   async generate(viewer: Viewer, req: GenerateWorldRequest): Promise<GeneratedWorld> {
+    if ("shape" in req) return this.generateShape(viewer, req);
     const campus = "campus" in req;
     const spec = campus ? req.campus : req.spec;
     const result = campus

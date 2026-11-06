@@ -7,6 +7,7 @@
  * `service_on` (role `active` or `standby`) and `service_via` (a switch on its path).
  */
 import type { Entity, PropValue } from "./blueprint";
+import { conditionsFor, workloadOf } from "./workload";
 
 export type ServiceKind = "request" | "batch" | "stateful";
 export type ServiceStatus = "healthy" | "degraded" | "down";
@@ -69,7 +70,11 @@ const kindOf = (value: PropValue | undefined): ServiceKind =>
 const defined = <T extends object>(o: T): Partial<T> =>
   Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)) as Partial<T>;
 
-function conditionsOf(p: Entity["props"], base: ServiceConditions): ServiceConditions {
+function conditionsOf(entity: Entity, base: ServiceConditions): ServiceConditions {
+  const p = entity.props;
+  const work = workloadOf(entity);
+  if (work && p.maxCpuUtil === undefined && p.maxMemPct === undefined && p.maxDiskPct === undefined)
+    return { ...conditionsFor(work, base), maxInletC: num(p, "maxInletC") ?? base.maxInletC };
   return {
     maxInletC: num(p, "maxInletC") ?? base.maxInletC,
     maxCpuUtil: num(p, "maxCpuUtil") ?? base.maxCpuUtil,
@@ -93,7 +98,7 @@ export function serviceDef(entity: Entity): ServiceDef {
     ...(perHour
       ? { queue: { perHour, unit: typeof p.queueUnit === "string" ? p.queueUnit : "건" } }
       : {}),
-    conditions: conditionsOf(p, DEFAULTS[kind]),
+    conditions: conditionsOf(entity, DEFAULTS[kind]),
   };
 }
 

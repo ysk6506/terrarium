@@ -19,12 +19,12 @@ covers:
   - packages/core/src/tools/shell-output.ts
   - packages/core/src/scenario/library-os.ts
 verification_log:
-  - "2026-11-06: 처음 씀. 건강 규칙은 service-health.ts, 번짐은 os-physics.ts, 허용 명령은 shell.ts, 템플릿은 library-os.ts와 대조했다 (ADR-0091 결정 1·2, ADR-0102)"
   - "2026-11-06: 새 문서"
   - "2026-11-06: 2026-11-06: ADR-0091(결정 1·2)·ADR-0102 구현: 서비스 층·OS 층 1차를 코드와 대조해 해당 절을 더하거나 고쳤다. 이 문서가 말하는 나머지 구조는 그대로다"
   - "2026-11-06: 2026-11-06: shell.ts, shell-output.ts는 린트 수정만 바뀌었고 문서 내용은 그대로임을 확인했다"
   - "2026-11-06: library-os.ts의 채점표가 복구 우선으로 바뀐 것과 world/service-events.ts, 기본 툴 묶음의 run_command를 코드와 대조해 템플릿 절·기준 에이전트 표를 고쳤다 (REQ-088, ADR-0104)"
-covers_hash: 421f2c950f92c3a3
+  - "2026-11-06: REQ-094 세계 만들기 입구·서비스부터·패널 없는 직접 짓기(ADR-0107~0109)를 코드와 대조해 해당 절을 더하거나 고쳤다"
+covers_hash: 3b76406f18b374af
 ---
 # 서비스와 OS 층 (REQ-086, REQ-087, [ADR-0091](adr/0091-service-os-layer-recovery-first.md))
 
@@ -54,7 +54,7 @@ covers_hash: 421f2c950f92c3a3
 | SLO | 가용성(기본 0.99), 지연 |
 | 피해 | `perHourKrw`(멈추면 시간당 원) 또는 `delayHours`(멈추면 늦어지는 시간) |
 | 대기열 | 배치만: 멈춘 동안 시간당 쌓이는 일의 수와 단위("건") |
-| 정상 조건 | 종류별 기본값 + 서비스별로 덮어쓰기 |
+| 정상 조건 | 종류별 기본값 + 일감(가장 많이 쓰는 자원의 한계가 비중만큼 낮아짐, `workload.ts`) + 서비스별로 덮어쓰기(적혀 있으면 일감이 덮지 않음) |
 
 종류별 기본 정상 조건(넘으면 느려짐):
 

@@ -25,6 +25,30 @@ export {
   SITE_CAMPUS_MIX,
 } from "./campus-spec";
 export { generateWorld, type WorldgenResult } from "./generate";
+export { generateShaped, type ShapedResult } from "./shaped";
+export {
+  customService,
+  DEFAULT_SHAPE,
+  IAP_DRAFT,
+  IAP_HARM,
+  IAP_WORKLOAD,
+  MIDDLE_LAYERS,
+} from "./shaped-defaults";
+export {
+  buildOf,
+  type HarmTier,
+  hostsOf,
+  planShape,
+  recount,
+  SERVERS_PER_RACK,
+  type ServiceDraft,
+  type ServicePart,
+  SHAPE_LIMITS,
+  type ShapePlan,
+  type ShapeSpec,
+  type StopRow,
+  shapeProblem,
+} from "./shaped-plan";
 export {
   outlineLand,
   SITE_SHAPES,

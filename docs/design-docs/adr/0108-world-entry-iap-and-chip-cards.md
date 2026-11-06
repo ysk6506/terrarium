@@ -4,8 +4,9 @@ kind: decision
 status: active
 last_verified: 2026-11-06
 enforced_by:
-  - none
-no_enforcement_reason: 클로즈 베타 2d에서 구현하면서 시험으로 바꾼다
+  - apps/web/src/logic/world-shape/world-shape.test.ts
+  - apps/server/src/runtime/world-templates.test.ts
+  - apps/web/src/logic/builder/server-card.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 7584d6f42ad95591

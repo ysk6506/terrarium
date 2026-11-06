@@ -55,6 +55,9 @@ const ExperimentPage = lazy(() =>
 const NewExperimentPage = lazy(() =>
   import("./pages/new-experiment").then((m) => ({ default: m.NewExperimentPage })),
 );
+const NewWorldPage = lazy(() =>
+  import("./pages/new-world").then((m) => ({ default: m.NewWorldPage })),
+);
 const RunPage = lazy(() => import("./pages/run").then((m) => ({ default: m.RunPage })));
 const SettingsPage = lazy(() =>
   import("./pages/settings").then((m) => ({ default: m.SettingsPage })),
@@ -78,6 +81,8 @@ function pageView(page: Page): ReactNode {
       return <WorldsPage />;
     case "world":
       return <WorldBuilderPage id={page.id} />;
+    case "newWorld":
+      return <NewWorldPage page={page} />;
     case "scenarios":
       return <ScenariosPage />;
     case "scenario":

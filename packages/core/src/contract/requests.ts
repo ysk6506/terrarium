@@ -10,6 +10,7 @@ import {
   ProfilesSchema,
   ScenarioDocSchema,
   SeedsSchema,
+  ShapeSpecSchema,
   TimePolicySchema,
   ToolsSchema,
   WorldgenSpecSchema,
@@ -40,6 +41,14 @@ export const CreateWorldBody = z.object({ name: NameSchema, blueprint: Blueprint
 export const GenerateWorldBody = z.union([
   z.object({ name: NameSchema.optional(), spec: WorldgenSpecSchema }).strict(),
   z.object({ name: NameSchema.optional(), campus: CampusSpecSchema }).strict(),
+  /** From services (REQ-094); `template: true` keeps the spec as a template instead of a world to run. */
+  z
+    .object({
+      name: NameSchema.optional(),
+      shape: ShapeSpecSchema,
+      template: z.boolean().optional(),
+    })
+    .strict(),
 ]);
 
 export const ImportWorldBody = z

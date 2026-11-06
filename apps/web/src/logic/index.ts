@@ -182,5 +182,26 @@ export {
   tourMode,
 } from "./tour";
 export { DEFAULT_QUESTION, type Fact, traceAdvice, tryDetail, tryFacts } from "./try-talk";
+export {
+  CARDS,
+  type Chip,
+  type ChipCard,
+  cardOf,
+  chipsOfLayer,
+  costText,
+  type Diagram,
+  type DiagramRow,
+  guessWorkload,
+  type Join,
+  LAYER_INFO,
+  PRESET_LABELS,
+  type PresetId,
+  presetLayers,
+  type Resolved,
+  resolveLayers,
+  type ShapeView,
+  shapeView,
+  workloadView,
+} from "./world-shape";
 export * as world3d from "./world3d";
 export * as worldScale from "./worldgen-scale";
