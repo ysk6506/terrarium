@@ -44,6 +44,24 @@ export {
 export * as builder from "./builder";
 export { type Box, type LineChart, lineChart, niceTicks, scoreBar } from "./charts";
 export {
+  ADDRESS_LABELS,
+  type AddressKind,
+  AGENT_PREVIEW,
+  addressKind,
+  agentLine,
+  KIND_CARDS,
+  MCP_WORDS,
+  markSlotRegistered,
+  matchAgents,
+  registerSteps,
+  SLOT_CONNECTORS,
+  SLOT_PENDING_PROBLEM,
+  shortSlotUrl,
+  slotRegistered,
+  slotToken,
+  splitConnections,
+} from "./connection-places";
+export {
   advancedChanges,
   advancedFields,
   CUSTOM_PRESET,

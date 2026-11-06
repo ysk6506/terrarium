@@ -122,6 +122,21 @@ function Overview({
   );
 }
 
+/** Keys that need a modifier, by letter: what each does to the selected block or the document. */
+const CTRL_KEYS: Readonly<Record<string, (e: ScenarioEditor, shift: boolean) => void>> = {
+  z: (e, shift) => (shift ? e.redo() : e.undo()),
+  y: (e) => e.redo(),
+  s: (e) => void (e.mine ? e.save() : e.saveCopy()),
+  c: (e) => e.copy(),
+  v: (e) => e.paste(),
+  d: (e) => e.duplicate(),
+};
+
+/**
+ * The keys of the editor (beta feedback 20): Ctrl+C, V, D, Z, Y, S and Delete. They stay out of the way of a text
+ * field, which has its own copy, paste and undo; and Delete inside the canvas is the canvas library's, which also
+ * deletes a selected wire.
+ */
 function useEditorKeys(editor: ScenarioEditor) {
   const latest = useRef(editor);
   latest.current = editor;
@@ -129,14 +144,17 @@ function useEditorKeys(editor: ScenarioEditor) {
     const down = (ev: KeyboardEvent) => {
       const e = latest.current;
       const el = ev.target as HTMLElement;
-      if (["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName) || !(ev.ctrlKey || ev.metaKey))
-        return;
-      const key = ev.key.toLowerCase();
-      if (key === "z") (ev.shiftKey ? e.redo : e.undo)();
-      else if (key === "y") e.redo();
-      else if (key === "s") void (e.mine ? e.save() : e.saveCopy());
-      else return;
-      ev.preventDefault();
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName) || el.isContentEditable) return;
+      if (ev.ctrlKey || ev.metaKey) {
+        const run = CTRL_KEYS[ev.key.toLowerCase()];
+        // text selected on the page is the person's to copy
+        if (!run || (ev.key.toLowerCase() === "c" && window.getSelection()?.toString())) return;
+        run(e, ev.shiftKey);
+        ev.preventDefault();
+      } else if (ev.key === "Delete" && !el.closest(".react-flow")) {
+        e.remove();
+        ev.preventDefault();
+      }
     };
     window.addEventListener("keydown", down);
     return () => window.removeEventListener("keydown", down);
@@ -171,7 +189,7 @@ function EditorScreen({
       )}
       {tab === "flow" && wide && (
         <div className="editor">
-          <Palette e={e} />
+          <Palette e={e} openSheet={() => setTab("sheet")} />
           <Canvas e={e} />
           <aside className="builder-side builder-side-right" aria-label="고른 블록">
             {e.selected ? (
@@ -182,7 +200,7 @@ function EditorScreen({
           </aside>
         </div>
       )}
-      {tab === "sheet" && <Sheet e={e} />}
+      {tab === "sheet" && <Sheet e={e} openSheet={() => setTab("sheet")} />}
       {tab === "runbook" && <RunbookTab e={e} />}
     </div>
   );

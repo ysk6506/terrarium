@@ -5,10 +5,15 @@
 import { Catalog } from "@terrarium/core/catalog";
 import type { DryRunView } from "@terrarium/core/contract";
 import type { ScenarioRecord, WorldRecord } from "@terrarium/core/experiments";
-import { type ScenarioDoc, validateScenario } from "@terrarium/core/scenario";
+import {
+  type ExpectationKind,
+  type PaletteItem,
+  type ScenarioDoc,
+  validateScenario,
+} from "@terrarium/core/scenario";
 import { BlueprintIndex } from "@terrarium/core/world";
-import { useCallback, useMemo, useRef, useState } from "react";
-import { ApiError, builder } from "../../logic";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ApiError, builder, scenario } from "../../logic";
 import { messageOf, useApp } from "../context";
 import { useCalibration } from "./useCalibration";
 
@@ -110,6 +115,75 @@ function useSaving(initial: ScenarioRecord, current: () => ScenarioDoc) {
   return { record, saved, saving, save, saveCopy, rename };
 }
 
+/**
+ * The everyday edits on the selected block (beta feedback 19, 20): a new block goes right after it, and copy, paste,
+ * duplicate and delete work on it. The copied block is kept here, not on the system clipboard, so it is the block
+ * itself with its settings and nothing a text field could swallow.
+ */
+function useBlockEdits(
+  doc: ScenarioDoc,
+  change: (make: (d: ScenarioDoc) => ScenarioDoc) => boolean,
+  selected: string | undefined,
+  select: (id: string | undefined) => void,
+) {
+  const { toast } = useApp();
+  const clip = useRef<scenario.Snippet | undefined>(undefined);
+  const pick = (ids: readonly string[]) => select(ids[0]);
+  const insert = (item: PaletteItem) => {
+    let added: string | undefined;
+    const ok = change((d) => {
+      const r = scenario.insertBlock(d, item, selected);
+      added = r.nodeId;
+      return r.doc;
+    });
+    if (ok && added) select(added);
+    return ok;
+  };
+  const addScore = (kind: ExpectationKind) => {
+    let id: string | undefined;
+    const ok = change((d) => {
+      const r = scenario.addScoreLine(d, kind);
+      id = r.id;
+      return r.doc;
+    });
+    return ok ? id : undefined;
+  };
+  const copy = () => {
+    const snippet = selected ? scenario.copyNodes(doc, [selected]) : undefined;
+    if (!snippet) return toast("복사할 블록을 먼저 골라 주세요. 시작 블록은 복사할 수 없어요");
+    clip.current = snippet;
+    toast("복사했어요. Ctrl+V로 고른 블록 뒤에 붙여 넣어요");
+  };
+  const paste = () => {
+    const snippet = clip.current;
+    if (!snippet) return toast("복사해 둔 블록이 아직 없어요. 블록을 골라 Ctrl+C를 눌러 주세요");
+    let ids: string[] = [];
+    const ok = change((d) => {
+      const r = scenario.pasteSnippet(d, snippet, selected);
+      ids = r.nodeIds;
+      return r.doc;
+    });
+    if (ok) pick(ids);
+  };
+  const duplicate = () => {
+    if (!selected) return toast("복제할 블록을 먼저 골라 주세요");
+    let ids: string[] = [];
+    const ok = change((d) => {
+      const r = scenario.duplicateNode(d, selected);
+      ids = r.nodeIds;
+      return r.doc;
+    });
+    if (ok) pick(ids);
+  };
+  const remove = () => {
+    if (!selected) return;
+    if (doc.nodes.find((n) => n.id === selected)?.type === "start")
+      return toast("시작 블록은 지울 수 없어요");
+    if (change((d) => scenario.removeAndMend(d, selected))) select(undefined);
+  };
+  return { insert, addScore, copy, paste, duplicate, remove };
+}
+
 export function useScenario(initial: ScenarioRecord, world: WorldRecord) {
   const { api, me, toast } = useApp();
   const edits = useDoc(initial.doc);
@@ -121,6 +195,11 @@ export function useScenario(initial: ScenarioRecord, world: WorldRecord) {
   const [running, setRunning] = useState(false);
   const mine = saving.record.owner === (me ?? "anonymous");
   const dirty = edits.doc !== saving.saved;
+  // undo can take away the block that was selected
+  useEffect(() => {
+    if (selected && !edits.doc.nodes.some((n) => n.id === selected)) setSelected(undefined);
+  }, [edits.doc, selected]);
+  const blocks = useBlockEdits(edits.doc, edits.change, selected, setSelected);
 
   /** The dry run and the exam-paper check play what is saved, so unsaved changes are saved first (by the owner). */
   const ensureSaved = useCallback(
@@ -154,6 +233,7 @@ export function useScenario(initial: ScenarioRecord, world: WorldRecord) {
     redo: edits.redo,
     canUndo: edits.history.current.canUndo,
     canRedo: edits.history.current.canRedo,
+    ...blocks,
     dirty,
     mine,
     saving: saving.saving,

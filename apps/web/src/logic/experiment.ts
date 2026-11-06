@@ -42,6 +42,7 @@ import {
   isDefaultLeadSettings,
   type LeadTimeSettings,
 } from "@terrarium/core/world";
+import { SLOT_PENDING_PROBLEM } from "./connection-places";
 
 import { type MetaRow, metadataOf } from "./connections";
 import { RECOMMENDED_RUNS, runsRange } from "./how-words";
@@ -265,6 +266,7 @@ export function draftProblems(
   draft: Draft,
   agents?: readonly string[],
   scenario?: ScenarioDoc,
+  slotPending = false,
 ): Readonly<Record<Step, readonly string[]>> {
   const what: string[] = [];
   const who: string[] = [];
@@ -273,6 +275,7 @@ export function draftProblems(
   what.push(...whatProblems(draft, scenario));
   if (!draft.harnessId) who.push("하네스를 골라 주세요");
   else if (!draft.agentId) who.push("에이전트를 골라 주세요");
+  else if (slotPending) who.push(SLOT_PENDING_PROBLEM);
   if (draft.runs < 1 || draft.runs > MAX_SEEDS) how.push(runsRange(MAX_SEEDS));
   recipeSteps(draft, agents, who, how);
   return { what, who, how: [...new Set(how)] };

@@ -4,10 +4,11 @@
  */
 import type { ExperimentView } from "@terrarium/core/contract";
 import type { ScenarioRecord, WorldSummary } from "@terrarium/core/experiments";
-import { useCallback, useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction, useCallback, useEffect, useState } from "react";
 import { experiment, metaProblems, operationWords } from "../../logic";
 import { Go, messageOf, useApp, useAsync } from "../context";
 import { Button, Failure, Loading, Note, PageHead } from "../kit";
+import { slotPending } from "./experiment-mcp";
 import { HowStep, NameStep, WhatStep, WhoStep } from "./experiment-steps";
 
 type Draft = experiment.Draft;
@@ -129,8 +130,9 @@ function SummaryCard({
   readonly scenarioDoc?: ScenarioRecord["doc"];
 }) {
   const { meta } = useApp();
-  const agents = meta?.harnesses.find((h) => h.id === draft.harnessId)?.agents.map((a) => a.id);
-  const problems = experiment.draftProblems(draft, agents, scenarioDoc);
+  const harness = meta?.harnesses.find((h) => h.id === draft.harnessId);
+  const agents = harness?.agents.map((a) => a.id);
+  const problems = experiment.draftProblems(draft, agents, scenarioDoc, slotPending(harness));
   const metaBad = Object.keys(metaProblems(draft.metadata)).length > 0;
   const all = [
     ...problems.what,
@@ -176,13 +178,10 @@ function useScenarioList(worldId: string | undefined) {
   );
 }
 
-function Wizard({ start }: { readonly start: Start }) {
-  const { api, navigate, meta } = useApp();
-  const [draft, setDraft] = useState<Draft>(start.draft);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string>();
+/** A new draft's harness defaults to the first one that answers. */
+function useDefaultHarness(draft: Draft, setDraft: Dispatch<SetStateAction<Draft>>) {
+  const { meta } = useApp();
   useEffect(() => {
-    // A new draft's harness defaults to the first one that answers.
     if (draft.harnessId || !meta) return;
     const h = meta.harnesses.find((x) => x.status === "ok");
     if (h)
@@ -191,15 +190,26 @@ function Wizard({ start }: { readonly start: Start }) {
         harnessId: h.id,
         ...(h.agents[0] ? { agentId: h.agents[0].id } : {}),
       }));
-  }, [meta, draft.harnessId]);
+  }, [meta, draft.harnessId, setDraft]);
+}
+
+function Wizard({ start }: { readonly start: Start }) {
+  const { api, navigate, meta } = useApp();
+  const [draft, setDraft] = useState<Draft>(start.draft);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string>();
+  useDefaultHarness(draft, setDraft);
   const set = useCallback((change: Partial<Draft>) => setDraft((d) => ({ ...d, ...change })), []);
   const scenarios = useScenarioList(draft.worldId);
   const scenario = scenarios.data?.find((s) => s.id === draft.scenarioId);
-  const agents = meta?.harnesses.find((h) => h.id === draft.harnessId)?.agents;
+  const harness = meta?.harnesses.find((h) => h.id === draft.harnessId);
+  const agents = harness?.agents;
+  const [, registered] = useState(0);
   const problems = experiment.draftProblems(
     draft,
     agents?.map((a) => a.id),
     scenario?.doc,
+    slotPending(harness),
   );
   const placeholder = experiment.suggestedName(
     undefined,
@@ -231,7 +241,12 @@ function Wizard({ start }: { readonly start: Start }) {
           worlds={start.worlds}
           scenarios={scenarios.data}
         />
-        <WhoStep draft={draft} set={set} problems={problems.who} />
+        <WhoStep
+          draft={draft}
+          set={set}
+          problems={problems.who}
+          onRegistered={() => registered((n) => n + 1)}
+        />
         <HowStep
           draft={draft}
           set={set}

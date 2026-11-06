@@ -10,7 +10,7 @@ import { useAction, useApp } from "../context";
 import { Button, Note, SelectField, TextField, ToneDot } from "../kit";
 
 /** Why the button is switched off, if it is. */
-function whyNot(view: ConnectionView, agentCount: number): string | undefined {
+export function whyNot(view: ConnectionView, agentCount: number): string | undefined {
   if (!view.canTalk) return "이 연결 방식은 아직 말 걸어 보기를 못 해요";
   if (view.status !== "ok") return "연결이 안 돼 있어요. '다시 확인'을 먼저 눌러 보세요";
   if (agentCount === 0) return "말 걸 에이전트가 없어요";
@@ -65,7 +65,6 @@ export function TryPanel({
   };
   return (
     <section className="stack" style={{ gap: 12 }} aria-label={`${view.name}에 말 걸어 보기`}>
-      <h3 style={{ margin: 0 }}>말 걸어 보기</h3>
       <p className="small muted" style={{ margin: 0 }}>
         한 문장을 보내고 답을 받아요. 툴은 쓰지 않고 실험에는 아무 영향이 없어요.
       </p>
@@ -89,7 +88,7 @@ export function TryPanel({
           {...(why ? { why } : {})}
           onClick={send}
         >
-          {busy ? "물어보는 중" : "말 걸어 보기"}
+          {busy ? "물어보는 중" : "보내서 답 보기"}
         </Button>
       </div>
       {result && <Answer result={result} />}

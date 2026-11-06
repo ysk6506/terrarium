@@ -59,6 +59,8 @@ function harnessViewOf(v: ConnectionView): HarnessView {
     kind: v.kind,
     description: v.description,
     toolTransport: v.toolTransport,
+    // a connection with a fixed tool address is registered once; the new-experiment screen says so (feedback 14)
+    ...(v.mcpSlotUrl ? { mcpSlot: v.id } : {}),
     telemetry: v.telemetry,
     ...(v.wakeable ? { wakeable: true } : {}),
     agents: v.agents,

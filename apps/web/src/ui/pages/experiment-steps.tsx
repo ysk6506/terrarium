@@ -10,6 +10,7 @@ import { experiment, hiddenWarning, howWords, toolPicker } from "../../logic";
 import { useApp } from "../context";
 import { Button, Check, Note, NumberField, SelectField, TextField } from "../kit";
 import { DomainScope } from "./experiment-domains";
+import { McpGuide } from "./experiment-mcp";
 import { KindChoice, OperationInstruction, OperationSetup } from "./experiment-operation";
 import { ExperimentMetadata, NoHarness, VersionPreview } from "./experiment-subject";
 import { HumanSettings } from "./human-settings";
@@ -97,7 +98,12 @@ export function WhatStep({
   );
 }
 
-export function WhoStep({ draft, set, problems }: StepProps) {
+export function WhoStep({
+  draft,
+  set,
+  problems,
+  onRegistered,
+}: StepProps & { readonly onRegistered?: () => void }) {
   const { meta } = useApp();
   const harnesses = meta?.harnesses ?? [];
   const harness = harnesses.find((h) => h.id === draft.harnessId);
@@ -145,6 +151,7 @@ export function WhoStep({ draft, set, problems }: StepProps) {
         </Note>
       )}
       {harness?.error && <Note tone="warn">{harness.error}</Note>}
+      {harness && <McpGuide harness={harness} onChange={() => onRegistered?.()} />}
       {harness && draft.agentId && (
         <VersionPreview harnessId={harness.id} agentId={draft.agentId} />
       )}
