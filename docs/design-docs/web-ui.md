@@ -55,13 +55,13 @@ covers:
   - apps/web/src/ui/replay/FramesBar.tsx
   - apps/web/src/ui/replay/useClock.ts
   - apps/web/src/logic/topology/words.ts
-covers_hash: 9184f01437fbbf10
+covers_hash: 5ee39a766a6bb248
 verification_log:
-  - "2026-11-05: 1차 합치기: 토폴로지·랙 장면·컨테인먼트 안 절을 코드와 대조"
   - "2026-11-06: ADR-0091(결정 1·2)·ADR-0102 구현: 서비스 층·OS 층 1차를 코드와 대조해 해당 절을 더하거나 고쳤다. 이 문서가 말하는 나머지 구조는 그대로다"
   - "2026-11-06: 토폴로지 절의 시간 막대 문장과 말풍선 자리를 고치고 실행·실험 화면의 다시 보기 절을 더했다(RunReplay, RunBoard, StoryLine, AgentBubble, ReplayBar와 대조)"
   - "2026-11-06: 2차 2a·2b 합치기: 서비스 층과 토폴로지 ② 절을 함께 둠"
   - "2026-11-06: 2차 합치기: 서비스 층과 다시 보기 절을 함께 둠"
+  - "2026-11-06: #13: 토폴로지·시간 막대 신호색을 signal-colors.ts 토큰으로, 밝은 테마 대비 4.5:1; 영향 범위 상자가 보드 위 자기 줄을 차지함"
 ---
 # 웹 화면 (REQ-006, REQ-030~041)
 
