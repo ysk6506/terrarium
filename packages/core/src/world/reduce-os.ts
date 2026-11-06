@@ -2,6 +2,7 @@
  * The reducers of the operating-system and service commands (ADR-0091): what `host.act`, `service.failover`,
  * `service.restart` and `vm.migrate` do to the state. The world hands itself over as an `OsWorld`.
  */
+import { failoverCluster, promote, restartDatabase, startRestore, switchPath } from "./db-act";
 import { actOnHost, type HostActContext } from "./host-os";
 import type { HostOs } from "./os";
 import { failover, restartService, type ServiceActContext } from "./service-act";
@@ -23,6 +24,12 @@ function hostContext(world: OsWorld, id: string): HostActContext {
   };
 }
 
+const dbContext = (world: OsWorld) => ({
+  world,
+  t: world.time(),
+  dropFault: (id: string) => world.dropFault(id),
+});
+
 export function reduceHostAndService(world: OsWorld, command: WorldCommand): void {
   const ctx: ServiceActContext = {
     world,
@@ -32,6 +39,20 @@ export function reduceHostAndService(world: OsWorld, command: WorldCommand): voi
   switch (command.type) {
     case "host.act":
       actOnHost(hostContext(world, command.target), command.action, command.arg);
+      if (command.action === "restart" && command.arg === "postgresql")
+        restartDatabase(dbContext(world), command.target);
+      return;
+    case "db.promote":
+      promote(dbContext(world), command.target);
+      return;
+    case "db.failover":
+      failoverCluster(dbContext(world), command.target);
+      return;
+    case "db.restore":
+      startRestore(dbContext(world), command.target, command.backup);
+      return;
+    case "storage.path_switch":
+      switchPath(dbContext(world), command.target);
       return;
     case "service.failover":
       failover(ctx, command.target);

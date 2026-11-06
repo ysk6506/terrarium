@@ -10,6 +10,8 @@
  * kind: a stateful service stops with any one of its places, a request or batch service only when none is left.
  */
 import type { Entity } from "./blueprint";
+import { dependenciesOf } from "./db";
+import { dependencyVerdict } from "./db-health";
 import { cutOffHosts } from "./net-reach";
 import { AUTH_SKEW_S, DISK_FULL_PCT, type HostOs } from "./os";
 import { type ServiceDef, type ServiceKind, type ServiceStatus, serviceDef } from "./service";
@@ -290,6 +292,23 @@ function fromPath(world: WorldReader, service: Entity): { status: ServiceStatus;
   };
 }
 
+/** The status the databases and pools it leans on give (`depends_on`): any one stopped stops it, any one slow slows it. */
+function fromDeps(
+  world: WorldReader,
+  service: Entity,
+  def: ServiceDef,
+): { status: ServiceStatus; reasons: string[] } {
+  let status: ServiceStatus = "healthy";
+  const reasons: string[] = [];
+  for (const dep of dependenciesOf(world.index, service.id)) {
+    const v = dependencyVerdict(world, dep, def);
+    if (v.state === "ok") continue;
+    status = worse(status, v.state === "dead" ? "down" : "degraded");
+    if (v.why) reasons.push(v.why);
+  }
+  return { status, reasons };
+}
+
 /** How a service is doing now. */
 export function serviceHealth(world: WorldReader, serviceId: string): ServiceHealth {
   const entity = world.index.entity(serviceId);
@@ -297,10 +316,12 @@ export function serviceHealth(world: WorldReader, serviceId: string): ServiceHea
   const state = world.stateAs(serviceId, "service");
   const verdicts = state.runsOn.map((id) => hostVerdict(world, id, def));
   const path = fromPath(world, entity);
-  const status = worse(fromHosts(def.kind, verdicts), path.status);
+  const deps = fromDeps(world, entity, def);
+  const status = worse(worse(fromHosts(def.kind, verdicts), path.status), deps.status);
   const reasons = [
     ...verdicts.flatMap((v) => (v.why ? [v.why] : [])),
     ...(path.reason ? [path.reason] : []),
+    ...deps.reasons,
   ];
   return {
     status,

@@ -5,6 +5,7 @@ status: active
 last_verified: 2026-11-06
 covers:
   - packages/core/src/world/ladder.ts
+  - packages/core/src/sources/worldgen/shaped-db.ts
   - packages/core/src/world/workload.ts
   - packages/core/src/sources/worldgen/shaped-plan.ts
   - packages/core/src/sources/worldgen/shaped.ts
@@ -17,11 +18,13 @@ covers:
   - apps/web/src/ui/pages/new-world.tsx
   - apps/web/src/ui/pages/shape-screen.tsx
   - apps/web/src/ui/builder/StageCards.tsx
-covers_hash: 6d730ec8d2b631a1
+covers_hash: 1cc1dbd33659ae83
 verification_log:
   - "2026-11-06: 새 문서: 사다리 데이터, 알아서, 생성 규칙, 직접 짓기 카드를 코드와 대조해 적었다"
   - "2026-11-06: REQ-094: CSS와 키보드 도움말(Toolbox의 조작법을 ? 도움말로 합침), 카드들을 코드와 다시 대조해 맞음"
   - "2026-11-06: REQ-094 최종 확인: 카드·사다리·생성 규칙·CSS·키보드 도움말을 코드와 대조해 맞음"
+  - "2026-11-06: REQ-095: 점선 21 → 14, 데이터베이스·스토리지 칩의 build와 세계 생성 규칙을 ladder.ts·shaped-db.ts와 대조해 적었다"
+  - "2026-11-06: 점선 14개와 데이터베이스·스토리지 칩의 생성 규칙을 대조해 고쳤다 (REQ-095)"
 ---
 # 세계 만들기 입구와 서비스부터 (REQ-094, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md), [ADR-0108](adr/0108-world-entry-iap-and-chip-cards.md), [ADR-0109](adr/0109-world-entry-amend-tests.md))
 
@@ -44,7 +47,7 @@ verification_log:
 선택지는 마흔넷이다(ADR-0107 결정 3의 목록을 세면 6·6·6·7·6·4·4·5. ADR-0108의 "45"는 한 개 더 센 것).
 - **코어**(`world/ladder.ts`, `LADDER`): 선택지마다 `id`, 층, `modeled`(코어가 흉내 낼 수 있나 — 아니면 점선), `buildsAs`(점선이 짓는 가까운 칸), `build`(세계를 어떻게 바꾸나: 스파인 수·베어메탈·호스트에 담는 노드 수·핫 스페어·공유 스토리지·전원 줄 수·냉방 이중화·컨테인먼트·서버룸·건물 수), `stops`/`slows`(이 구조가 멈추게·느리게 하는 고장과 사람의 실수), `costM`.
 - **화면**(`logic/world-shape/cards-*.ts`, `ladders.ts`): 선택지마다 `ChipCard` — 이름, 문단, 잃어도 되는 것, 잃으면 안 되는 것, 생기는 고장, 비용, 한 줄 결과, 그림. 그림은 마크업이 아니라 데이터(`Diagram`: 상자 줄들, 줄 사이 선, 끊기는 상자 하나)이고 `ui/pages/chip-art.tsx`가 토큰 색 SVG로 그린다(`aria-label`은 `alt`). 시험이 두 목록의 순서와 개수가 같은지, 점선이 ADR-0107 결정 5의 목록 그대로인지 지킨다.
-- 점선(21개): SDN·클라우드 네이티브, DRS·컨테이너·멀티클러스터, 듀얼 컨트롤러·분산 스토리지·지역 복제, 데이터베이스 전부(7), 무상태 이상 애플리케이션(4), DR 사이트·멀티 사이트. 고를 수 있고 카드가 "아직 흉내 낼 수 없어요"라고 말하며, 고장과 시나리오를 더하지 않는다. 세계는 `buildsAs` 모양으로 짓는다.
+- 점선(14개): SDN·클라우드 네이티브, DRS·컨테이너·멀티클러스터, 지역 복제, 분산 SQL·합의와 클라우드 관리형 멀티 AZ, 무상태 이상 애플리케이션(4), DR 사이트·멀티 사이트. 고를 수 있고 카드가 "아직 흉내 낼 수 없어요"라고 말하며, 고장과 시나리오를 더하지 않는다. 세계는 `buildsAs` 모양으로 짓는다. 처음에는 21개였고, 2e(REQ-095, [ADR-0111](adr/0111-db-storage-layers-amend-tests.md))에서 데이터베이스 다섯 칩과 듀얼 컨트롤러·분산 스토리지가 실선이 되었다. 그 일곱 칩의 `build`는 풀(`pool`)과 클러스터(`database`)를 말하고, 세계 생성이 [데이터베이스 층과 스토리지 HA 층](db-storage-layers.md)의 규칙대로 깐다. 이 칩들의 카드 "생기는 고장"은 칩의 `stops`·`slows`를 고장 이름으로 풀어 만든다.
 
 ### 알아서
 - `resolveLayers(services, manual)`: `manual`에 있는 층은 사람이 고른 것 그대로, 나머지는 알아서. 컴퓨트 → 네트워크 → 스토리지 → 데이터베이스 → 애플리케이션 → 전원 → 냉방 → 사이트 순으로, 서비스(노드 수, 멈출 때 가장 큰 시간당 피해, 종류)와 이미 정한 층에서 한 층씩 고른다. 예: 노드가 셋 이상이면 가상화 클러스터, 가상화면 공유 스토리지(VM을 옮기려면 있어야 해서)와 리프-스파인, 베어메탈이면 RAID + 백업과 3티어, 피해가 시간당 500만 원 이상이면 2N UPS + 발전기, 2,000만 원 이상이면 서버룸 둘.
@@ -81,6 +84,7 @@ verification_log:
 - 가상화면: 서비스의 VM(노드 수)을 호스트에 돌아가며 올리고(`runs_on`), 같은 서버룸의 데이터스토어에 둔다(`stored_on`). 베어메탈이면 서버에 서비스가 직접 선다.
 - 서비스 개체: `service_on`(활성, 핫 스페어는 대기), 공유 스토리지 선택이면 서버룸의 첫 스토리지 어레이에도 서고, `service_via`는 호스트의 ToR 둘.
 - 서비스 정의는 개체의 속성에 산다: 종류·시간당 피해(가장 큰 등급)·`harmTiers`(등급 전부, 문자열)·일감·"무엇을 주나"·"멈추면".
+- 데이터베이스와 스토리지 풀(REQ-095): 서비스마다 클러스터 하나를 `depends_on`으로 달고, 인스턴스는 서비스가 쓰지 않는 서버를 서로 다른 랙부터 골라 올라간다(VM은 `db: true`라 서비스 VM 수에 들지 않는다). 풀은 세계에 하나이고, 공유 디스크 모양은 스토리지 칸이 로컬이어도 풀을 만든다. 분산 풀은 노드 넷을 서로 다른 랙에 둔다. 규칙은 [데이터베이스 층과 스토리지 HA 층](db-storage-layers.md)에 있다.
 - 같은 구성과 번호면 같은 세계다.
 
 ### 피해 등급

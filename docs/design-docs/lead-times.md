@@ -6,9 +6,11 @@ last_verified: 2026-11-06
 covers:
   - packages/core/src/world/lead-times.ts
   - packages/core/src/world/domains.ts
-covers_hash: 62d697e077f0e4f9
+covers_hash: 6236cd894d7598a0
 verification_log:
+  - "2026-11-06: REQ-095: 데이터베이스 고장 다섯, 스토리지 고장 셋의 행을 LEAD_ROWS와 대조해 더했다"
   - "2026-11-06: LEAD_ROWS의 기본값이 표와 같음을 확인하고 구현된 설정 네 가지, 계산 예, 아직 없는 것을 적었다 (REQ-093)"
+  - "2026-11-06: LEAD_ROWS의 새 행 여덟을 표에 더했다 (REQ-095)"
 ---
 # 고장 종류별 리드타임 (ADR-0100)
 
@@ -17,9 +19,9 @@ verification_log:
 ## 일의 네 갈래
 | 갈래 | 뜻 | 가산 | 예 |
 |---|---|---|---|
-| 원격(remote) | 네트워크로 하는 설정·재시작 | 없음 | OS 고장, VM 폭주, 냉방 설정값 틀어짐, 펌웨어 올리기 실패 |
-| 방문(visit) | 사람이 와야 하지만 부품은 필요 없다 | 야간·주말 | 차단기 트립, ATS 고착 |
-| 교체(replace) | 부품을 바꾼다 | 야간·주말 | 팬, PSU, 디스크, 메모리, 냉방기, 칠러, 스위치 |
+| 원격(remote) | 네트워크로 하는 설정·재시작 | 없음 | OS 고장, 데이터베이스 고장 다섯, VM 폭주, 냉방 설정값 틀어짐, 펌웨어 올리기 실패 |
+| 방문(visit) | 사람이 와야 하지만 부품은 필요 없다 | 야간·주말 | 차단기 트립, ATS 고착, 스토리지 경로 끊김 |
+| 교체(replace) | 부품을 바꾼다 | 야간·주말 | 팬, PSU, 디스크, 메모리, 냉방기, 칠러, 스위치, 스토리지 컨트롤러, 분산 스토리지 노드 |
 | 외부(external) | 건물 밖의 일이라 우리가 못 당긴다 | 없음 | 한전 정전 |
 
 ## 실험이 바꾸는 것, 안 바꾸면 이 표
@@ -56,6 +58,8 @@ verification_log:
 | sensor_drift | 없음 | 2h / 4h / 1d | 4h / 1d / 3d |
 | fan_failure, psu_failure, link_down | 있음 | 1h / 3h / 1d | 8h / 1d / 3d |
 | disk_failure | 있음 | 1h / 2h / 1d | 8h / 1d / 3d |
+| storage_controller_failure | 없음 | 2h / 4h / 1d | 8h / 1d / 3d |
+| storage_node_lost | 없음 | 2h / 6h / 1d | 8h / 1d / 3d |
 | bmc_unresponsive | 없음 | 30m / 1h / 4h | 30m / 2h / 3d |
 | memory_failure | 있음 | 4h / 1d / 3d | 1d / 2d / 5d |
 | switch_failure | 없음 | 1h / 3h / 8h | 4h / 1d / 3d |
@@ -104,9 +108,11 @@ verification_log:
 |---|---|---|---|---|---|---|
 | vm_cpu_spike | 서비스/가상화팀 | 15m | 30m | 2h | 원인 프로세스 정리, 리소스 조정 | 내 도메인이면 직접 |
 | 호스트 재구축 (고장 종류로는 아직 없다) | 가상화팀 | 4h | 8h | 1d | 재설치·클러스터 재합류 | VM 이동 |
-| 스토리지 컨트롤러 (고장 종류로는 아직 없다) | 벤더 | 4h | 1d | 3d | 이중 컨트롤러면 영향 없음 | 경로 전환 |
+| storage_controller_failure (컨트롤러 고장) | 벤더 | 8h | 1d | 3d | 이중 컨트롤러면 영향 없음. 스페어가 없으면 주문(익일 기준). 예비 기본 없음 | 경로 전환(`storage_path_switch`) |
+| storage_path_cut (경로 끊김) | 스토리지팀 | 30m | 1h | 4h | 케이블·존 점검, 현장 방문(부품 없음) | 경로 전환(`storage_path_switch`) |
+| storage_node_lost (분산 스토리지 노드 상실) | 벤더 | 8h | 1d | 3d | 노드 교체. 재복제는 노드를 바꾸지 않아도 알아서 끝난다(15분) | 기다림, 복제본이 1개 되지 않게 지켜보기 |
 
-## 서비스/OS (고장 10)
+## 서비스/OS (고장 10 + 데이터베이스 5)
 | 고장 | 누가 | 최소 | 보통 | 최대 | 임시 조치 |
 |---|---|---|---|---|---|
 | 디스크 꽉 참, 로그 폭주 | OS팀 | 15m | 30m | 1h | 로그 정리 |
@@ -115,6 +121,11 @@ verification_log:
 | NTP·DNS 실패 | OS/네트워크팀 | 15m | 30m | 2h | 다른 서버 지정 |
 | 커널 패닉(재부팅) | OS팀 | 15m | 30m | 2h | 자동 재부팅 후 점검 |
 | 인증서 만료 | 서비스팀 | 30m | 1h | 4h | 재발급 |
+| db_primary_down (프라이머리 인스턴스 다운) | OS/서비스팀 | 30m | 1h | 4h | 승격·페일오버(`db_promote`·`db_failover`), 단일이면 백업 복원 |
+| db_secondary_down (세컨더리 다운) | OS/서비스팀 | 15m | 30m | 2h | 인스턴스 다시 시작 |
+| db_replication_broken (복제 끊김) | OS/서비스팀 | 15m | 45m | 2h | 인스턴스 다시 시작. 승격하면 지연만큼 잃는다 |
+| db_split_brain (스플릿 브레인) | OS/서비스팀 | 30m | 1h | 4h | 남길 쪽을 골라 승격(다른 쪽은 격리) |
+| db_backup_corrupt (백업 손상) | OS/서비스팀 | 1h | 4h | 1d | 백업을 다시 뜬다. 그동안 더 오래된 백업으로 복원 |
 
 ## 정직한 한계
 - 값은 업계 통상 SLA와 경험값이며 사내 계약·사업장 실측으로 바꿔야 한다. 지금 바꿀 수 있는 것은 위의 네 가지(벤더 SLA, 예비 부품 모두 있음·없음, 야간·주말 가산, 일을 맡는 때)뿐이다.

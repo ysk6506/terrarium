@@ -29,7 +29,30 @@ const TAKES_AWAY = new Set([
   "generator_start_failure",
   "utility_outage",
   "link_down",
+  "db_primary_down",
+  "db_secondary_down",
+  "storage_controller_failure",
+  "storage_path_cut",
+  "storage_node_lost",
 ]);
+
+/**
+ * The links of the database and storage layers (REQ-095) that carry a loss: a service leans on a cluster or a pool, an
+ * instance runs on a VM or server and keeps its data in a pool, a pool is storage nodes. Only the ones that start at
+ * these kinds, so a VM's own datastore keeps counting as before.
+ */
+const DEPENDS: readonly LinkKind[] = ["hosted_on", "stored_on", "backed_by", "depends_on"];
+const DEPENDENTS: ReadonlySet<string> = new Set([
+  "db_instance",
+  "storage_pool",
+  "storage_controller",
+  "service",
+]);
+/** A group lost with its members: the cluster of its instances, the pool of its controllers. */
+const GROUP_OF: Readonly<Record<string, string>> = {
+  db_instance: "db_cluster",
+  storage_controller: "storage_pool",
+};
 
 export interface Severe {
   /** Heat takes time; power does not. */
@@ -90,6 +113,10 @@ function startingDown(source: TopologySource, causes: Causes): Set<string> {
     "power_panel",
     "ups",
     "switch",
+    "db_instance",
+    "db_cluster",
+    "storage_pool",
+    "storage_controller",
   ] as const)
     for (const e of index.ofKind(kind)) if (stateSaysDown(source, e.id)) down.add(e.id);
   return down;
@@ -99,7 +126,18 @@ function startingDown(source: TopologySource, causes: Causes): Set<string> {
 function stateSaysDown(source: TopologySource, id: string): boolean {
   if (!source.index.has(id)) return false;
   const s = source.stateOf(id) as unknown as Record<string, unknown>;
+  if (s.kind === "db_cluster") return clusterIsDown(source, s);
+  if (s.kind === "db_instance" || s.kind === "storage_pool" || s.kind === "storage_controller")
+    return s.status === "down";
   return s.running === false || s.powered === false || s.tripped === true || s.phase === "failed";
+}
+
+/** A cluster with no primary that can take writes, or with two of them. */
+function clusterIsDown(source: TopologySource, s: Record<string, unknown>): boolean {
+  if (s.splitBrain === true) return true;
+  const primary = typeof s.primary === "string" ? s.primary : undefined;
+  if (!primary) return true;
+  return (source.stateOf(primary) as unknown as { status?: string }).status === "down";
 }
 
 interface Spread {
@@ -121,10 +159,13 @@ function spread(source: TopologySource, start: ReadonlySet<string>): Spread {
   const affected = new Set<string>();
   const queue = [...start];
   const lostOf = new Map<string, number>();
+  const result: Spread = { down, affected };
   while (queue.length > 0) {
     const lost = queue.pop() as string;
-    for (const kind of KINDS) {
+    rollUp(index, lost, lostOf, result, queue);
+    for (const kind of [...KINDS, ...DEPENDS]) {
       for (const l of index.incoming(lost, kind)) {
+        if (DEPENDS.includes(kind) && !DEPENDENTS.has(index.find(l.from)?.kind ?? "")) continue;
         const key = `${l.from}|${kind}`;
         const n = (lostOf.get(key) ?? 0) + 1;
         lostOf.set(key, n);
@@ -138,6 +179,33 @@ function spread(source: TopologySource, start: ReadonlySet<string>): Spread {
     }
   }
   return { down, affected };
+}
+
+/** A cluster is lost with its instances, a pool with its controllers; half of them lost is already trouble. */
+function rollUp(
+  index: BlueprintIndex,
+  lost: string,
+  lostOf: Map<string, number>,
+  spreadTo: Spread,
+  queue: string[],
+): void {
+  const kind = index.find(lost)?.kind ?? "";
+  const group = GROUP_OF[kind];
+  const target = group
+    ? index.outgoing(lost, "member_of").find((l) => index.find(l.to)?.kind === group)?.to
+    : undefined;
+  if (!target) return;
+  const key = `${target}|member`;
+  const n = (lostOf.get(key) ?? 0) + 1;
+  lostOf.set(key, n);
+  const total = index
+    .incoming(target, "member_of")
+    .filter((l) => index.find(l.from)?.kind === kind).length;
+  if (n * 2 >= total) spreadTo.affected.add(target);
+  if (n >= total && !spreadTo.down.has(target)) {
+    spreadTo.down.add(target);
+    queue.push(target);
+  }
 }
 
 interface Reach {
@@ -233,11 +301,26 @@ export function servicesOf(source: TopologySource): ServiceImpact {
   return { down, degraded, waiting: waiting.sort((a, b) => b.items - a.items) };
 }
 
+/** A service that is stopped or slow because of what it leans on (a database, a pool) is in the range too. */
+function leaningServices(source: TopologySource, affected: Set<string>): void {
+  const { index } = source;
+  for (const e of index.ofKind("service")) {
+    const s = source.stateOf(e.id);
+    if (
+      s.kind === "service" &&
+      s.status !== "healthy" &&
+      index.outgoing(e.id, "depends_on").length > 0
+    )
+      affected.add(e.id);
+  }
+}
+
 /** The range of what is broken or alarming right now. */
 export function impactOf(source: TopologySource): Impact {
   const causes = causesOf(source);
   const start = startingDown(source, causes);
   const { down, affected } = spread(source, start);
+  leaningServices(source, affected);
   const reaching = new Set([...causes.faulted, ...causes.alarmed, ...affected, ...down]);
   const reach = reachOf(source, reaching);
   const severe = severity(source, reach, down);

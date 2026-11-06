@@ -94,6 +94,16 @@ export const LEAD_ROWS: Readonly<Record<FaultType, LeadRow>> = {
   dns_failure: remote([15 * M, 30 * M, 2 * H]),
   kernel_panic: remote([15 * M, 30 * M, 2 * H]),
   cert_expired: remote([30 * M, 1 * H, 4 * H]),
+  // 데이터베이스 (서비스/OS 팀)
+  db_primary_down: remote([30 * M, 1 * H, 4 * H]),
+  db_secondary_down: remote([15 * M, 30 * M, 2 * H]),
+  db_replication_broken: remote([15 * M, 45 * M, 2 * H]),
+  db_split_brain: remote([30 * M, 1 * H, 4 * H]),
+  db_backup_corrupt: remote([1 * H, 4 * H, 1 * D]),
+  // 스토리지 HA
+  storage_path_cut: visit([30 * M, 1 * H, 4 * H]),
+  storage_controller_failure: replace([2 * H, 4 * H, 1 * D], [8 * H, 1 * D, 3 * D], false),
+  storage_node_lost: replace([2 * H, 6 * H, 1 * D], [8 * H, 1 * D, 3 * D], false),
 };
 
 // ---------- what the experiment sets ----------

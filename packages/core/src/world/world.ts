@@ -9,6 +9,7 @@ import { InvalidValueError, NotFoundError } from "@terrarium/core/kernel";
 import type { Blueprint, EntityKind } from "./blueprint";
 import { cloneState } from "./clone";
 import { validateCommand } from "./command-check";
+import type { DbCommand } from "./db-act";
 import { type Fault, withParamDefaults } from "./faults";
 import type { FirmwareCommand } from "./firmware";
 import { reduceFirmware } from "./firmware-reduce";
@@ -56,6 +57,7 @@ export type WorldCommand =
   | { readonly type: "net.set"; readonly target: string; readonly change: NetChange }
   | FirmwareCommand
   | ServiceCommand
+  | DbCommand
   /** An operator acts on the operating system of a server or VM: restart a process, free disk, remount, reboot (ADR-0091). */
   | {
       readonly type: "host.act";

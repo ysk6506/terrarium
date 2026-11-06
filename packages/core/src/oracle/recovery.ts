@@ -19,6 +19,9 @@ import {
   type ToolEvent,
 } from "@terrarium/core/world";
 
+/** The cause a cluster gives to a promotion it makes by itself (physics/db.ts); a copy so oracle does not import physics. */
+const CLUSTER_CAUSE = "cluster";
+
 /** What one service costs when it is not running: money each hour, or hours of delay each hour. */
 export interface ServiceHarm {
   readonly id: string;
@@ -51,6 +54,10 @@ export interface RecoveryReport {
   readonly recovered: boolean;
   /** Whether the services are well at the end and the agent changed something, so the recovery is its own and not luck. */
   readonly byAgent: boolean;
+  /** Whether a cluster brought them back by itself (it promoted a secondary, cause `cluster`) after the agent's last change. */
+  readonly byCluster?: boolean;
+  /** From the first service in trouble to that promotion; absent without one. */
+  readonly clusterAfterSeconds?: number;
   /** From the first service in trouble to recovery (to the end when it never came): the MTTR. */
   readonly seconds: number;
   /** The same, counted from the moment the agent had the task, which is what the score reads. */
@@ -133,6 +140,48 @@ function fixingAct(acts: readonly ToolEvent[], recoveredAt: number): ToolEvent |
   return acts.filter((a) => a.t <= recoveredAt).at(-1) ?? acts[0];
 }
 
+/** The last thing a cluster or a storage pool did by itself (a promotion, a copy made again) between the first trouble and the recovery (REQ-095). */
+function clusterRecovery(
+  events: readonly RunEvent[],
+  first: number | undefined,
+  recoveredAt: number | undefined,
+): number | undefined {
+  if (first === undefined || recoveredAt === undefined) return undefined;
+  const times = events.flatMap((e) =>
+    e.kind === "world" && e.cause === CLUSTER_CAUSE && e.t >= first && e.t <= recoveredAt
+      ? [e.t]
+      : [],
+  );
+  return times.length > 0 ? Math.max(...times) : undefined;
+}
+
+/** `byCluster`, and how long after the first trouble the cluster did it. */
+function clusterFields(
+  first: number | undefined,
+  clusterAt: number | undefined,
+): Pick<RecoveryReport, "byCluster" | "clusterAfterSeconds"> {
+  if (clusterAt === undefined || first === undefined) return { byCluster: clusterAt !== undefined };
+  return { byCluster: true, clusterAfterSeconds: Math.max(0, clusterAt - first) };
+}
+
+/**
+ * Who brought the services back: the agent's change that did it, or a cluster that promoted by itself after the agent's
+ * last change (then nobody on the agent's side did, and `clusterAt` says when the cluster did).
+ */
+function whoRecovered(
+  events: readonly RunEvent[],
+  acts: readonly ToolEvent[],
+  first: number | undefined,
+  recoveredAt: number | undefined,
+): { fix: ToolEvent | undefined; clusterAt: number | undefined } {
+  if (recoveredAt === undefined) return { fix: undefined, clusterAt: undefined };
+  const clusterAt = clusterRecovery(events, first, recoveredAt);
+  const lastAct = acts.filter((a) => a.t <= recoveredAt).at(-1);
+  if (clusterAt !== undefined && (lastAct === undefined || clusterAt > lastAct.t))
+    return { fix: undefined, clusterAt };
+  return { fix: fixingAct(acts, recoveredAt), clusterAt: undefined };
+}
+
 /**
  * The report of a run. `endedAt` is the world time the run is read up to: the last event of a finished run, which is
  * what a replay of its events gives; a run being scored just now passes the world's clock, the same moment.
@@ -151,7 +200,7 @@ export function analyzeRecovery(
   const agentStart = agentStartOf(events);
   const acts = events.filter(isAct).filter((a) => a.t >= agentStart);
   const recoveredAt = first === undefined ? undefined : recoveryTime(timeline, endAt);
-  const fix = recoveredAt === undefined ? undefined : fixingAct(acts, recoveredAt);
+  const { fix, clusterAt } = whoRecovered(events, acts, first, recoveredAt);
   const stoppedAt = recoveredAt ?? endAt;
   const cost = costOf(timeline, harms, endAt);
   return {
@@ -161,6 +210,7 @@ export function analyzeRecovery(
     endAt,
     recovered: first !== undefined && recoveredAt !== undefined,
     byAgent: fix !== undefined,
+    ...clusterFields(first, clusterAt),
     seconds: first === undefined ? 0 : Math.max(0, stoppedAt - first),
     agentSeconds: first === undefined ? 0 : Math.max(0, stoppedAt - Math.max(first, agentStart)),
     ...(fix ? { fixAfterSeconds: Math.max(0, fix.t - agentStart) } : {}),

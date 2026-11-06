@@ -7,6 +7,7 @@
  * metrics, service status), `rare` (exists in a few places: topology), `ideal` (does not exist in practice:
  * impact analysis). An experiment that wants realistic results gives `common` tools only.
  */
+import { DB_DOCS } from "./catalog-db";
 import { OPS_DOCS } from "./catalog-ops";
 
 export type Realism = "common" | "rare" | "ideal";
@@ -384,7 +385,7 @@ const BASE_DOCS: Readonly<Record<string, ToolDoc>> = {
     cost: "medium",
     costWhy: "output can be long; pipe to grep or tail",
     details:
-      "This is not a real shell: the output is made from the host's state in the shape of real Linux output. Allowed: df -h, free -m, top -bn1, ps aux, systemctl status|restart <unit>, journalctl -n <N> [-u <unit>] [-p err], dmesg, ping <host>, curl -I <url>, date, uptime, mount, chronyc tracking, rm <path under /var/log or /tmp>, logrotate -f /etc/logrotate.conf, reboot, mount -o remount,rw /. One pipe stage: | grep [-i|-v|-c] <text>, | tail [-n N], | head [-n N]. A command outside the list is answered with the list. rm, logrotate, systemctl restart, reboot and remount change the world.",
+      "This is not a real shell: the output is made from the host's state in the shape of real Linux output. Allowed: df -h, free -m, top -bn1, ps aux, systemctl status|restart <unit>, journalctl -n <N> [-u <unit>] [-p err], dmesg, ping <host>, curl -I <url>, date, uptime, mount, chronyc tracking, rm <path under /var/log or /tmp>, logrotate -f /etc/logrotate.conf, reboot, mount -o remount,rw /, and on a database host pg_isready, psql -c 'select pg_is_in_recovery()' and psql -c 'select now() - pg_last_xact_replay_timestamp()', and multipath -ll. One pipe stage: | grep [-i|-v|-c] <text>, | tail [-n N], | head [-n N]. A command outside the list is answered with the list. rm, logrotate, systemctl restart, reboot and remount change the world (systemctl restart postgresql restarts the database instance of the host).",
   }),
   ask_human: d({
     area: "act",
@@ -417,4 +418,8 @@ const BASE_DOCS: Readonly<Record<string, ToolDoc>> = {
 };
 
 /** Every tool's words: the equipment, observation and answer tools above, and the hand-over and ticket tools (REQ-093). */
-export const TOOL_DOCS: Readonly<Record<string, ToolDoc>> = { ...BASE_DOCS, ...OPS_DOCS };
+export const TOOL_DOCS: Readonly<Record<string, ToolDoc>> = {
+  ...BASE_DOCS,
+  ...OPS_DOCS,
+  ...DB_DOCS,
+};

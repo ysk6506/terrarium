@@ -85,6 +85,13 @@ function timeAxis(r: RecoveryReport, share: number): RecoveryAxis {
       max,
       `끝날 때까지 복구하지 못했어요 (${minutes(r.agentSeconds)} 동안)`,
     );
+  if (r.byCluster)
+    return nothing(
+      id,
+      label,
+      max,
+      "클러스터가 알아서 승격해서 돌아왔어요. 에이전트가 한 복구가 아니라서 점수가 없어요",
+    );
   if (!r.byAgent)
     return nothing(id, label, max, "조치한 것이 없는데 저절로 돌아와서 점수가 없어요");
   const points = round(max * ramp(r.agentSeconds, FULL_RECOVERY_S, ZERO_RECOVERY_S) * share, 2);
@@ -101,6 +108,8 @@ function timeAxis(r: RecoveryReport, share: number): RecoveryAxis {
 
 function orderAxis(r: RecoveryReport, share: number): RecoveryAxis {
   const [id, label, max] = ["recovery_order", "복구 순서", RECOVERY_WEIGHTS.order] as const;
+  if (r.byCluster)
+    return nothing(id, label, max, "클러스터가 알아서 복구해서 에이전트의 순서를 매길 수 없어요");
   if (!r.byAgent || r.fixAfterSeconds === undefined)
     return nothing(id, label, max, "복구하지 못해서 순서를 매길 수 없어요");
   const points = round(max * ramp(r.fixAfterSeconds, FULL_ORDER_S, ZERO_ORDER_S) * share, 2);

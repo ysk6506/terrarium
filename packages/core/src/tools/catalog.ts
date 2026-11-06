@@ -3,6 +3,7 @@
  * for people (Korean); descriptions are for the agent (English, as LLM tool descriptions usually are).
  */
 
+import { DB_SPECS } from "./catalog-db";
 import { OPS_SPECS } from "./catalog-ops";
 import { type Realism, standardDescription, TOOL_DOCS, type ToolArea } from "./docs";
 
@@ -408,16 +409,18 @@ const RAW_SPECS: readonly RawSpec[] = [
 ] as const; // prettier-ignore
 
 /** The tools with the description in the standard order and the realism tag (ADR-0087). */
-export const TOOL_SPECS: readonly ToolSpec[] = [...RAW_SPECS, ...OPS_SPECS].map((raw) => {
-  const doc = TOOL_DOCS[raw.name];
-  if (!doc) throw new Error(`tool '${raw.name}' has no entry in TOOL_DOCS`);
-  return {
-    ...raw,
-    realism: doc.realism,
-    area: doc.area,
-    description: standardDescription(doc, raw.mutating),
-  };
-});
+export const TOOL_SPECS: readonly ToolSpec[] = [...RAW_SPECS, ...OPS_SPECS, ...DB_SPECS].map(
+  (raw) => {
+    const doc = TOOL_DOCS[raw.name];
+    if (!doc) throw new Error(`tool '${raw.name}' has no entry in TOOL_DOCS`);
+    return {
+      ...raw,
+      realism: doc.realism,
+      area: doc.area,
+      description: standardDescription(doc, raw.mutating),
+    };
+  },
+);
 
 export const TOOL_NAMES: readonly string[] = TOOL_SPECS.map((t) => t.name);
 

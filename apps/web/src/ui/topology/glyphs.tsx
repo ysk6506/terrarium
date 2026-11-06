@@ -200,6 +200,43 @@ const Cluster = () => (
   </>
 );
 
+/** A database: three stacked discs, the top one carrying the light. */
+const Database = ({ state }: GlyphProps) => (
+  <>
+    {[0, 1, 2].map((i) => (
+      <Box key={i} x={0} y={8 - i * 6} w={18} d={12} z={5} tone="olive" />
+    ))}
+    <Led x={-6} y={-8} state={state} />
+  </>
+);
+
+const DbInstance = ({ state }: GlyphProps) => (
+  <>
+    <Box x={0} y={8} w={14} d={10} z={8} tone="olive" />
+    <Box x={0} y={0} w={14} d={10} z={8} tone="olive" />
+    <Led x={-4} y={-6} state={state} />
+  </>
+);
+
+/** A storage pool: a wide stack of disks. */
+const Pool = ({ state }: GlyphProps) => (
+  <>
+    {[0, 1].map((i) => (
+      <Box key={i} x={-9 + i * 18} y={8} w={16} d={12} z={8} tone="blue" />
+    ))}
+    <Box x={0} y={-2} w={34} d={10} z={4} tone="steel" />
+    <Led x={-12} y={-8} state={state} />
+  </>
+);
+
+const Controller = ({ state }: GlyphProps) => (
+  <>
+    <Box x={0} y={6} w={22} d={10} z={6} tone="steel" />
+    <Led x={-7} y={-1} state={state} />
+    <Led x={0} y={-1} state="ok" />
+  </>
+);
+
 type Glyph = (p: GlyphProps) => React.ReactNode;
 
 const SINGLE: Readonly<Record<TopoKind, Glyph>> = {
@@ -219,6 +256,10 @@ const SINGLE: Readonly<Record<TopoKind, Glyph>> = {
   vm: Vm,
   cluster: Cluster,
   service: Service,
+  db_cluster: Database,
+  db_instance: DbInstance,
+  storage_pool: Pool,
+  storage_controller: Controller,
 };
 
 /** Many of a kind: racks stand in a row, servers in a stack; the rest are the single glyph on a stack of bases. */

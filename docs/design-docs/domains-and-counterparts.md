@@ -19,13 +19,13 @@ covers:
   - apps/web/src/logic/handoffs.ts
   - apps/web/src/ui/pages/run-handoffs.tsx
   - apps/web/src/ui/pages/experiment-domains.tsx
-covers_hash: 93216be3b7765176
+covers_hash: 9f30e2181262a7a8
 verification_log:
-  - "2026-11-06: 새 문서. 도메인 표와 툴 표, escalate, 사건, 티켓, 측정, 화면을 코드와 대조해 썼다 (REQ-093)"
   - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: 2a·2b 합치기"
   - "2026-11-06: 2a·2b 합치기: escalate는 세계를 바꾸지 않는 툴(mutating false)로 표시"
+  - "2026-11-06: 도메인 표와 툴 표, 고장 44가지를 domains.ts·tools/domains.ts와 대조해 고쳤다 (REQ-095)"
 ---
 # 도메인과 가상 담당자 (REQ-093, [ADR-0098](adr/0098-domains-virtual-counterparts-tickets.md)·[0099](adr/0099-counterparts-deterministic.md)·[0100](adr/0100-escalate-by-domain.md))
 
@@ -35,14 +35,14 @@ IT 운영은 도메인별로 나뉘어 있어서, 실험은 "내 도메인"만 �
 ## 도메인 여섯 (`world/domains.ts`)
 | 도메인 (`id`) | 부르는 말 | 넘기는 팀 | 맡는 것 |
 |---|---|---|---|
-| `service_os` | 서비스/OS | 서비스/OS 팀 | 서비스, 호스트의 운영 체제와 프로세스 |
+| `service_os` | 서비스/OS | 서비스/OS 팀 | 서비스, 호스트의 운영 체제와 프로세스, 데이터베이스 |
 | `virtualization` | 가상화 | 가상화 팀 | VM, 클러스터, 호스트 배치 |
 | `server` | 서버 | 서버 팀 | 서버 하드웨어(메모리, 팬, 전원 공급 장치, BMC) |
 | `network` | 네트워크 | 네트워크 팀 | 스위치, 링크, VLAN, 라우팅 |
-| `storage` | 스토리지 | 스토리지 팀 | 스토리지와 디스크 |
+| `storage` | 스토리지 | 스토리지 팀 | 스토리지와 디스크, 컨트롤러와 경로, 분산 스토리지 |
 | `facility` | 데이터센터 인프라 | 데이터센터 인프라 팀 | 전원, 냉방, 센서 |
 
-고장 종류 36가지와 사람이 하는 실수 6가지에는 모두 도메인이 하나씩 달려 있다(`FAULT_DOMAIN`, `MISTAKE_DOMAIN`은 빠지면 타입 검사가 실패하고 시험이 한 번 더 센다). 어느 고장이 어느 도메인인지는 "누가 고치나"로 정했다: `cpu_runaway`는 프로세스 정리라 서비스/OS, `disk_failure`는 스토리지, 센서 틀어짐은 시설팀이라 데이터센터 인프라다. 새 고장 `memory_failure`(메모리 불량)는 서버다: 서버가 멈추고, 그 위의 VM과 서비스가 멈추며, 모듈을 바꿔야 돌아온다.
+고장 종류 44가지와 사람이 하는 실수 6가지에는 모두 도메인이 하나씩 달려 있다(`FAULT_DOMAIN`, `MISTAKE_DOMAIN`은 빠지면 타입 검사가 실패하고 시험이 한 번 더 센다). 어느 고장이 어느 도메인인지는 "누가 고치나"로 정했다: `cpu_runaway`는 프로세스 정리라 서비스/OS, `disk_failure`는 스토리지, 센서 틀어짐은 시설팀이라 데이터센터 인프라다. 새 고장 `memory_failure`(메모리 불량)는 서버다: 서버가 멈추고, 그 위의 VM과 서비스가 멈추며, 모듈을 바꿔야 돌아온다.
 
 ## 도메인 × 툴 (`tools/domains.ts`)
 모든 툴에 도메인이 하나 달려 있다(없으면 시험이 실패한다). `common`은 어느 도메인이나 가진 툴이다.
@@ -50,11 +50,11 @@ IT 운영은 도메인별로 나뉘어 있어서, 실험은 "내 도메인"만 �
 | 도메인 | 툴 |
 |---|---|
 | common | `list_alarms` `list_entities` `get_entity` `get_topology` `get_impact` `query_metrics` `wait` `submit_diagnosis` `events_since` `escalate` `create_ticket` `update_ticket` `list_tickets` |
-| service_os | `list_services` `service_status` `failover_service` `restart_service` `run_command` |
+| service_os | `list_services` `service_status` `failover_service` `restart_service` `run_command` `db_status` `db_promote` `db_failover` `db_restore` |
 | virtualization | `vcenter_request` `vrops_request` `migrate_vm` |
 | server | `redfish_request` `power_server` |
 | network | `network_cli` `eapi_request` `nxapi_request` |
-| storage | 아직 없다 (스토리지 전용 툴이 없어서, 이 도메인의 고장은 넘기는 길로만 풀린다) |
+| storage | `storage_status` `storage_path_switch` (REQ-095 이전에는 스토리지 전용 툴이 없어서 이 도메인의 고장은 넘기는 길로만 풀렸다. 디스크 고장은 지금도 넘기는 길뿐이다) |
 | facility | `facility_status` `bacnet_request` `snmp_request` `set_cooling_setpoint` `restart_cooling_unit` `reset_breaker` |
 
 ## 내 도메인이 툴을 정한다
@@ -106,5 +106,5 @@ IT 운영은 도메인별로 나뉘어 있어서, 실험은 "내 도메인"만 �
 ## 한계
 - 사람이 하는 실수(포트 shutdown, VLAN, PDU 콘센트 꺼짐 등 설정 변경)는 세계의 고장 목록에 없어서 넘겨도 풀리지 않는다. 넘길 수 있는 것은 `Fault`로 일으킨 고장뿐이다.
 - 팀마다 평일 주간·야간·주말 응답 시간, 고장별 직접 지정 값, 되묻기, 우선순위 경쟁은 모델에 없다(ADR-0100).
-- 스토리지 도메인의 툴이 아직 없다.
+- 스토리지 도메인의 툴은 둘뿐이다(상태 보기, 경로 전환). 디스크 고장과 분산 스토리지 노드 상실은 지금도 넘기는 길과 기다림뿐이다.
 - 3D는 달리는 중인 실험의 활동 스트림으로 기사를 부른다. `wait` 한 번으로 세계 시간이 몇 시간씩 건너뛰는 실험에서는 기사가 나타났다 사라지는 사이가 짧아 거의 보이지 않는다. 시간이 실제로 흐르는 실시간 실행이나 빨리 감기에서 잘 보인다.

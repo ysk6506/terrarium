@@ -77,6 +77,30 @@ const READERS: Readonly<Record<string, Reader>> = {
     if (s.status === "down") return "멈췄어요";
     return s.status === "degraded" ? "느려졌어요" : "잘 돌아가요";
   },
+  db_cluster: (s) => {
+    if (s.kind !== "db_cluster") return undefined;
+    if (s.splitBrain) return "스플릿 브레인";
+    return s.primary ? `승격 ${s.failovers}회` : "프라이머리가 없어요";
+  },
+  db_instance: (s) => {
+    if (s.kind !== "db_instance") return undefined;
+    if (s.status === "down") return "멈췄어요";
+    if (s.readOnly) return "쓸 수 없어요";
+    if (s.role === "primary") return "프라이머리";
+    return s.role === "standby" ? "대기" : `복제 지연 ${Math.round(s.lagS)}초`;
+  },
+  storage_pool: (s) => {
+    if (s.kind !== "storage_pool") return undefined;
+    if (s.status === "down") return "멈췄어요";
+    if (s.wanted > 1) return `복제본 ${s.copies}/${s.wanted}개`;
+    return s.status === "degraded" ? "느려요" : "잘 돌아가요";
+  },
+  storage_controller: (s) => {
+    if (s.kind !== "storage_controller") return undefined;
+    if (s.status === "down") return "고장 났어요";
+    if (s.path === "cut") return "경로가 끊겼어요";
+    return s.active ? "경로 사용 중" : "대기";
+  },
   vm: (s) => (s.kind === "vm" ? (s.running ? `CPU ${pct(s.cpuUsage)}` : "꺼졌어요") : undefined),
 };
 

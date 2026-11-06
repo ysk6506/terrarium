@@ -5,6 +5,7 @@
  */
 import { withJosa } from "@terrarium/core/kernel";
 import type { BlueprintIndex, Entity } from "@terrarium/core/world";
+import { DB_TEMPLATES } from "./library-db";
 import { DOMAIN_TEMPLATES } from "./library-domains";
 import { FACILITY_TEMPLATES } from "./library-facility";
 import { FIRMWARE_TEMPLATES } from "./library-firmware";
@@ -452,6 +453,9 @@ export { FIRMWARE_TEMPLATES };
 /** Faults of the operating system of a host, seen as a service that slows or stops (REQ-087). */
 export { OS_TEMPLATES };
 
+/** Faults of the database and storage-HA layers, seen as a service that slows or stops (REQ-095). */
+export { DB_TEMPLATES };
+
 /** Faults whose cause is in another domain than the one the agent looks after (REQ-093). */
 export { DOMAIN_TEMPLATES };
 
@@ -462,12 +466,13 @@ export const ALL_SCENARIO_TEMPLATES: readonly ScenarioTemplate[] = [
   ...NETWORK_TEMPLATES,
   ...FIRMWARE_TEMPLATES,
   ...OS_TEMPLATES,
+  ...DB_TEMPLATES,
   ...DOMAIN_TEMPLATES,
 ];
 
 /** How the new-scenario picker groups the templates: equipment first, then changes people make to settings. */
 export const TEMPLATE_GROUPS: readonly {
-  readonly id: "facility" | "network" | "firmware" | "os" | "domains";
+  readonly id: "facility" | "network" | "firmware" | "os" | "database" | "domains";
   readonly label: string;
   readonly templates: readonly ScenarioTemplate[];
 }[] = [
@@ -475,6 +480,7 @@ export const TEMPLATE_GROUPS: readonly {
   { id: "network", label: "네트워크·전원 설정", templates: NETWORK_TEMPLATES },
   { id: "firmware", label: "펌웨어 작업", templates: FIRMWARE_TEMPLATES },
   { id: "os", label: "OS 고장", templates: OS_TEMPLATES },
+  { id: "database", label: "데이터베이스·스토리지 HA", templates: DB_TEMPLATES },
   { id: "domains", label: "내 도메인 밖이 원인", templates: DOMAIN_TEMPLATES },
 ];
 

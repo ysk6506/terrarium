@@ -4,6 +4,7 @@
  * people can see them, but they cannot be used until physics implements them (REQ-034).
  */
 import type { EntityKind } from "./blueprint";
+import { DB_FAULT_SPECS } from "./faults-db";
 import { OS_FAULT_SPECS } from "./faults-os";
 
 export type FaultType =
@@ -42,7 +43,15 @@ export type FaultType =
   | "ntp_drift"
   | "dns_failure"
   | "kernel_panic"
-  | "cert_expired";
+  | "cert_expired"
+  | "db_primary_down"
+  | "db_secondary_down"
+  | "db_replication_broken"
+  | "db_split_brain"
+  | "db_backup_corrupt"
+  | "storage_path_cut"
+  | "storage_controller_failure"
+  | "storage_node_lost";
 
 /**
  * Things people do wrong, as opposed to things that break: a port put in the wrong VLAN, a gateway interface left
@@ -332,6 +341,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
     domain: "virtual",
   },
   ...OS_FAULT_SPECS,
+  ...DB_FAULT_SPECS,
 ];
 
 /** The mistakes a scenario can make with its configuration blocks, named so a diagnosis can name them. */

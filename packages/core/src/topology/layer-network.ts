@@ -9,6 +9,9 @@ import { type LayerShape, ShapeBuilder } from "./shape";
 
 const STAGES = [
   { id: "service", label: "서비스" },
+  { id: "database", label: "데이터베이스" },
+  { id: "instance", label: "DB 인스턴스" },
+  { id: "pool", label: "스토리지 풀·컨트롤러" },
   { id: "core", label: "코어 스위치" },
   { id: "spine", label: "스파인 스위치" },
   { id: "tor", label: "ToR 스위치" },
@@ -17,11 +20,14 @@ const STAGES = [
 ] as const;
 
 const SERVICE = 0;
-const CORE = 1;
-const SPINE = 2;
-const TOR = 3;
-const HOST = 4;
-const VIRTUAL = 5;
+const DATABASE = 1;
+const INSTANCE = 2;
+const POOL = 3;
+const CORE = 4;
+const SPINE = 5;
+const TOR = 6;
+const HOST = 7;
+const VIRTUAL = 8;
 
 /** Steps from a switch down to the nearest ToR: 0 for a ToR (or a switch nothing leans on), then 1, 2... */
 function depthsOf(index: BlueprintIndex): Map<string, number> {
@@ -55,6 +61,15 @@ function addEquipment(index: BlueprintIndex, b: ShapeBuilder): void {
   for (const e of index.ofKind("vm")) b.add(e.id, VIRTUAL, "vm");
   for (const e of index.ofKind("cluster")) b.add(e.id, VIRTUAL, "cluster");
   for (const e of index.ofKind("service")) b.add(e.id, SERVICE, "service");
+  addDatabase(index, b);
+}
+
+/** The database and storage-HA stages next to the services (REQ-095). */
+function addDatabase(index: BlueprintIndex, b: ShapeBuilder): void {
+  for (const e of index.ofKind("db_cluster")) b.add(e.id, DATABASE, "db_cluster");
+  for (const e of index.ofKind("db_instance")) b.add(e.id, INSTANCE, "db_instance");
+  for (const e of index.ofKind("storage_pool")) b.add(e.id, POOL, "storage_pool");
+  for (const e of index.ofKind("storage_controller")) b.add(e.id, POOL, "storage_controller");
 }
 
 export function networkShape(index: BlueprintIndex): LayerShape {
@@ -64,9 +79,15 @@ export function networkShape(index: BlueprintIndex): LayerShape {
     // The switch carries the traffic of what is cabled to it, and the server carries the VM that runs on it.
     // A cluster is drawn after its servers (they are its members), though the link says the server depends on it.
     if (l.kind === "network" || l.kind === "runs_on") b.link(l.to, l.from);
-    else if (l.kind === "member_of") b.link(l.from, l.to);
+    else if (l.kind === "member_of" && index.find(l.to)?.kind === "cluster") b.link(l.from, l.to);
+    else if (l.kind === "member_of") b.link(l.to, l.from);
     // The top of the layer: a service leans on the VMs and servers it runs on.
     else if (l.kind === "service_on") b.link(l.from, l.to);
+    // The database and storage layers (REQ-095): a service leans on a cluster or a pool, a cluster is its
+    // instances, an instance runs on a VM or server and keeps its data in a pool, a pool is storage nodes.
+    else if (l.kind === "depends_on") b.link(l.from, l.to);
+    else if (l.kind === "hosted_on" || l.kind === "stored_on") b.link(l.from, l.to);
+    else if (l.kind === "backed_by") b.link(l.from, l.to);
   }
   return b.build();
 }

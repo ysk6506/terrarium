@@ -18,7 +18,17 @@ export type RackMountedKind = "server" | "switch" | "storage" | "pdu";
 export type FloorStandingKind = "cooling_unit" | "power_panel" | "ups" | "cdu";
 /** Plant equipment: stands in a yard or on a roof, outside the data halls. */
 export type PlantKind = "chiller" | "generator";
-export type VirtualKind = "vcenter" | "cluster" | "vm" | "datastore" | "service";
+export type VirtualKind =
+  | "vcenter"
+  | "cluster"
+  | "vm"
+  | "datastore"
+  | "service"
+  /** Database and storage-HA layers (REQ-095, ADR-0107 item 6). */
+  | "db_cluster"
+  | "db_instance"
+  | "storage_pool"
+  | "storage_controller";
 export type EntityKind =
   | SpaceKind
   | "rack"
@@ -50,6 +60,10 @@ export const ENTITY_KINDS: readonly EntityKind[] = [
   "vm",
   "datastore",
   "service",
+  "db_cluster",
+  "db_instance",
+  "storage_pool",
+  "storage_controller",
 ]; // prettier-ignore
 
 export const MODELLED_KINDS: ReadonlySet<EntityKind> = new Set([
@@ -89,6 +103,10 @@ export const ALLOWED_PARENTS: Readonly<Record<EntityKind, readonly EntityKind[]>
   vm: [],
   datastore: [],
   service: [],
+  db_cluster: [],
+  db_instance: [],
+  storage_pool: [],
+  storage_controller: [],
 };
 
 /** Where something is, relative to its parent. Units are metres; racks use units (U). */
@@ -131,6 +149,10 @@ export const PLACEMENT_OF: Readonly<Record<EntityKind, Placement["type"] | undef
   vm: undefined,
   datastore: undefined,
   service: undefined,
+  db_cluster: undefined,
+  db_instance: undefined,
+  storage_pool: undefined,
+  storage_controller: undefined,
 };
 
 export type PropValue = string | number | boolean;
@@ -158,7 +180,11 @@ export type LinkKind =
   /** A service runs on this VM, server or storage; `role` is `active` or `standby` (ADR-0091). */
   | "service_on"
   /** A service needs the traffic of this switch to reach its users. */
-  | "service_via";
+  | "service_via"
+  /** A service needs this database or storage pool (REQ-095): it reads its state, not its host. */
+  | "depends_on"
+  /** A database instance runs on this VM or server; a storage controller sits in this storage array. */
+  | "hosted_on";
 
 /** Allowed (from kinds, to kinds) per link kind. `from` depends on `to`. */
 export const LINK_RULES: Readonly<
@@ -182,12 +208,17 @@ export const LINK_RULES: Readonly<
   network: { from: ["server", "storage", "switch"], to: ["switch"] },
   cooling: { from: ["rack", "cooling_unit", "cdu"], to: ["cooling_unit", "cdu", "chiller"] },
   runs_on: { from: ["vm"], to: ["server"] },
-  member_of: { from: ["server"], to: ["cluster"] },
+  member_of: {
+    from: ["server", "db_instance", "storage_controller"],
+    to: ["cluster", "db_cluster", "storage_pool"],
+  },
   managed_by: { from: ["cluster"], to: ["vcenter"] },
-  stored_on: { from: ["vm"], to: ["datastore"] },
-  backed_by: { from: ["datastore"], to: ["storage"] },
+  stored_on: { from: ["vm", "db_instance"], to: ["datastore", "storage_pool"] },
+  backed_by: { from: ["datastore", "storage_pool"], to: ["storage"] },
   service_on: { from: ["service"], to: ["vm", "server", "storage"] },
   service_via: { from: ["service"], to: ["switch"] },
+  depends_on: { from: ["service"], to: ["db_cluster", "db_instance", "storage_pool"] },
+  hosted_on: { from: ["db_instance", "storage_controller"], to: ["vm", "server", "storage"] },
 };
 
 export interface Link {
@@ -226,4 +257,8 @@ export const isVirtualKind = (kind: EntityKind): kind is VirtualKind =>
   kind === "cluster" ||
   kind === "vm" ||
   kind === "datastore" ||
-  kind === "service";
+  kind === "service" ||
+  kind === "db_cluster" ||
+  kind === "db_instance" ||
+  kind === "storage_pool" ||
+  kind === "storage_controller";

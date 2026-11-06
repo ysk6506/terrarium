@@ -44,7 +44,14 @@ export interface RecoveryPath {
   /** Whether moving the services brought them all back. */
   readonly ok: boolean;
   /** The tool that did it; `escalate` when only the team that owns the fault can bring them back. */
-  readonly how?: "failover_service" | "migrate_vm" | "escalate";
+  readonly how?:
+    | "failover_service"
+    | "migrate_vm"
+    | "db_failover"
+    | "db_promote"
+    | "storage_path_switch"
+    | "db_restore"
+    | "escalate";
   /** In plain Korean: how it works, or what is missing. */
   readonly note: string;
 }
@@ -63,6 +70,76 @@ function migrateVms(s: Session): boolean {
       (id) => (s.call("get_entity", { id }).data as { kind?: string } | undefined)?.kind === "vm",
     );
   return vms.map((vm) => migrateAway(s, vm)).some(Boolean);
+}
+
+const idsOf = (s: Session, kind: string): string[] => {
+  const r = s.call("list_entities", { kind });
+  return r.ok ? (r.data as Array<{ id: string }>).map((e) => e.id) : [];
+};
+
+/** How long the database tools need to settle: a standby that starts, a copy that catches up. */
+const DB_SETTLE_SECONDS = 240;
+/** A restore takes twenty minutes; a damaged backup fails after four, so the older one gets as long again. */
+const RESTORE_SETTLE_SECONDS = 1500;
+
+/**
+ * The ways back that need no repair of the machine but are the database's and the storage's own (REQ-095): make the
+ * cluster fail over, switch the storage path to the other controller, restore what is down from a backup (an older one
+ * when the newest turns out damaged). Returns the first that brings every service back.
+ */
+function databasePath(config: Config): RecoveryPath | undefined {
+  const tries: Array<[RecoveryPath["how"], string, (s: Session) => void]> = [
+    [
+      "db_failover",
+      "클러스터를 페일오버하면 돌아와요",
+      (s) => {
+        for (const cluster of idsOf(s, "db_cluster")) s.call("db_failover", { cluster });
+      },
+    ],
+    [
+      "db_promote",
+      "남길 인스턴스를 골라 승격하면 돌아와요",
+      (s) => {
+        for (const cluster of idsOf(s, "db_cluster")) {
+          const r = s.call("db_status", { cluster });
+          const first = r.ok
+            ? (r.data as { instances: Array<{ id: string }> }).instances[0]
+            : undefined;
+          if (first) s.call("db_promote", { instance: first.id });
+        }
+      },
+    ],
+    [
+      "storage_path_switch",
+      "스토리지 경로를 다른 컨트롤러로 바꾸면 돌아와요",
+      (s) => {
+        for (const controller of idsOf(s, "storage_controller"))
+          s.call("storage_path_switch", { controller });
+      },
+    ],
+  ];
+  for (const [how, note, act] of tries) {
+    const s = open(config, ALL_TOOLS);
+    if (troubled(s).length === 0) return undefined;
+    act(s);
+    s.call("wait", { seconds: DB_SETTLE_SECONDS });
+    if (troubled(s).length === 0) return { applicable: true, ok: true, how, note };
+  }
+  const s = open(config, ALL_TOOLS);
+  const instances = idsOf(s, "db_instance");
+  if (instances.length === 0 || s.remaining() < RESTORE_SETTLE_SECONDS) return undefined;
+  for (const instance of instances) s.call("db_restore", { instance, backup: "latest" });
+  s.call("wait", { seconds: DB_SETTLE_SECONDS + 60 });
+  for (const instance of instances) s.call("db_restore", { instance, backup: "backup-2" });
+  s.call("wait", { seconds: RESTORE_SETTLE_SECONDS });
+  return troubled(s).length === 0
+    ? {
+        applicable: true,
+        ok: true,
+        how: "db_restore",
+        note: "백업에서 복원하면 돌아와요(최신 백업이 깨져 있으면 더 오래된 백업으로)",
+      }
+    : undefined;
 }
 
 /**
@@ -126,6 +203,7 @@ export function recoveryPath(config: Config): RecoveryPath {
       };
   }
   return (
+    databasePath(config) ??
     handOver(config) ?? {
       applicable: true,
       ok: false,

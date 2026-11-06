@@ -10,12 +10,12 @@ covers:
   - packages/core/src/scenario/library-facility.ts
   - packages/core/src/scenario/library-domains.ts
 verification_log:
-  - "2026-11-06: 2026-11-06: ADR-0091(결정 1·2)·ADR-0102 구현: 서비스 층·OS 층 1차를 코드와 대조해 해당 절을 더하거나 고쳤다. 이 문서가 말하는 나머지 구조는 그대로다"
   - "2026-11-06: model.ts의 ScenarioDoc.scoring과 digest.ts, library-os.ts의 채점표(진단·재부팅 금지·끝에 정상)를 대조해 복구 우선 채점 절을 더했다 (REQ-088, ADR-0104)"
   - "2026-11-06: ScenarioDoc.runbook과 digest.ts의 해시 규칙, runner.ts의 skipFault를 절차서와 고장 범위 절에 대조해 더했다 (REQ-080, REQ-082)"
   - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: 2a·2b 합치기"
-covers_hash: 481c60ce00909603
+  - "2026-11-06: library-db.ts의 템플릿 여섯, blocks의 조건 필드, 행동 종류 넷을 더했다 (REQ-095)"
+covers_hash: a6a507c4c462118a
 ---
 # 시나리오 모델 (REQ-033, REQ-034)
 
@@ -118,6 +118,8 @@ VM 폭주). `FACILITY_TEMPLATES`는 플랜트·수랭·발전기가 있는 세�
 시나리오 문서에 `scoring: "recovery"`를 쓰면 위 채점표의 항목을 더하는 대신 서비스의 복구 시간(35)·복구 순서(15)·복구 중 악화 없음(20)·진단·보고(30)로 센다. 이때 채점표에서는 `diagnosis`(보고), `forbidden_action`(감점 그대로), `final_state`("끝에도 정상이다", 지켜지지 않으면 시간과 순서 점수가 반)만 읽고, `time_limit`·`tool_budget`·`required_action`은 읽지 않는다. 필드가 없으면 지금까지처럼 항목대로다. 서비스가 있는 시나리오(내장은 OS 고장 다섯)만 쓰며, `scoring`은 디지스트에 들어가서(있을 때만) 채점 방식이 다른 결과가 한 벤치마크에 섞이지 않는다. 자세한 규칙은 [측정의 신뢰](measurement.md#3-서비스가-있는-시나리오는-복구-우선으로-채점한다-req-088-adr-0091-adr-0104).
 
 ## 내 도메인 밖이 원인인 시나리오 (REQ-093, [ADR-0100](adr/0100-escalate-by-domain.md))
+
+내장 묶음 "데이터베이스·스토리지 HA" 여섯(`scenario/library-db.ts`, REQ-095): 프라이머리 데이터베이스가 죽었어요, 복제가 끊겼어요, 스플릿 브레인, 공유 디스크 경로가 끊겼어요, 분산 스토리지 노드를 잃었어요, 단일 데이터베이스가 죽었고 최신 백업이 깨졌어요. 모두 복구 우선 채점이다. 조건 필드에 새 개체 넷의 상태(클러스터의 프라이머리·스플릿 브레인·승격 횟수, 인스턴스의 역할·상태·복제 지연·데이터 손실·쓰기 불가, 풀의 상태·복제본·재복제 진행, 컨트롤러의 활성·상태·경로)가 더해졌고, 행동 종류가 인스턴스 승격·클러스터 페일오버·백업에서 복원·스토리지 경로 전환 넷 늘었다. 이벤트 조건에도 `db.promote`·`db.failover`·`db.restore`·`storage.path_switch`가 있다. 시나리오와 채점은 [데이터베이스 층과 스토리지 HA 층](db-storage-layers.md#시나리오-여섯).
 
 내장 묶음 "내 도메인 밖이 원인" 둘(`scenario/library-domains.ts`): 서버 메모리 불량(`domain-memory-vendor`), 서버와 스위치를 잇는 포트 불량(`domain-port-network`). 둘 다 복구 우선 채점이고, 템플릿에 권장 내 도메인(`ownDomains`)과 원인의 도메인(`causeDomain`)이 있어 카드에 한 줄로 보인다. 벤더가 부품을 바꾸는 데 며칠 걸리므로 **`에이전트 투입`의 제한 시간 상한을 24시간에서 4일로 늘렸다**(분으로 5,760). 도메인과 리드타임은 [도메인과 가상 담당자](domains-and-counterparts.md)에 있다.
 

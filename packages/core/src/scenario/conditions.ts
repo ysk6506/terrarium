@@ -40,6 +40,10 @@ function serviceAction(c: WorldCommand): AgentAction | undefined {
   if (c.type === "service.failover") return { action: "service_failover", target: c.target };
   if (c.type === "service.restart") return { action: "service_restart", target: c.target };
   if (c.type === "vm.migrate") return { action: "vm_migrate", target: c.target };
+  if (c.type === "db.promote") return { action: "db_promote", target: c.target };
+  if (c.type === "db.failover") return { action: "db_failover", target: c.target };
+  if (c.type === "db.restore") return { action: "db_restore", target: c.target };
+  if (c.type === "storage.path_switch") return { action: "path_switch", target: c.target };
   if (c.type !== "host.act") return undefined;
   const kind = {
     restart: "process_restart",

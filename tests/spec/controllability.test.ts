@@ -22,6 +22,7 @@ import { Session } from "@terrarium/core/session";
 import { TOOL_NAMES, TOOL_SPECS } from "@terrarium/core/tools";
 import { type Blueprint, FAULT_SPECS, World, type WorldCommand } from "@terrarium/core/world";
 import { describe, expect, test } from "vitest";
+import { dbLab } from "../../packages/core/src/world/test-support/db-lab";
 import { networkLab } from "../../packages/core/src/world/test-support/net-lab";
 import { campusBlueprint } from "../../packages/core/src/world/test-support/sample-campus";
 import { serviceLab } from "../../packages/core/src/world/test-support/service-lab";
@@ -64,6 +65,9 @@ describe("the list of what can be controlled is made of real things [REQ-069]", 
       expect(onList.has(command as never)).toBe(false);
     expect([...onList].sort()).toEqual([
       "breaker.reset",
+      "db.failover",
+      "db.promote",
+      "db.restore",
       "firmware.update",
       "host.act",
       "link.admin",
@@ -74,6 +78,7 @@ describe("the list of what can be controlled is made of real things [REQ-069]", 
       "power.set",
       "service.failover",
       "setpoint.set",
+      "storage.path_switch",
       "vm.migrate",
     ]);
   });
@@ -153,6 +158,16 @@ describe("the kinds a row says it acts on are the kinds the world accepts [REQ-0
       (id: string): WorldCommand => ({ type: "outlet.set", target: id, outlet: 1, on: false }),
     ],
     ["load.set", (id: string): WorldCommand => ({ type: "load.set", target: id, value: 0.5 })],
+    ["db.promote", (id: string): WorldCommand => ({ type: "db.promote", target: id })],
+    ["db.failover", (id: string): WorldCommand => ({ type: "db.failover", target: id })],
+    [
+      "db.restore",
+      (id: string): WorldCommand => ({ type: "db.restore", target: id, backup: "latest" }),
+    ],
+    [
+      "storage.path_switch",
+      (id: string): WorldCommand => ({ type: "storage.path_switch", target: id }),
+    ],
   ])("%s", (name, command) => {
     expect(accepted(command)).toEqual(claimed(name));
   });
@@ -481,6 +496,41 @@ Object.assign(DRIVES, {
     args: { vm: "vm-web", host: "srv-b1" },
     changed: happened("vm.migrate", "vm-web"),
     action: { kind: "vm_migrate", target: "vm-web" },
+  },
+  "host.database|run_command": {
+    world: () => dbLab({ shape: "replicated" }),
+    tool: "run_command",
+    args: { host: "vm-db-2", cmd: "systemctl restart postgresql" },
+    changed: hostAct("vm-db-2", "restart"),
+    action: { kind: "process_restart", target: "vm-db-2" },
+  },
+  "db.promote|db_promote": {
+    world: () => dbLab({ shape: "replicated" }),
+    tool: "db_promote",
+    args: { instance: "db-2" },
+    changed: happened("db.promote", "db-2"),
+    action: { kind: "db_promote", target: "db-2" },
+  },
+  "db.failover|db_failover": {
+    world: () => dbLab({ shape: "replicated" }),
+    tool: "db_failover",
+    args: { cluster: "db-main" },
+    changed: happened("db.failover", "db-main"),
+    action: { kind: "db_failover", target: "db-main" },
+  },
+  "db.restore|db_restore": {
+    world: () => dbLab({ shape: "replicated" }),
+    tool: "db_restore",
+    args: { instance: "db-2", backup: "latest" },
+    changed: happened("db.restore", "db-2"),
+    action: { kind: "db_restore", target: "db-2" },
+  },
+  "storage.path|storage_path_switch": {
+    world: () => dbLab({ shape: "replicated", storage: "dual" }),
+    tool: "storage_path_switch",
+    args: { controller: "ctl-b" },
+    changed: happened("storage.path_switch", "ctl-b"),
+    action: { kind: "path_switch", target: "ctl-b" },
   },
 } satisfies Record<string, Drive>);
 

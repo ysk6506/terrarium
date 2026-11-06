@@ -15,7 +15,7 @@ import { Catalog } from "@terrarium/core/catalog";
 import { createFacades } from "@terrarium/core/facades";
 import { ConflictError, InvalidValueError } from "@terrarium/core/kernel";
 import { type EndReason, investigationCalls, ORACLE_VERSION, score } from "@terrarium/core/oracle";
-import { DEFAULT_PHYSICS, Physics } from "@terrarium/core/physics";
+import { CLUSTER_CAUSE, DEFAULT_PHYSICS, Physics } from "@terrarium/core/physics";
 import {
   type AgentTask,
   actionsOf,
@@ -76,11 +76,11 @@ const ALWAYS_TOOLS = ["submit_diagnosis"];
 const MAX_SERIES = 24;
 
 /** World events the agent caused (tools and protocol facades), as opposed to scenario and physics. */
+const SYSTEM_CAUSES: ReadonlySet<string> = new Set(["physics", CLUSTER_CAUSE, HUMAN_CAUSE]);
 const byAgent = (e: WorldEvent) =>
-  e.cause !== "physics" &&
+  !SYSTEM_CAUSES.has(e.cause) &&
   !e.cause.startsWith("scenario:") &&
-  !e.cause.startsWith("counterpart:") &&
-  e.cause !== HUMAN_CAUSE;
+  !e.cause.startsWith("counterpart:");
 
 export class Session {
   readonly world: World;

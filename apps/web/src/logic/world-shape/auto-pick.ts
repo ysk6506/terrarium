@@ -23,7 +23,7 @@ export const PRESET_LABELS: Readonly<Record<PresetId, string>> = {
 const firstModeled = (layer: LayerId): string =>
   (LADDER[layer].find((c) => c.modeled) ?? (LADDER[layer][0] as { id: string })).id;
 
-/** The right-most choice the core can imitate (a database has none, so its right-most that exists). */
+/** The right-most choice the core can imitate. */
 const lastModeled = (layer: LayerId): string =>
   ([...LADDER[layer]].reverse().find((c) => c.modeled) ?? (LADDER[layer].at(-1) as { id: string }))
     .id;
@@ -31,14 +31,10 @@ const lastModeled = (layer: LayerId): string =>
 const eachLayer = (pick: (layer: LayerId) => string): Layers =>
   Object.fromEntries(Object.keys(LADDER).map((l) => [l, pick(l as LayerId)])) as Layers;
 
-/** The cheap row: `싸게`. The first choice, except the database, which has only dotted ones and starts on its first. */
-export const CHEAP_LAYERS: Layers = {
-  ...eachLayer(firstModeled),
-  database: "db-single",
-  compute: "cmp-bare",
-};
+/** The cheap row: `싸게`. The left-most choice the core can imitate, on bare metal. */
+export const CHEAP_LAYERS: Layers = { ...eachLayer(firstModeled), compute: "cmp-bare" };
 
-export const STEADY_LAYERS: Layers = { ...eachLayer(lastModeled), database: "db-auto-failover" };
+export const STEADY_LAYERS: Layers = eachLayer(lastModeled);
 
 /** What a service asks of the layers: how big it is and how much a stop costs. */
 interface Need {

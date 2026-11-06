@@ -63,6 +63,8 @@
     "kernel_panic: after": "06e0a80f1282cf08",
     "cert_expired: during": "0d45901b268dfc12",
     "cert_expired: after": "14c31d5cfd241c0d",
+    "storage_node_lost: during": "1d6728c0b755050e",
+    "storage_node_lost: after": "03b7485d3e21f30f",
     "commands": "1c278fa00314601b",
     "setpoint": "059f1f9b1a59e701",
     "(world)": "sample room"
@@ -131,6 +133,8 @@
     "kernel_panic: after": "0e7595466be80d19",
     "cert_expired: during": "1d9debbbb0a96306",
     "cert_expired: after": "0c5431c6e2750608",
+    "storage_node_lost: during": "000e36ff57704502",
+    "storage_node_lost: after": "06962e2799da7a06",
     "commands": "1605175d2fab600f",
     "setpoint": "09a2d162bd83230b",
     "(world)": "generated hall"
@@ -207,6 +211,8 @@
     "kernel_panic: after": "0843aba431940708",
     "cert_expired: during": "1474d32dcb23ec02",
     "cert_expired: after": "0d041e68d98c3808",
+    "storage_node_lost: during": "1e3a8efd25560c0a",
+    "storage_node_lost: after": "091a934693872018",
     "commands": "174b669c6377660d",
     "setpoint": "1b5af2dbda061904",
     "(world)": "campus with plant"
@@ -283,6 +289,8 @@
     "kernel_panic: after": "03d605232d6dad04",
     "cert_expired: during": "0a7501e77516180c",
     "cert_expired: after": "0062ae8ba7532009",
+    "storage_node_lost: during": "06b1ba08181b0215",
+    "storage_node_lost: after": "1c51523ee5f6ac14",
     "commands": "1919c2cef281ae1b",
     "setpoint": "0d3134e0448a9e1b",
     "(world)": "light racks and liquid halls"

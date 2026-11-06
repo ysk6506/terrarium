@@ -19,12 +19,12 @@ covers:
   - packages/core/src/sources/realimport/mapping.ts
   - packages/core/src/sources/realimport/synthesize.ts
 verification_log:
-  - "2026-11-05: podsPerHall 상한 문장을 campus-plan.ts와 대조해 고쳤다"
   - "2026-11-05: REQ-077 세계 만들기 재설계(작업 #90) 반영: 코드와 대조해 맞는 것을 확인했다"
   - "2026-11-05: 2026-11-05: 합친 뒤 코드(ADR-0081 실제 크기와 ADR-0083 세계 만들기 재설계)와 다시 대조: 크기와 모양 절, 냉방과 전기, m² 단위, 서버룸 이름이 맞다"
   - "2026-11-06: 2026-11-06: ADR-0091(결정 1·2)·ADR-0102 구현: 서비스 층·OS 층 1차를 코드와 대조해 해당 절을 더하거나 고쳤다. 이 문서가 말하는 나머지 구조는 그대로다"
   - "2026-11-06: REQ-094 세계 만들기 입구·서비스부터·패널 없는 직접 짓기(ADR-0107~0109)를 코드와 대조해 해당 절을 더하거나 고쳤다"
-covers_hash: 59951de48425448a
+  - "2026-11-06: shaped.ts·shaped-plan.ts의 데이터베이스·풀 생성과 dbHosts를 더했다 (REQ-095)"
+covers_hash: 752dbb9a6387cfc9
 ---
 # 세계 소스 (REQ-009~013, REQ-035, REQ-043~049)
 
@@ -132,7 +132,7 @@ HPC센터의 방은 `campus-floor.ts`의 층 평면이 자리를 정한다(조�
 
 ## 서비스부터 만들기 (shaped, REQ-094)
 
-`generateShaped(spec)`(`worldgen/shaped.ts`)는 서비스·층 여덟 선택·서버 수로 세계를 짓는다. 먼저 `planShape`(`shaped-plan.ts`)가 랙·서버룸·스위치·PDU·냉방기·kW를 센다(서버 ÷ 20이 계산 랙, 줄마다 인프라 랙 하나). 그 계획대로 `generateWorld`가 서버룸을 짓고(기본 서비스는 뺀다), 서비스를 호스트(서로 다른 랙·서버룸)와 VM 위에 얹는다. 레거시 계층형은 서버룸마다 스파인을 하나만 둔다. 사업장 실측(`real`)은 서버 수 대신 `generateCampus`에 서비스를 얹는다. 점선 선택지는 가까운 칸 모양으로 짓는다. 자세한 규칙은 [세계 만들기 입구와 서비스부터](world-entry.md#세계에-서비스가-깔리는-규칙). 템플릿은 세계 기록의 출처 `template`이고 `provenance.shape`에 구성이 든다.
+`generateShaped(spec)`(`worldgen/shaped.ts`)는 서비스·층 여덟 선택·서버 수로 세계를 짓는다. 먼저 `planShape`(`shaped-plan.ts`)가 랙·서버룸·스위치·PDU·냉방기·kW를 센다(서버 ÷ 20이 계산 랙, 줄마다 인프라 랙 하나). 그 계획대로 `generateWorld`가 서버룸을 짓고(기본 서비스는 뺀다), 서비스를 호스트(서로 다른 랙·서버룸)와 VM 위에 얹는다. 레거시 계층형은 서버룸마다 스파인을 하나만 둔다. 사업장 실측(`real`)은 서버 수 대신 `generateCampus`에 서비스를 얹는다. 점선 선택지는 가까운 칸 모양으로 짓는다. 자세한 규칙은 [세계 만들기 입구와 서비스부터](world-entry.md#세계에-서비스가-깔리는-규칙). 템플릿은 세계 기록의 출처 `template`이고 `provenance.shape`에 구성이 든다. 데이터베이스와 스토리지 칸을 고르면 서비스마다 클러스터가 깔리고 스토리지 칸이 풀을 만든다(`shaped-db.ts`, REQ-095). 인스턴스는 서비스가 쓰지 않는 서버를 다른 랙부터 골라 올라가고, 풀의 분산 노드는 서로 다른 랙에 선다. 베어메탈이면 서버 수에 인스턴스 몫이 더해진다(`planShape`의 `dbHosts`). 규칙은 [데이터베이스 층과 스토리지 HA 층](db-storage-layers.md#사다리와-세계-생성).
 
 ## 가져오기 (realimport)
 

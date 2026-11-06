@@ -3,6 +3,7 @@
  * milestones in one append-only list. A session owns one `RunLog`; the host can read what is new after every
  * call (the live topology view) and the finished run carries the whole list.
  */
+import { CLUSTER_CAUSE } from "@terrarium/core/physics";
 import { ACTION_LABELS, type ToolCallRecord } from "@terrarium/core/scenario";
 import { callEffect, callTargets } from "@terrarium/core/tools";
 import type {
@@ -51,7 +52,9 @@ export class RunLog {
   private waiting: RunEvent[] = [];
 
   private worldEvents(): RunEvent[] {
-    const fresh = this.world.events(this.cursor).filter((e) => e.type !== "note");
+    const fresh = this.world
+      .events(this.cursor)
+      .filter((e) => e.type !== "note" || e.cause === CLUSTER_CAUSE);
     this.cursor = this.world.lastSeq();
     const events = fresh.map((e) => this.fromWorld(e));
     if (this.waiting.length === 0) return events;

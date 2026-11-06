@@ -29,6 +29,10 @@ export const EVENT_LABELS: Readonly<Record<Exclude<EventType, "note">, string>> 
   "service.failover": "서비스를 대기 쪽으로 옮긴 적",
   "service.restart": "서비스를 다시 시작한 적",
   "vm.migrate": "VM을 다른 서버로 옮긴 적",
+  "db.promote": "인스턴스를 승격한 적",
+  "db.failover": "클러스터를 페일오버한 적",
+  "db.restore": "백업에서 복원을 시작한 적",
+  "storage.path_switch": "스토리지 경로를 바꾼 적",
 };
 
 export const EVENT_TYPES = Object.keys(EVENT_LABELS) as (keyof typeof EVENT_LABELS)[];

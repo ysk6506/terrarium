@@ -18,13 +18,13 @@ covers:
   - packages/core/src/tools/shell.ts
   - packages/core/src/tools/shell-output.ts
   - packages/core/src/scenario/library-os.ts
-covers_hash: 32e8c64ae95422f7
+covers_hash: a775ef973dd4e3d2
 verification_log:
-  - "2026-11-06: library-os.ts의 채점표가 복구 우선으로 바뀐 것과 world/service-events.ts, 기본 툴 묶음의 run_command를 코드와 대조해 템플릿 절·기준 에이전트 표를 고쳤다 (REQ-088, ADR-0104)"
-  - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: 새 문서"
   - "2026-11-06: REQ-094 세계 만들기 입구·서비스부터·패널 없는 직접 짓기(ADR-0107~0109)를 코드와 대조해 해당 절을 더하거나 고쳤다"
   - "2026-11-06: 2b·2d 합치기"
+  - "2026-11-06: REQ-095: 서비스 건강에 depends_on 규칙(데이터베이스·풀)을 더하고 가짜 셸 표에 데이터베이스 호스트의 명령을 더했다 (service-health.ts·shell.ts·host-os.ts와 대조)"
+  - "2026-11-06: service-health.ts의 depends_on 규칙과 shell.ts의 데이터베이스 명령을 더했다 (REQ-095)"
 ---
 # 서비스와 OS 층 (REQ-086, REQ-087, [ADR-0091](adr/0091-service-os-layer-recovery-first.md))
 
@@ -100,6 +100,8 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 4. 경로의 스위치가 **모두** 멈추면 `down`, 일부만 멈추면 `degraded`.
 5. 아니면 `healthy`. 위 둘(2·3 과 4) 중 나쁜 쪽을 쓴다.
 
+6. **서비스가 기대는 것**(`depends_on`, REQ-095): 서비스가 데이터베이스 클러스터나 스토리지 풀에 기대면 그 상태도 읽어 위와 합친다. 하나라도 멈췄으면 서비스가 멈추고 하나라도 느리면 느리다. 읽는 규칙(프라이머리가 멈추면 요청 처리는 읽기만 되어 느려지고 나머지는 멈춘다, 복제 지연이 한계를 넘으면 느려진다 따위)은 [데이터베이스 층과 스토리지 HA 층](db-storage-layers.md)에 있다. 서비스를 대기 쪽으로 옮겨도 데이터베이스는 그대로라서, 데이터베이스가 원인이면 옮겨도 돌아오지 않는다.
+
 장비를 고치거나 서비스를 대기 쪽으로 옮기면 다음 스텝에 저절로 돌아온다. 따로 "복구"를 쓰는 곳이 없다.
 
 ## OS 층 (`world/os.ts`, `physics/os-physics.ts`)
@@ -146,6 +148,7 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 | `rm <경로>`, `logrotate -f /etc/logrotate.conf` | 로그 지우기. 경로는 `/var/log`, `/tmp` 아래만 | 예 (디스크 비우기) |
 | `mount -o remount,rw /` | 다시 마운트 | 예 |
 | `reboot` | 재부팅 | 예 (그 위의 서비스가 모두 멈춤) |
+| `pg_isready`, `psql -c "select pg_is_in_recovery()"` 등, `multipath -ll` | 데이터베이스 호스트에서 인스턴스와 경로의 상태 (REQ-095, [데이터베이스 층](db-storage-layers.md)) | 아니오 |
 
 파이프는 한 단계만: `| grep [-i|-v|-c] <글자>`, `| tail [-n N]`, `| head [-n N]`. 출력은 400줄까지 보여 주고 더 길면 "| grep 이나 | tail 로 좁혀 보세요"를 붙인다. 허용 밖의 명령은 오류가 아니라 이 답이다.
 

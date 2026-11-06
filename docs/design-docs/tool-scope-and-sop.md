@@ -12,10 +12,12 @@ covers:
   - packages/core/src/session/human-line.ts
   - packages/core/src/session/tool-pick.ts
   - apps/server/src/runtime/escalations.ts
-covers_hash: 68cf958772b36f03
+covers_hash: 1e2e8464616dbcf2
 verification_log:
+  - "2026-11-06: REQ-095: 툴 여섯(db_status, db_promote, db_failover, db_restore, storage_status, storage_path_switch)과 고장 여덟의 필요한 툴을 FAULT_TOOLS·TOOL_DOCS와 대조해 표에 더했다"
   - "2026-11-06: 새 문서: tools/docs.ts·runbook.ts, scenario/tool-scope.ts·sop.ts, session/human.ts·human-line.ts·tool-pick.ts, server escalations.ts를 읽고 규칙·표·상태 흐름을 적었다 (REQ-080~082, ADR-0087, ADR-0105)"
   - "2026-11-06: 2a·2b 합치기"
+  - "2026-11-06: 툴 40개와 고장 44가지의 필요한 툴 표를 catalog와 FAULT_TOOLS에 맞췄다 (REQ-095)"
 ---
 # 툴 범위, 에스컬레이션, 절차서 (REQ-080~082, ADR-0087, ADR-0105)
 
@@ -31,7 +33,7 @@ verification_log:
 
 ### 영역 카드와 현실 수준 꼬리표
 
-툴 29개는 일곱 영역 카드에 나뉜다(`TOOL_DOCS`의 `area`). 카드는 접혀 있고 펼치면 세부 툴이 나온다. 맨 위에 검색 한 칸이 있다(툴 이름, 제목, 영역, 흔함·드묾·없음으로 찾는다).
+툴 40개는 일곱 영역 카드에 나뉜다(`TOOL_DOCS`의 `area`). 카드는 접혀 있고 펼치면 세부 툴이 나온다. 맨 위에 검색 한 칸이 있다(툴 이름, 제목, 영역, 흔함·드묾·없음으로 찾는다).
 
 | 영역 | 툴 |
 |---|---|
@@ -40,8 +42,8 @@ verification_log:
 | 냉방 | `bacnet_request`, `set_cooling_setpoint`, `restart_cooling_unit` |
 | 네트워크 | `network_cli`, `eapi_request`, `nxapi_request` |
 | 가상화 | `vcenter_request`, `vrops_request`, `migrate_vm`, `failover_service`, `restart_service` |
-| 관측 | `list_alarms`, `list_entities`, `get_entity`, `get_topology`, `get_impact`, `query_metrics`, `facility_status`, `list_services`, `service_status` |
-| 조치 | `wait`, `submit_diagnosis`, `ask_human`, `search_runbooks` |
+| 관측 | `list_alarms`, `list_entities`, `get_entity`, `get_topology`, `get_impact`, `query_metrics`, `facility_status`, `list_services`, `service_status`, `db_status`, `storage_status`, `events_since` |
+| 조치 | `wait`, `submit_diagnosis`, `ask_human`, `search_runbooks`, `escalate`, `db_promote`, `db_failover`, `db_restore`, `storage_path_switch`, 작업 티켓 셋 |
 
 툴마다 **현실 수준 꼬리표**가 작은 칩으로 붙는다: **흔함**(현실의 운영팀이 오늘 가진 것: 장비 API, 알람, 메트릭, 서비스 상태), **드묾**(몇 곳에만 있는 것: 토폴로지, 절차서 찾기), **없음**(현실에 없는 것: 영향 범위 분석). 드묾·없음 툴을 켜면 그 아래에 "현실엔 거의 없는 툴이에요 — 이 툴의 가치를 재는 실험이 돼요"가 한 줄 나온다. 영향 범위는 툴이 아니라 **채점 기준**(세계가 아는 정답)으로 쓴다.
 
@@ -123,7 +125,7 @@ verification_log:
 
 ### 고장마다 풀려면 필요한 툴 (코어의 `FAULT_TOOLS`)
 
-고장 34가지와 설정 실수 6가지가 모두 풀거나 피해를 줄이는 툴을 적었다(없는 고장은 시험이 실패한다). 목록의 아무 툴 하나면 되고 첫 번째가 "필요한 것만 켜기"가 고르는 툴이다. 표는 `controls.ts`의 `FAULT_RESPONSES`와 제어 가능 요소표에서 나온 것과 시험으로 맞춰 둔다.
+고장 44가지와 설정 실수 6가지가 모두 풀거나 피해를 줄이는 툴을 적었다(없는 고장은 시험이 실패한다). 목록의 아무 툴 하나면 되고 첫 번째가 "필요한 것만 켜기"가 고르는 툴이다. 표는 `controls.ts`의 `FAULT_RESPONSES`와 제어 가능 요소표에서 나온 것과 시험으로 맞춰 둔다.
 
 | 고장 | 에이전트가 | 필요한 툴 (아무거나 하나) |
 |---|---|---|
@@ -162,6 +164,14 @@ verification_log:
 | DNS 실패 (`dns_failure`) | 고쳐요 | `run_command`, `restart_service` |
 | 커널 패닉 (`kernel_panic`) | 피해를 줄여요 | `failover_service` |
 | 인증서 만료 (`cert_expired`) | 진단하고 사람을 불러요 | — |
+| 프라이머리 인스턴스 다운 (`db_primary_down`) | 피해를 줄여요 | `db_promote`, `db_failover`, `db_restore` |
+| 세컨더리 인스턴스 다운 (`db_secondary_down`) | 고쳐요 | `run_command` |
+| 복제 끊김 (`db_replication_broken`) | 고쳐요 | `run_command` |
+| 스플릿 브레인 (`db_split_brain`) | 고쳐요 | `db_promote` |
+| 백업 손상 (`db_backup_corrupt`) | 진단하고 사람을 불러요 | — |
+| 스토리지 경로 끊김 (`storage_path_cut`) | 피해를 줄여요 | `storage_path_switch` |
+| 스토리지 컨트롤러 고장 (`storage_controller_failure`) | 피해를 줄여요 | `storage_path_switch` |
+| 분산 스토리지 노드 상실 (`storage_node_lost`) | 진단하고 사람을 불러요 | — |
 | 포트 VLAN 오설정 (`port_vlan_mismatch`) | 고쳐요 | `network_cli`, `eapi_request`, `nxapi_request` |
 | 포트 꺼짐 (`port_shutdown`) | 고쳐요 | `network_cli`, `eapi_request`, `nxapi_request`, `snmp_request` |
 | VLAN 인터페이스 꺼짐 (`svi_shutdown`) | 고쳐요 | `network_cli`, `eapi_request`, `nxapi_request` |

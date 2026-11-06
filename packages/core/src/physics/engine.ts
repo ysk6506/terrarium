@@ -14,6 +14,7 @@ import type {
   WorldEvent,
 } from "@terrarium/core/world";
 import { desiredAlarms } from "./alarms";
+import { updateDb } from "./db";
 import { advanceFirmware } from "./firmware";
 import { updateHostOs } from "./os-physics";
 import { updateGenerators, updatePlant } from "./plant";
@@ -81,6 +82,7 @@ export class Physics {
     events.push(...this.protect());
     if (events.length > 0) this.updateElectrical();
     events.push(...updateHostOs(this.world, dt));
+    events.push(...updateDb(this.world, dt));
     updateServices(this.world, dt);
     events.push(...this.syncAlarms());
     this.updateHealth();

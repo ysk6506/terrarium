@@ -8,6 +8,16 @@ import type { BlueprintIndex } from "./graph";
 import type { NetPatch } from "./net-config";
 import type { HostOs } from "./os";
 import type { ServiceStatus } from "./service";
+import {
+  DB_FACTORIES,
+  type DbClusterState,
+  type DbInstanceState,
+  placeDatabase,
+  type StorageControllerState,
+  type StoragePoolState,
+} from "./state-db";
+
+export type { DbClusterState, DbInstanceState, StorageControllerState, StoragePoolState };
 
 export type Health = "ok" | "warning" | "critical";
 
@@ -205,6 +215,10 @@ export type EntityState =
   | RoomState
   | VmState
   | ServiceState
+  | DbInstanceState
+  | DbClusterState
+  | StorageControllerState
+  | StoragePoolState
   | SiteState
   | PlainState;
 
@@ -375,6 +389,7 @@ const FACTORIES: Partial<Record<EntityKind, Factory>> = {
     cpuUsage: 0.3,
     memUtil: 0.5,
   }),
+  ...DB_FACTORIES,
 };
 
 /** A blueprint can say how loaded a server is and which firmware versions it was built with. */
@@ -404,6 +419,7 @@ export function initialState(index: BlueprintIndex, catalog: Catalog): WorldStat
       state.cpuDemand = entity.props.cpuDemand;
     if (state.kind === "service") placeService(state, entity.id, index);
     if (state.kind === "server") applyServerProps(state, entity.props);
+    placeDatabase(state, entity, index);
     if (state.kind === "rack") state.util = bulkOf(entity)?.util ?? 0;
     if (state.kind === "cooling_unit" && typeof entity.props.setpointC === "number")
       state.setpointC = entity.props.setpointC;
