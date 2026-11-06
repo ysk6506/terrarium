@@ -54,6 +54,7 @@ export class WorkerSessions {
       const local = new LocalSession(
         Session.create({ ...config, blueprint: prepared.blueprint, warm: this.warm, prepared }),
         (reason) => this.send({ kind: "ended", id, reason }),
+        (events) => this.send({ kind: "events", id, events }),
       );
       this.sessions.set(id, local);
       this.send({

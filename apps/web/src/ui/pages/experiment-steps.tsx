@@ -10,6 +10,7 @@ import { experiment, hiddenWarning, howWords, toolPicker } from "../../logic";
 import { useApp } from "../context";
 import { Button, Check, Note, NumberField, SelectField, TextField } from "../kit";
 import { DomainScope } from "./experiment-domains";
+import { KindChoice, OperationInstruction, OperationSetup } from "./experiment-operation";
 import { ExperimentMetadata, NoHarness, VersionPreview } from "./experiment-subject";
 import { HumanSettings } from "./human-settings";
 import { ScenarioPick } from "./scenario-pick";
@@ -63,9 +64,10 @@ export function WhatStep({
   const first = choices.find((c) => !c.out)?.id;
   const current = choices.find((c) => c.id === draft.scenarioId);
   const stale = !current || current.out;
+  const operation = draft.operation !== undefined;
   useEffect(() => {
-    if (stale && first && first !== draft.scenarioId) set({ scenarioId: first });
-  }, [stale, first, draft.scenarioId, set]);
+    if (!operation && stale && first && first !== draft.scenarioId) set({ scenarioId: first });
+  }, [operation, stale, first, draft.scenarioId, set]);
   return (
     <section className="wizard-step stack">
       <StepHead n={1} title="무엇으로 시험할까요?" problems={problems} />
@@ -78,14 +80,19 @@ export function WhatStep({
           set({ ...rest, worldId });
         }}
       />
-      <ScenarioPick
-        choices={choices}
-        value={draft.scenarioId}
-        onChange={(scenarioId) => set({ scenarioId })}
-        {...(draft.worldId && scenarios && list.length === 0
-          ? { empty: "이 세계에는 시나리오가 아직 없어요. 시나리오 화면에서 만들어 보세요." }
-          : {})}
-      />
+      <KindChoice draft={draft} set={set} />
+      {operation ? (
+        <OperationSetup draft={draft} set={set} scenarios={list} />
+      ) : (
+        <ScenarioPick
+          choices={choices}
+          value={draft.scenarioId}
+          onChange={(scenarioId) => set({ scenarioId })}
+          {...(draft.worldId && scenarios && list.length === 0
+            ? { empty: "이 세계에는 시나리오가 아직 없어요. 시나리오 화면에서 만들어 보세요." }
+            : {})}
+        />
+      )}
     </section>
   );
 }
@@ -267,6 +274,7 @@ export function HowStep({
     <section className="wizard-step stack">
       <StepHead n={3} title="어떻게 시험할까요?" problems={problems} />
       <RunsField draft={draft} set={set} />
+      <OperationInstruction draft={draft} set={set} />
       <DomainScope draft={draft} set={set} />
       <ToolPicker
         selected={draft.tools}
@@ -274,7 +282,7 @@ export function HowStep({
         {...(scenario ? { scenario: scenario.doc } : {})}
       />
       <HumanSettings draft={draft} set={set} {...(scenario ? { scenario } : {})} />
-      <Advanced draft={draft} set={set} />
+      {!draft.operation && <Advanced draft={draft} set={set} />}
     </section>
   );
 }

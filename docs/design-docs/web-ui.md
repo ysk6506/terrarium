@@ -22,6 +22,12 @@ covers:
   - apps/web/src/logic/builder/power.ts
   - apps/web/src/logic/builder/handles.ts
   - apps/web/src/styles.css
+  - apps/web/src/logic/operation.ts
+  - apps/web/src/logic/mini-markdown.ts
+  - apps/web/src/ui/pages/experiment-operation.tsx
+  - apps/web/src/ui/pages/run-operation.tsx
+  - apps/web/src/ui/pages/operation-card.tsx
+  - apps/web/src/ui/pages/operation-guide.tsx
   - apps/web/src/logic/router.ts
   - apps/web/src/ui/world3d/WorldStage.tsx
   - apps/web/src/logic/activity.ts
@@ -61,13 +67,13 @@ covers:
   - apps/web/src/ui/replay/FramesBar.tsx
   - apps/web/src/ui/replay/useClock.ts
   - apps/web/src/logic/topology/words.ts
-covers_hash: 849d077ee7b71f48
+covers_hash: ab4849acdeb8420a
 verification_log:
-  - "2026-11-06: 2차 합치기: #13 색과 복구 우선 채점 절을 함께 둠"
-  - "2026-11-06: 새 절(실험 만들기의 툴 고르기, 시나리오 목록 회색, 에스컬레이션 설정, 사람 기다리는 중 카드, 결과 블록, 편집기 탭)을 tool-picker.tsx·scenario-pick.tsx·human-settings.tsx·escalation.tsx·run-blocks.tsx와 대조해 더했다 (REQ-080~082)"
   - "2026-11-06: styles.css의 툴 고르기·행렬 글꼴 줄 정리와 시나리오 자동 선택(범위 안 첫 시나리오)을 대조했다. 문서 내용은 그대로 맞다"
   - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: 2a·2b 합치기"
+  - "2026-11-06: 운영 모드 화면 절을 더하고 experiment-operation.tsx, run-operation.tsx, operation-card.tsx, operation-guide.tsx와 대조했다 (REQ-090)"
+  - "2026-11-06: 마지막 구현(연결 사건 link, executor-operation, 운영 툴 필수 검사, operator 설명)과 다시 대조했다. 본문은 그대로 맞다 (REQ-090)"
 ---
 # 웹 화면 (REQ-006, REQ-030~041)
 
@@ -356,6 +362,14 @@ verification_log:
 
 실행 화면에는 다시 보기 아래, 채점표 위에 **"넘긴 일"** 구역이 있다(넘긴 일이 있을 때만). 도메인·고장·예상·진행(기다리는 중 / 작업 중 / 끝났어요)·끝난 때를 표로 보이고, 바로 아래에 넘긴 일마다 "임시 조치 / 마무리 / 동시 작업 / 넘긴 근거"를 한 줄씩 말한다(`logic/handoffs.ts`). 머리말 옆에 어느 도메인과 어떤 담당자 설정이었는지 적힌다. 티켓 툴을 켠 실험이면 그 아래에 **티켓 보드**(내가 할 것 / 기다리는 중 / 끝남 세 칸)가 있고, 저절로 만들어진 티켓에는 그렇게 적힌다. 달리는 중에도 같은 표가 호출마다 따라간다.
 새 실험 3단계에는 **"내 도메인"**(여섯 가지 체크, 복수)이 있다. 고르면 그 도메인의 툴이 켜지고(`experiment.setDomains`) 아래에 **"SLA·예비 부품·팀"** 카드가 접힌 채 나온다: 벤더 SLA, 예비 부품, 일을 맡는 때, 야간·주말 가산, 바꾼 칸에 "바꿨어요", "기본값으로 되돌리기". 실험 요약에도 두 줄로 남는다. 시나리오 카드에는 "원인은 서버 도메인 · 내 도메인 서비스/OS·가상화 권장"이 붙는다.
+
+## 운영 모드 화면 (REQ-090, [ADR-0094](adr/0094-operation-mode.md))
+
+- **실험 만들기.** 1단계 맨 위의 "실험 종류"(사건 하나 / 운영)가 시나리오 고르기를 운영 설정으로 바꾼다: 운영 시간(8·24·48시간 버튼과 직접 입력), 시간(실시간 / 빨리 감기와 조용할 때의 배속), 고장은 어디서 와요(고장률 표의 조용함·보통·바쁨 / 이 세계의 시나리오 세트), 연쇄·동시 고장 확률. 3단계에는 "에이전트에게 주는 지시문" 칸, "권장안 넣기" 버튼, 권장안의 줄마다 "왜 이렇게 쓰나", 고른 하네스 종류에 맞는 주의, 이름 붙여 저장(이 브라우저), "알람마다 깨우기"(연결이 못 받으면 회색 + 이유), 툴 호출 상한이 있다. 오른쪽 요약은 "8시간 운영 · 빨리 감기 30배 · 공식 점수 아님"을 보인다.
+- **중간 점검 카드.** 홈("지금 돌고 있는 운영")과 실험 화면에 운영이 도는 동안 "14시간째 · 열린 사건 1 · 놓친 알람 0 · 다음 담당자 완료 2시간 뒤". 실행 중 기록을 5초마다 다시 읽는다.
+- **운영 결과.** 첫 줄이 서비스 가용률 · 놓친 알람 · 탐지 지연, 그 아래에 사건별 복구 시간 막대(못 끝낸 것은 빨강), 비용과 감시 숫자. 위에는 "8시간 운영 · 빨리 감기 30배 · 공식 점수 아님 · 시간이 다 돼서 끝났어요". 합격·채점표·진단 비교는 없다.
+- **시간 막대.** 운영의 리플레이는 같은 막대에 "봤다" 점(알람을 보여 주는 조회만), "사람 개입" 점, 사건마다 발생에서 끝까지의 막대를 더한다.
+- **연결 화면.** "운영 모드로 연결" 버튼이 설계 가이드(`/guides/operation`)로 간다. 가이드는 `docs/guides/operation-agent-guide.md`를 그대로 화면에 보인다(`logic/mini-markdown.ts`가 읽는다).
 
 ## 코드 구조
 

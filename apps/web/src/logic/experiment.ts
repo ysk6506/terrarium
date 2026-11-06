@@ -8,6 +8,7 @@ import {
   type Experiment,
   MAX_SEEDS,
   normalizeTools,
+  OPERATION_SCENARIO_ID,
   type Recipe,
   type RecipeChange,
   recipeDiff,
@@ -18,9 +19,12 @@ import { BUILTIN_PROFILES } from "@terrarium/core/profiles";
 import { type ScenarioDoc, scopeCheck } from "@terrarium/core/scenario";
 import {
   DEFAULT_AUTO_REPLY,
+  DEFAULT_OPERATION,
   DEFAULT_TIME,
   type EscalationPolicy,
   type FaultScope,
+  type OperationConfig,
+  operationProblem,
   type SopMode,
   type TimePolicy,
 } from "@terrarium/core/session";
@@ -66,6 +70,8 @@ export interface Draft {
   readonly faultScope: FaultScope;
   /** Whether the agent gets the scenario's runbook (REQ-082). */
   readonly sop: SopMode;
+  /** An operation instead of one incident (REQ-090): set, the scenario is not chosen. */
+  readonly operation?: OperationConfig;
 }
 
 /** The tool that finds a runbook: on exactly when the agent is made to find it. */
@@ -171,10 +177,11 @@ export function withTools(draft: Draft, tools: readonly string[]): Draft {
 
 /** The recipe the draft stands for, once world, scenario, harness and agent are chosen. */
 export function recipeOf(draft: Draft): Recipe | undefined {
-  if (!draft.worldId || !draft.scenarioId || !draft.harnessId || !draft.agentId) return undefined;
+  const scenarioId = draft.operation ? OPERATION_SCENARIO_ID : draft.scenarioId;
+  if (!draft.worldId || !scenarioId || !draft.harnessId || !draft.agentId) return undefined;
   return {
     worldId: draft.worldId,
-    scenarioId: draft.scenarioId,
+    scenarioId,
     harnessId: draft.harnessId,
     agentId: draft.agentId,
     tools: normalizeTools(draft.tools),
@@ -187,7 +194,25 @@ export function recipeOf(draft: Draft): Recipe | undefined {
     ...(draft.sop !== "none" ? { sop: draft.sop } : {}),
     ...(draft.domains.length > 0 ? { domains: draft.domains } : {}),
     ...(draft.leadTimes ? { leadTimes: draft.leadTimes } : {}),
+    ...(draft.operation ? { operation: draft.operation } : {}),
   };
+}
+
+/** The tools an operation starts with on top of the usual ones. */
+const OPERATION_TOOLS: readonly string[] = [
+  "events_since",
+  "wait",
+  "list_alarms",
+  "service_status",
+];
+
+/** Switch between one incident and an operation; an operation starts as eight real-time hours at "보통". */
+export function setKind(draft: Draft, operation: boolean): Draft {
+  const { operation: _drop, scenarioId: _scenario, ...rest } = draft;
+  if (!operation) return rest;
+  // an operation is watched by pulling: the news and the waiting are what it is made of
+  const tools = [...new Set([...rest.tools, ...OPERATION_TOOLS])];
+  return { ...rest, tools, operation: DEFAULT_OPERATION };
 }
 
 export type Step = "what" | "who" | "how";
@@ -216,6 +241,22 @@ function recipeSteps(
 export const countTools = (draft: Draft): number =>
   new Set([...draft.tools, "submit_diagnosis"]).size;
 
+/** What is wrong with the choice of scenario or operation. */
+function whatProblems(draft: Draft, scenario: ScenarioDoc | undefined): string[] {
+  const out: string[] = [];
+  if (!draft.scenarioId && !draft.operation) out.push("시나리오를 골라 주세요");
+  const opProblem = draft.operation && operationProblem(draft.operation);
+  if (opProblem) out.push(opProblem);
+  if (draft.faultScope === "inside" && scenario) {
+    const scope = scopeCheck(scenario, [...draft.tools, "submit_diagnosis"]);
+    if (!scope.inScope)
+      out.push(
+        `준 툴 안에서만으로는 이 시나리오를 못 풀어요: ${(scope.reason ?? "").replaceAll("`", "")}`,
+      );
+  }
+  return out;
+}
+
 /**
  * What is still missing or wrong, by step of the form. Empty everywhere means it can start. With faults limited to
  * the given tools, a scenario those tools cannot solve is a problem of step 1.
@@ -229,14 +270,7 @@ export function draftProblems(
   const who: string[] = [];
   const how: string[] = [];
   if (!draft.worldId) what.push("세계를 골라 주세요");
-  if (!draft.scenarioId) what.push("시나리오를 골라 주세요");
-  if (draft.faultScope === "inside" && scenario) {
-    const scope = scopeCheck(scenario, [...draft.tools, "submit_diagnosis"]);
-    if (!scope.inScope)
-      what.push(
-        `준 툴 안에서만으로는 이 시나리오를 못 풀어요: ${(scope.reason ?? "").replaceAll("`", "")}`,
-      );
-  }
+  what.push(...whatProblems(draft, scenario));
   if (!draft.harnessId) who.push("하네스를 골라 주세요");
   else if (!draft.agentId) who.push("에이전트를 골라 주세요");
   if (draft.runs < 1 || draft.runs > MAX_SEEDS) how.push(runsRange(MAX_SEEDS));
@@ -274,6 +308,7 @@ export function toRequest(draft: Draft, fallbackName: string): CreateExperimentR
       ...(recipe.sop ? { sop: recipe.sop } : {}),
       ...(recipe.domains ? { domains: [...recipe.domains] } : {}),
       ...(recipe.leadTimes ? { leadTimes: recipe.leadTimes } : {}),
+      ...(recipe.operation ? { operation: recipe.operation } : {}),
     },
   };
 }
@@ -300,6 +335,7 @@ export function draftFrom(parent: Experiment): Draft {
     escalation: r.escalation ?? { mode: "auto", reply: DEFAULT_AUTO_REPLY },
     faultScope: r.faultScope ?? "all",
     sop: r.sop ?? "none",
+    ...(r.operation ? { operation: r.operation } : {}),
   };
 }
 
@@ -338,6 +374,8 @@ export function toForkRequest(parent: Experiment, draft: Draft): ForkRequest {
 /** The benchmark set changes when the task changes (world, scenario, time, product versions). */
 export function leavesBenchmarkSet(changes: readonly RecipeChange[]): boolean {
   return changes.some((c) =>
-    ["worldId", "scenarioId", "time", "profiles", "domains", "leadTimes"].includes(c.field),
+    ["worldId", "scenarioId", "time", "profiles", "domains", "leadTimes", "operation"].includes(
+      c.field,
+    ),
   );
 }

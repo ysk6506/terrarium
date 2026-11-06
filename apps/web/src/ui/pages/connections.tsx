@@ -305,6 +305,20 @@ function DeleteDialog({
   );
 }
 
+/** The buttons at the top: the guide for connecting an agent that stays on for hours, and a new connection. */
+function HeadActions({ canAdd, onAdd }: { readonly canAdd: boolean; readonly onAdd: () => void }) {
+  return (
+    <>
+      <Go to={{ name: "operationGuide" }} className="btn">
+        운영 모드로 연결
+      </Go>
+      <Button kind="primary" disabled={!canAdd} why="서버에 연결 방식이 없어요" onClick={onAdd}>
+        연결 더하기
+      </Button>
+    </>
+  );
+}
+
 export function ConnectionsPage() {
   const { api, reloadMeta } = useApp();
   const list = useAsync((signal) => api.call("listConnections", { signal }), []);
@@ -321,16 +335,7 @@ export function ConnectionsPage() {
       <PageHead
         title="연결"
         lede="실험을 돌릴 하네스와 에이전트를 연결해요. 연결해 두면 새 실험에서 골라 써요."
-        actions={
-          <Button
-            kind="primary"
-            disabled={addable.length === 0}
-            why="서버에 연결 방식이 없어요"
-            onClick={() => setEditing({})}
-          >
-            연결 더하기
-          </Button>
-        }
+        actions={<HeadActions canAdd={addable.length > 0} onAdd={() => setEditing({})} />}
       />
       {list.error && <Failure error={list.error} retry={list.reload} />}
       {!list.data && !list.error && <Loading />}

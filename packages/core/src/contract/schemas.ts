@@ -12,7 +12,7 @@ import {
   SCENARIO_SCHEMA_VERSION,
   type ScenarioDoc,
 } from "@terrarium/core/scenario";
-import type { TimePolicy } from "@terrarium/core/session";
+import type { OperationConfig, TimePolicy } from "@terrarium/core/session";
 import {
   CAMPUS_PROFILE_LABELS,
   type CampusSpec,
@@ -370,6 +370,44 @@ export const DomainsSchema = z
   .array(z.enum(["service_os", "virtualization", "server", "network", "storage", "facility"]))
   .max(6)
   .refine((d) => new Set(d).size === d.length, { message: "같은 도메인이 두 번 들어 있어요" });
+
+const FaultTemplateSchema = z
+  .object({
+    type: z.string().min(1).max(64),
+    target: IdSchema,
+    params: z.record(z.string(), z.number().finite()).optional(),
+  })
+  .strict();
+
+/** An operation: how long, how time moves, where the faults come from, what the agent is told (REQ-090, ADR-0094). */
+export const OperationSchema = z
+  .object({
+    hours: z.number().min(1).max(96),
+    pace: z.discriminatedUnion("mode", [
+      z.object({ mode: z.literal("realtime") }).strict(),
+      z.object({ mode: z.literal("fast"), speed: z.number().min(10).max(60) }).strict(),
+    ]),
+    source: z.discriminatedUnion("kind", [
+      z.object({ kind: z.literal("preset"), preset: z.enum(["quiet", "normal", "busy"]) }).strict(),
+      z
+        .object({ kind: z.literal("set"), faults: z.array(FaultTemplateSchema).min(1).max(500) })
+        .strict(),
+    ]),
+    rateScale: z.number().min(0.1).max(100).optional(),
+    cascadeChance: z.number().min(0).max(1),
+    simultaneousChance: z.number().min(0).max(1),
+    wakeOnAlarm: z.boolean(),
+    instruction: z.string().max(4000),
+    budget: z
+      .object({
+        maxToolCalls: z.number().int().min(1).max(100_000).optional(),
+        maxTokens: z.number().int().min(1).max(1_000_000_000).optional(),
+        maxCostUsd: z.number().min(0.01).max(100_000).optional(),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict() as unknown as z.ZodType<OperationConfig>;
 
 /** The vendor SLA, spare parts and surcharge the teams' waits are worked out from (REQ-093). */
 export const LeadTimesSchema = z

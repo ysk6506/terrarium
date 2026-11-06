@@ -164,6 +164,27 @@ export function serversMoved(
   return { before: servers(at), after: servers(end), at };
 }
 
+/** An incident's bar as the time bar draws it: seconds from the start, the open end running to the end of the run. */
+export interface Bar {
+  readonly from: number;
+  readonly to: number;
+  readonly open: boolean;
+  readonly target: string;
+}
+
+export function barsOf(
+  spans: ReadonlyArray<{ readonly from: number; readonly to?: number; readonly target: string }>,
+  origin: number,
+  duration: number,
+): Bar[] {
+  return spans.map((s) => ({
+    from: Math.max(0, s.from - origin),
+    to: Math.min(duration, (s.to ?? origin + duration) - origin),
+    open: s.to === undefined,
+    target: s.target,
+  }));
+}
+
 /** The marks with their times counted from the start of the run, as the bar draws them. */
 export function relative(marks: readonly Mark[], origin: number): Mark[] {
   return marks.map((m) => ({ ...m, t: m.t - origin, at: m.at.map((a) => a - origin) }));

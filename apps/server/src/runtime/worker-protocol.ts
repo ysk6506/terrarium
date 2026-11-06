@@ -89,5 +89,7 @@ export type FromWorker =
       readonly seq: number;
       readonly error: WorkerError;
     }
+  /** What a realtime session wrote on its own between calls (an operation's alarms come while the agent waits). */
+  | { readonly kind: "events"; readonly id: string; readonly events: readonly RunEvent[] }
   /** A realtime session ran out of time on its own. */
   | { readonly kind: "ended"; readonly id: string; readonly reason: EndReason };

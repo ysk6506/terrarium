@@ -2,7 +2,13 @@
  * The replay of one run (REQ-078 step 2, ADR-0084 items 8 and 9): the first line of the result, the board, and the one
  * time bar. While the run goes, the bar follows the newest moment; drag it back and it stays where it is put.
  */
-import { markers, storyLine } from "@terrarium/core/topology";
+import {
+  incidentSpans,
+  isOperation,
+  markers,
+  operationMarks,
+  storyLine,
+} from "@terrarium/core/topology";
 import { useMemo, useState } from "react";
 import { hallTopology } from "../../logic";
 import { Button, Note } from "../kit";
@@ -41,14 +47,31 @@ export function useMarks(data: RunData | undefined) {
   return useMemo(() => {
     if (!data) return [];
     const { record } = data;
-    return hallTopology.relative(markers(record.events), record.origin);
+    const found = isOperation(record.events)
+      ? operationMarks(record.events)
+      : markers(record.events);
+    return hallTopology.relative(found, record.origin);
+  }, [data]);
+}
+
+/** An operation's incident bars; none for a run of one incident. */
+export function useBars(data: RunData | undefined) {
+  return useMemo(() => {
+    if (!data || !isOperation(data.record.events)) return undefined;
+    const { record } = data;
+    return hallTopology.barsOf(
+      incidentSpans(record.events),
+      record.origin,
+      record.end - record.origin,
+    );
   }, [data]);
 }
 
 /** The first line of the result: "고장 1곳 → ... → 영향 범위 서버 108 → 0 · 9분 30초 · 툴 호출 11번". */
 function useStory(data: RunData | undefined) {
   return useMemo(() => {
-    if (!data || data.record.live) return undefined;
+    // the first line counts one incident toward an answer; an operation has many incidents and no answer
+    if (!data || data.record.live || isOperation(data.record.events)) return undefined;
     const { index, record } = data;
     const first = markers(record.events).find((m) => m.kind === "act")?.t;
     const servers = hallTopology.serversMoved(index, replayCatalog, record.events, first);
@@ -68,6 +91,7 @@ export function RunReplay({ runId, worldId, live, onEnd }: RunReplayProps) {
   const duration = data ? data.record.end - data.record.origin : 0;
   const player = usePlayer(duration, data?.record.live ?? false);
   const marks = useMarks(data);
+  const bars = useBars(data);
   const story = useStory(data);
   if (error && !data) return <Note tone="warn">{W.replayNone}</Note>;
   if (!data) return <p className="muted">{W.replayLoading}</p>;
@@ -83,6 +107,7 @@ export function RunReplay({ runId, worldId, live, onEnd }: RunReplayProps) {
         t={player.t}
         duration={duration}
         marks={marks}
+        {...(bars ? { bars } : {})}
         playing={player.playing}
         onPlaying={player.onPlaying}
         onT={player.onT}

@@ -13,7 +13,19 @@ import {
 } from "@terrarium/core/world";
 import { clockText } from "./replay-words";
 
-export type MarkKind = "fault" | "alarm" | "read" | "act" | "partner" | "recover";
+export type MarkKind =
+  | "fault"
+  | "alarm"
+  | "read"
+  | "act"
+  | "partner"
+  | "recover"
+  /** An operation: the agent looked at the alarms ("봤다"). */
+  | "look"
+  /** An operation: a person was asked or stepped in. */
+  | "human"
+  /** An operation: the agent lost its harness. */
+  | "link";
 
 /** The order on the bar and in the line. */
 export const MARK_KINDS: readonly MarkKind[] = [
@@ -32,6 +44,9 @@ export const MARK_LABELS: Readonly<Record<MarkKind, string>> = {
   act: "조치",
   partner: "담당자",
   recover: "회복",
+  look: "봤다",
+  human: "사람 개입",
+  link: "연결 끊김",
 };
 
 export interface Mark {

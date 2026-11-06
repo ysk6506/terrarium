@@ -184,6 +184,7 @@ export class ScriptedHarness implements HarnessPort {
         "테라리움에 들어 있는 규칙 기반 기준 에이전트. 다른 에이전트와 비교할 바닥과 잣대가 돼요.",
       toolTransport: "in-process",
       telemetry: "none",
+      wakeable: true,
     };
   }
 

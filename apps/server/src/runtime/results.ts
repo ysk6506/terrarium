@@ -34,7 +34,12 @@ import type {
 import { UnavailableError } from "@terrarium/core/contract";
 import type { Experiment, RunRecord } from "@terrarium/core/experiments";
 import { NotFoundError, randomToken } from "@terrarium/core/kernel";
-import { type CommonReach, commonReach, legacyEvents } from "@terrarium/core/session";
+import {
+  type CommonReach,
+  commonReach,
+  legacyEvents,
+  operationScenario,
+} from "@terrarium/core/session";
 import type { ImportReport } from "@terrarium/core/sources/realimport";
 import { spanOf } from "@terrarium/core/topology";
 import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
@@ -95,7 +100,10 @@ export class Results {
     const key = `${worldId}@${worldDigest}|${scenarioId}@${scenarioDigest}`;
     if (!REACH.has(key)) {
       const blueprint = await this.ctx.store.worldVersion(worldId, worldDigest);
-      const scenario = await this.ctx.store.scenarioVersion(scenarioId, scenarioDigest);
+      const operation = experiment.recipe.operation;
+      const scenario = operation
+        ? operationScenario(scenarioId, worldId, operation)
+        : await this.ctx.store.scenarioVersion(scenarioId, scenarioDigest);
       REACH.set(key, blueprint && scenario ? (commonReach({ blueprint, scenario }) ?? null) : null);
     }
     return REACH.get(key) ?? undefined;

@@ -4,11 +4,11 @@ kind: reference
 status: active
 last_verified: 2026-11-06
 verification_log:
-  - "2026-11-06: tool-scope-and-sop.md와 ADR-0105 링크를 더했다"
   - "2026-11-05: ADR-0101 링크를 더했다"
   - "2026-11-05: harness-e2e.md 링크를 더했다"
   - "2026-11-05: ADR-0082 링크를 더했다"
   - "2026-11-06: ADR-0104 링크를 더했다"
+  - "2026-11-06: operation-mode.md, 운영 에이전트 설계 가이드, ADR-0110 링크를 더했다"
 ---
 # 문서 색인
 
@@ -56,6 +56,8 @@ verification_log:
 - [고장 종류별 리드타임 — 넘기면 얼마나 걸려 사라지나](design-docs/lead-times.md)
 - [도메인과 가상 담당자 — 내 도메인 밖의 고장은 넘기고, 기다리는 동안 다른 일을 한다](design-docs/domains-and-counterparts.md)
 - [시나리오 편집기 검토 — 처음 쓰는 사람의 눈으로, 토스의 원칙으로](design-docs/scenario-editor-review.md)
+- [운영 모드 — 끝이 없는 실험, 당겨서 보는 모니터링, 실시간과 빨리 감기](design-docs/operation-mode.md)
+- [운영 에이전트 설계 가이드 — 8시간 동안 지켜보는 에이전트를 만드는 법](guides/operation-agent-guide.md)
 - [용어집 — 화면에 쓰는 말은 여기서 정한다](design-docs/glossary.md)
 
 ### ADR
@@ -157,6 +159,7 @@ verification_log:
 - [0100 에스컬레이트는 도메인 하나만 받는다 — 그 도메인 고장이 종류별 리드타임 뒤에 사라진다 (0098·0099 단순화)](design-docs/adr/0100-escalate-by-domain.md)
 - [0101 랙 실장 장면, 컨테인먼트 안, 펌웨어 올리기 — 시험 세 개의 기대값을 고친다](design-docs/adr/0101-rack-containment-firmware-amend-tests.md)
 - [0102 서비스·OS 층을 구현하면서 시험 다섯 개의 기대값을 고친다](design-docs/adr/0102-service-os-amend-tests.md)
+- [0110 운영 모드를 구현하면서 ADR-0094의 강제 장치를 시험으로 잇는다](design-docs/adr/0110-operation-mode-amend-tests.md)
 - [0108 서비스부터는 IAP 하나로 시작하고, 사다리의 칩마다 그림·설명 카드가 있다 (0107 보정)](design-docs/adr/0108-world-entry-iap-and-chip-cards.md)
 - [0107 세계 만들기 입구를 둘로 가르고, 서비스부터는 층마다 HA 사다리에서 고른다 — 모르는 층은 알아서](design-docs/adr/0107-world-entry-two-doors-ha-ladders.md)
 - [0103 토폴로지 보기 ②가 건드리는 보호 경로 — ADR-0084의 강제 장치에 새 시험을 잇는다](design-docs/adr/0103-topology-replay-amend-tests.md)

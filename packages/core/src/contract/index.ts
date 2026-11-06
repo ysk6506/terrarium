@@ -108,6 +108,7 @@ export {
   MAX_LINKS,
   NameSchema,
   NoteSchema,
+  OperationSchema,
   ProfilesSchema,
   ScenarioDocSchema,
   SeedsSchema,

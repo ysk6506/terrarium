@@ -8,6 +8,7 @@ import { Go, useApp, useAsync } from "../context";
 import { Loading, Section } from "../kit";
 import { EscalationCards } from "./escalation";
 import { ExperimentTable } from "./experiments";
+import { OperationCards } from "./operation-card";
 
 const Vitrine = lazy(() => import("./Vitrine"));
 
@@ -53,6 +54,43 @@ function Starts() {
   );
 }
 
+/** The operations going now, one check-in card each (REQ-090). */
+function Operating() {
+  const { api } = useApp();
+  const list = useAsync(
+    (signal) => api.call("listExperiments", { query: { limit: 8 }, signal }),
+    [],
+  );
+  const going = (list.data ?? []).filter(
+    (s) => s.status === "running" && s.experiment.recipe.operation,
+  );
+  if (going.length === 0) return null;
+  return (
+    <Section title="지금 돌고 있는 운영">
+      <div className="stack">
+        {going.map((s) => (
+          <RunningOperation key={s.experiment.id} id={s.experiment.id} />
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function RunningOperation({ id }: { readonly id: string }) {
+  const { api } = useApp();
+  const view = useAsync((signal) => api.call("getExperiment", { params: { id }, signal }), [id]);
+  const recipe = view.data?.experiment.recipe;
+  if (!view.data || !recipe?.operation) return null;
+  return (
+    <OperationCards
+      runs={view.data.runs}
+      worldId={recipe.worldId}
+      hours={recipe.operation.hours}
+      title={view.data.experiment.name}
+    />
+  );
+}
+
 function Recent() {
   const { api, me, meta } = useApp();
   const list = useAsync(
@@ -83,6 +121,7 @@ export function HomePage() {
       <EscalationCards />
       <Hero />
       <Starts />
+      <Operating />
       <Recent />
     </div>
   );

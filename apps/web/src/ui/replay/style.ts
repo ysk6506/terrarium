@@ -85,6 +85,45 @@ export const REPLAY_CSS = `
   pointer-events: none;
 }
 
+.rb-span {
+  position: absolute;
+  top: 24px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--good);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.rb-span.open {
+  background: var(--bad);
+}
+
+.m-look {
+  background: color-mix(in srgb, var(--cobalt) 40%, var(--surface));
+}
+
+.m-human {
+  background: var(--ink);
+}
+
+.m-link {
+  background: var(--bad);
+  border-radius: 2px;
+}
+
+.t-link {
+  --mark: var(--bad);
+}
+
+.t-look {
+  --mark: color-mix(in srgb, var(--cobalt) 70%, var(--ink-2));
+}
+
+.t-human {
+  --mark: var(--ink);
+}
+
 .rb-mark.again {
   top: 11px;
   width: 8px;

@@ -4,6 +4,7 @@
  * the key; everything that changes the task itself is.
  */
 import { hashValue } from "@terrarium/core/kernel";
+import { operationKey, operationProblem } from "@terrarium/core/session";
 import { TOOL_NAMES } from "@terrarium/core/tools";
 import { isDefaultLeadSettings, resolveLeadSettings } from "@terrarium/core/world";
 import type { Recipe, Snapshot } from "./model";
@@ -77,6 +78,18 @@ function profileProblems(recipe: Recipe, ctx: RecipeContext): string[] {
   return out;
 }
 
+/** An operation needs a valid config and a way to pull the news: without `events_since` the agent can only list what is up. */
+function operationProblems(recipe: Recipe): string[] {
+  if (!recipe.operation) return [];
+  const own = operationProblem(recipe.operation);
+  return [
+    ...(own ? [own] : []),
+    ...(recipe.tools.includes("events_since")
+      ? []
+      : ["운영에는 새 사건 보기(events_since) 툴이 있어야 해요. 툴 고르기에서 켜 주세요"]),
+  ];
+}
+
 /** Problems with a recipe, in Korean; empty when it can run. */
 export function recipeProblems(recipe: Recipe, ctx: RecipeContext): string[] {
   const out = [
@@ -85,6 +98,7 @@ export function recipeProblems(recipe: Recipe, ctx: RecipeContext): string[] {
     ...timeProblems(recipe.time),
     ...humanProblems(recipe),
     ...profileProblems(recipe, ctx),
+    ...operationProblems(recipe),
   ];
   if (!recipe.harnessId) out.push("하네스를 골라야 해요");
   if (!recipe.agentId) out.push("에이전트를 골라야 해요");
@@ -96,7 +110,7 @@ export function recipeProblems(recipe: Recipe, ctx: RecipeContext): string[] {
 /** The comparable task: same world and scenario versions, same scoring, same time and product versions. */
 export function benchmarkKey(
   snapshot: Snapshot,
-  recipe: Pick<Recipe, "time" | "profiles" | "domains" | "leadTimes" | "faultScope">,
+  recipe: Pick<Recipe, "time" | "profiles" | "domains" | "leadTimes" | "faultScope" | "operation">,
 ): string {
   // domains and lead times change the task, so they are in the key; unset they leave the key as it always was
   const scope =
@@ -119,6 +133,9 @@ export function benchmarkKey(
     // which faults can happen shapes the task; how escalation is answered and whether a runbook is given are
     // conditions of the agent, like its tools, so they stay out of the key (only where set, so old keys stay)
     ...(recipe.faultScope === "inside" ? { faultScope: "inside" } : {}),
+    // an operation is a different task for each length, pace, fault source and rate; its instruction is a
+    // condition of the agent and stays out, like the tools
+    ...(recipe.operation ? { operation: operationKey(recipe.operation) } : {}),
   });
 }
 

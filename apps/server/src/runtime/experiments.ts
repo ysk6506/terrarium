@@ -30,6 +30,7 @@ import {
   isTerminal,
   newRun,
   normalizeTools,
+  OPERATION_SCENARIO_ID,
   progressOf,
   type Recipe,
   type RunRecord,
@@ -38,11 +39,17 @@ import {
   type Subject,
   seedsUpTo,
 } from "@terrarium/core/experiments";
-import { InvalidValueError } from "@terrarium/core/kernel";
+import { hashValue, InvalidValueError } from "@terrarium/core/kernel";
 import { ORACLE_VERSION } from "@terrarium/core/oracle";
 import { BUILTIN_PROFILES } from "@terrarium/core/profiles";
 import { hasErrors, type ScenarioDoc, scopeCheck } from "@terrarium/core/scenario";
-import { DEFAULT_TIME } from "@terrarium/core/session";
+import {
+  DEFAULT_TIME,
+  type OperationConfig,
+  operationKey,
+  operationProblem,
+  paceLabel,
+} from "@terrarium/core/session";
 import type { AgentVersions } from "./agent-versions";
 import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
 import type { Dispatcher } from "./dispatcher";
@@ -97,7 +104,22 @@ function forkChange(parent: Recipe, change: ForkRequest["change"]): Partial<Reci
   return { ...change, tools: normalizeTools(wanted) };
 }
 
+/** The choices of a recipe that are left out when not made, so an experiment that does not use them reads as it always did. */
+function optionsOf(req: RecipeRequest): Partial<Recipe> {
+  return {
+    ...(req.escalation ? { escalation: req.escalation } : {}),
+    ...(req.faultScope ? { faultScope: req.faultScope } : {}),
+    ...(req.sop ? { sop: req.sop } : {}),
+    ...(req.domains && req.domains.length > 0 ? { domains: req.domains } : {}),
+    ...(req.leadTimes ? { leadTimes: req.leadTimes } : {}),
+    ...(req.operation ? { operation: req.operation } : {}),
+  };
+}
+
 const FINDER = "search_runbooks";
+
+/** An operation follows the clock driver; the session is synced to the wall clock at real speed (ADR-0094). */
+const REAL_TIME = { kind: "realtime", speed: 1 } as const;
 
 export class Experiments {
   constructor(
@@ -114,6 +136,7 @@ export class Experiments {
   /** What a recipe points at, checked: the world, a runnable scenario on it, the harness's agents. */
   private async resolve(recipe: Recipe): Promise<{ snapshot: Snapshot; subject: Subject }> {
     const world = must(await this.ctx.store.getWorld(recipe.worldId), `세계 ${recipe.worldId}`);
+    if (recipe.operation) return this.resolveOperation(recipe, world);
     const scenario = must(
       await this.ctx.store.getScenario(recipe.scenarioId),
       `시나리오 ${recipe.scenarioId}`,
@@ -144,6 +167,27 @@ export class Experiments {
     };
   }
 
+  /** An operation has no stored scenario: its task is the config itself, so the digest is the config's. */
+  private async resolveOperation(
+    recipe: Recipe,
+    world: { readonly digest: string; readonly name: string },
+  ): Promise<{ snapshot: Snapshot; subject: Subject }> {
+    const operation = recipe.operation as OperationConfig;
+    const problem = operationProblem(operation);
+    if (problem)
+      throw new InvalidInputError(problem, [{ path: "recipe.operation", message: problem }]);
+    return {
+      snapshot: {
+        worldDigest: world.digest,
+        worldName: world.name,
+        scenarioDigest: hashValue(operationKey(operation)),
+        scenarioName: `${operation.hours}시간 운영 · ${paceLabel(operation.pace)}`,
+        oracle: ORACLE_VERSION,
+      },
+      subject: await this.checkRecipe(recipe),
+    };
+  }
+
   /** With faults limited to the given tools, a scenario those tools cannot solve is refused, with the missing tool. */
   private checkScope(recipe: Recipe, doc: ScenarioDoc, name: string): void {
     if (recipe.faultScope !== "inside") return;
@@ -169,6 +213,13 @@ export class Experiments {
         `하네스 '${harness.info.name}'에 연결할 수 없어요: ${err.message}`,
       );
     });
+    if (recipe.operation?.wakeOnAlarm && !harness.info.wakeable)
+      throw new InvalidInputError("알람마다 깨우기를 쓸 수 없는 연결이에요", [
+        {
+          path: "recipe.operation.wakeOnAlarm",
+          message: `'${harness.info.name}'은 알람 요약을 받을 수 없어요. 끄고 돌리면 에이전트가 직접 확인해요`,
+        },
+      ]);
     const problems = recipeProblems(recipe, {
       profiles: PROFILE_KEYS,
       agents: agents.map((a) => a.id),
@@ -189,18 +240,14 @@ export class Experiments {
     );
     return {
       worldId: req.worldId,
-      scenarioId: req.scenarioId,
+      scenarioId: req.operation ? OPERATION_SCENARIO_ID : req.scenarioId,
       harnessId: req.harnessId,
       agentId: req.agentId,
       tools,
       seeds: req.seeds ?? (req.runs ? seedsUpTo(req.runs) : [...DEFAULT_SEEDS]),
-      time: req.time ?? DEFAULT_TIME,
+      time: req.operation ? REAL_TIME : (req.time ?? DEFAULT_TIME),
       profiles: req.profiles ?? {},
-      ...(req.escalation ? { escalation: req.escalation } : {}),
-      ...(req.faultScope ? { faultScope: req.faultScope } : {}),
-      ...(req.sop ? { sop: req.sop } : {}),
-      ...(req.domains && req.domains.length > 0 ? { domains: req.domains } : {}),
-      ...(req.leadTimes ? { leadTimes: req.leadTimes } : {}),
+      ...optionsOf(req),
     };
   }
 
@@ -253,7 +300,9 @@ export class Experiments {
     const target = { ...parent.recipe, ...change };
     // Same world and scenario: the same versions the parent ran. Another one: its current version.
     const sameTask =
-      target.worldId === parent.recipe.worldId && target.scenarioId === parent.recipe.scenarioId;
+      target.worldId === parent.recipe.worldId &&
+      target.scenarioId === parent.recipe.scenarioId &&
+      target.operation === parent.recipe.operation;
     if (sameTask) await this.checkKeptScope(target, parent.snapshot);
     const resolved = sameTask ? undefined : await this.resolve(target);
     const snapshot = resolved?.snapshot ?? parent.snapshot;

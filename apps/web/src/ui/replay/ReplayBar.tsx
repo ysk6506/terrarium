@@ -21,6 +21,8 @@ export interface ReplayBarProps {
   readonly t: number;
   readonly duration: number;
   readonly marks?: readonly Mark[];
+  /** An operation's incidents: a bar from each fault to its end, red while it is still open. */
+  readonly bars?: readonly hallTopology.Bar[];
   readonly playing: boolean;
   readonly onPlaying: (playing: boolean) => void;
   readonly onT: (t: number) => void;
@@ -103,6 +105,16 @@ function Track(props: ReplayBarProps) {
     >
       <i className="rb-line" />
       <i className="rb-fill" style={{ width: `${hallTopology.pct(t, duration)}%` }} />
+      {props.bars?.map((b) => (
+        <i
+          key={`${b.target}-${b.from}`}
+          className={`rb-span${b.open ? " open" : ""}`}
+          style={{
+            left: `${hallTopology.pct(b.from, duration)}%`,
+            width: `${Math.max(0.6, hallTopology.pct(b.to, duration) - hallTopology.pct(b.from, duration))}%`,
+          }}
+        />
+      ))}
       <Marks marks={marks} duration={duration} />
       <i className="rb-knob" style={{ left: `${hallTopology.pct(t, duration)}%` }} />
     </div>

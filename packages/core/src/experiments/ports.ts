@@ -24,6 +24,19 @@ export interface HarnessInfo {
   readonly mcpSlot?: string;
   /** Whether its traces, metrics and logs can be read from ClickStack. */
   readonly telemetry: "clickstack" | "none";
+  /** Whether it can take a summary of every new alarm pushed to it during an operation (ADR-0094 item 4). */
+  readonly wakeable?: boolean;
+}
+
+/** Where a harness listens for the alarm summaries an operation pushes when "알람마다 깨우기" is on. */
+export interface AlarmWake {
+  subscribe(listener: (summary: string) => void): () => void;
+}
+
+/** The facts of an operation run a harness may need (ADR-0094). */
+export interface OperationInfo {
+  readonly hours: number;
+  readonly wake?: AlarmWake;
 }
 
 export interface AgentInfo {
@@ -110,6 +123,8 @@ export interface AgentRunRequest {
   readonly agentId: string;
   readonly prompt: string;
   readonly limits: { readonly maxToolCalls: number; readonly timeLimitSeconds: number };
+  /** Set for an operation: the agent stays on for hours and the run ends when the time is up (ADR-0094). */
+  readonly operation?: OperationInfo;
   readonly tools: ToolEndpoint;
   readonly signal: AbortSignal;
   /** W3C trace context, so the harness's spans join this run's trace in ClickStack. */
