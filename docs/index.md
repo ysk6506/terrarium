@@ -169,6 +169,7 @@ verification_log:
 - [0109 세계 만들기 입구를 구현하면서 글 잣대 시험의 화면 목록 둘을 고친다](design-docs/adr/0109-world-entry-amend-tests.md)
 - [0112 서버가 멈춰도 운영은 이어 가고, 저장해 둔 것은 서버에 두고, 서비스마다 모양을 고르고, 운영의 끝은 운영의 말로 쓴다](design-docs/adr/0112-operation-resume-and-presets-amend-tests.md)
 - [0110 운영 모드를 구현하면서 ADR-0094의 강제 장치를 시험으로 잇는다](design-docs/adr/0110-operation-mode-amend-tests.md)
+- [0116 진짜 호스트 섞기 — 세계의 서버 몇 대는 실제 리눅스가 답한다](design-docs/adr/0116-real-hosts-in-the-world.md)
 - [0108 서비스부터는 IAP 하나로 시작하고, 사다리의 칩마다 그림·설명 카드가 있다 (0107 보정)](design-docs/adr/0108-world-entry-iap-and-chip-cards.md)
 - [0107 세계 만들기 입구를 둘로 가르고, 서비스부터는 층마다 HA 사다리에서 고른다 — 모르는 층은 알아서](design-docs/adr/0107-world-entry-two-doors-ha-ladders.md)
 - [0103 토폴로지 보기 ②가 건드리는 보호 경로 — ADR-0084의 강제 장치에 새 시험을 잇는다](design-docs/adr/0103-topology-replay-amend-tests.md)
