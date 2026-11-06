@@ -95,6 +95,9 @@ export function summaryOf(node: ScenarioNode, index?: BlueprintIndex): string {
   return SUMMARIES[node.type]?.(node, index) ?? "";
 }
 
+/** What a block is called on the canvas: the author's caption, else the block's name. */
+export const titleOf = (n: ScenarioNode): string => n.label || blockSpec(n.type)?.label || n.type;
+
 const portLabel = (port: string) => PORT_LABELS[port] ?? `갈래 ${port}`;
 
 export function toFlow(
@@ -108,7 +111,7 @@ export function toFlow(
     return {
       id: n.id,
       type: n.type,
-      title: n.label || spec?.label || n.type,
+      title: titleOf(n),
       category: spec?.category ?? "unknown",
       summary: summaryOf(n, index),
       position: n.position,

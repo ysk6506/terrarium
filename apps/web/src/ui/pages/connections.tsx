@@ -2,270 +2,16 @@
  * Connections (REQ-051, REQ-052, REQ-053): the harnesses and agents Terrarium can run experiments on, who
  * connected them, whether they answer, how long until an unused one is removed, and the agents each one has.
  */
-import type { ConnectionView, ConnectorSpec } from "@terrarium/core/contract";
+import type { ConnectionView } from "@terrarium/core/contract";
 import { useState } from "react";
-import { expiryOf, reasonPhrase, TRANSPORT_LABELS, tracesLabel } from "../../logic";
+import { splitConnections } from "../../logic";
 import { Go, useAction, useApp, useAsync } from "../context";
-import { Button, Dialog, Empty, Failure, Loading, Note, PageHead, ToneDot } from "../kit";
-import { AgentCensusLine } from "./agent-census";
+import { Button, Dialog, Empty, Failure, Loading, PageHead } from "../kit";
+import { ConnectionCard } from "./connection-card";
 import { ConnectionDialog } from "./connection-dialog";
-import { TryPanel } from "./connection-try";
+import { KindCards } from "./connection-kinds";
 
-type Editing = { readonly view?: ConnectionView } | undefined;
-
-function AgentRows({
-  view,
-  agents,
-}: {
-  readonly view: ConnectionView;
-  readonly agents: ConnectionView["agents"];
-}) {
-  if (agents.length === 0) return null;
-  return (
-    <div className="table-wrap">
-      <table className="table">
-        <thead>
-          <tr>
-            <th>에이전트</th>
-            <th>모델</th>
-            <th>설명</th>
-            <th>버전</th>
-          </tr>
-        </thead>
-        <tbody>
-          {agents.map((a) => (
-            <tr key={a.id}>
-              <td>
-                {a.name}
-                {a.hidden && (
-                  <span className="tag" style={{ marginLeft: 8 }}>
-                    {reasonPhrase(a.hidden)}
-                  </span>
-                )}
-              </td>
-              <td>{a.model ?? "—"}</td>
-              <td className="muted">{a.description ?? ""}</td>
-              <td>
-                <Go
-                  to={{ name: "agentVersions", connectionId: view.id, agentId: a.id }}
-                  aria-label={`${a.name}의 버전 기록`}
-                >
-                  버전 기록
-                </Go>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function Badges({ view }: { readonly view: ConnectionView }) {
-  const expiry = expiryOf(view);
-  return (
-    <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
-      <ToneDot tone={view.status === "ok" ? "good" : "bad"}>
-        {view.status === "ok" ? "연결됨" : "연결 안 됨"}
-      </ToneDot>
-      <span className="tag">
-        {view.source === "config" ? "서버 설정" : `만든 사람 ${view.owner}`}
-      </span>
-      <span className="tag">{view.scope === "harness" ? "하네스" : "에이전트 하나"}</span>
-      <span className="tag">{TRANSPORT_LABELS[view.toolTransport]}</span>
-      <span className="tag">{tracesLabel(view.traces)}</span>
-      {expiry.state !== "none" && (
-        <ToneDot tone={expiry.state === "soon" ? "warn" : "neutral"}>{expiry.label}</ToneDot>
-      )}
-    </div>
-  );
-}
-
-function Pairs({ view }: { readonly view: ConnectionView }) {
-  const meta = Object.entries(view.metadata);
-  if (meta.length === 0 && view.headers.length === 0) return null;
-  return (
-    <div className="row" style={{ flexWrap: "wrap", gap: 6 }}>
-      {meta.map(([k, v]) => (
-        <span className="tag" key={`m:${k}`} title="실험에 붙는 메타데이터">
-          {k}={v}
-        </span>
-      ))}
-      {view.headers.map((h) => (
-        <span className="tag" key={`h:${h.name}`} title="모든 요청에 붙는 헤더">
-          헤더 {h.name}
-          {h.secret ? " (비밀)" : ""}
-        </span>
-      ))}
-    </div>
-  );
-}
-
-function Actions({
-  view,
-  mine,
-  onEdit,
-  onDelete,
-  onChanged,
-}: {
-  readonly view: ConnectionView;
-  readonly mine: boolean;
-  readonly onEdit: () => void;
-  readonly onDelete: () => void;
-  readonly onChanged: () => void;
-}) {
-  const { api } = useApp();
-  const { busy, run } = useAction();
-  const act = async (call: "keepConnection" | "recheckConnection", done: string) => {
-    if (await run(() => api.call(call, { params: { id: view.id } }), done)) onChanged();
-  };
-  return (
-    <div className="row" style={{ flexWrap: "wrap" }}>
-      <Button size="small" busy={busy} onClick={() => act("recheckConnection", "다시 확인했어요")}>
-        다시 확인
-      </Button>
-      {view.source === "screen" && (
-        <Button
-          size="small"
-          busy={busy}
-          onClick={() => act("keepConnection", "계속 쓰기로 했어요")}
-        >
-          계속 쓰기
-        </Button>
-      )}
-      {mine && (
-        <>
-          <Button size="small" onClick={onEdit}>
-            고치기
-          </Button>
-          <Button size="small" kind="danger" onClick={onDelete}>
-            지우기
-          </Button>
-        </>
-      )}
-    </div>
-  );
-}
-
-/**
- * A harness that reads its tools from its own config file (Hermes) needs one fixed address; show it with
- * where to write it, and copy it in one press.
- */
-function SlotAddress({ url }: { readonly url: string }) {
-  const { toast } = useApp();
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(url);
-      toast("툴 주소를 복사했어요");
-    } catch {
-      toast("복사하지 못했어요. 브라우저가 클립보드를 막고 있어요", "bad");
-    }
-  };
-  return (
-    <Note>
-      <div className="stack" style={{ gap: 8 }}>
-        <span>
-          이 하네스는 툴 주소를 설정 파일에서만 읽어요. 아래 주소를 하네스 설정의 MCP 서버(Hermes는
-          config.yaml의 mcp_servers → terrarium → url)에 한 번 적어 두세요. 실험이 돌 때만 그 세계로
-          이어져요.
-        </span>
-        <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
-          <code style={{ wordBreak: "break-all" }} title="고정 툴 주소">
-            {url}
-          </code>
-          <Button size="small" onClick={copy}>
-            주소 복사
-          </Button>
-        </div>
-      </div>
-    </Note>
-  );
-}
-
-/** The agents of a connection, how many there are and why some are left out, and "모두 보기". */
-function AgentsPart({
-  view,
-  spec,
-  mine,
-  onChanged,
-}: {
-  readonly view: ConnectionView;
-  readonly spec: ConnectorSpec | undefined;
-  readonly mine: boolean;
-  readonly onChanged: () => void;
-}) {
-  const { api } = useApp();
-  const { busy, run } = useAction();
-  const [peek, setPeek] = useState(false);
-  // The owner can make the connection list everything for every experiment; others only look.
-  const persist = mine && spec?.fields.some((f) => f.key === "showHidden") === true;
-  const showing = view.census.includesHidden || peek;
-  const toggle = async () => {
-    if (!persist) return setPeek(!peek);
-    const body = { config: { ...view.config, showHidden: !view.census.includesHidden } };
-    if (await run(() => api.call("updateConnection", { params: { id: view.id }, body }))) {
-      setPeek(false);
-      onChanged();
-    }
-  };
-  const agents = peek ? [...view.agents, ...view.hiddenAgents] : view.agents;
-  return (
-    <>
-      {view.status === "ok" && (
-        <AgentCensusLine census={view.census} showing={showing} onToggle={toggle} busy={busy} />
-      )}
-      <AgentRows view={view} agents={agents} />
-      <TryPanel view={view} agents={agents} />
-    </>
-  );
-}
-
-function ConnectionCard({
-  view,
-  spec,
-  onEdit,
-  onDelete,
-  onChanged,
-}: {
-  readonly view: ConnectionView;
-  readonly spec: ConnectorSpec | undefined;
-  readonly onEdit: () => void;
-  readonly onDelete: () => void;
-  readonly onChanged: () => void;
-}) {
-  const { me } = useApp();
-  const mine = view.source === "screen" && view.owner === me;
-  return (
-    <section className="panel panel-pad" aria-label={view.name}>
-      <div className="stack">
-        <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
-          <h2 style={{ margin: 0 }}>{view.name}</h2>
-          <Actions
-            view={view}
-            mine={mine}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            onChanged={onChanged}
-          />
-        </div>
-        {view.description && (
-          <p className="muted" style={{ margin: 0 }}>
-            {view.description}
-          </p>
-        )}
-        <Badges view={view} />
-        <Pairs view={view} />
-        {view.mcpSlotUrl && <SlotAddress url={view.mcpSlotUrl} />}
-        {view.status === "unreachable" && (
-          <Note tone="bad">
-            {view.error ?? "연결하지 못했어요. '다시 확인'을 눌러 한 번 더 해 보세요."}
-          </Note>
-        )}
-        <AgentsPart view={view} spec={spec} mine={mine} onChanged={onChanged} />
-      </div>
-    </section>
-  );
-}
+type Editing = { readonly view?: ConnectionView; readonly kind?: string } | undefined;
 
 function DeleteDialog({
   view,
@@ -319,6 +65,36 @@ function HeadActions({ canAdd, onAdd }: { readonly canAdd: boolean; readonly onA
   );
 }
 
+/** The built-in reference agents, folded away: they play a script, so there is nothing to talk to. */
+function ReferenceFold(props: {
+  readonly views: readonly ConnectionView[];
+  readonly onChanged: () => void;
+}) {
+  const { views, onChanged } = props;
+  const agents = views.reduce((n, v) => n + v.agents.length, 0);
+  if (views.length === 0) return null;
+  return (
+    <details className="fold detail-fold">
+      <summary>
+        내장 기준 에이전트 {agents} — 아무것도 안 함 · 찍기 · 정답만 앎 (변별력 점검에 쓰여요)
+      </summary>
+      <div className="stack" style={{ gap: 12, marginTop: 12 }}>
+        {views.map((view) => (
+          <ConnectionCard
+            key={view.id}
+            view={view}
+            spec={undefined}
+            reference
+            onEdit={() => undefined}
+            onDelete={() => undefined}
+            onChanged={onChanged}
+          />
+        ))}
+      </div>
+    </details>
+  );
+}
+
 export function ConnectionsPage() {
   const { api, reloadMeta } = useApp();
   const list = useAsync((signal) => api.call("listConnections", { signal }), []);
@@ -330,6 +106,7 @@ export function ConnectionsPage() {
     reloadMeta();
   };
   const addable = (connectors.data ?? []).filter((c) => c.fromScreen);
+  const { mine, reference } = splitConnections(list.data ?? []);
   return (
     <div className="page">
       <PageHead
@@ -339,36 +116,40 @@ export function ConnectionsPage() {
       />
       {list.error && <Failure error={list.error} retry={list.reload} />}
       {!list.data && !list.error && <Loading />}
-      {list.data?.length === 0 && (
-        <Empty
-          title="아직 연결된 하네스가 없어요"
-          action={
-            <Button kind="primary" onClick={() => setEditing({})}>
-              연결 더하기
-            </Button>
-          }
-        >
-          OpenCode, LangGraph, OpenClaw는 전용 연결이 있어요. GoClaw, Hermes, LangChain 같은 다른
-          에이전트는 범용 HTTP, A2A, MCP, 명령 가운데 맞는 것으로 붙여요. 주소와 토큰을 적고
-          연결하면 바로 확인해 줘요.
-        </Empty>
+      {list.data && (
+        <section className="stack" style={{ gap: 12 }} aria-label="내 연결">
+          <h2 style={{ margin: 0 }}>내 연결 {mine.length}</h2>
+          {mine.length === 0 && (
+            <Empty title="아직 연결된 하네스가 없어요">
+              아래에서 쓰는 하네스를 고르면 주소와 토큰만 물어봐요. 연결하면 바로 확인해 줘요.
+            </Empty>
+          )}
+          {mine.map((view) => (
+            <ConnectionCard
+              key={view.id}
+              view={view}
+              spec={(connectors.data ?? []).find((c) => c.kind === view.connector)}
+              onEdit={() => setEditing({ view })}
+              onDelete={() => setDeleting(view)}
+              onChanged={changed}
+            />
+          ))}
+        </section>
       )}
-      <div className="stack" style={{ gap: 16 }}>
-        {list.data?.map((view) => (
-          <ConnectionCard
-            key={view.id}
-            view={view}
-            spec={(connectors.data ?? []).find((c) => c.kind === view.connector)}
-            onEdit={() => setEditing({ view })}
-            onDelete={() => setDeleting(view)}
-            onChanged={changed}
-          />
-        ))}
+      {addable.length > 0 && (
+        <section className="stack" style={{ gap: 12, marginTop: 28 }} aria-label="연결 더하기">
+          <h2 style={{ margin: 0 }}>연결 더하기 — 어떤 하네스인가요?</h2>
+          <KindCards connectors={addable} onPick={(kind) => setEditing({ kind })} />
+        </section>
+      )}
+      <div style={{ marginTop: 28 }}>
+        <ReferenceFold views={reference} onChanged={changed} />
       </div>
       {editing && (
         <ConnectionDialog
           connectors={addable}
           existing={editing.view}
+          {...(editing.kind ? { initialKind: editing.kind } : {})}
           onClose={() => setEditing(undefined)}
           onSaved={() => {
             setEditing(undefined);

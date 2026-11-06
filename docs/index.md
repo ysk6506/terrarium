@@ -4,6 +4,7 @@ kind: reference
 status: active
 last_verified: 2026-11-06
 verification_log:
+  - "2026-11-06: 시나리오 편집기 검토 링크 설명에 세 번째 검토를 더했다"
   - "2026-11-06: db-storage-layers.md와 ADR-0111 링크를 더했다"
   - "2026-11-06: tool-scope-and-sop.md와 ADR-0105 링크를 더했다"
   - "2026-11-05: ADR-0101 링크를 더했다"
@@ -60,7 +61,7 @@ verification_log:
 - [세계 만들기 입구와 서비스부터 — 문 둘·HA 사다리·알아서·일감·패널 없는 직접 짓기](design-docs/world-entry.md)
 - [고장 종류별 리드타임 — 넘기면 얼마나 걸려 사라지나](design-docs/lead-times.md)
 - [도메인과 가상 담당자 — 내 도메인 밖의 고장은 넘기고, 기다리는 동안 다른 일을 한다](design-docs/domains-and-counterparts.md)
-- [시나리오 편집기 검토 — 처음 쓰는 사람의 눈으로, 토스의 원칙으로](design-docs/scenario-editor-review.md)
+- [시나리오 편집기 검토 — 처음 쓰는 사람의 눈으로, 토스의 원칙으로 (세 번째 검토: 질문 셋·문장 채점표)](design-docs/scenario-editor-review.md)
 - [운영 모드 — 끝이 없는 실험, 당겨서 보는 모니터링, 실시간과 빨리 감기](design-docs/operation-mode.md)
 - [운영 에이전트 설계 가이드 — 8시간 동안 지켜보는 에이전트를 만드는 법](guides/operation-agent-guide.md)
 - [용어집 — 화면에 쓰는 말은 여기서 정한다](design-docs/glossary.md)

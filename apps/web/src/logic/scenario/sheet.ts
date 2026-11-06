@@ -19,6 +19,7 @@ import {
   isFaultType,
 } from "@terrarium/core/world";
 import { conditionLine } from "./group";
+import { answerFromFaults } from "./sentences";
 
 export const EXPECTATION_LABELS: Readonly<Record<ExpectationKind, string>> = {
   diagnosis: "진단이 맞으면",
@@ -83,6 +84,25 @@ export function addExpectation(
 ): { doc: ScenarioDoc; id: string } {
   const id = nextId(doc);
   return { doc: { ...doc, expectations: [...doc.expectations, DEFAULTS[kind](id)] }, id };
+}
+
+/**
+ * A scoring line from the palette or the sheet's menu. A diagnosis line starts with the answer the fault blocks already
+ * give (the equipment they break and what kind of break), so the person only fixes what is not right.
+ */
+export function addScoreLine(
+  doc: ScenarioDoc,
+  kind: ExpectationKind,
+): { doc: ScenarioDoc; id: string } {
+  const added = addExpectation(doc, kind);
+  return kind === "diagnosis" ? { ...added, doc: fillAnswer(added.doc, added.id) } : added;
+}
+
+/** Set a diagnosis line's equipment and fault kinds from the fault blocks (the "고장 블록에서 다시 채우기" button). */
+export function fillAnswer(doc: ScenarioDoc, id: string): ScenarioDoc {
+  const answer = answerFromFaults(doc);
+  if (answer.faultType.length === 0) return doc;
+  return updateExpectation(doc, id, answer);
 }
 
 export function updateExpectation(

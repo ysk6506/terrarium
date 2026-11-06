@@ -27,10 +27,11 @@ import {
   tracesRequest,
 } from "../../logic";
 import { useAction, useApp, useAsync } from "../context";
-import { Button, Dialog, Note, SelectField, TextField } from "../kit";
+import { Button, Dialog, Note, TextField } from "../kit";
 import { AgentCensusLine } from "./agent-census";
 import { PresetForm, TracesChooser } from "./connection-extras";
 import { ConnectorFieldInput, HeaderEditor, MetaEditor } from "./connection-form";
+import { KindCards } from "./connection-kinds";
 
 const emptyForm: ConnectionForm = {
   name: "",
@@ -45,22 +46,23 @@ export interface ConnectionDialogProps {
   readonly connectors: readonly ConnectorSpec[];
   /** The connection being changed; left out for a new one. */
   readonly existing?: ConnectionView;
+  /** The kind of harness already chosen on the card that opened this, so the form starts on its fields. */
+  readonly initialKind?: string;
   readonly onClose: () => void;
   readonly onSaved: (view: ConnectionView) => void;
 }
 
+/** How this kind of harness gets the tools, folded: the form is what the person came for. */
 function ToolGuide({ spec }: { readonly spec: ConnectorSpec }) {
   return (
-    <Note>
-      <div className="stack" style={{ gap: 6 }}>
-        <strong>{TRANSPORT_LABELS[spec.toolTransport]}</strong>
-        <ol className="list-plain">
-          {spec.toolGuide.map((line) => (
-            <li key={line}>{line}</li>
-          ))}
-        </ol>
-      </div>
-    </Note>
+    <details className="fold">
+      <summary>툴은 어떻게 받나요? — {TRANSPORT_LABELS[spec.toolTransport]}</summary>
+      <ol className="list-plain" style={{ marginTop: 8 }}>
+        {spec.toolGuide.map((line) => (
+          <li key={line}>{line}</li>
+        ))}
+      </ol>
+    </details>
   );
 }
 
@@ -107,13 +109,6 @@ function CheckResult({ check }: { readonly check: ConnectionCheck }) {
     </div>
   );
 }
-
-const connectorOptions = (connectors: readonly ConnectorSpec[]) =>
-  connectors.map((c) => ({
-    value: c.kind,
-    label: c.label,
-    group: c.scope === "harness" ? "하네스 — 에이전트를 여러 개 가진 곳" : "에이전트 하나",
-  }));
 
 function Fields({
   spec,
@@ -213,15 +208,31 @@ function problemsOf(
   };
 }
 
-function useConnectionDialog({ connectors, existing, onSaved }: ConnectionDialogProps) {
+/** What the form starts as: the connection being changed, the chosen kind's blanks, or nothing yet. */
+function startForm(
+  connectors: readonly ConnectorSpec[],
+  existing: ConnectionView | undefined,
+  initialKind: string | undefined,
+): ConnectionForm {
+  const own = connectors.find((c) => c.kind === existing?.connector);
+  if (existing && own) return formOf(own, existing);
+  const chosen = connectors.find((c) => c.kind === initialKind);
+  return chosen ? blankForm(chosen) : emptyForm;
+}
+
+function useConnectionDialog({
+  connectors,
+  existing,
+  initialKind,
+  onSaved,
+}: ConnectionDialogProps) {
   const { api } = useApp();
   const { busy, run } = useAction();
-  const [kind, setKind] = useState(existing?.connector ?? "");
+  const [kind, setKind] = useState(existing?.connector ?? initialKind ?? "");
   const spec = connectors.find((c) => c.kind === kind);
-  const [form, setForm] = useState<ConnectionForm>(() => {
-    const first = connectors.find((c) => c.kind === existing?.connector);
-    return existing && first ? formOf(first, existing) : emptyForm;
-  });
+  const [form, setForm] = useState<ConnectionForm>(() =>
+    startForm(connectors, existing, initialKind),
+  );
   const [check, setCheck] = useState<ConnectionCheck>();
   const [shown, setShown] = useState(false);
   const kept = existing?.secrets ?? [];
@@ -365,6 +376,43 @@ function DialogFields({
   );
 }
 
+/** The kind of harness: the cards, or just the one that was chosen on the page, with a way back to the cards. */
+function KindStep({
+  d,
+  connectors,
+  chosen,
+}: {
+  readonly d: DialogState;
+  readonly connectors: readonly ConnectorSpec[];
+  readonly chosen: string | undefined;
+}) {
+  const [choosing, setChoosing] = useState(!chosen);
+  if (choosing || !d.spec)
+    return (
+      <>
+        <h3 style={{ margin: 0 }}>어떤 하네스인가요?</h3>
+        <KindCards
+          connectors={connectors}
+          picked={d.kind}
+          onPick={(kind) => {
+            d.pick(kind);
+            setChoosing(false);
+          }}
+        />
+      </>
+    );
+  return (
+    <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+      <p style={{ margin: 0 }}>
+        <b>{d.spec.label}</b> <span className="muted">{d.spec.description}</span>
+      </p>
+      <Button size="small" kind="quiet" onClick={() => setChoosing(true)}>
+        다른 하네스 고르기
+      </Button>
+    </div>
+  );
+}
+
 /** Add a connection, or change one that exists (the kind of an existing one cannot change). */
 export function ConnectionDialog(props: ConnectionDialogProps) {
   const { connectors, existing, onClose } = props;
@@ -378,16 +426,7 @@ export function ConnectionDialog(props: ConnectionDialogProps) {
       actions={<DialogActions d={d} onClose={onClose} />}
     >
       <div className="stack">
-        {!existing && (
-          <SelectField
-            label="무엇에 연결할까요?"
-            value={d.kind || undefined}
-            options={connectorOptions(connectors)}
-            onChange={d.pick}
-            placeholder="프로토콜을 골라 주세요"
-            help={spec?.description}
-          />
-        )}
+        {!existing && <KindStep d={d} connectors={connectors} chosen={props.initialKind} />}
         {spec && <DialogFields d={d} spec={spec} existing={existing} />}
       </div>
     </Dialog>

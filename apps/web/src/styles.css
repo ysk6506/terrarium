@@ -4378,3 +4378,246 @@ ol.elevation li:first-child .u-slot {
     left: 12px;
   }
 }
+
+/* ── scenario editor: questions, keys, sentences (beta feedback 18 to 21) ───── */
+
+.question-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+}
+
+.question-head small {
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.question-head::after {
+  content: none;
+}
+
+.question[data-open="true"] .question-head {
+  color: var(--cobalt);
+}
+
+.question-body {
+  margin-top: 10px;
+}
+
+.palette-score {
+  cursor: pointer;
+}
+
+.canvas-keys {
+  position: absolute;
+  right: 56px;
+  bottom: 12px;
+  z-index: 5;
+  margin: 0;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-3);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+.block[data-selected="true"] {
+  border-color: var(--cobalt);
+  border-width: 2px;
+  border-left-width: 4px;
+  box-shadow: 0 0 0 3px var(--cobalt-soft);
+}
+
+.sentence {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.sentence-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.sentence-word {
+  padding: 0 6px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sentence-word:hover,
+.sentence-word[aria-expanded="true"] {
+  background: var(--cobalt-soft);
+  color: var(--cobalt);
+}
+
+.sentence-num {
+  width: 3.4em;
+  padding: 0 4px;
+  border: 1px solid transparent;
+  border-bottom-color: var(--line-strong);
+  border-radius: 4px;
+  background: var(--paper);
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  text-align: right;
+}
+
+.sentence-num:focus-visible {
+  border-color: var(--cobalt);
+}
+
+.sentence-lose .sentence-num {
+  color: var(--bad);
+}
+
+.sentence-source {
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+.sentence-edit {
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: var(--radius-control);
+  background: var(--paper);
+}
+
+/* ── connections: cards, agent line, kinds (beta feedback 14 to 17) ───────────── */
+
+.conn-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.conn-manage {
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.agents-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.agents-search {
+  width: 180px;
+  max-width: 100%;
+}
+
+.agent-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.agent-row {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+}
+
+.kind-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.kind-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.kind-card:hover {
+  border-color: var(--ink-2);
+}
+
+.kind-card[aria-pressed="true"] {
+  border-color: var(--cobalt);
+  background: var(--cobalt-soft);
+}
+
+.kind-card span,
+.kind-card small {
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+.mcp-guide {
+  padding: 14px;
+  border-radius: var(--radius-control);
+  background: var(--paper);
+}
+
+.mcp-url {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 12px;
+}
+
+.mcp-url span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agents-search {
+  min-height: 0;
+  height: 36px;
+  padding: 4px 12px;
+  font-size: 14px;
+}

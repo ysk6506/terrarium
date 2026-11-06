@@ -1,270 +1,167 @@
 /**
- * The scoring sheet (REQ-034, ADR-0016): what earns points and what costs them, one card per line,
- * with the total kept in view so people can aim for 100 without doing sums.
+ * The scoring sheet as sentences (REQ-034, REQ-071, ADR-0016, beta feedback 21): "이 시나리오는 무엇을 보나". One
+ * sentence per line, with the pass rule on top and the total in view. A number inside a sentence is a box to type in;
+ * a word opens the form behind it. The answer line fills itself from the fault blocks, and the baseline agents' result
+ * sits right under the sentences.
  */
-import {
-  ACTION_KINDS,
-  ACTION_LABELS,
-  type ActionKind,
-  type Expectation,
-  type ExpectationKind,
-} from "@terrarium/core/scenario";
-import { FAULT_SPECS } from "@terrarium/core/world";
+import type { Expectation, ExpectationKind } from "@terrarium/core/scenario";
+import { useState } from "react";
 import { scenario } from "../../logic";
-import { Button, MenuButton, NumberField, type Option, SelectField, TextField } from "../kit";
-import { ConditionEditor } from "./ConditionEditor";
+import { Button, MenuButton, Note } from "../kit";
+import { Calibration } from "./Calibration";
+import { Body } from "./SheetBodies";
 import type { ScenarioEditor } from "./useScenario";
 
-const ACTIONS: Option[] = ACTION_KINDS.map((a) => ({ value: a, label: ACTION_LABELS[a] }));
-const FAULTS: Option[] = FAULT_SPECS.map((f) => ({ value: f.type, label: f.label }));
-const ANY = "";
-
-/** Several values picked one at a time, shown as removable chips. */
-function MultiPick(props: {
-  readonly label: string;
-  readonly values: readonly string[];
-  readonly options: readonly Option[];
-  readonly onChange: (v: string[]) => void;
+function NumberToken(props: {
+  readonly t: Extract<scenario.Token, { kind: "number" }>;
+  readonly set: (c: Partial<Expectation>) => void;
 }) {
-  const name = (v: string) => props.options.find((o) => o.value === v)?.label ?? v;
+  const { t, set } = props;
+  const apply = (n: number) => {
+    const v = Math.min(t.max, Math.max(t.min, Math.round(n)));
+    if (t.field === "minutes") set({ seconds: v * 60 } as Partial<Expectation>);
+    else if (t.field === "maxCalls") set({ maxCalls: v } as Partial<Expectation>);
+    else set({ [t.field]: v } as Partial<Expectation>);
+  };
   return (
-    <div className="stack" style={{ gap: 6 }}>
-      <SelectField
-        label={props.label}
-        value={undefined}
-        placeholder="더할 것을 골라요"
-        options={props.options.filter((o) => !props.values.includes(o.value))}
-        onChange={(v) => props.onChange([...props.values, v])}
+    <>
+      <input
+        className="sentence-num"
+        type="number"
+        inputMode="numeric"
+        aria-label={t.label}
+        min={t.min}
+        max={t.max}
+        value={t.value}
+        onChange={(ev) => ev.target.value !== "" && apply(Number(ev.target.value))}
       />
-      {props.values.length > 0 && (
-        <div className="row" style={{ gap: 6 }}>
-          {props.values.map((v) => (
-            <span key={v} className="tag">
-              {name(v)}
-              <button
-                type="button"
-                className="link-button"
-                aria-label={`${name(v)} 빼기`}
-                onClick={() => props.onChange(props.values.filter((x) => x !== v))}
-              >
-                ×
-              </button>
-            </span>
-          ))}
-        </div>
-      )}
-    </div>
+      {t.unit}
+    </>
   );
 }
 
-/** A chosen target, or none ("아무 대상이나"). */
-const targetOf = (target: string) => ({ target: target || undefined }) as Partial<Expectation>;
-
-interface BodyProps {
+function Line(props: {
   readonly x: Expectation;
   readonly e: ScenarioEditor;
-  readonly set: (c: Partial<Expectation>) => void;
-}
-
-const TARGET_KINDS = [
-  "server",
-  "rack",
-  "pdu",
-  "power_panel",
-  "ups",
-  "cooling_unit",
-  "switch",
-  "storage",
-  "vm",
-] as const;
-
-const targetsOf = (e: ScenarioEditor): Option[] => [
-  { value: ANY, label: "아무 대상이나" },
-  ...scenario.entityChoices(e.index, [...TARGET_KINDS]),
-];
-
-function DiagnosisBody({
-  x,
-  e,
-  set,
-}: BodyProps & { readonly x: Extract<Expectation, { kind: "diagnosis" }> }) {
-  return (
-    <>
-      <MultiPick
-        label="맞는 원인 장비 (하나라도 맞으면 정답)"
-        values={x.rootCause}
-        options={targetsOf(e).slice(1)}
-        onChange={(rootCause) => set({ rootCause })}
-      />
-      <MultiPick
-        label="맞는 고장 종류"
-        values={x.faultType}
-        options={FAULTS}
-        onChange={(faultType) => set({ faultType })}
-      />
-    </>
-  );
-}
-
-function FinalStateBody({
-  x,
-  e,
-  set,
-}: BodyProps & { readonly x: Extract<Expectation, { kind: "final_state" }> }) {
-  return (
-    <>
-      <TextField
-        label="결과에 보일 설명"
-        value={x.label ?? ""}
-        maxLength={200}
-        onChange={(label) => set({ label })}
-      />
-      <ConditionEditor
-        value={x.condition}
-        onChange={(condition) => set({ condition })}
-        index={e.index}
-      />
-    </>
-  );
-}
-
-function ActionBody({
-  x,
-  e,
-  set,
-}: BodyProps & {
-  readonly x: Extract<Expectation, { kind: "required_action" | "forbidden_action" }>;
+  readonly open: boolean;
+  readonly toggle: () => void;
 }) {
-  return (
-    <>
-      <SelectField
-        label="조치"
-        value={x.action}
-        options={ACTIONS}
-        onChange={(a) => set({ action: a as ActionKind })}
-      />
-      <SelectField
-        label="대상"
-        value={x.target ?? ANY}
-        options={targetsOf(e)}
-        onChange={(t) => set(targetOf(t))}
-      />
-    </>
-  );
-}
-
-function Body({ x, e, set }: BodyProps) {
-  switch (x.kind) {
-    case "diagnosis":
-      return <DiagnosisBody x={x} e={e} set={set} />;
-    case "final_state":
-      return <FinalStateBody x={x} e={e} set={set} />;
-    case "required_action":
-    case "forbidden_action":
-      return <ActionBody x={x} e={e} set={set} />;
-    case "time_limit":
-      return (
-        <NumberField
-          label="제한 시간"
-          value={Math.round(x.seconds / 60)}
-          min={1}
-          max={600}
-          unit="분"
-          onChange={(m) => m !== undefined && set({ seconds: m * 60 })}
-        />
-      );
-    case "tool_budget":
-      return (
-        <NumberField
-          label="툴 호출 상한"
-          value={x.maxCalls}
-          min={1}
-          max={500}
-          unit="회"
-          onChange={(n) => n !== undefined && set({ maxCalls: n })}
-        />
-      );
-  }
-}
-
-function Card({ x, e }: { readonly x: Expectation; readonly e: ScenarioEditor }) {
+  const { x, e, open, toggle } = props;
+  const s = scenario.sentenceOf(x, e.doc, e.index);
   const set = (change: Partial<Expectation>) =>
     e.change((d) => scenario.updateExpectation(d, x.id, change));
   const issues = e.issues.filter((i) => i.expectationId === x.id);
-  const text = scenario.expectationText(x, e.index);
+  const refill =
+    x.kind === "diagnosis" && !s.source && scenario.answerFromFaults(e.doc).faultType.length > 0;
   return (
-    <section className="panel panel-pad stack" aria-label={scenario.EXPECTATION_LABELS[x.kind]}>
-      <div className="row" style={{ justifyContent: "space-between" }}>
-        <h3>{scenario.EXPECTATION_LABELS[x.kind]}</h3>
-        <Button
-          size="small"
-          kind="quiet"
-          icon="trash"
-          aria-label="이 항목 지우기"
-          onClick={() => e.change((d) => scenario.removeExpectation(d, x.id))}
-        />
+    <li className={`sentence sentence-${s.tone}`} aria-label={scenario.EXPECTATION_LABELS[x.kind]}>
+      <div className="sentence-body">
+        <div>
+          {s.tokens.map((t, i) => {
+            const key = `${x.id}-${i}`;
+            if (t.kind === "text") return <span key={key}>{t.text}</span>;
+            if (t.kind === "number") return <NumberToken key={key} t={t} set={set} />;
+            return (
+              <button
+                key={key}
+                type="button"
+                className="sentence-word"
+                aria-expanded={open}
+                onClick={toggle}
+              >
+                {t.text}
+              </button>
+            );
+          })}
+        </div>
+        {s.source && <div className="sentence-source">{s.source}</div>}
+        {refill && (
+          <Button
+            kind="quiet"
+            size="small"
+            onClick={() => e.change((d) => scenario.fillAnswer(d, x.id))}
+          >
+            고장 블록에서 다시 채우기
+          </Button>
+        )}
+        {open && (
+          <div className="sentence-edit stack">
+            <Body x={x} e={e} set={set} />
+          </div>
+        )}
+        {issues.map((i) => (
+          <p key={i.message} className="field-error">
+            {i.message}
+          </p>
+        ))}
       </div>
-      <Body x={x} e={e} set={set} />
-      {"weight" in x ? (
-        <NumberField
-          label="점수"
-          value={x.weight}
-          min={0}
-          max={100}
-          unit="점"
-          onChange={(w) => w !== undefined && set({ weight: w })}
-        />
-      ) : (
-        <NumberField
-          label="한 번마다 깎는 점수"
-          value={x.penalty}
-          min={0}
-          max={100}
-          unit="점"
-          onChange={(p) => p !== undefined && set({ penalty: p } as Partial<Expectation>)}
-        />
-      )}
-      {text && <p className="tiny muted">{text}</p>}
-      {issues.map((i) => (
-        <p key={i.message} className="field-error">
-          {i.message}
-        </p>
-      ))}
-    </section>
+      <Button
+        size="small"
+        kind="quiet"
+        icon="trash"
+        aria-label={`${scenario.EXPECTATION_LABELS[x.kind]} 줄 지우기`}
+        onClick={() => e.change((d) => scenario.removeExpectation(d, x.id))}
+      />
+    </li>
   );
 }
 
-export function Sheet({ e }: { readonly e: ScenarioEditor }) {
+export function Sheet({
+  e,
+  openSheet,
+}: {
+  readonly e: ScenarioEditor;
+  readonly openSheet: () => void;
+}) {
   const total = scenario.sheetTotal(e.doc);
   const kinds = Object.keys(scenario.EXPECTATION_LABELS) as ExpectationKind[];
+  const [openId, setOpenId] = useState<string>();
+  const notes = scenario.scoringNotes(e.doc);
   return (
     <div className="workspace scroll">
       <div className="page" style={{ maxWidth: 760 }}>
         <div className="section-head">
           <div>
-            <h2>채점표</h2>
+            <h2>이 시나리오는 무엇을 보나</h2>
             <p className="small muted">
-              모두 더해 {total.points}점.{" "}
-              {total.note ?? "에이전트가 무엇을 하면 점수를 얻고 잃는지 정해요."}
+              {scenario.passSentence()}. 문장 안의 숫자는 바로 고치고, 낱말을 누르면 자세히 고쳐요.
             </p>
           </div>
           <MenuButton
-            label="항목 더하기"
+            label="줄 더하기"
             icon="plus"
             items={kinds.map((k) => ({
-              label: scenario.EXPECTATION_LABELS[k],
-              onSelect: () => e.change((d) => scenario.addExpectation(d, k).doc),
+              label: scenario.SCORE_LABELS[k],
+              onSelect: () => {
+                const id = e.addScore(k);
+                if (id) setOpenId(id);
+              },
             }))}
           />
         </div>
-        <div className="stack" style={{ gap: 14 }}>
+        {notes.map((n) => (
+          <Note key={n}>{n}</Note>
+        ))}
+        <ul className="stack" style={{ gap: 0, margin: 0, padding: 0, listStyle: "none" }}>
           {e.doc.expectations.length === 0 && (
-            <p className="muted">아직 채점 항목이 없어요. 오른쪽 위에서 더해 보세요.</p>
+            <li className="muted">
+              아직 보는 것이 없어요. 오른쪽 위 "줄 더하기"로 무엇을 볼지 정해 주세요.
+            </li>
           )}
           {e.doc.expectations.map((x) => (
-            <Card key={x.id} x={x} e={e} />
+            <Line
+              key={x.id}
+              x={x}
+              e={e}
+              open={openId === x.id}
+              toggle={() => setOpenId(openId === x.id ? undefined : x.id)}
+            />
           ))}
-        </div>
+        </ul>
+        <p className="small" style={{ marginTop: 12 }}>
+          {total.note ?? `모두 더해 ${total.points}점이에요.`}
+        </p>
+        <Calibration e={e} openSheet={openSheet} />
       </div>
     </div>
   );

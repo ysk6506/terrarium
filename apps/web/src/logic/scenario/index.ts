@@ -1,4 +1,13 @@
 /** The scenario editor's model: canvas, block forms, and the scoring sheet. */
+
+export {
+  copyNodes,
+  duplicateNode,
+  insertBlock,
+  pasteSnippet,
+  removeAndMend,
+  type Snippet,
+} from "./edit";
 export {
   type Choice,
   COMPARE_OPS,
@@ -35,6 +44,7 @@ export {
   setLabel,
   setParam,
   summaryOf,
+  titleOf,
   toFlow,
 } from "./flow";
 export {
@@ -46,11 +56,34 @@ export {
   startsCollapsed,
   valueForField,
 } from "./group";
+export {
+  type Entry,
+  entriesOf,
+  firstOpen,
+  QUESTIONS,
+  type Question,
+  type QuestionId,
+  questionOf,
+  SCORE_LABELS,
+  searchEntries,
+} from "./questions";
 export { canProbe, REACH_MAX_ENTITIES, reachesAnswer } from "./reach";
 export {
+  answerFromFaults,
+  followsFaults,
+  type NumberField,
+  passSentence,
+  type Sentence,
+  scoringNotes,
+  sentenceOf,
+  type Token,
+} from "./sentences";
+export {
   addExpectation,
+  addScoreLine,
   EXPECTATION_LABELS,
   expectationText,
+  fillAnswer,
   removeExpectation,
   sheetTotal,
   suggestedAction,

@@ -20,7 +20,7 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { type DragEvent, useEffect, useMemo, useState } from "react";
+import { type DragEvent, useEffect, useId, useMemo, useState } from "react";
 import { scenario } from "../../logic";
 import { DRAG_TYPE, paletteItem } from "./Palette";
 import type { ScenarioEditor } from "./useScenario";
@@ -116,7 +116,7 @@ function useFlowGraph(e: ScenarioEditor) {
           data: n as BlockData,
           selected: n.id === e.selected,
           deletable: n.type !== "start",
-          domAttributes: { "aria-roledescription": "블록" },
+          domAttributes: { "aria-roledescription": "블록", "aria-selected": n.id === e.selected },
         }),
       ),
     [flow, e.selected],
@@ -154,7 +154,7 @@ function useDropBlock(e: ScenarioEditor) {
   };
 }
 
-function Flow({ e }: { readonly e: ScenarioEditor }) {
+function Flow({ e, keysId }: { readonly e: ScenarioEditor; readonly keysId: string }) {
   const { nodes, setNodes, edges } = useFlowGraph(e);
   const onDrop = useDropBlock(e);
   const onNodesChange = (changes: NodeChange<BlockNode>[]) => {
@@ -174,12 +174,7 @@ function Flow({ e }: { readonly e: ScenarioEditor }) {
       onNodesChange={onNodesChange}
       onNodeDragStop={(_ev, node) => e.change((d) => scenario.moveNode(d, node.id, node.position))}
       onNodesDelete={(gone) =>
-        e.change((d) =>
-          scenario.removeNodes(
-            d,
-            gone.map((n) => n.id),
-          ),
-        )
+        e.change((d) => gone.reduce((acc, n) => scenario.removeAndMend(acc, n.id), d))
       }
       onEdgesDelete={(gone) =>
         e.change((d) => gone.reduce((acc, x) => scenario.disconnect(acc, x.id), d))
@@ -198,6 +193,7 @@ function Flow({ e }: { readonly e: ScenarioEditor }) {
       proOptions={{ hideAttribution: true }}
       ariaLabelConfig={ARIA_WORDS}
       aria-label="시나리오 흐름. 블록을 끌어 옮기고, 아래쪽 점에서 다음 블록 위쪽 점으로 끌어 이어요."
+      aria-describedby={keysId}
     >
       <Background gap={24} size={1} />
       <Controls showInteractive={false} position="bottom-right" />
@@ -205,12 +201,24 @@ function Flow({ e }: { readonly e: ScenarioEditor }) {
   );
 }
 
+/** The keys, said once on the canvas and read out when the canvas is entered. */
+const KEYS_TEXT =
+  "Ctrl+C/V 복사·붙여넣기 · Ctrl+D 복제 · Ctrl+Z 되돌리기 · Ctrl+Y 다시 · Del 지우기 · 끌어서 놓기";
+
 export function Canvas({ e }: { readonly e: ScenarioEditor }) {
+  const keysId = useId();
+  const picked = e.selected ? e.doc.nodes.find((n) => n.id === e.selected) : undefined;
   return (
     <div className="stage" style={{ background: "var(--paper)" }}>
+      <p className="canvas-keys" id={keysId}>
+        {KEYS_TEXT}
+      </p>
+      <p className="sr-only" aria-live="polite">
+        {picked ? `고른 블록: ${scenario.titleOf(picked)}` : ""}
+      </p>
       <div style={{ position: "absolute", inset: 0 }}>
         <ReactFlowProvider>
-          <Flow e={e} />
+          <Flow e={e} keysId={keysId} />
         </ReactFlowProvider>
       </div>
     </div>
