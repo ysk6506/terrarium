@@ -18,6 +18,7 @@ import { type ReactNode, useMemo, useState } from "react";
 import { hallTopology } from "../../logic";
 import { Segmented } from "../fields";
 import { useMediaQuery } from "../hooks";
+import { SIGNAL_CSS } from "../signal-colors";
 import { AgentBubble, type AgentLook } from "./AgentBubble";
 import { BoardView } from "./BoardView";
 import { DrawnLine, ImpactBox, Legend, PickedCard } from "./Hud";
@@ -102,7 +103,7 @@ export default function TopologyView(props: TopologyProps) {
   return (
     <div className="topo">
       {props.caption && <p className="topo-caption">{props.caption}</p>}
-      <style>{TOPOLOGY_CSS + BOARD_CSS}</style>
+      <style>{SIGNAL_CSS + TOPOLOGY_CSS + BOARD_CSS}</style>
       <div className="topo-head">
         <Crumbs crumbs={board.path} onCut={(id) => setPath(hallTopology.cutTo(path, id))} />
         <Segmented

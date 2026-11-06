@@ -7,8 +7,6 @@
 export const TOPOLOGY_CSS = `
 
 :root {
-  --topo-alarm: #e9962f;
-  --topo-range: #c3ccd8;
   --topo-touch-read: color-mix(in srgb, var(--cobalt) 45%, var(--surface));
   /* The ground and the bases come from the app's own tokens, so the board is light or dark with the app. */
   --topo-ground-a: color-mix(in srgb, var(--surface) 55%, var(--paper));
@@ -32,7 +30,7 @@ export const TOPOLOGY_CSS = `
   --topo-olive-t: #e1dfc4;
   --topo-olive-l: #a8a371;
   --topo-olive-r: #c6c295;
-  --topo-led: #4cc27a;
+  --topo-led: var(--good);
   --topo-hover: color-mix(in srgb, var(--cobalt) 8%, transparent);
   --topo-impact-slab: color-mix(in srgb, var(--topo-range) 30%, var(--topo-slab));
 }
@@ -40,8 +38,6 @@ export const TOPOLOGY_CSS = `
 /* Dark follows the app's own setting (data-theme), and the computer's when the app has none. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --topo-alarm: #f0b04a;
-    --topo-range: #566176;
     --topo-steel-t: #5a6678;
     --topo-steel-l: #3a4352;
     --topo-steel-r: #4a5566;
@@ -61,8 +57,6 @@ export const TOPOLOGY_CSS = `
 }
 
 :root[data-theme="dark"] {
-  --topo-alarm: #f0b04a;
-  --topo-range: #566176;
   --topo-steel-t: #5a6678;
   --topo-steel-l: #3a4352;
   --topo-steel-r: #4a5566;
@@ -103,17 +97,22 @@ export const TOPOLOGY_CSS = `
   align-items: center;
 }
 
+/* The boxes over the board take their own row, so a long impact box pushes the board down and never covers the
+   column labels (the stage names). Only the speech bubble and the foot cards float over the picture. */
 .topo-body {
   position: relative;
+  display: flex;
   flex: 1;
+  flex-direction: column;
   min-height: 0;
 }
 
 .topo-scroll {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  flex: 1;
+  min-height: 0;
   overflow: auto;
-  padding: 112px 16px 120px;
+  padding: 20px 16px 120px;
 }
 
 .topo-empty {
@@ -178,14 +177,16 @@ export const TOPOLOGY_CSS = `
 /* ── the glass cards ── */
 
 .topo-top {
-  position: absolute;
-  top: 14px;
-  left: 16px;
-  right: 16px;
+  position: relative;
+  z-index: 2;
+  order: -1;
   display: flex;
+  flex: none;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px 12px;
+  padding: 14px 16px 0;
   pointer-events: none;
 }
 
@@ -243,9 +244,18 @@ export const TOPOLOGY_CSS = `
 }
 
 .topo-agent-slot {
-  flex: 1;
+  position: absolute;
+  top: 100%;
+  left: 16px;
+  right: 16px;
   display: flex;
   justify-content: center;
+  margin-top: 8px;
+  pointer-events: none;
+}
+
+.topo-agent-slot > * {
+  pointer-events: auto;
 }
 
 .topo-caption {
@@ -285,7 +295,7 @@ export const TOPOLOGY_CSS = `
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #8ab4ff, #1b64da);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--cobalt) 55%, var(--surface)), var(--cobalt));
 }
 
 .topo-agent code {
