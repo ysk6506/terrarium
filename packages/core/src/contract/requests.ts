@@ -21,6 +21,8 @@ const QueryText = z.preprocess(blankToUndefined, z.string().max(200).optional())
 const QueryInt = (min: number, max: number) =>
   z.preprocess(blankToUndefined, z.coerce.number().int().min(min).max(max).optional());
 
+const QueryNumber = z.preprocess(blankToUndefined, z.coerce.number().finite().optional());
+
 /** `name=value` pairs people attach to tell results apart (REQ-052): few, short, and plain. */
 export const MetadataBody = z
   .record(
@@ -194,6 +196,9 @@ export const LeaderboardQuery = z
   .object({ worldId: QueryId, scenarioId: QueryId, minRuns: QueryInt(1, 50) })
   .strict();
 
+/** The window of a run's events, in the world's seconds; without it all of them (REQ-083). */
+export const RunEventsQuery = z.object({ from: QueryNumber, to: QueryNumber }).strict();
+
 export const CreateShareBody = z
   .object({ expiresInDays: z.number().int().min(1).max(365).optional() })
   .strict();
@@ -221,6 +226,7 @@ export type ForkRequest = z.infer<typeof ForkBody>;
 export type AddRunsRequest = z.infer<typeof AddRunsBody>;
 export type ExperimentQueryParams = z.infer<typeof ExperimentQuery>;
 export type LeaderboardQueryParams = z.infer<typeof LeaderboardQuery>;
+export type RunEventsQueryParams = z.infer<typeof RunEventsQuery>;
 export type CreateShareRequest = z.infer<typeof CreateShareBody>;
 export type TwinQueryParams = z.infer<typeof TwinQuery>;
 

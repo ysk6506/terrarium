@@ -4,33 +4,9 @@
  * and the temperatures of that frame, over the final state of the rest.
  */
 import type { Catalog } from "@terrarium/core/catalog";
-import type { Earlier, TopologySource } from "@terrarium/core/topology";
-import {
-  type Alarm,
-  type BlueprintIndex,
-  type EntityState,
-  initialState,
-} from "@terrarium/core/world";
+import { type Earlier, restingSource, type TopologySource } from "@terrarium/core/topology";
+import type { Alarm, BlueprintIndex, EntityState } from "@terrarium/core/world";
 import type { Preview, PreviewFrame } from "../builder/preview";
-
-const resting = new WeakMap<BlueprintIndex, TopologySource>();
-
-/** The world as built, before anything ran. */
-function restingSource(index: BlueprintIndex, catalog: Catalog): TopologySource {
-  const known = resting.get(index);
-  if (known) return known;
-  const { entities } = initialState(index, catalog);
-  const source: TopologySource = {
-    index,
-    time: () => 0,
-    stateOf: (id) => entities[id] as EntityState,
-    faults: () => [],
-    alarms: () => [],
-    linkUp: () => true,
-  };
-  resting.set(index, source);
-  return source;
-}
 
 const alarmOf = (a: PreviewFrame["alarms"][number]): Alarm => ({
   id: `${a.entityId}:${a.severity}`,

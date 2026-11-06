@@ -11,6 +11,7 @@ import { formatDuration, PASS_RULE_TEXT, scoreText } from "../../logic";
 import { Go, useApp, useAsync, usePageTitle } from "../context";
 import { Failure, Figures, Loading, Note, PageHead, Section, Status, Tabs } from "../kit";
 import { SeriesGrid, Timeline } from "../results";
+import { RunReplay } from "../topology/RunReplay";
 import { CallsTable, DiagnosisCompare, ScoreSheet, TelemetryPanel } from "./run-parts";
 
 type Tab = "timeline" | "calls" | "metrics" | "harness";
@@ -191,6 +192,20 @@ function Records({ view }: { readonly view: RunView }) {
   );
 }
 
+/** The replay of the run, from the moment it starts: live while it goes, the whole of it once it is over. */
+function Replay({ view, reload }: { readonly view: RunView; readonly reload: () => void }) {
+  const { run } = view;
+  if (run.status !== "running" && !run.result) return null;
+  return (
+    <RunReplay
+      runId={run.id}
+      worldId={view.experiment.experiment.recipe.worldId}
+      live={run.status === "running"}
+      onEnd={reload}
+    />
+  );
+}
+
 export function RunPage({ id }: { readonly id: string }) {
   const { api } = useApp();
   const state = useAsync((signal) => api.call("getRun", { params: { id }, signal }), [id]);
@@ -205,6 +220,7 @@ export function RunPage({ id }: { readonly id: string }) {
           <RunHead view={view} />
           {view.run.error && <Note tone="bad">{view.run.error}</Note>}
           <RunFigures view={view} />
+          <Replay view={view} reload={state.reload} />
           <Verdicts view={view} />
           <Records view={view} />
         </>

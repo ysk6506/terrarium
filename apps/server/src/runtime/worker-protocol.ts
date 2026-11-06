@@ -3,7 +3,7 @@ import type { EndReason } from "@terrarium/core/oracle";
 import type { AgentTask } from "@terrarium/core/scenario";
 import type { CallResult, RunResult } from "@terrarium/core/session";
 import type { ToolSpec } from "@terrarium/core/tools";
-import type { Blueprint } from "@terrarium/core/world";
+import type { Blueprint, RunEvent } from "@terrarium/core/world";
 import type { PlainSessionConfig } from "./hosts";
 import type { WorldIdentity } from "./world-cache";
 
@@ -46,6 +46,8 @@ export type FromWorker =
       readonly id: string;
       readonly task: AgentTask;
       readonly specs: readonly ToolSpec[];
+      /** What the run had written by the time the agent got its task: the scenario's first faults. */
+      readonly events: readonly RunEvent[];
     }
   | { readonly kind: "open_failed"; readonly id: string; readonly error: WorkerError }
   | {
@@ -53,6 +55,8 @@ export type FromWorker =
       readonly id: string;
       readonly seq: number;
       readonly result: CallResult;
+      /** What the run wrote while the call was made, apart from the answer: the agent never sees it. */
+      readonly events: readonly RunEvent[];
     }
   | {
       readonly kind: "finished";

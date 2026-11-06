@@ -3,7 +3,6 @@
  * eye on the same world: what is picked in the 3D view is lit here, what is pressed here is picked there, and the
  * time bar is the one the airflow map has. It comes down as a bundle of its own when it is first opened.
  */
-import type { Catalog } from "@terrarium/core/catalog";
 import {
   fold,
   impactOf,
@@ -12,33 +11,46 @@ import {
   LAYER_LABELS,
   type LayerId,
   type Tile,
+  type TopologySource,
 } from "@terrarium/core/topology";
 import type { BlueprintIndex } from "@terrarium/core/world";
-import { useMemo, useState } from "react";
-import { type builder, hallTopology } from "../../logic";
+import { type ReactNode, useMemo, useState } from "react";
+import { hallTopology } from "../../logic";
 import { Segmented } from "../fields";
 import { useMediaQuery } from "../hooks";
+import { AgentBubble, type AgentLook } from "./AgentBubble";
 import { BoardView } from "./BoardView";
-import { DrawnLine, ImpactBox, Legend, PickedCard, TimeBar } from "./Hud";
+import { DrawnLine, ImpactBox, Legend, PickedCard } from "./Hud";
 import { TOPOLOGY_CSS } from "./style";
 import { BOARD_CSS } from "./style-board";
 
 const W = hallTopology.TOPO_WORDS;
 
+/** The one thing the builder can do to a cooling unit from here: stop it to see what follows, or start it again. */
+export interface UnitControl {
+  readonly stopped: ReadonlySet<string>;
+  readonly busy: boolean;
+  readonly onToggle: (id: string) => void;
+}
+
 export interface TopologyProps {
   readonly index: BlueprintIndex;
-  readonly catalog: Catalog;
-  readonly preview: builder.Preview | undefined;
-  readonly previewing: boolean;
+  /** The moment to draw: the world as built, a frame of the builder's run, or a moment of a recorded run. */
+  readonly source: TopologySource;
+  /** Whether anything has run yet (the impact box says so when it has not). */
+  readonly ran: boolean;
   /** What the page has picked: the first of it is lit here. */
   readonly selected: readonly string[];
   readonly onSelect: (ids: readonly string[]) => void;
-  /** The moment of the run that is shown, shared with the airflow map. */
-  readonly at: number | undefined;
-  readonly onAt: (i: number) => void;
-  readonly onToggleUnit: (id: string) => void;
   /** The containers to open first: where the builder was looking. */
   readonly start: readonly string[];
+  readonly unit?: UnitControl;
+  /** The agent's pulse and speech bubble (runs only). */
+  readonly agent?: AgentLook;
+  /** The time bar, shared with the other views of the same moment. */
+  readonly bar?: ReactNode;
+  /** A name over the board, for the side-by-side view. */
+  readonly caption?: string;
 }
 
 function Crumbs(props: {
@@ -68,14 +80,10 @@ function Crumbs(props: {
 }
 
 export default function TopologyView(props: TopologyProps) {
-  const { index, catalog, preview, selected } = props;
+  const { index, source, selected, unit, agent } = props;
   const [layer, setLayer] = useState<LayerId>("cooling");
   const [path, setPath] = useState<readonly string[]>(props.start);
   const calm = useMediaQuery("(prefers-reduced-motion: reduce)");
-  const source = useMemo(
-    () => hallTopology.sourceOf(index, catalog, preview, props.at),
-    [index, catalog, preview, props.at],
-  );
   const impact = useMemo(() => impactOf(source), [source]);
   const picked = selected[0];
   const board = useMemo(
@@ -91,9 +99,9 @@ export default function TopologyView(props: TopologyProps) {
     props.onSelect([t.id]);
     setPath(hallTopology.pathFor(index, t.id));
   };
-  const at = preview ? hallTopology.frameOf(preview, props.at) : 0;
   return (
     <div className="topo">
+      {props.caption && <p className="topo-caption">{props.caption}</p>}
       <style>{TOPOLOGY_CSS + BOARD_CSS}</style>
       <div className="topo-head">
         <Crumbs crumbs={board.path} onCut={(id) => setPath(hallTopology.cutTo(path, id))} />
@@ -113,25 +121,26 @@ export default function TopologyView(props: TopologyProps) {
               layout={layout}
               picture={hallTopology.pictureText(board)}
               moving={!calm}
+              {...(agent ? { pulse: { effect: agent.effect, active: agent.active } } : {})}
               onPick={press}
             />
           )}
         </div>
         <div className="topo-top">
-          <ImpactBox impact={impact} ran={preview !== undefined} />
-          <div className="topo-agent-slot" aria-hidden="true" />
+          <ImpactBox impact={impact} ran={props.ran} />
+          <div className="topo-agent-slot">{agent && <AgentBubble look={agent} />}</div>
           <DrawnLine board={board} />
         </div>
         <div className="topo-foot">
           <Legend />
-          {preview && <TimeBar frames={preview.frames} at={at} onAt={props.onAt} />}
+          {props.bar}
           <PickedCard
             tile={tile}
             missing={picked !== undefined && !tile && !isSpace(index, picked)}
-            stopped={tile ? (preview?.stopped.has(tile.id) ?? false) : false}
-            canStop={tile?.kind === "crah"}
-            busy={props.previewing}
-            onToggleUnit={() => tile && props.onToggleUnit(tile.id)}
+            stopped={tile ? (unit?.stopped.has(tile.id) ?? false) : false}
+            canStop={unit !== undefined && tile?.kind === "crah"}
+            busy={unit?.busy ?? false}
+            onToggleUnit={() => tile && unit?.onToggle(tile.id)}
           />
         </div>
       </div>

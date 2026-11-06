@@ -13,6 +13,7 @@ import {
 } from "@terrarium/core/kernel";
 import type { EndReason } from "@terrarium/core/oracle";
 import type { CallResult, RunResult } from "@terrarium/core/session";
+import type { RunEvent } from "@terrarium/core/world";
 import { defaultThreadMb, Ledger, PROMISED_SHARE } from "./admission";
 import type { HostedSession, PlainSessionConfig, SessionHost } from "./hosts";
 import {
@@ -274,6 +275,7 @@ export class WorkerHost implements SessionHost {
 
   private handle(id: string, opened: Extract<FromWorker, { kind: "opened" }>): HostedSession {
     let ended: EndReason | undefined;
+    const events: RunEvent[] = [...opened.events];
     const host = this;
     return {
       task: opened.task,
@@ -282,16 +284,21 @@ export class WorkerHost implements SessionHost {
         return ended ?? host.ended.get(id);
       },
       call: async (tool, args) => {
-        const msg = await this.send<{ result: CallResult }>(id, (seq) => ({
-          kind: "call",
+        const msg = await this.send<{ result: CallResult; events: readonly RunEvent[] }>(
           id,
-          seq,
-          tool,
-          args,
-        }));
+          (seq) => ({
+            kind: "call",
+            id,
+            seq,
+            tool,
+            args,
+          }),
+        );
         if (msg.result.ended) ended = msg.result.ended;
+        events.push(...msg.events);
         return msg.result;
       },
+      eventsSince: (count) => events.slice(count),
       finish: async (reason) => {
         const msg = await this.send<{ result: RunResult }>(id, (seq) => ({
           kind: "finish",

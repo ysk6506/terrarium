@@ -8,6 +8,27 @@ export { type Focus, type FoldOptions, fold } from "./fold";
 export { type Impact, impactOf, NO_IMPACT, type Severe } from "./impact";
 export { chainOf, isSpace, type LayerShape, layerShape } from "./layers";
 export {
+  countAt,
+  type ReplayState,
+  replaySource,
+  restingSource,
+  stateAt,
+} from "./replay";
+export { callLabel, callWhen, clockText, EFFECT_WORDS } from "./replay-words";
+export {
+  MARK_KINDS,
+  MARK_LABELS,
+  type Mark,
+  type MarkKind,
+  markers,
+  type ServersMoved,
+  type Story,
+  type StoryOptions,
+  type StoryPart,
+  spanOf,
+  storyLine,
+} from "./story";
+export {
   type Board,
   type Crumb,
   type Earlier,

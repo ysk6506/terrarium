@@ -7,6 +7,7 @@ import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { builder, celsius, hallTopology, type world3d } from "../../logic";
 import { useApp, useAsync, useLeaveGuard, usePageTitle } from "../context";
 import { Failure, Loading } from "../kit";
+import { FramesBar } from "../replay/FramesBar";
 import { useActivity } from "../world3d/useActivity";
 import { WorldStage } from "../world3d/WorldStage";
 import { BuilderBar } from "./BuilderBar";
@@ -90,6 +91,7 @@ function airInput(
 }
 
 const NO_HANDLES: readonly world3d.PlanHandle[] = [];
+const NO_UNITS: ReadonlySet<string> = new Set();
 
 /** The topology view is a bundle of its own (REQ-078): it comes down when it is pointed at or opened. */
 const loadTopology = () => import("../topology/TopologyView");
@@ -173,19 +175,26 @@ function Stage3D(
 /** The topology eye (REQ-078): the same world, the same picks, the same moment of the run. */
 function TopologyStage({ b, at, setAt }: StageProps) {
   const { index, preview, selected, previewing } = b.state;
+  const source = useMemo(
+    () => hallTopology.sourceOf(index, catalog, preview, at),
+    [index, preview, at],
+  );
+  const frames = preview?.frames ?? [];
   return (
     <Suspense fallback={<Loading />}>
       <TopologyView
         index={index}
-        catalog={catalog}
-        preview={preview}
-        previewing={previewing}
+        source={source}
+        ran={preview !== undefined}
         selected={selected}
         onSelect={b.setSelected}
-        at={at}
-        onAt={setAt}
-        onToggleUnit={b.toggleUnit}
         start={topologyStart(b)}
+        unit={{ stopped: preview?.stopped ?? NO_UNITS, busy: previewing, onToggle: b.toggleUnit }}
+        bar={
+          preview && frames.length > 1 ? (
+            <FramesBar frames={frames} at={hallTopology.frameOf(preview, at)} onAt={setAt} />
+          ) : undefined
+        }
       />
     </Suspense>
   );

@@ -2,19 +2,20 @@
 title: 세계 만들기 검토 — 설명 없이도 되는가, 토스의 원칙으로
 kind: spec
 status: active
-last_verified: 2026-11-05
+last_verified: 2026-11-06
 covers:
   - apps/web/src/ui/pages/worlds.tsx
   - apps/web/src/ui/pages/world-forms.tsx
   - apps/web/src/ui/pages/new-site-form.tsx
   - apps/web/src/ui/builder/Toolbox.tsx
   - apps/web/src/ui/builder/WorldBuilderPage.tsx
-covers_hash: c2f16572e87ea9db
+covers_hash: ef1dc0bf536a3bdd
 verification_log:
   - "2026-11-05: 세계 만들기와 빌더 검토를 새로 썼다 (베타 피드백 4·12, ADR-0083)"
   - "2026-11-05: REQ-077 세계 만들기 재설계(작업 #90) 반영: 코드와 대조해 맞는 것을 확인했다"
   - "2026-11-05: WorldBuilderPage를 나눈 것(Stage3D, TopologyStage)과 위 막대에 3D/토폴로지 전환이 더해진 것을 확인했다. 검토의 내용(그때의 화면 설명)은 그대로이고 한 줄로 덧붙였다"
   - "2026-11-05: ADR-0083 검토 위에 3D/토폴로지 전환 한 줄이 더해진 것을 BuilderBar·WorldBuilderPage와 대조해 맞음"
+  - "2026-11-06: WorldBuilderPage가 토폴로지의 원천(source)과 시간 막대(FramesBar)를 바깥에서 넘기게 바뀐 것만 달라졌다. 검토의 내용(그때의 화면 설명)은 그대로다"
 ---
 # 세계 만들기 검토 (베타 피드백 4·12, ADR-0083 예정)
 

@@ -171,6 +171,14 @@ export {
   shapesOverlap,
   sharedEdge,
 } from "./room-shape";
+export {
+  RUN_EVENT_FORMAT,
+  type RunEvent,
+  type ScoreEvent,
+  type ToolEffect,
+  type ToolEvent,
+  type WorldRunEvent,
+} from "./run-events";
 export { reportedInletC } from "./sensors";
 export {
   DESIGN_UTIL,

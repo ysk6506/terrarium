@@ -2,7 +2,7 @@
 title: 실험과 결과 분석
 kind: spec
 status: active
-last_verified: 2026-11-05
+last_verified: 2026-11-06
 covers:
   - packages/core/src/experiments/agent-version.ts
   - packages/core/src/experiments/recipe.ts
@@ -10,13 +10,15 @@ covers:
   - packages/core/src/experiments/scheduler.ts
   - packages/core/src/analysis/leaderboard.ts
   - packages/core/src/analysis/twin.ts
-covers_hash: b14aca2e8691bad9
+  - packages/core/src/world/run-events.ts
+  - packages/core/src/session/run-events.ts
+covers_hash: 7dc75808424a495f
 verification_log:
-  - "2026-10-29: first version, checked against recipe, lineage, scheduler, leaderboard, twin"
   - "2026-10-30: 2026-10-30: 에이전트 버전(agent-version.ts)과 lineage.ts의 agentVersion 이어받기를 코드와 대조해 '누가 돌렸나, 어느 버전인가' 항목을 더했다 (REQ-053, ADR-0043)"
   - "2026-11-03: 서버·core가 사람에게 돌려주는 안내 문장이 해요체로 바뀐 것만 확인했다. 동작과 본문은 그대로 (ADR-0050)"
   - "2026-11-04: 2026-11-04: ADR-0073. 덮는 코드에서 사람이 읽는 말(알람 해요체, 에이전트 지시문 한다체, 툴·멈춤·상한 등)만 바뀌었고 문서가 말하는 구조와 규칙은 그대로다"
   - "2026-11-05: ADR-0085: 트레이스를 쌓는 곳이 연결마다 정해진다는 문장을 더했다. 덮는 코드의 동작은 그대로"
+  - "2026-11-06: 사건 기록 절(RunEvent 세 종류, 두 시계, 조회 경로)을 world/run-events.ts와 session/run-events.ts와 대조해 더했다"
 ---
 # 실험과 결과 분석 (REQ-015, REQ-030~033, REQ-037~040)
 
@@ -55,6 +57,20 @@ verification_log:
 - **실험 하나**(`analyzeExperiment`): 완료된 실행만으로 합격률·진단 정확도·평균 점수(±95% 구간)·항목별 달성률을 낸다.
   실패·취소는 진행률에서 따로 센다. 포크면 원본과 비교한다.
 - **"분명한 차이"**: 두 평균의 95% 구간이 겹치지 않을 때만. 실행 1번끼리는 절대 아니다. [ADR-0023](adr/0023-benchmark-sets-and-comparison.md).
+
+## 사건 기록 (REQ-083)
+
+실행은 끝나면 **사건의 나열**이 된다([ADR-0088](adr/0088-data-reuse.md) 1번). 세션이 쓰는 대로 한 줄씩 덧붙이고(`RunLog`) 고치거나 덮어쓰지 않는다. 다시 보기(시간 막대, 토폴로지), 결과 화면 첫 줄, 나중의 학습 데이터가 모두 이 하나를 읽는다. 조회는 `GET /api/runs/:id/events?from&to`(세계 초 구간)이고, 실행 중에는 지금까지 쌓인 것을 `live: true`로 준다. 끝난 실행의 기록은 결과(`RunResult.events`)에 들어 있다. 기록이 생기기 전에 저장된 실행은 툴 호출과 끝난 이유만으로 만들어 준다(`legacyEvents`, 세계 사건이 없다).
+
+모든 사건에 시계가 둘이다. `t`는 **세계 시간**(모의 초, 시계가 가는 축)이고 `real`은 **실제 시간**(ISO 8601)이다. 세계 사건의 `real`은 그 직전에 본 호출의 시각이라 "그 무렵"의 상한이지 초시계가 아니다(호스트는 모의 한 걸음 안을 보지 못한다).
+
+| 종류 | 담는 것 |
+|---|---|
+| 툴 호출 `tool` | 누가(하네스·에이전트·모델은 조회 응답의 `who`), 무엇을(`tool`, `args`), 대상 장비(`targets`), 하는 일(`effect`: observe 조회, act 조치, wait 기다림, answer 답), 결과(`ok`, `error`), 한 줄 요약(`summary`: 무엇이 바뀌었나, 왜 실패했나), `t`, `real` |
+| 세계 사건 `world` | 고장·알람·전원·설정값 같은 세계 명령(`command`)과 누가 일으켰나(`cause`), `t`, `real`. 같은 순간이면 호출 앞의 사건, 호출, 호출이 낳은 사건 순서다 |
+| 점수 사건 `score` | `agent_start`(과제를 받음, 세는 시작점 `scenarioStart`), `closed`(끝난 이유, 진단했나), `graded`(총점, 합격, 정답 장비 `rootCause`) |
+
+`seq`는 나열 속 자리(0부터)이고, 형식은 필드를 더하기만 한다(`RUN_EVENT_FORMAT`). 읽는 쪽은 모르는 필드를 무시한다.
 
 ## 벤치마크 대시보드 (REQ-039)
 

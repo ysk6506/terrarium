@@ -5,7 +5,7 @@ import { ForbiddenError } from "@terrarium/core/contract";
 import type { ExperimentStore, HarnessPort } from "@terrarium/core/experiments";
 import { NotFoundError, withJosa } from "@terrarium/core/kernel";
 import type { SourceEntry } from "../adapters";
-import type { EventBus } from "./events";
+import type { EventBus, RunLogs } from "./events";
 import type { SessionHost } from "./hosts";
 import type { Stamps } from "./ids";
 
@@ -44,6 +44,7 @@ export interface PlatformContext {
   readonly host: SessionHost;
   readonly stamps: Stamps;
   readonly events: EventBus;
+  readonly logs: RunLogs;
 }
 
 export function must<T>(value: T | undefined, what: string): T {

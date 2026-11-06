@@ -14,5 +14,27 @@ export {
   TILE_HALF,
 } from "./layout";
 export { cutTo, pathFor } from "./path";
+export {
+  advance,
+  type Bubble,
+  bubbleOf,
+  clamp,
+  DEFAULT_SPEED,
+  KEY_STEP_S,
+  keyedT,
+  type Moment,
+  momentAt,
+  nearestFrame,
+  PULSE_MS,
+  pct,
+  ratioOf,
+  relative,
+  SPEEDS,
+  serversMoved,
+  type Tick,
+  ticks,
+  valueText,
+  whoText,
+} from "./replay";
 export { frameOf, sourceOf } from "./source";
 export { drawnText, pictureText, TOPO_WORDS, tileText } from "./words";

@@ -86,6 +86,14 @@ export const BOARD_CSS = `
   fill: var(--cobalt);
 }
 
+.topo-board .touch-read .rim {
+  stroke: var(--topo-touch-read);
+}
+
+.topo-board .touch-read .glow {
+  fill: var(--topo-touch-read);
+}
+
 .topo-board .ring {
   fill: none;
   stroke: var(--cobalt);
