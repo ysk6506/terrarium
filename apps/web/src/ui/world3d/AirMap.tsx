@@ -1,7 +1,7 @@
 /**
  * The airflow map on the room level of the world page (REQ-072, ADR-0074): two quiet view toggles over
  * the picture (3D or the plan seen from above; inlet, outlet or air), the card beside it, and the
- * rack names on the plan. It reads what the "돌려 보기" run recorded, so the time can be dragged; with no run
+ * rack names on the plan. It reads what the "시운전" run recorded, so the time can be dragged; with no run
  * yet it offers to make one. The sentence that says it is a calculation is always on screen.
  */
 import type { BlueprintIndex } from "@terrarium/core/world";
@@ -21,7 +21,7 @@ export interface AirInput {
   /** The map mode is on: the page has folded its own panels and left the picture to the map. */
   readonly on: boolean;
   readonly onToggle: (on: boolean) => void;
-  /** What "돌려 보기" recorded, if it has been run. */
+  /** What "시운전" recorded, if it has been run. */
   readonly preview: builder.Preview | undefined;
   readonly previewing: boolean;
   readonly onRun: () => void;

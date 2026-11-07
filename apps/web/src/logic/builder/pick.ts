@@ -39,8 +39,8 @@ export interface PickCard {
   readonly entityId?: string;
 }
 
-export const RUN = "돌려 보기";
-export const RUN_OFF = "돌려 본 결과 끄기";
+export const RUN = "시운전";
+export const RUN_OFF = "시운전 결과 끄기";
 const FILL = "서버룸 채우기";
 const BLOCKED_FILL = "이미 놓은 것이 있어요. 지우고 비운 서버룸에서 채워요";
 
@@ -163,7 +163,7 @@ function ofEntity(
 
 /**
  * The card for what is picked, or for the level when nothing is. `ran` is whether the world has been run this
- * visit; the card only reads it to say "돌려 본 결과 끄기" in place of "돌려 보기".
+ * visit; the card only reads it to say "시운전 결과 끄기" in place of "시운전".
  */
 export function describePick(
   bp: Blueprint,

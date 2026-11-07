@@ -43,7 +43,7 @@ function AskTour({ onAnswer }: { readonly onAnswer: (yes: boolean) => void }) {
     <section className="tour-ask" aria-label="둘러보기">
       <div>
         <b>둘러보기 할까요?</b>
-        <p className="small muted">사업장에서 돌려 보기까지 다섯 걸음을 하나씩 알려 드려요.</p>
+        <p className="small muted">사업장에서 시운전까지 다섯 걸음을 하나씩 알려 드려요.</p>
       </div>
       <div className="row">
         <Button size="small" onClick={() => onAnswer(true)}>

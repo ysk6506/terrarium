@@ -1,10 +1,10 @@
 /**
- * The tycoon-style builder (REQ-006, REQ-035, REQ-036): site → building → floor → room → racks and
- * equipment, with running totals, a heat preview and saving. Opened lazily: three.js loads here.
+ * The tycoon-style builder (REQ-006, REQ-035, REQ-036, REQ-102): site → building → floor → room → racks and
+ * equipment, with a "놓기" button, one card for what is picked, a bar at the foot, a trial run and saving. Opened lazily: three.js loads here.
  */
 import type { WorldRecord } from "@terrarium/core/experiments";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
-import { builder, celsius, hallTopology, type world3d } from "../../logic";
+import { builder, hallTopology, type world3d } from "../../logic";
 import { useApp, useAsync, useLeaveGuard, usePageTitle } from "../context";
 import { Failure, Loading } from "../kit";
 import { FramesBar } from "../replay/FramesBar";
@@ -12,46 +12,30 @@ import { useActivity } from "../world3d/useActivity";
 import { WorldStage } from "../world3d/WorldStage";
 import { BuilderBar } from "./BuilderBar";
 import { NextChip } from "./NextChip";
+import { PlaceSheet } from "./PlaceSheet";
 import { StageCards } from "./StageCards";
 import { StepBar } from "./StepBar";
-import { Toolbox } from "./Toolbox";
 import { useAutosave } from "./useAutosave";
 import { type Builder, catalog, useBuilder } from "./useBuilder";
 import { useBuilderKeys } from "./useBuilderKeys";
 import { useGestures } from "./useGestures";
 
-/** The numbers an experiment runs on, over the picture: racks, servers, heat against cooling, power left (no money). */
-function Hud({ b }: { readonly b: Builder }) {
+/** What a trial run left, in one line at the top of the picture: alarms, the hottest place, the power left (REQ-102). */
+function TrialPill({ b }: { readonly b: Builder }) {
   const { index, level, preview, blueprint } = b.state;
-  const stats = builder.levelStats(index, catalog, level);
+  if (!preview) return null;
   const site = level.kind === "site" ? builder.siteUse(blueprint, catalog) : undefined;
+  const line = builder.trialLine(preview, index, catalog, level, site);
   return (
-    <div className="stage-top">
-      <section className="hud" aria-label="실험에 들어가는 숫자">
-        {builder.hudItems(stats, site).map((item) => (
-          <div
-            key={item.label}
-            className="hud-item"
-            style={item.bad ? { color: "var(--bad)" } : undefined}
-          >
-            {item.label}
-            <b>{item.value}</b>
-          </div>
-        ))}
-      </section>
-      {preview && (
-        <div className="heat-scale" title="랙 흡기 온도: 파랑은 차갑고 빨강은 너무 더워요">
-          <span>18°C</span>
-          <span className="heat-bar" />
-          <span>32°C</span>
-          {preview.hottest && (
-            <span>
-              가장 더운 랙 {preview.hottest.name} {celsius(preview.hottest.inletC)}
-            </span>
-          )}
-        </div>
-      )}
-    </div>
+    <output
+      className="trial-pill"
+      data-testid="trial-result"
+      title="랙 흡기 온도: 파랑은 차갑고 빨강은 너무 더워요"
+    >
+      {line.head} · <b className={preview.alarms.length === 0 ? "good" : "bad"}>{line.alarms}</b>
+      {line.rest && ` · ${line.rest}`}
+      <span className="heat-bar" aria-hidden="true" />
+    </output>
   );
 }
 
@@ -119,7 +103,7 @@ function useBuilderHabits(b: Builder): void {
 
 interface StageProps {
   readonly b: Builder;
-  /** The moment of the "돌려 보기" run that is shown, shared by the airflow map and the topology view. */
+  /** The moment of the "시운전" that is shown, shared by the airflow map and the topology view. */
   readonly at: number | undefined;
   readonly setAt: (i: number) => void;
 }
@@ -163,7 +147,7 @@ function Stage3D(
       now={now}
       onWatch={(id) => b.go(builder.levelOf(index, id))}
     >
-      {!map && <Hud b={b} />}
+      {!map && <TrialPill b={b} />}
       {!map && gestures.hint && (
         <output className={`stage-hint${gestures.bad ? " stage-hint-bad" : ""}`}>
           {gestures.hint}
@@ -222,11 +206,6 @@ function useViews(level: builder.Level) {
   return { map, setMapRoom, topology, openTopology };
 }
 
-/** The class of the builder's grid: the palette and the picture, or the picture alone (map mode, topology). */
-function gridClass(map: boolean, topology: boolean): string {
-  return map || topology ? "builder builder-map" : "builder";
-}
-
 function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
   const b = useBuilder(initial);
   const { level, preview } = b.state;
@@ -244,14 +223,14 @@ function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
         onTopology={openTopology}
         warm={warmTopology}
       />
-      <div className={gridClass(map, topology)}>
-        {!map && !topology && <Toolbox b={b} />}
+      <div className="builder">
         <div className="stage">
           {topology ? (
             <TopologyStage b={b} {...moment} />
           ) : (
             <Stage3D b={b} map={map} worldId={initial.id} setMapRoom={setMapRoom} {...moment} />
           )}
+          {!map && !topology && <PlaceSheet b={b} />}
           {!map && <NextChip b={b} worldId={initial.id} />}
           {!map && <StageCards b={b} />}
           {!map && <StepBar b={b} />}

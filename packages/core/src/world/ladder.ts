@@ -5,8 +5,18 @@
  * world, and which faults its structure makes possible. The words, pictures and cards of each choice belong to
  * the screen (apps/web/src/logic/world-shape/ladders.ts); a test keeps the two lists in step.
  */
-import type { DbShape } from "./db";
+
 import type { FaultType, MistakeType } from "./faults";
+import type { ChipBuild } from "./ladder-build";
+
+export type {
+  AppBuild,
+  ChipBuild,
+  DatabaseBuild,
+  K8sBuild,
+  OverlayBuild,
+  PoolBuild,
+} from "./ladder-build";
 
 /** A fault or a mistake: both are things that go wrong. */
 export type Problem = FaultType | MistakeType;
@@ -32,91 +42,34 @@ export const LAYER_IDS: readonly LayerId[] = [
   "site",
 ];
 
-/** What a chip makes of the generated world. Absent fields leave the generator's default alone. */
-export interface ChipBuild {
-  /** Spine switches per server room. */
-  readonly spines?: number;
-  /** Hosts a service needs for its nodes: how nodes share hosts (`pack`), and spare hosts kept idle. */
-  readonly pack?: number;
-  readonly spareHosts?: number;
-  /** Services run on servers directly, no virtual machines. */
-  readonly bare?: boolean;
-  /** Services take a place on a shared storage array. */
-  readonly sharedStorage?: boolean;
-  /** Power feeds into every rack. */
-  readonly feeds?: 1 | 2;
-  readonly cooling?: "N" | "N+1" | "2N";
-  readonly containment?: boolean;
-  /** Server rooms, and whether they stand in separate buildings. */
-  readonly rooms?: number;
-  readonly buildings?: number;
-  /** The storage pool the storage choice builds, and the database the database choice builds. */
-  readonly pool?: PoolBuild;
-  readonly database?: DatabaseBuild;
-  /** The overlay and cloud-native network the network choice builds on the leaf-spine (REQ-097). */
-  readonly overlay?: OverlayBuild;
-  /** The hosts' cluster moves VMs by itself when one host is hot (DRS, REQ-096). */
-  readonly drs?: boolean;
-  /** The service runs on Kubernetes: this many clusters, each with its control plane, workers and workloads (REQ-096). */
-  readonly k8s?: K8sBuild;
-  /** The application layer the app choice builds for every service: balancer, replicas, sessions, breakers, mesh, regions (REQ-100). */
-  readonly app?: AppBuild;
+/** One place on a ladder: the layer, and a choice of it. */
+export interface LadderSpot {
+  readonly layer: LayerId;
+  readonly atLeast: string;
 }
 
 /**
- * What an application choice from "stateless" up builds around every service. Each choice keeps what the one before it had:
- * a balancer and one replica object per place the service runs, then an external session store, a circuit breaker on every
- * call, a sidecar next to every replica with a mesh control plane over them, and a second region behind a global balancer.
+ * What a choice needs under it (REQ-102, ADR-0123): another layer at `atLeast` or further right on its ladder, or, when
+ * `orElse` is there, either of the two. A choice whose need is not met is shown muted and asks before it is taken.
  */
-export interface AppBuild {
-  readonly sessionStore: boolean;
-  readonly breakers: boolean;
-  readonly mesh: boolean;
-  /** Regions, each with a full stack of the service (the hosts are doubled). */
-  readonly regions: 1 | 2;
+export interface Need extends LadderSpot {
+  readonly orElse?: LadderSpot;
 }
 
-/** The SDN overlay a network chip builds: a controller pair, a VTEP per leaf, a segment per service, and for cloud native the pod network. */
-export interface OverlayBuild {
-  /** SDN controllers: one active, the rest standby. */
-  readonly controllers: number;
-  /** A virtual firewall in the way of every service (a network function). */
-  readonly nfv: boolean;
-  /** A CNI plugin per node, a network policy and an ingress per service. */
-  readonly cloudNative: boolean;
-}
-
-/** The Kubernetes clusters a chip builds for every service: how many (two keep each other up). */
-export interface K8sBuild {
-  readonly clusters: 1 | 2;
-}
-
-/** The storage pool a chip builds (REQ-095): two controllers and two paths, or nodes holding copies. */
-export interface PoolBuild {
-  readonly mode: "dual" | "distributed";
-  /** Whether the hosts switch to the other path by themselves (a dual pool). */
-  readonly multipath?: boolean;
-  /** Nodes of a distributed pool: one more than the copies, so a lost node can be made again. */
-  readonly nodes?: number;
-  readonly copies?: number;
-}
-
-/** The database cluster a chip builds for every service (REQ-095). */
-export interface DatabaseBuild {
-  readonly shape: DbShape;
-  /** Instances, the primary included. */
-  readonly instances: number;
-  readonly failover: "manual" | "auto";
-  readonly detectS?: number;
-  /** Voting members; a witness counts as one. */
-  readonly quorum?: number;
-  /** The instances keep their data on one shared disk (a storage pool) and not on their own. */
-  readonly sharedDisk?: boolean;
+/** A pair that is allowed but makes little sense together: the note says why, in one line. */
+export interface Pointless {
+  readonly layer: LayerId;
+  readonly chip: string;
+  readonly note: string;
 }
 
 export interface ChipMech {
   readonly id: string;
   readonly layer: LayerId;
+  /** Needs of other layers (all of them), see `Need`. Absent: none. */
+  readonly requires?: readonly Need[];
+  /** Pairs that make little sense with this choice. */
+  readonly pointlessWith?: readonly Pointless[];
   /** False: the core has no model for this structure (a dotted chip); it builds as `buildsAs` and makes no scenarios. */
   readonly modeled: boolean;
   /** The nearest modelled chip of the layer, for a dotted one. */
@@ -135,18 +88,28 @@ const c = (
   rest: Omit<ChipMech, "id" | "layer" | "modeled" | "build" | "stops" | "slows" | "costM"> &
     Partial<Pick<ChipMech, "modeled" | "build" | "stops" | "slows" | "costM">>,
 ): ChipMech => ({
+  ...rest,
   id,
   layer,
   modeled: rest.modeled ?? true,
-  ...(rest.buildsAs ? { buildsAs: rest.buildsAs } : {}),
   build: rest.build ?? {},
   stops: rest.stops ?? [],
   slows: rest.slows ?? [],
   costM: rest.costM ?? 0,
 });
 
-const dotted = (layer: LayerId, id: string, buildsAs: string, costM = 0): ChipMech =>
-  c(layer, id, { modeled: false, buildsAs, costM });
+const dotted = (
+  layer: LayerId,
+  id: string,
+  buildsAs: string,
+  costM = 0,
+  requires?: readonly Need[],
+): ChipMech => c(layer, id, { modeled: false, buildsAs, costM, ...(requires ? { requires } : {}) });
+
+const at = (layer: LayerId, atLeast: string): LadderSpot => ({ layer, atLeast });
+const SHARED: Need = at("storage", "sto-shared");
+const CONTAINERS: Need = at("compute", "cmp-containers");
+const MANY_DB = at("database", "db-distributed-sql");
 
 /** Every choice of every layer, left to right. 44 in all. */
 const APP_SLOWS = [
@@ -199,6 +162,7 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       costM: 150,
     }),
     c("network", "net-cloud-native", {
+      requires: [CONTAINERS],
       build: { spines: 2, overlay: { controllers: 2, nfv: true, cloudNative: true } },
       stops: ["switch_failure", "vxlan_tunnel_down", "ingress_controller_down"],
       slows: [
@@ -235,12 +199,14 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       costM: 15,
     }),
     c("compute", "cmp-virt-ha", {
+      requires: [SHARED],
       build: { pack: 3 },
       stops: ["kernel_panic", "bmc_unresponsive"],
       slows: ["psu_failure", "vm_cpu_spike", "memory_leak", "cpu_runaway", "fan_failure"],
       costM: 30,
     }),
     c("compute", "cmp-drs", {
+      requires: [SHARED],
       build: { pack: 3, drs: true },
       stops: ["kernel_panic", "bmc_unresponsive"],
       slows: ["psu_failure", "vm_cpu_spike", "memory_leak", "cpu_runaway", "fan_failure"],
@@ -262,6 +228,13 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       costM: 40,
     }),
     c("compute", "cmp-multicluster", {
+      pointlessWith: [
+        {
+          layer: "site",
+          chip: "site-one-room",
+          note: "멀티클러스터인데 서버룸이 하나면 같은 방이 멈추면 둘 다 멈춰요",
+        },
+      ],
       build: { pack: 3, k8s: { clusters: 2 } },
       stops: [],
       slows: [
@@ -333,6 +306,7 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       costM: 15,
     }),
     c("database", "db-shared-aa", {
+      requires: [SHARED],
       build: {
         database: { shape: "shared_aa", instances: 3, failover: "manual", sharedDisk: true },
       },
@@ -383,12 +357,14 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       costM: 20,
     }),
     c("app", "app-mesh", {
+      requires: [CONTAINERS],
       build: { app: { sessionStore: true, breakers: true, mesh: true, regions: 1 } },
       stops: ["cert_expired"],
       slows: [...APP_MESH_SLOWS],
       costM: 40,
     }),
     c("app", "app-multiregion", {
+      requires: [at("site", "site-multi-active"), MANY_DB],
       build: { app: { sessionStore: true, breakers: true, mesh: true, regions: 2 } },
       stops: [],
       slows: [...APP_MESH_SLOWS, "region_down", "replication_lag_high"],
@@ -448,8 +424,12 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
     c("site", "site-one-room", { build: { rooms: 1, buildings: 1 } }),
     c("site", "site-two-rooms", { build: { rooms: 2, buildings: 1 }, costM: 120 }),
     c("site", "site-two-buildings", { build: { rooms: 2, buildings: 2 }, costM: 400 }),
-    dotted("site", "site-dr-warm", "site-two-buildings", 600),
-    dotted("site", "site-multi-active", "site-two-buildings", 1200),
+    dotted("site", "site-dr-warm", "site-two-buildings", 600, [
+      { ...at("storage", "sto-geo"), orElse: at("database", "db-primary-secondary") },
+    ]),
+    dotted("site", "site-multi-active", "site-two-buildings", 1200, [
+      { ...at("storage", "sto-geo"), orElse: MANY_DB },
+    ]),
   ],
 };
 

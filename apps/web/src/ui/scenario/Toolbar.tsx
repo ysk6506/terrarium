@@ -152,11 +152,11 @@ export function Bar({
         icon="play"
         busy={e.running}
         disabled={!e.mine && e.dirty}
-        why="다른 사람의 시나리오예요. 내 사본으로 저장한 뒤에 돌려 볼 수 있어요"
+        why="다른 사람의 시나리오예요. 내 사본으로 저장한 뒤에 미리 볼 수 있어요"
         onClick={() => void e.runDry()}
-        title={errors > 0 ? "고칠 곳을 먼저 고쳐 주세요" : "에이전트 없이 시나리오만 돌려 봐요"}
+        title={errors > 0 ? "고칠 곳을 먼저 고쳐 주세요" : "에이전트 없이 시나리오만 미리 봐요"}
       >
-        미리 돌려 보기
+        미리 보기
       </Button>
       <Go
         to={{ name: "newExperiment", scenarioId: e.record.id }}

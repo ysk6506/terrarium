@@ -167,6 +167,7 @@ describe("check entry points [REQ-024]", () => {
       "debt",
       "test-integrity",
       "traceability",
+      "moss",
       "protected-paths",
       "coverage",
     ]);

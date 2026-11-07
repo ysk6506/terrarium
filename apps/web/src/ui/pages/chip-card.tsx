@@ -5,7 +5,7 @@
  */
 
 import type { LayerId } from "@terrarium/core/world";
-import { chipsOfLayer, LAYER_INFO } from "../../logic";
+import { capList, chipsOfLayer, LAYER_INFO } from "../../logic";
 import { MossAsk, termQuestion } from "../../moss";
 import { ChipArt } from "./chip-art";
 
@@ -41,11 +41,11 @@ export function ChipDetail({
       <p className="we-d-what">{card.what}</p>
       <dl className="we-kv">
         <dt>잃어도 되는 것</dt>
-        <dd>{card.canLose}</dd>
+        <dd>{capList(card.canLose)}</dd>
         <dt>잃으면 안 되는 것</dt>
-        <dd>{card.mustNot}</dd>
+        <dd>{capList(card.mustNot)}</dd>
         <dt>생기는 고장</dt>
-        <dd>{card.faults}</dd>
+        <dd>{capList(card.faults)}</dd>
         <dt>비용</dt>
         <dd>{card.cost}</dd>
       </dl>

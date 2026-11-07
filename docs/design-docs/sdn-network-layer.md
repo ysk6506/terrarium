@@ -22,13 +22,13 @@ covers:
   - packages/core/src/topology/layer-network.ts
   - packages/core/src/session/probes.ts
   - packages/core/src/session/operation/mtbf.ts
-covers_hash: 972ea4db9cb3e784
+covers_hash: 4ff7c0f501430e24
 verification_log:
-  - "2026-11-06: 처리기·물리·토폴로지의 함수 쪼개기 뒤에도 표와 규칙이 코드와 같음을 다시 대조했다 (REQ-097)"
-  - "2026-11-06: library-sdn.ts의 VTEP 고르기를 서비스의 세그먼트에서 잡도록 고쳤고(생성된 세계에서 서비스가 비던 문제), 시나리오 표는 그대로 맞다 (REQ-097)"
-  - "2026-11-06: o1·o2 합치기"
-  - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
+  - "2026-11-06: 새 문서의 개체·상태·건강 규칙·고장·자동 동작·툴·CLI·사다리·시나리오·토폴로지를 코드와 대조했다 (REQ-097)"
+  - "2026-11-07: REQ-102(ADR-0123): 사다리·직접 짓기 화면과 말(시운전·미리 보기·전제)을 코드와 대조해 고쳤다"
+  - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
+  - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
 ---
 # SDN 오버레이와 클라우드 네이티브 네트워크 층 (REQ-097, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0115](adr/0115-sdn-network-layer-amend-tests.md))
 
@@ -128,7 +128,7 @@ VTEP이 세그먼트에서 끊기는 때(물리가 매 스텝 정한다): 스위
 
 ## 사다리와 세계 생성
 
-`net-sdn`과 `net-cloud-native`가 `modeled: true`가 되었다. `build.overlay`가 컨트롤러 수(둘), 가상 방화벽 여부, 클라우드 네이티브 여부를 말한다. 점선은 이 층에 더는 없다(ADR-0107 결정 5의 점선 목록에서 둘이 빠진다).
+`net-sdn`과 `net-cloud-native`가 `modeled: true`가 되었다. 클라우드 네이티브는 컴퓨트가 컨테이너 오케스트레이션 이상이어야 골라진다(전제 규칙 `requires`, REQ-102, [사다리 화면](world-entry.md)). `build.overlay`가 컨트롤러 수(둘), 가상 방화벽 여부, 클라우드 네이티브 여부를 말한다. 점선은 이 층에 더는 없다(ADR-0107 결정 5의 점선 목록에서 둘이 빠진다).
 
 | 칩 | 짓는 것 | 멈추는 고장 | 느려지는 고장 |
 |---|---|---|---|

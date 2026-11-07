@@ -29,7 +29,9 @@ export interface BuilderState {
   readonly rotation: Rotation;
   readonly preview?: builder.Preview;
   readonly previewing: boolean;
-  /** Whether "돌려 보기" has been done in this visit, even if its result was switched off since. */
+  /** How many of the trial run's minutes are done (while `previewing`). */
+  readonly minutes: number;
+  /** Whether "시운전" has been done in this visit, even if its result was switched off since. */
   readonly ran: boolean;
   readonly issues: readonly Issue[];
   readonly dirty: boolean;
@@ -60,39 +62,50 @@ export interface Refused {
 
 type History = MutableRefObject<builder.History<Blueprint>>;
 
-/** "돌려 보기": the physics run in the browser, on demand, cleared by any edit. */
+/** "시운전": the physics run in the browser, on demand, a frame at a time so the bar can say how far it is; cleared by any edit. */
 function usePreview(history: History) {
   const { toast } = useApp();
   const [preview, setPreview] = useState<builder.Preview>();
   const [previewing, setPreviewing] = useState(false);
+  const [minutes, setMinutes] = useState(0);
   const [ran, setRan] = useState(false);
+  /** Which run is the live one: an edit or a new run makes the one before it stop where it is. */
+  const live = useRef(0);
   const run = useCallback(
     (stopped: ReadonlySet<string>) => {
+      const mine = ++live.current;
       setPreviewing(true);
-      // Let the button show it is working before the physics runs.
-      setTimeout(() => {
-        const result = builder.preview(
-          history.current.current,
-          catalog,
-          builder.PREVIEW_SECONDS,
-          stopped,
-        );
+      setMinutes(0);
+      const steps = builder.previewSteps(
+        history.current.current,
+        catalog,
+        builder.PREVIEW_SECONDS,
+        stopped,
+      );
+      const finish = (result: builder.Preview | { readonly problems: readonly string[] }) => {
         setPreviewing(false);
         if ("problems" in result) {
           const more = result.problems.length > 1 ? ` 외 ${result.problems.length - 1}건` : "";
-          toast(`돌릴 수 없어요: ${result.problems[0] ?? ""}${more}`, "bad");
+          toast(`시운전할 수 없어요: ${result.problems[0] ?? ""}${more}`, "bad");
           return;
         }
         setPreview(result);
         setRan(true);
-      }, 30);
+      };
+      const tick = () => {
+        if (live.current !== mine) return;
+        const next = steps.next();
+        if (next.done) return finish(next.value);
+        setMinutes(Math.floor(next.value / 60));
+        setTimeout(tick, 0);
+      };
+      // Let the button show it is working before the physics runs.
+      setTimeout(tick, 30);
     },
     [toast, history],
   );
-  const runPreview = useCallback(() => {
-    if (preview) return setPreview(undefined);
-    run(new Set());
-  }, [preview, run]);
+  /** "시운전" and "다시 시운전": always a fresh run. */
+  const runPreview = useCallback(() => run(new Set()), [run]);
   /** Run again with one cooling unit stopped, or started again ("멈춰 보기"). */
   const toggleUnit = useCallback(
     (id: string) => {
@@ -102,8 +115,12 @@ function usePreview(history: History) {
     },
     [preview, run],
   );
-  const clearPreview = useCallback(() => setPreview(undefined), []);
-  return { preview, previewing, ran, runPreview, toggleUnit, clearPreview };
+  const clearPreview = useCallback(() => {
+    live.current++;
+    setPreviewing(false);
+    setPreview(undefined);
+  }, []);
+  return { preview, previewing, minutes, ran, runPreview, toggleUnit, clearPreview };
 }
 
 const CONFLICT = "그사이 다른 곳에서 이 세계가 바뀌었어요. 새로고침하면 바뀐 내용을 볼 수 있어요";
@@ -228,7 +245,7 @@ export function useBuilder(initial: WorldRecord) {
   const { me } = useApp();
   const clear = useRef<() => void>(() => undefined);
   const edits = useEdits(initial.blueprint, () => clear.current());
-  const { preview, previewing, ran, runPreview, toggleUnit, clearPreview } = usePreview(
+  const { preview, previewing, minutes, ran, runPreview, toggleUnit, clearPreview } = usePreview(
     edits.history,
   );
   clear.current = clearPreview;
@@ -268,6 +285,7 @@ export function useBuilder(initial: WorldRecord) {
     rotation,
     ...(preview ? { preview } : {}),
     previewing,
+    minutes,
     ran,
     issues,
     dirty: edits.blueprint !== saving.saved,

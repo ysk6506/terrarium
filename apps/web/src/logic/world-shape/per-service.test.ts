@@ -63,7 +63,7 @@ describe("서비스마다 다른 모양을 화면이 읽는 법 [REQ-094]", () =
     // 노드 셋의 배치 서비스: 호스트에 나눠 올리고, 쌓아 두고 돌리는 일이라 백업만으로 충분해요
     expect(small.layers.compute).toBe("cmp-virt-ha");
     expect(small.layers.database).toBe("db-single");
-    expect(small.why.database).toContain("알아서");
+    expect(small.why.database).toMatch(/백업/);
     const pressed = resolveServiceLayers(batch(), { compute: "cmp-bare" });
     expect(pressed.layers.compute).toBe("cmp-bare");
     expect(pressed.why.compute).toBeUndefined();

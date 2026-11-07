@@ -58,8 +58,17 @@ async function waitForResult(page: Page): Promise<void> {
     .waitFor({ timeout: 90 * SECOND });
 }
 
+/** The sums in the bar at the foot of the 3D view: they change when a rack is put down. */
 async function hudText(page: Page): Promise<string> {
-  return (await page.locator(".hud").innerText()).replace(/\s+/g, " ");
+  return (await page.locator(".step-sum").innerText()).replace(/\s+/g, " ");
+}
+
+/** From the 세계 page: 새 세계 → "데이터센터를 직접 지어요" → 작은 사업장 만들기 (the entry has two doors, ADR-0107). */
+async function startSmallSite(c: Context): Promise<void> {
+  const { page } = c.v;
+  await c.d.click(page.getByRole("link", { name: /^새 세계/ }));
+  await c.d.click(page.getByRole("button", { name: /직접 지어요/ }));
+  await c.d.click(page.getByRole("button", { name: "작은 사업장 만들기" }));
 }
 
 /** A site as it is, at the smallest scale; then a rack in the first server room, and undo. */
@@ -67,17 +76,23 @@ async function build(c: Context): Promise<void> {
   const { page } = c.v;
   await home(c);
   await c.d.click(nav(page, "세계"));
-  await c.d.click(page.getByRole("button", { name: "새 세계" }));
-  await c.d.click(page.getByRole("button", { name: /사업장 그대로/ }));
-  await c.d.click(page.getByRole("radio", { name: /작게/ }));
-  await c.d.click(page.getByRole("button", { name: /만들기$/ }));
+  await startSmallSite(c);
   await expectPath(c, /^\/worlds\/w-/);
   await page
     .locator("canvas")
     .first()
     .waitFor({ timeout: 60 * SECOND });
   await page.waitForTimeout(1500);
-  await c.d.click(page.getByRole("button", { name: "랙 놓기" }));
+  // "랙" is on the sheet inside a server room: fill the empty one first.
+  await c.d.click(page.getByRole("button", { name: /^다음: 서버룸 채우기/ }));
+  await c.d.click(page.getByTestId("pick-card").getByRole("button", { name: "서버룸 채우기" }));
+  await page
+    .locator(".step-sum")
+    .getByText(/랙 24대/)
+    .first()
+    .waitFor({ timeout: 20 * SECOND });
+  await c.d.click(page.getByRole("button", { name: "놓기", exact: true }));
+  await c.d.click(page.getByRole("menuitem", { name: /^랙/ }));
   const before = await hudText(page);
   const box = await page.locator("canvas").first().boundingBox();
   if (!box) throw new Error("3D 장면의 자리를 찾지 못했다");
@@ -257,21 +272,25 @@ async function site(c: Context): Promise<void> {
   const { page } = c.v;
   await home(c);
   await c.d.click(nav(page, "세계"));
-  await c.d.click(page.getByRole("button", { name: "새 세계" }));
-  await c.d.click(page.getByRole("button", { name: /작게 시작/ }));
-  await c.d.click(page.getByRole("button", { name: "작은 사업장 만들기" }));
+  await startSmallSite(c);
   await expectPath(c, /^\/worlds\/w-/);
   await page
     .locator("canvas")
     .first()
     .waitFor({ timeout: 30 * SECOND });
-  const buy = page.getByRole("button", { name: /에 사기$/ });
-  await buy.first().waitFor({ timeout: 15 * SECOND });
+  // "놓기" → "땅 사기" lists the land for sale, one line each.
+  const buy = page.getByRole("menuitem", { name: /에 사기$/ });
   const forSale = async (): Promise<number> => {
-    const text = await page.getByText(/^팔고 있는 땅이 \d+곳/).innerText();
-    return Number(/(\d+)곳/.exec(text)?.[1] ?? Number.NaN);
+    await page.getByRole("button", { name: "놓기", exact: true }).click();
+    await page.getByRole("menuitem", { name: /^땅 사기/ }).click();
+    const n = await buy.count();
+    await page.keyboard.press("Escape");
+    return n;
   };
+  await page.getByRole("button", { name: "놓기", exact: true }).waitFor({ timeout: 15 * SECOND });
   const before = await forSale();
+  await c.d.click(page.getByRole("button", { name: "놓기", exact: true }));
+  await c.d.click(page.getByRole("menuitem", { name: /^땅 사기/ }));
   await c.d.click(buy.first());
   await page.waitForTimeout(500);
   if ((await forSale()) !== before - 1) throw new Error("땅을 사도 팔고 있는 땅이 줄지 않았다");
@@ -280,14 +299,12 @@ async function site(c: Context): Promise<void> {
   if ((await forSale()) !== before) throw new Error("되돌리기가 산 땅을 물리지 못했다");
 }
 
-/** 작게 시작 → 서버룸 채우기 → 돌려 보기: the three things a first world needs, led by the 다음 할 일 chip. */
+/** 작게 시작 → 서버룸 채우기 → 시운전: the three things a first world needs, led by the 다음 할 일 chip. */
 async function buildSmall(c: Context): Promise<void> {
   const { page } = c.v;
   await home(c);
   await c.d.click(nav(page, "세계"));
-  await c.d.click(page.getByRole("button", { name: "새 세계" }));
-  await c.d.click(page.getByRole("button", { name: /작게 시작/ }));
-  await c.d.click(page.getByRole("button", { name: "작은 사업장 만들기" }));
+  await startSmallSite(c);
   await expectPath(c, /^\/worlds\/w-/);
   await page
     .locator("canvas")
@@ -296,12 +313,12 @@ async function buildSmall(c: Context): Promise<void> {
   await c.d.click(page.getByRole("button", { name: /^다음: 서버룸 채우기/ }));
   await c.d.click(page.getByTestId("pick-card").getByRole("button", { name: "서버룸 채우기" }));
   await page
-    .locator(".hud")
-    .getByText(/^24대$/)
+    .locator(".step-sum")
+    .getByText(/랙 24대/)
     .first()
     .waitFor({ timeout: 20 * SECOND });
-  await c.d.click(page.getByTestId("pick-card").getByRole("button", { name: "돌려 보기" }));
-  await page.locator(".heat-scale").waitFor({ timeout: 90 * SECOND });
+  await c.d.click(page.getByRole("button", { name: /^시운전/ }).first());
+  await page.getByTestId("trial-result").waitFor({ timeout: 90 * SECOND });
 }
 
 /** Most tiles the topology view may draw (ADR-0084), and the longest a person waits for the first picture. */

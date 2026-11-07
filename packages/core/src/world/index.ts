@@ -222,6 +222,7 @@ export {
   type PoolBuild,
   type Problem,
 } from "./ladder";
+export { cheapestWay, placeOf, pointlessOf, unmetNeeds, unmetOf, withChoice } from "./ladder-rules";
 export {
   LAND_MARKETS,
   LAND_PRICE_M_PER_M2,

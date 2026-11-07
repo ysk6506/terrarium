@@ -49,7 +49,7 @@ describe("IAP 기본 카드는 컨테이너 오케스트레이션이다 [REQ-096
   test("카드에 컨트롤 플레인 VM이 있는 서비스는 알아서도 컨테이너를 고른다", () => {
     const r = resolveLayers([IAP_DRAFT], {});
     expect(r.layers.compute).toBe("cmp-containers");
-    expect(r.why.compute).toMatch(/직접 만든 쿠버네티스/);
+    expect(r.why.compute).toMatch(/컨트롤 플레인 VM/);
   });
 
   test("점선으로 남은 컴퓨트 칩은 없다", () => {

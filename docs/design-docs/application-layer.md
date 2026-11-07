@@ -22,11 +22,12 @@ covers:
   - packages/core/src/topology/impact-app.ts
   - packages/core/src/world/ladder.ts
 verification_log:
-  - "2026-11-07: 새 문서: 서비스 호출 그래프(calls), 개체 일곱, 고장 여덟, 툴 여덟, 알아서 하는 일, 시나리오 일곱, 사다리 연결, 한계를 코드와 대조해 적었다 (REQ-100)"
   - "2026-11-07: 개체·고장·툴·알아서 하는 일·시나리오를 코드와 대조해 적었다 (REQ-100)"
   - "2026-11-07: 마지막 정리(복잡도 분리) 뒤 코드와 다시 대조했다. 내용은 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
-covers_hash: a56c2c40be7d49a8
+  - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
+  - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
+covers_hash: 20a0b3f71abec6da
 ---
 # 애플리케이션 층 (REQ-100, [ADR-0121](adr/0121-application-layer-and-calls.md), [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6)
 

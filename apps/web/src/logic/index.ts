@@ -251,9 +251,11 @@ export {
   WORLD_SORT_OPTIONS,
 } from "./world-board";
 export {
+  CARD_LIST_MAX,
   CARDS,
   type Chip,
   type ChipCard,
+  capList,
   cardOf,
   chipsOfLayer,
   costText,

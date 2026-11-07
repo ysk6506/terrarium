@@ -6,6 +6,7 @@
  */
 
 import { gpuOf, mountOfModel, plannedGpus, type RackMountedKind } from "@terrarium/core/catalog";
+import { withJosa } from "@terrarium/core/kernel";
 import type { Entity, ServiceKind } from "@terrarium/core/world";
 import {
   rackStandardOf,
@@ -16,8 +17,7 @@ import {
 import { useState } from "react";
 import { builder, won } from "../../logic";
 import { Button, NumberField, Segmented, SelectField } from "../kit";
-import { EntityFolds } from "./DetailCard";
-import { NameBox } from "./PickCard";
+import { NameBox } from "./CardParts";
 import type { Builder } from "./useBuilder";
 import { catalog } from "./useBuilder";
 
@@ -165,9 +165,9 @@ export function ServerCard({ entity, b }: { readonly entity: Entity; readonly b:
   const rack = entity.parentId ? index.find(entity.parentId) : undefined;
   const at = entity.placement?.type === "unit" ? entity.placement.u : undefined;
   return (
-    <section className="rf-card" aria-label={`${entity.name} 카드`}>
+    <section className="rf-card ocard" aria-label={`${entity.name} 카드`}>
       <NameBox entity={entity} b={b} />
-      <p className="tiny muted">
+      <p className="fact">
         {facts.model}
         {rack && at !== undefined ? ` · ${rack.name} ${at}U` : ""}
       </p>
@@ -194,6 +194,11 @@ export function ServerCard({ entity, b }: { readonly entity: Entity; readonly b:
       </dl>
       {changing && <ChangeService entity={entity} b={b} />}
       <div className="row">
+        {rack && (
+          <Button size="small" onClick={() => b.setSelected([rack.id])}>
+            {withJosa(rack.name, "으로")} 돌아가기
+          </Button>
+        )}
         <Button size="small" onClick={() => setChanging((c) => !c)} aria-expanded={changing}>
           서비스 바꾸기
         </Button>
@@ -206,12 +211,6 @@ export function ServerCard({ entity, b }: { readonly entity: Entity; readonly b:
           빼기
         </Button>
       </div>
-      <details className="fold">
-        <summary>더 보기</summary>
-        <div className="stack" style={{ marginTop: 8 }}>
-          <EntityFolds entity={entity} b={b} />
-        </div>
-      </details>
     </section>
   );
 }
@@ -263,7 +262,7 @@ export function ServiceCard({
 }) {
   const def = serviceDef(entity);
   return (
-    <section className="rf-card" aria-label={`${entity.name} 서비스 카드`}>
+    <section className="rf-card ocard" aria-label={`${entity.name} 서비스 카드`}>
       <NameBox entity={entity} b={b} />
       <Segmented
         label="서비스 종류"

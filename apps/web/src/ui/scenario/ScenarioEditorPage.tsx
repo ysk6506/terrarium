@@ -99,10 +99,10 @@ function Overview({
       </div>
       <Calibration e={e} openSheet={openSheet} />
       <div className="builder-block stack">
-        <h3 style={{ marginBottom: 0 }}>미리 돌려 본 결과</h3>
+        <h3 style={{ marginBottom: 0 }}>미리 본 결과</h3>
         {!e.dryRun && (
           <p className="small muted">
-            에이전트 없이 시나리오만 돌려서 세계에 무슨 일이 일어나는지 봐요. 저장된 내용으로
+            에이전트 없이 시나리오만 미리 보면서 세계에 무슨 일이 일어나는지 봐요. 저장된 내용으로
             돌아요.
           </p>
         )}

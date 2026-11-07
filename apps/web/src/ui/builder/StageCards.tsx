@@ -1,16 +1,13 @@
 /**
- * The cards over the 3D view (ADR-0107 item 8), in place of the right panel: a rack's front with the card of the unit that
- * was pressed beside it, the small card of a server, the card of a service, and for everything else the detail card.
- * "어느 서버에서 돌아요?" is answered here: while a service is waiting, the next server picked gets it.
+ * The card over the 3D view (REQ-102, ADR-0123, ADR-0107 item 8): one card, and only when something is picked — a rack,
+ * a room or a building gets the one card, a server its small card, a service its card, several things the one thing to
+ * do with them. "어느 서버에서 돌아요?" is answered here: while a service is waiting, the next server picked gets it.
  */
-import type { Entity } from "@terrarium/core/world";
 import { useEffect, useState } from "react";
 import { builder } from "../../logic";
 import { Button } from "../kit";
-import { EntityPanel, LevelPanel, ManyPicked } from "./DetailCard";
-import { RackFront } from "./RackFront";
-import { InsertCard, ServerCard, ServiceCard } from "./ServerCards";
-import { rackOfPick } from "./StepBar";
+import { OneCard } from "./OneCard";
+import { ServerCard, ServiceCard } from "./ServerCards";
 import type { Builder } from "./useBuilder";
 
 const HOSTS = new Set(["server", "vm", "storage"]);
@@ -35,42 +32,6 @@ function useHostPick(b: Builder) {
   return { serviceId, setServiceId };
 }
 
-function Detail({ b }: { readonly b: Builder }) {
-  const { selected, index } = b.state;
-  const [open, setOpen] = useState(true);
-  const entity = selected.length === 1 ? index.find(selected[0] as string) : undefined;
-  return (
-    <aside className="stage-detail" aria-label="고른 것">
-      <button
-        type="button"
-        className="stage-detail-toggle"
-        aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
-      >
-        {open ? "접기" : "자세히 ▸"}
-      </button>
-      {open &&
-        (selected.length > 1 ? (
-          <ManyPicked b={b} />
-        ) : entity ? (
-          <EntityPanel entity={entity} b={b} />
-        ) : (
-          <LevelPanel b={b} />
-        ))}
-    </aside>
-  );
-}
-
-/** Which cards the pick calls for: the device in the rack, a service, a server outside any rack, or the detail card. */
-function cardsFor(rack: Entity | undefined, one: Entity | undefined, at: number | undefined) {
-  const inRack = one !== undefined && one.parentId === rack?.id && one.kind !== "rack";
-  const device = inRack ? one : undefined;
-  const service = one?.kind === "service" ? one : undefined;
-  const loose = !rack && one && HOSTS.has(one.kind) ? one : undefined;
-  const open = Boolean(device || service || loose || (rack && at !== undefined));
-  return { device, service, loose, detail: !open };
-}
-
 function HostHint({ onStop }: { readonly onStop: () => void }) {
   return (
     <div className="stage-hint">
@@ -82,69 +43,49 @@ function HostHint({ onStop }: { readonly onStop: () => void }) {
   );
 }
 
-function RackCards({
-  rack,
-  device,
-  at,
-  setAt,
-  b,
-}: {
-  readonly rack: Entity;
-  readonly device: Entity | undefined;
-  readonly at: number | undefined;
-  readonly setAt: (u: number | undefined) => void;
-  readonly b: Builder;
-}) {
+/** Several things picked: the one thing to do with them. */
+function ManyPicked({ b }: { readonly b: Builder }) {
+  const { selected } = b.state;
   return (
-    <div className="stage-rack">
-      <RackFront
-        rack={rack}
-        b={b}
-        at={device ? undefined : at}
-        onPick={(u) => {
-          b.setSelected([rack.id]);
-          setAt(u);
-        }}
-      />
-      {at !== undefined && !device && (
-        <InsertCard rack={rack} at={at} b={b} onDone={() => setAt(undefined)} />
-      )}
-      {device && <ServerCard entity={device} b={b} />}
-    </div>
+    <section className="rf-card ocard" aria-label="고른 것 여럿">
+      <h3>{selected.length}개를 골랐어요</h3>
+      <div className="acts">
+        <Button
+          kind="danger"
+          size="small"
+          icon="trash"
+          onClick={() => b.apply((bp) => builder.remove(bp, selected))}
+        >
+          모두 지우기
+        </Button>
+        <Button size="small" onClick={() => b.setSelected([])}>
+          선택 풀기
+        </Button>
+      </div>
+    </section>
   );
 }
 
 export function StageCards({ b }: { readonly b: Builder }) {
   const { selected, index } = b.state;
-  const rack = rackOfPick(b);
-  const [at, setAt] = useState<number>();
   const host = useHostPick(b);
   const one = selected.length === 1 ? index.find(selected[0] as string) : undefined;
-  // A different rack is a different strip: the unit that was pressed is forgotten.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: forget the unit when the rack changes
-  useEffect(() => setAt(undefined), [rack?.id]);
-  const cards = cardsFor(rack, one, at);
-  const { service, loose } = cards;
   return (
     <>
       {host.serviceId && <HostHint onStop={() => host.setServiceId(undefined)} />}
-      {rack && <RackCards rack={rack} device={cards.device} at={at} setAt={setAt} b={b} />}
-      {!rack && service && (
-        <div className="stage-rack">
-          <ServiceCard
-            entity={service}
-            b={b}
-            picking={host.serviceId === service.id}
-            onPick={(on) => host.setServiceId(on ? service.id : undefined)}
-          />
-        </div>
+      {selected.length > 1 && <ManyPicked b={b} />}
+      {one?.kind === "service" && (
+        <ServiceCard
+          entity={one}
+          b={b}
+          picking={host.serviceId === one.id}
+          onPick={(on) => host.setServiceId(on ? one.id : undefined)}
+        />
       )}
-      {loose && (
-        <div className="stage-rack">
-          <ServerCard entity={loose} b={b} />
-        </div>
+      {one && HOSTS.has(one.kind) && <ServerCard entity={one} b={b} />}
+      {one && one.kind !== "service" && !HOSTS.has(one.kind) && (
+        <OneCard key={one.id} entity={one} b={b} />
       )}
-      {cards.detail && <Detail b={b} />}
     </>
   );
 }

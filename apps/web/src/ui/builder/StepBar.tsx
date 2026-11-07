@@ -1,11 +1,13 @@
 /**
- * The bar at the foot of the stage (ADR-0107 item 8): where you are in building (부지 › 건물 › 서버룸 › 랙) and the sums of
- * that step only, with the one button that moves on. Everything else the old panel said lives on the cards.
+ * The bar at the foot of the stage, the single status line (ADR-0107 item 8, ADR-0123): where you are in building
+ * (부지 › 건물 › 서버룸 › 랙), the sums of that step (money is here and nowhere else), what needs fixing, "?", and the
+ * one button that moves on.
  */
 import type { Entity } from "@terrarium/core/world";
-import { builder, won } from "../../logic";
+import { builder } from "../../logic";
 import { Go } from "../context";
 import { Button } from "../kit";
+import { IssuesLine } from "./CardParts";
 import { KeysHint } from "./KeysHint";
 import type { Builder } from "./useBuilder";
 import { catalog } from "./useBuilder";
@@ -34,7 +36,8 @@ export function StepBar({ b }: { readonly b: Builder }) {
   const rack = rackOfPick(b);
   const at = depth(b, rack);
   const crumbs = builder.crumbs(index, level);
-  const sum = builder.stepSum(index, catalog, level, rack);
+  const site = level.kind === "site" ? builder.siteUse(b.state.blueprint, catalog) : undefined;
+  const sum = builder.barSum(index, catalog, level, rack, site);
   const reach = (i: number) =>
     i === 0 ? crumbs[0]?.level : i === 1 || i === 2 ? crumbs[i]?.level : undefined;
   return (
@@ -63,12 +66,15 @@ export function StepBar({ b }: { readonly b: Builder }) {
       </ol>
       <span className="step-spacer" />
       <span className="step-sum">
-        {sum.label}{" "}
-        <b>
-          {sum.servers}대 · {won(sum.costM)}
-        </b>{" "}
-        · 서비스 {sum.services}개
+        {sum.map((part, i) => (
+          <span key={part.label ?? "money"}>
+            {i > 0 && " · "}
+            {part.label && `${part.label} `}
+            <b style={part.bad ? { color: "var(--bad)" } : undefined}>{part.value}</b>
+          </span>
+        ))}
       </span>
+      <IssuesLine b={b} />
       {at === 3 && (
         <Button size="small" onClick={() => b.setSelected([])}>
           서버룸으로

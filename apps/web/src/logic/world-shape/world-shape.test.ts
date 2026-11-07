@@ -60,7 +60,7 @@ describe("알아서와 프리셋 [REQ-094]", () => {
     const r = resolveLayers([IAP_DRAFT], { network: "net-three-tier", compute: "cmp-virt-ha" });
     expect(r.layers.network).toBe("net-three-tier");
     expect(r.why.network).toBeUndefined();
-    expect(r.why.storage).toMatch(/^알아서 .+로 골랐어요 — /);
+    expect(r.why.storage).toMatch(/^(?!알아서).+해서$|라서$/);
     expect(Object.keys(r.why)).toHaveLength(6);
   });
 

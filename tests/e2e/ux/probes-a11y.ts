@@ -118,9 +118,9 @@ const TASKS: ReadonlyArray<readonly [string, (ids: Ids) => string, Work]> = [
   ],
   [
     "dialog",
-    () => "/worlds",
+    () => "/scenarios",
     async (page, stops) => {
-      if (!(await tabTo(page, "새 세계", 40, stops))) return false;
+      if (!(await tabTo(page, "새 시나리오", 40, stops))) return false;
       await page.keyboard.press("Enter");
       await page.getByRole("dialog").waitFor({ timeout: 3000 });
       const inside = await page.evaluate(() =>
@@ -129,8 +129,9 @@ const TASKS: ReadonlyArray<readonly [string, (ids: Ids) => string, Work]> = [
       await page.keyboard.press("Escape");
       await page.getByRole("dialog").waitFor({ state: "detached", timeout: 3000 });
       const back =
-        ((await page.evaluate(`(${FOCUS_VISIBLE})()`)) as Stop | null)?.name.includes("새 세계") ??
-        false;
+        ((await page.evaluate(`(${FOCUS_VISIBLE})()`)) as Stop | null)?.name.includes(
+          "새 시나리오",
+        ) ?? false;
       return inside && back;
     },
   ],

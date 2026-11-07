@@ -4,11 +4,11 @@ kind: reference
 status: active
 last_verified: 2026-11-07
 verification_log:
-  - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
   - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
   - "2026-11-07: REQ-100 애플리케이션 층: 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
   - "2026-11-07: 연결 화면 절을 web-ui-connections.md로 나눔 (DOC050)"
+  - "2026-11-07: ADR-0126"
 ---
 # 문서 색인
 
@@ -62,6 +62,7 @@ verification_log:
 - [측정의 신뢰 — 효율 점수는 과제를 푼 만큼만, 시험지는 기준선 에이전트로 점검](design-docs/measurement.md)
 - [세계 만들기 검토 — 설명 없이도 되는가, 토스의 원칙으로](design-docs/world-builder-review.md)
 - [세계 만들기 입구와 서비스부터 — 문 둘·HA 사다리·알아서·일감·패널 없는 직접 짓기](design-docs/world-entry.md)
+- [화면 다듬기 목업 — 사다리 닫힘·열림, 직접 짓기 아무것도 안 고름·랙 고름](design-docs/mockups/ux-round3-mockup.html) (승인됨, REQ-102)
 - [고장 종류별 리드타임 — 넘기면 얼마나 걸려 사라지나](design-docs/lead-times.md)
 - [도메인과 가상 담당자 — 내 도메인 밖의 고장은 넘기고, 기다리는 동안 다른 일을 한다](design-docs/domains-and-counterparts.md)
 - [시나리오 편집기 검토 — 처음 쓰는 사람의 눈으로, 토스의 원칙으로 (세 번째 검토: 질문 셋·문장 채점표)](design-docs/scenario-editor-review.md)
@@ -175,11 +176,13 @@ verification_log:
 - [0112 서버가 멈춰도 운영은 이어 가고, 저장해 둔 것은 서버에 두고, 서비스마다 모양을 고르고, 운영의 끝은 운영의 말로 쓴다](design-docs/adr/0112-operation-resume-and-presets-amend-tests.md)
 - [0110 운영 모드를 구현하면서 ADR-0094의 강제 장치를 시험으로 잇는다](design-docs/adr/0110-operation-mode-amend-tests.md)
 - [0117 흉내 OS를 깊게 — 작은 리눅스 흉내가 run_command에 답한다 (0116 대체)](design-docs/adr/0117-deep-os-simulation.md)
+- [0123 사다리 화면과 직접 짓기를 주인공 하나로 다시 그리고, 칩에 전제 규칙을 두고, 돌려 보기를 시운전으로 부른다](design-docs/adr/0123-ladder-and-builder-focus.md)
 - [0120 컨테이너·SDN 층을 깊은 OS 흉내 위에 얹으면서 노드 디스크 압박 시험의 지우는 길을 고친다](design-docs/adr/0120-container-layer-on-deep-os.md)
 - [0118 깊은 OS 흉내를 구현하면서 시험 다섯 곳의 기대값을 고치고 시험을 더한다](design-docs/adr/0118-deep-os-tests.md)
 - [0119 LLM API 등록 — 워크스페이스 단위 모델 연결, 키는 서버에만, 얇은 클라이언트](design-docs/adr/0119-llm-api-registration.md)
 - [0124 이끼 — 테라리움 도우미: 이름·지식 둘·화면 등록·누락 검사·모델·품질 측정, 먼저 말 걸지 않는다](design-docs/adr/0124-moss-assistant.md)
 - [0125 이끼는 LLM을 연결해야만 쓸 수 있다: 기본 모델이 없으면 꺼져 있고, 점수 질문은 채점 문서를 먼저 찾는다](design-docs/adr/0125-moss-requires-model.md)
+- [0126 run-all은 이끼 검사도 돌린다 (0124 보정)](design-docs/adr/0126-run-all-includes-moss.md)
 - [0122 세계 인기 순서·좋아요·칭호, 그리고 계급 모델 — 점수는 서버가 기록에서 세고, 칭호는 한 번 얻으면 안 잃고, 계급은 아직 화면에 없다](design-docs/adr/0122-world-popularity-likes-titles.md)
 - [0121 애플리케이션 층을 코어 모델로 올리고 서비스 호출 그래프를 넣는다](design-docs/adr/0121-application-layer-and-calls.md)
 - [0116 진짜 호스트 섞기 (폐기, 0117로 대체)](design-docs/adr/0116-real-hosts-in-the-world.md)

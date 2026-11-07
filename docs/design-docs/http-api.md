@@ -13,13 +13,13 @@ covers:
   - packages/core/src/contract/model-routes.ts
   - packages/core/src/contract/community.ts
   - packages/core/src/contract/community-routes.ts
-covers_hash: 8961b52d123b8341
+covers_hash: 67a272f6b54ffb07
 verification_log:
-  - "2026-11-06: LLM API 등록"
-  - "2026-11-06: LLM API 등록"
-  - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
-  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
-  - "2026-11-07: ADR-0125: 이끼는 기본 모델이 있어야만 켜진다(꺼지면 알약만, 409 no_model), 점수 질문 찾기 규칙을 문서에 반영하고 코드와 대조함"
+  - "2026-11-06: 2b·2d 합치기"
+  - "2026-11-06: 저장해 둔 것 여섯 경로를 routes.ts, responses.ts, contract/presets.ts와 대조해 표에 더했다 (ADR-0112)"
+  - "2026-11-07: REQ-102(ADR-0123): 사다리·직접 짓기 화면과 말(시운전·미리 보기·전제)을 코드와 대조해 고쳤다"
+  - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
+  - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -89,7 +89,7 @@ verification_log:
 | `POST /api/scenarios` | 새 시나리오 (빈 것, 템플릿, 문서) | |
 | `PUT /api/scenarios/:id` | 시나리오 고쳐 저장 (버전 확인) | |
 | `DELETE /api/scenarios/:id` | 시나리오 숨기기 | |
-| `POST /api/scenarios/:id/dry-run` | 에이전트 없이 미리 돌려 보기 | |
+| `POST /api/scenarios/:id/dry-run` | 에이전트 없이 미리 보기 | |
 | `POST /api/scenarios/:id/calibrate` | 시험지 점검: 아무것도 안 하는·찍는·정답만 아는 에이전트로 점수 재 보기. 서비스를 옮겨 복구하는 길(`recoveryPath`)과 흔한 툴만으로 원인에 닿는 길(`commonReach`)도 함께 답한다. 또 툴 설명만 읽는 기준 에이전트가 상황마다 고른 툴과 모호한 쌍(`toolPick`)도 답한다 | |
 | `GET /api/scenarios/:id/runbook-draft` | 이 시나리오로 끝난 실행 가운데 점수가 가장 높은 것의 툴 호출 순서로 만든 절차서 초안과 어느 실행에서 나왔는지 (끝난 실행이 없으면 빈 답) | |
 | `GET /api/experiments` | 실험 목록 (최신순). 만든 사람에게 칭호가 있으면 `ownerTitles`가 같이 온다 (REQ-101) | |
