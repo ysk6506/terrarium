@@ -192,7 +192,7 @@ describe("what heals by itself is not the agent's recovery [REQ-095] [REQ-088]",
     expect(recovery?.recovered).toBe(true);
     expect(recovery?.byCluster).toBe(true);
     expect(recovery?.byAgent).toBe(false);
-    expect(result.score.total).toBe(30);
+    expect(result.score.total).toBe(100);
     const axes = result.score.items.filter((i) => i.id.startsWith("recovery"));
     expect(axes.find((i) => i.id === "recovery_time")?.detail).toContain("클러스터가 알아서");
   });
@@ -230,12 +230,12 @@ describe("what heals by itself is not the agent's recovery [REQ-095] [REQ-088]",
     const result = run.finish();
     expect(result.score.recovery?.recovered).toBe(true);
     expect(result.score.recovery?.byAgent).toBe(false);
-    expect(result.score.total).toBe(30);
+    expect(result.score.total).toBe(100);
     const meddler = open(s.scenario, s.blueprint);
     meddler.call("db_failover", { cluster: "db-main" });
     meddler.call("wait", { seconds: 1200 });
     report(meddler, s.scenario);
-    expect(score(meddler).total ?? 0).toBeLessThan(30);
+    expect(score(meddler).total ?? 0).toBeLessThan(100);
   });
 });
 

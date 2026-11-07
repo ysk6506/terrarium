@@ -17,10 +17,11 @@ covers:
   - packages/core/src/scenario/library-accel.ts
   - packages/core/src/sources/worldgen/shaped-gpu.ts
   - packages/core/src/session/probes-accel.ts
-covers_hash: f499bd2b1b9aa13a
+covers_hash: 7cc7b2f7e85fddf4
 verification_log:
   - "2026-11-07: 새 문서. 코드와 대조해 칩 표·고장 표·시스템이 하는 일의 시간(30·20·300초 등)·툴·셸 명령·시나리오를 맞춰 썼다"
   - "2026-11-07: REQ-108: 코드와 대조했고 필요한 서술(기대 복구 시간, 서비스 카드 복사, 숫자 보정)을 고쳤다. 나머지는 그대로 맞다"
+  - "2026-11-07: ADR-0133에 맞춰 대조: 기대 복구 시간(+5분), 손대지 않는 것이 정답인 시트의 만점, 링크 흔들림 서술"
 ---
 # 가속기(GPU) 층 (REQ-107, ADR-0130)
 
@@ -57,7 +58,7 @@ verification_log:
 |---|---|---|---|
 | `gpu_xid_error` | GPU가 버스에서 떨어짐 | 그 노드의 잡이 실패, 풀은 복제본을 뺌 | `gpu_reset` |
 | `nvlink_down` | NVLink 끊김 | Xid와 같이 노드가 빠짐 | `node_drain` |
-| `ib_link_flap` | 링크가 끊겼다 붙기를 되풀이 | 잡이 40 %로 느려지고 180초 넘게 가면 NCCL 타임아웃으로 실패 | `node_drain` |
+| `ib_link_flap` | 링크가 끊겼다 붙기를 되풀이 | 잡이 40 %로 느려지고 180초 넘게 가면 NCCL 타임아웃으로 실패 | `node_drain` (스케줄러에서 뺀 노드의 흔들리는 링크는 패브릭 건강에 세지 않는다) |
 | `gpu_thermal_throttle` | GPU가 더 뜨거워짐(+5~40 °C) | 83 °C부터 1 °C당 클럭 4 %를 잃고, 잡은 가장 느린 GPU에 맞춤 | `set_power_cap` |
 | `gpu_memory_leak_inference` | 서빙 프로세스가 GPU 메모리를 먹음 | 가득 차면 OOM으로 죽고 90초 뒤 다시 뜸을 되풀이 | `gpu_reset` |
 | `job_stuck_checkpoint` | 체크포인트 저장소가 느림 | 잡이 멈추고, 30분을 넘으면 마지막 체크포인트가 깨짐 | `job_resume` |

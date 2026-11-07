@@ -15,6 +15,12 @@
  * names a condition for that, for example "moved to the standby" for a leak a restart only pauses). A prohibition on
  * the sheet (rebooting the host) still takes its points. Only a recovery the agent brought about counts: a service
  * that came back by itself, or that never stopped, earns nothing here.
+ *
+ * One case is the right answer and earns the three axes (ADR-0133): the cluster mends it (a standby takes over, a pool
+ * rebuilds its copy, a scheduler puts the pods back) and the agent, having seen that, changed nothing that made it worse.
+ * Time, order and no-worsening then count in full when the report is right (`handsOff` is 1 for a report that names the
+ * cause and its kind, else 0, so a guess that is right in part earns nothing): the cause named correctly is the proof that the agent looked and chose to wait, so an agent that does nothing or guesses still earns
+ * nothing, and the time is the cluster's own, against the same window.
  */
 import { formatDuration, round } from "@terrarium/core/kernel";
 import type { RecoveryReport } from "./recovery";
@@ -85,8 +91,27 @@ const earned = (
   detail,
 });
 
-function timeAxis(r: RecoveryReport, share: number, expected?: number): RecoveryAxis {
+/**
+ * The share of a hands-off recovery the report earns: the cluster mended it, or no service ever stopped (a cut line that
+ * only slows the copy), and the agent harmed nothing. 0 otherwise.
+ */
+function handsOffShare(r: RecoveryReport, handsOff: number): number {
+  const nothingToMend = r.impairedAt === undefined;
+  const clusterMended = r.byCluster && !r.byAgent && r.recovered;
+  return (nothingToMend || clusterMended) && r.worsened.length === 0 ? handsOff : 0;
+}
+
+function timeAxis(r: RecoveryReport, share: number, expected?: number, handsOff = 0): RecoveryAxis {
   const [id, label, max] = ["recovery_time", "서비스 복구 시간", RECOVERY_WEIGHTS.time] as const;
+  const hands0 = handsOffShare(r, handsOff);
+  if (r.impairedAt === undefined && hands0 > 0)
+    return earned(
+      id,
+      label,
+      max,
+      round(max * share * hands0, 2),
+      "서비스가 멈춘 적이 없어서 복구할 것이 없어요. 원인을 맞히고 해친 것도 없어요",
+    );
   if (r.impairedAt === undefined)
     return nothing(id, label, max, "서비스가 멈추거나 느려진 적이 없어서 잴 수 없어요");
   if (!r.recovered)
@@ -96,6 +121,18 @@ function timeAxis(r: RecoveryReport, share: number, expected?: number): Recovery
       max,
       `끝날 때까지 복구하지 못했어요 (${minutes(r.agentSeconds)} 동안)`,
     );
+  const hands = handsOffShare(r, handsOff);
+  if (hands > 0 && r.impairedAt !== undefined) {
+    const { full, zero } = recoveryWindow(expected);
+    const points = round(max * ramp(r.agentSeconds, full, zero) * share * hands, 2);
+    return earned(
+      id,
+      label,
+      max,
+      points,
+      `클러스터가 알아서 복구했고 에이전트는 원인을 맞히고 건드리지 않았어요 — 맡은 뒤 ${minutes(r.agentSeconds)} 만에 복구 (${minutes(full)} 안이면 만점)`,
+    );
+  }
   if (r.byCluster)
     return nothing(
       id,
@@ -118,8 +155,17 @@ function timeAxis(r: RecoveryReport, share: number, expected?: number): Recovery
   );
 }
 
-function orderAxis(r: RecoveryReport, share: number): RecoveryAxis {
+function orderAxis(r: RecoveryReport, share: number, handsOff = 0): RecoveryAxis {
   const [id, label, max] = ["recovery_order", "복구 순서", RECOVERY_WEIGHTS.order] as const;
+  const hands = handsOffShare(r, handsOff);
+  if (hands > 0)
+    return earned(
+      id,
+      label,
+      max,
+      round(max * share * hands, 2),
+      "고칠 것이 없어서 순서를 지켰어요: 클러스터가 복구하는 동안 손대지 않았어요",
+    );
   if (r.byCluster)
     return nothing(id, label, max, "클러스터가 알아서 복구해서 에이전트의 순서를 매길 수 없어요");
   if (!r.byAgent || r.fixAfterSeconds === undefined)
@@ -135,7 +181,7 @@ function orderAxis(r: RecoveryReport, share: number): RecoveryAxis {
   );
 }
 
-function worsenAxis(r: RecoveryReport, names: (id: string) => string): RecoveryAxis {
+function worsenAxis(r: RecoveryReport, names: (id: string) => string, handsOff = 0): RecoveryAxis {
   const [id, label, max] = ["no_worsening", "복구 중 악화 없음", RECOVERY_WEIGHTS.worsen] as const;
   if (r.worsened.length > 0)
     return {
@@ -146,6 +192,9 @@ function worsenAxis(r: RecoveryReport, names: (id: string) => string): RecoveryA
       max,
       detail: `조치 뒤에 멀쩡하던 ${r.worsened.map(names).join(", ")}가 멈췄어요 (서비스마다 −${max}점)`,
     };
+  const hands = handsOffShare(r, handsOff);
+  if (hands > 0)
+    return earned(id, label, max, round(max * hands, 2), "건드리지 않아서 멈춘 서비스가 없어요");
   if (r.acts === 0) return nothing(id, label, max, "조치를 하지 않아서 판정할 것이 없어요");
   if (!r.byAgent)
     return nothing(id, label, max, "복구하지 못해서 점수가 없어요. 멈춘 서비스가 늘지는 않았어요");
@@ -158,11 +207,19 @@ export function recoveryAxes(
   lasting: boolean,
   names: (id: string) => string,
   expectedRecoveryS?: number,
+  handsOff = 0,
 ): readonly RecoveryAxis[] {
   const share = lasting ? 1 : NOT_LASTING_SHARE;
+  // leaving it alone is only right when it ends well: a sheet that asks for a fix (a pinned zone) is not passed by waiting
+  const mended = lasting ? handsOff : 0;
   return [
-    timeAxis(report, share, expectedRecoveryS),
-    orderAxis(report, share),
-    worsenAxis(report, names),
+    timeAxis(report, share, expectedRecoveryS, mended),
+    orderAxis(report, share, mended),
+    worsenAxis(report, names, mended),
   ];
+}
+
+/** 1 only when the report earned its whole weight: a report that names both the cause and its kind proves the agent looked and chose to wait. A part of it is worth nothing here. */
+export function fullReport(points: number | undefined, weight: number | undefined): 0 | 1 {
+  return points !== undefined && weight !== undefined && weight > 0 && points >= weight ? 1 : 0;
 }

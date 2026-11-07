@@ -56,6 +56,8 @@ export {
   scenarioTemplate,
   TEMPLATE_GROUPS,
 } from "./library-all";
+// the layer sheet builder, for the probe sheets of the fault kinds no template injects (tests, ADR-0133)
+export { dependents, layerTemplate, servicesOf } from "./library-layer";
 export {
   ACTION_KINDS,
   ACTION_LABELS,

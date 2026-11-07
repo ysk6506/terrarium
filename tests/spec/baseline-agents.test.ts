@@ -77,7 +77,7 @@ describe("operator and triage know the site and DR layer [REQ-108]", () => {
       expect(calls.some((c) => c.name === "dr_failover" || c.name === "failover_service")).toBe(
         false,
       );
-      expect(result.score.total).toBe(30);
+      expect(result.score.total).toBe(100);
     }
   });
 
@@ -86,7 +86,7 @@ describe("operator and triage know the site and DR layer [REQ-108]", () => {
     expect(rep.calls.find((c) => c.name === "run_command")?.args).toMatchObject({
       cmd: "systemctl restart replicad",
     });
-    expect(rep.result.score.total).toBe(30);
+    expect(rep.result.score.total).toBe(100);
     const ring = await play("operator", row("db-quorum-lost", "raft"));
     expect(ring.calls.some((c) => c.name === "db_node_restart")).toBe(true);
     expect(ring.result.score.total).toBeGreaterThanOrEqual(95);
@@ -126,7 +126,7 @@ describe("nobody touches a cluster that is bringing the service back by itself [
           `${agent} ${world}`,
         ).toEqual([]);
         if (world === "hot") expect(calls.some((c) => c.name === "wait")).toBe(true);
-        expect(result.score.total, `${agent} ${world}`).toBe(30);
+        expect(result.score.total, `${agent} ${world}`).toBe(100);
         expect(result.score.recovery).toMatchObject({ byCluster: true, byAgent: false });
         expect(result.score.recovery?.worsened).toEqual([]);
       }

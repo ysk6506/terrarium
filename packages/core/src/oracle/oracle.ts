@@ -43,6 +43,7 @@ import {
 import { analyzeHandoffs, type HandoffReport } from "./handoff";
 import { analyzeRecovery, type RecoveryReport, serviceHarms } from "./recovery";
 import {
+  fullReport,
   RECOVERY_WEIGHTS,
   type RecoveryAxis,
   recoveryAxes,
@@ -424,8 +425,11 @@ function scoreRecovery(outcome: RunOutcome): Score {
   const report = analyzeRecovery(outcome.events ?? [], harms, outcome.endedAt);
   const lasting = raw.filter((i) => i.kind === "final_state").every((i) => i.verdict === "pass");
   const name = (id: string) => outcome.world.index.find(id)?.name ?? id;
+  const d = raw.find((i) => i.kind === "diagnosis");
+  const w = outcome.doc.expectations.find((x) => x.id === d?.id);
+  const reportShare = fullReport(d?.points, w?.kind === "diagnosis" ? w.weight : undefined);
   const items = [
-    ...recoveryAxes(report, lasting, name, expected).map(axisItem),
+    ...recoveryAxes(report, lasting, name, expected, reportShare).map(axisItem),
     ...reportItem(raw, outcome.doc),
     ...raw.filter((i) => i.kind === "forbidden_action"),
     ...handoffItems(handoff),

@@ -255,7 +255,7 @@ function upsBehind(index: BlueprintIndex, id: string): Entity | undefined {
 /** How much of its battery a degraded UPS keeps (the fault block's `factor`). */
 const BATTERY_FACTOR = 0.1;
 /** The battery must last at least this long at the load left on it, minutes. */
-const HOLD_MINUTES = 20;
+const HOLD_MINUTES = 18;
 /** And the charge left when the run ends, %. */
 const HOLD_PCT = 20;
 
