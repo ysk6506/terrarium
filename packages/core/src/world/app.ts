@@ -32,6 +32,8 @@ export const MESH_REVISION = 7;
 export const SESSION_PROCESS = "redis-server";
 export const SIDECAR_PROCESS = "envoy";
 export const MESH_PROCESS = "istiod";
+/** The job scheduler of the GPU layer (REQ-107). */
+export const SCHEDULER_PROCESS = "slurmctld";
 
 const num = (props: Entity["props"], key: string): number | undefined =>
   typeof props[key] === "number" ? (props[key] as number) : undefined;

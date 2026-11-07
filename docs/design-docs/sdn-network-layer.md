@@ -22,13 +22,13 @@ covers:
   - packages/core/src/topology/layer-network.ts
   - packages/core/src/session/probes.ts
   - packages/core/src/session/operation/mtbf.ts
-covers_hash: 4ff7c0f501430e24
+covers_hash: 6ffe34cf40cab9f0
 verification_log:
-  - "2026-11-07: o5 합치기 (애플리케이션 층)"
   - "2026-11-06: 새 문서의 개체·상태·건강 규칙·고장·자동 동작·툴·CLI·사다리·시나리오·토폴로지를 코드와 대조했다 (REQ-097)"
   - "2026-11-07: REQ-102(ADR-0123): 사다리·직접 짓기 화면과 말(시운전·미리 보기·전제)을 코드와 대조해 고쳤다"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
+  - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장이 이 문서의 내용을 바꾸지 않는지 대조했다(층 수·툴 수·칩 수를 세는 문장을 찾아 고쳤고, 나머지는 그대로 맞다)"
 ---
 # SDN 오버레이와 클라우드 네이티브 네트워크 층 (REQ-097, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0115](adr/0115-sdn-network-layer-amend-tests.md))
 

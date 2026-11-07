@@ -22,12 +22,12 @@ covers:
   - packages/core/src/topology/impact-app.ts
   - packages/core/src/world/ladder.ts
 verification_log:
-  - "2026-11-07: 개체·고장·툴·알아서 하는 일·시나리오를 코드와 대조해 적었다 (REQ-100)"
   - "2026-11-07: 마지막 정리(복잡도 분리) 뒤 코드와 다시 대조했다. 내용은 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
-covers_hash: 20a0b3f71abec6da
+  - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장이 이 문서의 내용을 바꾸지 않는지 대조했다(층 수·툴 수·칩 수를 세는 문장을 찾아 고쳤고, 나머지는 그대로 맞다)"
+covers_hash: b47f53082ab745f0
 ---
 # 애플리케이션 층 (REQ-100, [ADR-0121](adr/0121-application-layer-and-calls.md), [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6)
 

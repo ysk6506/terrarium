@@ -3,6 +3,7 @@ import { describe, expect, test } from "vitest";
 import { type Blueprint, ENTITY_KINDS, type Entity, validateBlueprint } from ".";
 import { withChanges } from "./test-support/sample";
 import { campusBlueprint } from "./test-support/sample-campus";
+import { SHAPED_ONLY_KINDS } from "./test-support/shaped-only";
 
 const catalog = new Catalog();
 const codes = (bp: Blueprint) =>
@@ -22,7 +23,9 @@ const parcel = (id: string, x: number, y: number, w: number, d: number, owned = 
 describe("campus: land, buildings on it, plants and yards [REQ-043]", () => {
   test("the campus sample uses every kind of thing and has no problems at all", () => {
     const bp = campusBlueprint();
-    expect(new Set(bp.entities.map((e) => e.kind)).size).toBe(ENTITY_KINDS.length);
+    expect(new Set(bp.entities.map((e) => e.kind)).size).toBe(
+      ENTITY_KINDS.length - SHAPED_ONLY_KINDS.size,
+    );
     expect(validateBlueprint(bp, catalog)).toEqual([]);
   });
 

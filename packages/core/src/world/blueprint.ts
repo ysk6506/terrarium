@@ -48,7 +48,21 @@ export type VirtualKind =
   | "circuit_breaker"
   | "mesh_sidecar"
   | "mesh_control"
-  | "region";
+  | "region"
+  /** GPU accelerator layer (REQ-107, ADR-0130): GPUs, NVLink domains, the InfiniBand/RoCE fabric, the scheduler, jobs and pools. */
+  | "gpu"
+  | "nvlink_domain"
+  | "ib_fabric"
+  | "ib_link"
+  | "job_scheduler"
+  | "training_job"
+  | "inference_pool"
+  /** Power and cooling ladders (REQ-107, ADR-0130): rack batteries, 48 V buses, the substation, rear doors, immersion tanks. */
+  | "bbu"
+  | "dc_bus"
+  | "substation"
+  | "rdhx"
+  | "immersion_tank";
 export type EntityKind =
   | SpaceKind
   | "rack"
@@ -101,6 +115,18 @@ export const ENTITY_KINDS: readonly EntityKind[] = [
   "mesh_sidecar",
   "mesh_control",
   "region",
+  "gpu",
+  "nvlink_domain",
+  "ib_fabric",
+  "ib_link",
+  "job_scheduler",
+  "training_job",
+  "inference_pool",
+  "bbu",
+  "dc_bus",
+  "substation",
+  "rdhx",
+  "immersion_tank",
 ]; // prettier-ignore
 
 export const MODELLED_KINDS: ReadonlySet<EntityKind> = new Set([
@@ -161,6 +187,18 @@ export const ALLOWED_PARENTS: Readonly<Record<EntityKind, readonly EntityKind[]>
   mesh_sidecar: [],
   mesh_control: [],
   region: [],
+  gpu: [],
+  nvlink_domain: [],
+  ib_fabric: [],
+  ib_link: [],
+  job_scheduler: [],
+  training_job: [],
+  inference_pool: [],
+  bbu: [],
+  dc_bus: [],
+  substation: [],
+  rdhx: [],
+  immersion_tank: [],
 };
 
 /** Where something is, relative to its parent. Units are metres; racks use units (U). */
@@ -224,6 +262,18 @@ export const PLACEMENT_OF: Readonly<Record<EntityKind, Placement["type"] | undef
   mesh_sidecar: undefined,
   mesh_control: undefined,
   region: undefined,
+  gpu: undefined,
+  nvlink_domain: undefined,
+  ib_fabric: undefined,
+  ib_link: undefined,
+  job_scheduler: undefined,
+  training_job: undefined,
+  inference_pool: undefined,
+  bbu: undefined,
+  dc_bus: undefined,
+  substation: undefined,
+  rdhx: undefined,
+  immersion_tank: undefined,
 };
 
 export type PropValue = string | number | boolean;
@@ -284,7 +334,7 @@ export const LINK_RULES: Readonly<
       "chiller",
       "ups",
     ],
-    to: ["pdu", "power_panel", "ups", "generator"],
+    to: ["pdu", "power_panel", "ups", "generator", "substation"],
   },
   network: { from: ["server", "storage", "switch"], to: ["switch"] },
   cooling: { from: ["rack", "cooling_unit", "cdu"], to: ["cooling_unit", "cdu", "chiller"] },
@@ -300,8 +350,21 @@ export const LINK_RULES: Readonly<
       "app_instance",
       "mesh_sidecar",
       "region",
+      "gpu",
+      "nvlink_domain",
+      "ib_link",
+      "training_job",
+      "bbu",
+      "dc_bus",
+      "rdhx",
+      "immersion_tank",
     ],
     to: [
+      "server",
+      "rack",
+      "nvlink_domain",
+      "ib_fabric",
+      "job_scheduler",
       "cluster",
       "db_cluster",
       "storage_pool",
@@ -330,6 +393,10 @@ export const LINK_RULES: Readonly<
       "k8s_workload",
       "load_balancer",
       "session_store",
+      "inference_pool",
+      "job_scheduler",
+      "training_job",
+      "ib_fabric",
     ],
   },
   hosted_on: {
@@ -347,6 +414,7 @@ export const LINK_RULES: Readonly<
       "session_store",
       "mesh_sidecar",
       "mesh_control",
+      "job_scheduler",
     ],
     to: ["vm", "server", "storage", "switch", "app_instance"],
   },
@@ -413,6 +481,18 @@ const VIRTUAL_KINDS: ReadonlySet<EntityKind> = new Set<EntityKind>([
   "mesh_sidecar",
   "mesh_control",
   "region",
+  "gpu",
+  "nvlink_domain",
+  "ib_fabric",
+  "ib_link",
+  "job_scheduler",
+  "training_job",
+  "inference_pool",
+  "bbu",
+  "dc_bus",
+  "substation",
+  "rdhx",
+  "immersion_tank",
 ]);
 
 export const isVirtualKind = (kind: EntityKind): kind is VirtualKind => VIRTUAL_KINDS.has(kind);

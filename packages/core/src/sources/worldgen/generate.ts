@@ -6,6 +6,8 @@ import { Catalog } from "@terrarium/core/catalog";
 import { InvalidValueError, SeededRng } from "@terrarium/core/kernel";
 import { type AssemblyResult, BlueprintAssembler } from "@terrarium/core/sources";
 import type { EntityKind } from "@terrarium/core/world";
+import { plantFor } from "./cool-plant";
+import { plantSide, substationOf } from "./power-plant";
 import { buildRoom, type RoomPower, unitsFor } from "./room";
 import { withServices } from "./services";
 import { type SitePreset, sitePreset, specProblems, type WorldgenSpec } from "./spec";
@@ -16,6 +18,7 @@ export interface WorldgenResult extends AssemblyResult {
 
 const ROOM_LETTERS = "ABCD";
 const UPS_MODEL = "ups-500kva";
+const substationId = (code: string): string => `${code}-sub`;
 
 export function generateWorld(
   spec: WorldgenSpec,
@@ -35,12 +38,15 @@ export function generateWorld(
   asm.site(preset.code, preset.name, preset.land, { preset: preset.id });
   const vcenter = `${preset.code}-vc`;
   if (spec.vmsPerHost > 0) asm.virtual(vcenter, "vcenter", `vcsa-${preset.code}`);
+  let plantW = 0;
   for (let b = 1; b <= spec.buildings; b++) {
     const buildingId = `${preset.code}-dc${b}`;
     asm.building(buildingId, preset.code, `DC${b}동`);
     for (let f = 1; f <= spec.floors; f++)
-      addFloor({ asm, catalog, rng, spec, preset, vcenter }, buildingId, b, f);
+      plantW += addFloor({ asm, catalog, rng, spec, preset, vcenter }, buildingId, b, f);
   }
+  if (spec.plant?.substation)
+    substationOf(asm, substationId(preset.code), `${preset.name} 변전소`, plantW);
   const built = asm.build();
   const result = { ...built, blueprint: withServices(built.blueprint) };
   const stats: Partial<Record<EntityKind, number>> = {};
@@ -58,7 +64,8 @@ interface SiteContext {
   readonly vcenter: string;
 }
 
-function addFloor(site: SiteContext, buildingId: string, b: number, f: number): void {
+/** Builds one floor; returns the electric load of its rooms, W. */
+function addFloor(site: SiteContext, buildingId: string, b: number, f: number): number {
   const { asm, catalog, rng, spec, preset, vcenter } = site;
   const floorId = `${buildingId}-f${f}`;
   asm.floor(floorId, buildingId, `${f}F`, f);
@@ -76,10 +83,20 @@ function addFloor(site: SiteContext, buildingId: string, b: number, f: number): 
         roomName: `${f}F-${letter} 서버룸`,
         host: `${preset.code}${b}-${f}${letter.toLowerCase()}`,
         vcenter,
+        ...(spec.dense && b === 1 && f === 1 && r === 0 ? { dense: spec.dense } : {}),
       }),
     );
   }
-  powerFloor({ asm, catalog, spec }, { floorId, b, f }, rooms);
+  powerFloor({ asm, catalog, spec, preset }, { floorId, buildingId, b, f }, rooms);
+  const tag = `DC${b}`;
+  for (const room of rooms)
+    plantFor(
+      { asm, catalog },
+      { siteId: preset.code, building: buildingId, tag },
+      room.cdus,
+      room.liquidKw,
+    );
+  return rooms.reduce((sum, room) => sum + room.loadW, 0);
 }
 
 /**
@@ -87,13 +104,20 @@ function addFloor(site: SiteContext, buildingId: string, b: number, f: number): 
  * every room panel hangs on one of them (spread evenly). A small floor has one UPS per side.
  */
 function powerFloor(
-  site: Pick<SiteContext, "asm" | "catalog" | "spec">,
-  where: { readonly floorId: string; readonly b: number; readonly f: number },
+  site: Pick<SiteContext, "asm" | "catalog" | "spec" | "preset">,
+  where: {
+    readonly floorId: string;
+    readonly buildingId: string;
+    readonly b: number;
+    readonly f: number;
+  },
   rooms: readonly RoomPower[],
 ): void {
   const { asm, catalog, spec } = site;
   const load = rooms.reduce((sum, room) => sum + room.loadW, 0);
-  const perSide = unitsFor(load, catalog.getOf(UPS_MODEL, "ups").capacityKw * 1000);
+  const plant = spec.plant;
+  const perSide =
+    unitsFor(load, catalog.getOf(UPS_MODEL, "ups").capacityKw * 1000) + (plant?.upsSpare ? 1 : 0);
   const sides = spec.powerRedundancy === "2N" ? (["a", "b"] as const) : (["a"] as const);
   for (const side of sides) {
     const ids = Array.from({ length: perSide }, (_, i) => {
@@ -109,7 +133,24 @@ function powerFloor(
     rooms
       .flatMap((room) => room.panels[side])
       .forEach((panel, i) => {
-        asm.link("power", panel, ids[i % ids.length] as string);
+        // N+1 modules share every panel of the side; plain UPS units each take their own panels
+        if (plant?.upsSpare) for (const id of ids) asm.link("power", panel, id);
+        else asm.link("power", panel, ids[i % ids.length] as string);
       });
+    if (plant)
+      plantSide(
+        { asm, catalog },
+        {
+          siteId: site.preset.code,
+          building: where.buildingId,
+          floorId: where.floorId,
+          side,
+          tag: `DC${where.b}-${where.f}F`,
+          loadW: load,
+          ...(plant.substation ? { substation: substationId(site.preset.code) } : {}),
+        },
+        plant,
+        ids,
+      );
   }
 }

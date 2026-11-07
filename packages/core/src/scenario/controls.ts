@@ -8,6 +8,7 @@
  * truth; tests/spec/controllability.test.ts checks every row against them and drives each row with a real tool call.
  */
 import type { EntityKind, FaultType, WorldCommand } from "@terrarium/core/world";
+import { ACCEL_CONTROL_ROWS } from "./controls-accel";
 import { APP_CONTROL_ROWS } from "./controls-app";
 import { K8S_CONTROL_ROWS } from "./controls-k8s";
 import { SDN_CONTROL_ROWS } from "./controls-sdn";
@@ -314,6 +315,7 @@ export const CONTROL_ROWS: readonly ControlRow[] = [
   ...SDN_CONTROL_ROWS,
   ...K8S_CONTROL_ROWS,
   ...APP_CONTROL_ROWS,
+  ...ACCEL_CONTROL_ROWS,
   {
     id: "outdoor.set",
     label: "외기 온도",
@@ -435,5 +437,20 @@ export const FAULT_RESPONSES: Readonly<Record<FaultType, FaultResponse>> = {
   mesh_control_down: { remedy: "fix", via: ["host.app_process"] },
   region_down: { remedy: "mitigate", via: ["region.failover"] },
   replication_lag_high: { remedy: "mitigate", via: ["region.failover"] },
+  gpu_xid_error: { remedy: "fix", via: ["gpu.reset"] },
+  nvlink_down: { remedy: "mitigate", via: ["node.drain"] },
+  ib_link_flap: { remedy: "mitigate", via: ["node.drain"] },
+  gpu_thermal_throttle: { remedy: "mitigate", via: ["power.cap"] },
+  gpu_memory_leak_inference: { remedy: "fix", via: ["gpu.reset"] },
+  job_stuck_checkpoint: { remedy: "fix", via: ["job.resume"] },
+  scheduler_down: { remedy: "fix", via: ["host.app_process"] },
+  mig_misconfig: { remedy: "fix", via: ["pool.scale"] },
+  bbu_cell_fault: { remedy: "diagnose", via: [] },
+  dc_bus_sag: { remedy: "mitigate", via: ["power.cap"] },
+  utility_feed_loss: { remedy: "fix", via: ["feed.transfer"] },
+  transformer_overtemp: { remedy: "mitigate", via: SHED },
+  ups_module_fail: { remedy: "mitigate", via: SHED },
+  rdhx_valve_stuck: { remedy: "mitigate", via: ["power.cap"] },
+  fluid_level_low: { remedy: "diagnose", via: [] },
   k8s_cni_failure: { remedy: "fix", via: ["host.kubelet"] },
 };

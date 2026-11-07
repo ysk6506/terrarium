@@ -58,6 +58,18 @@ describe("lookups and labels at the edges [REQ-001]", () => {
       "mesh_sidecar",
       "mesh_control",
       "region",
+      "gpu",
+      "nvlink_domain",
+      "ib_fabric",
+      "ib_link",
+      "job_scheduler",
+      "training_job",
+      "inference_pool",
+      "bbu",
+      "dc_bus",
+      "substation",
+      "rdhx",
+      "immersion_tank",
     ]);
   });
 

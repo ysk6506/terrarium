@@ -19,8 +19,8 @@ const specWith = (layers: Partial<Layers>): ShapeSpec => ({
 });
 
 describe("HA 사다리: 선택지와 카드 [REQ-094]", () => {
-  test("층은 여덟이고, 카드는 코어의 선택지와 같은 순서로 하나씩 있다", () => {
-    expect(LAYER_IDS).toHaveLength(8);
+  test("층은 아홉이고, 카드는 코어의 선택지와 같은 순서로 하나씩 있다", () => {
+    expect(LAYER_IDS).toHaveLength(9);
     expect(CARDS).toHaveLength(CHIP_COUNT);
     for (const layer of LAYER_IDS) {
       expect(chipsOfLayer(layer).map((c) => c.card.id)).toEqual(LADDER[layer].map((c) => c.id));
@@ -61,7 +61,7 @@ describe("알아서와 프리셋 [REQ-094]", () => {
     expect(r.layers.network).toBe("net-three-tier");
     expect(r.why.network).toBeUndefined();
     expect(r.why.storage).toMatch(/^(?!알아서).+해서$|라서$/);
-    expect(Object.keys(r.why)).toHaveLength(6);
+    expect(Object.keys(r.why)).toHaveLength(7);
   });
 
   test("알아서는 다른 층에 맞춘다: 가상화면 공유 저장소, 베어메탈이면 RAID", () => {
@@ -73,11 +73,11 @@ describe("알아서와 프리셋 [REQ-094]", () => {
     );
   });
 
-  test("도메인을 안 고른 사람은 여덟 층 모두 알아서다", () => {
-    expect(Object.keys(resolveLayers([IAP_DRAFT], {}).why)).toHaveLength(8);
+  test("도메인을 안 고른 사람은 아홉 층 모두 알아서다", () => {
+    expect(Object.keys(resolveLayers([IAP_DRAFT], {}).why)).toHaveLength(9);
   });
 
-  test("싸게·보통·멈추지 않게는 여덟 층을 모두 채우고 실제 선택지만 가리킨다", () => {
+  test("싸게·보통·멈추지 않게는 아홉 층을 모두 채우고 실제 선택지만 가리킨다", () => {
     for (const row of [CHEAP_LAYERS, presetLayers("middle"), STEADY_LAYERS]) {
       for (const layer of LAYER_IDS)
         expect(LADDER[layer].some((c) => c.id === row?.[layer])).toBe(true);

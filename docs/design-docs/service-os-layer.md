@@ -20,12 +20,12 @@ covers:
   - packages/core/src/session/shell-reach.ts
   - packages/core/src/scenario/library-os.ts
 verification_log:
-  - "2026-11-06: 깊은 OS 흉내(REQ-098, ADR-0117)에 맞춰 가짜 셸 절을 가상 파일시스템·프로세스 표·저널·셸 문법·명령 표·고장 열 가지의 진단 길·흉내 밖 명령 세기·정직한 한계로 다시 썼고 world/os, tools/shell.ts, session/shell-reach.ts와 대조했다"
-  - "2026-11-06: 최종 코드(world/os 분할, 호스트 조치 열두 가지, 변별력 셋째 물음)와 다시 대조했다"
   - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
   - "2026-11-07: REQ-100 애플리케이션 층이 덮는 코드가 바뀐 것을 확인했고 이 문서의 내용은 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
-covers_hash: 91bc02f30e459ad9
+  - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장이 이 문서의 내용을 바꾸지 않는지 대조했다(층 수·툴 수·칩 수를 세는 문장을 찾아 고쳤고, 나머지는 그대로 맞다)"
+  - "2026-11-07: REQ-107: shell-reach.ts의 GPU 흔적을 OS 흔적과 따로 두었고 내용은 그대로 맞다"
+covers_hash: b8c464af2ba74fb4
 ---
 # 서비스와 OS 층 (REQ-086, REQ-087, [ADR-0091](adr/0091-service-os-layer-recovery-first.md))
 

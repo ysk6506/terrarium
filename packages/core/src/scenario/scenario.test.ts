@@ -3,6 +3,7 @@ import { BlueprintIndex, ENTITY_KINDS, FAULT_SPECS, World } from "@terrarium/cor
 import { describe, expect, test } from "vitest";
 import { sampleBlueprint, withChanges } from "../world/test-support/sample";
 import { campusBlueprint } from "../world/test-support/sample-campus";
+import { SHAPED_ONLY_FAULTS, SHAPED_ONLY_KINDS } from "../world/test-support/shaped-only";
 import {
   BLOCK_SPECS,
   CONDITION_FIELDS,
@@ -74,6 +75,15 @@ const withNode = (
 });
 const issuesFor = (n: ScenarioNode) => check(withNode(base(), n));
 
+const OPTIONAL_STATE: Readonly<Record<string, true>> = {
+  ...Object.fromEntries(
+    ["overS", "overCount", "over", "lossS", "hotAt", "stopAt", "powerCapW", "perf"].map((f) => [
+      f,
+      true,
+    ]),
+  ),
+};
+
 describe("scenario blocks [REQ-034]", () => {
   test("every block explains itself in Korean, and planned blocks say why they are unavailable", () => {
     for (const spec of BLOCK_SPECS) {
@@ -91,12 +101,15 @@ describe("scenario blocks [REQ-034]", () => {
     // The campus sample has every kind of entity, including plant, liquid cooling and land.
     const world = World.fromBlueprint(campusBlueprint(), catalog);
     const kindsSeen = new Set(world.index.all().map((e) => e.kind));
-    expect(kindsSeen.size).toBe(ENTITY_KINDS.length);
+    expect(kindsSeen.size).toBe(ENTITY_KINDS.length - SHAPED_ONLY_KINDS.size);
     for (const entity of world.index.all()) {
       const state = world.stateOf(entity.id) as unknown as Record<string, unknown>;
       for (const [field, spec] of Object.entries(CONDITION_FIELDS[entity.kind])) {
         const expected = spec.type === "enum" ? "string" : spec.type;
-        expect([entity.kind, field, typeof state[field]]).toEqual([entity.kind, field, expected]);
+        // meters that exist only once something sets them (a rack's limit, a server's cap, REQ-107)
+        const unset = state[field] === undefined && field in OPTIONAL_STATE;
+        const seen = unset ? expected : typeof state[field];
+        expect([entity.kind, field, seen]).toEqual([entity.kind, field, expected]);
       }
     }
   });
@@ -153,11 +166,16 @@ describe("scenario palette [REQ-034]", () => {
       "mesh_control_down",
       "region_down",
       "replication_lag_high",
+      ...SHAPED_ONLY_FAULTS,
     ]);
     // In the campus sample every supported fault has something to act on.
     const campus = paletteFor(new BlueprintIndex(campusBlueprint()));
     const campusFaults = campus.filter((p) => p.type === "inject_fault");
-    expect(campusFaults.every((f) => f.available)).toBe(true);
+    expect(
+      campusFaults
+        .filter((f) => !SHAPED_ONLY_FAULTS.includes(f.params.faultType as string))
+        .every((f) => f.available),
+    ).toBe(true);
     expect(palette.find((p) => p.key === "inject_fault:cooling_unit_failure")).toMatchObject({
       group: "설비",
       label: "냉방기 정지",

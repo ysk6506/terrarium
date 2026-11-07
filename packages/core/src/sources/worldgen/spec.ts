@@ -4,6 +4,7 @@
  */
 
 import type { Outline } from "@terrarium/core/spatial";
+import type { DenseSpec, PlantSpec } from "./dense";
 import { outlineLand, SITE_SHAPES, type SitePlace, type SiteSlot, shapeOutline } from "./sites";
 
 export type SiteId = "giheung" | "hwaseong" | "onyang" | "cheonan" | "suwon" | "pyeongtaek";
@@ -80,6 +81,9 @@ export interface WorldgenSpec {
   readonly powerRedundancy: "N" | "2N";
   /** VMs per virtualisation host; 0 builds no virtualisation layer. */
   readonly vmsPerHost: number;
+  /** Dense racks (GPU or liquid) in the first room, and the power plant of a power choice from N+1 UPS up (REQ-107). */
+  readonly dense?: DenseSpec;
+  readonly plant?: PlantSpec;
 }
 
 export const DEFAULT_WORLDGEN: Omit<WorldgenSpec, "site" | "seed"> = {

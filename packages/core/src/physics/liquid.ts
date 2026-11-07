@@ -65,6 +65,26 @@ export const AIR_ONLY: RackLiquid = {
   bathC: 0,
 };
 
+/** Share of its water a rear-door heat exchanger lets through, 1 unless its valve is stuck (REQ-107). */
+function valveShare(world: World, rack: Entity): number {
+  for (const l of world.index.incoming(rack.id, "member_of")) {
+    if (world.index.find(l.from)?.kind !== "rdhx") continue;
+    const f = world.faultsOn(l.from).find((x) => x.type === "rdhx_valve_stuck");
+    if (f) return (f.params.openPct ?? 20) / 100;
+  }
+  return 1;
+}
+
+/** Share of the fluid an immersion tank still holds, scaled to what it takes out of the servers: 1 unless the level is low (REQ-107). */
+function tankLevel(world: World, rack: Entity): number {
+  for (const l of world.index.incoming(rack.id, "member_of")) {
+    if (world.index.find(l.from)?.kind !== "immersion_tank") continue;
+    const f = world.faultsOn(l.from).find((x) => x.type === "fluid_level_low");
+    if (f) return ((f.params.levelPct ?? 60) / 100) ** 2;
+  }
+  return 1;
+}
+
 /** Heat the servers of a rack give to liquid when it flows, W. */
 function directLiquidW(world: World, rack: Entity): number {
   const light = bulkOf(rack);
@@ -100,7 +120,9 @@ function tankBath(
     .some((f) => f.type === "immersion_circulation_failure")
     ? 0.08
     : 1;
-  const ua = supply.ok ? ((model.maxKw * 1000) / TANK_DELTA_K) * circulation : 0;
+  const ua = supply.ok
+    ? ((model.maxKw * 1000) / TANK_DELTA_K) * circulation * tankLevel(world, rack)
+    : 0;
   const surface = TANK_SURFACE_W_PER_K;
   const sink = supply.ok ? supply.supplyC : ambient;
   const conductance = ua + surface;
@@ -136,7 +158,7 @@ export function updateRackLiquid(
   const liquidW = !supply.ok
     ? 0
     : cooling === "rdhx"
-      ? RDHX_SHARE * powerW
+      ? RDHX_SHARE * powerW * valveShare(world, rack)
       : directLiquidW(world, rack);
   const coolantC = supply.ok
     ? supply.supplyC

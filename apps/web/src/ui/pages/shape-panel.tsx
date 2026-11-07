@@ -1,5 +1,5 @@
 /**
- * "이 모양이면" (ADR-0107 item 3): what the eight choices come to, read off the core: hosts, VMs, switches and price;
+ * "이 모양이면" (ADR-0107 item 3): what the nine choices come to, read off the core: hosts, VMs, switches and price;
  * what stops, what only slows, how to bring it back; how many scenarios fit. It sits under the card of the choice.
  */
 import { costText, type ShapeView } from "../../logic";
@@ -40,6 +40,18 @@ export function ShapePanel({ view }: { readonly view: ShapeView }) {
           <b>{view.switches}</b>
           <small>스위치</small>
         </div>
+        {view.gpus > 0 && (
+          <>
+            <div>
+              <b>{view.gpus}</b>
+              <small>GPU</small>
+            </div>
+            <div>
+              <b>{view.kw}</b>
+              <small>kW</small>
+            </div>
+          </>
+        )}
         <div>
           <b>{costText(view.costM).replace(/ 원$/, "")}</b>
           <small>원 · 대략</small>

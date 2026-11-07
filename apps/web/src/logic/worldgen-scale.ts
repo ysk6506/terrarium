@@ -329,13 +329,32 @@ export function planFigures(
   const sides = build.feeds === 1 ? "한 줄" : "A+B";
   const cooling = build.cooling ?? "N+1";
   const leaves = plan.leaves;
+  const power = build.power;
+  const upsNote = [
+    power?.upsSpare ? "UPS N+1" : "",
+    power?.rackBattery ? "랙 BBU" : "",
+    power?.substation ? "자체 변전소" : "",
+  ]
+    .filter((t) => t !== "")
+    .join(" · ");
+  // REQ-107: the accelerator, liquid and power choices add what they bring (GPUs, CDUs) and move the kW
+  const gpu =
+    plan.gpus > 0
+      ? [{ value: count(plan.gpus), unit: `GPU · 서버 ${count(plan.gpuServers)}대` }]
+      : [];
+  const cdus = plan.cdus > 0 ? [{ value: count(plan.cdus), unit: "CDU · 액체 냉각" }] : [];
   return [
     { value: count(plan.racks), unit: `랙 · ${plan.perRack}대씩` },
     { value: count(plan.rooms), unit: "서버룸" },
     { value: count(plan.switches), unit: `스위치 · 리프 ${count(leaves)} + 스파인 ${plan.spines}` },
-    { value: count(plan.pdus), unit: `PDU · ${sides}` },
+    { value: count(plan.pdus), unit: `PDU · ${sides}${upsNote ? ` · ${upsNote}` : ""}` },
     { value: count(plan.coolers), unit: `냉방기 · ${cooling}` },
-    { value: count(plan.kw), unit: "kW" },
+    ...gpu,
+    ...cdus,
+    {
+      value: count(plan.kw),
+      unit: plan.gpuKw > 0 ? `kW · GPU ${count(plan.gpuKw)} kW 포함` : "kW",
+    },
   ];
 }
 

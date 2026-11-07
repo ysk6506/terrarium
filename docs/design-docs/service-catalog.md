@@ -9,9 +9,10 @@ covers:
   - apps/server/src/runtime/service-cards.ts
   - apps/server/src/runtime/experiments-quick.ts
   - packages/core/src/contract/service-cards.ts
-covers_hash: b7797e7c8c1f9492
+covers_hash: 6700c1ec8cb21e95
 verification_log:
   - "2026-11-07: 2026-11-07: REQ-104(ADR-0127) 코드와 대조해 고쳤다"
+  - "2026-11-07: REQ-107: 해당 문장을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
 ---
 # 서비스 카탈로그 (REQ-104, [ADR-0127](adr/0127-short-world-flow-and-service-catalog.md))
 
@@ -25,15 +26,15 @@ verification_log:
 | 쿠버네티스 플랫폼 (`k8s-platform`) | 요청 처리 | 배포만 막힘 30만 / 앱 일부 응답 없음 200만 / 전부 멈춤 500만 | 플랫폼 앱 3 · 컨트롤 플레인 VM 3 · 워커 VM 3 · 가상화 호스트 3 · 공유 스토리지 · 스위치 2 | 없음 | compute·network·storage |
 | 메시지 큐 (`message-queue`) | 상태 유지 | 쌓임 80만 / 전달 중단 300만 | 브로커 VM 3 · 디스크 · 가상화 호스트 3 · 스위치 2 | 없음 | compute·storage |
 | 캐시 (`cache`) | 요청 처리 | 느려짐 40만 / 캐시 전체 멈춤 150만 | 캐시 VM 2 · 가상화 호스트 2 · 스위치 2 | 없음 | compute·network |
-| AI 추론 서빙 (`ai-serving`) | 요청 처리 | 응답 느림 100만 / 모델 응답 없음 600만 | 로드밸런서 · GPU 서버 3 · 가상화 호스트 3 · 스위치 2 | cache | compute·network·cooling |
-| 학습 파이프라인 (`training-pipeline`) | 배치 | 되감기 150만 / 체크포인트 손실 400만 | GPU 서버 4 · 체크포인트 저장소 · 가상화 호스트 4 · 스위치 2 | 없음 | compute·storage·power·cooling |
+| AI 추론 서빙 (`ai-serving`) | 요청 처리 | 응답 느림 100만 / 모델 응답 없음 600만 | 로드밸런서 · GPU 서버 3 · 가상화 호스트 3 · 스위치 2 | cache | 가속기·컴퓨트·네트워크·냉방 |
+| 학습 파이프라인 (`training-pipeline`) | 배치 | 되감기 150만 / 체크포인트 손실 400만 | GPU 서버 4 · 체크포인트 저장소 · 가상화 호스트 4 · 스위치 2 | 없음 | 가속기·컴퓨트·스토리지·전원·냉방 |
 | 파일 공유 (`file-share`) | 상태 유지 | 느림 30만 / 파일 열기 불가 250만 | 게이트웨이 VM 2 · NAS · 가상화 호스트 2 · 스위치 2 | 없음 | storage·power |
 | 모니터링 (`monitoring`) | 상태 유지 | 알람 지연 20만 / 알람 중단 120만 | 수집기·알람 VM 2 · 시계열 저장소 · 가상화 호스트 2 · 스위치 2 | 없음 | compute·storage |
 
 - **종류**는 코어의 `ServiceKind`(요청 처리·배치·상태 유지)이고 일감(`DEFAULT_WORKLOAD`의 api·interactive·batch·stream)도 카드마다 정해져 있다.
 - **피해 등급**은 어림이다(`harmEstimated`). 서비스부터 화면에는 돈이 없고, 실험의 "바꾸기"에서 고친다.
 - **기본으로 부르는 카드**: 이미 세계에 있는 서비스 가운데 그 카드에서 만든 것이 있으면 `calls` 링크가 이어진다(키는 카드 id, 같은 카드를 또 고르면 `cache-2`).
-- **사다리에서 중요한 층**은 둘째 화면의 안내 한 줄("AI 추론 서빙은 컴퓨트·네트워크·냉방이 특히 중요해요.")에만 쓴다. 층을 대신 고르지는 않는다.
+- **사다리에서 중요한 층**은 둘째 화면의 안내 한 줄("AI 추론 서빙은 가속기·컴퓨트·네트워크·냉방이 특히 중요해요.")에 쓴다. 층을 대신 고르지는 않는다. 다만 AI 추론 서빙은 가속기 칩 `gpu-serving-pool`, 학습 파이프라인은 `gpu-training-cluster`를 기본으로 달고(`CatalogCard.accel`, REQ-107), "알아서"도 이 둘에서만 GPU를 고른다.
 - IAP는 카탈로그 밖의 기본 서비스다(기본 제공 · 잠김). "쿠버네티스 플랫폼" 카드는 IAP와 같은 모양의 작은 판이다.
 
 ## 내 카드 (`service_cards`)

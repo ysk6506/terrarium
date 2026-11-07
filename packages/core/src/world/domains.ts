@@ -146,6 +146,21 @@ export const FAULT_DOMAIN: Readonly<Record<FaultType, Domain>> = {
   mesh_control_down: "service_os",
   region_down: "service_os",
   replication_lag_high: "service_os",
+  gpu_xid_error: "server",
+  nvlink_down: "server",
+  ib_link_flap: "network",
+  gpu_thermal_throttle: "server",
+  gpu_memory_leak_inference: "service_os",
+  job_stuck_checkpoint: "service_os",
+  scheduler_down: "service_os",
+  mig_misconfig: "service_os",
+  bbu_cell_fault: "facility",
+  dc_bus_sag: "facility",
+  utility_feed_loss: "facility",
+  transformer_overtemp: "facility",
+  ups_module_fail: "facility",
+  rdhx_valve_stuck: "facility",
+  fluid_level_low: "facility",
 };
 
 /** The domain of the mistakes people make (a wrong VLAN, a shut port, a PDU outlet switched off). */

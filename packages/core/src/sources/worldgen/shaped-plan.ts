@@ -14,6 +14,7 @@ import {
   type ServiceKind,
   type WorkloadProfile,
 } from "@terrarium/core/world";
+import { type DenseSpec, denseOf } from "./dense";
 import { type SiteId, sitePreset, type WorldgenSpec } from "./spec";
 
 /** A part of a service's card. `tier` is the layer it sits in (0 上, 1 가운데, 2 아래); `role` says what a count adds up to. */
@@ -116,6 +117,14 @@ export interface ShapePlan {
   readonly coolers: number;
   readonly kw: number;
   readonly perRack: number;
+  /** The accelerator layer (REQ-107): GPU servers and GPUs, the racks they stand in, the CDUs and the kW of the GPUs. */
+  readonly gpuServers: number;
+  readonly gpus: number;
+  readonly denseRacks: number;
+  readonly cdus: number;
+  readonly gpuKw: number;
+  /** The dense racks the build asks for, as the generator builds them. */
+  readonly dense?: DenseSpec;
   readonly layout: Pick<
     WorldgenSpec,
     "buildings" | "floors" | "roomsPerFloor" | "rows" | "racksPerRow"
@@ -183,6 +192,26 @@ function placesFor(build: ChipBuild, computeRacks: number) {
   };
 }
 
+/** GPU servers, the GPUs in them and the kilowatts they draw (70 % of their nameplate) in a world of this build. */
+function gpuFigures(build: ChipBuild, dense: DenseSpec | undefined, catalog: Catalog) {
+  const servers = build.accel?.servers ?? 0;
+  const model = dense?.gpu && dense.server ? catalog.getOf(dense.server, "server") : undefined;
+  return {
+    servers,
+    kw: model ? Math.round((servers * model.maxPowerW * 0.7) / 1000) : 0,
+    gpus: servers * Math.min(build.accel?.gpusPerServer ?? 0, model?.gpus ?? 8),
+  };
+}
+
+/** CDUs for the liquid racks: planned for 60 % of their capacity, one more than the load needs (at least two). */
+const cduCount = (kw: number, catalog: Catalog): number =>
+  Math.max(2, Math.ceil((kw * 0.75) / (0.6 * catalog.getOf("aq-cdu-500kw", "cdu").capacityKw)) + 1);
+
+function coolersFor(mode: string, kw: number): number {
+  const base = Math.max(1, Math.ceil(kw / (0.8 * 100)));
+  return mode === "N" ? base : mode === "N+1" ? base + 1 : base * 2;
+}
+
 export function planShape(spec: ShapeSpec): ShapePlan {
   const build = buildOf(spec.layers);
   const serviceHosts = spec.services.reduce((n, s) => n + hostsOf(s, buildFor(spec.layers, s)), 0);
@@ -194,18 +223,22 @@ export function planShape(spec: ShapeSpec): ShapePlan {
   // database instances of bare-metal worlds stand on servers of their own (virtualised ones share the service's hosts)
   const dbHosts = build.bare ? spec.services.length * (build.database?.instances ?? 0) : 0;
   const servers = Math.max(spec.servers, serviceHosts + spareHosts + dbHosts);
-  const computeRacks = Math.max(3, Math.ceil(servers / SERVERS_PER_RACK));
+  const catalog = defaultCatalog();
+  const dense = denseOf(build, Math.max(3, Math.ceil(servers / SERVERS_PER_RACK)), catalog);
+  // a dense rack is wider and takes two places of a row; one more place for the row that cannot be paired
+  const computeRacks =
+    Math.max(3, Math.ceil(servers / SERVERS_PER_RACK)) + (dense ? 2 * dense.racks + 1 : 0);
   const places = placesFor(build, computeRacks);
   const perRoom = Math.ceil(computeRacks / places.rooms);
   const shape = rowsFor(perRoom);
   const racksPerRoom = shape.rows * shape.racksPerRow;
-  const racks = racksPerRoom * places.rooms;
+  const racks = racksPerRoom * places.rooms - (dense?.racks ?? 0);
   const spines = (build.spines ?? 2) * places.rooms;
   const feeds = build.feeds ?? 2;
-  const kw = Math.round((servers * 0.33 + racks * 0.35 + spines * 0.6) * RACK_KW_HEADROOM);
-  const coolBase = Math.max(1, Math.ceil(kw / (0.8 * 100)));
-  const mode = build.cooling ?? "N+1";
-  const coolers = mode === "N" ? coolBase : mode === "N+1" ? coolBase + 1 : coolBase * 2;
+  const gpu = gpuFigures(build, dense, catalog);
+  const kw = Math.round((servers * 0.33 + racks * 0.35 + spines * 0.6 + gpu.kw) * RACK_KW_HEADROOM);
+  const cdus = dense?.liquid ? cduCount(kw, catalog) : 0;
+  const coolers = coolersFor(build.cooling ?? "N+1", kw);
   return {
     serviceHosts,
     spareHosts,
@@ -221,6 +254,12 @@ export function planShape(spec: ShapeSpec): ShapePlan {
     coolers,
     kw,
     perRack: Math.round(servers / computeRacks),
+    gpuServers: gpu.servers,
+    gpus: gpu.gpus,
+    denseRacks: dense?.racks ?? 0,
+    cdus,
+    gpuKw: gpu.kw,
+    ...(dense ? { dense } : {}),
     layout: {
       buildings: places.buildings,
       floors: places.floors,
@@ -234,6 +273,7 @@ export function planShape(spec: ShapeSpec): ShapePlan {
 /** The generator's own spec for a plan: the layers that change what worldgen builds. */
 export function worldgenSpecOf(spec: ShapeSpec, plan: ShapePlan): WorldgenSpec {
   const build = buildOf(spec.layers);
+  const dense = plan.dense;
   return {
     site: spec.site,
     seed: spec.seed,
@@ -245,6 +285,8 @@ export function worldgenSpecOf(spec: ShapeSpec, plan: ShapePlan): WorldgenSpec {
     coolingRedundancy: build.cooling ?? "N+1",
     powerRedundancy: build.feeds === 1 ? "N" : "2N",
     vmsPerHost: build.bare ? 0 : 1,
+    ...(dense ? { dense } : {}),
+    ...(build.power ? { plant: build.power } : {}),
   };
 }
 

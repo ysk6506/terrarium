@@ -1,0 +1,96 @@
+/** Cards of the accelerator ladder (REQ-107, ADR-0130): from no GPU to a liquid-cooled pod. */
+import { type ChipCard, rows } from "./card-types";
+
+export const ACCEL_CARDS: readonly ChipCard[] = [
+  {
+    id: "gpu-none",
+    layer: "accel",
+    label: "GPU 없음",
+    what: "CPU 서버만 써요. GPU가 필요 없는 서비스에는 이게 맞고, 가장 싸고 가장 덜 뜨거워요.",
+    canLose: "해당 없음",
+    mustNot: "해당 없음",
+    faults: "GPU 고장은 생기지 않아요",
+    cost: "추가 비용 없음",
+    result: "GPU가 없어서 GPU 고장도 없어요",
+    diagram: rows("GPU 없이 서버만 있음", [["서버", 3]]),
+  },
+  {
+    id: "gpu-per-server",
+    layer: "accel",
+    label: "서버마다 GPU",
+    what: "서버 한 대에 GPU를 2~8장 꽂아요. 서버 안에서는 NVLink로 묶이고, 서버끼리는 일반 네트워크로 이어져요. 작은 추론이나 실험에 맞아요.",
+    canLose: "GPU 한 장 · 서버 한 대",
+    mustNot: "GPU가 뜨거워지는 일",
+    faults: "GPU Xid 오류 · GPU 열 스로틀 · NVLink 끊김",
+    cost: "GPU 서버 · 서버당 수천만 원~1억 원쯤",
+    result: "GPU 한 장이 죽어도 같은 서버의 나머지는 돌아요",
+    diagram: rows(
+      "서버 둘에 GPU가 네 장씩 있고 GPU 한 장이 끊김",
+      [
+        ["서버", 2],
+        ["GPU", 8, "mesh"],
+      ],
+      [1, 3],
+    ),
+  },
+  {
+    id: "gpu-serving-pool",
+    layer: "accel",
+    label: "추론 풀 (LB + MIG)",
+    what: "GPU 서버 여러 대를 풀로 묶고 앞에 로드밸런서를 둬요. GPU 한 장을 MIG로 잘게 나눠 여러 모델을 올려요. 고장 난 복제본은 풀에서 빠져요.",
+    canLose: "복제본 몇 개 · 서버 한 대",
+    mustNot: "MIG를 잘못 나누는 일",
+    faults: "추론 서버 GPU 메모리 누수 · MIG 분할 잘못 설정 · GPU Xid 오류",
+    cost: "GPU 서버 4대쯤 + 로드밸런서",
+    result: "복제본이 빠져도 풀이 답해요, 다만 처리량이 줄어요",
+    diagram: rows(
+      "로드밸런서가 GPU 노드 넷에 요청을 나누고 노드 하나가 끊김",
+      [
+        ["LB", 1],
+        ["GPU 노드", 4, "mesh"],
+        ["복제본", 8, "mesh"],
+      ],
+      [1, 2],
+    ),
+  },
+  {
+    id: "gpu-training-cluster",
+    layer: "accel",
+    label: "학습 클러스터",
+    what: "서버 안은 NVLink, 서버 사이는 InfiniBand나 RoCE 패브릭으로 이어요. 스케줄러가 잡을 올리고, 체크포인트가 있어서 노드가 죽어도 마지막 지점부터 다시 해요. 여분 노드를 둬요.",
+    canLose: "노드 하나 (여분이 있으면) · 마지막 체크포인트 이후 스텝",
+    mustNot: "스케줄러와 패브릭이 함께 서는 일",
+    faults: "GPU Xid 오류 · 패브릭 링크 플래핑 · 체크포인트 쓰기에서 멈춤",
+    cost: "GPU 서버 8대쯤 + IB 패브릭 · 수십억 원쯤",
+    result: "노드가 죽어도 마지막 체크포인트부터 다시 돌아요",
+    diagram: rows(
+      "스케줄러가 패브릭으로 묶인 GPU 노드 넷에 잡을 올리고 노드 하나가 끊김",
+      [
+        ["스케줄러", 1],
+        ["패브릭", 2, "mesh"],
+        ["GPU 노드", 4, "mesh"],
+      ],
+      [2, 1],
+    ),
+  },
+  {
+    id: "gpu-liquid-pod",
+    layer: "accel",
+    label: "액냉 GPU 포드",
+    what: "랙 하나가 40~100 kW라서 공기로는 못 식혀요. 냉각수(DLC)가 GPU 판까지 들어가고, 전원은 이중 계통이에요. CDU의 예비 펌프는 운영자가 직접 올려요. 학습 클러스터의 구성에 이 냉각 설비가 더해져요.",
+    canLose: "CDU 펌프 하나 · 노드 하나 (여분이 있으면)",
+    mustNot: "냉각수가 새는 일 · CDU가 함께 서는 일",
+    faults: "CDU 펌프 고장 · 냉각수 누설 · GPU 열 스로틀",
+    cost: "DLC 랙 + CDU + 이중 전원 · 수십억 원 이상",
+    result: "CDU 펌프가 멈추면 몇 분 안에 GPU가 클럭을 깎아요",
+    diagram: rows(
+      "CDU가 액냉 랙에 냉각수를 보내고 GPU 노드가 랙 안에 있으며 CDU 하나가 끊김",
+      [
+        ["CDU", 2],
+        ["액냉 랙", 2, "mesh"],
+        ["GPU 노드", 4, "mesh"],
+      ],
+      [0, 1],
+    ),
+  },
+];

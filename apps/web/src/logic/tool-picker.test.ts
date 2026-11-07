@@ -61,14 +61,20 @@ describe("the tool cards [REQ-080]", () => {
     expect(names("get_impact")).toEqual(["get_impact"]);
     expect(names("없음")).toEqual(["get_impact"]);
     expect(names("드묾").sort()).toEqual([
+      "bbu_status",
       "breaker_reset",
       "breaker_status",
+      "cdu_pump_switch",
       "get_topology",
       "mesh_rollback",
       "mesh_status",
       "overlay_trace",
+      "power_cap_status",
       "region_failover",
       "search_runbooks",
+      "set_power_cap",
+      "substation_status",
+      "transfer_feed",
     ]);
     expect(names("전혀 없는 말")).toEqual([]);
     expect(toolPicker.areaCards([], "전혀 없는 말")).toEqual([]);

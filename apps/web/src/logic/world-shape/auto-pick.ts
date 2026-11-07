@@ -16,6 +16,7 @@ import {
   type LayerId,
   type Layers,
   placeOf,
+  SERVICE_CATALOG,
   unmetNeeds,
   unmetOf,
 } from "@terrarium/core/world";
@@ -43,14 +44,19 @@ const eachLayer = (pick: (layer: LayerId) => string): Layers =>
   Object.fromEntries(Object.keys(LADDER).map((l) => [l, pick(l as LayerId)])) as Layers;
 
 /** The cheap row: `싸게`. The left-most choice the core can imitate, on bare metal. */
-export const CHEAP_LAYERS: Layers = { ...eachLayer(firstModeled), compute: "cmp-bare" };
+export const CHEAP_LAYERS: Layers = {
+  ...eachLayer(firstModeled),
+  compute: "cmp-bare",
+  accel: "gpu-none",
+};
 
 /**
  * The steady row: `멈추지 않게`. The right-most choice the core can imitate on every layer, but never one whose need the
  * others leave unmet (REQ-102): such a choice steps left, so the preset itself is whole.
  */
 function steadyRow(): Layers {
-  const layers: Record<string, string> = { ...eachLayer(lastModeled) };
+  // a GPU layer does not make a service stop less: the steady row leaves accelerators to the service that asks for them
+  const layers: Record<string, string> = { ...eachLayer(lastModeled), accel: "gpu-none" };
   for (let round = 0; round < LAYER_IDS.length * 2; round++) {
     const open = unmetOf(layers as Layers)[0];
     if (!open) break;
@@ -69,19 +75,48 @@ interface Need {
   readonly name: string;
   /** The service is a Kubernetes built on its VMs (its card has a control plane among its nodes). */
   readonly k8s: boolean;
+  /** The accelerator choice the service's card brings (AI 추론 서빙, 학습 파이프라인); absent: none. */
+  readonly accel?: string;
+  /** The service whose card brings it. */
+  readonly accelBy?: string;
 }
 
 const isCluster = (s: ServiceDraft): boolean =>
   s.parts.some((p) => p.role === "node" && p.label.includes("컨트롤 플레인"));
 
+const accelOf = (s: ServiceDraft): string | undefined =>
+  SERVICE_CATALOG.find((c) => c.name === s.name)?.accel;
+
+const strongestAccel = (
+  services: readonly ServiceDraft[],
+): { readonly id: string; readonly by: string } | undefined => {
+  const rank = (id: string) => LADDER.accel.findIndex((c) => c.id === id);
+  let best: { id: string; by: string } | undefined;
+  for (const s of services) {
+    const id = accelOf(s);
+    if (id !== undefined && (!best || rank(id) > rank(best.id))) best = { id, by: s.name };
+  }
+  return best;
+};
+
 function needOf(services: readonly ServiceDraft[]): Need {
   const top = services.reduce<Need | undefined>((best, s) => {
     const perHour = s.harm.reduce((m, t) => Math.max(m, t.perHourKrw), 0);
     return !best || perHour > best.perHour
-      ? { nodes: s.nodes, perHour, kind: s.kind, name: s.name, k8s: isCluster(s) }
+      ? {
+          nodes: s.nodes,
+          perHour,
+          kind: s.kind,
+          name: s.name,
+          k8s: isCluster(s),
+          accel: accelOf(s),
+        }
       : best;
   }, undefined);
-  return top ?? { nodes: 1, perHour: 0, kind: "request", name: "서비스", k8s: false };
+  if (!top) return { nodes: 1, perHour: 0, kind: "request", name: "서비스", k8s: false };
+  // accelerators are one building's: the largest GPU choice any service brings, not only the costliest service's
+  const accel = strongestAccel(services);
+  return { ...top, accel: accel?.id, accelBy: accel?.by };
 }
 
 const label = (id: string): string => cardOf(id)?.label ?? id;
@@ -108,6 +143,10 @@ const CHOOSERS: Readonly<Record<LayerId, Chooser>> = {
       : need.nodes >= 3
         ? { id: "cmp-virt-ha", why: "노드가 여럿이라 호스트 몇 대에 나눠 올려서" }
         : { id: "cmp-bare-spare", why: "노드가 하나뿐이라 서버째 두고 예비 한 대만 둬서" },
+  accel: (need) =>
+    need.accel
+      ? { id: need.accel, why: `${need.accelBy ?? need.name} 카드가 GPU를 쓰는 서비스라서` }
+      : { id: "gpu-none", why: "GPU가 필요한 서비스가 아니라서" },
   storage: (_, chosen) =>
     isVirtual(chosen)
       ? { id: "sto-shared", why: "VM을 옮기려면 공유 저장소가 있어야 해서" }
@@ -142,6 +181,7 @@ const isVirtual = (chosen: Layers): boolean =>
 
 const ORDER: readonly LayerId[] = [
   "compute",
+  "accel",
   "network",
   "storage",
   "database",

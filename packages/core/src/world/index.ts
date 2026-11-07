@@ -1,4 +1,5 @@
 /** core.world: the world blueprint, entities, dynamic state, event log and snapshots (REQ-001, REQ-014). */
+export * as Accel from "./accel-api";
 export {
   appInstancesOf,
   breakerDef,

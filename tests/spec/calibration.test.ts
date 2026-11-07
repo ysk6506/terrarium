@@ -15,6 +15,7 @@ import { gpuLab } from "../../packages/core/src/world/test-support/gpu-lab";
 import { networkLab } from "../../packages/core/src/world/test-support/net-lab";
 import { campusBlueprint } from "../../packages/core/src/world/test-support/sample-campus";
 import { sdnLab } from "../../packages/core/src/world/test-support/sdn-lab";
+import { accelLab, powerLab } from "./test-support/ladder-labs";
 
 const WORLDS: ReadonlyArray<{ name: string; blueprint: () => Blueprint }> = [
   { name: "campus", blueprint: campusBlueprint },
@@ -23,6 +24,21 @@ const WORLDS: ReadonlyArray<{ name: string; blueprint: () => Blueprint }> = [
   { name: "sdn", blueprint: () => sdnLab({ cloudNative: true }) },
   { name: "app mesh", blueprint: () => appLab({ level: "mesh" }) },
   { name: "app multiregion", blueprint: () => appLab({ level: "multiregion" }) },
+  {
+    name: "gpu training lab",
+    blueprint: () => accelLab("gpu-training-cluster", { network: "net-leaf-spine" }),
+  },
+  { name: "gpu serving lab", blueprint: () => accelLab("gpu-serving-pool") },
+  {
+    name: "gpu pod lab",
+    blueprint: () =>
+      accelLab("gpu-liquid-pod", {
+        network: "net-leaf-spine",
+        cooling: "cool-liquid",
+        power: "pwr-ab",
+      }),
+  },
+  { name: "power ladder lab", blueprint: () => powerLab("pwr-substation") },
 ];
 
 const KNOWN_FLOOR: Readonly<Record<string, number>> = { "cooling-failure": 20 };

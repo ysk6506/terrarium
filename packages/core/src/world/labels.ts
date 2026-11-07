@@ -45,6 +45,18 @@ export const KIND_LABELS: Readonly<Record<EntityKind, string>> = {
   mesh_sidecar: "메시 사이드카",
   mesh_control: "메시 컨트롤 플레인",
   region: "리전",
+  gpu: "GPU",
+  nvlink_domain: "NVLink 도메인",
+  ib_fabric: "InfiniBand/RoCE 패브릭",
+  ib_link: "패브릭 링크",
+  job_scheduler: "잡 스케줄러",
+  training_job: "학습 잡",
+  inference_pool: "추론 풀",
+  bbu: "랙 배터리(BBU)",
+  dc_bus: "48V DC 버스",
+  substation: "자체 변전소",
+  rdhx: "리어도어 열교환기",
+  immersion_tank: "액침 탱크",
 };
 
 export const LINK_LABELS: Readonly<Record<LinkKind, string>> = {

@@ -109,7 +109,9 @@ export default function TopologyView(props: TopologyProps) {
         <Segmented
           label={W.layers}
           value={layer}
-          options={LAYER_IDS.map((id) => ({ value: id, label: LAYER_LABELS[id] }))}
+          options={LAYER_IDS.filter((id) => id !== "accel" || index.ofKind("gpu").length > 0).map(
+            (id) => ({ value: id, label: LAYER_LABELS[id] }),
+          )}
           onChange={setLayer}
         />
       </div>

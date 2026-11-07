@@ -13,6 +13,7 @@ const KIND: Readonly<Record<LayerId, Edge["kind"]>> = {
   power: "power",
   cooling: "cold",
   network: "net",
+  accel: "net",
 };
 
 /** The pipe is drawn in the colour of the trouble where the trouble is the heat; otherwise by what it carries. */

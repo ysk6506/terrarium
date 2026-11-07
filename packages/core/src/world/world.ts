@@ -6,6 +6,7 @@
  */
 import type { Catalog } from "@terrarium/core/catalog";
 import { InvalidValueError, NotFoundError } from "@terrarium/core/kernel";
+import type { AccelCommand } from "./accel-act";
 import type { AppCommand } from "./app-act";
 import type { Blueprint, EntityKind } from "./blueprint";
 import { cloneState } from "./clone";
@@ -63,6 +64,7 @@ export type WorldCommand =
   | DbCommand
   | SdnCommand
   | AppCommand
+  | AccelCommand
   | K8sCommand
   /** An operator acts on the operating system of a server or VM: restart a process, free disk, remount, reboot (ADR-0091). */
   | {

@@ -26,6 +26,13 @@ export {
   updateBatteries,
   updateDevices,
 } from "./power";
+export {
+  type CapMode,
+  type CapPlan,
+  type CapServer,
+  distributeCap,
+  perfUnderCap,
+} from "./power-cap";
 export { faultParam } from "./power-supply";
 export { updateSdn } from "./sdn";
 export { updateServices } from "./services";

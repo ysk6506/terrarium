@@ -1,5 +1,5 @@
 /**
- * The ladders as the screen reads them (ADR-0107 item 3, ADR-0108 item 4): eight layers, each with its question and its
+ * The ladders as the screen reads them (ADR-0107 item 3, ADR-0108 item 4): nine layers, each with its question and its
  * choices left to right, every choice with its card. The mechanics of a choice (what it builds, which faults it makes
  * possible, whether the core can imitate it) live in the core (`@terrarium/core/world` LADDER); a test keeps the two
  * lists in step, so a choice cannot be added to one and forgotten in the other.
@@ -7,14 +7,17 @@
 import { type ChipMech, LADDER, LAYER_IDS, type LayerId } from "@terrarium/core/world";
 import type { ChipCard } from "./card-types";
 import { APP_CARDS, DATABASE_CARDS, STORAGE_CARDS } from "./cards-data";
+import { ACCEL_CARDS } from "./cards-gpu";
 import { COOLING_CARDS, POWER_CARDS, SITE_CARDS } from "./cards-infra";
 import { COMPUTE_CARDS, NETWORK_CARDS } from "./cards-net-compute";
+import { COOLING_EXTRA_CARDS, POWER_EXTRA_CARDS } from "./cards-power-cooling";
 
 export type { ChipCard, Diagram, DiagramRow, Join } from "./card-types";
 
 export const LAYER_INFO: Readonly<Record<LayerId, { name: string; question: string }>> = {
   network: { name: "네트워크", question: "어떻게 이어지나요" },
   compute: { name: "컴퓨트", question: "서비스가 무엇 위에서 도나요" },
+  accel: { name: "가속기", question: "GPU는 어떻게 두나요" },
   storage: { name: "스토리지", question: "데이터는 어디에" },
   database: { name: "데이터베이스", question: "상태는 어떻게 지키나요" },
   app: { name: "애플리케이션", question: "요청은 어떻게 받나요" },
@@ -26,11 +29,14 @@ export const LAYER_INFO: Readonly<Record<LayerId, { name: string; question: stri
 export const CARDS: readonly ChipCard[] = [
   ...NETWORK_CARDS,
   ...COMPUTE_CARDS,
+  ...ACCEL_CARDS,
   ...STORAGE_CARDS,
   ...DATABASE_CARDS,
   ...APP_CARDS,
   ...POWER_CARDS,
+  ...POWER_EXTRA_CARDS,
   ...COOLING_CARDS,
+  ...COOLING_EXTRA_CARDS,
   ...SITE_CARDS,
 ];
 

@@ -17,13 +17,13 @@ covers:
   - apps/server/src/runtime/dispatcher.ts
   - apps/server/src/runtime/hosts.ts
   - packages/core/src/session/operation/journal.ts
-covers_hash: 106507366b52a3db
+covers_hash: 47b577acbbfe56df
 verification_log:
-  - "2026-11-06: REQ-096: mtbf.ts의 컨테이너 고장 여덟 행을 MTBF 표에 더했다"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
   - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
+  - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장 절을 더하거나 고쳤고 나머지는 코드와 대조해 그대로 맞다"
 ---
 # 운영 모드 (REQ-090, [ADR-0094](adr/0094-operation-mode.md))
 
@@ -78,6 +78,12 @@ verification_log:
 | `retry_storm` / `mesh_control_down` | 메시 컨트롤 플레인 | 7,000 / 6,000시간 |
 | `sidecar_crash` | 사이드카 | 5,000시간 |
 | `region_down` / `replication_lag_high` | 리전 | 20,000 / 4,000시간 |
+| `gpu_xid_error` / `gpu_thermal_throttle` / `gpu_memory_leak_inference` | GPU | 6,000 / 9,000 / 4,000시간 |
+| `nvlink_down` / `ib_link_flap` | NVLink 도메인 / 패브릭 링크 | 12,000 / 5,000시간 |
+| `job_stuck_checkpoint` / `scheduler_down` / `mig_misconfig` | 학습 잡 / 스케줄러 / 추론 풀 | 2,000 / 6,000 / 8,000시간 |
+| `bbu_cell_fault` / `dc_bus_sag` | 랙 배터리 / 48V 버스 | 14,000 / 16,000시간 |
+| `utility_feed_loss` / `transformer_overtemp` | 변전소 | 20,000 / 30,000시간 |
+| `ups_module_fail` / `rdhx_valve_stuck` / `fluid_level_low` | UPS / 리어도어 / 침지 탱크 | 12,000 / 15,000 / 18,000시간 |
 
 표는 `operation/mtbf.ts`가 단일 출처이고 발생기와 시험이 이 값을 읽는다. 새 고장 종류를 더하면 표에도 줄을 더한다(그리고 `FAULT_TOOLS`와 `physics-golden.json`에도, 툴 추가 규칙대로).
 

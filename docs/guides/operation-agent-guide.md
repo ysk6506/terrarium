@@ -8,13 +8,13 @@ covers:
   - packages/core/src/session/operation/metrics.ts
   - packages/core/src/session/operation/mtbf.ts
   - apps/server/src/adapters/harness/scripted-operator.ts
-covers_hash: 578b1dc9b6bae518
+covers_hash: be8ff02f8f2a2b5f
 verification_log:
-  - "2026-11-06: REQ-096: mtbf.ts에 컨테이너 고장 행이 늘었다. 가이드의 툴 규약·지표 계산식·빨리 감기 규칙은 그대로 맞다"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
   - "2026-11-07: REQ-100 애플리케이션 층이 덮는 코드가 바뀐 것을 확인했고 이 문서의 내용은 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
+  - "2026-11-07: REQ-107: 에이전트용 툴 목록에 새 툴이 늘었음을 대조했고 안내 내용은 그대로 맞다"
 ---
 # 운영 에이전트 설계 가이드
 

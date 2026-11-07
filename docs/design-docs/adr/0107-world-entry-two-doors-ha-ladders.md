@@ -20,6 +20,8 @@ enforced_by:
   - tests/spec/app-physics.test.ts
   - tests/spec/app-scenarios.test.ts
   - packages/core/src/sources/worldgen/shaped-app.test.ts
+  - tests/spec/gpu-worldgen.test.ts
+  - apps/web/src/logic/world-shape/gpu-cards.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 3941f276858239b0

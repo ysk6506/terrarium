@@ -38,6 +38,7 @@ export {
 export { scenarioDigest } from "./digest";
 export { EVENT_LABELS, EVENT_TYPES, type EventType, eventTarget, isEventType } from "./events";
 export {
+  ACCEL_TEMPLATES,
   ALL_SCENARIO_TEMPLATES,
   APP_TEMPLATES,
   DB_TEMPLATES,
@@ -47,12 +48,13 @@ export {
   K8S_TEMPLATES,
   NETWORK_TEMPLATES,
   OS_TEMPLATES,
+  POWER_TEMPLATES,
   SCENARIO_TEMPLATES,
   type ScenarioTemplate,
   SDN_TEMPLATES,
   scenarioTemplate,
   TEMPLATE_GROUPS,
-} from "./library";
+} from "./library-groups";
 export {
   ACTION_KINDS,
   ACTION_LABELS,

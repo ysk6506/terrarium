@@ -22,6 +22,7 @@ import { appLab } from "../../packages/core/src/world/test-support/app-lab";
 import { k8sLab } from "../../packages/core/src/world/test-support/k8s-lab";
 import { sampleBlueprint } from "../../packages/core/src/world/test-support/sample";
 import { sdnLab } from "../../packages/core/src/world/test-support/sdn-lab";
+import { accelLab, coolingLab, powerLab } from "./test-support/ladder-labs";
 
 const FILE = new URL("./physics-golden.json", import.meta.url);
 const catalog = new Catalog();
@@ -65,6 +66,10 @@ const worlds: ReadonlyArray<readonly [string, () => Blueprint]> = [
   ["container cluster", () => k8sLab({ second: true })],
   // the application layer (REQ-100): balancer, replicas, sessions, breakers, mesh and two regions
   ["app layer lab", () => appLab({ level: "multiregion" })],
+  // the accelerator, power and cooling ladders (REQ-107): GPUs with a fabric and a job, a substation with rack batteries, rear doors and immersion
+  ["gpu training lab", () => accelLab("gpu-training-cluster", { network: "net-leaf-spine" })],
+  ["power ladder lab", () => powerLab("pwr-substation")],
+  ["cooling ladder lab", () => coolingLab("cool-immersion")],
 ];
 
 const stateHash = (world: World): string =>

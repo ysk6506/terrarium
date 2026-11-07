@@ -19,6 +19,7 @@ import type {
   UpsState,
   World,
 } from "@terrarium/core/world";
+import { accelAlarms } from "./accel-alarms";
 import { type Draft, type Hit, NO_HITS, pushHits, type Scan } from "./alarm-scan";
 import { appAlarms } from "./app-alarms";
 import { dbAlarms } from "./db-alarms";
@@ -293,6 +294,7 @@ export function desiredAlarms(world: World): Draft[] {
   dbAlarms(world, out);
   k8sAlarms(world, out);
   appAlarms(world, out);
+  accelAlarms(world, out);
   sdnAlarms(world, out);
   serviceAlarms(world, out);
   return out;

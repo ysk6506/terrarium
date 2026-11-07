@@ -6,14 +6,15 @@
  */
 import type { Alarm, BlueprintIndex, EntityState, Fault } from "@terrarium/core/world";
 
-export type LayerId = "power" | "cooling" | "network";
+export type LayerId = "power" | "cooling" | "network" | "accel";
 
-export const LAYER_IDS: readonly LayerId[] = ["power", "cooling", "network"];
+export const LAYER_IDS: readonly LayerId[] = ["power", "cooling", "network", "accel"];
 
 export const LAYER_LABELS: Readonly<Record<LayerId, string>> = {
   power: "전원",
   cooling: "냉방",
   network: "네트워크·가상화",
+  accel: "가속기",
 };
 
 /** The four colours of the board, and "ok" for everything that has nothing to say. */
@@ -57,7 +58,11 @@ export type TopoKind =
   | "circuit_breaker"
   | "mesh_sidecar"
   | "mesh_control"
-  | "region";
+  | "region"
+  | "gpu"
+  | "ib_fabric"
+  | "job"
+  | "pool";
 
 /** What the board reads of a world: the part of `WorldReader` that tells what is, and how it is doing. */
 export interface TopologySource {

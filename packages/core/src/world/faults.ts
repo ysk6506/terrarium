@@ -4,6 +4,7 @@
  * people can see them, but they cannot be used until physics implements them (REQ-034).
  */
 import type { EntityKind } from "./blueprint";
+import { ACCEL_FAULT_SPECS } from "./faults-accel";
 import { APP_FAULT_SPECS } from "./faults-app";
 import { DB_FAULT_SPECS } from "./faults-db";
 import { K8S_FAULT_SPECS } from "./faults-k8s";
@@ -77,7 +78,22 @@ export type FaultType =
   | "sidecar_crash"
   | "mesh_control_down"
   | "region_down"
-  | "replication_lag_high";
+  | "replication_lag_high"
+  | "gpu_xid_error"
+  | "nvlink_down"
+  | "ib_link_flap"
+  | "gpu_thermal_throttle"
+  | "gpu_memory_leak_inference"
+  | "job_stuck_checkpoint"
+  | "scheduler_down"
+  | "mig_misconfig"
+  | "bbu_cell_fault"
+  | "dc_bus_sag"
+  | "utility_feed_loss"
+  | "transformer_overtemp"
+  | "ups_module_fail"
+  | "rdhx_valve_stuck"
+  | "fluid_level_low";
 
 /**
  * Things people do wrong, as opposed to things that break: a port put in the wrong VLAN, a gateway interface left
@@ -372,6 +388,7 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   ...SDN_FAULT_SPECS,
   ...K8S_FAULT_SPECS,
   ...APP_FAULT_SPECS,
+  ...ACCEL_FAULT_SPECS,
 ];
 
 /** The mistakes a scenario can make with its configuration blocks, named so a diagnosis can name them. */

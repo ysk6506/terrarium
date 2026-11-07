@@ -23,7 +23,8 @@ function expectConserved(board: Board, source: ReturnType<typeof gridWorld>): vo
 describe("what is the same is folded, what differs stands alone [REQ-078]", () => {
   test("a healthy campus is a handful of group tiles however many racks it has", () => {
     const source = gridWorld(SPEC);
-    for (const layer of LAYER_IDS) {
+    // the accelerator layer (REQ-107) is empty in a campus with no GPUs
+    for (const layer of LAYER_IDS.filter((l) => l !== "accel")) {
       const board = fold(source, { layer });
       expect(board.tiles.length).toBeLessThan(40);
       expect(board.stats.entities).toBeGreaterThan(RACKS);

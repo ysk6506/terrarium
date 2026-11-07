@@ -3,6 +3,7 @@
  * of thing, and the values are in range. A refused command changes nothing and is not logged.
  */
 import { ConflictError, InvalidValueError, NotFoundError } from "@terrarium/core/kernel";
+import { type AccelCommand, checkAccelCommand, isAccelCommand } from "./accel-act";
 import { type AppCommand, checkAppCommand, isAppCommand } from "./app-act";
 import type { EntityKind } from "./blueprint";
 import { isBulkRack } from "./bulk";
@@ -140,6 +141,7 @@ function checkLayerCommand(world: WorldReader, command: WorldCommand): void {
   if (isDbCommand(command.type)) checkDbCommand(world, command as DbCommand);
   else if (isSdnCommand(command.type)) checkSdnCommand(world, command as SdnCommand);
   else if (isAppCommand(command.type)) checkAppCommand(world, command as AppCommand);
+  else if (isAccelCommand(command.type)) checkAccelCommand(world, command as AccelCommand);
   else if (isK8sCommand(command.type)) checkK8sCommand(world, command as K8sCommand);
   else if (command.type === "host.act") checkHostAct(world, command.target, command.action);
   else if (command.type === "vm.migrate" || command.type.startsWith("service."))

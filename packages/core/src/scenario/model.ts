@@ -54,7 +54,14 @@ export type ActionKind =
   | "lb_enable"
   | "circuit_reset"
   | "mesh_rollback"
-  | "region_failover";
+  | "region_failover"
+  | "gpu_reset"
+  | "job_resume"
+  | "node_drain"
+  | "pool_scale"
+  | "power_cap"
+  | "feed_transfer"
+  | "pump_switch";
 
 export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   power_off: "전원 끄기",
@@ -92,6 +99,13 @@ export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   circuit_reset: "서킷 브레이커 리셋",
   mesh_rollback: "메시 설정 되돌리기",
   region_failover: "리전 옮기기",
+  gpu_reset: "GPU 리셋",
+  job_resume: "학습 잡 이어가기",
+  node_drain: "노드 스케줄에서 빼기",
+  pool_scale: "추론 풀 크기 바꾸기",
+  power_cap: "서버 전력 캡",
+  feed_transfer: "수전 옮기기",
+  pump_switch: "예비 펌프 돌리기",
 };
 
 export const ACTION_KINDS = Object.keys(ACTION_LABELS) as ActionKind[];

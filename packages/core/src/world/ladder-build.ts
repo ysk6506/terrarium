@@ -30,6 +30,46 @@ export interface ChipBuild {
   readonly k8s?: K8sBuild;
   /** The application layer the app choice builds for every service: balancer, replicas, sessions, breakers, mesh, regions (REQ-100). */
   readonly app?: AppBuild;
+  /** The accelerator layer the accel choice builds: GPU servers, their NVLink, the fabric, the scheduler, jobs and the pool (REQ-107). */
+  readonly accel?: AccelBuild;
+  /** What the power choice adds around the UPS: spare modules, generators, rack batteries, 48 V DC, an own substation (REQ-107). */
+  readonly power?: PowerBuild;
+  /** How the dense racks are cooled: rear doors, direct-to-chip plates or an immersion tank (REQ-107). */
+  readonly liquid?: "rdhx" | "dlc" | "immersion";
+}
+
+/**
+ * The accelerator layer. `server`: a few GPU servers, one serving process each. `pool`: a balancer over a node pool of GPU
+ * servers with MIG. `training`: NVLink in every node, an IB/RoCE fabric, a scheduler and a training job with spares.
+ * `pod`: the same on liquid-cooled racks.
+ */
+export interface AccelBuild {
+  readonly mode: "server" | "pool" | "training" | "pod";
+  /** GPU servers, the spares the job can move to included. */
+  readonly servers: number;
+  readonly spares: number;
+  /** GPUs of a server that are populated (2..8). */
+  readonly gpusPerServer: number;
+  /** The scale-out fabric between the nodes; absent: none. */
+  readonly fabric?: "ib" | "roce";
+  readonly scheduler: boolean;
+  readonly job: boolean;
+  readonly pool: boolean;
+  readonly mig: boolean;
+}
+
+/** What the power choices from N+1 UPS up build, each keeping what the one before it had. */
+export interface PowerBuild {
+  /** One more UPS module per side than the load needs (N+1), all feeding every panel of the side. */
+  readonly upsSpare?: boolean;
+  /** An ATS and diesel generators per side; the hours of fuel on site; one more generator than the load needs. */
+  readonly generator?: boolean;
+  readonly fuelHours?: number;
+  readonly spareGenerator?: boolean;
+  /** A battery pack and a 48 V DC bus in every rack (OCP style). */
+  readonly rackBattery?: boolean;
+  /** An own substation with two transformers on two utility feeds in front of the ATS. */
+  readonly substation?: boolean;
 }
 
 /**

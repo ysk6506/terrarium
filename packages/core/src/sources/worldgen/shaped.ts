@@ -22,6 +22,7 @@ import { DEFAULT_CAMPUS, SITE_CAMPUS_MIX } from "./campus-spec";
 import { generateWorld } from "./generate";
 import { type AppService, layApp } from "./shaped-app";
 import { contentsOf, type Laying, layCluster, layPool, link, slugOf } from "./shaped-db";
+import { layAccel, layLiquidParts, layRackPower } from "./shaped-gpu";
 import { dependsOn, layK8s } from "./shaped-k8s";
 import {
   buildFor,
@@ -68,11 +69,11 @@ const roomOf = (index: BlueprintIndex, server: Entity): string =>
   index.find(server.parentId ?? "")?.parentId ?? "";
 
 /** The servers a service may stand on, grouped room by room and rack by rack, in a fixed order. */
-function hostPool(index: BlueprintIndex): Map<string, Map<string, Entity[]>> {
+function hostPool(index: BlueprintIndex, catalog: Catalog): Map<string, Map<string, Entity[]>> {
   const pool = new Map<string, Map<string, Entity[]>>();
   const servers = index
     .ofKind("server")
-    .filter((s) => !(s.modelId ?? "").includes("gpu"))
+    .filter((s) => (s.modelId ? catalog.getOf(s.modelId, "server").gpus === 0 : true))
     .sort((a, b) => a.id.localeCompare(b.id));
   for (const s of servers) {
     const room = roomOf(index, s);
@@ -267,7 +268,7 @@ function splitHosts(
 
 function lay(bp: Blueprint, spec: ShapeSpec, catalog: Catalog): Laying {
   const index = new BlueprintIndex(bp);
-  const pool = hostPool(index);
+  const pool = hostPool(index, catalog);
   const used = new Set<string>();
   const placed: PlacedService[] = [];
   const apps: AppService[] = [];
@@ -317,7 +318,34 @@ function lay(bp: Blueprint, spec: ShapeSpec, catalog: Catalog): Laying {
   }
   layNetworkOverlay(into, index, { pool, used, spec, placed });
   layApp(into, { index }, apps);
+  layBuildParts(into, { index, catalog, spec, pool, used });
   return into;
+}
+
+/** The accelerator layer, the rack batteries and the liquid parts the world's choices ask for (REQ-107). */
+function layBuildParts(
+  into: Laying,
+  ctx: {
+    readonly index: BlueprintIndex;
+    readonly catalog: Catalog;
+    readonly spec: ShapeSpec;
+    readonly pool: Map<string, Map<string, Entity[]>>;
+    readonly used: Set<string>;
+  },
+): void {
+  const { index, catalog, spec } = ctx;
+  const build = buildOf(spec.layers);
+  if (build.accel)
+    layAccel(into, {
+      index,
+      catalog,
+      build: build.accel,
+      fabric: spec.layers.network === "net-ai-fabric" ? "roce" : "ib",
+      services: spec.services,
+      schedulerHost: build.accel.scheduler ? pickHosts(ctx.pool, 1, ctx.used)[0]?.id : undefined,
+    });
+  if (build.power?.rackBattery) layRackPower(into, index, catalog);
+  if (build.liquid) layLiquidParts(into, index, catalog);
 }
 
 /** The overlay and the cloud-native network, if the world's network choice asks for them. */

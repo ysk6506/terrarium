@@ -1,6 +1,6 @@
 /** Dynamic state of the world: JSON-serialisable so it can be snapshotted and sent between threads. */
 import type { Catalog, EquipmentModel } from "@terrarium/core/catalog";
-import type { Entity, EntityKind } from "./blueprint";
+import type { EntityKind } from "./blueprint";
 import { bulkOf } from "./bulk";
 import type { Fault } from "./faults";
 import { type FirmwareJob, SHIPPED_FIRMWARE } from "./firmware";
@@ -8,6 +8,7 @@ import type { BlueprintIndex } from "./graph";
 import type { NetPatch } from "./net-config";
 import type { HostOs } from "./os";
 import type { ServiceStatus } from "./service";
+import { ACCEL_FACTORIES, type AccelStates } from "./state-accel";
 import {
   APP_FACTORIES,
   type AppInstanceState,
@@ -37,6 +38,7 @@ import {
   placeK8sEntity,
   placePods,
 } from "./state-k8s";
+import { applyServerProps, placeService } from "./state-place";
 import {
   type CniState,
   type IngressState,
@@ -78,6 +80,10 @@ export interface ServerState extends Base {
   psuOk: boolean[];
   powerW: number;
   throttled: boolean;
+  /** Power cap in watts (`set_power_cap`, REQ-107), `perf` the throughput it leaves (0..1), `gpuLoad` the load its GPUs are asked. */
+  powerCapW?: number;
+  perf?: number;
+  gpuLoad?: number;
   /** The operating system, once something needed it (see os.ts). */
   os?: HostOs;
   /** Firmware versions; the BMC says "shipped" until it is updated (the profile's own version shows then). */
@@ -154,6 +160,12 @@ export interface RackState extends Base {
   bathC: number;
   /** The most servers of this rack that were rebooting for firmware at the same time. */
   rebootPeak: number;
+  overS?: number; // power-capping meters of a rack with a limit (REQ-107, ADR-0130)
+  overCount?: number;
+  over?: boolean;
+  lossS?: number;
+  hotAt?: number;
+  stopAt?: number;
 }
 export interface CduState extends Base {
   kind: "cdu";
@@ -167,6 +179,7 @@ export interface CduState extends Base {
   loadKw: number;
   capacityKw: number;
   pumpsOk: boolean[];
+  standbyOn?: boolean;
 }
 export interface ChillerState extends Base {
   kind: "chiller";
@@ -280,6 +293,7 @@ export type EntityState =
   | SidecarState
   | MeshControlState
   | RegionState
+  | AccelStates
   | SiteState
   | PlainState;
 
@@ -454,25 +468,12 @@ const FACTORIES: Partial<Record<EntityKind, Factory>> = {
   ...SDN_FACTORIES,
   ...K8S_FACTORIES,
   ...APP_FACTORIES,
+  ...ACCEL_FACTORIES,
 };
-
-/** A blueprint can say how loaded a server is and which firmware versions it was built with. */
-function applyServerProps(state: StateOf<"server">, props: Entity["props"]): void {
-  if (typeof props.cpuUtil === "number") state.cpuUtil = props.cpuUtil;
-  if (typeof props.bmcVersion === "string") state.bmcVersion = props.bmcVersion;
-  if (typeof props.biosVersion === "string") state.biosVersion = props.biosVersion;
-}
 
 function initial(kind: EntityKind, modelId: string | undefined, catalog: Catalog): EntityState {
   const model = modelId && catalog.has(modelId) ? catalog.get(modelId) : undefined;
   return FACTORIES[kind]?.(model) ?? ({ kind, health: "ok" } as EntityState);
-}
-
-/** A service starts where the blueprint's `service_on` links say: the active places run it, the standby ones wait. */
-function placeService(state: StateOf<"service">, id: string, index: BlueprintIndex): void {
-  for (const link of index.outgoing(id, "service_on")) {
-    (link.props.role === "standby" ? state.standby : state.runsOn).push(link.to);
-  }
 }
 
 export function initialState(index: BlueprintIndex, catalog: Catalog): WorldState {

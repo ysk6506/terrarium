@@ -15,6 +15,7 @@ import {
   reportedInletC,
   type WorldPort,
 } from "@terrarium/core/world";
+import { ACCEL_HANDLERS } from "./handlers-accel";
 import { APP_HANDLERS } from "./handlers-app";
 import { DB_HANDLERS } from "./handlers-db";
 import { K8S_HANDLERS } from "./handlers-k8s";
@@ -459,6 +460,7 @@ export const HANDLERS: Readonly<Record<string, Handler>> = {
   ...SDN_HANDLERS,
   ...K8S_HANDLERS,
   ...APP_HANDLERS,
+  ...ACCEL_HANDLERS,
   list_alarms: listAlarms,
   list_entities: listEntities,
   get_entity: getEntity,

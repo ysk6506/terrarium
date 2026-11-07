@@ -74,6 +74,7 @@ export const IAP_DRAFT: ServiceDraft = {
 export const MIDDLE_LAYERS: Layers = {
   network: "net-leaf-spine",
   compute: "cmp-virt-ha",
+  accel: "gpu-none",
   storage: "sto-shared",
   database: "db-primary-secondary",
   app: "app-lb-sticky",

@@ -4,6 +4,7 @@
  * honour yet is listed with `status: "planned"` and the reason, so people see it but cannot use it.
  */
 import type { EntityKind } from "@terrarium/core/world";
+import { RACK_CAP_FIELDS, SERVER_CAP_FIELDS } from "./blocks-accel";
 import { LAYER_CONDITION_FIELDS } from "./blocks-app";
 import { NET_BLOCK_SPECS } from "./blocks-net";
 import { SDN_CONDITION_FIELDS } from "./blocks-sdn";
@@ -405,6 +406,7 @@ export const CONDITION_FIELDS: Readonly<Record<EntityKind, Readonly<Record<strin
     coolantC: num("냉각수 온도", "°C"),
     bathC: num("액침 유체 온도", "°C"),
     rebootPeak: num("펌웨어 때문에 한꺼번에 재부팅한 서버 수(가장 많았을 때)", "대"),
+    ...RACK_CAP_FIELDS,
   },
   cdu: {
     health: HEALTH,
@@ -444,6 +446,7 @@ export const CONDITION_FIELDS: Readonly<Record<EntityKind, Readonly<Record<strin
     bmcVersion: version("BMC 펌웨어 버전"),
     biosVersion: version("BIOS 펌웨어 버전"),
     rebooting: bool("펌웨어 때문에 재부팅 중"),
+    ...SERVER_CAP_FIELDS,
   },
   switch: { health: HEALTH, powered: bool("전원 공급"), adminOn: bool("전원 켜짐") },
   storage: {
