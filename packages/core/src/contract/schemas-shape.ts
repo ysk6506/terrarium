@@ -46,6 +46,16 @@ const ServiceDraftSchema = z
               .trim()
               .regex(/^[a-z0-9][a-z0-9-]{0,39}$/)
               .optional(),
+            /** The workloads this one calls, by name (REQ-100). */
+            calls: z
+              .array(
+                z
+                  .string()
+                  .trim()
+                  .regex(/^[a-z0-9][a-z0-9-]{0,39}$/),
+              )
+              .max(8)
+              .optional(),
           })
           .strict(),
       )
@@ -72,6 +82,8 @@ const ServiceDraftSchema = z
       )
       .max(6),
     workload: WorkloadSchema,
+    /** The services this one calls, by key (REQ-100): an optional line of the "+ 서비스 더하기" form. */
+    calls: z.array(IdSchema).max(11).optional(),
     /** Its own choices for the four layers a service chooses (ADR-0108 item 5); absent: the world's shape. */
     layers: z
       .object(Object.fromEntries(SERVICE_LAYERS.map((l) => [l, z.string().max(40)])))

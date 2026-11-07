@@ -2,7 +2,7 @@
 title: 툴 범위, 에스컬레이션, 절차서 — 실험 설계자가 정하는 세 가지 변수
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/tools/docs.ts
   - packages/core/src/tools/runbook.ts
@@ -13,12 +13,12 @@ covers:
   - packages/core/src/session/tool-pick.ts
   - apps/server/src/runtime/escalations.ts
 verification_log:
-  - "2026-11-06: o1·o2 합치기"
   - "2026-11-06: 툴 40개와 고장 44가지의 필요한 툴 표를 catalog와 FAULT_TOOLS에 맞췄다 (REQ-095)"
   - "2026-11-06: 저장해 두기가 서버 보관으로 바뀐 것(툴 묶음·절차서·지시문)을 적고 정직한 한계를 고쳤다 (ADR-0112)"
   - "2026-11-06: run_command의 툴 설명(tools/docs.ts)이 깊은 OS 흉내로 바뀐 것을 확인했다. 표의 필요한 툴은 그대로다 (REQ-098)"
   - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
-covers_hash: f248e5bbfa504c37
+  - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
+covers_hash: 92ac8494f6b6c75c
 ---
 # 툴 범위, 에스컬레이션, 절차서 (REQ-080~082, ADR-0087, ADR-0105)
 
@@ -34,7 +34,7 @@ covers_hash: f248e5bbfa504c37
 
 ### 영역 카드와 현실 수준 꼬리표
 
-툴 58개는 일곱 영역 카드에 나뉜다(`TOOL_DOCS`의 `area`). 카드는 접혀 있고 펼치면 세부 툴이 나온다. 맨 위에 검색 한 칸이 있다(툴 이름, 제목, 영역, 흔함·드묾·없음으로 찾는다).
+툴 66개는 일곱 영역 카드에 나뉜다(`TOOL_DOCS`의 `area`). 카드는 접혀 있고 펼치면 세부 툴이 나온다. 맨 위에 검색 한 칸이 있다(툴 이름, 제목, 영역, 흔함·드묾·없음으로 찾는다).
 
 | 영역 | 툴 |
 |---|---|
@@ -185,6 +185,11 @@ covers_hash: f248e5bbfa504c37
 | 파드 CrashLoopBackOff (`k8s_pod_crashloop`) | 고쳐요 | `kubectl_rollout_restart` |
 | 자원 부족 (`k8s_resource_exhausted`) | 피해를 줄여요 | `kubectl_scale` |
 | kubelet 디스크 압박 (`k8s_disk_pressure`) | 고쳐요 | `run_command` (디스크 비우기) |
+| 백엔드 플래핑 (`lb_backend_flapping`) | 피해를 줄여요 | `lb_drain` |
+| 세션 저장소 다운 (`session_store_down`), 사이드카 죽음 (`sidecar_crash`), 메시 컨트롤 플레인 다운 (`mesh_control_down`) | 고쳐요 | `run_command` (redis·envoy·istiod 다시 시작) |
+| 서킷 브레이커 굳음 (`circuit_breaker_stuck_open`) | 고쳐요 | `breaker_reset` |
+| 재시도 폭주 (`retry_storm`) | 고쳐요 | `mesh_rollback` |
+| 리전 다운 (`region_down`), 복제 지연 (`replication_lag_high`) | 피해를 줄여요 | `region_failover` |
 | 포트 VLAN 오설정 (`port_vlan_mismatch`) | 고쳐요 | `network_cli`, `eapi_request`, `nxapi_request` |
 | 포트 꺼짐 (`port_shutdown`) | 고쳐요 | `network_cli`, `eapi_request`, `nxapi_request`, `snmp_request` |
 | VLAN 인터페이스 꺼짐 (`svi_shutdown`) | 고쳐요 | `network_cli`, `eapi_request`, `nxapi_request` |

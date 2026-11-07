@@ -8,6 +8,7 @@
  * truth; tests/spec/controllability.test.ts checks every row against them and drives each row with a real tool call.
  */
 import type { EntityKind, FaultType, WorldCommand } from "@terrarium/core/world";
+import { APP_CONTROL_ROWS } from "./controls-app";
 import { K8S_CONTROL_ROWS } from "./controls-k8s";
 import { SDN_CONTROL_ROWS } from "./controls-sdn";
 import type { ActionKind } from "./model";
@@ -312,6 +313,7 @@ export const CONTROL_ROWS: readonly ControlRow[] = [
   },
   ...SDN_CONTROL_ROWS,
   ...K8S_CONTROL_ROWS,
+  ...APP_CONTROL_ROWS,
   {
     id: "outdoor.set",
     label: "외기 온도",
@@ -425,5 +427,13 @@ export const FAULT_RESPONSES: Readonly<Record<FaultType, FaultResponse>> = {
   k8s_resource_exhausted: { remedy: "mitigate", via: ["k8s.scale"] },
   k8s_image_pull_failure: { remedy: "diagnose", via: [] },
   k8s_disk_pressure: { remedy: "fix", via: ["host.disk"] },
+  lb_backend_flapping: { remedy: "mitigate", via: ["lb.drain"] },
+  session_store_down: { remedy: "fix", via: ["host.app_process"] },
+  circuit_breaker_stuck_open: { remedy: "fix", via: ["circuit.reset"] },
+  retry_storm: { remedy: "fix", via: ["mesh.rollback"] },
+  sidecar_crash: { remedy: "fix", via: ["host.app_process"] },
+  mesh_control_down: { remedy: "fix", via: ["host.app_process"] },
+  region_down: { remedy: "mitigate", via: ["region.failover"] },
+  replication_lag_high: { remedy: "mitigate", via: ["region.failover"] },
   k8s_cni_failure: { remedy: "fix", via: ["host.kubelet"] },
 };

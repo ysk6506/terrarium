@@ -2,13 +2,13 @@
 title: 문서 색인
 kind: reference
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 verification_log:
-  - "2026-11-06: container-layer.md와 ADR-0114 링크를 더했다"
   - "2026-11-06: LLM API 등록"
   - "2026-11-06: LLM API 등록"
   - "2026-11-06: o4 합치기 (LLM API 등록)"
   - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
+  - "2026-11-07: REQ-100 애플리케이션 층: 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
 ---
 # 문서 색인
 
@@ -37,6 +37,7 @@ verification_log:
 - [데이터베이스 층과 스토리지 HA 층 — 서비스가 기대는 두 겹, 고장 여덟, 자동 페일오버](design-docs/db-storage-layers.md)
 - [컨테이너 층 — 쿠버네티스 클러스터·노드·파드, 고장 여덟, 클러스터가 알아서 하는 일, DRS](design-docs/container-layer.md)
 - [SDN 오버레이와 클라우드 네이티브 네트워크 층 — 리프-스파인 위의 가상 네트워크, 고장 일곱, 컨트롤러 전환](design-docs/sdn-network-layer.md)
+- [애플리케이션 층 — 서비스 호출 그래프, 로드 밸런서·세션·브레이커·메시·리전, 고장 여덟](design-docs/application-layer.md)
 - [모델 등록 — LLM API를 워크스페이스에 등록하고 연결 확인까지 (REQ-099)](design-docs/model-registration.md)
 - [서버 운영 — 설치와 사내 시스템 연결](design-docs/operations.md)
 - [규모 키우기 — 스케일 업과 스케일 아웃](design-docs/scaling.md)
@@ -174,6 +175,7 @@ verification_log:
 - [0120 컨테이너·SDN 층을 깊은 OS 흉내 위에 얹으면서 노드 디스크 압박 시험의 지우는 길을 고친다](design-docs/adr/0120-container-layer-on-deep-os.md)
 - [0118 깊은 OS 흉내를 구현하면서 시험 다섯 곳의 기대값을 고치고 시험을 더한다](design-docs/adr/0118-deep-os-tests.md)
 - [0119 LLM API 등록 — 워크스페이스 단위 모델 연결, 키는 서버에만, 얇은 클라이언트](design-docs/adr/0119-llm-api-registration.md)
+- [0121 애플리케이션 층을 코어 모델로 올리고 서비스 호출 그래프를 넣는다](design-docs/adr/0121-application-layer-and-calls.md)
 - [0116 진짜 호스트 섞기 (폐기, 0117로 대체)](design-docs/adr/0116-real-hosts-in-the-world.md)
 - [0108 서비스부터는 IAP 하나로 시작하고, 사다리의 칩마다 그림·설명 카드가 있다 (0107 보정)](design-docs/adr/0108-world-entry-iap-and-chip-cards.md)
 - [0107 세계 만들기 입구를 둘로 가르고, 서비스부터는 층마다 HA 사다리에서 고른다 — 모르는 층은 알아서](design-docs/adr/0107-world-entry-two-doors-ha-ladders.md)

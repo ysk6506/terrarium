@@ -6,6 +6,8 @@
 export {
   BOARD_W,
   type Column,
+  fitHead,
+  headWidth,
   type Layout,
   layout,
   type Pipe,

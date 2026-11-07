@@ -11,6 +11,7 @@
 import { RACK_CRITICAL_C } from "@terrarium/core/physics";
 import { type BlueprintIndex, type LinkKind, serviceDef } from "@terrarium/core/world";
 import { type Causes, causesOf } from "./causes";
+import { callsRollUp } from "./impact-app";
 import { k8sRollUp } from "./impact-k8s";
 import { rackServers } from "./shape";
 import type { TopologySource } from "./types";
@@ -359,6 +360,7 @@ export function impactOf(source: TopologySource): Impact {
   const start = startingDown(source, causes);
   const { down, affected } = spread(source, start);
   leaningServices(source, affected);
+  callsRollUp(source, affected);
   const reaching = new Set([...causes.faulted, ...causes.alarmed, ...affected, ...down]);
   const reach = reachOf(source, reaching);
   const severe = severity(source, reach, down);

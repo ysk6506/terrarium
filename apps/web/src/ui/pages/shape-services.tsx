@@ -158,14 +158,45 @@ export function ServiceCard({
   );
 }
 
+/** "이 서비스가 부르는 서비스": the services already on the screen, one box each (REQ-100). */
+function CallsLine({
+  others,
+  picked,
+  onToggle,
+}: {
+  readonly others: readonly ServiceDraft[];
+  readonly picked: readonly string[];
+  readonly onToggle: (key: string) => void;
+}) {
+  if (others.length === 0) return null;
+  return (
+    <fieldset className="we-calls">
+      <legend>이 서비스가 부르는 서비스 (없으면 비워 둬요)</legend>
+      {others.map((o) => (
+        <label key={o.key} className="we-call">
+          <input
+            type="checkbox"
+            checked={picked.includes(o.key)}
+            onChange={() => onToggle(o.key)}
+          />{" "}
+          {o.name}
+        </label>
+      ))}
+    </fieldset>
+  );
+}
+
 function AddService({
   n,
+  others,
   onAdd,
 }: {
   readonly n: number;
+  readonly others: readonly ServiceDraft[];
   readonly onAdd: (s: ServiceDraft) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [calls, setCalls] = useState<readonly string[]>([]);
   const [name, setName] = useState("");
   const [gives, setGives] = useState("");
   const [stops, setStops] = useState("");
@@ -185,9 +216,15 @@ function AddService({
         e.preventDefault();
         if (!ready) return;
         onAdd(
-          customService(n, { name: name.trim(), gives: gives.trim(), stopsText: stops.trim() }),
+          customService(n, {
+            name: name.trim(),
+            gives: gives.trim(),
+            stopsText: stops.trim(),
+            calls,
+          }),
         );
         setOpen(false);
+        setCalls([]);
         setName("");
         setGives("");
         setStops("");
@@ -196,6 +233,13 @@ function AddService({
       <TextField label="이름" value={name} onChange={setName} />
       <TextField label="무엇을 주나" value={gives} onChange={setGives} />
       <TextField label="멈추면 어떻게 되나" value={stops} onChange={setStops} />
+      <CallsLine
+        others={others}
+        picked={calls}
+        onToggle={(key) =>
+          setCalls((now) => (now.includes(key) ? now.filter((k) => k !== key) : [...now, key]))
+        }
+      />
       <div className="row">
         <Button kind="primary" type="submit" disabled={!ready} why="이름을 적어 주세요">
           서비스 더하기
@@ -206,6 +250,19 @@ function AddService({
       </div>
     </form>
   );
+}
+
+/** The list without service `i`, and without the calls that led to it. */
+function without(list: readonly ServiceDraft[], i: number): ServiceDraft[] {
+  const gone = list[i]?.key;
+  return list
+    .filter((_, k) => k !== i)
+    .map((s) => {
+      if (!s.calls?.includes(gone as string)) return s;
+      const { calls, ...rest } = s;
+      const kept = calls.filter((c) => c !== gone);
+      return kept.length > 0 ? { ...rest, calls: kept } : rest;
+    });
 }
 
 export function ServicesStep({
@@ -234,15 +291,17 @@ export function ServicesStep({
           draft={s}
           first={i === 0}
           onChange={(next) => change(i, next)}
-          {...(services.length > 1
-            ? { onRemove: () => onChange(services.filter((_, k) => k !== i)) }
-            : {})}
+          {...(services.length > 1 ? { onRemove: () => onChange(without(services, i)) } : {})}
         />
       ))}
       <p className="we-foot">
         시나리오 <b>{scenarios}개</b>가 따라와요 · 멈추면 시간당 피해는 3단계에서 적어요
       </p>
-      <AddService n={services.length + 1} onAdd={(s) => onChange([...services, s])} />
+      <AddService
+        n={services.length + 1}
+        others={services}
+        onAdd={(s) => onChange([...services, s])}
+      />
     </>
   );
 }

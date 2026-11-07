@@ -38,6 +38,13 @@ export const KIND_LABELS: Readonly<Record<EntityKind, string>> = {
   k8s_cluster: "쿠버네티스 클러스터",
   k8s_node: "쿠버네티스 노드",
   k8s_workload: "워크로드",
+  app_instance: "애플리케이션 인스턴스",
+  load_balancer: "로드 밸런서",
+  session_store: "세션 저장소",
+  circuit_breaker: "서킷 브레이커",
+  mesh_sidecar: "메시 사이드카",
+  mesh_control: "메시 컨트롤 플레인",
+  region: "리전",
 };
 
 export const LINK_LABELS: Readonly<Record<LinkKind, string>> = {
@@ -55,6 +62,7 @@ export const LINK_LABELS: Readonly<Record<LinkKind, string>> = {
   hosted_on: "올라간 곳",
   controls: "관리하는 스위치",
   applies_to: "적용 대상",
+  calls: "부르는 서비스",
 };
 
 /** "냉방기·분전반" style list of kind labels; "link" (a network link target) reads as "네트워크 링크". */

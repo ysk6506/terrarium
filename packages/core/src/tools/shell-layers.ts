@@ -8,9 +8,10 @@ import {
   type ShellCmdResult as R,
   registerShellCommand,
 } from "@terrarium/core/world";
+import { istioctl } from "./shell-app";
 import { crictl, kubectl, type ShellOut } from "./shell-k8s";
 
-const NOT_YET = /^이 (kubectl|crictl) 명령은 아직 못 해요/;
+const NOT_YET = /^이 (kubectl|crictl|istioctl) 명령은 아직 못 해요/;
 
 /** The answer of a layer command in the shape of the shell; a thing it cannot do is listed as outside. */
 function asR(c: Cmd, out: ShellOut): R {
@@ -32,3 +33,4 @@ function asR(c: Cmd, out: ShellOut): R {
 
 registerShellCommand("kubectl", (c) => asR(c, kubectl(c.world, c.h.id, [c.name, ...c.args])));
 registerShellCommand("crictl", (c) => asR(c, crictl(c.world, c.h.id, [c.name, ...c.args])));
+registerShellCommand("istioctl", (c) => asR(c, istioctl(c.world, [c.name, ...c.args].slice(1))));

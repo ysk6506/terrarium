@@ -2,7 +2,7 @@
 title: 세계 소스 — 생성과 가져오기
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/sources/assembly.ts
   - packages/core/src/sources/assembly-site.ts
@@ -18,13 +18,13 @@ covers:
   - packages/core/src/sources/worldgen/shaped-plan.ts
   - packages/core/src/sources/realimport/mapping.ts
   - packages/core/src/sources/realimport/synthesize.ts
-covers_hash: 67b7477e47893f9e
+covers_hash: 483cc09ee9b83d51
 verification_log:
-  - "2026-11-06: 2c 보완 합치기"
   - "2026-11-06: 오버레이 생성 한 문장을 shaped-sdn.ts와 대조해 더했다 (REQ-097)"
   - "2026-11-06: REQ-096: worldgen의 shaped-k8s.ts 추가가 소스 문서의 말(생성기 입력·출력)을 바꾸지 않음을 확인했다. 컨테이너 세계 생성은 container-layer.md에 있다"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
+  - "2026-11-07: REQ-100 애플리케이션 층이 덮는 코드가 바뀐 것을 확인했고 이 문서의 내용은 그대로 맞다"
 ---
 # 세계 소스 (REQ-009~013, REQ-035, REQ-043~049)
 

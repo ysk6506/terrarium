@@ -2,7 +2,7 @@
 title: 컨테이너 층 — 쿠버네티스 클러스터, 노드, 파드, 그리고 클러스터가 알아서 하는 일
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/world/k8s.ts
   - packages/core/src/world/k8s-sched.ts
@@ -21,12 +21,13 @@ covers:
   - packages/core/src/sources/worldgen/shaped-k8s.ts
   - packages/core/src/topology/impact-k8s.ts
   - packages/core/src/world/ladder.ts
-covers_hash: 3aef8fd1c24ce3c5
+covers_hash: 53f68f59cbdffa70
 verification_log:
   - "2026-11-06: 새 문서: 컨테이너 층의 개체·상태, 서비스 건강 규칙, 고장 여덟, 툴 아홉, 클러스터가 알아서 하는 일, DRS, 사다리 연결, 시나리오 다섯을 코드와 대조해 적었다 (REQ-096)"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
   - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
+  - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
 ---
 # 컨테이너 층 (REQ-096, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0114](adr/0114-container-layer-amend-tests.md))
 
@@ -45,7 +46,7 @@ IAP(연수 님 팀의 플랫폼)가 바로 "VM 위에 직접 만든 쿠버네티
 - **롤링 업데이트는 하나씩 겹쳐 띄우는 것뿐이다.** 새 파드를 먼저 띄우고 뜨면 옛 파드를 지운다. 최대 불가·서지 설정은 없다.
 - **디스크 압박은 사람이 uncordon 해야 풀린다.** 진짜는 압박이 풀리면 테인트가 알아서 빠지지만, 여기서는 압박으로 쫓아낸 노드를 스케줄이 막힌 채로 두어 "디스크를 비우고 uncordon"이라는 두 단계를 시나리오로 잴 수 있게 했다.
 - **CNI·이미지 풀은 상태 하나다.** 네트워크 플러그인은 노드마다 켜짐·꺼짐, 이미지 풀 실패는 클러스터마다 켜짐·꺼짐이다. 어떤 파드끼리 통신이 끊기는지는 가르지 않고, 그 노드의 파드가 모두 제 몫을 못 한다고 센다.
-- **서비스 사이의 호출 관계는 없다.** 서비스는 자기 워크로드만 본다.
+- **워크로드끼리의 호출 건강은 컨테이너 층이 읽지 않는다.** 서비스 사이의 호출 관계(`calls`)는 [애플리케이션 층](application-layer.md)이 준다. 워크로드끼리 잇는 `calls`는 그림과 영향 범위만 넓힌다.
 
 ## 개체와 상태
 
@@ -181,5 +182,5 @@ IAP 기본 카드(`shaped-defaults.ts`)의 컴퓨트 기본은 `cmp-containers`�
 
 - 스케줄 어피니티, 테인트와 톨러레이션, 우선순위와 선점, 자원 한도(limits)와 OOM은 없다.
 - HPA(자동 스케일)와 서버리스는 없다. 멀티클러스터는 "클러스터 둘이 서로를 받친다"만 흉내 낸다.
-- 서비스 메시와 서비스 사이의 호출, 인그레스, 영구 볼륨은 없다.
+- 서비스 메시와 서비스 사이의 호출은 [애플리케이션 층](application-layer.md), 인그레스는 [SDN 층](sdn-network-layer.md)의 일이다. 영구 볼륨은 없다.
 - DRS는 CPU 부하만 보고 메모리나 스토리지 부하, 호스트 유지보수 모드는 보지 않는다.

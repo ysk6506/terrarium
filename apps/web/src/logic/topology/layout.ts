@@ -6,7 +6,7 @@
  * that lean on it.
  */
 import type { Board, Edge, Tile } from "@terrarium/core/topology";
-import { nounOf, num } from "@terrarium/core/topology";
+import { nounOf, num, stageHead } from "@terrarium/core/topology";
 
 /** The picture is this wide; its height follows the tallest column. */
 export const BOARD_W = 1100;
@@ -41,7 +41,54 @@ export interface Pipe {
 
 export interface Column {
   readonly x: number;
+  /** The stage's full label (what a screen reader and the tooltip say). */
   readonly label: string;
+  /** The head as drawn: the short word, broken into lines that fit the room between this column and its neighbours. */
+  readonly lines: readonly string[];
+  /** Font size of the head in the picture's units. */
+  readonly size: number;
+}
+
+/** The sizes a column head may be drawn in, the largest first. */
+const HEAD_SIZES = [12, 11, 10, 9] as const;
+/** A Korean syllable is as wide as the font is tall; a letter or digit about 0.6 of it; the spacing adds a little. */
+export const headWidth = (text: string, size: number): number =>
+  [...text].reduce((w, ch) => w + (ch.charCodeAt(0) > 0x2e80 ? size * 1.03 : size * 0.62), 0);
+const MAX_LINES = 3;
+/** Air kept between two heads. */
+const HEAD_GAP = 4;
+
+/** Break `text` into lines no wider than `room`: at spaces, and inside a word only when the word alone is too wide. */
+function wrapHead(text: string, room: number, size: number): string[] | undefined {
+  const fits = (t: string) => headWidth(t, size) <= room;
+  const lines: string[] = [];
+  let line = "";
+  for (const word of text.split(" ")) {
+    if (line !== "" && fits(`${line} ${word}`)) {
+      line = `${line} ${word}`;
+      continue;
+    }
+    if (line !== "") lines.push(line);
+    line = "";
+    for (const ch of word) {
+      if (line !== "" && !fits(line + ch)) {
+        lines.push(line);
+        line = ch;
+      } else line += ch;
+    }
+  }
+  if (line !== "") lines.push(line);
+  return lines.length <= MAX_LINES && lines.every(fits) ? lines : undefined;
+}
+
+/** The head of a column: the largest size at which it fits in the room, in as few lines as it takes. */
+export function fitHead(text: string, room: number): { lines: string[]; size: number } {
+  for (const size of HEAD_SIZES) {
+    const lines = wrapHead(text, room, size);
+    if (lines) return { lines, size };
+  }
+  const size = HEAD_SIZES[HEAD_SIZES.length - 1] ?? 9;
+  return { lines: [...text].slice(0, Math.max(1, Math.floor(room / size))), size };
 }
 
 export interface Layout {
@@ -57,6 +104,10 @@ export const pipeWidth = (count: number): number => Math.min(10, 2 + Math.log2(c
 
 const columnX = (stage: number, stages: number): number =>
   stages === 1 ? BOARD_W / 2 : MARGIN_X + (stage * (BOARD_W - 2 * MARGIN_X)) / (stages - 1);
+
+/** The room a head has: the space between its column and the next, less the air kept between two heads. */
+const headRoom = (stage: number, stages: number): number =>
+  stages === 1 ? BOARD_W - 2 * MARGIN_X : (BOARD_W - 2 * MARGIN_X) / (stages - 1) - HEAD_GAP;
 
 const WORST: Record<Tile["state"], number> = { fault: 0, alarm: 1, impact: 3, ok: 4 };
 
@@ -121,7 +172,14 @@ export function layout(board: Board): Layout {
   return {
     width: BOARD_W,
     height: TOP + tallest * ROW + BOTTOM,
-    columns: board.stages.map((s, i) => ({ x: columnX(i, board.stages.length), label: s.label })),
+    columns: board.stages.map((s, i) => {
+      const room = headRoom(i, board.stages.length);
+      return {
+        x: columnX(i, board.stages.length),
+        label: s.label,
+        ...(({ lines, size }) => ({ lines, size }))(fitHead(stageHead(s), room)),
+      };
+    }),
     tiles,
     pipes,
   };

@@ -2,7 +2,7 @@
 title: 세계 만들기 입구와 서비스부터 (REQ-094)
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/world/ladder.ts
   - packages/core/src/sources/worldgen/shaped-db.ts
@@ -21,13 +21,13 @@ covers:
   - apps/web/src/ui/pages/shape-same.tsx
   - apps/web/src/ui/pages/shape-flow.ts
   - apps/web/src/ui/builder/StageCards.tsx
-covers_hash: af9f568c58e4fd11
+covers_hash: 0e2f2c5ea1f50695
 verification_log:
-  - "2026-11-06: 2c 보완 합치기"
   - "2026-11-06: 점선 열둘과 SDN 칩의 build.overlay·생성 규칙을 ladder.ts·shaped-sdn.ts와 대조해 고쳤다 (REQ-097)"
   - "2026-11-06: REQ-096: 점선 11개, 컴퓨트 세 칩의 build(drs·k8s)와 IAP 기본 카드를 ladder.ts·shaped-k8s.ts·shaped-defaults.ts와 대조해 적었다"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
+  - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
 ---
 # 세계 만들기 입구와 서비스부터 (REQ-094, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md), [ADR-0108](adr/0108-world-entry-iap-and-chip-cards.md), [ADR-0109](adr/0109-world-entry-amend-tests.md))
 
@@ -50,7 +50,7 @@ verification_log:
 선택지는 마흔넷이다(ADR-0107 결정 3의 목록을 세면 6·6·6·7·6·4·4·5. ADR-0108의 "45"는 한 개 더 센 것).
 - **코어**(`world/ladder.ts`, `LADDER`): 선택지마다 `id`, 층, `modeled`(코어가 흉내 낼 수 있나 — 아니면 점선), `buildsAs`(점선이 짓는 가까운 칸), `build`(세계를 어떻게 바꾸나: 스파인 수·오버레이(컨트롤러·방화벽·클라우드 네이티브)·베어메탈·호스트에 담는 노드 수·핫 스페어·공유 스토리지·전원 줄 수·냉방 이중화·컨테인먼트·서버룸·건물 수), `stops`/`slows`(이 구조가 멈추게·느리게 하는 고장과 사람의 실수), `costM`.
 - **화면**(`logic/world-shape/cards-*.ts`, `ladders.ts`): 선택지마다 `ChipCard` — 이름, 문단, 잃어도 되는 것, 잃으면 안 되는 것, 생기는 고장, 비용, 한 줄 결과, 그림. 그림은 마크업이 아니라 데이터(`Diagram`: 상자 줄들, 줄 사이 선, 끊기는 상자 하나)이고 `ui/pages/chip-art.tsx`가 토큰 색 SVG로 그린다(`aria-label`은 `alt`). 시험이 두 목록의 순서와 개수가 같은지, 점선이 ADR-0107 결정 5의 목록 그대로인지 지킨다.
-- 점선(9개): 지역 복제, 분산 SQL·합의와 클라우드 관리형 멀티 AZ, 무상태 이상 애플리케이션(4), DR 사이트·멀티 사이트. 고를 수 있고 카드가 "아직 흉내 낼 수 없어요"라고 말하며, 고장과 시나리오를 더하지 않는다. 세계는 `buildsAs` 모양으로 짓는다. 처음에는 21개였고, 2e(REQ-095, [ADR-0111](adr/0111-db-storage-layers-amend-tests.md))에서 데이터베이스 다섯 칩과 듀얼 컨트롤러·분산 스토리지가 실선이 되었다. 그 일곱 칩의 `build`는 풀(`pool`)과 클러스터(`database`)를 말하고, 세계 생성이 [데이터베이스 층과 스토리지 HA 층](db-storage-layers.md)의 규칙대로 깐다. 이 칩들의 카드 "생기는 고장"은 칩의 `stops`·`slows`를 고장 이름으로 풀어 만든다. 3차(REQ-096, [ADR-0114](adr/0114-container-layer-amend-tests.md))에서 DRS·컨테이너 오케스트레이션·멀티클러스터가 실선이 되었다: `build`가 `drs`(세계의 가상화 클러스터가 VM을 알아서 옮긴다)와 `k8s`(서비스마다 쿠버네티스 클러스터 하나 또는 둘)를 말하고, 세계 생성이 [컨테이너 층](container-layer.md)의 규칙대로 깐다. IAP 기본 카드(`IAP_LAYERS`)의 컴퓨트 기본은 컨테이너 오케스트레이션이다. 이어서 SDN 오버레이와 클라우드 네이티브(REQ-097, [ADR-0115](adr/0115-sdn-network-layer-amend-tests.md))도 실선이 되었다: `build.overlay`가 컨트롤러 수·가상 방화벽·클라우드 네이티브 여부를 말하고, `sources/worldgen/shaped-sdn.ts`가 리프-스파인 위에 컨트롤러 둘, 리프마다 VTEP, 서비스마다 세그먼트·가상 방화벽(클라우드 네이티브는 노드마다 CNI, 서비스마다 정책, 요청 서비스마다 인그레스)을 깐다. 규칙은 [SDN 오버레이와 클라우드 네이티브 네트워크 층](sdn-network-layer.md#사다리와-세계-생성).
+- 점선(5개): 지역 복제, 분산 SQL·합의와 클라우드 관리형 멀티 AZ, DR 사이트·멀티 사이트. 고를 수 있고 카드가 "아직 흉내 낼 수 없어요"라고 말하며, 고장과 시나리오를 더하지 않는다. 세계는 `buildsAs` 모양으로 짓는다. 처음에는 21개였고, 2e(REQ-095, [ADR-0111](adr/0111-db-storage-layers-amend-tests.md))에서 데이터베이스 다섯 칩과 듀얼 컨트롤러·분산 스토리지가 실선이 되었다. 그 일곱 칩의 `build`는 풀(`pool`)과 클러스터(`database`)를 말하고, 세계 생성이 [데이터베이스 층과 스토리지 HA 층](db-storage-layers.md)의 규칙대로 깐다. 이 칩들의 카드 "생기는 고장"은 칩의 `stops`·`slows`를 고장 이름으로 풀어 만든다. 3차(REQ-096, [ADR-0114](adr/0114-container-layer-amend-tests.md))에서 DRS·컨테이너 오케스트레이션·멀티클러스터가 실선이 되었다: `build`가 `drs`(세계의 가상화 클러스터가 VM을 알아서 옮긴다)와 `k8s`(서비스마다 쿠버네티스 클러스터 하나 또는 둘)를 말하고, 세계 생성이 [컨테이너 층](container-layer.md)의 규칙대로 깐다. IAP 기본 카드(`IAP_LAYERS`)의 컴퓨트 기본은 컨테이너 오케스트레이션이다. 이어서 SDN 오버레이와 클라우드 네이티브(REQ-097, [ADR-0115](adr/0115-sdn-network-layer-amend-tests.md))도 실선이 되었다: `build.overlay`가 컨트롤러 수·가상 방화벽·클라우드 네이티브 여부를 말하고, `sources/worldgen/shaped-sdn.ts`가 리프-스파인 위에 컨트롤러 둘, 리프마다 VTEP, 서비스마다 세그먼트·가상 방화벽(클라우드 네이티브는 노드마다 CNI, 서비스마다 정책, 요청 서비스마다 인그레스)을 깐다. 규칙은 [SDN 오버레이와 클라우드 네이티브 네트워크 층](sdn-network-layer.md#사다리와-세계-생성). 마지막으로 애플리케이션 층(REQ-100, [ADR-0121](adr/0121-application-layer-and-calls.md))의 앱 칩 넷(상태 없는 앱·마이크로서비스·서비스 메시·멀티 리전)이 실선이 되었다: `build.app`이 외부 세션 저장소·서킷 브레이커·메시·리전 수를 말하고, `sources/worldgen/shaped-app.ts`가 [애플리케이션 층](application-layer.md#사다리와-세계-생성)의 규칙대로 깐다. "+ 서비스 더하기" 폼에는 선택 한 줄 "이 서비스가 부르는 서비스"(이미 있는 서비스 중 여럿 고르기)가 있고, 고른 서비스가 `calls` 링크가 된다. IAP 기본 카드는 오케스트레이터 → 도메인 에이전트 → 토폴로지 그래프 DB, 오케스트레이터 → GoClaw 코어를 기본으로 부른다.
 
 ### 알아서
 - `resolveLayers(services, manual)`: `manual`에 있는 층은 사람이 고른 것 그대로, 나머지는 알아서. 컴퓨트 → 네트워크 → 스토리지 → 데이터베이스 → 애플리케이션 → 전원 → 냉방 → 사이트 순으로, 서비스(노드 수, 멈출 때 가장 큰 시간당 피해, 종류)와 이미 정한 층에서 한 층씩 고른다. 예: 노드가 셋 이상이면 가상화 클러스터, 가상화면 공유 스토리지(VM을 옮기려면 있어야 해서)와 리프-스파인, 베어메탈이면 RAID + 백업과 3티어, 피해가 시간당 500만 원 이상이면 2N UPS + 발전기, 2,000만 원 이상이면 서버룸 둘.

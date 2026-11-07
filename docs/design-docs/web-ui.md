@@ -2,7 +2,7 @@
 title: 웹 화면 — 디자인 원칙과 구조
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - apps/web/src/logic/world3d/crew.ts
   - apps/web/src/logic/world3d/crew-plan.ts
@@ -72,13 +72,13 @@ covers:
   - apps/web/src/ui/replay/FramesBar.tsx
   - apps/web/src/ui/replay/useClock.ts
   - apps/web/src/logic/topology/words.ts
-covers_hash: 8385817d32f41c3a
+covers_hash: 5d84bca3805faecc
 verification_log:
-  - "2026-11-06: o1·o2 합치기"
   - "2026-11-06: 2c 보완 합치기"
   - "2026-11-06: LLM API 등록"
   - "2026-11-06: LLM API 등록"
   - "2026-11-06: o4 합치기 (LLM API 등록)"
+  - "2026-11-07: REQ-100 애플리케이션 층이 덮는 코드가 바뀐 것을 확인했고 이 문서의 내용은 그대로 맞다"
 ---
 # 웹 화면 (REQ-006, REQ-030~041)
 

@@ -2,13 +2,13 @@
 title: 구현 계획 — 테라리움
 kind: plan
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 verification_log:
-  - "2026-11-06: o4 합치기 (LLM API 등록)"
   - "2026-11-06: 12g 두 줄에 2c·2d 보완을 적었다"
   - "2026-11-06: 2c 보완 합치기"
   - "2026-11-06: 12n 깊은 OS 흉내를 구현 끝으로 적었다 (REQ-098)"
   - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
+  - "2026-11-07: REQ-100 애플리케이션 층: 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
 ---
 # 구현 계획
 
@@ -52,6 +52,7 @@ verification_log:
 | 12j | 연결 화면과 시나리오 편집기 다시 (내 연결 먼저·하네스 종류 카드·접힌 기준 에이전트·주소 종류, 실험 2단계 MCP 안내와 슬롯 확인, 편집기 질문 셋 팔레트·선택 블록 뒤에 끼우기·Ctrl+C/V/D/Z/Y·Delete·문장형 채점표) | REQ-034, 051, 071, 079 | 구현 끝(UX 측정은 4차 뒤 한 번) |
 | 12m | LLM API 등록 (설정의 "모델" 구역: LiteLLM·OpenAI 호환·Claude 호환 등록, 카드·기본 모델·"연결 확인"(목록 → 짧은 호출), 키는 서버 비밀 상자에 봉인하고 마지막 네 글자만, 얇은 `LlmClient`와 어댑터 둘. 아직 쓰는 곳은 없다) | REQ-099 | 구현 끝 |
 | 12n | 깊은 OS 흉내 (호스트마다 가상 파일시스템 `/proc`·`/var/log`·`/etc`·`/tmp`·`/var/lib`와 프로세스 표와 유닛·저널을 한 사건 목록에서 만듦, `run_command`는 파이프·리다이렉트·`grep`·`awk`·`sed` 같은 텍스트 명령을 실제 의미대로 돌리고 모르는 명령은 `command not found`, 쓰는 명령은 `host.act`로 열 두 가지, OS 고장 열 가지가 파일·프로세스로 드러남, 변별력 점검에 "흔한 명령만으로 원인에 닿는가", 실행 결과에 "흉내 밖 명령 n번", `kubectl`·`crictl`을 다는 `registerShellCommand`) | REQ-098 | 구현 끝 ([설명](../../design-docs/service-os-layer.md), [ADR-0117](../../design-docs/adr/0117-deep-os-simulation.md), [ADR-0118](../../design-docs/adr/0118-deep-os-tests.md)) |
+| 12o | 애플리케이션 층과 서비스 호출 그래프 (`calls` 링크와 건강 전파, 앱 개체 일곱, 고장 여덟, 툴 여덟, 셸 `curl -I`·`istioctl proxy-status`, 시나리오 일곱, 사다리의 앱 칩 넷 실선(점선 9에서 5), 칩 카드·IAP 기본 호출·"이 서비스가 부르는 서비스", 정책이 `calls`를 따라감, 토폴로지 호출 선과 머리글 겹침 고치기) | REQ-100 | 구현 끝 ([설명](../../design-docs/application-layer.md), [ADR-0121](../../design-docs/adr/0121-application-layer-and-calls.md)) |
 | 13 | **오픈 (프로덕션 레디)** — 여러 팀이 믿고 쓴다: 로그인, 운영, 접근성, 부하 | 아래 | 예정 |
 
 결정은 ADR에 있다. 이 계획에는 순서와 상태만 둔다.

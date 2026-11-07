@@ -43,6 +43,11 @@ export const EVENT_LABELS: Readonly<Record<Exclude<EventType, "note">, string>> 
   "k8s.cordon": "노드를 cordon·uncordon 한 적",
   "k8s.drain": "노드를 drain 한 적",
   "k8s.delete_pod": "파드를 지운 적",
+  "lb.drain": "백엔드를 로테이션에서 뺀 적",
+  "lb.enable": "백엔드를 로테이션에 되돌린 적",
+  "circuit.reset": "서킷 브레이커를 리셋한 적",
+  "mesh.rollback": "메시 설정을 되돌린 적",
+  "region.failover": "트래픽을 다른 리전으로 옮긴 적",
 };
 
 export const EVENT_TYPES = Object.keys(EVENT_LABELS) as (keyof typeof EVENT_LABELS)[];

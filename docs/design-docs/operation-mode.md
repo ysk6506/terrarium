@@ -2,7 +2,7 @@
 title: 운영 모드 — 끝이 없는 실험, 당겨서 보는 모니터링, 실시간과 빨리 감기
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/session/operation/config.ts
   - packages/core/src/session/operation/mtbf.ts
@@ -17,13 +17,13 @@ covers:
   - apps/server/src/runtime/dispatcher.ts
   - apps/server/src/runtime/hosts.ts
   - packages/core/src/session/operation/journal.ts
-covers_hash: 45eec0a645add5a8
+covers_hash: 106507366b52a3db
 verification_log:
-  - "2026-11-06: 재시작 뒤 재개(입력 기록·재생·link resumed)와 결과 상태 문구 절을 더하고 journal.ts, executor.ts, executor-operation.ts, dispatcher.ts, hosts.ts와 대조했다 (REQ-090, ADR-0112)"
   - "2026-11-06: MTBF 표의 새 줄 두 개를 mtbf.ts와 대조해 더했다 (REQ-097)"
   - "2026-11-06: REQ-096: mtbf.ts의 컨테이너 고장 여덟 행을 MTBF 표에 더했다"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
+  - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
 ---
 # 운영 모드 (REQ-090, [ADR-0094](adr/0094-operation-mode.md))
 
@@ -74,6 +74,10 @@ verification_log:
 | `k8s_node_notready`, `k8s_control_plane_down`, `k8s_disk_pressure`, `k8s_cni_failure` | 쿠버네티스 노드 | 1,500 / 4,000 / 2,000 / 3,000시간 |
 | `k8s_pod_crashloop` | 워크로드 | 900시간 |
 | `k8s_etcd_quorum_lost`, `k8s_resource_exhausted`, `k8s_image_pull_failure` | 쿠버네티스 클러스터 | 9,000 / 6,000 / 5,000시간 |
+| `lb_backend_flapping` / `session_store_down` / `circuit_breaker_stuck_open` | 앱 인스턴스 / 세션 저장소 / 서킷 브레이커 | 3,000 / 4,000 / 6,000시간 |
+| `retry_storm` / `mesh_control_down` | 메시 컨트롤 플레인 | 7,000 / 6,000시간 |
+| `sidecar_crash` | 사이드카 | 5,000시간 |
+| `region_down` / `replication_lag_high` | 리전 | 20,000 / 4,000시간 |
 
 표는 `operation/mtbf.ts`가 단일 출처이고 발생기와 시험이 이 값을 읽는다. 새 고장 종류를 더하면 표에도 줄을 더한다(그리고 `FAULT_TOOLS`와 `physics-golden.json`에도, 툴 추가 규칙대로).
 

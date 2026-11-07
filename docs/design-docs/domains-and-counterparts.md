@@ -2,7 +2,7 @@
 title: 도메인과 가상 담당자 — 내 도메인 밖의 고장은 넘기고, 기다리는 동안 다른 일을 한다
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/world/domains.ts
   - packages/core/src/world/lead-times.ts
@@ -19,13 +19,13 @@ covers:
   - apps/web/src/logic/handoffs.ts
   - apps/web/src/ui/pages/run-handoffs.tsx
   - apps/web/src/ui/pages/experiment-domains.tsx
-covers_hash: ff2ef943ca3ddb34
+covers_hash: 62c707e3c17241f5
 verification_log:
-  - "2026-11-06: 2e 합치기"
   - "2026-11-06: 네트워크 도메인의 툴 아홉과 고장을 TOOL_DOMAIN·FAULT_DOMAIN과 대조해 더했다 (REQ-097)"
   - "2026-11-06: REQ-096: 컨테이너 고장 여덟(모두 서비스/OS)과 툴 아홉을 domains.ts·tools/domains.ts와 대조해 고쳤다"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
+  - "2026-11-07: REQ-100 애플리케이션 층이 덮는 코드가 바뀐 것을 확인했고 이 문서의 내용은 그대로 맞다"
 ---
 # 도메인과 가상 담당자 (REQ-093, [ADR-0098](adr/0098-domains-virtual-counterparts-tickets.md)·[0099](adr/0099-counterparts-deterministic.md)·[0100](adr/0100-escalate-by-domain.md))
 

@@ -28,6 +28,7 @@ import {
   type WorldCommand,
 } from "@terrarium/core/world";
 import { describe, expect, test } from "vitest";
+import { appLab } from "../../packages/core/src/world/test-support/app-lab";
 import { dbLab } from "../../packages/core/src/world/test-support/db-lab";
 import { k8sLab } from "../../packages/core/src/world/test-support/k8s-lab";
 import { networkLab } from "../../packages/core/src/world/test-support/net-lab";
@@ -73,6 +74,7 @@ describe("the list of what can be controlled is made of real things [REQ-069]", 
       expect(onList.has(command as never)).toBe(false);
     expect([...onList].sort()).toEqual([
       "breaker.reset",
+      "circuit.reset",
       "db.failover",
       "db.promote",
       "db.restore",
@@ -84,14 +86,18 @@ describe("the list of what can be controlled is made of real things [REQ-069]", 
       "k8s.drain",
       "k8s.rollout_restart",
       "k8s.scale",
+      "lb.drain",
+      "lb.enable",
       "link.admin",
       "load.set",
+      "mesh.rollback",
       "net.set",
       "outdoor.set",
       "outlet.set",
       "policy.revert",
       "policy.set",
       "power.set",
+      "region.failover",
       "sdn.failover",
       "sdn.sync",
       "service.failover",
@@ -230,6 +236,8 @@ interface Drive {
   readonly args: Record<string, unknown>;
   /** Make the world ready (trip the breaker that the reset will clear). */
   readonly before?: (world: World) => void;
+  /** Seconds to let physics run after `before` (a fault shows in the state a step later). */
+  readonly settle?: number;
   /** The change the world shows afterwards. */
   readonly changed: (world: World) => boolean;
   readonly action: { kind: string; target: string };
@@ -604,6 +612,84 @@ Object.assign(DRIVES, {
   },
 } satisfies Record<string, Drive>);
 
+// the application layer (REQ-100)
+Object.assign(DRIVES, {
+  "host.app_process|run_command": {
+    world: () => appLab({ level: "stateless" }),
+    tool: "run_command",
+    args: { host: "vm-web3", cmd: "systemctl restart redis-server" },
+    before: (w) =>
+      void w.apply(
+        {
+          type: "fault.add",
+          fault: { id: "f-sess", type: "session_store_down", target: "sess-portal", params: {} },
+        },
+        "scenario",
+      ),
+    changed: hostAct("vm-web3", "restart"),
+    action: { kind: "process_restart", target: "vm-web3" },
+  },
+  "lb.drain|lb_drain": {
+    world: () => appLab(),
+    tool: "lb_drain",
+    args: { backend: "app-portal-1" },
+    changed: happened("lb.drain", "app-portal-1"),
+    action: { kind: "lb_drain", target: "app-portal-1" },
+  },
+  "lb.enable|lb_enable": {
+    world: () => appLab(),
+    tool: "lb_enable",
+    args: { backend: "app-portal-1" },
+    before: (w) => void w.apply({ type: "lb.drain", target: "app-portal-1" }, "scenario"),
+    changed: happened("lb.enable", "app-portal-1"),
+    action: { kind: "lb_enable", target: "app-portal-1" },
+  },
+  "circuit.reset|breaker_reset": {
+    world: () => appLab({ level: "microservices" }),
+    tool: "breaker_reset",
+    args: { link: "call-portal-license" },
+    settle: 30,
+    before: (w) =>
+      void w.apply(
+        {
+          type: "fault.add",
+          fault: {
+            id: "f-cb",
+            type: "circuit_breaker_stuck_open",
+            target: "cb-portal-license",
+            params: {},
+          },
+        },
+        "scenario",
+      ),
+    changed: happened("circuit.reset", "cb-portal-license"),
+    action: { kind: "circuit_reset", target: "cb-portal-license" },
+  },
+  "mesh.rollback|mesh_rollback": {
+    world: () => appLab({ level: "mesh" }),
+    tool: "mesh_rollback",
+    args: { control: "mesh-control" },
+    settle: 30,
+    before: (w) =>
+      void w.apply(
+        {
+          type: "fault.add",
+          fault: { id: "f-retry", type: "retry_storm", target: "mesh-control", params: {} },
+        },
+        "scenario",
+      ),
+    changed: happened("mesh.rollback", "mesh-control"),
+    action: { kind: "mesh_rollback", target: "mesh-control" },
+  },
+  "region.failover|region_failover": {
+    world: () => appLab({ level: "multiregion" }),
+    tool: "region_failover",
+    args: { region: "region-b" },
+    changed: happened("region.failover", "region-b"),
+    action: { kind: "region_failover", target: "region-b" },
+  },
+} satisfies Record<string, Drive>);
+
 // the container layer (REQ-096)
 Object.assign(DRIVES, {
   "host.kubelet|run_command": {
@@ -709,6 +795,7 @@ describe("an agent really controls each thing on the list [REQ-069] [REQ-007]", 
       });
       session.start();
       drive.before?.(session.world);
+      if (drive.settle) session.call("wait", { seconds: drive.settle });
       expect(drive.changed(session.world), "not already changed").toBe(false);
       const result = session.call(drive.tool, drive.args) as { ok?: boolean; error?: unknown };
       expect(result.ok ?? true, JSON.stringify(result).slice(0, 300)).not.toBe(false);

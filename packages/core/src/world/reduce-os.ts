@@ -3,6 +3,14 @@
  * `service.restart` and `vm.migrate` do to the state, and of the database, container and SDN layers above them. The
  * world hands itself over as an `OsWorld`.
  */
+import {
+  drainBackend,
+  enableBackend,
+  failoverRegion,
+  resetBreaker,
+  restartAppProcess,
+  rollbackMesh,
+} from "./app-act";
 import { failoverCluster, promote, restartDatabase, startRestore, switchPath } from "./db-act";
 import { actOnHost, type HostActContext } from "./host-os";
 import { cordon, deletePod, drain, restartKubelet, rolloutRestart, scale } from "./k8s-act";
@@ -80,6 +88,31 @@ function afterRestart(world: OsWorld, command: Extract<WorldCommand, { type: "ho
     restartKubelet(dbContext(world), command.target);
   if (command.arg === CNI_PROCESS) restartCni(sdnContext(world), command.target);
   if (command.arg === INGRESS_PROCESS) restartIngressProcess(sdnContext(world), command.target);
+  if (command.arg) restartAppProcess(dbContext(world), command.target, command.arg);
+}
+
+/** The commands of the application layer (REQ-100); false when the command is not one of them. */
+function reduceApp(world: OsWorld, command: WorldCommand): boolean {
+  const ctx = dbContext(world);
+  switch (command.type) {
+    case "lb.drain":
+      drainBackend(ctx, command.target);
+      return true;
+    case "lb.enable":
+      enableBackend(ctx, command.target);
+      return true;
+    case "circuit.reset":
+      resetBreaker(ctx, command.target);
+      return true;
+    case "mesh.rollback":
+      rollbackMesh(ctx, command.target);
+      return true;
+    case "region.failover":
+      failoverRegion(ctx, command.target);
+      return true;
+    default:
+      return false;
+  }
 }
 
 /** The commands of the overlay and the cloud-native layer (REQ-097); false when the command is not one of them. */
@@ -111,7 +144,7 @@ export function reduceHostAndService(world: OsWorld, command: WorldCommand): voi
     reduceK8s(world, command);
     return;
   }
-  if (reduceSdn(world, command)) return;
+  if (reduceSdn(world, command) || reduceApp(world, command)) return;
   const ctx: ServiceActContext = {
     world,
     t: world.time(),

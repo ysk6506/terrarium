@@ -145,6 +145,14 @@ describe("scenario palette [REQ-034]", () => {
       "k8s_image_pull_failure",
       "k8s_disk_pressure",
       "k8s_cni_failure",
+      "lb_backend_flapping",
+      "session_store_down",
+      "circuit_breaker_stuck_open",
+      "retry_storm",
+      "sidecar_crash",
+      "mesh_control_down",
+      "region_down",
+      "replication_lag_high",
     ]);
     // In the campus sample every supported fault has something to act on.
     const campus = paletteFor(new BlueprintIndex(campusBlueprint()));

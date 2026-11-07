@@ -35,8 +35,19 @@ export const IAP_DRAFT: ServiceDraft = {
   hosts: 3,
   switches: 2,
   parts: [
-    { label: "오케스트레이터", tier: 0, workload: "orchestrator" },
-    { label: "도메인 에이전트", count: 4, tier: 0, workload: "domain-agents" },
+    {
+      label: "오케스트레이터",
+      tier: 0,
+      workload: "orchestrator",
+      calls: ["domain-agents", "goclaw-core"],
+    },
+    {
+      label: "도메인 에이전트",
+      count: 4,
+      tier: 0,
+      workload: "domain-agents",
+      calls: ["topology-graph"],
+    },
     { label: "토폴로지 그래프 DB", tier: 0, workload: "topology-graph" },
     { label: "GoClaw 코어", tier: 0, workload: "goclaw-core" },
     { label: "컨트롤 플레인 VM", count: 3, tier: 1, role: "node" },
@@ -86,7 +97,14 @@ export const DEFAULT_SHAPE: ShapeSpec = {
 /** A service the person adds by name, what it gives and what its stop does. */
 export function customService(
   n: number,
-  fields: { name: string; gives: string; stopsText: string; kind?: ServiceKind },
+  fields: {
+    name: string;
+    gives: string;
+    stopsText: string;
+    kind?: ServiceKind;
+    /** The keys of the services this one calls (REQ-100). */
+    calls?: readonly string[];
+  },
 ): ServiceDraft {
   const kind = fields.kind ?? "request";
   return {
@@ -106,5 +124,6 @@ export function customService(
     stops: [{ what: fields.name, result: fields.stopsText, bad: true }],
     harm: [{ name: "멈춤", perHourKrw: 1_000_000 }],
     workload: kind === "batch" ? DEFAULT_WORKLOAD.batch : DEFAULT_WORKLOAD.api,
+    ...(fields.calls && fields.calls.length > 0 ? { calls: [...fields.calls] } : {}),
   };
 }

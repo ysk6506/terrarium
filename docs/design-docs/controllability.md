@@ -2,18 +2,18 @@
 title: 제어 가능 요소표 — 실험이 무엇을 바꿀 수 있고, 에이전트가 무엇을 할 수 있는가
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/scenario/controls.ts
   - packages/core/src/facades/bacnet-points.ts
   - packages/core/src/world/command-check.ts
 verification_log:
-  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
   - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: 호스트 조치 두 줄의 명령 예를 깊은 OS 흉내(ADR-0117)에 맞췄다: 지우기는 du·find로 찾은 큰 로그, 다시 시작에 stop·start·kill 추가"
   - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
-covers_hash: 755c2d562e71dc44
+  - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
+covers_hash: 95d66824bee1ca50
 ---
 # 제어 가능 요소표 (REQ-069, ADR-0066)
 
@@ -76,6 +76,8 @@ covers_hash: 755c2d562e71dc44
 
 SDN 오버레이와 클라우드 네이티브 조치(REQ-097, [SDN 오버레이와 클라우드 네이티브 네트워크 층](sdn-network-layer.md))는 월드 명령 `sdn.sync`·`sdn.failover`·`policy.set`·`policy.revert`·`ingress.restart`와 호스트 조치 하나(`host.cni`: 노드에서 `systemctl restart calico-node`)다. `sdn.failover`는 스탠바이 컨트롤러가 스스로 이어받을 때(원인 `cluster`)도 같은 명령이다. `policy.set`은 시나리오의 `policy_set` 블록이 잘못된 정책 배포라는 실수를 만드는 일이라 에이전트의 길이 없고(줄의 `note`가 이유를 말한다), 되돌리는 `policy.revert`는 `policy_revert`다. 행동 종류는 `sdn_sync`·`sdn_failover`·`policy_revert`·`ingress_restart` 넷이 늘었다.
 
+애플리케이션 조치(REQ-100, [애플리케이션 층](application-layer.md))는 월드 명령 `lb.drain`·`lb.enable`·`circuit.reset`·`mesh.rollback`·`region.failover`와 호스트 조치 하나(`host.app_process`: 호스트에서 `systemctl restart redis-server|envoy|istiod`)다. `lb.drain`과 `region.failover`는 완화이고(백엔드·리전을 피해 갈 뿐 원인은 그대로), 나머지는 원인을 푼다. `mesh.rollback`은 컨트롤 플레인이 멈춘 동안은 거부된다.
+
 월드 명령 가운데 운영자의 것이 아닌 것은 이름이 붙어 있다: 고장 발생·복구(시나리오), 열 보호 종료(물리 엔진), 알람 올리기·지우기(모니터링), 기록.
 
 ## 시험이 보장하는 것
@@ -113,6 +115,8 @@ SDN 오버레이와 클라우드 네이티브 조치(REQ-097, [SDN 오버레이�
 | 스토리지 경로 끊김, 스토리지 컨트롤러 고장 | 피해를 줄일 수 있어요 | 스토리지 경로 전환 |
 | 분산 스토리지 노드 상실 | 진단하고 사람을 불러요 | — (복제본은 알아서 다시 만들어진다) |
 | SDN 컨트롤러 다운 (REQ-097) | 피해를 줄일 수 있어요 | SDN 컨트롤러 전환 |
+| 백엔드 플래핑, 리전 다운, 복제 지연 (REQ-100) | 피해를 줄일 수 있어요 | 백엔드 빼기, 리전 넘기기 |
+| 세션 저장소·사이드카·메시 컨트롤 플레인 다운, 브레이커 굳음, 재시도 폭주 (REQ-100) | 고칠 수 있어요 | 프로세스 다시 시작, 브레이커 리셋, 메시 설정 되돌리기 |
 | 컨트롤러 설정 동기화 실패, EVPN 세션 플랩 | 고칠 수 있어요 | 스위치 설정 재동기화 |
 | 인그레스 컨트롤러 다운 | 고칠 수 있어요 | 인그레스 다시 시작 |
 | CNI 플러그인 고장 | 고칠 수 있어요 | 호스트에서 명령 실행(노드의 플러그인 다시 시작) |

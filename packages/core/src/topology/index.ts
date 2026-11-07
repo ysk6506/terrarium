@@ -13,6 +13,7 @@ export {
   type Severe,
   servicesOf,
 } from "./impact";
+export { NETWORK_STAGES } from "./layer-network";
 export { chainOf, isSpace, type LayerShape, layerShape } from "./layers";
 export {
   type IncidentSpan,
@@ -65,4 +66,5 @@ export {
   impactWhen,
   nounOf,
   num,
+  stageHead,
 } from "./words";

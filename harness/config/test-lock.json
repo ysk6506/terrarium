@@ -36790,12 +36790,16 @@
   },
   "apps/web/src/logic/tool-picker.test.ts::the tool cards [REQ-080] > a search narrows the cards to the tools that answer it, by name, title, card or tag": {
    "kind": "test",
-   "hash": "3f9122ef472f3327",
+   "hash": "9efcd8275e80c560",
    "asserts": 6,
    "literals": [
     "\"a search narrows the cards to the tools that answer it, by name, title, card or tag\"",
     "\"bacnet_request\"",
     "\"bacnet_request\"",
+    "\"breaker_reset\"",
+    "\"breaker_reset\"",
+    "\"breaker_status\"",
+    "\"breaker_status\"",
     "\"get_impact\"",
     "\"get_impact\"",
     "\"get_impact\"",
@@ -36804,8 +36808,14 @@
     "\"get_impact\"",
     "\"get_topology\"",
     "\"get_topology\"",
+    "\"mesh_rollback\"",
+    "\"mesh_rollback\"",
+    "\"mesh_status\"",
+    "\"mesh_status\"",
     "\"overlay_trace\"",
     "\"overlay_trace\"",
+    "\"region_failover\"",
+    "\"region_failover\"",
     "\"restart_cooling_unit\"",
     "\"restart_cooling_unit\"",
     "\"search_runbooks\"",
@@ -36825,8 +36835,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": "0115-sdn-network-layer-amend-tests.md"
+   "added": "2026-11-07",
+   "amended_by": "0121-application-layer-and-calls.md"
   },
   "apps/web/src/logic/tool-picker.test.ts::the tool cards [REQ-080] > an area turns on or off as a whole, and the answer stays": {
    "kind": "test",
@@ -37151,6 +37161,150 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/topology/headers.test.ts::<import:88c0f1a7>": {
+   "kind": "support",
+   "hash": "88c0f1a758bcf00b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/topology/headers.test.ts::<import:d8c562ad>": {
+   "kind": "support",
+   "hash": "d8c562ad1a29044f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/topology/headers.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/topology/headers.test.ts::=boardOf": {
+   "kind": "support",
+   "hash": "d1635a3422903801",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/topology/headers.test.ts::=boxes": {
+   "kind": "support",
+   "hash": "a88b49509f123a77",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/topology/headers.test.ts::=WIDTH_PX": {
+   "kind": "support",
+   "hash": "64e7a5bad1687150",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/topology/headers.test.ts::the column heads of the board do not overlap [REQ-100] > <stmt:3d657eec>": {
+   "kind": "support",
+   "hash": "3d657eecbb0f9c75",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/topology/headers.test.ts::the column heads of the board do not overlap [REQ-100] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/topology/headers.test.ts::the column heads of the board do not overlap [REQ-100] > a head that fits is left alone, and a long one gets lines": {
+   "kind": "test",
+   "hash": "1ffd1ee1305ec444",
+   "asserts": 3,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"12\"",
+    "\"12\"",
+    "\"40\"",
+    "\"40\"",
+    "\"40\"",
+    "\"60\"",
+    "\"60\"",
+    "\"a head that fits is left alone, and a long one gets lines\"",
+    "\"서버\"",
+    "\"서버\"",
+    "\"서버\"",
+    "\"서버\"",
+    "\"쿠버네티스 클러스터\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/topology/headers.test.ts::the column heads of the board do not overlap [REQ-100] > a head that is wider than its room is broken into lines or drawn smaller, never cut off": {
+   "kind": "test",
+   "hash": "d03f35fe4da13769",
+   "asserts": 3,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"3\"",
+    "\"3\"",
+    "\"9\"",
+    "\"9\"",
+    "\"a head that is wider than its room is broken into lines or drawn smaller, never cut off\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/topology/headers.test.ts::the column heads of the board do not overlap [REQ-100] > the short heads of the network board are five characters or fewer": {
+   "kind": "test",
+   "hash": "cb7595ad31106c20",
+   "asserts": 1,
+   "literals": [
+    "\"5\"",
+    "\"5\"",
+    "\"the short heads of the network board are five characters or fewer\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
    "amended_by": null
   },
   "apps/web/src/logic/topology/replay.test.ts::<import:426e49ad>": {
@@ -38159,6 +38313,223 @@
    "added": "2026-11-05",
    "amended_by": null
   },
+  "apps/web/src/logic/world-shape/app-cards.test.ts::'이 모양이면'에 애플리케이션 고장이 들어간다 [REQ-100] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/app-cards.test.ts::'이 모양이면'에 애플리케이션 고장이 들어간다 [REQ-100] > 멀티 리전을 고르면 리전 다운이 들고, 로드 밸런서만 있으면 들지 않는다": {
+   "kind": "test",
+   "hash": "97a1d9ceaa94e93b",
+   "asserts": 3,
+   "literals": [
+    "\"app-lb-sticky\"",
+    "\"app-lb-sticky\"",
+    "\"app-multiregion\"",
+    "\"app-multiregion\"",
+    "\"region_down\"",
+    "\"region_down\"",
+    "\"region_down\"",
+    "\"region_down\"",
+    "\"region_failover\"",
+    "\"region_failover\"",
+    "\"멀티 리전을 고르면 리전 다운이 들고, 로드 밸런서만 있으면 들지 않는다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/app-cards.test.ts::'이 모양이면'에 애플리케이션 고장이 들어간다 [REQ-100] > 서비스 메시를 고르면 재시도 폭주가 느려지는 고장에 들고 시나리오가 따라온다": {
+   "kind": "test",
+   "hash": "ce812911c9648745",
+   "asserts": 3,
+   "literals": [
+    "\"app-lb-sticky\"",
+    "\"app-lb-sticky\"",
+    "\"app-mesh\"",
+    "\"mesh_control_down\"",
+    "\"mesh_control_down\"",
+    "\"mesh_rollback\"",
+    "\"mesh_rollback\"",
+    "\"retry_storm\"",
+    "\"retry_storm\"",
+    "\"sidecar_crash\"",
+    "\"sidecar_crash\"",
+    "\"서비스 메시를 고르면 재시도 폭주가 느려지는 고장에 들고 시나리오가 따라온다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/app-cards.test.ts::<import:15a6551e>": {
+   "kind": "support",
+   "hash": "15a6551e1e8c372b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/app-cards.test.ts::<import:8eedba82>": {
+   "kind": "support",
+   "hash": "8eedba82cd9cacde",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/app-cards.test.ts::<import:b4da9b93>": {
+   "kind": "support",
+   "hash": "b4da9b93d977c880",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/app-cards.test.ts::<import:c7201240>": {
+   "kind": "support",
+   "hash": "c7201240e892d1f8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/app-cards.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/app-cards.test.ts::<import:e736b501>": {
+   "kind": "support",
+   "hash": "e736b5011c255a10",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/app-cards.test.ts::=MODELED": {
+   "kind": "support",
+   "hash": "062b6010110a7096",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/app-cards.test.ts::=viewWith": {
+   "kind": "support",
+   "hash": "c9b92adfc6682169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/app-cards.test.ts::애플리케이션 칩 네 개는 실선이고 카드는 코어의 고장 목록과 같다 [REQ-100] > <stmt:4cc0e990>": {
+   "kind": "support",
+   "hash": "4cc0e990f4558f5a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/app-cards.test.ts::애플리케이션 칩 네 개는 실선이고 카드는 코어의 고장 목록과 같다 [REQ-100] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/app-cards.test.ts::애플리케이션 칩 네 개는 실선이고 카드는 코어의 고장 목록과 같다 [REQ-100] > 점선은 다섯 개만 남는다": {
+   "kind": "test",
+   "hash": "936bf33a42b3b12f",
+   "asserts": 1,
+   "literals": [
+    "\"app\"",
+    "\"database\"",
+    "\"db-distributed-sql\"",
+    "\"db-distributed-sql\"",
+    "\"db-managed-multiaz\"",
+    "\"db-managed-multiaz\"",
+    "\"network\"",
+    "\"power\"",
+    "\"site\"",
+    "\"site-dr-warm\"",
+    "\"site-dr-warm\"",
+    "\"site-multi-active\"",
+    "\"site-multi-active\"",
+    "\"sto-geo\"",
+    "\"sto-geo\"",
+    "\"storage\"",
+    "\"점선은 다섯 개만 남는다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/app-cards.test.ts::애플리케이션 칩 네 개는 실선이고 카드는 코어의 고장 목록과 같다 [REQ-100] > 칩을 올릴수록 짓는 것이 늘어난다: 세션 저장소, 브레이커, 메시, 리전": {
+   "kind": "test",
+   "hash": "e9bd46b6a9b88974",
+   "asserts": 4,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"app-mesh\"",
+    "\"app-mesh\"",
+    "\"app-microservices\"",
+    "\"app-microservices\"",
+    "\"app-multiregion\"",
+    "\"app-multiregion\"",
+    "\"app-stateless\"",
+    "\"app-stateless\"",
+    "\"칩을 올릴수록 짓는 것이 늘어난다: 세션 저장소, 브레이커, 메시, 리전\"",
+    "false",
+    "false",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
   "apps/web/src/logic/world-shape/db-cards.test.ts::'이 모양이면'에 데이터베이스 고장이 들어간다 [REQ-095] > <suite>": {
    "kind": "support",
    "hash": "edb4bbfe0a867169",
@@ -39036,17 +39407,9 @@
   },
   "apps/web/src/logic/world-shape/world-shape.test.ts::HA 사다리: 선택지와 카드 [REQ-094] > 점선은 ADR-0107 결정 5의 목록 그대로다": {
    "kind": "test",
-   "hash": "ed8504e86a0031f0",
+   "hash": "b77aa3d8c329667c",
    "asserts": 1,
    "literals": [
-    "\"app-mesh\"",
-    "\"app-mesh\"",
-    "\"app-microservices\"",
-    "\"app-microservices\"",
-    "\"app-multiregion\"",
-    "\"app-multiregion\"",
-    "\"app-stateless\"",
-    "\"app-stateless\"",
     "\"db-distributed-sql\"",
     "\"db-distributed-sql\"",
     "\"db-managed-multiaz\"",
@@ -39061,8 +39424,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": "0114-container-layer-amend-tests.md"
+   "added": "2026-11-07",
+   "amended_by": "0121-application-layer-and-calls.md"
   },
   "apps/web/src/logic/world-shape/world-shape.test.ts::HA 사다리: 선택지와 카드 [REQ-094] > 층은 여덟이고, 카드는 코어의 선택지와 같은 순서로 하나씩 있다": {
    "kind": "test",
@@ -67296,7 +67659,7 @@
   },
   "packages/core/src/scenario/actions.test.ts::validating action conditions [REQ-034] > action conditions must name a known action and a real target": {
    "kind": "test",
-   "hash": "22da7d378b17c84e",
+   "hash": "696d838feb5efa6a",
    "asserts": 3,
    "literals": [
     "\"0\"",
@@ -67350,13 +67713,13 @@
     "\"start\"",
     "\"tool_budget\"",
     "\"x\"",
-    "\"알 수 없는 행동 'explode' (가능: 전원 끄기, 전원 켜기, 재시작, 차단기 리셋, 냉방 설정 변경, 포트 끄기, 포트 켜기, 콘센트 끄기, 콘센트 켜기, 스위치 설정 변경, 펌웨어 올리기, 서비스를 대기 쪽으로 옮기기, 서비스 다시 시작, 프로세스 다시 시작, 디스크 비우기, 파일시스템 다시 마운트, VM 다른 서버로 옮기기, 인스턴스 승격, 클러스터 페일오버, 백업에서 복원, 스토리지 경로 전환, 스위치 설정 재동기화, SDN 컨트롤러 전환, 네트워크 정책 되돌리기, 인그레스 다시 시작, 롤아웃 재시작, 레플리카 수 바꾸기, 노드 cordon·uncordon, 노드 drain, 파드 지우기)\"",
-    "\"알 수 없는 행동 'explode' (가능: 전원 끄기, 전원 켜기, 재시작, 차단기 리셋, 냉방 설정 변경, 포트 끄기, 포트 켜기, 콘센트 끄기, 콘센트 켜기, 스위치 설정 변경, 펌웨어 올리기, 서비스를 대기 쪽으로 옮기기, 서비스 다시 시작, 프로세스 다시 시작, 디스크 비우기, 파일시스템 다시 마운트, VM 다른 서버로 옮기기, 인스턴스 승격, 클러스터 페일오버, 백업에서 복원, 스토리지 경로 전환, 스위치 설정 재동기화, SDN 컨트롤러 전환, 네트워크 정책 되돌리기, 인그레스 다시 시작, 롤아웃 재시작, 레플리카 수 바꾸기, 노드 cordon·uncordon, 노드 drain, 파드 지우기)\""
+    "\"알 수 없는 행동 'explode' (가능: 전원 끄기, 전원 켜기, 재시작, 차단기 리셋, 냉방 설정 변경, 포트 끄기, 포트 켜기, 콘센트 끄기, 콘센트 켜기, 스위치 설정 변경, 펌웨어 올리기, 서비스를 대기 쪽으로 옮기기, 서비스 다시 시작, 프로세스 다시 시작, 디스크 비우기, 파일시스템 다시 마운트, VM 다른 서버로 옮기기, 인스턴스 승격, 클러스터 페일오버, 백업에서 복원, 스토리지 경로 전환, 스위치 설정 재동기화, SDN 컨트롤러 전환, 네트워크 정책 되돌리기, 인그레스 다시 시작, 롤아웃 재시작, 레플리카 수 바꾸기, 노드 cordon·uncordon, 노드 drain, 파드 지우기, 백엔드 빼기(drain), 백엔드 되돌리기, 서킷 브레이커 리셋, 메시 설정 되돌리기, 리전 옮기기)\"",
+    "\"알 수 없는 행동 'explode' (가능: 전원 끄기, 전원 켜기, 재시작, 차단기 리셋, 냉방 설정 변경, 포트 끄기, 포트 켜기, 콘센트 끄기, 콘센트 켜기, 스위치 설정 변경, 펌웨어 올리기, 서비스를 대기 쪽으로 옮기기, 서비스 다시 시작, 프로세스 다시 시작, 디스크 비우기, 파일시스템 다시 마운트, VM 다른 서버로 옮기기, 인스턴스 승격, 클러스터 페일오버, 백업에서 복원, 스토리지 경로 전환, 스위치 설정 재동기화, SDN 컨트롤러 전환, 네트워크 정책 되돌리기, 인그레스 다시 시작, 롤아웃 재시작, 레플리카 수 바꾸기, 노드 cordon·uncordon, 노드 drain, 파드 지우기, 백엔드 빼기(drain), 백엔드 되돌리기, 서킷 브레이커 리셋, 메시 설정 되돌리기, 리전 옮기기)\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": "0114-container-layer-amend-tests.md"
+   "added": "2026-11-07",
+   "amended_by": "0121-application-layer-and-calls.md"
   },
   "packages/core/src/scenario/condition-groups.test.ts::<import:e71fddbd>": {
    "kind": "support",
@@ -69490,7 +69853,7 @@
   },
   "packages/core/src/scenario/scenario.test.ts::scenario palette [REQ-034] > in the sample hall every supported fault can be used, each as its own block": {
    "kind": "test",
-   "hash": "ed0ada64cb4e229a",
+   "hash": "fdf77278b5c4d0e5",
    "asserts": 5,
    "literals": [
     "\"0\"",
@@ -69507,6 +69870,8 @@
     "\"chiller_degraded\"",
     "\"chiller_failure\"",
     "\"chiller_failure\"",
+    "\"circuit_breaker_stuck_open\"",
+    "\"circuit_breaker_stuck_open\"",
     "\"cni_plugin_failure\"",
     "\"cni_plugin_failure\"",
     "\"cooling_unit_failure\"",
@@ -69548,12 +69913,26 @@
     "\"k8s_pod_crashloop\"",
     "\"k8s_resource_exhausted\"",
     "\"k8s_resource_exhausted\"",
+    "\"lb_backend_flapping\"",
+    "\"lb_backend_flapping\"",
+    "\"mesh_control_down\"",
+    "\"mesh_control_down\"",
     "\"nfv_firewall_overload\"",
     "\"nfv_firewall_overload\"",
+    "\"region_down\"",
+    "\"region_down\"",
+    "\"replication_lag_high\"",
+    "\"replication_lag_high\"",
+    "\"retry_storm\"",
+    "\"retry_storm\"",
     "\"sdn_controller_down\"",
     "\"sdn_controller_down\"",
     "\"sdn_sync_failed\"",
     "\"sdn_sync_failed\"",
+    "\"session_store_down\"",
+    "\"session_store_down\"",
+    "\"sidecar_crash\"",
+    "\"sidecar_crash\"",
     "\"storage_controller_failure\"",
     "\"storage_controller_failure\"",
     "\"storage_path_cut\"",
@@ -69573,8 +69952,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": "0114-container-layer-amend-tests.md"
+   "added": "2026-11-07",
+   "amended_by": "0121-application-layer-and-calls.md"
   },
   "packages/core/src/scenario/scenario.test.ts::scenario validation [REQ-034] > <suite>": {
    "kind": "support",
@@ -79195,6 +79574,281 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-03",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-app.test.ts::<import:1a6f4cba>": {
+   "kind": "support",
+   "hash": "1a6f4cbaf2de1476",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-app.test.ts::<import:983e3f78>": {
+   "kind": "support",
+   "hash": "983e3f784d37b419",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-app.test.ts::<import:cd3ce941>": {
+   "kind": "support",
+   "hash": "cd3ce9414aced584",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-app.test.ts::<import:e8df5012>": {
+   "kind": "support",
+   "hash": "e8df50121f944c27",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-app.test.ts::=kinds": {
+   "kind": "support",
+   "hash": "a17083f7c71ed60f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-app.test.ts::=withApp": {
+   "kind": "support",
+   "hash": "7ed1be861e0526a1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-app.test.ts::애플리케이션 층을 짓는 생성기 [REQ-100] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-app.test.ts::애플리케이션 층을 짓는 생성기 [REQ-100] > app-single과 LB 뒤 N대 모양에는 애플리케이션 개체가 없다": {
+   "kind": "test",
+   "hash": "82b31042c7944304",
+   "asserts": 1,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"app-lb-sticky\"",
+    "\"app-single\"",
+    "\"app-single과 LB 뒤 N대 모양에는 애플리케이션 개체가 없다\"",
+    "\"app_instance\"",
+    "\"circuit_breaker\"",
+    "\"load_balancer\"",
+    "\"mesh_control\"",
+    "\"mesh_sidecar\"",
+    "\"region\"",
+    "\"session_store\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-app.test.ts::애플리케이션 층을 짓는 생성기 [REQ-100] > IAP 기본 틀에는 오케스트레이터가 도메인 에이전트와 코어를, 도메인 에이전트가 토폴로지 그래프 DB를 부르는 호출이 있다": {
+   "kind": "test",
+   "hash": "c797530cf5156c21",
+   "asserts": 1,
+   "literals": [
+    "\"-\"",
+    "\"-\"",
+    "\"-\"",
+    "\"-\"",
+    "\"2\"",
+    "\"2\"",
+    "\"IAP 기본 틀에는 오케스트레이터가 도메인 에이전트와 코어를, 도메인 에이전트가 토폴로지 그래프 DB를 부르는 호출이 있다\"",
+    "\"app-stateless\"",
+    "\"calls\"",
+    "\"domain-agents > topology-graph\"",
+    "\"domain-agents > topology-graph\"",
+    "\"orchestrator > domain-agents\"",
+    "\"orchestrator > domain-agents\"",
+    "\"orchestrator > goclaw-core\"",
+    "\"orchestrator > goclaw-core\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-app.test.ts::애플리케이션 층을 짓는 생성기 [REQ-100] > 마이크로서비스부터 서비스끼리의 호출마다 브레이커가, 메시부터 사이드카와 컨트롤 플레인이, 멀티 리전은 리전 둘이 선다": {
+   "kind": "test",
+   "hash": "b2da04514de8ed69",
+   "asserts": 5,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"app-mesh\"",
+    "\"app-microservices\"",
+    "\"app-microservices\"",
+    "\"app-multiregion\"",
+    "\"app-multiregion\"",
+    "\"app-stateless\"",
+    "\"app-stateless\"",
+    "\"circuit_breaker\"",
+    "\"circuit_breaker\"",
+    "\"circuit_breaker\"",
+    "\"circuit_breaker\"",
+    "\"cmp-bare-spare\"",
+    "\"mesh_control\"",
+    "\"mesh_control\"",
+    "\"mesh_sidecar\"",
+    "\"mesh_sidecar\"",
+    "\"region\"",
+    "\"region\"",
+    "\"마이크로서비스부터 서비스끼리의 호출마다 브레이커가, 메시부터 사이드카와 컨트롤 플레인이, 멀티 리전은 리전 둘이 선다\"",
+    "\"밤새 정산해요\"",
+    "\"정산 배치\"",
+    "\"정산이 늦어져요\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-app.test.ts::애플리케이션 층을 짓는 생성기 [REQ-100] > 멀티 리전은 호스트가 두 배로 서고 인스턴스가 두 리전에 나뉜다": {
+   "kind": "test",
+   "hash": "2c76f19d859717ce",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"app-mesh\"",
+    "\"app-multiregion\"",
+    "\"member_of\"",
+    "\"region\"",
+    "\"멀티 리전은 호스트가 두 배로 서고 인스턴스가 두 리전에 나뉜다\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-app.test.ts::애플리케이션 층을 짓는 생성기 [REQ-100] > 무상태: 인스턴스와 로드 밸런서와 세션 저장소가 서고 브레이커·메시·리전은 없다": {
+   "kind": "test",
+   "hash": "6fa387cf63139c92",
+   "asserts": 6,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"app-stateless\"",
+    "\"app_instance\"",
+    "\"app_instance\"",
+    "\"circuit_breaker\"",
+    "\"circuit_breaker\"",
+    "\"load_balancer\"",
+    "\"load_balancer\"",
+    "\"mesh_control\"",
+    "\"mesh_control\"",
+    "\"region\"",
+    "\"region\"",
+    "\"session_store\"",
+    "\"session_store\"",
+    "\"무상태: 인스턴스와 로드 밸런서와 세션 저장소가 서고 브레이커·메시·리전은 없다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-app.test.ts::애플리케이션 층을 짓는 생성기 [REQ-100] > 서비스를 더하며 부르는 서비스를 고르면 calls 링크가 생긴다": {
+   "kind": "test",
+   "hash": "78458b53bd0fd136",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"2\"",
+    "\"app-lb-sticky\"",
+    "\"calls\"",
+    "\"svc-svc2\"",
+    "\"밤새 정산해요\"",
+    "\"서비스를 더하며 부르는 서비스를 고르면 calls 링크가 생긴다\"",
+    "\"정산 배치\"",
+    "\"정산이 늦어져요\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-app.test.ts::애플리케이션 층을 짓는 생성기 [REQ-100] > 지은 세계는 검증을 통과하고 모든 서비스가 처음에 멀쩡하다": {
+   "kind": "test",
+   "hash": "43e30431265477fd",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"app-mesh\"",
+    "\"app-microservices\"",
+    "\"app-multiregion\"",
+    "\"app-stateless\"",
+    "\"service\"",
+    "\"service\"",
+    "\"지은 세계는 검증을 통과하고 모든 서비스가 처음에 멀쩡하다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
    "amended_by": null
   },
   "packages/core/src/sources/worldgen/shaped-per-service.test.ts::<import:983e3f78>": {
@@ -92259,6 +92913,106 @@
    "added": "2026-11-05",
    "amended_by": null
   },
+  "packages/core/src/world/test-support/app-lab.ts::<import:1d246e74>": {
+   "kind": "support",
+   "hash": "1d246e74cf15a128",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/test-support/app-lab.ts::<import:b0810b11>": {
+   "kind": "support",
+   "hash": "b0810b11a873fd53",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/test-support/app-lab.ts::<import:ff579bda>": {
+   "kind": "support",
+   "hash": "ff579bdac299f113",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/test-support/app-lab.ts::=appLab": {
+   "kind": "support",
+   "hash": "df4d0ef753909588",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/test-support/app-lab.ts::=AppLabOptions": {
+   "kind": "support",
+   "hash": "850879c3d10cfabd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/test-support/app-lab.ts::=AppLevel": {
+   "kind": "support",
+   "hash": "16345f30c4d86ce0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/test-support/app-lab.ts::=ent": {
+   "kind": "support",
+   "hash": "ddc9c6bda75073d5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/test-support/app-lab.ts::=link": {
+   "kind": "support",
+   "hash": "8acc756521972e69",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/test-support/app-lab.ts::=ORDER": {
+   "kind": "support",
+   "hash": "73b10f09faa63ccd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/test-support/app-lab.ts::=VMS": {
+   "kind": "support",
+   "hash": "510fc0a5324e0854",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
   "packages/core/src/world/test-support/db-lab.ts::<import:1c4a11e9>": {
    "kind": "support",
    "hash": "1c4a11e9db70d938",
@@ -92651,13 +93405,13 @@
   },
   "packages/core/src/world/test-support/sample-campus.ts::=campusBlueprint": {
    "kind": "support",
-   "hash": "c6fad4e74f893824",
+   "hash": "b252cb8eddcf6204",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": "0114-container-layer-amend-tests.md"
+   "added": "2026-11-07",
+   "amended_by": "0121-application-layer-and-calls.md"
   },
   "packages/core/src/world/test-support/sample-campus.ts::=ent": {
    "kind": "support",
@@ -92861,23 +93615,23 @@
   },
   "packages/core/src/world/test-support/sdn-lab.ts::=sdnLab": {
    "kind": "support",
-   "hash": "c8df6e3c2212fe50",
+   "hash": "bd30baacbca3e568",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-07",
+   "amended_by": "0121-application-layer-and-calls.md"
   },
   "packages/core/src/world/test-support/sdn-lab.ts::=SdnLabOptions": {
    "kind": "support",
-   "hash": "036c62e7c79fb7d9",
+   "hash": "df9ad921f80d8876",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-07",
+   "amended_by": "0121-application-layer-and-calls.md"
   },
   "packages/core/src/world/test-support/service-lab.ts::<import:1c4a11e9>": {
    "kind": "support",
@@ -93424,9 +94178,13 @@
   },
   "packages/core/src/world/world-edges.test.ts::lookups and labels at the edges [REQ-001] > only the four virtual kinds are virtual": {
    "kind": "test",
-   "hash": "2944ec5e04393e8a",
+   "hash": "18edbbab6c482d43",
    "asserts": 1,
    "literals": [
+    "\"app_instance\"",
+    "\"app_instance\"",
+    "\"circuit_breaker\"",
+    "\"circuit_breaker\"",
     "\"cluster\"",
     "\"cluster\"",
     "\"cni\"",
@@ -93445,6 +94203,12 @@
     "\"k8s_node\"",
     "\"k8s_workload\"",
     "\"k8s_workload\"",
+    "\"load_balancer\"",
+    "\"load_balancer\"",
+    "\"mesh_control\"",
+    "\"mesh_control\"",
+    "\"mesh_sidecar\"",
+    "\"mesh_sidecar\"",
     "\"network_policy\"",
     "\"network_policy\"",
     "\"nfv_function\"",
@@ -93452,10 +94216,14 @@
     "\"only the four virtual kinds are virtual\"",
     "\"overlay_segment\"",
     "\"overlay_segment\"",
+    "\"region\"",
+    "\"region\"",
     "\"sdn_controller\"",
     "\"sdn_controller\"",
     "\"service\"",
     "\"service\"",
+    "\"session_store\"",
+    "\"session_store\"",
     "\"storage_controller\"",
     "\"storage_controller\"",
     "\"storage_pool\"",
@@ -93469,8 +94237,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": "0114-container-layer-amend-tests.md"
+   "added": "2026-11-07",
+   "amended_by": "0121-application-layer-and-calls.md"
   },
   "packages/core/src/world/world-edges.test.ts::lookups and labels at the edges [REQ-001] > the index answers by id and says plainly what it does not know": {
    "kind": "test",
@@ -94866,6 +95634,406 @@
    "added": "2026-11-04",
    "amended_by": null
   },
+  "tests/spec/app-physics.test.ts::<import:0f465da4>": {
+   "kind": "support",
+   "hash": "0f465da4070b74ff",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-physics.test.ts::<import:7f66c152>": {
+   "kind": "support",
+   "hash": "7f66c152e2582c7d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-physics.test.ts::<import:82bf7aad>": {
+   "kind": "support",
+   "hash": "82bf7aada4bb25bf",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-physics.test.ts::<import:b2677072>": {
+   "kind": "support",
+   "hash": "b26770722ae02ccc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-physics.test.ts::<import:c54ae633>": {
+   "kind": "support",
+   "hash": "c54ae6332d702489",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-physics.test.ts::<import:cca56744>": {
+   "kind": "support",
+   "hash": "cca56744de7969e4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-physics.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-physics.test.ts::=lab": {
+   "kind": "support",
+   "hash": "8f9806df418181ce",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-physics.test.ts::a call down the graph [REQ-100] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-physics.test.ts::a call down the graph [REQ-100] > a stopped critical callee stops the caller; a breaker keeps it degraded and it recovers": {
+   "kind": "test",
+   "hash": "69e3345a08056529",
+   "asserts": 3,
+   "literals": [
+    "\"120\"",
+    "\"300\"",
+    "\"60\"",
+    "\"a stopped critical callee stops the caller; a breaker keeps it degraded and it recovers\"",
+    "\"degraded\"",
+    "\"degraded\"",
+    "\"down\"",
+    "\"down\"",
+    "\"f-process_crashloop-srv-a2\"",
+    "\"fault.remove\"",
+    "\"healthy\"",
+    "\"healthy\"",
+    "\"microservices\"",
+    "\"process_crashloop\"",
+    "\"process_crashloop\"",
+    "\"scenario\"",
+    "\"srv-a2\"",
+    "\"srv-a2\"",
+    "\"stateless\"",
+    "\"svc-portal\"",
+    "\"svc-portal\"",
+    "\"svc-portal\"",
+    "\"svc-portal\"",
+    "\"svc-portal\"",
+    "\"svc-portal\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-physics.test.ts::a healthy application layer [REQ-100] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-physics.test.ts::a healthy application layer [REQ-100] > every level starts healthy": {
+   "kind": "test",
+   "hash": "f5f0d3d9c55a28d0",
+   "asserts": 2,
+   "literals": [
+    "\"every level starts healthy\"",
+    "\"healthy\"",
+    "\"healthy\"",
+    "\"healthy\"",
+    "\"healthy\"",
+    "\"lb\"",
+    "\"mesh\"",
+    "\"microservices\"",
+    "\"multiregion\"",
+    "\"stateless\"",
+    "\"svc-license\"",
+    "\"svc-license\"",
+    "\"svc-portal\"",
+    "\"svc-portal\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::<import:49ee9796>": {
+   "kind": "support",
+   "hash": "49ee979651c1e36b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::<import:6a7847e7>": {
+   "kind": "support",
+   "hash": "6a7847e79e3d2035",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::<import:cca56744>": {
+   "kind": "support",
+   "hash": "cca56744de7969e4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::<import:cda8e525>": {
+   "kind": "support",
+   "hash": "cda8e5254ddd04c5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::<import:f6092d2d>": {
+   "kind": "support",
+   "hash": "f6092d2dfb36a5d9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::=answer": {
+   "kind": "support",
+   "hash": "ce45e1fd149aa583",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::=CASES": {
+   "kind": "support",
+   "hash": "b4c745f94af77d7d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::=fix": {
+   "kind": "support",
+   "hash": "149b76b8b820199a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::=lookAround": {
+   "kind": "support",
+   "hash": "dfe7967bb1b9e65d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::=open": {
+   "kind": "support",
+   "hash": "c2b10d8d5ab8511e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::=report": {
+   "kind": "support",
+   "hash": "c5f2ee512efaf638",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::=Run": {
+   "kind": "support",
+   "hash": "11d97e96fa2e06a6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::=score": {
+   "kind": "support",
+   "hash": "0709ab499a046d28",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::=sheet": {
+   "kind": "support",
+   "hash": "b7b48c487b774964",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::each sheet has a way back that is the layer's own [REQ-100] [REQ-088] > <stmt:774828f2>": {
+   "kind": "support",
+   "hash": "774828f266128bd5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::each sheet has a way back that is the layer's own [REQ-100] [REQ-088] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::each sheet has a way back that is the layer's own [REQ-100] [REQ-088] > =WAYS": {
+   "kind": "support",
+   "hash": "7f59ab9f06bec255",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::every application sheet is valid and cannot be passed by not knowing [REQ-100] > <stmt:5ef26e4f>": {
+   "kind": "support",
+   "hash": "5ef26e4f2884279c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::every application sheet is valid and cannot be passed by not knowing [REQ-100] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::every application sheet is valid and cannot be passed by not knowing [REQ-100] > the seven are in the list of all templates, and a world without the layer says why": {
+   "kind": "test",
+   "hash": "0582d9c3b107eb3b",
+   "asserts": 4,
+   "literals": [
+    "\"7\"",
+    "\"7\"",
+    "\"breaker-stuck-open\"",
+    "\"lb\"",
+    "\"region-down\"",
+    "\"retry-storm\"",
+    "\"sidecar-crash\"",
+    "\"the seven are in the list of all templates, and a world without the layer says why\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::recovery first beats cause first beats doing nothing [REQ-100] [REQ-088] > <stmt:8c028388>": {
+   "kind": "support",
+   "hash": "8c02838899e40061",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/app-scenarios.test.ts::recovery first beats cause first beats doing nothing [REQ-100] [REQ-088] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
   "tests/spec/bacnet-protocol.test.ts::<import:0d18178d>": {
    "kind": "support",
    "hash": "0d18178d17001cce",
@@ -95896,6 +97064,16 @@
    "added": "2026-11-04",
    "amended_by": null
   },
+  "tests/spec/calibration.test.ts::<import:6e4fb6db>": {
+   "kind": "support",
+   "hash": "6e4fb6dbc66a86a7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
   "tests/spec/calibration.test.ts::<import:bcc3fae8>": {
    "kind": "support",
    "hash": "bcc3fae8163d3031",
@@ -95988,13 +97166,13 @@
   },
   "tests/spec/calibration.test.ts::=WORLDS": {
    "kind": "support",
-   "hash": "14ca1b3f756879d3",
+   "hash": "5f383b667c6ea2a8",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": "0115-sdn-network-layer-amend-tests.md"
+   "added": "2026-11-07",
+   "amended_by": "0121-application-layer-and-calls.md"
   },
   "tests/spec/calibration.test.ts::a quick wrong answer earns nothing for being quick [REQ-070] > <suite>": {
    "kind": "support",
@@ -96116,10 +97294,11 @@
   },
   "tests/spec/calibration.test.ts::every built-in scenario tells an agent that knows from one that does not [REQ-070] [REQ-007] > the scenarios that give full marks for the answer alone are exactly these (they measure diagnosis, not operation)": {
    "kind": "test",
-   "hash": "bb27e1ffbf259180",
+   "hash": "accab2cc7f3aaaf5",
    "asserts": 1,
    "literals": [
     "\"100\"",
+    "\"180000\"",
     "\"fan-failure-throttle\"",
     "\"fan-failure-throttle\"",
     "\"plant-loop-down\"",
@@ -96130,8 +97309,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-04",
-   "amended_by": "0076-operation-scoring-amend-tests.md"
+   "added": "2026-11-07",
+   "amended_by": "0121-application-layer-and-calls.md"
   },
   "tests/spec/campus-light.test.ts::<import:0f465da4>": {
    "kind": "support",
@@ -97600,6 +98779,16 @@
    "added": "2026-11-04",
    "amended_by": null
   },
+  "tests/spec/controllability.test.ts::<import:6e4fb6db>": {
+   "kind": "support",
+   "hash": "6e4fb6dbc66a86a7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
   "tests/spec/controllability.test.ts::<import:900c38ab>": {
    "kind": "support",
    "hash": "900c38abb7d441db",
@@ -97680,6 +98869,16 @@
    "added": "2026-11-06",
    "amended_by": null
   },
+  "tests/spec/controllability.test.ts::<stmt:5c3f9840>": {
+   "kind": "support",
+   "hash": "5c3f9840ecfd18a1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
   "tests/spec/controllability.test.ts::<stmt:87b66dca>": {
    "kind": "support",
    "hash": "87b66dca0d56a285",
@@ -97712,13 +98911,13 @@
   },
   "tests/spec/controllability.test.ts::=Drive": {
    "kind": "support",
-   "hash": "f35c17233a188cca",
+   "hash": "9b219f73450e5642",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-04",
-   "amended_by": null
+   "added": "2026-11-07",
+   "amended_by": "0121-application-layer-and-calls.md"
   },
   "tests/spec/controllability.test.ts::=driveKeys": {
    "kind": "support",
@@ -97872,7 +99071,7 @@
   },
   "tests/spec/controllability.test.ts::an agent really controls each thing on the list [REQ-069] [REQ-007] > %s changes the world and is scored as the action it is": {
    "kind": "test",
-   "hash": "04384ab874fcb0c0",
+   "hash": "6549938d56595968",
    "asserts": 5,
    "literals": [
     "\"%s changes the world and is scored as the action it is\"",
@@ -97883,6 +99082,7 @@
     "\"300\"",
     "\"not already changed\"",
     "\"not already changed\"",
+    "\"wait\"",
     "\"|\"",
     "false",
     "false",
@@ -97897,8 +99097,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-04",
-   "amended_by": null
+   "added": "2026-11-07",
+   "amended_by": "0121-application-layer-and-calls.md"
   },
   "tests/spec/controllability.test.ts::an agent really controls each thing on the list [REQ-069] [REQ-007] > <suite>": {
    "kind": "support",
@@ -98130,11 +99330,13 @@
   },
   "tests/spec/controllability.test.ts::the list of what can be controlled is made of real things [REQ-069] > every world command is either on the list or named as no operator's": {
    "kind": "test",
-   "hash": "ec798cccb715edce",
+   "hash": "7203ecc6916ba67e",
    "asserts": 2,
    "literals": [
     "\"breaker.reset\"",
     "\"breaker.reset\"",
+    "\"circuit.reset\"",
+    "\"circuit.reset\"",
     "\"db.failover\"",
     "\"db.failover\"",
     "\"db.promote\"",
@@ -98158,10 +99360,16 @@
     "\"k8s.rollout_restart\"",
     "\"k8s.scale\"",
     "\"k8s.scale\"",
+    "\"lb.drain\"",
+    "\"lb.drain\"",
+    "\"lb.enable\"",
+    "\"lb.enable\"",
     "\"link.admin\"",
     "\"link.admin\"",
     "\"load.set\"",
     "\"load.set\"",
+    "\"mesh.rollback\"",
+    "\"mesh.rollback\"",
     "\"net.set\"",
     "\"net.set\"",
     "\"outdoor.set\"",
@@ -98174,6 +99382,8 @@
     "\"policy.set\"",
     "\"power.set\"",
     "\"power.set\"",
+    "\"region.failover\"",
+    "\"region.failover\"",
     "\"sdn.failover\"",
     "\"sdn.failover\"",
     "\"sdn.sync\"",
@@ -98191,8 +99401,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": "0114-container-layer-amend-tests.md"
+   "added": "2026-11-07",
+   "amended_by": "0121-application-layer-and-calls.md"
   },
   "tests/spec/controllability.test.ts::the list of what can be controlled is made of real things [REQ-069] > rows have unique ids and name only blocks, tools and actions that exist": {
    "kind": "test",
@@ -112472,6 +113682,16 @@
    "added": "2026-11-04",
    "amended_by": null
   },
+  "tests/spec/physics-golden.test.ts::<import:6e4fb6db>": {
+   "kind": "support",
+   "hash": "6e4fb6dbc66a86a7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
   "tests/spec/physics-golden.test.ts::<import:7978a0e9>": {
    "kind": "support",
    "hash": "7978a0e963385abe",
@@ -112594,13 +113814,13 @@
   },
   "tests/spec/physics-golden.test.ts::=worlds": {
    "kind": "support",
-   "hash": "679006dd37e7f496",
+   "hash": "00d3e5aa49a312ff",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": "0114-container-layer-amend-tests.md"
+   "added": "2026-11-07",
+   "amended_by": "0121-application-layer-and-calls.md"
   },
   "tests/spec/physics-golden.test.ts::=WRITE": {
    "kind": "support",
@@ -115704,7 +116924,7 @@
   },
   "tests/spec/sdn-physics.test.ts::the cloud-native layer [REQ-097] > a policy deployed with a deny cuts just that pair of services, and policy_revert undoes it": {
    "kind": "test",
-   "hash": "ddc53c54cada0cef",
+   "hash": "fd207279fe3d6abe",
    "asserts": 6,
    "literals": [
     "\"0\"",
@@ -115742,12 +116962,13 @@
     "\"svc-portal\"",
     "true",
     "true",
+    "true",
     "true"
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-07",
+   "amended_by": "0121-application-layer-and-calls.md"
   },
   "tests/spec/sdn-physics.test.ts::the cloud-native layer [REQ-097] > an ingress that is down refuses requests from outside only; a restart brings it back after 20 seconds": {
    "kind": "test",
@@ -116688,11 +117909,11 @@
   },
   "tests/spec/service-tools.test.ts::every tool is described in the standard order and tagged with how real it is [REQ-080] [REQ-086] > a summary, when to use and not, an example, access and cost; realism on all of them": {
    "kind": "test",
-   "hash": "b7d6b4dea8a5b256",
+   "hash": "f375420893907b2b",
    "asserts": 8,
    "literals": [
-    "\"58\"",
-    "\"58\"",
+    "\"66\"",
+    "\"66\"",
     "\"Access: read-only\"",
     "\"Access: read-only\"",
     "\"Access:\"",
@@ -116726,8 +117947,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": "0114-container-layer-amend-tests.md"
+   "added": "2026-11-07",
+   "amended_by": "0121-application-layer-and-calls.md"
   },
   "tests/spec/service-tools.test.ts::the fake shell prints what the state says, in the shape of Linux [REQ-087] > <suite>": {
    "kind": "support",

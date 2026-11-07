@@ -4,6 +4,7 @@
  * (restart a process, free disk, remount, reboot) are `host.act`; they are applied here to the state the world
  * hands over, together with the faults they can clear.
  */
+import { MESH_PROCESS, SESSION_PROCESS, SIDECAR_PROCESS, sidecarOf } from "./app";
 import type { Entity } from "./blueprint";
 import type { Fault, FaultType } from "./faults";
 import {
@@ -80,6 +81,14 @@ function cpuOf(state: EntityState): number {
   return 0;
 }
 
+/** Whether an application instance on the host has a sidecar next to it (the mesh). */
+const hasSidecar = (world: WorldReader, id: string): boolean =>
+  world.index
+    .incoming(id, "hosted_on")
+    .some(
+      (l) => world.index.find(l.from)?.kind === "app_instance" && sidecarOf(world.index, l.from),
+    );
+
 /** The processes of what is hosted on a host besides services: a database instance, a Kubernetes node, a CNI plugin, an SDN controller, an ingress. */
 function hostedProcesses(world: WorldReader, id: string): string[] {
   const kinds = new Set(
@@ -91,6 +100,9 @@ function hostedProcesses(world: WorldReader, id: string): string[] {
     ...(kinds.has("sdn_controller") ? [SDN_PROCESS] : []),
     ...(kinds.has("ingress") ? [INGRESS_PROCESS] : []),
     ...(kinds.has("k8s_node") ? K8S_PROCESSES : []),
+    ...(kinds.has("session_store") ? [SESSION_PROCESS] : []),
+    ...(kinds.has("mesh_control") ? [MESH_PROCESS] : []),
+    ...(hasSidecar(world, id) ? [SIDECAR_PROCESS] : []),
   ];
 }
 

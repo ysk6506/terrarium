@@ -5,6 +5,7 @@ import { serviceDef } from "../service";
 import { hostVerdict } from "../service-health";
 import { has, parseArgs } from "./args";
 import { ctime, dateAt } from "./clock";
+import { lbHealthReply } from "./cmd-lb";
 import { skewAt } from "./journal";
 import { portOf } from "./layout";
 import { addressOf, IP, pingable, resolveName, resolverAnswers, resolverOf } from "./net-names";
@@ -173,11 +174,12 @@ export function curl(c: Cmd): R {
       .split(/[/:?]/)[0] ?? "";
   const https = url.startsWith("https");
   const port = Number(/^\w+:\/\/[^/:]+:(\d+)/.exec(url)?.[1] ?? (https ? 443 : 80));
-  const reply = lookupReply(c, host, port);
+  const path = /^\w+:\/\/[^/]+(\/[^?#]*)/.exec(url)?.[1] ?? "/";
+  const reply = lookupReply(c, host, port, path);
   return formatCurl(p, reply);
 }
 
-function lookupReply(c: Cmd, host: string, port: number): Reply {
+function lookupReply(c: Cmd, host: string, port: number, path: string): Reply {
   const local = host === "localhost" || host === "127.0.0.1";
   if (!IP.test(host) && !local && !c.h.os.dnsOk)
     return { kind: "error", exit: 6, message: `curl: (6) Could not resolve host: ${host}` };
@@ -192,6 +194,8 @@ function lookupReply(c: Cmd, host: string, port: number): Reply {
       exit: 7,
       message: `curl: (7) Failed to connect to ${host} port ${port}: Connection refused`,
     };
+  const health = path === "/healthz" ? lbHealthReply(c.h.world, t.service) : undefined;
+  if (health) return { kind: "http", ...health };
   return serviceReply(c, t.service, host, port);
 }
 

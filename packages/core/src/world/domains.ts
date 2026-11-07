@@ -138,6 +138,14 @@ export const FAULT_DOMAIN: Readonly<Record<FaultType, Domain>> = {
   k8s_image_pull_failure: "service_os",
   k8s_disk_pressure: "service_os",
   k8s_cni_failure: "service_os",
+  lb_backend_flapping: "service_os",
+  session_store_down: "service_os",
+  circuit_breaker_stuck_open: "service_os",
+  retry_storm: "service_os",
+  sidecar_crash: "service_os",
+  mesh_control_down: "service_os",
+  region_down: "service_os",
+  replication_lag_high: "service_os",
 };
 
 /** The domain of the mistakes people make (a wrong VLAN, a shut port, a PDU outlet switched off). */
