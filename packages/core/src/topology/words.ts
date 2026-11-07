@@ -59,7 +59,52 @@ const COUNTING: Readonly<Record<TopoKind, readonly [string, string]>> = {
   k8s_cluster: ["쿠버네티스 클러스터", "개"],
   k8s_node: ["쿠버네티스 노드", "개"],
   k8s_workload: ["워크로드", "개"],
+  app_instance: ["앱 인스턴스", "개"],
+  load_balancer: ["로드 밸런서", "개"],
+  session_store: ["세션 저장소", "개"],
+  circuit_breaker: ["서킷 브레이커", "개"],
+  mesh_sidecar: ["사이드카", "개"],
+  mesh_control: ["메시 컨트롤 플레인", "개"],
+  region: ["리전", "곳"],
 };
+
+/**
+ * The column heads, short: five characters or fewer where the stage allows it, so that twenty columns fit across the board
+ * (REQ-100). The full label stays on the stage (it is what a screen reader and the tooltip say).
+ */
+const STAGE_SHORT: Readonly<Record<string, string>> = {
+  feed: "전원",
+  plant: "플랜트",
+  unit: "냉방기",
+  room: "서버룸",
+  service: "서비스",
+  callee: "부르는 곳",
+  callee2: "그 아래",
+  workload: "워크로드",
+  workload2: "그 아래",
+  front: "앞단",
+  region: "리전",
+  sidecar: "사이드카",
+  replica: "복제본",
+  cluster: "클러스터",
+  knode: "노드",
+  database: "DB",
+  instance: "DB 노드",
+  pool: "스토리지",
+  door: "인그레스",
+  segment: "세그먼트",
+  controller: "SDN",
+  vtep: "VTEP",
+  core: "코어",
+  spine: "스파인",
+  tor: "ToR",
+  host: "서버",
+  virtual: "VM",
+};
+
+/** The short head of a column: the stage's own short word, or its full label when it has none. */
+export const stageHead = (stage: { readonly id: string; readonly label: string }): string =>
+  STAGE_SHORT[stage.id] ?? stage.label;
 
 /** What a kind of equipment is called when counted ("랙", "냉방기"). */
 export const nounOf = (kind: TopoKind): string => COUNTING[kind][0];

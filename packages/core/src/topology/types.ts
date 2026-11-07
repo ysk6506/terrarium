@@ -50,7 +50,14 @@ export type TopoKind =
   | "ingress"
   | "k8s_cluster"
   | "k8s_node"
-  | "k8s_workload";
+  | "k8s_workload"
+  | "app_instance"
+  | "load_balancer"
+  | "session_store"
+  | "circuit_breaker"
+  | "mesh_sidecar"
+  | "mesh_control"
+  | "region";
 
 /** What the board reads of a world: the part of `WorldReader` that tells what is, and how it is doing. */
 export interface TopologySource {

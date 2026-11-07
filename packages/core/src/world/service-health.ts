@@ -9,7 +9,9 @@
  * lookup is wrong is *slow* for the services that feel it. How many dead hosts stop a service depends on its
  * kind: a stateful service stops with any one of its places, a request or batch service only when none is left.
  */
+import { appHealth } from "./app-health";
 import type { Entity } from "./blueprint";
+import { callsHealth } from "./calls-health";
 import { dependenciesOf } from "./db";
 import { dependencyVerdict } from "./db-health";
 import { workloadsOfService } from "./k8s";
@@ -324,6 +326,11 @@ function fromDeps(
 
 /** How a service is doing now. */
 export function serviceHealth(world: WorldReader, serviceId: string): ServiceHealth {
+  return healthOf(world, serviceId, new Set());
+}
+
+/** `seen` holds the services being worked out above this one, so a ring of calls does not call itself. */
+function healthOf(world: WorldReader, serviceId: string, seen: ReadonlySet<string>): ServiceHealth {
   const entity = world.index.entity(serviceId);
   const def = serviceDef(entity);
   const state = world.stateAs(serviceId, "service");
@@ -334,14 +341,24 @@ export function serviceHealth(world: WorldReader, serviceId: string): ServiceHea
   const path = fromPath(world, entity);
   const deps = fromDeps(world, entity, def);
   const overlay = sdnHealth(world, entity, def);
+  const app = appHealth(world, entity);
+  const inside = new Set(seen).add(serviceId);
+  const calls = callsHealth(world, entity, (id) =>
+    inside.has(id) ? "healthy" : healthOf(world, id, inside).status,
+  );
   const hosts: ServiceStatus =
     onCluster && verdicts.length === 0 ? "healthy" : fromHosts(def.kind, verdicts);
-  const status = worse(worse(worse(hosts, path.status), deps.status), overlay.status);
+  const status = [path, deps, overlay, app, calls].reduce<ServiceStatus>(
+    (acc, v) => worse(acc, v.status),
+    hosts,
+  );
   const reasons = [
     ...verdicts.flatMap((v) => (v.why ? [v.why] : [])),
     ...(path.reason ? [path.reason] : []),
     ...deps.reasons,
     ...overlay.reasons,
+    ...app.reasons,
+    ...calls.reasons,
   ];
   return {
     status,

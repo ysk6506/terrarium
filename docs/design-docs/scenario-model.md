@@ -2,7 +2,7 @@
 title: 시나리오 모델
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/scenario/model.ts
   - packages/core/src/scenario/blocks.ts
@@ -10,12 +10,12 @@ covers:
   - packages/core/src/scenario/library-facility.ts
   - packages/core/src/scenario/library-domains.ts
 verification_log:
-  - "2026-11-06: library-db.ts의 템플릿 여섯, blocks의 조건 필드, 행동 종류 넷을 더했다 (REQ-095)"
-  - "2026-11-06: 내장 묶음 SDN·클라우드 네이티브 여섯과 policy_set 블록, 행동 종류 넷을 더했다 (REQ-097)"
   - "2026-11-06: REQ-096: model.ts의 행동 종류 다섯과 library-k8s.ts의 템플릿 다섯을 더했다"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
-covers_hash: 4e75a45b9ebec442
+  - "2026-11-07: REQ-100 애플리케이션 층이 덮는 코드가 바뀐 것을 확인했고 이 문서의 내용은 그대로 맞다"
+  - "2026-11-07: o5 합치기 (애플리케이션 층)"
+covers_hash: a6a3ee03ddfedbda
 ---
 # 시나리오 모델 (REQ-033, REQ-034)
 

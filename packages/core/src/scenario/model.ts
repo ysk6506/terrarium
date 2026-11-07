@@ -49,7 +49,12 @@ export type ActionKind =
   | "k8s_scale"
   | "k8s_cordon"
   | "k8s_drain"
-  | "k8s_delete_pod";
+  | "k8s_delete_pod"
+  | "lb_drain"
+  | "lb_enable"
+  | "circuit_reset"
+  | "mesh_rollback"
+  | "region_failover";
 
 export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   power_off: "전원 끄기",
@@ -82,6 +87,11 @@ export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   k8s_cordon: "노드 cordon·uncordon",
   k8s_drain: "노드 drain",
   k8s_delete_pod: "파드 지우기",
+  lb_drain: "백엔드 빼기(drain)",
+  lb_enable: "백엔드 되돌리기",
+  circuit_reset: "서킷 브레이커 리셋",
+  mesh_rollback: "메시 설정 되돌리기",
+  region_failover: "리전 옮기기",
 };
 
 export const ACTION_KINDS = Object.keys(ACTION_LABELS) as ActionKind[];

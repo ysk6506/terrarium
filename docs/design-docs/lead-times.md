@@ -2,17 +2,17 @@
 title: 고장 종류별 리드타임 — 넘기면 얼마나 걸려 사라지나
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/world/lead-times.ts
   - packages/core/src/world/domains.ts
-covers_hash: 389f824f9c646e3f
+covers_hash: 2cb1ed649fef0046
 verification_log:
-  - "2026-11-06: LEAD_ROWS의 새 행 여덟을 표에 더했다 (REQ-095)"
-  - "2026-11-06: LEAD_ROWS의 새 행 일곱을 표에 더했다 (REQ-097)"
   - "2026-11-06: REQ-096: 컨테이너 고장 여덟의 행을 LEAD_ROWS와 대조해 더했다 (리드타임은 모두 원격)"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
+  - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
+  - "2026-11-07: o5 합치기 (애플리케이션 층)"
 ---
 # 고장 종류별 리드타임 (ADR-0100)
 
@@ -126,7 +126,7 @@ verification_log:
 | nfv_firewall_overload (가상 방화벽 과부하) | 네트워크팀 | 1h | 4h | 1d | 용량을 늘리거나 분산 | 서비스를 다른 경로로 |
 | network_policy_deny (잘못된 정책 배포, 설정 실수라 고장 목록에 없어 넘길 수 없다) | 네트워크팀 | 15m | 45m | 2h | 변경 승인과 되돌리기 | 정책 되돌리기(`policy_revert`) |
 
-## 서비스/OS (고장 10 + 데이터베이스 5 + 컨테이너 8)
+## 서비스/OS (고장 10 + 데이터베이스 5 + 컨테이너 8 + 애플리케이션 8)
 | 고장 | 누가 | 최소 | 보통 | 최대 | 임시 조치 |
 |---|---|---|---|---|---|
 | 디스크 꽉 참, 로그 폭주 | OS팀 | 15m | 30m | 1h | 로그 정리 |
@@ -148,6 +148,14 @@ verification_log:
 | k8s_image_pull_failure (이미지 풀 실패) | OS/서비스팀 | 30m | 1h | 4h | 레지스트리·네트워크 복구 | 도는 파드는 건드리지 않는다 |
 | k8s_disk_pressure (kubelet 디스크 압박) | OS/서비스팀 | 15m | 30m | 2h | 로그 정리·디스크 확장 | 내 도메인이면 디스크를 비우고 uncordon |
 | k8s_cni_failure (네트워크 플러그인) | OS/서비스팀 | 30m | 1h | 4h | containerd·CNI 다시 시작 | 노드를 drain 해 파드를 옮긴다 |
+| lb_backend_flapping (백엔드 플래핑) | OS/서비스팀 | 15m | 30m | 2h | 백엔드 점검·고침 | 로테이션에서 빼서 요청을 다른 백엔드로 (`lb_drain`) |
+| session_store_down (세션 저장소) | OS/서비스팀 | 15m | 30m | 2h | redis 다시 시작 | 로그인이 풀린 채 기다린다 |
+| circuit_breaker_stuck_open (브레이커 굳음) | OS/서비스팀 | 15m | 30m | 2h | 설정 점검 | 브레이커 리셋 (`breaker_reset`) |
+| retry_storm (재시도 폭주) | OS/서비스팀 | 15m | 45m | 2h | 잘못된 메시 설정 되돌리기 | `mesh_rollback` |
+| sidecar_crash (사이드카 죽음) | OS/서비스팀 | 15m | 30m | 2h | envoy 다시 시작 | 로드 밸런서가 3번 실패 뒤 인스턴스를 뺀다 |
+| mesh_control_down (메시 컨트롤 플레인) | OS/서비스팀 | 30m | 1h | 4h | istiod 다시 시작 | 트래픽은 그대로 흐른다. 새 설정만 못 민다 |
+| region_down (리전 다운, 외부) | 클라우드팀 | 1h | 4h | 1d | 리전 복구 | `region_failover`로 바로 다른 리전으로 (기다리면 5분 뒤 알아서) |
+| replication_lag_high (복제 지연) | OS/서비스팀 | 30m | 2h | 8h | 복제 원인 찾아 고침 | 밀리지 않은 리전에 트래픽 고정 |
 
 ## 정직한 한계
 - 값은 업계 통상 SLA와 경험값이며 사내 계약·사업장 실측으로 바꿔야 한다. 지금 바꿀 수 있는 것은 위의 네 가지(벤더 SLA, 예비 부품 모두 있음·없음, 야간·주말 가산, 일을 맡는 때)뿐이다.

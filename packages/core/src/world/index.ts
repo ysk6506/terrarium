@@ -1,6 +1,30 @@
 /** core.world: the world blueprint, entities, dynamic state, event log and snapshots (REQ-001, REQ-014). */
 export {
-  ALLOWED_PARENTS,
+  appInstancesOf,
+  breakerDef,
+  breakerEnds,
+  breakerOfLink,
+  breakers,
+  callDef,
+  callsIn,
+  hostOfApp,
+  instanceOfSidecar,
+  LB_FAIL_CHECKS,
+  LB_RECOVER_CHECKS,
+  lbOf,
+  loadBalancerDef,
+  MESH_REVISION,
+  meshControls,
+  REGION_RECOVER_S,
+  RELOGIN_S,
+  regionOf,
+  regionsOf,
+  STALE_LAG_S,
+  servicesBehind,
+  sessionStoreOf,
+  sidecarOf,
+} from "./app";
+export {
   BLUEPRINT_SCHEMA_VERSION,
   type Blueprint,
   ENTITY_KINDS,
@@ -15,15 +39,11 @@ export {
   type Link,
   type LinkKind,
   MODELLED_KINDS,
-  PLACEMENT_OF,
   type Placement,
   type PropValue,
   type RackMountedKind,
-  type SpaceKind,
-  type VirtualKind,
 } from "./blueprint";
 export {
-  BULK_SWITCH_U,
   type BulkLoad,
   bulkOf,
   bulkPowerW,
@@ -44,61 +64,38 @@ export {
   controllersOf,
   DB_ROLE_LABELS,
   DB_SHAPE_LABELS,
-  DB_SHAPES,
-  type DbClusterDef,
-  type DbRole,
-  type DbShape,
   type DbStatus,
-  DEFAULT_REBUILD_S,
   dbClusterDef,
   dbClusterProps,
-  dependenciesOf,
   hostedOn,
   instancesOf,
   MULTIPATH_SWITCH_S,
   nodesOfPool,
-  type PoolDef,
   poolDef,
   poolOfInstance,
   poolProps,
-  RESTORE_FAIL_S,
   RESTORE_S,
-  roleOfProps,
-  STANDBY_START_S,
 } from "./db";
 export {
   backupAgeS,
-  backupNumber,
   bestCandidate,
-  type DbCommand,
-  isDbCommand,
 } from "./db-act";
-export {
-  clusterSummary,
-  clusterVerdict,
-  type DepVerdict,
-  dependencyVerdict,
-  poolVerdict,
-} from "./db-health";
+export {} from "./db-health";
 export { blueprintDigest } from "./digest";
 export {
   DOMAIN_IDS,
   DOMAINS,
   type Domain,
-  type DomainInfo,
   domainChoices,
   domainInfo,
-  FAULT_DOMAIN,
   faultDomain,
   isDomain,
-  MISTAKE_DOMAIN,
   parseDomain,
 } from "./domains";
 export {
   diagnosisLabel,
   FAULT_SPECS,
   type Fault,
-  type FaultParamSpec,
   type FaultSpec,
   type FaultType,
   faultSpec,
@@ -108,10 +105,9 @@ export {
   isTaskType,
   MISTAKE_SPECS,
   type MistakeType,
-  TASK_SPECS,
-  type TaskType,
   withParamDefaults,
 } from "./faults";
+
 export {
   FIRMWARE_COMPONENTS,
   FIRMWARE_LABELS,
@@ -207,6 +203,7 @@ export {
 } from "./k8s-sched";
 export { KIND_LABELS, kindList, LINK_LABELS } from "./labels";
 export {
+  type AppBuild,
   builtChip,
   CHIP_COUNT,
   type ChipBuild,
@@ -463,6 +460,7 @@ export {
   type VtepState,
   type WorldState,
 } from "./state";
+export type { BreakerState } from "./state-app";
 export { hasErrors, type Issue, validateBlueprint } from "./validate";
 export { isOwned, landProblem } from "./validate-campus";
 export {

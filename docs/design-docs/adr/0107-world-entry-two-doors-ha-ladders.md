@@ -2,7 +2,7 @@
 title: ADR-0107 세계 만들기 입구를 둘로 가르고, 서비스부터는 층마다 HA 사다리에서 고른다 — 모르는 층은 알아서
 kind: decision
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 enforced_by:
   - apps/web/src/logic/world-shape/world-shape.test.ts
   - packages/core/src/sources/worldgen/shaped.test.ts
@@ -17,9 +17,15 @@ enforced_by:
   - tests/spec/k8s-physics.test.ts
   - tests/spec/k8s-scenarios.test.ts
   - tests/spec/k8s-worldgen.test.ts
+  - tests/spec/app-physics.test.ts
+  - tests/spec/app-scenarios.test.ts
+  - packages/core/src/sources/worldgen/shaped-app.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 3941f276858239b0
+verification_log:
+  - "2026-11-07: REQ-100 애플리케이션 층: 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
+  - "2026-11-07: o5 합치기 (애플리케이션 층)"
 ---
 # ADR-0107 세계 만들기 입구를 둘로 가르고, 서비스부터는 층마다 HA 사다리에서 고른다
 

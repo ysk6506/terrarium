@@ -11,6 +11,7 @@
 import type { ScenarioDoc } from "@terrarium/core/scenario";
 import { TOOL_SPECS } from "@terrarium/core/tools";
 import { domainInfo, faultDomain, formatSpan, standsOnCluster } from "@terrarium/core/world";
+import { appPath } from "./probes-app";
 import { Session, type SessionConfig } from "./session";
 
 type Config = Omit<SessionConfig, "tools" | "seed"> & { readonly seed?: number };
@@ -56,6 +57,10 @@ export interface RecoveryPath {
     | "policy_revert"
     | "ingress_restart"
     | "cni_restart"
+    | "lb_drain"
+    | "breaker_reset"
+    | "mesh_rollback"
+    | "region_failover"
     | "kubectl_rollout_restart"
     | "kubectl_scale"
     | "kubectl_drain"
@@ -348,7 +353,12 @@ export function recoveryPath(config: Config): RecoveryPath {
 /** The ways back that are a layer's own tools: the database, the cluster, the overlay, and at last the team. */
 function layerPath(config: Config): RecoveryPath {
   return (
-    databasePath(config) ?? k8sPath(config) ?? overlayPath(config) ?? handOver(config) ?? NO_WAY
+    databasePath(config) ??
+    k8sPath(config) ??
+    overlayPath(config) ??
+    appPath(config) ??
+    handOver(config) ??
+    NO_WAY
   );
 }
 

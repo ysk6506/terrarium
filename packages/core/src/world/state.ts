@@ -9,6 +9,17 @@ import type { NetPatch } from "./net-config";
 import type { HostOs } from "./os";
 import type { ServiceStatus } from "./service";
 import {
+  APP_FACTORIES,
+  type AppInstanceState,
+  type BreakerState,
+  type LoadBalancerState,
+  type MeshControlState,
+  placeApp,
+  type RegionState,
+  type SessionStoreState,
+  type SidecarState,
+} from "./state-app";
+import {
   DB_FACTORIES,
   type DbClusterState,
   type DbInstanceState,
@@ -262,6 +273,13 @@ export type EntityState =
   | K8sClusterState
   | K8sNodeState
   | K8sWorkloadState
+  | AppInstanceState
+  | LoadBalancerState
+  | SessionStoreState
+  | BreakerState
+  | SidecarState
+  | MeshControlState
+  | RegionState
   | SiteState
   | PlainState;
 
@@ -435,6 +453,7 @@ const FACTORIES: Partial<Record<EntityKind, Factory>> = {
   ...DB_FACTORIES,
   ...SDN_FACTORIES,
   ...K8S_FACTORIES,
+  ...APP_FACTORIES,
 };
 
 /** A blueprint can say how loaded a server is and which firmware versions it was built with. */
@@ -467,6 +486,7 @@ export function initialState(index: BlueprintIndex, catalog: Catalog): WorldStat
     placeDatabase(state, entity, index);
     placeSdn(state, entity, index);
     placeK8sEntity(state, entity, index);
+    placeApp(state, entity, index);
     if (state.kind === "rack") state.util = bulkOf(entity)?.util ?? 0;
     if (state.kind === "cooling_unit" && typeof entity.props.setpointC === "number")
       state.setpointC = entity.props.setpointC;

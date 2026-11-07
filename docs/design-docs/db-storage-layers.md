@@ -2,7 +2,7 @@
 title: 데이터베이스 층과 스토리지 HA 층 — 서비스가 기대는 두 겹
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/world/db.ts
   - packages/core/src/world/db-act.ts
@@ -18,13 +18,13 @@ covers:
   - packages/core/src/sources/worldgen/shaped-db.ts
   - packages/core/src/topology/layer-network.ts
   - packages/core/src/oracle/recovery.ts
-covers_hash: e82be41fe012d3e5
+covers_hash: 5275a14f9514c5ea
 verification_log:
-  - "2026-11-06: layer-network.ts의 링크 방향 정리는 DB 단계의 그림이 같다. 문서는 그대로 맞다 (REQ-097)"
-  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
   - "2026-11-06: shell-db.ts가 world/os/cmd-db.ts로 옮겨진 것을 covers에 맞췄다(psql 질의 네 가지, 흉내 밖 세기 추가, 동작은 같다)"
   - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
+  - "2026-11-07: REQ-100 애플리케이션 층이 덮는 코드가 바뀐 것을 확인했고 이 문서의 내용은 그대로 맞다"
+  - "2026-11-07: o5 합치기 (애플리케이션 층)"
 ---
 # 데이터베이스 층과 스토리지 HA 층 (REQ-095, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0111](adr/0111-db-storage-layers-amend-tests.md))
 

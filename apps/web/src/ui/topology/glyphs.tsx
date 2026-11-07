@@ -293,6 +293,43 @@ const Door = ({ state }: GlyphProps) => (
   </>
 );
 
+/** A balancer: one box that fans out to two below it. */
+const Balancer = ({ state }: GlyphProps) => (
+  <>
+    <Box x={0} y={-2} w={18} d={8} z={6} tone="steel" />
+    <Box x={-9} y={9} w={8} d={6} z={5} tone="olive" />
+    <Box x={9} y={9} w={8} d={6} z={5} tone="olive" />
+    <Led x={-6} y={-8} state={state} />
+  </>
+);
+
+/** A replica of an application: a single small box with a light. */
+const Replica = ({ state }: GlyphProps) => (
+  <>
+    <Box x={0} y={7} w={12} d={9} z={8} tone="olive" />
+    <Led x={-3} y={-1} state={state} />
+  </>
+);
+
+/** A breaker on a call: a gate with a bar across. */
+const Breaker = ({ state }: GlyphProps) => (
+  <>
+    <Box x={-8} y={6} w={5} d={8} z={14} tone="steel" />
+    <Box x={8} y={6} w={5} d={8} z={14} tone="steel" />
+    <Box x={0} y={0} w={20} d={4} z={3} tone="blue" />
+    <Led x={0} y={-6} state={state} />
+  </>
+);
+
+/** A region: a wide flat plate with a smaller one on top. */
+const Region = ({ state }: GlyphProps) => (
+  <>
+    <Box x={0} y={9} w={34} d={10} z={4} tone="blue" />
+    <Box x={0} y={1} w={20} d={7} z={6} tone="blue" />
+    <Led x={-10} y={-5} state={state} />
+  </>
+);
+
 type Glyph = (p: GlyphProps) => React.ReactNode;
 
 const SINGLE: Readonly<Record<TopoKind, Glyph>> = {
@@ -326,6 +363,13 @@ const SINGLE: Readonly<Record<TopoKind, Glyph>> = {
   cni: Vm,
   network_policy: Segment,
   ingress: Door,
+  app_instance: Replica,
+  load_balancer: Balancer,
+  session_store: DbInstance,
+  circuit_breaker: Breaker,
+  mesh_sidecar: Replica,
+  mesh_control: Controller,
+  region: Region,
 };
 
 /** Many of a kind: racks stand in a row, servers in a stack; the rest are the single glyph on a stack of bases. */

@@ -15,6 +15,8 @@ import { type Laying, link, slugOf } from "./shaped-db";
 /** A service the overlay is laid for, and where its nodes stand (VMs, or servers when there are none). */
 export interface PlacedService {
   readonly id: string;
+  /** The key the person gave it. */
+  readonly key: string;
   readonly name: string;
   readonly kind: string;
   readonly nodes: readonly string[];

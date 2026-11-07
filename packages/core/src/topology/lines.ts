@@ -146,6 +146,38 @@ const READERS: Readonly<Record<string, Reader>> = {
     const running = s.pods.filter((p) => p.phase === "Running").length;
     return `파드 ${running}/${s.desired}개 돌아요`;
   },
+  app_instance: (s) => {
+    if (s.kind !== "app_instance") return undefined;
+    if (s.drained) return "로테이션에서 뺐어요";
+    if (s.status === "down") return "답하지 않아요";
+    if (s.flapping) return "헬스 체크가 오르락내리락";
+    return s.inRotation ? "로테이션 안" : "로테이션 밖";
+  },
+  load_balancer: (s) => {
+    if (s.kind !== "load_balancer") return undefined;
+    if (s.status === "down") return "받을 곳이 없어요";
+    if (s.pinned) return "한 리전에 고정";
+    return s.status === "degraded" ? "일부 실패해요" : "정상";
+  },
+  session_store: (s) =>
+    s.kind === "session_store" ? (s.status === "down" ? "멈췄어요" : "정상") : undefined,
+  circuit_breaker: (s) => {
+    if (s.kind !== "circuit_breaker") return undefined;
+    if (s.mode === "open") return s.stuck ? "열린 채 굳었어요" : "열렸어요";
+    return s.mode === "half-open" ? "반열림" : "닫혀 있어요";
+  },
+  mesh_sidecar: (s) =>
+    s.kind === "mesh_sidecar" ? (s.status === "down" ? "죽었어요" : "정상") : undefined,
+  mesh_control: (s) => {
+    if (s.kind !== "mesh_control") return undefined;
+    if (s.status === "down") return "멈췄어요";
+    return s.retries === "aggressive" ? "재시도 폭주 설정" : `설정 r${s.revision}`;
+  },
+  region: (s) => {
+    if (s.kind !== "region") return undefined;
+    if (s.status === "down") return "멈췄어요";
+    return s.lagS > 30 ? `복제 지연 ${Math.round(s.lagS)}초` : "정상";
+  },
   vm: (s) => (s.kind === "vm" ? (s.running ? `CPU ${pct(s.cpuUsage)}` : "꺼졌어요") : undefined),
 };
 

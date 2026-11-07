@@ -55,6 +55,11 @@ const PLAIN_ACTIONS: Readonly<Record<string, AgentAction["action"]>> = {
   "sdn.failover": "sdn_failover",
   "policy.revert": "policy_revert",
   "ingress.restart": "ingress_restart",
+  "lb.drain": "lb_drain",
+  "lb.enable": "lb_enable",
+  "circuit.reset": "circuit_reset",
+  "mesh.rollback": "mesh_rollback",
+  "region.failover": "region_failover",
 };
 
 function serviceAction(c: WorldCommand): AgentAction | undefined {

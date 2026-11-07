@@ -15,6 +15,8 @@ import { networkLab } from "./net-lab";
 export interface SdnLabOptions {
   readonly controllers?: 1 | 2;
   readonly cloudNative?: boolean;
+  /** The portal calls the license server (REQ-100): a policy that guards the license server then reaches the portal. */
+  readonly calls?: boolean;
 }
 
 const link = (id: string, kind: Link["kind"], from: string, to: string, props = {}): Link => ({
@@ -114,6 +116,9 @@ export function sdnLab(options: SdnLabOptions = {}): Blueprint {
     link("portal-on-1", "service_on", "svc-portal", "vm-web", { role: "active" }),
     link("portal-on-2", "service_on", "svc-portal", "vm-web2", { role: "active" }),
     link("license-on", "service_on", "svc-license", "srv-a2", { role: "active" }),
+    ...(options.calls
+      ? [link("call-portal-license", "calls", "svc-portal", "svc-license", {})]
+      : []),
     ...parts.links,
     ...cn.links,
   ];

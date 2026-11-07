@@ -10,6 +10,7 @@ import { calibrate, FLOOR_LIMIT, Session } from "@terrarium/core/session";
 import { TOOL_NAMES } from "@terrarium/core/tools";
 import { type Blueprint, BlueprintIndex } from "@terrarium/core/world";
 import { describe, expect, test } from "vitest";
+import { appLab } from "../../packages/core/src/world/test-support/app-lab";
 import { gpuLab } from "../../packages/core/src/world/test-support/gpu-lab";
 import { networkLab } from "../../packages/core/src/world/test-support/net-lab";
 import { campusBlueprint } from "../../packages/core/src/world/test-support/sample-campus";
@@ -20,6 +21,8 @@ const WORLDS: ReadonlyArray<{ name: string; blueprint: () => Blueprint }> = [
   { name: "network", blueprint: networkLab },
   { name: "gpu", blueprint: gpuLab },
   { name: "sdn", blueprint: () => sdnLab({ cloudNative: true }) },
+  { name: "app mesh", blueprint: () => appLab({ level: "mesh" }) },
+  { name: "app multiregion", blueprint: () => appLab({ level: "multiregion" }) },
 ];
 
 const KNOWN_FLOOR: Readonly<Record<string, number>> = { "cooling-failure": 20 };
@@ -60,7 +63,7 @@ describe("every built-in scenario tells an agent that knows from one that does n
       .map((c) => c.id)
       .sort();
     expect(diagnosisOnly).toEqual(["fan-failure-throttle", "plant-loop-down", "sensor-drift"]);
-  });
+  }, 180_000);
 });
 
 describe("a quick wrong answer earns nothing for being quick [REQ-070]", () => {

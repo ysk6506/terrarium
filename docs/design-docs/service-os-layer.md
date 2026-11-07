@@ -2,7 +2,7 @@
 title: 서비스와 OS 층 — 장비 위에서 무엇이 도는가
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/world/service.ts
   - packages/core/src/world/service-events.ts
@@ -20,12 +20,12 @@ covers:
   - packages/core/src/session/shell-reach.ts
   - packages/core/src/scenario/library-os.ts
 verification_log:
-  - "2026-11-06: o1·o2 합치기"
-  - "2026-11-06: REQ-095: 서비스 건강에 depends_on 규칙(데이터베이스·풀)을 더하고 가짜 셸 표에 데이터베이스 호스트의 명령을 더했다 (service-health.ts·shell.ts·host-os.ts와 대조)"
   - "2026-11-06: 깊은 OS 흉내(REQ-098, ADR-0117)에 맞춰 가짜 셸 절을 가상 파일시스템·프로세스 표·저널·셸 문법·명령 표·고장 열 가지의 진단 길·흉내 밖 명령 세기·정직한 한계로 다시 썼고 world/os, tools/shell.ts, session/shell-reach.ts와 대조했다"
   - "2026-11-06: 최종 코드(world/os 분할, 호스트 조치 열두 가지, 변별력 셋째 물음)와 다시 대조했다"
   - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
-covers_hash: c551e067d928835b
+  - "2026-11-07: REQ-100 애플리케이션 층이 덮는 코드가 바뀐 것을 확인했고 이 문서의 내용은 그대로 맞다"
+  - "2026-11-07: o5 합치기 (애플리케이션 층)"
+covers_hash: 91bc02f30e459ad9
 ---
 # 서비스와 OS 층 (REQ-086, REQ-087, [ADR-0091](adr/0091-service-os-layer-recovery-first.md))
 

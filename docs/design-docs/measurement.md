@@ -2,7 +2,7 @@
 title: 측정의 신뢰 — 효율 점수는 과제를 푼 만큼만, 시험지는 기준 에이전트로 점검
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/session/operation/metrics.ts
   - packages/core/src/oracle/oracle.ts
@@ -14,12 +14,12 @@ covers:
   - packages/core/src/session/session-parts.ts
   - packages/core/src/oracle/handoff.ts
 verification_log:
-  - "2026-11-06: 2c 보완 합치기"
-  - "2026-11-06: 컨트롤러 전환·EVPN 재수립·ECMP도 원인 cluster 사건이라는 문장을 recovery.ts와 대조해 더했다 (REQ-097)"
   - "2026-11-06: 변별력 점검의 셋째 물음(shellReach)과 실행 결과의 흉내 밖 명령 절을 baselines.ts, shell-reach.ts, session-parts.ts와 대조해 더했다 (REQ-098)"
   - "2026-11-06: 최종 코드와 다시 대조했다"
   - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
-covers_hash: 780805b79cf742a4
+  - "2026-11-07: REQ-100 애플리케이션 층이 덮는 코드가 바뀐 것을 확인했고 이 문서의 내용은 그대로 맞다"
+  - "2026-11-07: o5 합치기 (애플리케이션 층)"
+covers_hash: 9e70da2eded18d95
 ---
 # 측정의 신뢰 (REQ-070, ADR-0067)
 

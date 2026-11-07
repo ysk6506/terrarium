@@ -55,6 +55,15 @@ export const MTBF_TABLE: readonly Mtbf[] = [
   { type: "k8s_image_pull_failure", kinds: ["k8s_cluster"], hours: 5_000 },
   { type: "k8s_disk_pressure", kinds: ["k8s_node"], hours: 2_000 },
   { type: "k8s_cni_failure", kinds: ["k8s_node"], hours: 3_000 },
+  // 애플리케이션 층 (REQ-100)
+  { type: "lb_backend_flapping", kinds: ["app_instance"], hours: 3_000 },
+  { type: "session_store_down", kinds: ["session_store"], hours: 4_000 },
+  { type: "circuit_breaker_stuck_open", kinds: ["circuit_breaker"], hours: 6_000 },
+  { type: "retry_storm", kinds: ["mesh_control"], hours: 7_000 },
+  { type: "sidecar_crash", kinds: ["mesh_sidecar"], hours: 5_000 },
+  { type: "mesh_control_down", kinds: ["mesh_control"], hours: 6_000 },
+  { type: "region_down", kinds: ["region"], hours: 20_000 },
+  { type: "replication_lag_high", kinds: ["region"], hours: 4_000 },
 ];
 
 /**

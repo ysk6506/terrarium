@@ -92,6 +92,19 @@ function layCluster(
   };
   for (const p of parts) add(p.name, p.replicas, each, true);
   add("batch", batch, BATCH_MILLI, false);
+  for (const p of draft.parts)
+    for (const to of p.calls ?? []) {
+      const from = `${id}-${slugOf(p.workload ?? p.label)}`;
+      const callee = `${id}-${slugOf(to)}`;
+      if (from !== callee && into.entities.some((e) => e.id === callee))
+        into.links.push({
+          id: `calls-${from}-${callee}`,
+          kind: "calls",
+          from,
+          to: callee,
+          props: { fanout: 1, timeoutMs: 5000 },
+        });
+    }
   return ids;
 }
 

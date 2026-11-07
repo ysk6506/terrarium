@@ -24,6 +24,8 @@ export interface ServicePart {
   readonly role?: "node" | "host" | "switch";
   /** On Kubernetes (REQ-096): the workload this part is, by name; `count` is its replicas. */
   readonly workload?: string;
+  /** The workloads this one calls, by name (REQ-100). */
+  readonly calls?: readonly string[];
 }
 
 /** One thing that can stop and what comes of it. */
@@ -70,6 +72,8 @@ export interface ServiceDraft {
   readonly stops: readonly StopRow[];
   readonly harm: readonly HarmTier[];
   readonly workload: WorkloadProfile;
+  /** The services this one calls, by key (REQ-100). */
+  readonly calls?: readonly string[];
   /** Its own choices when it is not shaped like the world's (the "따로 고르기"); absent: the same shape as `ShapeSpec.layers`. */
   readonly layers?: ServiceLayers;
 }
@@ -153,10 +157,10 @@ export function recount(draft: ServiceDraft): ServiceDraft {
 /** Hosts one service needs under the compute choice. */
 export function hostsOf(draft: ServiceDraft, build: ChipBuild): number {
   if (build.bare) return Math.max(1, draft.nodes);
-  const clusters = build.k8s?.clusters ?? 1;
+  const clusters = (build.k8s?.clusters ?? 1) * (build.app?.regions ?? 1);
   const packed = Math.ceil(draft.nodes / (build.pack ?? 3));
   const own = Math.max(1, Math.min(draft.hosts > 0 ? draft.hosts : packed, draft.nodes));
-  // two clusters keep each other up only on hosts of their own
+  // two clusters (or two regions) keep each other up only on hosts of their own
   return own * clusters;
 }
 

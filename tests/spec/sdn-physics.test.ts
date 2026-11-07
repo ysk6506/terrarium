@@ -248,7 +248,7 @@ describe("the cloud-native layer [REQ-097]", () => {
   });
 
   test("a policy deployed with a deny cuts just that pair of services, and policy_revert undoes it", () => {
-    const { world, physics, call, status } = lab({ cloudNative: true });
+    const { world, physics, call, status } = lab({ cloudNative: true, calls: true });
     world.apply({ type: "policy.set", target: "np-license", rule: "deny" }, "scenario");
     physics.run(10);
     expect(status("svc-license")).toBe("degraded");

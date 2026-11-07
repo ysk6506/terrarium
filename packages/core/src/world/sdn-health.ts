@@ -11,10 +11,12 @@
  *   - the ingress is down                                   a request service stops (users cannot come in), others slow
  *                                                           (calls from inside the cluster still work)
  *   - a virtual function in its way is overloaded           slow (latency)
- *   - a network policy denies traffic between it and a peer both are slow (only that pair is cut)
+ *   - a network policy denies it, or a service it calls   it is slow; the policy walks the `calls` links, so every
+ *                                                           caller of the guarded service is slow (REQ-100)
  * A controller that is down changes nothing here: what is configured keeps flowing (headless), only new configuration
  * cannot be pushed.
  */
+import { callsOut } from "./app";
 import type { Entity } from "./blueprint";
 import {
   cniOfHost,
@@ -89,15 +91,22 @@ function nfvVerdict(world: WorldReader, nfv: Entity): SdnVerdict | undefined {
   return { status: s.status === "down" ? "down" : "degraded", reasons: [why] };
 }
 
-/** The policies that cut this service off from a peer: its own guards that deny, and others that deny it as the caller. */
+/**
+ * The policies that cut this service off from a peer (REQ-100): the policies that guard it and deny, and the policies that
+ * deny a service it calls (`calls`). A policy guards one service; the services that call it are the ones it hurts.
+ */
 function policyReasons(world: WorldReader, service: Entity): string[] {
-  const mine = policiesOf(world.index, service.id);
-  const asCaller = world.index
-    .ofKind("network_policy")
-    .filter((p) => p.props.from === service.id && !mine.includes(p));
-  return [...mine, ...asCaller]
-    .filter((p) => world.stateAs(p.id, "network_policy").rule === "deny")
+  const denies = (policy: Entity): boolean =>
+    world.stateAs(policy.id, "network_policy").rule === "deny";
+  const own = policiesOf(world.index, service.id)
+    .filter(denies)
     .map((p) => `${p.name}: 정책이 서비스 사이의 호출을 막고 있어요`);
+  const callees = callsOut(world.index, service.id).flatMap((l) =>
+    policiesOf(world.index, l.to)
+      .filter(denies)
+      .map((p) => `${p.name}: 정책이 ${world.index.find(l.to)?.name ?? l.to} 호출을 막고 있어요`),
+  );
+  return [...own, ...callees];
 }
 
 const SDN_KINDS = ["overlay_segment", "cni", "ingress", "nfv_function", "network_policy"] as const;

@@ -6,6 +6,7 @@ export {
   ROOM_CRITICAL_C,
   ROOM_WARNING_C,
 } from "./alarms";
+export { updateApp } from "./app";
 export { baselineLag, CLUSTER_CAUSE, updateDb } from "./db";
 export { updateDrs } from "./drs";
 export { DEFAULT_PHYSICS, Physics, type PhysicsOptions } from "./engine";

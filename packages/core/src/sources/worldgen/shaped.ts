@@ -20,6 +20,7 @@ import {
 import { generateCampus } from "./campus";
 import { DEFAULT_CAMPUS, SITE_CAMPUS_MIX } from "./campus-spec";
 import { generateWorld } from "./generate";
+import { type AppService, layApp } from "./shaped-app";
 import { contentsOf, type Laying, layCluster, layPool, link, slugOf } from "./shaped-db";
 import { dependsOn, layK8s } from "./shaped-k8s";
 import {
@@ -253,11 +254,23 @@ function layDatabase(
   );
 }
 
+function splitHosts(
+  pool: Map<string, Map<string, Entity[]>>,
+  used: Set<string>,
+  want: number,
+  spare: number,
+): { hosts: Entity[]; active: Entity[]; standby: Entity[] } {
+  const hosts = pickHosts(pool, want + spare, used);
+  const active = hosts.slice(0, hosts.length - spare || hosts.length);
+  return { hosts, active, standby: hosts.slice(active.length) };
+}
+
 function lay(bp: Blueprint, spec: ShapeSpec, catalog: Catalog): Laying {
   const index = new BlueprintIndex(bp);
   const pool = hostPool(index);
   const used = new Set<string>();
   const placed: PlacedService[] = [];
+  const apps: AppService[] = [];
   const into: Laying = { entities: [], links: [] };
   // the world has one pool; its shape follows the world-wide storage choice and the first service's database
   const first = buildFor(spec.layers, spec.services[0] ?? ({} as never));
@@ -271,14 +284,18 @@ function lay(bp: Blueprint, spec: ShapeSpec, catalog: Catalog): Laying {
     // each service stands the way its own choices say: the building is the world's, the rest is the service's
     const build = buildFor(spec.layers, draft);
     const storage = build.sharedStorage ? index.ofKind("storage")[0] : undefined;
-    const hosts = pickHosts(pool, hostsOf(draft, build) + (build.spareHosts ?? 0), used);
-    const active = hosts.slice(0, hosts.length - (build.spareHosts ?? 0) || hosts.length);
-    const standby = hosts.slice(active.length);
+    const { hosts, active, standby } = splitHosts(
+      pool,
+      used,
+      hostsOf(draft, build),
+      build.spareHosts ?? 0,
+    );
     const k8s = build.k8s;
     const lead = active.length > 0 ? active : hosts;
+    const regions = build.app?.regions ?? 1;
     const nodes = k8s
       ? clusterNodes(into, index, draft, lead, k8s.clusters)
-      : nodesOn(into, index, draft, lead, Boolean(build.bare));
+      : nodesOn(into, index, { ...draft, nodes: draft.nodes * regions }, lead, Boolean(build.bare));
     const id = addService(into, index, draft, {
       nodes,
       standby: standby.map((h) => h.id),
@@ -286,9 +303,20 @@ function lay(bp: Blueprint, spec: ShapeSpec, catalog: Catalog): Laying {
     });
     if (k8s) dependsOn(into, id, layK8s(into, draft, nodes, k8s.clusters));
     layDatabase(into, index, { pool, used, build, poolId }, draft, id);
-    placed.push({ id, name: draft.name, kind: draft.kind, nodes });
+    placed.push({ id, key: draft.key, name: draft.name, kind: draft.kind, nodes });
+    apps.push({
+      id,
+      key: draft.key,
+      name: draft.name,
+      kind: draft.kind,
+      nodes,
+      calls: draft.calls ?? [],
+      build: build.app,
+      hosts: lead.map((h) => h.id),
+    });
   }
   layNetworkOverlay(into, index, { pool, used, spec, placed });
+  layApp(into, { index }, apps);
   return into;
 }
 

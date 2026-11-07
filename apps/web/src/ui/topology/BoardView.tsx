@@ -183,8 +183,13 @@ export function BoardView({ layout, picture, moving, pulse, onPick }: BoardViewP
     <div className="topo-board" style={{ aspectRatio: `${width} / ${height}` }}>
       <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={picture}>
         {layout.columns.map((c) => (
-          <text key={c.label} className="col" x={c.x} y={30} textAnchor="middle">
-            {c.label}
+          <text key={c.label} className="col" x={c.x} y={22} textAnchor="middle" fontSize={c.size}>
+            <title>{c.label}</title>
+            {c.lines.map((line, i) => (
+              <tspan key={line} x={c.x} dy={i === 0 ? 0 : c.size + 1}>
+                {line}
+              </tspan>
+            ))}
           </text>
         ))}
         {layout.pipes.map((p, i) => (

@@ -40,7 +40,15 @@ export type VirtualKind =
   /** Container layer (REQ-096, ADR-0107 item 6): a cluster, its nodes, and the workloads whose pods run on them. */
   | "k8s_cluster"
   | "k8s_node"
-  | "k8s_workload";
+  | "k8s_workload"
+  /** Application layer (REQ-100, ADR-0121): replicas, balancers, sessions, breakers, the mesh, regions. */
+  | "app_instance"
+  | "load_balancer"
+  | "session_store"
+  | "circuit_breaker"
+  | "mesh_sidecar"
+  | "mesh_control"
+  | "region";
 export type EntityKind =
   | SpaceKind
   | "rack"
@@ -86,6 +94,13 @@ export const ENTITY_KINDS: readonly EntityKind[] = [
   "k8s_cluster",
   "k8s_node",
   "k8s_workload",
+  "app_instance",
+  "load_balancer",
+  "session_store",
+  "circuit_breaker",
+  "mesh_sidecar",
+  "mesh_control",
+  "region",
 ]; // prettier-ignore
 
 export const MODELLED_KINDS: ReadonlySet<EntityKind> = new Set([
@@ -139,6 +154,13 @@ export const ALLOWED_PARENTS: Readonly<Record<EntityKind, readonly EntityKind[]>
   k8s_cluster: [],
   k8s_node: [],
   k8s_workload: [],
+  app_instance: [],
+  load_balancer: [],
+  session_store: [],
+  circuit_breaker: [],
+  mesh_sidecar: [],
+  mesh_control: [],
+  region: [],
 };
 
 /** Where something is, relative to its parent. Units are metres; racks use units (U). */
@@ -195,6 +217,13 @@ export const PLACEMENT_OF: Readonly<Record<EntityKind, Placement["type"] | undef
   k8s_cluster: undefined,
   k8s_node: undefined,
   k8s_workload: undefined,
+  app_instance: undefined,
+  load_balancer: undefined,
+  session_store: undefined,
+  circuit_breaker: undefined,
+  mesh_sidecar: undefined,
+  mesh_control: undefined,
+  region: undefined,
 };
 
 export type PropValue = string | number | boolean;
@@ -230,7 +259,13 @@ export type LinkKind =
   /** An SDN controller manages this switch's VTEP (REQ-097). */
   | "controls"
   /** A network policy applies to this service (REQ-097). */
-  | "applies_to";
+  | "applies_to"
+  /**
+   * A service calls another service (REQ-100, ADR-0121): the caller leans on the callee. Settings: `critical` (the caller
+   * cannot work without the answer), `fanout` (calls it makes for one request) and `timeoutMs`. Workloads of the container
+   * layer may call each other too; that only draws the picture and widens the impact range.
+   */
+  | "calls";
 
 /** Allowed (from kinds, to kinds) per link kind. `from` depends on `to`. */
 export const LINK_RULES: Readonly<
@@ -255,8 +290,28 @@ export const LINK_RULES: Readonly<
   cooling: { from: ["rack", "cooling_unit", "cdu"], to: ["cooling_unit", "cdu", "chiller"] },
   runs_on: { from: ["vm"], to: ["server"] },
   member_of: {
-    from: ["server", "db_instance", "storage_controller", "vtep", "k8s_node", "k8s_workload"],
-    to: ["cluster", "db_cluster", "storage_pool", "overlay_segment", "k8s_cluster"],
+    from: [
+      "server",
+      "db_instance",
+      "storage_controller",
+      "vtep",
+      "k8s_node",
+      "k8s_workload",
+      "app_instance",
+      "mesh_sidecar",
+      "region",
+    ],
+    to: [
+      "cluster",
+      "db_cluster",
+      "storage_pool",
+      "overlay_segment",
+      "k8s_cluster",
+      "service",
+      "region",
+      "mesh_control",
+      "load_balancer",
+    ],
   },
   managed_by: { from: ["cluster"], to: ["vcenter"] },
   stored_on: { from: ["vm", "db_instance"], to: ["datastore", "storage_pool"] },
@@ -273,6 +328,8 @@ export const LINK_RULES: Readonly<
       "ingress",
       "nfv_function",
       "k8s_workload",
+      "load_balancer",
+      "session_store",
     ],
   },
   hosted_on: {
@@ -285,11 +342,17 @@ export const LINK_RULES: Readonly<
       "cni",
       "ingress",
       "k8s_node",
+      "app_instance",
+      "load_balancer",
+      "session_store",
+      "mesh_sidecar",
+      "mesh_control",
     ],
-    to: ["vm", "server", "storage", "switch"],
+    to: ["vm", "server", "storage", "switch", "app_instance"],
   },
   controls: { from: ["sdn_controller"], to: ["switch"] },
   applies_to: { from: ["network_policy"], to: ["service"] },
+  calls: { from: ["service", "k8s_workload"], to: ["service", "k8s_workload"] },
 };
 
 export interface Link {
@@ -343,6 +406,13 @@ const VIRTUAL_KINDS: ReadonlySet<EntityKind> = new Set<EntityKind>([
   "k8s_cluster",
   "k8s_node",
   "k8s_workload",
+  "app_instance",
+  "load_balancer",
+  "session_store",
+  "circuit_breaker",
+  "mesh_sidecar",
+  "mesh_control",
+  "region",
 ]);
 
 export const isVirtualKind = (kind: EntityKind): kind is VirtualKind => VIRTUAL_KINDS.has(kind);

@@ -59,6 +59,21 @@ export interface ChipBuild {
   readonly drs?: boolean;
   /** The service runs on Kubernetes: this many clusters, each with its control plane, workers and workloads (REQ-096). */
   readonly k8s?: K8sBuild;
+  /** The application layer the app choice builds for every service: balancer, replicas, sessions, breakers, mesh, regions (REQ-100). */
+  readonly app?: AppBuild;
+}
+
+/**
+ * What an application choice from "stateless" up builds around every service. Each choice keeps what the one before it had:
+ * a balancer and one replica object per place the service runs, then an external session store, a circuit breaker on every
+ * call, a sidecar next to every replica with a mesh control plane over them, and a second region behind a global balancer.
+ */
+export interface AppBuild {
+  readonly sessionStore: boolean;
+  readonly breakers: boolean;
+  readonly mesh: boolean;
+  /** Regions, each with a full stack of the service (the hosts are doubled). */
+  readonly regions: 1 | 2;
 }
 
 /** The SDN overlay a network chip builds: a controller pair, a VTEP per leaf, a segment per service, and for cloud native the pod network. */
@@ -134,6 +149,21 @@ const dotted = (layer: LayerId, id: string, buildsAs: string, costM = 0): ChipMe
   c(layer, id, { modeled: false, buildsAs, costM });
 
 /** Every choice of every layer, left to right. 44 in all. */
+const APP_SLOWS = [
+  "process_crashloop",
+  "memory_leak",
+  "log_flood",
+  "lb_backend_flapping",
+  "session_store_down",
+] as const;
+const APP_MESH_SLOWS = [
+  ...APP_SLOWS,
+  "circuit_breaker_stuck_open",
+  "retry_storm",
+  "sidecar_crash",
+  "mesh_control_down",
+] as const;
+
 export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
   network: [
     c("network", "net-legacy", {
@@ -340,10 +370,30 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       slows: ["process_crashloop", "memory_leak", "log_flood"],
       costM: 10,
     }),
-    dotted("app", "app-stateless", "app-lb-sticky", 10),
-    dotted("app", "app-microservices", "app-lb-sticky", 20),
-    dotted("app", "app-mesh", "app-lb-sticky", 40),
-    dotted("app", "app-multiregion", "app-lb-sticky", 150),
+    c("app", "app-stateless", {
+      build: { app: { sessionStore: true, breakers: false, mesh: false, regions: 1 } },
+      stops: ["cert_expired"],
+      slows: APP_SLOWS,
+      costM: 10,
+    }),
+    c("app", "app-microservices", {
+      build: { app: { sessionStore: true, breakers: true, mesh: false, regions: 1 } },
+      stops: ["cert_expired"],
+      slows: [...APP_SLOWS, "circuit_breaker_stuck_open"],
+      costM: 20,
+    }),
+    c("app", "app-mesh", {
+      build: { app: { sessionStore: true, breakers: true, mesh: true, regions: 1 } },
+      stops: ["cert_expired"],
+      slows: [...APP_MESH_SLOWS],
+      costM: 40,
+    }),
+    c("app", "app-multiregion", {
+      build: { app: { sessionStore: true, breakers: true, mesh: true, regions: 2 } },
+      stops: [],
+      slows: [...APP_MESH_SLOWS, "region_down", "replication_lag_high"],
+      costM: 150,
+    }),
   ],
   power: [
     c("power", "pwr-single", {

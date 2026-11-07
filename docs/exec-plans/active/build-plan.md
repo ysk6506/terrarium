@@ -2,13 +2,13 @@
 title: 구현 계획 — 테라리움
 kind: plan
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 verification_log:
-  - "2026-11-06: 12g 두 줄에 2c·2d 보완을 적었다"
-  - "2026-11-06: 2c 보완 합치기"
   - "2026-11-06: 12n 깊은 OS 흉내를 구현 끝으로 적었다 (REQ-098)"
   - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
   - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
+  - "2026-11-07: REQ-100 애플리케이션 층: 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
+  - "2026-11-07: o5 합치기 (애플리케이션 층)"
 ---
 # 구현 계획
 
@@ -54,6 +54,7 @@ verification_log:
 | 12n | 깊은 OS 흉내 (호스트마다 가상 파일시스템 `/proc`·`/var/log`·`/etc`·`/tmp`·`/var/lib`와 프로세스 표와 유닛·저널을 한 사건 목록에서 만듦, `run_command`는 파이프·리다이렉트·`grep`·`awk`·`sed` 같은 텍스트 명령을 실제 의미대로 돌리고 모르는 명령은 `command not found`, 쓰는 명령은 `host.act`로 열 두 가지, OS 고장 열 가지가 파일·프로세스로 드러남, 변별력 점검에 "흔한 명령만으로 원인에 닿는가", 실행 결과에 "흉내 밖 명령 n번", `kubectl`·`crictl`을 다는 `registerShellCommand`) | REQ-098 | 구현 끝 ([설명](../../design-docs/service-os-layer.md), [ADR-0117](../../design-docs/adr/0117-deep-os-simulation.md), [ADR-0118](../../design-docs/adr/0118-deep-os-tests.md)) |
 | 12r | 이끼 — 테라리움 도우미 (이름·묻기·안내·대신 하기, 지식 둘: 리포 문서 제목 조각 색인(BM25 방식, 임베딩·네트워크 없음)과 지금 화면의 상태 JSON, 화면 등록부와 "이렇게 할게요" 카드·체크리스트·직접 누르면 멈춤, 숫자·용어 옆 "?", `Cmd+K`, `POST /api/moss/ask`(기본 모델, 세 문장·출처·"문서에 없어요", 서버는 동작을 하지 않음), `moss` 검사 MOSS001~004, 질문 은행 1,000여 개와 `pnpm moss-eval`) | REQ-103 | 구현 끝 ([설명](../../design-docs/moss.md), [ADR-0124](../../design-docs/adr/0124-moss-assistant.md)). 바닥값은 모델로 재 본 뒤 정한다 |
 | 12p | 세계 인기 순서·좋아요·칭호·계급 모델 (세계 순서는 인기가 기본 — 점수 = 최근 30일 실험 + 좋아요 + 남이 시작한 수 — 카드에 근거와 하트, 정렬 넷(인기·요즘 활발·새로 생김·내 세계)을 이 브라우저에 기억, 칭호 여덟(첫 세계·실험 100번·실험 1,000번·남이 쓰는 세계·남이 쓰는 시나리오·첫 복구·꼼꼼한 출제자·좋아요 10)은 서버가 기록에서 세어 한 번 얻으면 안 잃고 이름 옆에 최대 둘, 메달·계급은 순수 함수와 대회 포트(메모리)까지만 — 화면은 대회 모드와 함께) | REQ-101 | 구현 끝 ([설명](../../design-docs/ranking-and-titles.md), [ADR-0122](../../design-docs/adr/0122-world-popularity-likes-titles.md)) |
+| 12o | 애플리케이션 층과 서비스 호출 그래프 (`calls` 링크와 건강 전파, 앱 개체 일곱, 고장 여덟, 툴 여덟, 셸 `curl -I`·`istioctl proxy-status`, 시나리오 일곱, 사다리의 앱 칩 넷 실선(점선 9에서 5), 칩 카드·IAP 기본 호출·"이 서비스가 부르는 서비스", 정책이 `calls`를 따라감, 토폴로지 호출 선과 머리글 겹침 고치기) | REQ-100 | 구현 끝 ([설명](../../design-docs/application-layer.md), [ADR-0121](../../design-docs/adr/0121-application-layer-and-calls.md)) |
 | 13 | **오픈 (프로덕션 레디)** — 여러 팀이 믿고 쓴다: 로그인, 운영, 접근성, 부하 | 아래 | 예정 |
 
 결정은 ADR에 있다. 이 계획에는 순서와 상태만 둔다.

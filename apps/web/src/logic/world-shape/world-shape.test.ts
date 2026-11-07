@@ -34,10 +34,6 @@ describe("HA 사다리: 선택지와 카드 [REQ-094]", () => {
       "sto-geo",
       "db-distributed-sql",
       "db-managed-multiaz",
-      "app-stateless",
-      "app-microservices",
-      "app-mesh",
-      "app-multiregion",
       "site-dr-warm",
       "site-multi-active",
     ]);
