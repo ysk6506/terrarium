@@ -423,14 +423,17 @@ export function Section({
   title,
   aside,
   children,
+  id: anchor,
 }: {
+  /** 주소 조각(`#models`)으로 찾아갈 이름. */
+  readonly id?: string;
   readonly title: ReactNode;
   readonly aside?: ReactNode;
   readonly children?: ReactNode;
 }) {
   const id = useId();
   return (
-    <section className="section" aria-labelledby={id}>
+    <section className="section" id={anchor} aria-labelledby={id}>
       <div className="section-head">
         <h2 id={id}>{title}</h2>
         {aside}

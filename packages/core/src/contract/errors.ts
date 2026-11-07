@@ -35,10 +35,19 @@ export class UnavailableError extends TerrariumError {
   override readonly status = 503;
 }
 
+/** 이끼는 기본 모델이 있어야만 쓸 수 있다 (REQ-103, ADR-0125): 없으면 409 `{ error: { reason: "no_model" } }`. */
+export class NoModelError extends TerrariumError {
+  override readonly code = "no_model";
+  override readonly status = 409;
+  readonly reason = "no_model";
+}
+
 export interface ApiError {
   readonly error: {
     readonly code: string;
     readonly message: string;
+    /** 프로그램이 가를 수 있는 까닭 (예: `no_model`). 없을 수도 있어요. */
+    readonly reason?: string;
     readonly issues?: readonly ApiIssue[];
   };
 }
@@ -82,6 +91,11 @@ export function toErrorReply(err: unknown): ErrorReply {
     return {
       status: 400,
       body: { error: { code: err.code, message: err.message, issues: err.issues } },
+    };
+  if (err instanceof NoModelError)
+    return {
+      status: 409,
+      body: { error: { code: err.code, message: err.message, reason: err.reason } },
     };
   if (err instanceof TerrariumError) return errorReply(err.status, err.code, err.message);
   return errorReply(

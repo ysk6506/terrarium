@@ -5,12 +5,14 @@
 import {
   type MossAnswerView,
   type MossAskRequest,
+  NoModelError,
   UnavailableError,
 } from "@terrarium/core/contract";
 import { LlmError } from "@terrarium/core/llm";
 import type { Models } from "./models";
 import { isRelevant, LOW_SCORE, type MossChunk, type MossIndex, mossIndexFor } from "./moss-index";
 import { hasState, NOT_IN_DOCS, parseReply, SYSTEM_PROMPT, userPrompt } from "./moss-prompt";
+import { scoringChunk } from "./moss-scoring";
 
 const TOP = 4;
 
@@ -44,17 +46,21 @@ export class Moss {
   }
 
   /** 질문에 맞는 문서 조각. 점수가 낮으면 한 조각도 주지 않는다. */
-  retrieve(question: string): MossChunk[] {
+  retrieve(question: string, state?: unknown): MossChunk[] {
     const hits = this.index.search(question, TOP);
-    return hits[0] && isRelevant(hits[0])
-      ? hits.filter((h) => h.score >= LOW_SCORE * 0.6).map((h) => h.chunk)
-      : [];
+    const docs =
+      hits[0] && isRelevant(hits[0])
+        ? hits.filter((h) => h.score >= LOW_SCORE * 0.6).map((h) => h.chunk)
+        : [];
+    // 결과 화면이면 이 실행의 채점표가 늘 첫 조각이다 (ADR-0125)
+    const table = scoringChunk(state);
+    return table ? [table, ...docs] : docs;
   }
 
   async ask(input: MossAskRequest): Promise<MossAnswerView> {
     const model = await this.models.defaultClient();
-    if (!model) throw new UnavailableError(NO_MODEL);
-    const chunks = this.retrieve(input.question);
+    if (!model) throw new NoModelError(NO_MODEL);
+    const chunks = this.retrieve(input.question, input.state);
     // 문서에도 화면에도 근거가 없으면 모델에게 묻지 않는다: 지어낼 틈을 주지 않는다.
     if (chunks.length === 0 && !hasState(input.state)) return nothing(model.name);
     try {

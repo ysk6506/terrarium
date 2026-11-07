@@ -10027,16 +10027,20 @@
    "added": "2026-11-07",
    "amended_by": null
   },
-  "apps/server/src/http/moss-api.test.ts::POST /api/moss/ask answers from the docs and the screen state [REQ-103] > without a default model it is 503 with the way out, and nothing is guessed": {
+  "apps/server/src/http/moss-api.test.ts::POST /api/moss/ask answers from the docs and the screen state [REQ-103] > without a default model it is 409 with reason no_model and the way out, and nothing is guessed": {
    "kind": "test",
-   "hash": "854994cfe8437556",
-   "asserts": 2,
+   "hash": "384ca5068c9a69c7",
+   "asserts": 4,
    "literals": [
     "\"/api/moss/ask\"",
-    "\"503\"",
-    "\"503\"",
+    "\"409\"",
+    "\"409\"",
     "\"POST\"",
-    "\"without a default model it is 503 with the way out, and nothing is guessed\"",
+    "\"no_model\"",
+    "\"no_model\"",
+    "\"no_model\"",
+    "\"no_model\"",
+    "\"without a default model it is 409 with reason no_model and the way out, and nothing is guessed\"",
     "\"{}\"",
     "\"모델을 등록\"",
     "\"모델을 등록\""
@@ -15954,9 +15958,29 @@
    "added": "2026-11-07",
    "amended_by": null
   },
+  "apps/server/src/runtime/moss.test.ts::<import:2c0835e7>": {
+   "kind": "support",
+   "hash": "2c0835e7536c3aa7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
   "apps/server/src/runtime/moss.test.ts::<import:30102eeb>": {
    "kind": "support",
    "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/moss.test.ts::<import:6099b5ea>": {
+   "kind": "support",
+   "hash": "6099b5ea86d7b5ec",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -16004,29 +16028,19 @@
    "added": "2026-11-07",
    "amended_by": null
   },
-  "apps/server/src/runtime/moss.test.ts::<import:c34bd671>": {
-   "kind": "support",
-   "hash": "c34bd671d6e85ddc",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
-  },
-  "apps/server/src/runtime/moss.test.ts::<import:d2d0b133>": {
-   "kind": "support",
-   "hash": "d2d0b1335a055436",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
-  },
   "apps/server/src/runtime/moss.test.ts::<import:fc38e4e0>": {
    "kind": "support",
    "hash": "fc38e4e01244139f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/moss.test.ts::<import:ff1d5b55>": {
+   "kind": "support",
+   "hash": "ff1d5b551339f07e",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -16107,6 +16121,156 @@
     "\"작은 \\\"?\\\" 를 누르면\"",
     "true",
     "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/moss.test.ts::scoring questions find the scoring docs, and a result's table comes first [REQ-103] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/moss.test.ts::scoring questions find the scoring docs, and a result's table comes first [REQ-103] > =index": {
+   "kind": "support",
+   "hash": "b39f8a6c843cd548",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/moss.test.ts::scoring questions find the scoring docs, and a result's table comes first [REQ-103] > =other": {
+   "kind": "support",
+   "hash": "95ab7cdc537c0a92",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/moss.test.ts::scoring questions find the scoring docs, and a result's table comes first [REQ-103] > =scoring": {
+   "kind": "support",
+   "hash": "6d83875db4fbdc94",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/moss.test.ts::scoring questions find the scoring docs, and a result's table comes first [REQ-103] > =state": {
+   "kind": "support",
+   "hash": "1dddbf6b393cee90",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/moss.test.ts::scoring questions find the scoring docs, and a result's table comes first [REQ-103] > a result's scoring table becomes the first chunk, shown as the screen state, and other screens get none": {
+   "kind": "test",
+   "hash": "708b2a82ef0de829",
+   "asserts": 8,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"a result's scoring table becomes the first chunk, shown as the screen state, and other screens get none\"",
+    "\"state\"",
+    "\"state\"",
+    "\"state\"",
+    "\"state#채점표\"",
+    "\"state#채점표\"",
+    "\"state#채점표\"",
+    "\"state#채점표\"",
+    "\"state#채점표\"",
+    "\"state#채점표\"",
+    "\"state#채점표\"",
+    "\"늦게 복구했어요.\"",
+    "\"서비스 복구 시간: 늦음, 3/35점 — 20분 가까이 걸렸어요\"",
+    "\"서비스 복구 시간: 늦음, 3/35점 — 20분 가까이 걸렸어요\"",
+    "\"이 실행의 채점표\"",
+    "\"이 실행의 채점표\"",
+    "\"이 실행이 왜 18.2점이에요?\"",
+    "\"이 실행이 왜 18.2점이에요?\"",
+    "\"이 실행이 왜 18.2점이에요?\"",
+    "\"이 실행이 왜 18.2점이에요?\"",
+    "\"점수 18.2점, 불합격\"",
+    "\"점수 18.2점, 불합격\"",
+    "\"홈\"",
+    "\"홈\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/moss.test.ts::scoring questions find the scoring docs, and a result's table comes first [REQ-103] > the scoring words are a fixed list; a question without them is not boosted": {
+   "kind": "test",
+   "hash": "3d7c42bc3a447bd5",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"2\"",
+    "\"MTTR이 뭐예요?\"",
+    "\"docs/guides/run-guide.md\"",
+    "\"docs/guides/run-guide.md\"",
+    "\"the scoring words are a fixed list; a question without them is not boosted\"",
+    "\"시드가 뭐예요?\"",
+    "\"시드가 뭐예요?\"",
+    "\"실행 화면 안내\"",
+    "\"왜 불합격이에요?\"",
+    "\"이 실행이 왜 18.2점이에요?\"",
+    "\"채점은 어떻게 해요?\"",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/moss.test.ts::scoring questions find the scoring docs, and a result's table comes first [REQ-103] > with a scoring word the chunks of the scoring docs go up by the fixed factor, others stay": {
+   "kind": "test",
+   "hash": "b7c7b04cca04c8c8",
+   "asserts": 4,
+   "literals": [
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"docs/x.md\"",
+    "\"docs/x.md\"",
+    "\"with a scoring word the chunks of the scoring docs go up by the fixed factor, others stay\"",
+    "\"시드가 뭐예요?\"",
+    "\"시드가 뭐예요?\"",
+    "\"실행 점수 보기\"",
+    "\"이 실행이 왜 18.2점이에요?\"",
+    "\"이 실행이 왜 18.2점이에요?\"",
+    "\"이 실행이 왜 18.2점이에요?\"",
+    "\"이 실행이 왜 18.2점이에요?\""
    ],
    "precision": [],
    "skips": 0,
@@ -16588,12 +16752,12 @@
    "added": "2026-11-07",
    "amended_by": null
   },
-  "apps/server/src/runtime/moss.test.ts::이끼 asks the default model and never acts [REQ-103] > with no default model it says so (503) instead of guessing": {
+  "apps/server/src/runtime/moss.test.ts::이끼 asks the default model and never acts [REQ-103] > with no default model it says so (409 no_model) instead of guessing": {
    "kind": "test",
-   "hash": "efb7c21dc1bd8fa5",
+   "hash": "b938fd58595b4f15",
    "asserts": 1,
    "literals": [
-    "\"with no default model it says so (503) instead of guessing\""
+    "\"with no default model it says so (409 no_model) instead of guessing\""
    ],
    "precision": [],
    "skips": 0,
@@ -52569,9 +52733,9 @@
    "added": "2026-11-07",
    "amended_by": null
   },
-  "apps/web/src/moss/moss.test.ts::<import:c6e60106>": {
+  "apps/web/src/moss/moss.test.ts::<import:bc4d7117>": {
    "kind": "support",
-   "hash": "c6e60106e7e29fd2",
+   "hash": "bc4d7117a4111cde",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -52579,9 +52743,19 @@
    "added": "2026-11-07",
    "amended_by": null
   },
-  "apps/web/src/moss/moss.test.ts::<import:db6e1c41>": {
+  "apps/web/src/moss/moss.test.ts::<import:be397c67>": {
    "kind": "support",
-   "hash": "db6e1c410a6cf8c5",
+   "hash": "be397c67943e4f73",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/moss/moss.test.ts::<import:c6e60106>": {
+   "kind": "support",
+   "hash": "c6e60106e7e29fd2",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -53041,7 +53215,7 @@
   },
   "apps/web/src/moss/moss.test.ts::the store joins the screen and the panel [REQ-103] > the panel opens with a question to send once, and closes": {
    "kind": "test",
-   "hash": "3513da1c54361d4c",
+   "hash": "04f118ed3e952f49",
    "asserts": 4,
    "literals": [
     "\"1\"",
@@ -53052,10 +53226,166 @@
     "\"이 실행이 왜 30점이에요?\"",
     "false",
     "false",
+    "false",
     "true",
     "true",
     "true",
     "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": "0125-moss-requires-model.md"
+  },
+  "apps/web/src/moss/moss.test.ts::이끼 needs a default model [REQ-103] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/moss/moss.test.ts::이끼 needs a default model [REQ-103] > =model": {
+   "kind": "support",
+   "hash": "78576ba9007d5258",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/moss/moss.test.ts::이끼 needs a default model [REQ-103] > asleep: nothing opens (the keys, the ? marks, the actions all go through openMoss), and sleeping closes an open panel": {
+   "kind": "test",
+   "hash": "36230cdd4b1b0272",
+   "asserts": 6,
+   "literals": [
+    "\"asleep: nothing opens (the keys, the ? marks, the actions all go through openMoss), and sleeping closes an open panel\"",
+    "\"q\"",
+    "\"이 실행이 왜 30점이에요?\"",
+    "false",
+    "false",
+    "false",
+    "false",
+    "false",
+    "false",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/moss/moss.test.ts::이끼 needs a default model [REQ-103] > only a default model wakes it; none, not yet read, or only non-default ones keep it asleep": {
+   "kind": "test",
+   "hash": "86d00681f85cf891",
+   "asserts": 4,
+   "literals": [
+    "\"only a default model wakes it; none, not yet read, or only non-default ones keep it asleep\"",
+    "false",
+    "false",
+    "false",
+    "false",
+    "false",
+    "false",
+    "false",
+    "false",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/ui/moss/moss-gate.test.ts::<import:13577532>": {
+   "kind": "support",
+   "hash": "1357753251ef58e7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/ui/moss/moss-gate.test.ts::<import:c25a6c11>": {
+   "kind": "support",
+   "hash": "c25a6c11049cf68f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/ui/moss/moss-gate.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/ui/moss/moss-gate.test.ts::<import:ed7101fb>": {
+   "kind": "support",
+   "hash": "ed7101fb8a631830",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/ui/moss/moss-gate.test.ts::the ? marks follow the default model [REQ-103] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/ui/moss/moss-gate.test.ts::the ? marks follow the default model [REQ-103] > =draw": {
+   "kind": "support",
+   "hash": "79c496c95d24aa5f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/ui/moss/moss-gate.test.ts::the ? marks follow the default model [REQ-103] > asleep, MossAsk draws only its child; awake, the child comes with its ? mark": {
+   "kind": "test",
+   "hash": "03108f95de2dc6b5",
+   "asserts": 3,
+   "literals": [
+    "\"<b>30점</b>\"",
+    "\"<b>30점</b>\"",
+    "\"<b>30점</b>\"",
+    "\"<b>30점</b>\"",
+    "\"asleep, MossAsk draws only its child; awake, the child comes with its ? mark\"",
+    "\"class=\\\"moss-q\\\"\"",
+    "\"class=\\\"moss-q\\\"\"",
+    "false",
+    "false",
     "true"
    ],
    "precision": [],
@@ -112562,6 +112892,27 @@
    "added": "2026-11-07",
    "amended_by": null
   },
+  "tests/spec/moss-questions.test.ts::[REQ-103] 이끼의 문서 찾기 > every hand-written 왜 question about a score finds its scoring doc in the top three (the scoring boost, ADR-0125)": {
+   "kind": "test",
+   "hash": "eb5d66148eb8288d",
+   "asserts": 3,
+   "literals": [
+    "\"3\"",
+    "\"6\"",
+    "\"6\"",
+    "\"docs/design-docs/measurement.md\"",
+    "\"docs/design-docs/measurement.md\"",
+    "\"every hand-written 왜 question about a score finds its scoring doc in the top three (the scoring boost, ADR-0125)\"",
+    "\"why\"",
+    "\"이 실행이 왜 18.2점이에요?\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
   "tests/spec/moss-questions.test.ts::[REQ-103] 이끼의 문서 찾기 > exec-plans are not in the index, ADRs and mockups are": {
    "kind": "test",
    "hash": "8d4b822470cc771f",
@@ -112588,7 +112939,7 @@
   },
   "tests/spec/moss-questions.test.ts::[REQ-103] 이끼의 문서 찾기 > the bank has a hundred questions or more, thirty of them hand-written 왜 questions": {
    "kind": "test",
-   "hash": "853a59fa8c98e290",
+   "hash": "ecbf8eb6310d991f",
    "asserts": 3,
    "literals": [
     "\"0\"",
@@ -112610,7 +112961,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-07",
-   "amended_by": null
+   "amended_by": "0125-moss-requires-model.md"
   },
   "tests/spec/moss-questions.test.ts::[REQ-103] 이끼의 문서 찾기 > the hand-written 왜 questions alone find their doc at least 80% of the time (the harder half)": {
    "kind": "test",
@@ -112656,9 +113007,9 @@
    "added": "2026-11-07",
    "amended_by": null
   },
-  "tests/spec/moss-questions.test.ts::<import:83f289b7>": {
+  "tests/spec/moss-questions.test.ts::<import:8057ba86>": {
    "kind": "support",
-   "hash": "83f289b7e2fbd05b",
+   "hash": "8057ba860fb8a6f1",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -126222,6 +126573,10 @@
   "apps/server/src/adapters/harness.test.ts::an OpenAI-compatible model as a harness [REQ-031] > the model calls tools as functions until it submits; tokens are counted": "0042-connectors.md",
   "apps/server/src/adapters/harness.test.ts::an OpenAI-compatible model as a harness [REQ-031] > tool replies are JSON the model can read, cut when huge": "0042-connectors.md",
   "apps/server/src/adapters/test-support/fake-fetch.ts::<import:28b66704>": "0042-connectors.md",
+  "apps/server/src/http/moss-api.test.ts::POST /api/moss/ask answers from the docs and the screen state [REQ-103] > without a default model it is 503 with the way out, and nothing is guessed": "0125-moss-requires-model.md",
+  "apps/server/src/runtime/moss.test.ts::<import:c34bd671>": "0125-moss-requires-model.md",
+  "apps/server/src/runtime/moss.test.ts::<import:d2d0b133>": "0125-moss-requires-model.md",
+  "apps/server/src/runtime/moss.test.ts::이끼 asks the default model and never acts [REQ-103] > with no default model it says so (503) instead of guessing": "0125-moss-requires-model.md",
   "apps/web/src/logic/app-words.test.ts::<import:3c3e2cad>": "0077-airflow-words-amend-tests.md",
   "apps/web/src/logic/connections.test.ts::<import:69983d44>": "0048-connections-screens.md",
   "apps/web/src/logic/crew-words.test.ts::the lines of the people in the server room [REQ-074] > there are 3 to 5 for each of the six situations": "0106-domains-escalate-amend-tests.md",
@@ -126237,6 +126592,7 @@
   "apps/web/src/logic/human-talk.test.ts::saved sets [REQ-080] [REQ-082] > a set without a name is not saved": "0112-operation-resume-and-presets-amend-tests.md",
   "apps/web/src/logic/human-talk.test.ts::saved sets [REQ-080] [REQ-082] > tool sets and runbooks are kept apart, newest first": "0112-operation-resume-and-presets-amend-tests.md",
   "apps/web/src/logic/scenario/group.test.ts::<import:71932ad8>": "0073-app-words-amend-tests.md",
+  "apps/web/src/moss/moss.test.ts::<import:db6e1c41>": "0125-moss-requires-model.md",
   "packages/core/src/sources/worldgen/campus-places.test.ts::<import:540ca3f3>": "0047-site-names-and-places.md",
   "packages/core/src/sources/worldgen/site-places.test.ts::<import:57cc2e2a>": "0047-site-names-and-places.md",
   "packages/core/src/world/construction.test.ts::<import:31561bdf>": "0051-real-world-prices.md",
@@ -126247,6 +126603,7 @@
   "tests/spec/controllability.test.ts::<stmt:c459c3aa>": "0118-deep-os-tests.md",
   "tests/spec/controllability.test.ts::<stmt:c8231bea>": "0115-sdn-network-layer-amend-tests.md",
   "tests/spec/facades.test.ts::vCenter facade [REQ-003] [REQ-004] > lists VMs with filters and shows details with placement": "0058-vmware-api-conformance.md",
-  "tests/spec/facility-protocols.test.ts::<import:f6c50b5a>": "0057-facility-standard-interfaces.md"
+  "tests/spec/facility-protocols.test.ts::<import:f6c50b5a>": "0057-facility-standard-interfaces.md",
+  "tests/spec/moss-questions.test.ts::<import:83f289b7>": "0125-moss-requires-model.md"
  }
 }

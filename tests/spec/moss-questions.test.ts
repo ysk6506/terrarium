@@ -3,7 +3,12 @@
  * 모델이 있을 때의 답 품질은 `pnpm moss-eval`이 재요.
  */
 import { describe, expect, test } from "vitest";
-import { buildMossIndex, isRelevant } from "../../apps/server/src/runtime";
+import {
+  buildMossIndex,
+  isRelevant,
+  isScoringQuestion,
+  SCORING_FILES,
+} from "../../apps/server/src/runtime";
 import { autoQuestions, DOCS_DIR, found, loadBank } from "./moss-bank";
 
 const index = buildMossIndex(DOCS_DIR);
@@ -16,9 +21,7 @@ describe("[REQ-103] 이끼의 문서 찾기", () => {
     expect(bank.length).toBeGreaterThanOrEqual(100);
     expect(bank.filter((q) => q.kind === "why").length).toBeGreaterThanOrEqual(30);
     expect(
-      bank
-        .filter((q) => q.kind === "why")
-        .every((q) => q.q.startsWith("왜 ") && q.expect.length > 0),
+      bank.filter((q) => q.kind === "why").every((q) => q.q.includes("왜 ") && q.expect.length > 0),
     ).toBe(true);
   });
 
@@ -32,6 +35,17 @@ describe("[REQ-103] 이끼의 문서 찾기", () => {
 
   test("the hand-written 왜 questions alone find their doc at least 80% of the time (the harder half)", () => {
     expect(rate(loadBank().filter((q) => q.kind === "why"))).toBeGreaterThanOrEqual(0.8);
+  });
+
+  test("every hand-written 왜 question about a score finds its scoring doc in the top three (the scoring boost, ADR-0125)", () => {
+    const scoring = loadBank().filter(
+      (q) =>
+        q.kind === "why" && isScoringQuestion(q.q) && q.expect.some((f) => SCORING_FILES.has(f)),
+    );
+    expect(scoring.length).toBeGreaterThanOrEqual(6);
+    expect(scoring.filter((q) => !found(index, q)).map((q) => q.q)).toEqual([]);
+    const asked = index.search("이 실행이 왜 18.2점이에요?", 3);
+    expect(asked.some((h) => h.chunk.file === "docs/design-docs/measurement.md")).toBe(true);
   });
 
   test("a question about something the docs never mention finds nothing worth citing", () => {

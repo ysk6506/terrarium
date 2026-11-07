@@ -98,7 +98,9 @@ function sourceViews(ids: readonly string[], chunks: readonly MossChunk[]): Moss
     const id = raw.trim().replace(/^\[|\]$/g, "");
     if (id === "state" && !out.some((s) => s.kind === "state")) out.push({ kind: "state" });
     const c = chunks.find((x) => x.id === id);
-    if (c && !out.some((s) => s.kind === "doc" && s.id === c.id))
+    if (c?.synthetic) {
+      if (!out.some((s) => s.kind === "state")) out.push({ kind: "state" });
+    } else if (c && !out.some((s) => s.kind === "doc" && s.id === c.id))
       out.push({ kind: "doc", id: c.id, title: c.title, file: c.file, path: c.path });
   }
   return out;
