@@ -13,6 +13,7 @@ import type {
 import type { LlmModelView } from "./models";
 import type { MossAnswerView } from "./moss";
 import type { PresetListView, PresetView } from "./presets";
+import type { QuickExperimentView, ServiceCardView } from "./service-cards";
 import type {
   CalibrationView,
   DryRunView,
@@ -65,6 +66,11 @@ export interface Responses {
   checkModel: LlmModelView;
   setDefaultModel: LlmModelView;
   askMoss: MossAnswerView;
+  listServiceCards: ServiceCardView[];
+  createServiceCard: ServiceCardView;
+  updateServiceCard: ServiceCardView;
+  deleteServiceCard: { readonly deleted: boolean };
+  quickExperiment: QuickExperimentView;
   listWorlds: WorldCardView[];
   likeWorld: LikeView;
   unlikeWorld: LikeView;

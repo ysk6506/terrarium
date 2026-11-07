@@ -61,6 +61,8 @@ export interface ShapeView {
   readonly slows: readonly string[];
   readonly ways: readonly string[];
   readonly scenarios: number;
+  /** The templates those scenarios are made from, for the quick experiment to take its faults from. */
+  readonly templateIds: readonly string[];
   /** Scenarios that can only be solved by handing over, by whom. */
   readonly handover: ReadonlyArray<{ readonly team: string; readonly count: number }>;
   /** The faults the shape has, kept for the workload card. */
@@ -176,6 +178,7 @@ export function shapeView(spec: ShapeSpec): ShapeView {
     slows: names(slows),
     ways: waysOf([...stops, ...slows]),
     scenarios: templates.length,
+    templateIds: templates.map((t) => t.id),
     handover: handoverOf(templates),
     problems: [...set],
     dotted: [

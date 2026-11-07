@@ -5,7 +5,14 @@
  */
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { hasDefaultModel, MODELS_CHANGED, MODELS_HASH, MOSS_SLEEP_LINE } from "../../logic";
-import { openMoss, panelState, setAwake, subscribe, useMossScreen } from "../../moss";
+import {
+  openMoss,
+  panelState,
+  setAwake,
+  subscribe,
+  useMossScreen,
+  watchBottomBars,
+} from "../../moss";
 import { useApp, useAsync } from "../context";
 import { MossPanel } from "./Panel";
 
@@ -122,6 +129,8 @@ export function MossHost() {
     if (panel.open) setHint(false);
   }, [panel.open]);
   useOpenKeys(awake);
+  // 아래 막대가 있는 화면에서는 버튼이 막대 위로 올라가요 (REQ-104)
+  useEffect(() => watchBottomBars(), []);
   const high = page.name === "world" || page.name === "scenario";
   return (
     <>

@@ -1,5 +1,7 @@
 /** web.moss: 이끼가 화면과 만나는 곳 — 등록부, 붙이는 훅, 물음표 (REQ-103, ADR-0124). */
+
 export { MossAsk, numberQuestion, termQuestion } from "./ask";
+export { BAR_VAR, barHeight, launcherBottom, watchBottomBars } from "./bar-offset";
 export { useMossActions, useMossRead, useMossScreen } from "./bind";
 export { parseInput } from "./match";
 export type { Plan, PlanStatus, PlanStep, StepStatus } from "./plan";

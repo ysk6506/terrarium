@@ -6,7 +6,6 @@
 import type { ServiceDraft, ShapePlan } from "@terrarium/core/sources/worldgen";
 import type { Layers } from "@terrarium/core/world";
 import { count, worldScale } from "../../logic";
-import { Editable } from "./shape-edit";
 
 function Servers({
   servers,
@@ -53,16 +52,9 @@ export function SizeStep(props: {
   readonly servers: number;
   readonly real: boolean;
   readonly onServers: (n: number, real: boolean) => void;
-  readonly onServices: (next: readonly ServiceDraft[]) => void;
   readonly problem: string | undefined;
 }) {
   const { services, plan } = props;
-  const setHarm = (si: number, hi: number, perHourKrw: number) =>
-    props.onServices(
-      services.map((s, i) =>
-        i === si ? { ...s, harm: s.harm.map((h, k) => (k === hi ? { ...h, perHourKrw } : h)) } : s,
-      ),
-    );
   return (
     <>
       <div className="we-qhead">
@@ -92,32 +84,6 @@ export function SizeStep(props: {
             </p>
           )}
           <p className="we-note">토폴로지는 접어서 보여 줘요 · 첫 그림까지 1초 안</p>
-        </section>
-        <section className="we-panel">
-          <h3>멈추면</h3>
-          {services.map((s, si) =>
-            s.harm.map((h, hi) => (
-              <div key={`${s.key}-${h.name}`} className="we-harm">
-                <div className="we-harm-name">
-                  {hi === 0 ? s.name : " "}
-                  <small>{h.name}</small>
-                </div>
-                <div className="we-field">
-                  시간당{" "}
-                  <b>
-                    <Editable
-                      numeric
-                      label={`${s.name} ${h.name} 시간당 피해(만 원)`}
-                      value={Math.round(h.perHourKrw / 10_000)}
-                      onCommit={(v) => setHarm(si, hi, Number(v) * 10_000)}
-                    />
-                  </b>
-                  <small>만 원</small>
-                </div>
-              </div>
-            )),
-          )}
-          <p className="we-note">사고 비용 = 멈춘 시간 × 이 값. 결과 화면에 나와요.</p>
         </section>
       </div>
     </>

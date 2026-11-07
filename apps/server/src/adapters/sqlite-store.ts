@@ -4,6 +4,7 @@
  * only what lists filter and sort on. Versions of worlds and scenarios are kept by digest forever,
  * because experiments point at them.
  */
+
 import { mkdirSync } from "node:fs";
 import path from "node:path";
 import { DatabaseSync, type StatementSync } from "node:sqlite";
@@ -23,6 +24,7 @@ import {
   type PresetRecord,
   type RunRecord,
   type ScenarioRecord,
+  type ServiceCardRecord,
   type ShareRecord,
   type TitleAward,
   type WorldLike,
@@ -30,6 +32,7 @@ import {
   type WorldSummary,
 } from "@terrarium/core/experiments";
 import type { Blueprint, EntityKind } from "@terrarium/core/world";
+import { RecordTable } from "./sqlite-records";
 
 const SCHEMA_VERSION = 1;
 
@@ -68,6 +71,8 @@ CREATE TABLE IF NOT EXISTS presets (
   id TEXT PRIMARY KEY, owner TEXT NOT NULL, kind TEXT NOT NULL, created_at TEXT NOT NULL, record TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS presets_owner ON presets (owner, kind);
 CREATE TABLE IF NOT EXISTS llm_models (
+  id TEXT PRIMARY KEY, created_at TEXT NOT NULL, record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS service_cards (
   id TEXT PRIMARY KEY, created_at TEXT NOT NULL, record TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS world_likes (
   world_id TEXT NOT NULL, user_name TEXT NOT NULL, at TEXT NOT NULL, PRIMARY KEY (world_id, user_name));
@@ -396,26 +401,36 @@ export class SqliteStore implements ExperimentStore {
     return Number(this.sql("DELETE FROM presets WHERE id = ?").run(id).changes) > 0;
   }
 
+  private readonly models = new RecordTable<LlmModelRecord>((q) => this.sql(q), "llm_models");
+
   async putModel(model: LlmModelRecord): Promise<void> {
-    this.sql("INSERT OR REPLACE INTO llm_models (id, created_at, record) VALUES (?, ?, ?)").run(
-      model.id,
-      model.createdAt,
-      JSON.stringify(model),
-    );
+    this.models.put(model);
   }
-
   async getModel(id: string): Promise<LlmModelRecord | undefined> {
-    const row = this.sql("SELECT record FROM llm_models WHERE id = ?").get(id) as Row | undefined;
-    return row && parse<LlmModelRecord>(row.record);
+    return this.models.get(id);
   }
-
   async listModels(): Promise<LlmModelRecord[]> {
-    const rows = this.sql("SELECT record FROM llm_models ORDER BY created_at, id").all() as Row[];
-    return rows.map((r) => parse<LlmModelRecord>(r.record));
+    return this.models.list();
   }
 
   async deleteModel(id: string): Promise<boolean> {
-    return Number(this.sql("DELETE FROM llm_models WHERE id = ?").run(id).changes) > 0;
+    return this.models.delete(id);
+  }
+
+  private readonly cards = new RecordTable<ServiceCardRecord>((q) => this.sql(q), "service_cards");
+
+  async putServiceCard(c: ServiceCardRecord): Promise<void> {
+    this.cards.put(c);
+  }
+  async getServiceCard(id: string): Promise<ServiceCardRecord | undefined> {
+    return this.cards.get(id);
+  }
+  async listServiceCards(): Promise<ServiceCardRecord[]> {
+    return this.cards.list();
+  }
+
+  async deleteServiceCard(id: string): Promise<boolean> {
+    return this.cards.delete(id);
   }
 
   async putLike(like: WorldLike): Promise<void> {

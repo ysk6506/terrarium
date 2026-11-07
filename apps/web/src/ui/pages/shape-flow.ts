@@ -6,11 +6,11 @@
 import { DEFAULT_SHAPE, type ServiceDraft, type ShapeSpec } from "@terrarium/core/sources/worldgen";
 import { LAYER_IDS, type LayerId, type Layers } from "@terrarium/core/world";
 import { useCallback, useMemo, useState } from "react";
-import { type PresetId, presetLayers, resolveLayers } from "../../logic";
+import { type PresetId, presetLayers, resolveLayers, STEPS, type Step } from "../../logic";
 import { shapedServices, useApart } from "./shape-apart";
 
-export type Step = "services" | "ladders" | "work" | "size";
-export const STEPS: readonly Step[] = ["services", "ladders", "work", "size"];
+export type { Step };
+export { STEPS };
 
 const OWN_KEY = "terrarium.ownLayers";
 

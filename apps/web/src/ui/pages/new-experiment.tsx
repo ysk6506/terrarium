@@ -3,14 +3,24 @@
  * will run, what is still missing, and — for a fork — exactly what differs from the original.
  */
 import type { ExperimentView } from "@terrarium/core/contract";
-import type { ScenarioRecord, WorldSummary } from "@terrarium/core/experiments";
+import type { ScenarioRecord, WorldRecord, WorldSummary } from "@terrarium/core/experiments";
+import type { ShapeSpec } from "@terrarium/core/sources/worldgen";
 import { type Dispatch, type SetStateAction, useCallback, useEffect, useState } from "react";
-import { experiment, metaProblems, operationWords } from "../../logic";
+import {
+  experiment,
+  metaProblems,
+  operationWords,
+  quickDraft,
+  quickOperation,
+  shapeView,
+  withHarm,
+} from "../../logic";
 import { Go, messageOf, useApp, useAsync } from "../context";
 import { Button, Failure, Loading, Note, PageHead } from "../kit";
 import { slotPending } from "./experiment-mcp";
 import { HowStep, NameStep, WhatStep, WhoStep } from "./experiment-steps";
 import { useWizardMoss } from "./new-experiment-moss";
+import { type HarmEdits, QuickHarm } from "./quick-harm-panel";
 
 type Draft = experiment.Draft;
 
@@ -18,11 +28,13 @@ interface Start {
   readonly worlds: readonly WorldSummary[];
   readonly parent?: ExperimentView;
   readonly draft: Draft;
+  /** The world "바꾸기" came from, whose damage numbers the form lets you change. */
+  readonly world?: WorldRecord;
 }
 
 /** Where the form starts: a fork's parent as it was, a chosen scenario, or empty. */
-function useStart(forkOf?: string, scenarioId?: string, worldId?: string) {
-  const { api } = useApp();
+function useStart(forkOf?: string, scenarioId?: string, worldId?: string, quick = false) {
+  const { api, identity } = useApp();
   return useAsync(
     async (signal): Promise<Start> => {
       const worlds = await api.call("listWorlds", { query: { sort: "new" }, signal });
@@ -37,6 +49,29 @@ function useStart(forkOf?: string, scenarioId?: string, worldId?: string) {
           draft: { ...experiment.emptyDraft(), worldId: s.worldId, scenarioId: s.id },
         };
       }
+      if (quick && worldId) {
+        // "바꾸기": the settings "실험 시작" would have used, as the form's starting point (REQ-104)
+        const world = await api.call("getWorld", { params: { id: worldId }, signal });
+        const shape = world.provenance?.shape as ShapeSpec | undefined;
+        const mine = await api.call("listExperiments", {
+          query: { owner: identity.name, limit: 1 },
+          signal,
+        });
+        const last = mine[0]?.experiment.recipe;
+        const operation = quickOperation(
+          world.blueprint,
+          shape ? shapeView(shape).templateIds : undefined,
+        );
+        return {
+          worlds,
+          world,
+          draft: quickDraft(
+            worldId,
+            operation,
+            last ? { harnessId: last.harnessId, agentId: last.agentId } : undefined,
+          ),
+        };
+      }
       return {
         worlds,
         draft: {
@@ -45,7 +80,7 @@ function useStart(forkOf?: string, scenarioId?: string, worldId?: string) {
         },
       };
     },
-    [forkOf, scenarioId, worldId],
+    [forkOf, scenarioId, worldId, quick],
   );
 }
 
@@ -147,7 +182,7 @@ function SummaryCard({
     start.parent !== undefined &&
     experiment.forkChanges(start.parent.experiment, draft).length === 0;
   return (
-    <aside className="summary-card stack" aria-label="실행할 것">
+    <aside className="summary-card stack" data-bottom-bar aria-label="실행할 것">
       <h2 style={{ fontSize: 18 }}>{start.parent ? "원본에서 바꾼 것" : "실행할 것"}</h2>
       {start.parent && <ForkChanges parent={start.parent} draft={draft} />}
       {!start.parent && <RunLine draft={draft} />}
@@ -196,7 +231,7 @@ function useDefaultHarness(draft: Draft, setDraft: Dispatch<SetStateAction<Draft
 }
 
 /** 실험을 시작한다(또는 이어서 돌린다): "실험 시작" 버튼과 이끼의 "실험 시작"이 같은 `launch`를 써요. */
-function useLaunch(start: Start, draft: Draft, placeholder: string) {
+function useLaunch(start: Start, draft: Draft, placeholder: string, harm: HarmEdits) {
   const { api, navigate } = useApp();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
@@ -204,6 +239,15 @@ function useLaunch(start: Start, draft: Draft, placeholder: string) {
     setBusy(true);
     setError(undefined);
     try {
+      // damage numbers changed on this form belong to the world's services: write them before the experiment
+      if (start.world && Object.keys(harm).length > 0)
+        await api.call("updateWorld", {
+          params: { id: start.world.id },
+          body: {
+            baseDigest: start.world.digest,
+            blueprint: withHarm(start.world.blueprint, harm),
+          },
+        });
       const view = start.parent
         ? await api.call("forkExperiment", {
             params: { id: start.parent.experiment.id },
@@ -239,7 +283,8 @@ function Wizard({ start }: { readonly start: Start }) {
     undefined,
     agents?.find((a) => a.id === draft.agentId)?.name,
   );
-  const { busy, error, launch } = useLaunch(start, draft, placeholder);
+  const [harm, setHarm] = useState<HarmEdits>({});
+  const { busy, error, launch } = useLaunch(start, draft, placeholder, harm);
   useWizardMoss({
     draft,
     set,
@@ -273,6 +318,7 @@ function Wizard({ start }: { readonly start: Start }) {
           {...(scenario ? { scenario } : {})}
         />
         <NameStep draft={draft} set={set} placeholder={placeholder} />
+        {start.world && <QuickHarm world={start.world} edits={harm} onChange={setHarm} />}
       </div>
       <div className="stack">
         <SummaryCard
@@ -319,7 +365,7 @@ export function NewExperimentPage() {
   const query = page.name === "newExperiment" ? page : undefined;
   const forkOf = query?.forkOf;
   const scenarioId = query?.scenarioId;
-  const start = useStart(forkOf, scenarioId, query?.worldId);
+  const start = useStart(forkOf, scenarioId, query?.worldId, Boolean(query?.quick));
   return (
     <div className="page">
       <PageHead

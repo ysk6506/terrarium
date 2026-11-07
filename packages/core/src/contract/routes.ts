@@ -35,6 +35,7 @@ import {
   UpdateScenarioBody,
   UpdateWorldBody,
 } from "./requests";
+import { SERVICE_CARD_ROUTES } from "./service-card-routes";
 
 export type { Responses } from "./responses";
 
@@ -199,6 +200,7 @@ export const ROUTES = {
   ...MODEL_ROUTES,
   ...MOSS_ROUTES,
   ...COMMUNITY_ROUTES,
+  ...SERVICE_CARD_ROUTES,
 
   listWorldTemplates: {
     method: "GET",

@@ -16,6 +16,8 @@ import {
   type ExperimentView,
   type ForkRequest,
   InvalidInputError,
+  type QuickExperimentRequest,
+  type QuickExperimentView,
   type RecipeRequest,
   type RunSummary,
   UnavailableError,
@@ -54,6 +56,7 @@ import type { AgentVersions } from "./agent-versions";
 import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
 import type { Dispatcher } from "./dispatcher";
 import { summaryOf } from "./executor";
+import { quickPlan } from "./experiments-quick";
 import type { Scenarios } from "./scenarios";
 import { present, subjectOf } from "./subject";
 import type { Titles } from "./titles";
@@ -294,6 +297,17 @@ export class Experiments {
     };
     await this.launch(experiment, recipe.seeds);
     return this.view(viewer, experiment.id);
+  }
+
+  /** "실험 시작" in one request: the recommended settings for the world, created and queued as any experiment. */
+  async quick(
+    viewer: Viewer,
+    worldId: string,
+    req: QuickExperimentRequest,
+  ): Promise<QuickExperimentView> {
+    const plan = await quickPlan(this.ctx, viewer, worldId, req);
+    const view = await this.create(viewer, plan.request);
+    return { experimentId: view.experiment.id, ...plan.info };
   }
 
   async fork(viewer: Viewer, id: string, req: ForkRequest): Promise<ExperimentView> {

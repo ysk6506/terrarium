@@ -13,13 +13,13 @@ covers:
   - packages/core/src/contract/model-routes.ts
   - packages/core/src/contract/community.ts
   - packages/core/src/contract/community-routes.ts
-covers_hash: 67a272f6b54ffb07
+covers_hash: 4b1f3f6880302348
 verification_log:
-  - "2026-11-06: 2b·2d 합치기"
   - "2026-11-06: 저장해 둔 것 여섯 경로를 routes.ts, responses.ts, contract/presets.ts와 대조해 표에 더했다 (ADR-0112)"
   - "2026-11-07: REQ-102(ADR-0123): 사다리·직접 짓기 화면과 말(시운전·미리 보기·전제)을 코드와 대조해 고쳤다"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
+  - "2026-11-07: 2026-11-07: REQ-104(ADR-0127) 코드와 대조해 고쳤다"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -77,6 +77,11 @@ verification_log:
 | `POST /api/worlds/:id/like` | 좋아요 `{ worldId, likes, likedByMe }`. 사람마다 세계마다 하나라 다시 눌러도 하나. 없는 세계 404, 이름 없는 사람 403 | |
 | `DELETE /api/worlds/:id/like` | 좋아요 취소(없어도 같은 답) | |
 | `GET /api/users/:id/titles` | 한 사람의 칭호 전부 `{ user, titles: [{ key, label, means, earnedAt }] }`, 보여 줄 차례대로. `:id`는 사람 이름 | |
+| `POST /api/worlds/:id/quick-experiment` | 권장값으로 실험 시작 한 번(REQ-104, [ADR-0127](adr/0127-short-world-flow-and-service-catalog.md), [설명](world-entry.md#실험-시작--권장값-한-번에)) `{ templateIds? }` → `{ experimentId, scenarios, faults, runs, hours, harnessId, agentId, agentName, agentFrom }`. 운영 실험(시나리오 세트) · 기본 툴 + `events_since` · 5번 · 실제 시간 · 최근 쓴 에이전트(없으면 내장 `operator`). 쓸 시나리오가 없으면 400 | |
+| `GET /api/service-cards` | 내 카드와 공유된 서비스 카드(REQ-104, [카탈로그](service-catalog.md)). 만든 사람·칭호·`locked`·`shared`·`canEdit` | |
+| `POST /api/service-cards` | 내 카드로 저장 `{ name, card, harm?, locked?: true, shared?: false }`. `card`는 기본 제공 카드 id, `harm`은 그 카드의 등급 수와 같아야 한다(400) | |
+| `PATCH /api/service-cards/:id` | 고치기: 이름·`harm`은 만든 사람(잠금을 풀었으면 누구나), `locked`·`shared`는 만든 사람만(403). 공유 안 된 남의 카드는 403 | |
+| `DELETE /api/service-cards/:id` | 지우기(만든 사람만) | |
 | `GET /api/worlds/:id` | 세계 하나 (blueprint 포함) | |
 | `POST /api/worlds` | 빌더에서 지은 세계 저장 | |
 | `POST /api/worlds/generate` | 사업장 프리셋으로 세계 생성. 본문이 `{ shape }`이면 서비스부터(REQ-094), `template: true`를 더하면 템플릿으로 저장, `startedFrom`(템플릿·세계 id)을 더하면 출처를 세계 기록에 남긴다(REQ-101) | |

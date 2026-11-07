@@ -185,6 +185,8 @@ export {
 } from "./next-step";
 export * as operationWords from "./operation";
 export * as presets from "./presets";
+export { quickDraft, quickOperation } from "./quick-draft";
+export { type HarmRow, harmRows, withHarm } from "./quick-harm";
 export {
   commonPathNote,
   NO_COMMON_PATH_TEXT,
@@ -251,6 +253,8 @@ export {
   WORLD_SORT_OPTIONS,
 } from "./world-board";
 export {
+  advance,
+  builtFact,
   CARD_LIST_MAX,
   CARDS,
   type Chip,
@@ -267,10 +271,16 @@ export {
   PRESET_LABELS,
   type PresetId,
   presetLayers,
+  pressesToExperiment,
+  QUICK,
   type Resolved,
+  recommendLine,
   resolveLayers,
   resolveServiceLayers,
+  retreat,
   type ShapeView,
+  STEPS,
+  type Step,
   shapeView,
   workloadView,
 } from "./world-shape";

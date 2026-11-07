@@ -19,27 +19,16 @@ function Doors({
   return (
     <div className="we-doors">
       <button type="button" className="we-door" onClick={onService}>
-        <div className="we-pic svc" aria-hidden="true">
-          <i />
-          <i />
-          <i />
-        </div>
         <div>
           <h2>실험할 인프라가 필요해요</h2>
           <p>멈추면 안 되는 서비스를 고르면, 그걸 떠받치는 데이터센터를 대신 지어요.</p>
         </div>
         <div className="we-meta">
-          <b>3분</b>· 질문 셋 · 바로 실험으로
+          <b>3분</b>· 질문 셋 · 끝나면 바로 실험
         </div>
         <div className="we-go">서비스 고르기 →</div>
       </button>
       <button type="button" className="we-door" onClick={onBuild}>
-        <div className="we-pic diy" aria-hidden="true">
-          <i />
-          <i />
-          <i />
-          <i />
-        </div>
         <div>
           <h2>데이터센터를 직접 지어요</h2>
           <p>부지를 사고 건물을 올리고 랙에 서버를 꽂아요. 실제 가격, 실제 크기예요.</p>

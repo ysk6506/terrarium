@@ -401,6 +401,7 @@ export {
   serviceProps,
 } from "./service";
 export type { ServiceCommand } from "./service-act";
+export { type CatalogCard, catalogCard, SERVICE_CATALOG } from "./service-catalog";
 export {
   harmShare,
   impairedAt,
