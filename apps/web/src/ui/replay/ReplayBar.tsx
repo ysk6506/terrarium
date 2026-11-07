@@ -1,6 +1,6 @@
 /**
  * The time bar (REQ-078 step 2, ADR-0084 item 8): one bar for the run page, the result page, the side-by-side view and
- * the builder's "돌려 보기". It plays, pauses, is dragged, and takes the keyboard (← → move 5 seconds, Home and End go
+ * the builder's "시운전". It plays, pauses, is dragged, and takes the keyboard (← → move 5 seconds, Home and End go
  * to the ends). The marks on it are the five things a run does (fault, alarm, look, act, recovery), each at its first
  * time, with a small dot for every time after; a mark's label under the line goes to that moment when pressed.
  */

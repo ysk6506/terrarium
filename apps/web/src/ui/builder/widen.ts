@@ -1,17 +1,23 @@
 import type { Builder } from "./useBuilder";
 
+/** Set when "방 넓히기" was pressed: the room's card, when it appears, opens its size boxes (read once). */
+let sizeAsked = false;
+
+/** Whether the size boxes were asked for since the last look; asking again needs a new press. */
+export function takeSizeAsk(): boolean {
+  const asked = sizeAsked;
+  sizeAsked = false;
+  return asked;
+}
+
 /**
- * The way on from a full server room: show the size boxes. The room is picked first so the panel is about it, the
- * folded "크기와 모양" is opened, and the cursor lands in the width box.
+ * The way on from a full server room: pick the room so its card shows, with the size boxes open and the cursor in
+ * the width box (the card does that when it opens).
  */
 export function widenRoom(b: Builder): void {
-  const { level, selected } = b.state;
-  if (level.kind === "room" && selected.length > 0) b.setSelected([]);
-  const fold = document.querySelector<HTMLDetailsElement>('[data-fold="size"]');
-  if (fold) fold.open = true;
-  requestAnimationFrame(() => {
-    const box = document.querySelector<HTMLInputElement>('[data-testid="size-w"]');
-    box?.scrollIntoView({ block: "center" });
-    box?.focus();
-  });
+  const { level } = b.state;
+  if (level.kind === "room") {
+    sizeAsked = true;
+    b.setSelected([level.id]);
+  }
 }

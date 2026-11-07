@@ -51,7 +51,7 @@ describe("the 다음 할 일 chip is a function of the world [REQ-077]", () => {
     });
     expect(nextStep(idx(filled.blueprint), false)).toMatchObject({
       id: "run",
-      label: "다음: 돌려 보기",
+      label: "다음: 시운전",
     });
     expect(nextStep(idx(filled.blueprint), true).id).toBe("done");
   });

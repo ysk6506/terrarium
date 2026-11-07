@@ -2,18 +2,18 @@
 title: UX Honeycomb 측정
 kind: guide
 status: active
-last_verified: 2026-11-05
+last_verified: 2026-11-07
 covers:
   - harness/src/ux/score.ts
   - tests/e2e/ux/probes-voice.ts
   - tests/e2e/ux/probes-detail.ts
-covers_hash: 34fde003d5b300f9
+covers_hash: 6faf17d6c7eeec12
 verification_log:
-  - "2026-11-04: 여정 표에 site(새 사업장 만들고 땅 사기, 예산 6)를 더하고 score.ts의 JOURNEY_BUDGETS·JOURNEY_LABELS와 journeys.ts를 대조했다"
   - "2026-11-04: 여정 표에 author(빈 캔버스에서 시험지 점검까지, 예산 8)를 더하고 score.ts의 JOURNEY_BUDGETS·JOURNEY_LABELS, journeys.ts와 대조했다. 여정 수는 열 개"
   - "2026-11-05: REQ-077 세계 만들기 재설계(작업 #90) 반영: 코드와 대조해 맞는 것을 확인했다"
   - "2026-11-05: 여정 표에 topology(예산 5, 화성 실제 크기에서 타일 150개 이하·첫 그림 3초)를 더하고 score.ts의 JOURNEY_BUDGETS·JOURNEY_LABELS, journeys.ts와 대조했다. 여정 수는 열한 개"
   - "2026-11-05: ADR-0083(build-small, import 없음)과 ADR-0084(topology)를 합친 뒤 score.ts·journeys.ts와 대조: 여정 열한 개, 순서 author → build-small → topology"
+  - "2026-11-07: REQ-102(ADR-0123): 사다리·직접 짓기 화면과 말(시운전·미리 보기·전제)을 코드와 대조해 고쳤다"
 ---
 # UX를 숫자로 재는 법 (REQ-041, [ADR-0031](adr/0031-ux-honeycomb-measurement.md))
 
@@ -47,7 +47,7 @@ UI를 바꿨다면 `pnpm ux`를 한 번 돌려야 `pnpm check`가 통과한다(�
 | | 꺼진 버튼의 이유 (`disabled-why`) | 꺼진 버튼이 `title`이나 `aria-describedby`로 이유를 말하는 비율 |
 | | 포인터 반응 (`hover`) | 화면마다 앞쪽 버튼 3개에 포인터를 올리면 색, 그림자, 테두리 같은 모양이 바뀌는 비율 |
 | 매력 (desirable) | 디자인 토큰 | 스타일시트의 색 값 중 테마 토큰(`:root`) 밖에서 쓴 비율 |
-| | 진행 표시 | 세계 생성, 미리 돌려 보기, 도는 실험 중에 진행이 보이는가 |
+| | 진행 표시 | 세계 생성, 미리 보기, 도는 실험 중에 진행이 보이는가 |
 | | 첫 화면 크기와 시간 | 홈이 내려받는 양(700 kB)과 제목이 보일 때까지의 시간(2.5초) 예산 |
 | | 3D 장면 | 세계 화면의 캔버스가 비어 있지 않은가 |
 | 찾기 쉬움 (findable) | 닿는 길 | 홈에서 안의 링크를 두 번 눌러 화면 10종(목록, 세계, 시나리오, 실험, 실행, 벤치마크, 새 실험)에 닿는가 |
@@ -78,7 +78,7 @@ UI를 바꿨다면 `pnpm ux`를 한 번 돌려야 `pnpm check`가 통과한다(�
 | fork | 6 | 끝난 실험에서 에이전트를 바꿔 다시 돌리고 원본과 견주는 결과를 본다 |
 | compare | 4 | 벤치마크에서 줄을 골라 조건을 바꿔 해 보는 화면까지 간다 |
 | site | 6 | 작게 시작으로 작은 사업장을 만들고, 팔고 있는 땅을 사서 "팔고 있는 땅이 n곳"이 줄어드는 것을 보고, 되돌린다 |
-| build-small | 8 | 작게 시작 → 다음 할 일 칩으로 서버룸 채우기(랙 24대) → 돌려 보기까지 (REQ-077, ADR-0083). 맨 뒤에 둔다 |
+| build-small | 8 | 작게 시작 → 다음 할 일 칩으로 서버룸 채우기(랙 24대) → 시운전까지 (REQ-077, ADR-0083). 맨 뒤에 둔다 |
 | topology | 5 | 화성을 실제 크기로 올려 두고 세계 목록에서 열어 토폴로지를 누른다. **타일이 150개 이하**이고 **첫 그림이 3초 안에** 나오는지 재고, 층(전원)을 바꾸고, 접힌 묶음 하나를 펼친다 (REQ-078). 끝나면 그 세계를 숨긴다. 맨 뒤 여정이다 |
 
 ## 코드 위치와 고치는 법

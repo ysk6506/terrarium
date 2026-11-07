@@ -1,4 +1,4 @@
-/** The builder's top bar: the world's name, where we are, undo, "돌려 보기", and how the world stands (saved on its own). */
+/** The builder's top bar: the world's name, where we are, undo, "시운전", and how the world stands (saved on its own). */
 import { useEffect, useState } from "react";
 import { builder } from "../../logic";
 import { Go, useNow } from "../context";
@@ -72,9 +72,25 @@ function SaveState({ b }: { readonly b: Builder }) {
   );
 }
 
-/** The map mode's bar: one way back and the one thing to do, "돌려 보기". */
+/** The trial-run button: it says how far it is while it goes, and "다시 시운전" once there is a result. */
+function TrialButton({ b, primary }: { readonly b: Builder; readonly primary: boolean }) {
+  const { preview, previewing, minutes } = b.state;
+  return (
+    <Button
+      kind={primary && !preview ? "primary" : "plain"}
+      icon="play"
+      busy={previewing}
+      onClick={b.runPreview}
+      title="에이전트 없이 10분 시운전해서 어디가 더운지 봐요"
+    >
+      {builder.trialLabel({ previewing, minutes, done: preview !== undefined })}
+    </Button>
+  );
+}
+
+/** The map mode's bar: one way back and the one thing to do, "시운전". */
 function MapBar({ b, onLeave }: { readonly b: Builder; readonly onLeave: () => void }) {
-  const { world, preview, previewing } = b.state;
+  const { world } = b.state;
   return (
     <div className="toolbar">
       <Button kind="quiet" icon="back" onClick={onLeave}>
@@ -87,15 +103,7 @@ function MapBar({ b, onLeave }: { readonly b: Builder; readonly onLeave: () => v
           <Crumbs b={b} />
         </div>
       </div>
-      <Button
-        kind={preview ? "plain" : "primary"}
-        icon="play"
-        busy={previewing}
-        onClick={b.runPreview}
-        title="에이전트 없이 10분 돌려서 어디가 더운지 봐요"
-      >
-        {preview ? "다시 돌려 보기" : "돌려 보기"}
-      </Button>
+      <TrialButton b={b} primary />
     </div>
   );
 }
@@ -136,7 +144,7 @@ export function BuilderBar({
   readonly warm: () => void;
 }) {
   if (map) return <MapBar b={b} onLeave={onLeaveMap} />;
-  const { world, preview, previewing, canUndo, canRedo, mine } = b.state;
+  const { world, canUndo, canRedo, mine } = b.state;
   return (
     <div className="toolbar">
       <Go to={{ name: "worlds" }} className="btn btn-quiet btn-small" aria-label="세계 목록으로">
@@ -170,18 +178,7 @@ export function BuilderBar({
         why="다시 할 게 아직 없어요"
         onClick={b.redo}
       />
-      <Button
-        icon="play"
-        busy={previewing}
-        aria-pressed={Boolean(preview)}
-        onClick={b.runPreview}
-        title="에이전트 없이 10분 돌려서 어디가 더운지 봐요"
-      >
-        {preview ? "돌려 본 결과 끄기" : "돌려 보기"}
-      </Button>
-      <Go to={{ name: "scenarios", worldId: world.id }} className="btn btn-quiet">
-        이 세계의 시나리오
-      </Go>
+      <TrialButton b={b} primary={false} />
       <SaveState b={b} />
     </div>
   );

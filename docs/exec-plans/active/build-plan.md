@@ -52,6 +52,7 @@ verification_log:
 | 12j | 연결 화면과 시나리오 편집기 다시 (내 연결 먼저·하네스 종류 카드·접힌 기준 에이전트·주소 종류, 실험 2단계 MCP 안내와 슬롯 확인, 편집기 질문 셋 팔레트·선택 블록 뒤에 끼우기·Ctrl+C/V/D/Z/Y·Delete·문장형 채점표) | REQ-034, 051, 071, 079 | 구현 끝(UX 측정은 4차 뒤 한 번) |
 | 12m | LLM API 등록 (설정의 "모델" 구역: LiteLLM·OpenAI 호환·Claude 호환 등록, 카드·기본 모델·"연결 확인"(목록 → 짧은 호출), 키는 서버 비밀 상자에 봉인하고 마지막 네 글자만, 얇은 `LlmClient`와 어댑터 둘. 아직 쓰는 곳은 없다) | REQ-099 | 구현 끝 |
 | 12n | 깊은 OS 흉내 (호스트마다 가상 파일시스템 `/proc`·`/var/log`·`/etc`·`/tmp`·`/var/lib`와 프로세스 표와 유닛·저널을 한 사건 목록에서 만듦, `run_command`는 파이프·리다이렉트·`grep`·`awk`·`sed` 같은 텍스트 명령을 실제 의미대로 돌리고 모르는 명령은 `command not found`, 쓰는 명령은 `host.act`로 열 두 가지, OS 고장 열 가지가 파일·프로세스로 드러남, 변별력 점검에 "흔한 명령만으로 원인에 닿는가", 실행 결과에 "흉내 밖 명령 n번", `kubectl`·`crictl`을 다는 `registerShellCommand`) | REQ-098 | 구현 끝 ([설명](../../design-docs/service-os-layer.md), [ADR-0117](../../design-docs/adr/0117-deep-os-simulation.md), [ADR-0118](../../design-docs/adr/0118-deep-os-tests.md)) |
+| 12q | 화면 다듬기 1 (사다리 화면은 조용한 줄 여덟 + 층 하나만 펼침 + 구조 카드는 목록 셋까지, 칩 전제 규칙과 "컴퓨트도 바꾸기", 알아서의 짧은 이유와 전제를 지키는 프리셋, 직접 짓기는 놓기 · 카드 하나 · 아래 막대 하나, "돌려 보기"를 "시운전"으로, 시나리오 편집기의 "미리 보기") | REQ-102 | 구현 끝 ([설명](../../design-docs/world-entry.md), [ADR-0123](../../design-docs/adr/0123-ladder-and-builder-focus.md)) |
 | 13 | **오픈 (프로덕션 레디)** — 여러 팀이 믿고 쓴다: 로그인, 운영, 접근성, 부하 | 아래 | 예정 |
 
 결정은 ADR에 있다. 이 계획에는 순서와 상태만 둔다.

@@ -280,7 +280,7 @@ export const ROUTES = {
   dryRunScenario: {
     method: "POST",
     path: "/api/scenarios/:id/dry-run",
-    summary: "에이전트 없이 미리 돌려 보기",
+    summary: "에이전트 없이 미리 보기",
     body: DryRunBody,
     produces: json,
   },

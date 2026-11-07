@@ -1,5 +1,5 @@
 /**
- * "돌려 보기": run the world's physics in the browser for a while, with no scenario, and see where it
+ * "시운전": run the world's physics in the browser for a while, with no scenario, and see where it
  * runs hot (REQ-001, REQ-006). The same core physics the experiments use, so what the builder shows is
  * what an agent will meet.
  */
@@ -90,13 +90,23 @@ function frameOf(world: World, t: number): PreviewFrame {
   return { t, racks, units, rooms, alarms };
 }
 
-/** Run the world for `seconds`; the cooling units named in `stopped` fail right after the start. */
-export function preview(
+/** What a trial run yields while it goes: the simulated seconds so far; it returns the result (REQ-102). */
+export type PreviewSteps = Generator<
+  number,
+  Preview | { readonly problems: readonly string[] },
+  void
+>;
+
+/**
+ * Run the world for `seconds`, a frame at a time: each step yields the simulated seconds so far, so a screen can show
+ * "시운전 중 3/10분" between steps. The cooling units named in `stopped` fail right after the start.
+ */
+export function* previewSteps(
   bp: Blueprint,
   catalog: Catalog,
   seconds = PREVIEW_SECONDS,
   stopped: ReadonlySet<string> = NO_UNITS,
-): Preview | { readonly problems: readonly string[] } {
+): PreviewSteps {
   const issues = validateBlueprint(bp, catalog);
   if (hasErrors(issues))
     return {
@@ -120,6 +130,7 @@ export function preview(
     const dt = Math.min(every, seconds - t);
     physics.run(dt);
     frames.push(frameOf(world, t + dt));
+    yield t + dt;
   }
   const heat = new Map<string, number>();
   for (const rack of world.index.ofKind("rack"))
@@ -143,4 +154,15 @@ export function preview(
     stopped,
     world,
   };
+}
+
+/** Run the world for `seconds` in one go; the cooling units named in `stopped` fail right after the start. */
+export function preview(
+  bp: Blueprint,
+  catalog: Catalog,
+  seconds = PREVIEW_SECONDS,
+  stopped: ReadonlySet<string> = NO_UNITS,
+): Preview | { readonly problems: readonly string[] } {
+  const steps = previewSteps(bp, catalog, seconds, stopped);
+  for (let next = steps.next(); ; next = steps.next()) if (next.done) return next.value;
 }

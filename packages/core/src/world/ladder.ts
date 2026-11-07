@@ -99,9 +99,34 @@ export interface DatabaseBuild {
   readonly sharedDisk?: boolean;
 }
 
+/** One place on a ladder: the layer, and a choice of it. */
+export interface LadderSpot {
+  readonly layer: LayerId;
+  readonly atLeast: string;
+}
+
+/**
+ * What a choice needs under it (REQ-102, ADR-0123): another layer at `atLeast` or further right on its ladder, or, when
+ * `orElse` is there, either of the two. A choice whose need is not met is shown muted and asks before it is taken.
+ */
+export interface Need extends LadderSpot {
+  readonly orElse?: LadderSpot;
+}
+
+/** A pair that is allowed but makes little sense together: the note says why, in one line. */
+export interface Pointless {
+  readonly layer: LayerId;
+  readonly chip: string;
+  readonly note: string;
+}
+
 export interface ChipMech {
   readonly id: string;
   readonly layer: LayerId;
+  /** Needs of other layers (all of them), see `Need`. Absent: none. */
+  readonly requires?: readonly Need[];
+  /** Pairs that make little sense with this choice. */
+  readonly pointlessWith?: readonly Pointless[];
   /** False: the core has no model for this structure (a dotted chip); it builds as `buildsAs` and makes no scenarios. */
   readonly modeled: boolean;
   /** The nearest modelled chip of the layer, for a dotted one. */
@@ -120,18 +145,28 @@ const c = (
   rest: Omit<ChipMech, "id" | "layer" | "modeled" | "build" | "stops" | "slows" | "costM"> &
     Partial<Pick<ChipMech, "modeled" | "build" | "stops" | "slows" | "costM">>,
 ): ChipMech => ({
+  ...rest,
   id,
   layer,
   modeled: rest.modeled ?? true,
-  ...(rest.buildsAs ? { buildsAs: rest.buildsAs } : {}),
   build: rest.build ?? {},
   stops: rest.stops ?? [],
   slows: rest.slows ?? [],
   costM: rest.costM ?? 0,
 });
 
-const dotted = (layer: LayerId, id: string, buildsAs: string, costM = 0): ChipMech =>
-  c(layer, id, { modeled: false, buildsAs, costM });
+const dotted = (
+  layer: LayerId,
+  id: string,
+  buildsAs: string,
+  costM = 0,
+  requires?: readonly Need[],
+): ChipMech => c(layer, id, { modeled: false, buildsAs, costM, ...(requires ? { requires } : {}) });
+
+const at = (layer: LayerId, atLeast: string): LadderSpot => ({ layer, atLeast });
+const SHARED: Need = at("storage", "sto-shared");
+const CONTAINERS: Need = at("compute", "cmp-containers");
+const MANY_DB = at("database", "db-distributed-sql");
 
 /** Every choice of every layer, left to right. 44 in all. */
 export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
@@ -169,6 +204,7 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       costM: 150,
     }),
     c("network", "net-cloud-native", {
+      requires: [CONTAINERS],
       build: { spines: 2, overlay: { controllers: 2, nfv: true, cloudNative: true } },
       stops: ["switch_failure", "vxlan_tunnel_down", "ingress_controller_down"],
       slows: [
@@ -205,12 +241,14 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       costM: 15,
     }),
     c("compute", "cmp-virt-ha", {
+      requires: [SHARED],
       build: { pack: 3 },
       stops: ["kernel_panic", "bmc_unresponsive"],
       slows: ["psu_failure", "vm_cpu_spike", "memory_leak", "cpu_runaway", "fan_failure"],
       costM: 30,
     }),
     c("compute", "cmp-drs", {
+      requires: [SHARED],
       build: { pack: 3, drs: true },
       stops: ["kernel_panic", "bmc_unresponsive"],
       slows: ["psu_failure", "vm_cpu_spike", "memory_leak", "cpu_runaway", "fan_failure"],
@@ -232,6 +270,13 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       costM: 40,
     }),
     c("compute", "cmp-multicluster", {
+      pointlessWith: [
+        {
+          layer: "site",
+          chip: "site-one-room",
+          note: "멀티클러스터인데 서버룸이 하나면 같은 방이 멈추면 둘 다 멈춰요",
+        },
+      ],
       build: { pack: 3, k8s: { clusters: 2 } },
       stops: [],
       slows: [
@@ -303,6 +348,7 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       costM: 15,
     }),
     c("database", "db-shared-aa", {
+      requires: [SHARED],
       build: {
         database: { shape: "shared_aa", instances: 3, failover: "manual", sharedDisk: true },
       },
@@ -342,8 +388,11 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
     }),
     dotted("app", "app-stateless", "app-lb-sticky", 10),
     dotted("app", "app-microservices", "app-lb-sticky", 20),
-    dotted("app", "app-mesh", "app-lb-sticky", 40),
-    dotted("app", "app-multiregion", "app-lb-sticky", 150),
+    dotted("app", "app-mesh", "app-lb-sticky", 40, [CONTAINERS]),
+    dotted("app", "app-multiregion", "app-lb-sticky", 150, [
+      at("site", "site-multi-active"),
+      MANY_DB,
+    ]),
   ],
   power: [
     c("power", "pwr-single", {
@@ -398,8 +447,12 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
     c("site", "site-one-room", { build: { rooms: 1, buildings: 1 } }),
     c("site", "site-two-rooms", { build: { rooms: 2, buildings: 1 }, costM: 120 }),
     c("site", "site-two-buildings", { build: { rooms: 2, buildings: 2 }, costM: 400 }),
-    dotted("site", "site-dr-warm", "site-two-buildings", 600),
-    dotted("site", "site-multi-active", "site-two-buildings", 1200),
+    dotted("site", "site-dr-warm", "site-two-buildings", 600, [
+      { ...at("storage", "sto-geo"), orElse: at("database", "db-primary-secondary") },
+    ]),
+    dotted("site", "site-multi-active", "site-two-buildings", 1200, [
+      { ...at("storage", "sto-geo"), orElse: MANY_DB },
+    ]),
   ],
 };
 

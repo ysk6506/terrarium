@@ -180,9 +180,7 @@ function summaryOf(step: Step, spec: ShapeSpec, view: ShapeView): ReactNode {
       <>
         지금 모양:{" "}
         <b>
-          {view.dotted.length > 0
-            ? `점선 ${view.dotted.length}층 포함`
-            : "모두 흉내 낼 수 있는 모양"}
+          {view.dotted.length > 0 ? `점선 ${view.dotted.length}층 포함` : "모두 흉내 낼 수 있어요"}
         </b>
       </>
     ),

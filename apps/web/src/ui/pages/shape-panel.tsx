@@ -41,8 +41,8 @@ export function ShapePanel({ view }: { readonly view: ShapeView }) {
           <small>스위치</small>
         </div>
         <div>
-          <b>{costText(view.costM)}</b>
-          <small>대략</small>
+          <b>{costText(view.costM).replace(/ 원$/, "")}</b>
+          <small>원 · 대략</small>
         </div>
       </div>
       <Line tone="bad" title="멈추는 고장" items={view.stops} />

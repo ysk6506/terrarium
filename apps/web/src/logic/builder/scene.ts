@@ -64,7 +64,7 @@ export interface Corner {
 
 /** What the view adds on top of the plain world. */
 export interface Overlay {
-  /** Inlet temperature per rack (°C), after "돌려 보기". */
+  /** Inlet temperature per rack (°C), after "시운전". */
   readonly heat?: ReadonlyMap<string, number>;
   /** Entities with an active critical alarm. */
   readonly alarmed?: ReadonlySet<string>;

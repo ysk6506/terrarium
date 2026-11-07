@@ -1,5 +1,5 @@
 /**
- * The time bar of the builder's "돌려 보기" (REQ-072, REQ-078): the same bar the runs have, over the frames of the
+ * The time bar of the builder's "시운전" (REQ-072, REQ-078): the same bar the runs have, over the frames of the
  * preview run. The 3D airflow map and the topology view both show the frame this bar is on, so there is one bar for
  * one moment, not one for each eye.
  */

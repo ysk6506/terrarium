@@ -5,9 +5,20 @@
  * chosen for them.
  */
 
+import { withJosa } from "@terrarium/core/kernel";
 import type { ServiceDraft, ServiceLayers } from "@terrarium/core/sources/worldgen";
 import { MIDDLE_LAYERS, SERVICE_LAYERS } from "@terrarium/core/sources/worldgen";
-import { LADDER, type LayerId, type Layers } from "@terrarium/core/world";
+import {
+  type ChipMech,
+  cheapestWay,
+  LADDER,
+  LAYER_IDS,
+  type LayerId,
+  type Layers,
+  placeOf,
+  unmetNeeds,
+  unmetOf,
+} from "@terrarium/core/world";
 import { cardOf } from "./ladders";
 
 export type PresetId = "auto" | "cheap" | "middle" | "steady";
@@ -69,56 +80,51 @@ interface Autoed {
 const man = (perHour: number): string =>
   `${Math.round(perHour / 10_000).toLocaleString("ko-KR")}만 원`;
 
-type Chooser = (need: Need, chosen: Layers, given: string) => Autoed;
+type Chooser = (need: Need, chosen: Layers) => Autoed;
 
-/** One chooser per layer: it reads the service and the layers chosen before it. */
+/** One chooser per layer: it reads the service and the layers chosen before it. Each says one short cause. */
 const CHOOSERS: Readonly<Record<LayerId, Chooser>> = {
-  network: (_, chosen, given) => ({
-    id: isVirtual(chosen) ? "net-leaf-spine" : "net-three-tier",
-    why: `${given}가 랙 사이를 오가서 길이 여럿인 모양으로`,
-  }),
-  compute: (need, _, given) =>
+  network: (_, chosen) =>
+    isVirtual(chosen)
+      ? { id: "net-leaf-spine", why: "랙 사이를 오가는 길이 여럿이라서" }
+      : { id: "net-three-tier", why: "서버가 랙 사이를 두 줄로 오가면 충분해서" },
+  compute: (need) =>
     need.k8s
-      ? {
-          id: "cmp-containers",
-          why: `${given}가 VM 위에 직접 만든 쿠버네티스라서 파드를 옮길 수 있게`,
-        }
+      ? { id: "cmp-containers", why: `${need.name} 카드에 컨트롤 플레인 VM이 있어서` }
       : need.nodes >= 3
-        ? { id: "cmp-virt-ha", why: `${given}를 호스트 몇 대에 나눠 올릴 수 있어서` }
-        : { id: "cmp-bare-spare", why: `${given}라 서버째 두고 예비 한 대만 두려고` },
+        ? { id: "cmp-virt-ha", why: "노드가 여럿이라 호스트 몇 대에 나눠 올려서" }
+        : { id: "cmp-bare-spare", why: "노드가 하나뿐이라 서버째 두고 예비 한 대만 둬서" },
   storage: (_, chosen) =>
     isVirtual(chosen)
-      ? { id: "sto-shared", why: "VM을 호스트 사이로 옮기려면 공유 저장소가 있어야 해서" }
-      : { id: "sto-raid-backup", why: "서버 안 디스크를 묶고 백업을 따로 두려고" },
+      ? { id: "sto-shared", why: "VM을 옮기려면 공유 저장소가 있어야 해서" }
+      : { id: "sto-raid-backup", why: "서버 안 디스크를 묶고 백업을 따로 둬서" },
   database: (need) =>
     need.kind === "batch"
-      ? { id: "db-single", why: "쌓아 두고 돌리는 일이라 백업만으로 충분해서" }
+      ? { id: "db-single", why: "쌓아 두고 돌리는 일이라 백업이면 충분해서" }
       : {
           id: "db-primary-secondary",
-          why: `멈추면 시간당 ${man(need.perHour)}이라 복제본을 두려고`,
+          why:
+            need.perHour > 0
+              ? `멈추면 시간당 ${man(need.perHour)}이라서`
+              : "복제본 하나는 있어야 해서",
         },
-  app: (need, _, given) =>
+  app: (need) =>
     need.nodes >= 2
-      ? { id: "app-lb-sticky", why: `${given}를 한 대 잃어도 나머지가 받게` }
-      : { id: "app-single", why: "노드가 하나뿐이라" },
+      ? { id: "app-lb-sticky", why: "한 대를 잃어도 나머지가 받게" }
+      : { id: "app-single", why: "노드가 하나뿐이라서" },
   power: (need) =>
     need.perHour >= 5_000_000
       ? { id: "pwr-2n-gen", why: "멈추면 피해가 커서 긴 정전도 버티게" }
       : { id: "pwr-ab", why: "한 줄이 꺼져도 돌아야 해서" },
   cooling: () => ({ id: "cool-n1", why: "냉방기 하나는 쉬어도 되게" }),
-  site: (need, _, given) =>
+  site: (need) =>
     need.perHour >= 20_000_000
       ? { id: "site-two-rooms", why: "멈추면 피해가 커서 방 하나가 막혀도 돌게" }
-      : { id: "site-one-room", why: `${given}와 다른 층에 맞춰서` },
+      : { id: "site-one-room", why: "서버룸 하나로 충분해서" },
 };
 
 const isVirtual = (chosen: Layers): boolean =>
   chosen.compute !== "cmp-bare" && chosen.compute !== "cmp-bare-spare";
-
-/** One layer's "알아서" choice given what is already chosen in the layers it leans on. */
-function autoFor(layer: LayerId, need: Need, chosen: Layers): Autoed {
-  return CHOOSERS[layer](need, chosen, `${need.name}(${need.nodes}개 노드)`);
-}
 
 const ORDER: readonly LayerId[] = [
   "compute",
@@ -131,9 +137,44 @@ const ORDER: readonly LayerId[] = [
   "site",
 ];
 
+/** The nearest choice to the left of `id` whose needs the layers meet; the left-most when none does. */
+function leftOf(layers: Layers, layer: LayerId, id: string): string {
+  const chips = LADDER[layer];
+  for (let i = placeOf(layer, id) - 1; i > 0; i--) {
+    const chip = chips[i] as ChipMech;
+    if (unmetNeeds({ ...layers, [layer]: chip.id }, layer, chip.id).length === 0) return chip.id;
+  }
+  return (chips[0] as ChipMech).id;
+}
+
+/**
+ * Makes the "알아서" layers whole (REQ-102): a layer the person chose is never touched. Where an unmet need stands, the
+ * layer on "알아서" gives way: the choice that needs moves left, or the layer it leans on is raised to what it needs.
+ */
+function mend(
+  layers: Record<string, string>,
+  auto: ReadonlySet<LayerId>,
+  why: Partial<Record<LayerId, string>>,
+): void {
+  for (let round = 0; round < LAYER_IDS.length * 2; round++) {
+    const open = unmetOf(layers as Layers)[0];
+    if (!open) return;
+    const way = cheapestWay(open.need);
+    if (auto.has(way.layer)) {
+      layers[way.layer] = way.atLeast;
+      why[way.layer] = `${label(open.chip)}에 필요해서`;
+    } else if (auto.has(open.layer)) {
+      layers[open.layer] = leftOf(layers as Layers, open.layer, open.chip);
+      why[open.layer] = `${withJosa(label(way.atLeast), "이")} 아니라서 낮춰서`;
+    } else {
+      return;
+    }
+  }
+}
+
 export interface Resolved {
   readonly layers: Layers;
-  /** Layer → why it was chosen for them, for the layers on "알아서". */
+  /** Layer → the one short cause it was chosen for them ("VM을 옮기려면 공유 저장소가 있어야 해서"), for the layers on "알아서". */
   readonly why: Readonly<Partial<Record<LayerId, string>>>;
 }
 
@@ -148,16 +189,19 @@ export function resolveLayers(
   const need = needOf(services);
   const layers: Record<string, string> = {};
   const why: Partial<Record<LayerId, string>> = {};
+  const auto = new Set<LayerId>();
   for (const layer of ORDER) {
     const chosen = manual[layer];
     if (chosen !== undefined) {
       layers[layer] = chosen;
       continue;
     }
-    const picked = autoFor(layer, need, { ...MIDDLE_LAYERS, ...layers } as Layers);
+    const picked = CHOOSERS[layer](need, { ...MIDDLE_LAYERS, ...layers } as Layers);
     layers[layer] = picked.id;
-    why[layer] = `알아서 ${label(picked.id)}로 골랐어요 — ${picked.why}`;
+    why[layer] = picked.why;
+    auto.add(layer);
   }
+  mend(layers, auto, why);
   return { layers: layers as Layers, why };
 }
 

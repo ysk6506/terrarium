@@ -1,7 +1,7 @@
 /**
  * Puts the people into the room being looked at (REQ-074, ADR-0078): who is there, and what is the matter
  * with the machines. The alarms are those of the moment on show: the airflow map's time scrubber when it is
- * on, otherwise the end of the last "돌려 보기". The runs at work come from the activity stream.
+ * on, otherwise the end of the last "시운전". The runs at work come from the activity stream.
  */
 import type { Catalog } from "@terrarium/core/catalog";
 import type { BlueprintIndex } from "@terrarium/core/world";
@@ -14,7 +14,7 @@ export interface CrewInput {
   readonly catalog: Catalog;
   /** The room in view, if the camera is in one. */
   readonly roomId: string | undefined;
-  /** What "돌려 보기" recorded, and which moment of it is shown (the last when none is picked). */
+  /** What "시운전" recorded, and which moment of it is shown (the last when none is picked). */
   readonly preview: builder.Preview | undefined;
   readonly frame: number | undefined;
   readonly activity: ActivityState;

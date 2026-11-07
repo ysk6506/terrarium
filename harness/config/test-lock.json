@@ -23675,6 +23675,152 @@
    "added": "2026-11-03",
    "amended_by": null
   },
+  "apps/web/src/logic/builder/one-card.test.ts::<import:341dee69>": {
+   "kind": "support",
+   "hash": "341dee6941899fba",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/one-card.test.ts::<import:4654a10e>": {
+   "kind": "support",
+   "hash": "4654a10ed24fed6d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/one-card.test.ts::<import:b2677072>": {
+   "kind": "support",
+   "hash": "b26770722ae02ccc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/one-card.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/one-card.test.ts::=catalog": {
+   "kind": "support",
+   "hash": "e0d83f2b24742ae5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/one-card.test.ts::=view": {
+   "kind": "support",
+   "hash": "aaab5b69edb992af",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/one-card.test.ts::직접 짓기 둘레: 놓기 하나, 카드 하나, 시운전 [REQ-102] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/one-card.test.ts::직접 짓기 둘레: 놓기 하나, 카드 하나, 시운전 [REQ-102] > 놓기 목록의 글에는 '장애'나 '돌려 보기'가 없다": {
+   "kind": "test",
+   "hash": "d92f26e6c84a74e2",
+   "asserts": 1,
+   "literals": [
+    "\" \"",
+    "\" \"",
+    "\"r1\"",
+    "\"room\"",
+    "\"놓기 목록의 글에는 '장애'나 '돌려 보기'가 없다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/one-card.test.ts::직접 짓기 둘레: 놓기 하나, 카드 하나, 시운전 [REQ-102] > 서버룸 안의 놓기 목록은 랙·냉방기·전기 설비만 보여 준다": {
+   "kind": "test",
+   "hash": "97a4d8ee9544fb41",
+   "asserts": 5,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"r1\"",
+    "\"room\"",
+    "\"냉방기\"",
+    "\"냉방기\"",
+    "\"땅 사기\"",
+    "\"땅 사기\"",
+    "\"랙\"",
+    "\"랙\"",
+    "\"서버룸 안의 놓기 목록은 랙·냉방기·전기 설비만 보여 준다\"",
+    "\"전기 설비\"",
+    "\"전기 설비\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/one-card.test.ts::직접 짓기 둘레: 놓기 하나, 카드 하나, 시운전 [REQ-102] > 시운전 버튼의 말은 하기 전, 하는 중, 한 뒤로 바뀐다": {
+   "kind": "test",
+   "hash": "8c8d05022c75e986",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"10\"",
+    "\"10\"",
+    "\"3\"",
+    "\"3\"",
+    "\"다시 시운전\"",
+    "\"다시 시운전\"",
+    "\"시운전 10분\"",
+    "\"시운전 10분\"",
+    "\"시운전 버튼의 말은 하기 전, 하는 중, 한 뒤로 바뀐다\"",
+    "\"시운전 중 3/10분\"",
+    "\"시운전 중 3/10분\"",
+    "false",
+    "false",
+    "false",
+    "false",
+    "false",
+    "false",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
   "apps/web/src/logic/builder/pick.test.ts::<import:b2677072>": {
    "kind": "support",
    "hash": "b26770722ae02ccc",
@@ -33761,7 +33907,7 @@
   },
   "apps/web/src/logic/next-step.test.ts::the 다음 할 일 chip is a function of the world [REQ-077] > it walks one road: no land, no building, no server room, an empty one, not run, done": {
    "kind": "test",
-   "hash": "82094b35045e5a1c",
+   "hash": "a314177df9e82749",
    "asserts": 6,
    "literals": [
     "\"\"",
@@ -33787,10 +33933,10 @@
     "\"room\"",
     "\"run\"",
     "\"run\"",
-    "\"다음: 돌려 보기\"",
-    "\"다음: 돌려 보기\"",
     "\"다음: 서버룸 채우기\"",
     "\"다음: 서버룸 채우기\"",
+    "\"다음: 시운전\"",
+    "\"다음: 시운전\"",
     "false",
     "false",
     "false",
@@ -33806,8 +33952,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-07",
+   "amended_by": "0123-ladder-and-builder-focus.md"
   },
   "apps/web/src/logic/next-step.test.ts::둘러보기 is the same chip pointing at five places [REQ-077] > <suite>": {
    "kind": "support",
@@ -38512,7 +38658,7 @@
   },
   "apps/web/src/logic/world-shape/k8s-cards.test.ts::IAP 기본 카드는 컨테이너 오케스트레이션이다 [REQ-096] > 카드에 컨트롤 플레인 VM이 있는 서비스는 알아서도 컨테이너를 고른다": {
    "kind": "test",
-   "hash": "dbbf954bcbfc51f6",
+   "hash": "9a5313fab6c10ab4",
    "asserts": 2,
    "literals": [
     "\"cmp-containers\"",
@@ -38521,8 +38667,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-07",
+   "amended_by": "0123-ladder-and-builder-focus.md"
   },
   "apps/web/src/logic/world-shape/k8s-cards.test.ts::IAP 기본 카드는 컨테이너 오케스트레이션이다 [REQ-096] > 컴퓨트 기본이 컨테이너 오케스트레이션이고 '이 모양이면'에 쿠버네티스 고장이 든다": {
    "kind": "test",
@@ -38674,7 +38820,7 @@
   },
   "apps/web/src/logic/world-shape/per-service.test.ts::서비스마다 다른 모양을 화면이 읽는 법 [REQ-094] > 서비스 하나의 '알아서'는 그 서비스를 보고 네 층만 고른다": {
    "kind": "test",
-   "hash": "af74cfc0568c804a",
+   "hash": "9f5d6394109ad988",
    "asserts": 7,
    "literals": [
     "\"app\"",
@@ -38694,14 +38840,12 @@
     "\"sto-raid-backup\"",
     "\"storage\"",
     "\"storage\"",
-    "\"서비스 하나의 '알아서'는 그 서비스를 보고 네 층만 고른다\"",
-    "\"알아서\"",
-    "\"알아서\""
+    "\"서비스 하나의 '알아서'는 그 서비스를 보고 네 층만 고른다\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-07",
+   "amended_by": "0123-ladder-and-builder-focus.md"
   },
   "apps/web/src/logic/world-shape/per-service.test.ts::서비스마다 다른 모양을 화면이 읽는 법 [REQ-094] > 서비스의 호스트 수 글은 그 서비스의 모양으로 센다": {
    "kind": "test",
@@ -38721,6 +38865,128 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/prerequisites.test.ts::<import:091ee9af>": {
+   "kind": "support",
+   "hash": "091ee9afdaf2182e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/prerequisites.test.ts::<import:4b46970c>": {
+   "kind": "support",
+   "hash": "4b46970c21987588",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/prerequisites.test.ts::<import:6c7b8e3c>": {
+   "kind": "support",
+   "hash": "6c7b8e3c34df9e4e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/prerequisites.test.ts::<import:a055da70>": {
+   "kind": "support",
+   "hash": "a055da707d156d62",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/prerequisites.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/prerequisites.test.ts::알아서와 프리셋은 전제를 어기지 않는다 [REQ-102] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/prerequisites.test.ts::알아서와 프리셋은 전제를 어기지 않는다 [REQ-102] > 서비스가 무엇이든, 고른 층이 무엇이든 알아서는 전제가 안 맞는 짝을 만들지 않는다": {
+   "kind": "test",
+   "hash": "c2fa378121f99760",
+   "asserts": 1,
+   "literals": [
+    "\"1\"",
+    "\"5\"",
+    "\"batch\"",
+    "\"서비스가 무엇이든, 고른 층이 무엇이든 알아서는 전제가 안 맞는 짝을 만들지 않는다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/prerequisites.test.ts::알아서와 프리셋은 전제를 어기지 않는다 [REQ-102] > 알아서 층은 한 줄 원인만 말한다": {
+   "kind": "test",
+   "hash": "275e5d1b8de73566",
+   "asserts": 3,
+   "literals": [
+    "\"40\"",
+    "\"40\"",
+    "\"알아서 층은 한 줄 원인만 말한다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/prerequisites.test.ts::알아서와 프리셋은 전제를 어기지 않는다 [REQ-102] > 카드 목록은 셋까지만 보이고 나머지는 '외 n가지'": {
+   "kind": "test",
+   "hash": "d6bb986b551c0fb3",
+   "asserts": 2,
+   "literals": [
+    "\"가 · 나 · 다 · 라 · 마\"",
+    "\"가 · 나 · 다 · 라 · 마\"",
+    "\"가 · 나 · 다 · 외 2가지\"",
+    "\"가 · 나 · 다 · 외 2가지\"",
+    "\"가 · 나 · 다\"",
+    "\"가 · 나 · 다\"",
+    "\"가 · 나 · 다\"",
+    "\"가 · 나 · 다\"",
+    "\"카드 목록은 셋까지만 보이고 나머지는 '외 n가지'\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/prerequisites.test.ts::알아서와 프리셋은 전제를 어기지 않는다 [REQ-102] > 프리셋 셋과 기본 모양은 모두 전제가 채워져 있다": {
+   "kind": "test",
+   "hash": "f1868833f3d6d5af",
+   "asserts": 1,
+   "literals": [
+    "\"middle\"",
+    "\"프리셋 셋과 기본 모양은 모두 전제가 채워져 있다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
    "amended_by": null
   },
   "apps/web/src/logic/world-shape/sdn-cards.test.ts::'이 모양이면'에 오버레이 고장이 들어간다 [REQ-097] > <suite>": {
@@ -39161,7 +39427,7 @@
   },
   "apps/web/src/logic/world-shape/world-shape.test.ts::알아서와 프리셋 [REQ-094] > 고른 층은 그대로 두고 나머지는 알아서 고르며 한 줄로 이유를 말한다": {
    "kind": "test",
-   "hash": "e736c953bd4295aa",
+   "hash": "cdb5c544e5fcc2da",
    "asserts": 4,
    "literals": [
     "\"6\"",
@@ -39174,8 +39440,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-07",
+   "amended_by": "0123-ladder-and-builder-focus.md"
   },
   "apps/web/src/logic/world-shape/world-shape.test.ts::알아서와 프리셋 [REQ-094] > 도메인을 안 고른 사람은 여덟 층 모두 알아서다": {
    "kind": "test",
@@ -39461,13 +39727,13 @@
   },
   "apps/web/src/logic/world-words.test.ts::=SCREENS": {
    "kind": "support",
-   "hash": "30b187b3e265e9e0",
+   "hash": "7bc34652a2462135",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": "0109-world-entry-amend-tests.md"
+   "added": "2026-11-07",
+   "amended_by": "0123-ladder-and-builder-focus.md"
   },
   "apps/web/src/logic/world-words.test.ts::=screenTexts": {
    "kind": "support",
@@ -39491,13 +39757,13 @@
   },
   "apps/web/src/logic/world-words.test.ts::=SOURCES": {
    "kind": "support",
-   "hash": "e0aebb6e03195fdf",
+   "hash": "3a4242f52bd788ac",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": "0109-world-entry-amend-tests.md"
+   "added": "2026-11-07",
+   "amended_by": "0123-ladder-and-builder-focus.md"
   },
   "apps/web/src/logic/world-words.test.ts::=view": {
    "kind": "support",
@@ -39521,26 +39787,26 @@
   },
   "apps/web/src/logic/world-words.test.ts::글 잣대: 해요체, 숫자와 단위, 시스템 말 금지, 버튼은 결과 [REQ-077] > a button says what it does: the big buttons and the main ones end in the result": {
    "kind": "test",
-   "hash": "bdca4d481cc16671",
+   "hash": "e976e6f8fd2e49bb",
    "asserts": 2,
    "literals": [
     "\"a button says what it does: the big buttons and the main ones end in the result\"",
     "\"hwaseong\"",
     "\"건물 올리기\"",
     "\"냉방기 놓기\"",
-    "\"돌려 보기\"",
     "\"랙 놓기\"",
     "\"서버룸 넓히기\"",
     "\"서버룸 만들기\"",
     "\"서버룸 채우기\"",
+    "\"시운전\"",
     "\"작은 사업장 만들기\"",
     "true",
     "true"
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-07",
+   "amended_by": "0123-ladder-and-builder-focus.md"
   },
   "apps/web/src/logic/world-words.test.ts::글 잣대: 해요체, 숫자와 단위, 시스템 말 금지, 버튼은 결과 [REQ-077] > a sentence about a thing ends in 요 and has one fact: no run-on with a middle dot of two sentences": {
    "kind": "test",
@@ -89645,6 +89911,259 @@
    "precision": [],
    "skips": 0,
    "added": "2026-10-28",
+   "amended_by": null
+  },
+  "packages/core/src/world/ladder-rules.test.ts::<import:2a948ce2>": {
+   "kind": "support",
+   "hash": "2a948ce2b80b9222",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/ladder-rules.test.ts::<import:2e56605c>": {
+   "kind": "support",
+   "hash": "2e56605cde4b11c6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/ladder-rules.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/ladder-rules.test.ts::=base": {
+   "kind": "support",
+   "hash": "ed7d154ef55643f0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/ladder-rules.test.ts::=BASE": {
+   "kind": "support",
+   "hash": "4836a99130a3c542",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/ladder-rules.test.ts::=needsOf": {
+   "kind": "support",
+   "hash": "eefcfe62fed107ce",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/ladder-rules.test.ts::전제 규칙: 어떤 칩은 다른 층이 받쳐 줘야 골라진다 [REQ-102] > '이상'은 사다리에서 그 칩이거나 오른쪽이라는 뜻이다": {
+   "kind": "test",
+   "hash": "e7a2e13bc2ea2382",
+   "asserts": 3,
+   "literals": [
+    "\"'이상'은 사다리에서 그 칩이거나 오른쪽이라는 뜻이다\"",
+    "\"cmp-containers\"",
+    "\"cmp-containers\"",
+    "\"cmp-containers\"",
+    "\"cmp-drs\"",
+    "\"cmp-drs\"",
+    "\"cmp-multicluster\"",
+    "\"cmp-multicluster\"",
+    "\"compute\"",
+    "\"sto-shared\"",
+    "\"sto-shared\"",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/ladder-rules.test.ts::전제 규칙: 어떤 칩은 다른 층이 받쳐 줘야 골라진다 [REQ-102] > '컴퓨트도 바꾸기'는 전제 층을 필요한 가장 왼쪽 칩으로 올리고, 이미 높은 층은 건드리지 않는다": {
+   "kind": "test",
+   "hash": "1771e8a3571affd6",
+   "asserts": 6,
+   "literals": [
+    "\"'컴퓨트도 바꾸기'는 전제 층을 필요한 가장 왼쪽 칩으로 올리고, 이미 높은 층은 건드리지 않는다\"",
+    "\"app\"",
+    "\"app-multiregion\"",
+    "\"cmp-bare\"",
+    "\"cmp-containers\"",
+    "\"cmp-containers\"",
+    "\"cmp-multicluster\"",
+    "\"cmp-multicluster\"",
+    "\"cmp-multicluster\"",
+    "\"net-cloud-native\"",
+    "\"net-cloud-native\"",
+    "\"net-cloud-native\"",
+    "\"net-cloud-native\"",
+    "\"network\"",
+    "\"network\"",
+    "\"site-multi-active\"",
+    "\"site-multi-active\"",
+    "\"sto-shared\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/ladder-rules.test.ts::전제 규칙: 어떤 칩은 다른 층이 받쳐 줘야 골라진다 [REQ-102] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/ladder-rules.test.ts::전제 규칙: 어떤 칩은 다른 층이 받쳐 줘야 골라진다 [REQ-102] > 규칙의 층과 칩 id는 모두 사다리에 있다": {
+   "kind": "test",
+   "hash": "ad2035cb08c23271",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"규칙의 층과 칩 id는 모두 사다리에 있다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/ladder-rules.test.ts::전제 규칙: 어떤 칩은 다른 층이 받쳐 줘야 골라진다 [REQ-102] > 둘 중 하나로 채워지는 전제는 싼 쪽을 고른다": {
+   "kind": "test",
+   "hash": "4fc30b273015f72c",
+   "asserts": 5,
+   "literals": [
+    "\"0\"",
+    "\"database\"",
+    "\"database\"",
+    "\"db-primary-secondary\"",
+    "\"db-primary-secondary\"",
+    "\"site\"",
+    "\"site-dr-warm\"",
+    "\"site-dr-warm\"",
+    "\"site-dr-warm\"",
+    "\"site-dr-warm\"",
+    "\"site-dr-warm\"",
+    "\"site-dr-warm\"",
+    "\"site-dr-warm\"",
+    "\"sto-geo\"",
+    "\"sto-geo\"",
+    "\"둘 중 하나로 채워지는 전제는 싼 쪽을 고른다\"",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/ladder-rules.test.ts::전제 규칙: 어떤 칩은 다른 층이 받쳐 줘야 골라진다 [REQ-102] > 쓸모없는 짝은 막지 않고 한 줄 말만 건넨다": {
+   "kind": "test",
+   "hash": "78cd6109fb1ad329",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"cmp-multicluster\"",
+    "\"site-one-room\"",
+    "\"site-two-rooms\"",
+    "\"site-two-rooms\"",
+    "\"sto-shared\"",
+    "\"멀티클러스터인데 서버룸이 하나면 같은 방이 멈추면 둘 다 멈춰요\"",
+    "\"멀티클러스터인데 서버룸이 하나면 같은 방이 멈추면 둘 다 멈춰요\"",
+    "\"쓸모없는 짝은 막지 않고 한 줄 말만 건넨다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/ladder-rules.test.ts::전제 규칙: 어떤 칩은 다른 층이 받쳐 줘야 골라진다 [REQ-102] > 정해진 규칙이 칩에 붙어 있다": {
+   "kind": "test",
+   "hash": "5e031bdfb87e59c3",
+   "asserts": 1,
+   "literals": [
+    "\"app-mesh\"",
+    "\"app-multiregion\"",
+    "\"cmp-drs\"",
+    "\"cmp-virt-ha\"",
+    "\"compute:cmp-containers\"",
+    "\"compute:cmp-containers\"",
+    "\"database:db-distributed-sql\"",
+    "\"database:db-distributed-sql\"",
+    "\"database:db-primary-secondary\"",
+    "\"db-shared-aa\"",
+    "\"net-cloud-native\"",
+    "\"site-dr-warm\"",
+    "\"site-multi-active\"",
+    "\"site:site-multi-active\"",
+    "\"storage:sto-geo\"",
+    "\"storage:sto-geo\"",
+    "\"storage:sto-shared\"",
+    "\"storage:sto-shared\"",
+    "\"storage:sto-shared\"",
+    "\"정해진 규칙이 칩에 붙어 있다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/world/ladder-rules.test.ts::전제 규칙: 어떤 칩은 다른 층이 받쳐 줘야 골라진다 [REQ-102] > 채워지지 않은 전제를 말해 준다": {
+   "kind": "test",
+   "hash": "eee6a8a31b2a1eaa",
+   "asserts": 3,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"net-cloud-native\"",
+    "\"net-cloud-native\"",
+    "\"net-cloud-native\"",
+    "\"net-cloud-native\"",
+    "\"net-cloud-native\"",
+    "\"network\"",
+    "\"network\"",
+    "\"채워지지 않은 전제를 말해 준다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
    "amended_by": null
   },
   "packages/core/src/world/land.test.ts::<import:52dae190>": {

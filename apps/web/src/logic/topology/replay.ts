@@ -1,6 +1,6 @@
 /**
  * The calculation of the time bar and the agent's pulse (REQ-078 step 2, ADR-0084 items 5 and 8). One bar serves the
- * run page, the result page, the side-by-side view and the builder's "돌려 보기": it is a position in seconds on a
+ * run page, the result page, the side-by-side view and the builder's "시운전": it is a position in seconds on a
  * line with up to five kinds of marks, and it moves by the clock, by the keys and by a drag. The functions are
  * pure so that a test can read every rule.
  */

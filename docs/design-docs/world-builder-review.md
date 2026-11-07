@@ -2,7 +2,7 @@
 title: 세계 만들기 검토 — 설명 없이도 되는가, 토스의 원칙으로
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - apps/web/src/ui/pages/worlds.tsx
   - apps/web/src/ui/pages/world-forms.tsx
@@ -10,13 +10,13 @@ covers:
   - apps/web/src/ui/builder/Toolbox.tsx
   - apps/web/src/ui/builder/WorldBuilderPage.tsx
   - apps/web/src/ui/pages/new-world.tsx
-covers_hash: 0d1d6de7a332e4f4
+covers_hash: 0af940a48ee025a3
 verification_log:
-  - "2026-11-05: ADR-0083 검토 위에 3D/토폴로지 전환 한 줄이 더해진 것을 BuilderBar·WorldBuilderPage와 대조해 맞음"
-  - "2026-11-06: WorldBuilderPage가 토폴로지의 원천(source)과 시간 막대(FramesBar)를 바깥에서 넘기게 바뀐 것만 달라졌다. 검토의 내용(그때의 화면 설명)은 그대로다"
   - "2026-11-06: REQ-094 세계 만들기 입구·서비스부터·패널 없는 직접 짓기(ADR-0107~0109)를 코드와 대조해 해당 절을 더하거나 고쳤다"
   - "2026-11-06: REQ-094: CSS와 키보드 도움말(Toolbox의 조작법을 ? 도움말로 합침), 카드들을 코드와 다시 대조해 맞음"
   - "2026-11-06: REQ-094 최종 확인: 카드·사다리·생성 규칙·CSS·키보드 도움말을 코드와 대조해 맞음"
+  - "2026-11-07: REQ-102: 이 검토는 당시 상태의 기록이다. 빌더 둘레는 web-ui.md가 지금 모습을 말한다"
+  - "2026-11-07: REQ-102 뒤의 모습을 가리키는 말을 덧붙였다"
 ---
 # 세계 만들기 검토 (베타 피드백 4·12, ADR-0083 예정)
 
@@ -93,6 +93,8 @@ verification_log:
 
 지금 화면은 세 칸이다. 왼쪽 "놓을 것"(카탈로그 전부 + 값) 아래 "조작"(키 설명 여덟 줄이 늘 보임), 가운데 3D(왼쪽 위 숫자 네 개, 아래에 늘 떠 있는 "끌면 화면이 움직여요"), 오른쪽 패널(큰 숫자 셋 → 자동 배선 → 크기 → 조각 덧붙이기 → 채우기 → 넓히기 → 고칠 곳 → 냉방·전력 어디서… 한 줄로 길게).
 (이 검토 뒤 위 막대에 **3D / 토폴로지** 전환이 더해졌다. 주된 버튼은 그대로 "돌려 보기" 하나이고 전환은 조용한 선택이다. [토폴로지](topology.md))
+
+(REQ-102, [ADR-0123](adr/0123-ladder-and-builder-focus.md): 이 검토의 왼쪽 팔레트·위 통계 줄·접힌 절은 없어졌고, 주된 버튼의 이름은 "시운전"이 되었다. 지금 모습은 [웹 화면](web-ui.md)에 있다.)
 
 | # | 어긋난 원칙 | 무엇이 문제인가 | 고칠 것 |
 |---|---|---|---|

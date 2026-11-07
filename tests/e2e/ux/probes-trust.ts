@@ -86,20 +86,14 @@ export async function invalid(site: Site, notes: string[]): Promise<Tally> {
   await asVisitor(site, {}, async (v) => {
     const { page } = v;
     await open(page, site.base, "/worlds");
-    await page.getByRole("button", { name: "새 세계" }).click();
-    await page.getByRole("button", { name: /사업장 그대로/ }).click();
-    await page.getByText("더 정하기").click();
+    await page.getByRole("link", { name: /^새 세계/ }).click();
+    await page.getByRole("button", { name: /직접 지어요/ }).click();
+    await page.getByText("땅 모양 정하기").click();
     await page
-      .getByLabel("데이터센터")
+      .getByLabel("가로")
       .fill("99999")
       .catch(() => undefined);
-    note(
-      "세계 만들기에 말이 안 되는 크기",
-      await rejects(
-        page,
-        `${(await page.getByRole("button", { name: /만들기$/ }).innerText()).trim()}`,
-      ),
-    );
+    note("세계 만들기에 말이 안 되는 크기", await rejects(page, "작은 사업장 만들기"));
     await page.keyboard.press("Escape");
     await open(page, site.base, "/experiments/new");
     await page.getByLabel("몇 번 돌릴까요").fill("99");
@@ -129,11 +123,11 @@ export async function progress(site: Site, notes: string[]): Promise<Tally> {
         await route.continue();
       });
     await slow("**/api/worlds/generate");
+    await slow("**/api/worlds");
     await open(page, site.base, "/worlds");
-    await page.getByRole("button", { name: "새 세계" }).click();
-    await page.getByRole("button", { name: /사업장 그대로/ }).click();
-    await page.getByRole("radio", { name: /작게/ }).click();
-    await page.getByRole("button", { name: /만들기$/ }).click();
+    await page.getByRole("link", { name: /^새 세계/ }).click();
+    await page.getByRole("button", { name: /직접 지어요/ }).click();
+    await page.getByRole("button", { name: "작은 사업장 만들기" }).click();
     await page.waitForTimeout(400);
     check("세계 생성", (await page.locator("[aria-busy=true]").count()) > 0);
     await page.waitForURL(/\/worlds\/w-/, { timeout: 30_000 });
@@ -141,9 +135,9 @@ export async function progress(site: Site, notes: string[]): Promise<Tally> {
 
     await slow("**/api/scenarios/*/dry-run");
     await open(page, site.base, `/scenarios/${site.ids.scenario}`);
-    await page.getByRole("button", { name: "미리 돌려 보기" }).click();
+    await page.getByRole("button", { name: "미리 보기" }).click();
     await page.waitForTimeout(400);
-    check("시나리오 미리 돌려 보기", (await page.locator("[aria-busy=true]").count()) > 0);
+    check("시나리오 미리 보기", (await page.locator("[aria-busy=true]").count()) > 0);
     await page.waitForTimeout(2000);
     await page.unroute("**/api/scenarios/*/dry-run");
 

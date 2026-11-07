@@ -60,33 +60,6 @@ export function ParcelPanel({ entity, b }: { readonly entity: Entity; readonly b
   );
 }
 
-/** The land of the whole site: the parcels for sale, each with its price and a way to buy it. */
-export function LandList({ b }: { readonly b: Builder }) {
-  const parcels = builder.parcelViews(b.state.index, catalog);
-  const forSale = parcels.filter((p) => !p.owned);
-  if (parcels.length === 0) return null;
-  return (
-    <div className="builder-block stack">
-      <h3>땅</h3>
-      {forSale.length === 0 ? (
-        <p className="small">팔고 있는 땅은 모두 샀어요.</p>
-      ) : (
-        <ul className="list-plain stack" style={{ gap: 8 }}>
-          {forSale.map((p) => (
-            <li key={p.id} className="stack" style={{ gap: 4 }}>
-              <button type="button" className="link-button" onClick={() => b.setSelected([p.id])}>
-                {p.name}
-              </button>
-              <span className="tiny muted">넓이 {count(p.areaM2)}㎡</span>
-              <BuyButton parcel={p} b={b} />
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
 /** What a building or a room is for. A data hall stays the default for rooms, a data centre for buildings. */
 export function PurposeField({ entity, b }: { readonly entity: Entity; readonly b: Builder }) {
   if (entity.kind === "building")

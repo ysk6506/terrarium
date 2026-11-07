@@ -38,7 +38,7 @@ export interface WorldStageProps extends StageEvents {
   readonly ghost?: Ghost;
   /** Handles on the selected room or building, in the level's plan. */
   readonly handles?: readonly world3d.PlanHandle[];
-  /** Live facts to colour by (temperatures, alarms), after "돌려 보기". */
+  /** Live facts to colour by (temperatures, alarms), after "시운전". */
   readonly overlay?: world3d.Overlay;
   readonly readOnly?: boolean;
   readonly label?: string;
@@ -53,7 +53,7 @@ export interface WorldStageProps extends StageEvents {
   readonly now?: number;
   /** A run's marker or list entry was picked: the equipment it is at. Left out, the camera goes there. */
   readonly onWatch?: (entityId: string) => void;
-  /** On the room level: the temperature and airflow map (REQ-072), from what "돌려 보기" recorded. */
+  /** On the room level: the temperature and airflow map (REQ-072), from what "시운전" recorded. */
   readonly air?: AirInput;
   readonly children?: ReactNode;
 }

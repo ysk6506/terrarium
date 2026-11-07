@@ -2,7 +2,7 @@
 title: 데이터베이스 층과 스토리지 HA 층 — 서비스가 기대는 두 겹
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/world/db.ts
   - packages/core/src/world/db-act.ts
@@ -18,13 +18,13 @@ covers:
   - packages/core/src/sources/worldgen/shaped-db.ts
   - packages/core/src/topology/layer-network.ts
   - packages/core/src/oracle/recovery.ts
-covers_hash: e82be41fe012d3e5
+covers_hash: ecdee008c45a8826
 verification_log:
-  - "2026-11-06: layer-network.ts의 링크 방향 정리는 DB 단계의 그림이 같다. 문서는 그대로 맞다 (REQ-097)"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
   - "2026-11-06: shell-db.ts가 world/os/cmd-db.ts로 옮겨진 것을 covers에 맞췄다(psql 질의 네 가지, 흉내 밖 세기 추가, 동작은 같다)"
   - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
+  - "2026-11-07: REQ-102(ADR-0123): 사다리·직접 짓기 화면과 말(시운전·미리 보기·전제)을 코드와 대조해 고쳤다"
 ---
 # 데이터베이스 층과 스토리지 HA 층 (REQ-095, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0111](adr/0111-db-storage-layers-amend-tests.md))
 
@@ -135,6 +135,8 @@ verification_log:
 ## 사다리와 세계 생성
 
 `world/ladder.ts`에서 데이터베이스 다섯 칩과 스토리지 두 칩(듀얼 컨트롤러+멀티패스, 분산 3벌)이 `modeled: true`가 되었고, `build`로 `database`(모양·인스턴스 수·페일오버·감지 시간·쿼럼·공유 디스크)와 `pool`(방식·멀티패스·노드 수·복제본 수)을 말한다. 점선은 분산 SQL·클라우드 관리형 멀티 AZ(→ 자동 페일오버), 지역 복제(→ 듀얼 컨트롤러)다.
+
+공유 디스크 액티브-액티브(`db-shared-aa`)는 스토리지가 공유 SAN·NAS 이상일 때만 골라지고, DR 사이트·멀티 사이트·멀티 리전 같은 점선은 복제 칩이 받쳐 줘야 한다(전제 규칙, REQ-102, [world-entry](world-entry.md)).
 
 | 칩 | 짓는 것 | 멈추는 고장 | 느려지는 고장 |
 |---|---|---|---|

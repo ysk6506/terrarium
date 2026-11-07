@@ -120,6 +120,15 @@ export {
   type SiteSpec,
 } from "./new-site";
 export {
+  type BarPart,
+  barSum,
+  factLine,
+  type StripCell,
+  stripOf,
+  trialLabel,
+  trialLine,
+} from "./one-card";
+export {
   describePick,
   type PickCard,
   type PickPrimary,
@@ -139,8 +148,16 @@ export {
   structureOfM,
   tileCount,
 } from "./pieces";
+export { type PlaceKind, placeKinds, placeTexts } from "./place";
 export { assertPower, megawatts, type SiteUse, siteUse, siteUseText } from "./power";
-export { PREVIEW_SECONDS, type Preview, type PreviewFrame, preview } from "./preview";
+export {
+  PREVIEW_SECONDS,
+  type Preview,
+  type PreviewFrame,
+  type PreviewSteps,
+  preview,
+  previewSteps,
+} from "./preview";
 export {
   type Elevation,
   elevation,

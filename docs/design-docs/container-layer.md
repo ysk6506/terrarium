@@ -2,7 +2,7 @@
 title: 컨테이너 층 — 쿠버네티스 클러스터, 노드, 파드, 그리고 클러스터가 알아서 하는 일
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/world/k8s.ts
   - packages/core/src/world/k8s-sched.ts
@@ -21,12 +21,13 @@ covers:
   - packages/core/src/sources/worldgen/shaped-k8s.ts
   - packages/core/src/topology/impact-k8s.ts
   - packages/core/src/world/ladder.ts
-covers_hash: 3aef8fd1c24ce3c5
+covers_hash: 518da8bca32e5a04
 verification_log:
   - "2026-11-06: 새 문서: 컨테이너 층의 개체·상태, 서비스 건강 규칙, 고장 여덟, 툴 아홉, 클러스터가 알아서 하는 일, DRS, 사다리 연결, 시나리오 다섯을 코드와 대조해 적었다 (REQ-096)"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
   - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
+  - "2026-11-07: REQ-102(ADR-0123): 사다리·직접 짓기 화면과 말(시운전·미리 보기·전제)을 코드와 대조해 고쳤다"
 ---
 # 컨테이너 층 (REQ-096, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0114](adr/0114-container-layer-amend-tests.md))
 
@@ -147,7 +148,7 @@ VM 위의 노드(IAP)와 베어메탈 위의 노드가 같은 개체다. 노드�
 
 ## 사다리와 세계 생성
 
-`world/ladder.ts`에서 세 칩이 `modeled: true`가 되었다(점선은 14개에서 11개가 된다, [world-entry](world-entry.md)).
+`world/ladder.ts`에서 세 칩이 `modeled: true`가 되었다(점선은 14개에서 11개가 된다, [world-entry](world-entry.md)). 가상화 클러스터(HA)와 자동 재배치(DRS)는 공유 저장소가, 컨테이너 오케스트레이션 위에서만 의미 있는 클라우드 네이티브·서비스 메시는 컴퓨트가, 멀티클러스터는 서버룸이 둘 이상이어야 말이 된다는 전제 규칙(`requires`·`pointlessWith`, REQ-102)이 붙었다.
 
 | 칩 | 짓는 것 | 멈추는 고장 | 느려지는 고장 |
 |---|---|---|---|

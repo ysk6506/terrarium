@@ -44,7 +44,7 @@ function firstFloor(index: BlueprintIndex): Level {
 }
 
 /**
- * The next thing to do in a world. `ran` is whether the person has run it yet ("돌려 보기" this visit), which is
+ * The next thing to do in a world. `ran` is whether the person has run it yet ("시운전" this visit), which is
  * the only thing about a visit the world itself does not hold.
  */
 export function nextStep(index: BlueprintIndex, ran: boolean): NextStep {
@@ -74,7 +74,7 @@ export function nextStep(index: BlueprintIndex, ran: boolean): NextStep {
       label: "다음: 서버룸 채우기",
       aim: { kind: "go", level: levelOf(index, bare.id), select: [bare.id] },
     };
-  if (!ran) return { id: "run", label: "다음: 돌려 보기", aim: { kind: "run" } };
+  if (!ran) return { id: "run", label: "다음: 시운전", aim: { kind: "run" } };
   return { id: "done", label: "다음: 시나리오 만들기", aim: { kind: "scenarios" } };
 }
 
@@ -107,7 +107,7 @@ export const TOUR_STEPS: readonly TourStep[] = [
         : { kind: "go", level: firstFloor(index) };
     },
   },
-  { label: "돌려 보기", aim: () => ({ kind: "run" }) },
+  { label: "시운전", aim: () => ({ kind: "run" }) },
 ];
 
 /** The chip's words in the tour: "둘러보기 2/5 · 건물 안으로 들어가기". */

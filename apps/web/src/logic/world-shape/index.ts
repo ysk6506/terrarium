@@ -10,6 +10,7 @@ export {
   resolveServiceLayers,
   STEADY_LAYERS,
 } from "./auto-pick";
+export { CARD_LIST_MAX, capList } from "./cap";
 export {
   CARDS,
   type Chip,

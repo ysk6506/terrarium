@@ -1,5 +1,5 @@
 /**
- * What the topology view reads of the builder's world. With no "돌려 보기" yet, the world is as it was built: nothing
+ * What the topology view reads of the builder's world. With no "시운전" yet, the world is as it was built: nothing
  * broken, nothing alarming. After a run it is the world the run left, at the moment of the time bar: the alarms
  * and the temperatures of that frame, over the final state of the rest.
  */

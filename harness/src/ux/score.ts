@@ -52,7 +52,7 @@ export const JOURNEY_LABELS: Readonly<Record<JourneyId, string>> = {
   fork: "조건 바꿔 다시 돌리기",
   compare: "벤치마크에서 비교하고 가져오기",
   site: "새 사업장 만들고 땅 사기",
-  "build-small": "작게 시작해서 서버룸 채우고 돌려 보기",
+  "build-small": "작게 시작해서 서버룸 채우고 시운전",
   topology: "화성 실제 그대로 세계에서 토폴로지 열기",
 };
 

@@ -1,5 +1,5 @@
 /**
- * Keys of the builder (ADR-0107 item 8, feedback #23): one overlay the first time the builder opens (remembered in this
+ * Keys of the builder (ADR-0107 item 8, feedback #23, ADR-0123: four lines): one overlay the first time the builder opens (remembered in this
  * browser), and a "?" button that opens it again, as does the key itself.
  */
 import { useEffect, useState } from "react";
@@ -7,14 +7,10 @@ import { useEffect, useState } from "react";
 const KEY = "terrarium.builderKeysSeen";
 
 const KEYS: ReadonlyArray<readonly [string, string]> = [
-  ["R", "고른 것을 돌려요"],
-  ["Delete", "고른 것을 지워요"],
-  ["Esc", "한 걸음 물러나요 (도구 → 고른 것 → 위 단계)"],
-  ["Ctrl+Z", "되돌려요"],
-  ["Ctrl+Shift+Z", "다시 해요"],
-  ["Ctrl+S", "저장해요"],
-  ["두 번 누르기", "건물이나 서버룸 안으로 들어가요"],
-  ["?", "이 도움말을 열고 닫아요"],
+  ["R", "돌리기"],
+  ["Delete", "지우기"],
+  ["Ctrl+Z", "되돌리기"],
+  ["두 번 누르기", "안으로"],
 ];
 
 const seen = (): boolean => {
@@ -75,7 +71,7 @@ export function KeysHint() {
               </div>
             ))}
           </dl>
-          <button type="button" className="btn btn-primary btn-small" onClick={close}>
+          <button type="button" className="btn btn-small" onClick={close}>
             알았어요
           </button>
         </dialog>

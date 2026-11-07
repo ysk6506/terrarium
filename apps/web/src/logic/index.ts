@@ -230,9 +230,11 @@ export {
 } from "./tour";
 export { DEFAULT_QUESTION, type Fact, traceAdvice, tryDetail, tryFacts } from "./try-talk";
 export {
+  CARD_LIST_MAX,
   CARDS,
   type Chip,
   type ChipCard,
+  capList,
   cardOf,
   chipsOfLayer,
   costText,
