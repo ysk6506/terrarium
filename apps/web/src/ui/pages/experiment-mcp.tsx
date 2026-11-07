@@ -44,7 +44,13 @@ function CopyRow({ label, value, shown }: { label: string; value: string; shown:
   return (
     <div className="mcp-url">
       <span title={label}>{shown}</span>
-      <Button size="small" kind="quiet" aria-label={`${label} 복사`} onClick={copy}>
+      <Button
+        data-moss-skip="세부 조절"
+        size="small"
+        kind="quiet"
+        aria-label={`${label} 복사`}
+        onClick={copy}
+      >
         복사
       </Button>
     </div>
@@ -80,7 +86,7 @@ function SlotGuide({ harness, onChange }: { harness: HarnessView; onChange: () =
         </span>
       </div>
       {done ? (
-        <Button size="small" kind="quiet" onClick={reset}>
+        <Button data-moss-skip="세부 조절" size="small" kind="quiet" onClick={reset}>
           {MCP_WORDS.UNREGISTER}
         </Button>
       ) : (
@@ -108,7 +114,13 @@ function SlotGuide({ harness, onChange }: { harness: HarnessView; onChange: () =
             ))}
           </ol>
           <div>
-            <Button kind="primary" size="small" busy={busy} onClick={check}>
+            <Button
+              data-moss-skip="세부 조절"
+              kind="primary"
+              size="small"
+              busy={busy}
+              onClick={check}
+            >
               {MCP_WORDS.CHECK}
             </Button>
           </div>

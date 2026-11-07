@@ -10,6 +10,7 @@ import { Go, messageOf, useApp, useAsync } from "../context";
 import { Button, Failure, Loading, Note, PageHead } from "../kit";
 import { slotPending } from "./experiment-mcp";
 import { HowStep, NameStep, WhatStep, WhoStep } from "./experiment-steps";
+import { useWizardMoss } from "./new-experiment-moss";
 
 type Draft = experiment.Draft;
 
@@ -153,6 +154,7 @@ function SummaryCard({
       <Remaining items={all} />
       <Button
         kind="primary"
+        data-moss-action="exp-start"
         icon="play"
         busy={busy}
         disabled={!experiment.isReady(problems) || metaBad || same}
@@ -193,11 +195,33 @@ function useDefaultHarness(draft: Draft, setDraft: Dispatch<SetStateAction<Draft
   }, [meta, draft.harnessId, setDraft]);
 }
 
-function Wizard({ start }: { readonly start: Start }) {
-  const { api, navigate, meta } = useApp();
-  const [draft, setDraft] = useState<Draft>(start.draft);
+/** 실험을 시작한다(또는 이어서 돌린다): "실험 시작" 버튼과 이끼의 "실험 시작"이 같은 `launch`를 써요. */
+function useLaunch(start: Start, draft: Draft, placeholder: string) {
+  const { api, navigate } = useApp();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
+  const launch = async () => {
+    setBusy(true);
+    setError(undefined);
+    try {
+      const view = start.parent
+        ? await api.call("forkExperiment", {
+            params: { id: start.parent.experiment.id },
+            body: experiment.toForkRequest(start.parent.experiment, draft),
+          })
+        : await api.call("createExperiment", { body: experiment.toRequest(draft, placeholder) });
+      navigate({ name: "experiment", id: view.experiment.id });
+    } catch (err) {
+      setError(messageOf(err));
+      setBusy(false);
+    }
+  };
+  return { busy, error, launch };
+}
+
+function Wizard({ start }: { readonly start: Start }) {
+  const { meta } = useApp();
+  const [draft, setDraft] = useState<Draft>(start.draft);
   useDefaultHarness(draft, setDraft);
   const set = useCallback((change: Partial<Draft>) => setDraft((d) => ({ ...d, ...change })), []);
   const scenarios = useScenarioList(draft.worldId);
@@ -215,22 +239,17 @@ function Wizard({ start }: { readonly start: Start }) {
     undefined,
     agents?.find((a) => a.id === draft.agentId)?.name,
   );
-  const launch = async () => {
-    setBusy(true);
-    setError(undefined);
-    try {
-      const view = start.parent
-        ? await api.call("forkExperiment", {
-            params: { id: start.parent.experiment.id },
-            body: experiment.toForkRequest(start.parent.experiment, draft),
-          })
-        : await api.call("createExperiment", { body: experiment.toRequest(draft, placeholder) });
-      navigate({ name: "experiment", id: view.experiment.id });
-    } catch (err) {
-      setError(messageOf(err));
-      setBusy(false);
-    }
-  };
+  const { busy, error, launch } = useLaunch(start, draft, placeholder);
+  useWizardMoss({
+    draft,
+    set,
+    worlds: start.worlds,
+    scenarios: scenarios.data,
+    harness,
+    agents,
+    problems,
+    launch,
+  });
   return (
     <div className="wizard">
       <div className="stack" style={{ gap: 28 }}>

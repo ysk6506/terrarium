@@ -3,6 +3,7 @@ import { run as architecture } from "./checks/architecture";
 import { run as coverage } from "./checks/coverage";
 import { run as debt } from "./checks/debt";
 import { run as docs } from "./checks/docs";
+import { run as moss } from "./checks/moss";
 import { run as protectedPaths } from "./checks/protected";
 import { run as testguard } from "./checks/testguard";
 import { run as traceability } from "./checks/traceability";
@@ -17,6 +18,7 @@ export function checks(root: string, base: string | undefined, withCoverage: boo
     ["debt", () => debt(root, today(), base)],
     ["test-integrity", () => testguard(root, base)],
     ["traceability", () => traceability(root)],
+    ["moss", () => moss(root)],
     ["protected-paths", () => protectedPaths(root, base)],
   ];
   if (withCoverage) plan.push(["coverage", () => coverage(root, base)]);

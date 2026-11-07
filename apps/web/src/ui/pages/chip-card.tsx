@@ -6,6 +6,7 @@
 
 import type { LayerId } from "@terrarium/core/world";
 import { chipsOfLayer, LAYER_INFO } from "../../logic";
+import { MossAsk, termQuestion } from "../../moss";
 import { ChipArt } from "./chip-art";
 
 export function ChipDetail({
@@ -31,7 +32,9 @@ export function ChipDetail({
     <section className="we-detail" aria-live="polite" aria-label="고른 선택지의 구조">
       <div className="we-d-head">
         <span className="we-d-layer">{LAYER_INFO[layer].name}</span>
-        <h3>{card.label}</h3>
+        <h3>
+          <MossAsk question={termQuestion(card.label)}>{card.label}</MossAsk>
+        </h3>
         {!mech.modeled && <span className="we-d-soon">아직 흉내 낼 수 없어요</span>}
       </div>
       <ChipArt diagram={card.diagram} />

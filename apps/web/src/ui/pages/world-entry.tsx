@@ -62,10 +62,18 @@ function Templates({ items }: { readonly items: readonly WorldSummary[] }) {
           <b>{t.name}</b>
           <span className="muted small">내 템플릿 · {t.owner}</span>
           <span className="we-spacer" />
-          <Go to={{ name: "newWorld", template: t.id }} className="btn btn-primary btn-small">
+          <Go
+            data-moss-skip="세계 폼 안의 입력"
+            to={{ name: "newWorld", template: t.id }}
+            className="btn btn-primary btn-small"
+          >
             그대로 만들기
           </Go>
-          <Go to={{ name: "newWorld", template: t.id, change: true }} className="btn btn-small">
+          <Go
+            data-moss-skip="세계 폼 안의 입력"
+            to={{ name: "newWorld", template: t.id, change: true }}
+            className="btn btn-small"
+          >
             조금 바꿔서
           </Go>
         </div>
@@ -107,7 +115,11 @@ export function WorldEntry({ onService }: { readonly onService: () => void }) {
         <Dialog title="어디에 지을까요?" onClose={() => setOpen(undefined)}>
           <SmallForm onDone={() => setOpen(undefined)} />
           <div className="row" style={{ marginTop: 8 }}>
-            <Button kind="quiet" onClick={() => setOpen(undefined)}>
+            <Button
+              data-moss-skip="세계 폼 안의 입력"
+              kind="quiet"
+              onClick={() => setOpen(undefined)}
+            >
               그만두기
             </Button>
           </div>

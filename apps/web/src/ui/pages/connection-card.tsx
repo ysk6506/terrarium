@@ -115,7 +115,13 @@ export function AgentsLine({
           onChange={(ev) => setQuery(ev.target.value)}
         />
         {agents.length > 0 && (
-          <Button size="small" kind="quiet" aria-expanded={open} onClick={() => setOpen(!open)}>
+          <Button
+            data-moss-skip="폼과 대화상자 안"
+            size="small"
+            kind="quiet"
+            aria-expanded={open}
+            onClick={() => setOpen(!open)}
+          >
             {open ? "목록 접기" : "목록 펼치기"}
           </Button>
         )}
@@ -152,7 +158,13 @@ function CensusRow(props: {
       <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
         <span className={`small ${empty ? "" : "muted"}`}>{empty ? text.headline : why}</span>
         {text.action && (
-          <Button size="small" kind="quiet" busy={props.busy} onClick={props.onToggle}>
+          <Button
+            data-moss-skip="폼과 대화상자 안"
+            size="small"
+            kind="quiet"
+            busy={props.busy}
+            onClick={props.onToggle}
+          >
             {text.action}
           </Button>
         )}
@@ -228,11 +240,17 @@ function Upkeep({
   };
   return (
     <div className="row" style={{ flexWrap: "wrap" }}>
-      <Button size="small" busy={busy} onClick={() => act("recheckConnection", "다시 확인했어요")}>
+      <Button
+        data-moss-skip="폼과 대화상자 안"
+        size="small"
+        busy={busy}
+        onClick={() => act("recheckConnection", "다시 확인했어요")}
+      >
         다시 확인
       </Button>
       {view.source === "screen" && (
         <Button
+          data-moss-skip="폼과 대화상자 안"
           size="small"
           busy={busy}
           onClick={() => act("keepConnection", "계속 쓰기로 했어요")}
@@ -242,10 +260,10 @@ function Upkeep({
       )}
       {mine && (
         <>
-          <Button size="small" onClick={onEdit}>
+          <Button data-moss-skip="폼과 대화상자 안" size="small" onClick={onEdit}>
             고치기
           </Button>
-          <Button size="small" kind="danger" onClick={onDelete}>
+          <Button data-moss-skip="폼과 대화상자 안" size="small" kind="danger" onClick={onDelete}>
             지우기
           </Button>
         </>
@@ -298,6 +316,7 @@ function CardHead(props: {
       <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
         {!reference && (
           <Button
+            data-moss-skip="폼과 대화상자 안"
             kind="primary"
             size="small"
             aria-expanded={talk}
@@ -308,7 +327,12 @@ function CardHead(props: {
             말 걸어 보기
           </Button>
         )}
-        <Button size="small" aria-expanded={manage} onClick={() => props.setManage(!manage)}>
+        <Button
+          data-moss-skip="폼과 대화상자 안"
+          size="small"
+          aria-expanded={manage}
+          onClick={() => props.setManage(!manage)}
+        >
           설정
         </Button>
       </div>

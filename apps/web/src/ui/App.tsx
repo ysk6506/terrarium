@@ -30,6 +30,7 @@ import {
 import { AppContext, type AppServices, Go, type ToastTone, useApp, useAsync } from "./context";
 import { Icon, Mark } from "./icons";
 import { Button, Dialog, Loading, Note, TextField } from "./kit";
+import { MossHost, usePanelState } from "./moss";
 import { ExperimentsPage } from "./pages/experiments";
 import { HomePage } from "./pages/home";
 import { ScenariosPage } from "./pages/scenarios";
@@ -346,6 +347,7 @@ export function App({ api, identity }: { readonly api: Api; readonly identity: I
     window.addEventListener(world3d.QUALITY_EVENT, lowered);
     return () => window.removeEventListener(world3d.QUALITY_EVENT, lowered);
   }, [toast]);
+  const mossOpen = usePanelState().open;
   const [asking, setAsking] = useState(false);
   const [, setNameVersion] = useState(0);
   const meta = useAsync((signal) => api.call("meta", { signal }), []);
@@ -376,7 +378,7 @@ export function App({ api, identity }: { readonly api: Api; readonly identity: I
       <a className="skip-link" href={`#${mainId}`}>
         본문으로 건너뛰기
       </a>
-      <div className="shell">
+      <div className={`shell${mossOpen ? " moss-open" : ""}`}>
         <Rail
           page={page}
           {...(me ? { me } : {})}
@@ -397,6 +399,7 @@ export function App({ api, identity }: { readonly api: Api; readonly identity: I
         </main>
       </div>
       <Toasts toasts={toasts} />
+      <MossHost />
       {asking && (
         <NameDialog
           identity={identity}

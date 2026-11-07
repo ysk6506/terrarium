@@ -2,18 +2,18 @@
 title: AGENTS.md — 에이전트 진입점
 kind: guide
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - package.json
   - harness/config/architecture.yaml
   - harness/config/protected-paths.txt
-covers_hash: 8ffef2e265e678e3
+covers_hash: 64cb6ab7d6639e82
 verification_log:
-  - "2026-11-04: package.json과 architecture.yaml 변경은 시험 전용 의존성 ajv, ajv-formats 추가(ADR-0057)뿐이다. 지도와 절대 규칙 표는 그대로 맞다"
   - "2026-11-05: package.json의 dev 스크립트가 pnpm --parallel로 바뀐 것만 달라졌다. 명령 목록(dev, check, lock-tests, ratchet, ux)과 보호 경로 표는 그대로 맞다"
   - "2026-11-05: architecture.yaml의 변경은 core.topology 단위 하나를 더한 것뿐이다. 지도와 절대 규칙 표, 명령 목록은 그대로 맞다(ADR-0097)"
   - "2026-11-06: LLM API 등록"
   - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
+  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
 ---
 # Terrarium — 코딩 에이전트 안내서
 
@@ -45,6 +45,7 @@ pnpm check        # lint + 타입 + 테스트 + 모든 구조 검사. 이게 통
 | `harness/`, 설정 파일, ADR, 이 파일 수정 | 보호 경로 (`PROT001`) — 같은 변경에 봉인된 ADR 필요 |
 | 추적 없는 `TODO` | `TODO(TD-NNNN)` + [부채 장부](docs/exec-plans/tech-debt.yaml) (`DEBT001`) |
 | `Date.now()`, `Math.random()` 직접 사용 | `kernel`의 `Clock`/`Rng`를 주입받는다 (`ARCH052`) |
+| 새 쪽·버튼·문서를 이끼에게 알리지 않기 | `MOSS001`~`MOSS004` — 라우트는 `apps/web/src/moss/registry.ts`에 칸을, 쪽의 버튼은 `data-moss-action`(또는 이유를 적은 `data-moss-skip`)을, 점수·지표 타일은 `MossAsk`를 (REQ-103) |
 | 코드만 바꾸고 문서 방치 | 문서가 `covers`한 코드가 바뀌면 실패 (`DOC010`) |
 
 ## 자주 하는 일

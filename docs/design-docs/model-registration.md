@@ -2,7 +2,7 @@
 title: 모델 등록 — LLM API를 워크스페이스에 등록하고 연결 확인까지
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/llm/types.ts
   - packages/core/src/llm/http.ts
@@ -15,15 +15,16 @@ covers:
   - apps/web/src/logic/models.ts
   - apps/web/src/ui/pages/model-section.tsx
   - apps/web/src/ui/pages/model-dialog.tsx
-covers_hash: f4693d988676c0af
+covers_hash: e762bcfab9a3314f
 verification_log:
   - "2026-11-06: LLM API 등록"
+  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
 ---
 # 모델 등록 (REQ-099, [ADR-0119](adr/0119-llm-api-registration.md))
 
 ## 한 문장으로
 
-**LiteLLM·OpenAI 호환·Claude 호환 API를 설정 화면에서 등록하고 "연결 확인"까지 한다. 모델을 쓰는 기능은 아직 없다.**
+**LiteLLM·OpenAI 호환·Claude 호환 API를 설정 화면에서 등록하고 "연결 확인"까지 한다. 쓰는 곳은 이끼 하나다.**
 나중에 실험 결과 해석과 사용자 안내에 기본 모델을 쓰려는 준비이고, 화면도 그렇게 말한다.
 
 ## 무엇이 어디에 있나
@@ -65,8 +66,8 @@ verification_log:
 
 ## 한계 (화면도 그렇게 말한다)
 
-- **아직 쓰는 곳은 없다.** 등록과 연결 확인뿐이다. "결과 해석과 안내가 생기면 기본 모델을 써요."
+- **쓰는 곳: 이끼** ([REQ-103](moss.md), [ADR-0124](adr/0124-moss-assistant.md)). 기본 모델 하나가 이끼의 답을 만든다. 모델 이름은 등록값, 마지막 연결 확인이 본 첫 이름, API 목록의 첫 이름 순으로 정한다. 카드 밑에 "쓰는 곳: 이끼 — 기본 모델이 이끼의 답을 만들어요. 작은 모델이면 이끼의 답이 거칠 수 있어요."가 있다.
 - 연결 확인은 **서버에서 바깥 주소로** 나간다. 서버가 외부로 나갈 수 없는 환경이면 "서버가 이 주소로 나가지 못했어요"라고 한다.
 - 스트리밍과 툴 호출은 하지 않는다. 한 번 묻고 한 번 받는다.
-- 토큰·비용 한도는 없다. 쓰는 기능이 붙을 때 정한다.
+- 토큰·비용 한도는 없다. 이끼는 답 하나에 `max_tokens` 700으로 부르고, 한도는 쓰는 기능이 더 붙을 때 정한다.
 - 기본 모델이 하나다. 기능마다 다른 모델을 고르는 것은 없다.

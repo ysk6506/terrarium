@@ -72,27 +72,31 @@ export function WhatStep({
   return (
     <section className="wizard-step stack">
       <StepHead n={1} title="무엇으로 시험할까요?" problems={problems} />
-      <SelectField
-        label="세계"
-        value={draft.worldId}
-        options={worlds.map((w) => ({ value: w.id, label: w.name }))}
-        onChange={(worldId) => {
-          const { scenarioId: _drop, ...rest } = draft;
-          set({ ...rest, worldId });
-        }}
-      />
+      <div data-moss-action="exp-pick-world">
+        <SelectField
+          label="세계"
+          value={draft.worldId}
+          options={worlds.map((w) => ({ value: w.id, label: w.name }))}
+          onChange={(worldId) => {
+            const { scenarioId: _drop, ...rest } = draft;
+            set({ ...rest, worldId });
+          }}
+        />
+      </div>
       <KindChoice draft={draft} set={set} />
       {operation ? (
         <OperationSetup draft={draft} set={set} scenarios={list} />
       ) : (
-        <ScenarioPick
-          choices={choices}
-          value={draft.scenarioId}
-          onChange={(scenarioId) => set({ scenarioId })}
-          {...(draft.worldId && scenarios && list.length === 0
-            ? { empty: "이 세계에는 시나리오가 아직 없어요. 시나리오 화면에서 만들어 보세요." }
-            : {})}
-        />
+        <div data-moss-action="exp-pick-scenario">
+          <ScenarioPick
+            choices={choices}
+            value={draft.scenarioId}
+            onChange={(scenarioId) => set({ scenarioId })}
+            {...(draft.worldId && scenarios && list.length === 0
+              ? { empty: "이 세계에는 시나리오가 아직 없어요. 시나리오 화면에서 만들어 보세요." }
+              : {})}
+          />
+        </div>
       )}
     </section>
   );
@@ -174,7 +178,7 @@ function setProfile(draft: Draft, protocol: "vcenter" | "vrops", key: string): P
 
 function RunsField({ draft, set }: Pick<StepProps, "draft" | "set">) {
   return (
-    <div className="stack how-runs" style={{ gap: 6 }}>
+    <div className="stack how-runs" style={{ gap: 6 }} data-moss-action="exp-set-runs">
       <NumberField
         label={howWords.RUNS_LABEL}
         error={draft.runs < 1 || draft.runs > MAX_SEEDS ? howWords.runsRange(MAX_SEEDS) : undefined}
@@ -190,6 +194,7 @@ function RunsField({ draft, set }: Pick<StepProps, "draft" | "set">) {
         <span className="tag tag-recommend">{howWords.RUNS_RECOMMEND}</span>
         {draft.runs !== howWords.RECOMMENDED_RUNS && (
           <Button
+            data-moss-action="exp-set-runs"
             size="small"
             kind="quiet"
             onClick={() => set({ runs: howWords.RECOMMENDED_RUNS })}
@@ -283,11 +288,13 @@ export function HowStep({
       <RunsField draft={draft} set={set} />
       <OperationInstruction draft={draft} set={set} />
       <DomainScope draft={draft} set={set} />
-      <ToolPicker
-        selected={draft.tools}
-        onChange={(tools) => set(experiment.withTools(draft, tools))}
-        {...(scenario ? { scenario: scenario.doc } : {})}
-      />
+      <div data-moss-action="exp-pick-tools">
+        <ToolPicker
+          selected={draft.tools}
+          onChange={(tools) => set(experiment.withTools(draft, tools))}
+          {...(scenario ? { scenario: scenario.doc } : {})}
+        />
+      </div>
       <HumanSettings draft={draft} set={set} {...(scenario ? { scenario } : {})} />
       {!draft.operation && <Advanced draft={draft} set={set} />}
     </section>

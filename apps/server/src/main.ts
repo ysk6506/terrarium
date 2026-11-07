@@ -104,6 +104,7 @@ async function runControl(
     capacity: placement.capacity,
     version: VERSION,
   });
+  platform.moss.warm(); // 이끼의 문서 색인을 시작할 때 만들어 둔다 (REQ-103)
   placement.hooks.onJoin = () => platform.dispatcher.wake();
   const app = buildApp({
     platform,

@@ -35,6 +35,8 @@ export {
 } from "./hosts";
 export { type Stamps, SYSTEM_STAMPS } from "./ids";
 export { Models } from "./models";
+export { Moss } from "./moss";
+export { buildMossIndex, isRelevant, type MossChunk, MossIndex } from "./moss-index";
 export { Platform, type PlatformOptions, withCapacity } from "./platform";
 export { Presets } from "./presets";
 export { type ReportFormat, Results } from "./results";

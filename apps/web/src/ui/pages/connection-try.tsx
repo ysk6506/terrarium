@@ -82,6 +82,7 @@ export function TryPanel({
       <TextField label="보낼 말" value={text} onChange={setText} maxLength={2000} />
       <div>
         <Button
+          data-moss-skip="폼과 대화상자 안"
           kind="primary"
           busy={busy}
           disabled={why !== undefined}

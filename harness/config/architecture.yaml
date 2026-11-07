@@ -32,7 +32,8 @@ units:
   server.http:              {path: apps/server/src/http, may_import: ["core.*", server.adapters, server.runtime, server.mcp]}
   server.main:              {path: apps/server/src, may_import: ["core.*", "server.*"], public_index: false}
   web.logic:                {path: apps/web/src/logic, may_import: ["core.*"]}
-  web.ui:                   {path: apps/web/src/ui, may_import: ["core.*", web.logic]}
+  web.moss:                 {path: apps/web/src/moss, may_import: ["core.*", web.logic]}
+  web.ui:                   {path: apps/web/src/ui, may_import: ["core.*", web.logic, web.moss]}
   web.main:                 {path: apps/web/src, may_import: ["core.*", "web.*"], public_index: false}
   harness:                  {path: harness/src, may_import: [], public_index: false}
   tests.spec:               {path: tests/spec, may_import: ["core.*", "server.*"], public_index: false}
@@ -49,7 +50,7 @@ third_party:
   "@fastify/static": [server.http]
   "@modelcontextprotocol/sdk": [server.mcp, server.adapters]
   falkordb: [server.adapters]
-  react: [web.ui, web.main]
+  react: [web.ui, web.moss, web.main]
   react-dom: [web.ui, web.main]
   "@xyflow/react": [web.ui]
   three: [web.ui]

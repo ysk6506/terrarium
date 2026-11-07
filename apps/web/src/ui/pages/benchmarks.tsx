@@ -6,6 +6,7 @@
 import type { Leaderboard, LeaderboardRow } from "@terrarium/core/analysis";
 import { MIN_RUNS_TO_RANK } from "@terrarium/core/analysis";
 import { formatDuration, meanText, percent } from "../../logic";
+import { benchmarksState, useMossRead } from "../../moss";
 import { Go, useApp, useAsync } from "../context";
 import { Empty, Failure, Loading, PageHead, Section, SelectField } from "../kit";
 import { ScoreBar } from "../results";
@@ -138,13 +139,18 @@ export function BenchmarksPage() {
   const data = useAsync((signal) => api.call("leaderboards", { signal }), []);
   const boards = data.data ?? [];
   const shown = set ? boards.filter((b) => b.benchmarkKey === set) : boards;
+  useMossRead("benchmarks", () => benchmarksState(shown, set));
   return (
     <div className="page">
       <PageHead
         title="벤치마크"
         lede="같은 세계, 같은 시나리오, 같은 채점표에서 돌린 실험끼리만 순위를 매겨요. 오차 범위가 겹치면 차이가 있다고 하지 않아요."
         actions={
-          <Go to={{ name: "newExperiment" }} className="btn btn-primary">
+          <Go
+            data-moss-action="go-new-experiment"
+            to={{ name: "newExperiment" }}
+            className="btn btn-primary"
+          >
             새 실험
           </Go>
         }
@@ -170,7 +176,11 @@ export function BenchmarksPage() {
         <Empty
           title="아직 순위를 매길 실험이 없어요"
           action={
-            <Go to={{ name: "newExperiment" }} className="btn btn-primary">
+            <Go
+              data-moss-action="go-new-experiment"
+              to={{ name: "newExperiment" }}
+              className="btn btn-primary"
+            >
               첫 실험 만들기
             </Go>
           }

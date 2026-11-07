@@ -2,7 +2,7 @@
 title: 세계 만들기 검토 — 설명 없이도 되는가, 토스의 원칙으로
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - apps/web/src/ui/pages/worlds.tsx
   - apps/web/src/ui/pages/world-forms.tsx
@@ -10,13 +10,13 @@ covers:
   - apps/web/src/ui/builder/Toolbox.tsx
   - apps/web/src/ui/builder/WorldBuilderPage.tsx
   - apps/web/src/ui/pages/new-world.tsx
-covers_hash: c38247c1b669f264
+covers_hash: 8038555db35395e6
 verification_log:
-  - "2026-11-06: WorldBuilderPage가 토폴로지의 원천(source)과 시간 막대(FramesBar)를 바깥에서 넘기게 바뀐 것만 달라졌다. 검토의 내용(그때의 화면 설명)은 그대로다"
   - "2026-11-06: REQ-094 세계 만들기 입구·서비스부터·패널 없는 직접 짓기(ADR-0107~0109)를 코드와 대조해 해당 절을 더하거나 고쳤다"
   - "2026-11-06: REQ-094: CSS와 키보드 도움말(Toolbox의 조작법을 ? 도움말로 합침), 카드들을 코드와 다시 대조해 맞음"
   - "2026-11-06: REQ-094 최종 확인: 카드·사다리·생성 규칙·CSS·키보드 도움말을 코드와 대조해 맞음"
   - "2026-11-06: REQ-101: worlds.tsx가 표에서 카드 목록으로, new-world.tsx가 startedFrom을 넘기도록 바뀌었다. 검토 기록의 결론은 그대로 맞다(세계 목록은 web-ui.md에 있다)"
+  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
 ---
 # 세계 만들기 검토 (베타 피드백 4·12, ADR-0083 예정)
 

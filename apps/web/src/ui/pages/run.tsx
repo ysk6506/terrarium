@@ -15,6 +15,7 @@ import {
   scoreText,
   scoringText,
 } from "../../logic";
+import { numberQuestion, runState, useMossActions, useMossScreen } from "../../moss";
 import { Go, useApp, useAsync, usePageTitle } from "../context";
 import { Failure, Figures, Loading, Note, PageHead, Section, Status, Tabs } from "../kit";
 import { SeriesGrid, Timeline } from "../results";
@@ -116,6 +117,7 @@ function RunFigures({ view }: { readonly view: RunView }) {
         {
           label: "점수",
           value: scoreText(analysis.score),
+          ask: numberQuestion("이 실행", scoreText(analysis.score)),
           hint: run.result?.score.summary || "채점표 항목의 점수를 더한 값",
         },
         {
@@ -182,8 +184,28 @@ function Verdicts({ view }: { readonly view: RunView }) {
   );
 }
 
+const TAB_WORDS: Readonly<Record<string, Tab>> = {
+  timeline: "timeline",
+  일어난: "timeline",
+  calls: "calls",
+  툴: "calls",
+  metrics: "metrics",
+  지표: "metrics",
+  harness: "harness",
+  하네스: "harness",
+};
+
 function Records({ view }: { readonly view: RunView }) {
   const [tab, setTab] = useState<Tab>("timeline");
+  // 이끼가 기록 탭을 넘길 때 쓰는 핸들러: 탭 버튼과 같은 setTab (REQ-103)
+  useMossActions("run", {
+    "run-show-tab": (args) => {
+      const text = String(args.tab ?? args.text ?? "");
+      const hit = Object.entries(TAB_WORDS).find(([word]) => text.includes(word));
+      setTab(hit ? hit[1] : "calls");
+      return `${hit ? hit[0] : "툴 호출"} 탭을 열었어요`;
+    },
+  });
   const result = view.run.result;
   const worldId = view.experiment.experiment.recipe.worldId;
   return (
@@ -229,6 +251,20 @@ export function RunPage({ id }: { readonly id: string }) {
   const state = useAsync((signal) => api.call("getRun", { params: { id }, signal }), [id]);
   const view = state.data;
   usePageTitle(view && `${view.run.index + 1}번째 실행, ${view.experiment.experiment.name}`);
+  const { navigate } = useApp();
+  useMossScreen("run", {
+    read: () => (view ? runState(view) : {}),
+    run: {
+      "run-open-experiment": () =>
+        view && navigate({ name: "experiment", id: view.run.experimentId }),
+      "run-read-scores": () =>
+        view?.run.result
+          ? view.run.result.score.items
+              .map((i) => `${i.label} ${i.points}/${i.max || "감점"}점`)
+              .join(", ")
+          : "아직 채점 전이에요",
+    },
+  });
   return (
     <div className="page">
       {state.error && !view && <Failure error={state.error} retry={state.reload} />}

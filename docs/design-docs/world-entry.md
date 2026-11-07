@@ -2,7 +2,7 @@
 title: 세계 만들기 입구와 서비스부터 (REQ-094)
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/world/ladder.ts
   - packages/core/src/sources/worldgen/shaped-db.ts
@@ -21,13 +21,13 @@ covers:
   - apps/web/src/ui/pages/shape-same.tsx
   - apps/web/src/ui/pages/shape-flow.ts
   - apps/web/src/ui/builder/StageCards.tsx
-covers_hash: a11265bc30b10ee9
+covers_hash: 3dae7b0af94a5af2
 verification_log:
-  - "2026-11-06: 점선 열둘과 SDN 칩의 build.overlay·생성 규칙을 ladder.ts·shaped-sdn.ts와 대조해 고쳤다 (REQ-097)"
   - "2026-11-06: REQ-096: 점선 11개, 컴퓨트 세 칩의 build(drs·k8s)와 IAP 기본 카드를 ladder.ts·shaped-k8s.ts·shaped-defaults.ts와 대조해 적었다"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
   - "2026-11-06: REQ-101: 저장소 포트·출발점(startedFrom) 반영, ADR-0122"
+  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
 ---
 # 세계 만들기 입구와 서비스부터 (REQ-094, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md), [ADR-0108](adr/0108-world-entry-iap-and-chip-cards.md), [ADR-0109](adr/0109-world-entry-amend-tests.md))
 

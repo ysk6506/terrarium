@@ -7,6 +7,7 @@ import type { ExperimentView, RunSummary } from "@terrarium/core/contract";
 import { withJosa } from "@terrarium/core/kernel";
 import { useState } from "react";
 import { dateText, hallTopology, statusLabel } from "../../logic";
+import { experimentState, useMossActions, useMossScreen } from "../../moss";
 import { Go, useAction, useApp, useAsync, usePageTitle } from "../context";
 import {
   Button,
@@ -104,6 +105,16 @@ function CancelButton({
   const { busy, run } = useAction();
   const [asking, setAsking] = useState(false);
   const remaining = view.progress.total - view.progress.finished;
+  // 이끼의 "실험 멈추기": 같은 호출이고, 확인은 이끼의 "이렇게 할게요" 카드가 해요 (REQ-103)
+  useMossActions("experiment", {
+    "exp-cancel": async () => {
+      const next = await run(
+        () => api.call("cancelExperiment", { params: { id: view.experiment.id } }),
+        "남은 실행을 멈췄어요",
+      );
+      if (next) onDone(next);
+    },
+  });
   const cancel = async () => {
     const next = await run(
       () => api.call("cancelExperiment", { params: { id: view.experiment.id } }),
@@ -114,7 +125,12 @@ function CancelButton({
   };
   return (
     <>
-      <Button kind="danger" icon="stop" onClick={() => setAsking(true)}>
+      <Button
+        kind="danger"
+        icon="stop"
+        data-moss-action="exp-cancel"
+        onClick={() => setAsking(true)}
+      >
         멈추기
       </Button>
       {asking && (
@@ -122,7 +138,12 @@ function CancelButton({
           title="남은 실행을 멈출까요?"
           onClose={() => setAsking(false)}
           actions={
-            <Button kind="danger" busy={busy} onClick={() => void cancel()}>
+            <Button
+              data-moss-action="exp-cancel"
+              kind="danger"
+              busy={busy}
+              onClick={() => void cancel()}
+            >
               {remaining}회 멈추기
             </Button>
           }
@@ -166,7 +187,7 @@ function AddRuns({
           onChange={(v) => v !== undefined && setCount(Math.round(v))}
         />
       </div>
-      <Button busy={busy} onClick={() => void add()}>
+      <Button data-moss-skip="세부 조절" busy={busy} onClick={() => void add()}>
         같은 조건으로 더 돌리기
       </Button>
     </div>
@@ -196,7 +217,11 @@ function Head({
       actions={
         <>
           {view.canCancel && active && <CancelButton view={view} onDone={onChange} />}
-          <Go to={{ name: "newExperiment", forkOf: e.id }} className="btn btn-primary">
+          <Go
+            to={{ name: "newExperiment", forkOf: e.id }}
+            className="btn btn-primary"
+            data-moss-action="exp-fork"
+          >
             조건 바꿔 다시 돌리기
           </Go>
           <ShareMenu view={view} />
@@ -224,6 +249,7 @@ function SideBySide({
   return (
     <div style={{ marginTop: 16 }}>
       <Button
+        data-moss-skip="세부 조절"
         size="small"
         disabled={!(a && b)}
         why={hallTopology.TOPO_WORDS.pickTwo}
@@ -264,6 +290,28 @@ function LiveStatus({
   );
 }
 
+/** 이끼가 이 실험을 읽고 "실행 열기"를 하는 길: 실행 표의 링크와 같은 `navigate` (REQ-103) */
+function useExperimentMoss(view: ExperimentView | undefined) {
+  const { navigate } = useApp();
+  useMossScreen("experiment", {
+    read: () => (view ? experimentState(view) : {}),
+    summary: () =>
+      view
+        ? `${view.experiment.name} · 남은 ${view.progress.total - view.progress.finished}회`
+        : undefined,
+    run: {
+      "exp-open-run": (a) => {
+        const runs = view?.runs ?? [];
+        const n = typeof a.n === "number" ? a.n : 1;
+        const hit = runs.find((r) => r.index + 1 === n) ?? runs[0];
+        if (!hit) throw new Error("열 실행이 아직 없어요");
+        navigate({ name: "run", id: hit.id });
+        return `${hit.index + 1}번째 실행을 열었어요`;
+      },
+    },
+  });
+}
+
 export function ExperimentPage({ id }: { readonly id: string }) {
   const { api } = useApp();
   const [picked, setPicked] = useState<readonly string[]>([]);
@@ -273,6 +321,7 @@ export function ExperimentPage({ id }: { readonly id: string }) {
   const view = state.data;
   usePageTitle(view?.experiment.name);
   const live = useLive(view, state.reload);
+  useExperimentMoss(view);
   if (state.error && !view)
     return (
       <div className="page">

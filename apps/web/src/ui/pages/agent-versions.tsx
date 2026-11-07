@@ -144,8 +144,10 @@ function VersionDialog({
       onClose={onClose}
       actions={
         <>
-          <Button onClick={onClose}>닫기</Button>
-          <Button kind="primary" busy={busy} onClick={save}>
+          <Button data-moss-skip="폼과 대화상자 안" onClick={onClose}>
+            닫기
+          </Button>
+          <Button data-moss-skip="폼과 대화상자 안" kind="primary" busy={busy} onClick={save}>
             저장
           </Button>
         </>
@@ -184,10 +186,15 @@ function VersionCard({
           <h3 style={{ margin: 0 }}>{versionTitle(version)}</h3>
           {mayEdit && (
             <div className="row">
-              <Button size="small" onClick={onEdit}>
+              <Button data-moss-skip="폼과 대화상자 안" size="small" onClick={onEdit}>
                 이름·메모 고치기
               </Button>
-              <Button size="small" kind="danger" onClick={onDelete}>
+              <Button
+                data-moss-skip="폼과 대화상자 안"
+                size="small"
+                kind="danger"
+                onClick={onDelete}
+              >
                 지우기
               </Button>
             </div>
@@ -277,8 +284,10 @@ function DeleteVersion({
       onClose={onClose}
       actions={
         <>
-          <Button onClick={onClose}>닫기</Button>
-          <Button kind="danger" busy={busy} onClick={remove}>
+          <Button data-moss-skip="폼과 대화상자 안" onClick={onClose}>
+            닫기
+          </Button>
+          <Button data-moss-skip="폼과 대화상자 안" kind="danger" busy={busy} onClick={remove}>
             지우기
           </Button>
         </>
@@ -315,7 +324,11 @@ function Versions({
         title="버전"
         aside={
           mayEdit && (
-            <Button size="small" onClick={() => setDialog({ kind: "add" })}>
+            <Button
+              data-moss-skip="폼과 대화상자 안"
+              size="small"
+              onClick={() => setDialog({ kind: "add" })}
+            >
               버전 더하기
             </Button>
           )

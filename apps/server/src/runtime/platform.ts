@@ -19,6 +19,8 @@ import { Experiments, summarize } from "./experiments";
 import type { SessionHost } from "./hosts";
 import { type Stamps, SYSTEM_STAMPS } from "./ids";
 import { Models, type ModelsOptions } from "./models";
+import { Moss } from "./moss";
+import { findDocsDir } from "./moss-index";
 import { Presets } from "./presets";
 import { Results } from "./results";
 import { Scenarios } from "./scenarios";
@@ -56,6 +58,8 @@ export interface PlatformOptions {
   readonly tryOptions?: TryOptions;
   /** How model APIs are reached and timed (tests hand in a fake `fetch`). */
   readonly llm?: Pick<ModelsOptions, "fetch" | "now" | "timeoutMs">;
+  /** The docs folder 이끼 reads (default: the repo's `docs`, or `TERRARIUM_DOCS_DIR`). */
+  readonly docsDir?: string;
 }
 
 /** What the meta and the experiment form need of a connection: who it is and which agents it has. */
@@ -148,6 +152,8 @@ export class Platform {
   readonly presets: Presets;
   /** The model APIs the workspace registered for later (REQ-099, ADR-0119). */
   readonly models: Models;
+  /** 이끼, the helper that answers from the repo docs and the screen's state (REQ-103, ADR-0124). */
+  readonly moss: Moss;
   /** The world list in popularity order with hearts (REQ-101, ADR-0122). */
   readonly board: WorldBoard;
   /** What people earned (REQ-101, ADR-0122). */
@@ -207,6 +213,8 @@ export class Platform {
       ...(options.llm ?? {}),
       ...(options.adapters.allowedHosts ? { allowedHosts: options.adapters.allowedHosts } : {}),
     });
+    const docsDir = options.docsDir ?? findDocsDir();
+    this.moss = new Moss(this.models, docsDir ? { docsDir } : {});
     this.experiments = new Experiments(
       this.ctx,
       this.scenarios,

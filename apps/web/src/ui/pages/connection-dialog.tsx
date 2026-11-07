@@ -307,11 +307,20 @@ type DialogState = ReturnType<typeof useConnectionDialog>;
 function DialogActions({ d, onClose }: { readonly d: DialogState; readonly onClose: () => void }) {
   return (
     <>
-      <Button onClick={onClose}>닫기</Button>
-      <Button onClick={d.test} busy={d.busy} disabled={!d.spec} why="연결 방식을 먼저 골라 주세요">
+      <Button data-moss-skip="폼과 대화상자 안" onClick={onClose}>
+        닫기
+      </Button>
+      <Button
+        data-moss-skip="폼과 대화상자 안"
+        onClick={d.test}
+        busy={d.busy}
+        disabled={!d.spec}
+        why="연결 방식을 먼저 골라 주세요"
+      >
         연결 확인
       </Button>
       <Button
+        data-moss-skip="폼과 대화상자 안"
         kind="primary"
         onClick={d.save}
         busy={d.busy}
@@ -406,7 +415,12 @@ function KindStep({
       <p style={{ margin: 0 }}>
         <b>{d.spec.label}</b> <span className="muted">{d.spec.description}</span>
       </p>
-      <Button size="small" kind="quiet" onClick={() => setChoosing(true)}>
+      <Button
+        data-moss-skip="폼과 대화상자 안"
+        size="small"
+        kind="quiet"
+        onClick={() => setChoosing(true)}
+      >
         다른 하네스 고르기
       </Button>
     </div>

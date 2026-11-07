@@ -10,6 +10,7 @@ import { messageOf, useApp } from "../context";
 import { Button, TextField } from "../kit";
 import { type Flow, STEPS, type Step, useShapeFlow } from "./shape-flow";
 import { LaddersStep } from "./shape-ladders";
+import { useShapeMoss } from "./shape-moss";
 import { ServicesStep } from "./shape-services";
 import { SizeStep } from "./shape-size";
 import { WorkloadStep } from "./shape-workload";
@@ -50,7 +51,7 @@ function Done({
       </output>
       <div className="we-save">
         <TextField label="템플릿 이름" value={name} onChange={setName} maxLength={80} />
-        <Button disabled={saved} onClick={() => void save()}>
+        <Button data-moss-skip="세계 폼 안의 입력" disabled={saved} onClick={() => void save()}>
           {saved ? "템플릿으로 저장했어요" : "이 구성을 템플릿으로 저장"}
         </Button>
       </div>
@@ -64,10 +65,14 @@ function Done({
           세계 이름 <b>{flow.spec.name}</b>
         </span>
         <span className="we-spacer" />
-        <Button onClick={() => navigate({ name: "world", id: built.worldId })}>
+        <Button
+          data-moss-skip="세계 폼 안의 입력"
+          onClick={() => navigate({ name: "world", id: built.worldId })}
+        >
           세계 둘러보기
         </Button>
         <Button
+          data-moss-action="go-new-experiment"
           kind="primary"
           onClick={() => navigate({ name: "newExperiment", worldId: built.worldId })}
         >
@@ -91,11 +96,12 @@ function Bar(props: {
     <div className="we-bar">
       <span className="we-bar-sum">{props.sum}</span>
       <span className="we-spacer" />
-      <Button kind="quiet" onClick={props.onBack}>
+      <Button data-moss-skip="세계 폼 안의 입력" kind="quiet" onClick={props.onBack}>
         이전
       </Button>
       <Button
         kind="primary"
+        data-moss-action="world-build"
         busy={props.busy}
         disabled={props.nextDisabled !== undefined}
         why={props.nextDisabled}
@@ -222,6 +228,7 @@ export function ShapeScreen({
   const next = NEXT[flow.step];
   const back = BACK[flow.step];
   const sum = summaryOf(flow.step, spec, view);
+  useShapeMoss({ spec, flow, step: flow.step, last: !next, problem, make });
   if (built)
     return (
       <div className="we">

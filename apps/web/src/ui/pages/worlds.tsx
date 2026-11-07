@@ -15,7 +15,7 @@ export function WorldsPage() {
         title="세계"
         lede="에이전트가 일할 데이터센터예요. 사업장 그대로 만들거나, 작게 시작해서 직접 키워요."
         actions={
-          <Go to={{ name: "newWorld" }} className="btn btn-primary">
+          <Go data-moss-action="go-new-world" to={{ name: "newWorld" }} className="btn btn-primary">
             새 세계
           </Go>
         }

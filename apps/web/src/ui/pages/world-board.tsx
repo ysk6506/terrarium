@@ -16,12 +16,13 @@ import {
   toggledLike,
   WORLD_SORT_OPTIONS,
 } from "../../logic";
+import { pickByText, useMossScreen, worldsState } from "../../moss";
 import { browserStore } from "../browser-store";
 import { Go, useApp, useAsync } from "../context";
 import { Empty, Failure, Loading, Section, Segmented } from "../kit";
 import { WorldCard } from "./world-card";
 
-function useWorldBoard() {
+function useWorldBoard(limit?: number) {
   const { api, me, askName, toast } = useApp();
   const [sort, setSort] = useState<WorldSort>(() => readWorldSort(browserStore()));
   const list = useAsync(
@@ -50,6 +51,20 @@ function useWorldBoard() {
       toast((err as Error).message, "bad");
     }
   };
+  useMossScreen(limit ? "home" : "worlds", {
+    ...(limit ? {} : { read: () => worldsState(sort, list.data ?? []) }),
+    run: limit
+      ? {}
+      : {
+          "worlds-sort": (a) => {
+            const hit = pickByText(String(a.text ?? ""), WORLD_SORT_OPTIONS, (o) => o.label);
+            const next = hit ?? WORLD_SORT_OPTIONS.find((o) => o.value !== sort);
+            if (!next) throw new Error("바꿀 순서가 없어요");
+            choose(next.value);
+            return next.label;
+          },
+        },
+  });
   return { sort, choose, list, toggle };
 }
 
@@ -99,7 +114,7 @@ function BoardBody({
  * nothing to show. Without one it is the whole list of `/worlds`.
  */
 export function WorldBoard({ limit }: { readonly limit?: number }) {
-  const board = useWorldBoard();
+  const board = useWorldBoard(limit);
   const { sort, list } = board;
   const empty = list.data ? boardEmpty(sort, list.data.length) : undefined;
   // on the home page a workspace with no worlds at all stays quiet: the hero already offers the way to one

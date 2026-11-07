@@ -19,7 +19,9 @@
     "check:pr": "pnpm lint && pnpm typecheck && pnpm test && tsx harness/src/run-all.ts --with-coverage --base origin/main && tsx harness/src/ux/run.ts check --base origin/main",
     "ux": "tsx harness/src/ux/run.ts",
     "ratchet": "tsx harness/src/checks/coverage.ts ratchet && tsx harness/src/checks/debt.ts ratchet",
-    "lock-tests": "tsx harness/src/checks/testguard.ts lock"
+    "lock-tests": "tsx harness/src/checks/testguard.ts lock",
+    "moss-eval": "tsx tests/spec/moss-eval.ts",
+    "moss-bank": "tsx tests/spec/moss-bank.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",

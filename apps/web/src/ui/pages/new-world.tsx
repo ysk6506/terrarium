@@ -5,6 +5,7 @@
  */
 import type { ShapeSpec } from "@terrarium/core/sources/worldgen";
 import type { Page } from "../../logic";
+import { useMossScreen } from "../../moss";
 import { useApp, useAsync, usePageTitle } from "../context";
 import { Failure, Loading } from "../kit";
 import { ShapeScreen } from "./shape-screen";
@@ -33,6 +34,14 @@ function FromTemplate({ id, change }: { readonly id: string; readonly change: bo
 export function NewWorldPage({ page }: { readonly page: NewWorld }) {
   const { navigate } = useApp();
   usePageTitle("새 세계");
+  useMossScreen("newWorld", {
+    run: {
+      "world-ladders": () => {
+        navigate({ name: "newWorld", door: "service" });
+        return "서비스부터 정하는 길로 갈게요. 층마다 모양을 고르는 사다리가 나와요";
+      },
+    },
+  });
   if (page.template) return <FromTemplate id={page.template} change={Boolean(page.change)} />;
   if (page.door === "service")
     return <ShapeScreen fromTemplate={false} onLeave={() => navigate({ name: "newWorld" })} />;

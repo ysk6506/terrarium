@@ -2,16 +2,16 @@
 title: ARCHITECTURE — 단위와 의존 방향
 kind: reference
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - harness/config/architecture.yaml
-covers_hash: 100f23e4b1e92e97
+covers_hash: 154ca855671ab18e
 verification_log:
-  - "2026-10-30: 2026-10-30: server.adapters 행(커넥터·봉인), runtime 행(연결 레지스트리·버전), http 행(식별 자리), 외부 라이브러리 줄(MCP SDK는 server.mcp와 server.adapters)을 architecture.yaml과 대조했다 (ADR-0042~0044)"
   - "2026-11-04: architecture.yaml 대조: 시험 전용 의존성 ajv와 ajv-formats가 tests.spec 단위에만 허용된 것(ADR-0057)을 외부 라이브러리 줄에, 파사드 단위 설명에 SNMP·BACnet을 반영했다"
   - "2026-11-05: architecture.yaml에 core.topology 단위(kernel, catalog, world, physics)가 늘었다. 단위 표와 그림에 한 줄씩 더했다"
   - "2026-11-06: LLM API 등록"
   - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
+  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
 ---
 # 아키텍처
 
@@ -67,7 +67,8 @@ contract ─► analysis ─► experiments ─► oracle ─► scenario ─►
 | `server.mcp` | 실행마다 하나인 MCP 툴 엔드포인트 | core, runtime |
 | `server.http` | 계약의 경로 표 그대로의 Fastify 라우트, SSE, 공유 링크, 정적 웹, 사용자 식별 자리(ADR-0028, 0044) | core, adapters, runtime, mcp |
 | `web.logic` | 화면 상태와 계산(DOM 없이 테스트) | core |
-| `web.ui` | React 화면, 3D 빌더, 시나리오 편집기 | core, web.logic |
+| `web.moss` | 이끼: 화면 등록부, 읽기·핸들러 훅, 화면 상태 JSON, `MossAsk` (REQ-103) | core, web.logic |
+| `web.ui` | React 화면, 3D 빌더, 시나리오 편집기 | core, web.logic, web.moss |
 
 ## 꼭 지켜야 할 경계
 
