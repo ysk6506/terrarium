@@ -14,6 +14,9 @@ const MODELED = [
   "db-shared-aa",
   "db-primary-secondary",
   "db-auto-failover",
+  "sto-geo",
+  "db-distributed-sql",
+  "db-managed-multiaz",
 ];
 
 const viewWith = (layers: Partial<Layers>) =>
@@ -30,11 +33,10 @@ describe("데이터베이스와 스토리지 칩의 카드는 코어의 고장 �
     });
   }
 
-  test("점선으로 남은 칩은 데이터베이스와 스토리지에 둘뿐이고 가까운 칸으로 짓는다", () => {
+  test("데이터베이스와 스토리지에는 점선이 남지 않는다 [REQ-106]", () => {
     for (const id of ["db-distributed-sql", "db-managed-multiaz", "sto-geo"]) {
-      const chip = chipById(id);
-      expect(chip?.modeled, id).toBe(false);
-      expect(chipById(chip?.buildsAs ?? "")?.modeled, id).toBe(true);
+      expect(chipById(id)?.modeled, id).toBe(true);
+      expect(chipById(id)?.buildsAs, id).toBeUndefined();
     }
   });
 });
@@ -61,9 +63,15 @@ describe("'이 모양이면'에 데이터베이스 고장이 들어간다 [REQ-0
     expect(v.handover.some((h) => h.team === "스토리지팀")).toBe(true);
   });
 
-  test("점선 데이터베이스 칩은 고장도 시나리오도 더하지 않는다", () => {
-    const dotted = viewWith({ database: "db-managed-multiaz" });
-    expect(dotted.problems.some((p) => p.startsWith("db_"))).toBe(false);
-    expect(dotted.dotted).toContain("클라우드 관리형 멀티 AZ");
+  test("합의 DB와 관리형 DB는 자기 고장을 더한다 [REQ-106]", () => {
+    const raft = viewWith({ database: "db-distributed-sql" });
+    expect(raft.problems).toEqual(
+      expect.arrayContaining(["db_leader_lost", "db_quorum_lost", "db_node_lagging"]),
+    );
+    expect(raft.dotted).toEqual([]);
+    const managed = viewWith({ database: "db-managed-multiaz" });
+    expect(managed.problems).toEqual(
+      expect.arrayContaining(["db_az_failure", "db_failover_flapping", "db_storage_full"]),
+    );
   });
 });

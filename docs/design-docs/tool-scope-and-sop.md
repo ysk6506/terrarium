@@ -13,12 +13,12 @@ covers:
   - packages/core/src/session/tool-pick.ts
   - apps/server/src/runtime/escalations.ts
 verification_log:
-  - "2026-11-06: 저장해 두기가 서버 보관으로 바뀐 것(툴 묶음·절차서·지시문)을 적고 정직한 한계를 고쳤다 (ADR-0112)"
   - "2026-11-06: run_command의 툴 설명(tools/docs.ts)이 깊은 OS 흉내로 바뀐 것을 확인했다. 표의 필요한 툴은 그대로다 (REQ-098)"
   - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
   - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
-covers_hash: 92ac8494f6b6c75c
+  - "2026-11-07: REQ-106 고장 열다섯의 필요한 툴과 툴 80개로 고쳤다"
+covers_hash: e80cc210383c53ef
 ---
 # 툴 범위, 에스컬레이션, 절차서 (REQ-080~082, ADR-0087, ADR-0105)
 
@@ -34,7 +34,7 @@ covers_hash: 92ac8494f6b6c75c
 
 ### 영역 카드와 현실 수준 꼬리표
 
-툴 66개는 일곱 영역 카드에 나뉜다(`TOOL_DOCS`의 `area`). 카드는 접혀 있고 펼치면 세부 툴이 나온다. 맨 위에 검색 한 칸이 있다(툴 이름, 제목, 영역, 흔함·드묾·없음으로 찾는다).
+툴 80개는 일곱 영역 카드에 나뉜다(`TOOL_DOCS`의 `area`). 카드는 접혀 있고 펼치면 세부 툴이 나온다. 맨 위에 검색 한 칸이 있다(툴 이름, 제목, 영역, 흔함·드묾·없음으로 찾는다).
 
 | 영역 | 툴 |
 |---|---|
@@ -126,7 +126,7 @@ covers_hash: 92ac8494f6b6c75c
 
 ### 고장마다 풀려면 필요한 툴 (코어의 `FAULT_TOOLS`)
 
-고장 59가지와 설정 실수 7가지가 모두 풀거나 피해를 줄이는 툴을 적었다(없는 고장은 시험이 실패한다). 목록의 아무 툴 하나면 되고 첫 번째가 "필요한 것만 켜기"가 고르는 툴이다. 표는 `controls.ts`의 `FAULT_RESPONSES`와 제어 가능 요소표에서 나온 것과 시험으로 맞춰 둔다.
+고장 82가지와 설정 실수 7가지가 모두 풀거나 피해를 줄이는 툴을 적었다(없는 고장은 시험이 실패한다). 목록의 아무 툴 하나면 되고 첫 번째가 "필요한 것만 켜기"가 고르는 툴이다. 표는 `controls.ts`의 `FAULT_RESPONSES`와 제어 가능 요소표에서 나온 것과 시험으로 맞춰 둔다.
 
 | 고장 | 에이전트가 | 필요한 툴 (아무거나 하나) |
 |---|---|---|
@@ -190,6 +190,14 @@ covers_hash: 92ac8494f6b6c75c
 | 서킷 브레이커 굳음 (`circuit_breaker_stuck_open`) | 고쳐요 | `breaker_reset` |
 | 재시도 폭주 (`retry_storm`) | 고쳐요 | `mesh_rollback` |
 | 리전 다운 (`region_down`), 복제 지연 (`replication_lag_high`) | 피해를 줄여요 | `region_failover` |
+| 사이트 정전 (`site_power_loss`) | 피해를 줄여요 | `dr_failover` |
+| 복제 스트림 깨짐 (`replication_broken`) | 고쳐요 | `run_command` |
+| 전환 멈춤 (`dr_failover_stuck`), 스플릿 브레인 (`split_brain`) | 고쳐요 | `dr_failover` |
+| 회선 끊김·느림 (`wan_link_down`, `wan_degraded`), 콜드 이미지 낡음 (`dr_site_stale`), 지역 복제 지연·깨짐 (`geo_replication_lag`, `geo_replica_broken`) | 진단하고 사람을 불러요 | 없음 |
+| 합의 DB 리더·과반 상실 (`db_leader_lost`, `db_quorum_lost`) | 고쳐요 | `db_node_restart` |
+| 합의 DB 노드 지연 (`db_node_lagging`) | 고쳐요 | `db_node_restart`, `db_transfer_leader` |
+| 관리형 DB 영역 장애·오락가락 (`db_az_failure`, `db_failover_flapping`) | 피해를 줄여요 | `db_managed_failover` |
+| 관리형 DB 저장소 가득 (`db_storage_full`) | 고쳐요 | `db_managed_scale_storage` |
 | 포트 VLAN 오설정 (`port_vlan_mismatch`) | 고쳐요 | `network_cli`, `eapi_request`, `nxapi_request` |
 | 포트 꺼짐 (`port_shutdown`) | 고쳐요 | `network_cli`, `eapi_request`, `nxapi_request`, `snmp_request` |
 | VLAN 인터페이스 꺼짐 (`svi_shutdown`) | 고쳐요 | `network_cli`, `eapi_request`, `nxapi_request` |

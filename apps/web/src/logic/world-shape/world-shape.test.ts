@@ -28,15 +28,10 @@ describe("HA 사다리: 선택지와 카드 [REQ-094]", () => {
     }
   });
 
-  test("점선은 ADR-0107 결정 5의 목록 그대로다", () => {
+  test("점선은 하나도 없다: 마흔여섯 칸이 모두 실선이다 [REQ-106]", () => {
     const dotted = LAYER_IDS.flatMap((l) => LADDER[l].filter((c) => !c.modeled).map((c) => c.id));
-    expect(dotted).toEqual([
-      "sto-geo",
-      "db-distributed-sql",
-      "db-managed-multiaz",
-      "site-dr-warm",
-      "site-multi-active",
-    ]);
+    expect(dotted).toEqual([]);
+    expect(CARDS).toHaveLength(46);
   });
 
   test("카드마다 그림·문단·잃어도 되는 것·잃으면 안 되는 것·고장·비용이 있고 글 잣대를 지킨다", () => {
@@ -98,16 +93,17 @@ describe("이 모양이면 [REQ-094]", () => {
     for (const p of v.problems) expect(FAULT_TOOLS[p]).toBeDefined();
   });
 
-  test("점선 칸은 고장도 시나리오도 더하지 않는다", () => {
+  test("사이트 칸은 고장과 시나리오를 더하고 점선은 하나도 없다 [REQ-106]", () => {
     const dr = shapeView(specWith({ site: "site-dr-warm" }));
     const buildings = shapeView(specWith({ site: "site-two-buildings" }));
-    expect(dr.scenarios).toBeLessThanOrEqual(buildings.scenarios);
-    expect(dr.dotted.length).toBeGreaterThan(buildings.dotted.length);
-    const onlyDb = shapeView(specWith({ database: "db-managed-multiaz" }));
-    const ownDb = (v: { problems: readonly string[] }) =>
-      v.problems.filter((p) => p.startsWith("db_"));
-    expect(ownDb(onlyDb)).toEqual([]);
-    expect(ownDb(shapeView(specWith({ database: "db-single" }))).length).toBeGreaterThan(0);
+    expect(dr.problems).toEqual(expect.arrayContaining(["site_power_loss", "wan_link_down"]));
+    expect(buildings.problems).not.toContain("site_power_loss");
+    expect(dr.scenarios).toBeGreaterThan(buildings.scenarios);
+    expect(dr.dotted).toEqual([]);
+    expect(dr.ways).toEqual(expect.arrayContaining(["사이트 전환하기"]));
+    const managed = shapeView(specWith({ database: "db-managed-multiaz" }));
+    expect(managed.problems).toEqual(expect.arrayContaining(["db_az_failure", "db_storage_full"]));
+    expect(managed.dotted).toEqual([]);
   });
 
   test("베어메탈 + 핫 스페어는 호스트를 한 대 더하고 VM이 없다", () => {

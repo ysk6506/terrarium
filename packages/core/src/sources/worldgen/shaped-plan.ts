@@ -157,7 +157,8 @@ export function recount(draft: ServiceDraft): ServiceDraft {
 /** Hosts one service needs under the compute choice. */
 export function hostsOf(draft: ServiceDraft, build: ChipBuild): number {
   if (build.bare) return Math.max(1, draft.nodes);
-  const clusters = (build.k8s?.clusters ?? 1) * (build.app?.regions ?? 1);
+  const spread = Math.max(build.app?.regions ?? 1, build.site?.mode === "active" ? 2 : 1);
+  const clusters = (build.k8s?.clusters ?? 1) * spread;
   const packed = Math.ceil(draft.nodes / (build.pack ?? 3));
   const own = Math.max(1, Math.min(draft.hosts > 0 ? draft.hosts : packed, draft.nodes));
   // two clusters (or two regions) keep each other up only on hosts of their own
@@ -192,8 +193,12 @@ export function planShape(spec: ShapeSpec): ShapePlan {
   );
   const serviceNodes = spec.services.reduce((n, s) => n + s.nodes, 0);
   // database instances of bare-metal worlds stand on servers of their own (virtualised ones share the service's hosts)
-  const dbHosts = build.bare ? spec.services.length * (build.database?.instances ?? 0) : 0;
-  const servers = Math.max(spec.servers, serviceHosts + spareHosts + dbHosts);
+  const ring =
+    build.dbx?.kind === "raft" ? build.dbx.nodes + (build.site?.mode === "active" ? 1 : 0) : 0;
+  const dbHosts = build.bare ? spec.services.length * (build.database?.instances ?? ring) : 0;
+  // a second site holds the same hardware again (cold and hot: all of it, warm: half of it)
+  const needed = serviceHosts + spareHosts + dbHosts;
+  const servers = Math.max(spec.servers, build.site ? needed * 2 + 2 : needed);
   const computeRacks = Math.max(3, Math.ceil(servers / SERVERS_PER_RACK));
   const places = placesFor(build, computeRacks);
   const perRoom = Math.ceil(computeRacks / places.rooms);

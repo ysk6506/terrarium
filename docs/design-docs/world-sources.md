@@ -18,13 +18,13 @@ covers:
   - packages/core/src/sources/worldgen/shaped-plan.ts
   - packages/core/src/sources/realimport/mapping.ts
   - packages/core/src/sources/realimport/synthesize.ts
-covers_hash: 483cc09ee9b83d51
+covers_hash: 0eb49f64496c158e
 verification_log:
-  - "2026-11-06: REQ-096: worldgen의 shaped-k8s.ts 추가가 소스 문서의 말(생성기 입력·출력)을 바꾸지 않음을 확인했다. 컨테이너 세계 생성은 container-layer.md에 있다"
-  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
   - "2026-11-07: REQ-100 애플리케이션 층이 덮는 코드가 바뀐 것을 확인했고 이 문서의 내용은 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
+  - "2026-11-07: REQ-106 사이트 층이 shaped.ts의 세계 생성에 붙었다. 서술은 그대로 맞다"
+  - "2026-11-07: REQ-106 마무리(툴 인자·설명 문구·고장 설명 다듬기)에 맞춰 다시 대조했다. 서술은 그대로 맞다"
 ---
 # 세계 소스 (REQ-009~013, REQ-035, REQ-043~049)
 

@@ -9,11 +9,11 @@ import { InvalidValueError } from "@terrarium/core/kernel";
 import {
   type Blueprint,
   BlueprintIndex,
+  buildingOf,
   builtChip,
   type ChipBuild,
   type Entity,
   type LayerId,
-  type Link,
   serviceProps,
   workloadProps,
 } from "@terrarium/core/world";
@@ -22,6 +22,7 @@ import { DEFAULT_CAMPUS, SITE_CAMPUS_MIX } from "./campus-spec";
 import { generateWorld } from "./generate";
 import { type AppService, layApp } from "./shaped-app";
 import { contentsOf, type Laying, layCluster, layPool, link, slugOf } from "./shaped-db";
+import { type HostPool, hostPool, nodesOn, pickHosts, vmsOn } from "./shaped-hosts";
 import { dependsOn, layK8s } from "./shaped-k8s";
 import {
   buildFor,
@@ -37,6 +38,15 @@ import {
   worldgenSpecOf,
 } from "./shaped-plan";
 import { layOverlay, type PlacedService } from "./shaped-sdn";
+import {
+  hostsForService,
+  layCopies,
+  layDbx,
+  laySites,
+  layVolume,
+  planSites,
+  type SitePlan,
+} from "./shaped-site";
 
 export interface ShapedResult {
   readonly blueprint: Blueprint;
@@ -46,6 +56,9 @@ export interface ShapedResult {
     readonly servers: number;
     readonly racks: number;
     readonly rooms: number;
+    /** Buildings, and the sites a DR plan names (0 without one). */
+    readonly buildings: number;
+    readonly sites: number;
     readonly vms: number;
     readonly services: number;
     readonly serviceVms: number;
@@ -63,54 +76,6 @@ const withoutServices = (bp: Blueprint): Blueprint => {
     links: bp.links.filter((l) => !gone.has(l.from)),
   };
 };
-
-const roomOf = (index: BlueprintIndex, server: Entity): string =>
-  index.find(server.parentId ?? "")?.parentId ?? "";
-
-/** The servers a service may stand on, grouped room by room and rack by rack, in a fixed order. */
-function hostPool(index: BlueprintIndex): Map<string, Map<string, Entity[]>> {
-  const pool = new Map<string, Map<string, Entity[]>>();
-  const servers = index
-    .ofKind("server")
-    .filter((s) => !(s.modelId ?? "").includes("gpu"))
-    .sort((a, b) => a.id.localeCompare(b.id));
-  for (const s of servers) {
-    const room = roomOf(index, s);
-    const racks = pool.get(room) ?? new Map<string, Entity[]>();
-    const rack = racks.get(s.parentId ?? "") ?? [];
-    rack.push(s);
-    racks.set(s.parentId ?? "", rack);
-    pool.set(room, racks);
-  }
-  return pool;
-}
-
-/** The next unused server: rooms in turn, and inside a room racks spread out, never two in one rack while another is free. */
-function pickHosts(
-  pool: Map<string, Map<string, Entity[]>>,
-  count: number,
-  used: Set<string>,
-): Entity[] {
-  const rooms = [...pool.values()].map((racks) => [...racks.values()]);
-  const picked: Entity[] = [];
-  const touched = new Set<string>();
-  for (let round = 0; picked.length < count && round < count * 4; round++) {
-    const racks = rooms[round % rooms.length] as Entity[][];
-    const stride = Math.max(1, Math.floor(racks.length / Math.ceil(count / rooms.length)));
-    const start = (Math.floor(round / rooms.length) * stride + 1) % racks.length;
-    for (let k = 0; k < racks.length; k++) {
-      const rack = racks[(start + k) % racks.length] as Entity[];
-      const free = rack.find((s) => !used.has(s.id));
-      const first = rack[0]?.parentId ?? "";
-      if (!free || (touched.has(first) && k < racks.length - 1)) continue;
-      used.add(free.id);
-      touched.add(first);
-      picked.push(free);
-      break;
-    }
-  }
-  return picked;
-}
 
 function addService(
   into: Laying,
@@ -154,50 +119,6 @@ function addService(
 const hostOfNode = (index: BlueprintIndex, node: string): string | undefined =>
   index.find(node)?.kind === "vm" ? index.outgoing(node, "runs_on")[0]?.to : node;
 
-/** `count` VMs named `key-1 …` on the hosts in turn, kept in the room's datastore; or the servers themselves when bare. */
-function vmsOn(
-  into: Laying,
-  index: BlueprintIndex,
-  vm: { readonly key: string; readonly count: number; readonly props: Entity["props"] },
-  hosts: readonly Entity[],
-  bare: boolean,
-): string[] {
-  if (bare) return hosts.slice(0, vm.count).map((h) => h.id);
-  const stores = index.ofKind("datastore");
-  return Array.from({ length: vm.count }, (_, i) => {
-    const host = hosts[i % hosts.length] as Entity;
-    const id = `${host.id}-${slugOf(vm.key)}-vm${i + 1}`;
-    into.entities.push({
-      id,
-      kind: "vm",
-      name: `${vm.key}-${i + 1}`,
-      props: { cpuCount: 8, memoryGiB: 32, cpuDemand: 0.25, ...vm.props },
-    });
-    link(into, "runs_on", id, host.id);
-    const room = host.id.replace(/-r\d+-s\d+$/, "");
-    const store = stores.find((d) => d.id.startsWith(room)) ?? stores[0];
-    if (store) link(into, "stored_on", id, store.id);
-    return id;
-  });
-}
-
-function nodesOn(
-  into: Laying,
-  index: BlueprintIndex,
-  draft: ServiceDraft,
-  hosts: readonly Entity[],
-  bare: boolean,
-): string[] {
-  if (bare) return hosts.map((h) => h.id);
-  return vmsOn(
-    into,
-    index,
-    { key: draft.key, count: draft.nodes, props: { shaped: true } },
-    hosts,
-    false,
-  );
-}
-
 /** The VMs of every Kubernetes cluster of a service: each cluster on its own share of the hosts, so two do not fall together. */
 function clusterNodes(
   into: Laying,
@@ -223,7 +144,7 @@ function layDatabase(
   into: Laying,
   index: BlueprintIndex,
   ctx: {
-    readonly pool: Map<string, Map<string, Entity[]>>;
+    readonly pool: HostPool;
     readonly used: Set<string>;
     readonly build: ChipBuild;
     readonly poolId: string | undefined;
@@ -254,21 +175,14 @@ function layDatabase(
   );
 }
 
-function splitHosts(
-  pool: Map<string, Map<string, Entity[]>>,
-  used: Set<string>,
-  want: number,
-  spare: number,
-): { hosts: Entity[]; active: Entity[]; standby: Entity[] } {
-  const hosts = pickHosts(pool, want + spare, used);
-  const active = hosts.slice(0, hosts.length - spare || hosts.length);
-  return { hosts, active, standby: hosts.slice(active.length) };
-}
-
 function lay(bp: Blueprint, spec: ShapeSpec, catalog: Catalog): Laying {
   const index = new BlueprintIndex(bp);
   const pool = hostPool(index);
+  const world = buildOf(spec.layers);
+  const site = planSites(index, pool, world.site);
+  const primaryPool = site?.poolA ?? pool;
   const used = new Set<string>();
+  const usedB = new Set<string>();
   const placed: PlacedService[] = [];
   const apps: AppService[] = [];
   const into: Laying = { entities: [], links: [] };
@@ -280,31 +194,99 @@ function lay(bp: Blueprint, spec: ShapeSpec, catalog: Catalog): Laying {
     first.pool,
     Boolean(first.database?.sharedDisk),
   );
+  if (site) laySites(into, index, site, Boolean(world.dbx));
   for (const draft of spec.services) {
-    // each service stands the way its own choices say: the building is the world's, the rest is the service's
-    const build = buildFor(spec.layers, draft);
-    const storage = build.sharedStorage ? index.ofKind("storage")[0] : undefined;
-    const { hosts, active, standby } = splitHosts(
-      pool,
-      used,
-      hostsOf(draft, build),
-      build.spareHosts ?? 0,
+    const one = layService(
+      into,
+      index,
+      { pool: primaryPool, used, site, usedB, poolId },
+      spec,
+      draft,
     );
-    const k8s = build.k8s;
-    const lead = active.length > 0 ? active : hosts;
-    const regions = build.app?.regions ?? 1;
-    const nodes = k8s
-      ? clusterNodes(into, index, draft, lead, k8s.clusters)
-      : nodesOn(into, index, { ...draft, nodes: draft.nodes * regions }, lead, Boolean(build.bare));
-    const id = addService(into, index, draft, {
+    placed.push(one.placed);
+    apps.push(one.app);
+  }
+  layNetworkOverlay(into, index, { pool: primaryPool, used, spec, placed });
+  layApp(into, { index }, apps);
+  return into;
+}
+
+interface ServiceCtx {
+  readonly pool: HostPool;
+  readonly used: Set<string>;
+  readonly usedB: Set<string>;
+  readonly site: SitePlan | undefined;
+  readonly poolId: string | undefined;
+}
+
+/** How many copies of a service's nodes the build asks for: one per region, two for an active-active pair. */
+const spreadOf = (build: ChipBuild): number =>
+  Math.max(build.app?.regions ?? 1, build.site?.mode === "active" ? 2 : 1);
+
+/** An active-active pair runs a cluster of its own at each site. */
+const clustersOf = (build: ChipBuild): number =>
+  (build.k8s?.clusters ?? 1) * (build.site?.mode === "active" ? 2 : 1);
+
+/** One service: its nodes, its database, and (with a site layer) its copy at the second site. */
+function layService(
+  into: Laying,
+  index: BlueprintIndex,
+  ctx: ServiceCtx,
+  spec: ShapeSpec,
+  draft: ServiceDraft,
+): { placed: PlacedService; app: AppService } {
+  // each service stands the way its own choices say: the building is the world's, the rest is the service's
+  const build = buildFor(spec.layers, draft);
+  const storage = build.sharedStorage ? index.ofKind("storage")[0] : undefined;
+  const { hosts, active, standby } = hostsForService(
+    ctx.site,
+    ctx.pool,
+    ctx.used,
+    hostsOf(draft, build),
+    build.spareHosts ?? 0,
+  );
+  const k8s = build.k8s;
+  const lead = active.length > 0 ? active : hosts;
+  const clusters = clustersOf(build);
+  const nodes = k8s
+    ? clusterNodes(into, index, draft, lead, clusters)
+    : nodesOn(
+        into,
+        index,
+        { ...draft, nodes: draft.nodes * spreadOf(build) },
+        lead,
+        Boolean(build.bare),
+      );
+  const id = addService(into, index, draft, {
+    nodes,
+    standby: standby.map((h) => h.id),
+    on: storage ? [storage.id] : [],
+  });
+  if (k8s) dependsOn(into, id, layK8s(into, draft, nodes, clusters));
+  layDatabase(
+    into,
+    index,
+    { pool: ctx.pool, used: ctx.used, build, poolId: ctx.poolId },
+    draft,
+    id,
+  );
+  layDbx(into, index, { site: ctx.site, pool: ctx.pool, used: ctx.used, build }, draft, id);
+  if (ctx.site) {
+    const svc = {
+      draft,
+      id,
       nodes,
-      standby: standby.map((h) => h.id),
-      on: storage ? [storage.id] : [],
-    });
-    if (k8s) dependsOn(into, id, layK8s(into, draft, nodes, k8s.clusters));
-    layDatabase(into, index, { pool, used, build, poolId }, draft, id);
-    placed.push({ id, key: draft.key, name: draft.name, kind: draft.kind, nodes });
-    apps.push({
+      hostCount: lead.length,
+      bare: Boolean(build.bare),
+      hasDb: Boolean(build.database),
+    };
+    if (build.geo && ctx.poolId && draft.kind === "stateful")
+      layVolume(into, ctx.site, { id, name: draft.name }, ctx.poolId);
+    layCopies(into, index, ctx.site, svc, ctx.usedB);
+  }
+  return {
+    placed: { id, key: draft.key, name: draft.name, kind: draft.kind, nodes },
+    app: {
       id,
       key: draft.key,
       name: draft.name,
@@ -313,11 +295,8 @@ function lay(bp: Blueprint, spec: ShapeSpec, catalog: Catalog): Laying {
       calls: draft.calls ?? [],
       build: build.app,
       hosts: lead.map((h) => h.id),
-    });
-  }
-  layNetworkOverlay(into, index, { pool, used, spec, placed });
-  layApp(into, { index }, apps);
-  return into;
+    },
+  };
 }
 
 /** The overlay and the cloud-native network, if the world's network choice asks for them. */
@@ -325,7 +304,7 @@ function layNetworkOverlay(
   into: Laying,
   index: BlueprintIndex,
   ctx: {
-    readonly pool: Map<string, Map<string, Entity[]>>;
+    readonly pool: HostPool;
     readonly used: Set<string>;
     readonly spec: ShapeSpec;
     readonly placed: readonly PlacedService[];
@@ -368,6 +347,23 @@ function withDrs(bp: Blueprint, drs: boolean): Blueprint {
   };
 }
 
+/** The servers of a cold DR site are installed and cabled but switched off (REQ-106). */
+function withColdSite(bp: Blueprint, cold: boolean): Blueprint {
+  if (!cold) return bp;
+  const index = new BlueprintIndex(bp);
+  const buildings = [...index.ofKind("building")].sort((x, y) => x.id.localeCompare(y.id));
+  const second = buildings[1]?.id;
+  if (!second) return bp;
+  return {
+    ...bp,
+    entities: bp.entities.map((e) =>
+      e.kind === "server" && buildingOf(index, e.id) === second
+        ? { ...e, props: { ...e.props, adminOff: true } }
+        : e,
+    ),
+  };
+}
+
 function baseOf(spec: ShapeSpec, plan: ShapePlan, catalog: Catalog): Blueprint {
   if (spec.real) {
     const campus = {
@@ -393,6 +389,8 @@ function countOf(bp: Blueprint, plan: ShapePlan): ShapedResult["counts"] {
     servers: n("server"),
     racks: n("rack"),
     rooms: n("room"),
+    buildings: n("building"),
+    sites: n("dr_site"),
     vms: n("vm"),
     services: n("service"),
     serviceVms: bp.entities.filter((e) => e.kind === "vm" && e.props.shaped === true).length,
@@ -406,9 +404,12 @@ export function generateShaped(spec: ShapeSpec, catalog: Catalog = defaultCatalo
   const problem = shapeProblem(spec);
   if (problem) throw new InvalidValueError(`세계를 만들 수 없어요: ${problem}`);
   const plan = planShape(spec);
-  const base = withDrs(
-    trimSpines(withoutServices(baseOf(spec, plan, catalog)), buildOf(spec.layers).spines ?? 2),
-    spec.services.some((s) => buildFor(spec.layers, s).drs),
+  const base = withColdSite(
+    withDrs(
+      trimSpines(withoutServices(baseOf(spec, plan, catalog)), buildOf(spec.layers).spines ?? 2),
+      spec.services.some((s) => buildFor(spec.layers, s).drs),
+    ),
+    buildOf(spec.layers).site?.mode === "cold",
   );
   const laid = lay(base, spec, catalog);
   const blueprint: Blueprint = {

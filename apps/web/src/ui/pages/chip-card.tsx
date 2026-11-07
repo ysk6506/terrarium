@@ -46,6 +46,12 @@ export function ChipDetail({
         <dd>{capList(card.mustNot)}</dd>
         <dt>생기는 고장</dt>
         <dd>{capList(card.faults)}</dd>
+        {card.promise && (
+          <>
+            <dt>복구 목표</dt>
+            <dd>{card.promise}</dd>
+          </>
+        )}
         <dt>비용</dt>
         <dd>{card.cost}</dd>
       </dl>

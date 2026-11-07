@@ -25,6 +25,7 @@ import { type PreparedWorld, prepareWorld } from "./prepared";
 import { reduceHostAndService } from "./reduce-os";
 import type { SdnCommand } from "./sdn-act";
 import type { ServiceCommand } from "./service-act";
+import type { SiteCommand } from "./site-act";
 import {
   type Alarm,
   DEFAULT_OUTDOOR_C,
@@ -63,6 +64,7 @@ export type WorldCommand =
   | DbCommand
   | SdnCommand
   | AppCommand
+  | SiteCommand
   | K8sCommand
   /** An operator acts on the operating system of a server or VM: restart a process, free disk, remount, reboot (ADR-0091). */
   | {

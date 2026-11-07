@@ -12,6 +12,7 @@ import type { ScenarioDoc } from "@terrarium/core/scenario";
 import { TOOL_SPECS } from "@terrarium/core/tools";
 import { domainInfo, faultDomain, formatSpan, standsOnCluster } from "@terrarium/core/world";
 import { appPath } from "./probes-app";
+import { onlySilentFaults, sitePath } from "./probes-site";
 import { Session, type SessionConfig } from "./session";
 
 type Config = Omit<SessionConfig, "tools" | "seed"> & { readonly seed?: number };
@@ -64,6 +65,10 @@ export interface RecoveryPath {
     | "kubectl_rollout_restart"
     | "kubectl_scale"
     | "kubectl_drain"
+    | "dr_failover"
+    | "db_node_restart"
+    | "db_managed_failover"
+    | "db_managed_scale_storage"
     | "run_command"
     | "escalate";
   /** In plain Korean: how it works, or what is missing. */
@@ -343,6 +348,8 @@ export function recoveryPath(config: Config): RecoveryPath {
     return { applicable: false, ok: true, note: "서비스가 없는 시나리오라 옮길 것이 없어요" };
   const s = open(config, ALL_TOOLS);
   const hurt = troubled(s);
+  if (hurt.length === 0 && onlySilentFaults(config.scenario))
+    return { applicable: false, ok: true, note: "서비스가 멈추지 않는 고장이라 옮길 것이 없어요" };
   if (hurt.length === 0)
     return { applicable: true, ok: false, note: "시작할 때 멈추거나 느린 서비스가 없어요" };
   // a service that stands on pods has no standby and no VM of its own to move: the cluster's tools are its way back
@@ -353,6 +360,7 @@ export function recoveryPath(config: Config): RecoveryPath {
 /** The ways back that are a layer's own tools: the database, the cluster, the overlay, and at last the team. */
 function layerPath(config: Config): RecoveryPath {
   return (
+    sitePath(config) ??
     databasePath(config) ??
     k8sPath(config) ??
     overlayPath(config) ??

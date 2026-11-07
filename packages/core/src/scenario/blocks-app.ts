@@ -2,6 +2,7 @@
 import { DB_CONDITION_FIELDS } from "./blocks-db";
 import { K8S_CONDITION_FIELDS } from "./blocks-k8s";
 import { SDN_CONDITION_FIELDS } from "./blocks-sdn";
+import { SITE_CONDITION_FIELDS } from "./blocks-site";
 import { bool, type FieldSpec, HEALTH, num } from "./field-spec";
 
 const STATUS3: FieldSpec = { label: "상태", type: "enum", values: ["ok", "degraded", "down"] };
@@ -47,4 +48,5 @@ export const LAYER_CONDITION_FIELDS = {
   ...SDN_CONDITION_FIELDS,
   ...K8S_CONDITION_FIELDS,
   ...APP_CONDITION_FIELDS,
+  ...SITE_CONDITION_FIELDS,
 };

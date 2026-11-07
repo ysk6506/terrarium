@@ -57,7 +57,9 @@ export type TopoKind =
   | "circuit_breaker"
   | "mesh_sidecar"
   | "mesh_control"
-  | "region";
+  | "region"
+  | "dr_site"
+  | "site_link";
 
 /** What the board reads of a world: the part of `WorldReader` that tells what is, and how it is doing. */
 export interface TopologySource {

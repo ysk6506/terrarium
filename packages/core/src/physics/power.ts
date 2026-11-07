@@ -26,6 +26,7 @@ import {
 } from "@terrarium/core/world";
 import { type PowerPlan, powerPlanOf, SLOT, SUPPLIER_KINDS } from "./power-plan";
 import { faultParam, hasFault, isTransferSwitch, SupplyResolver } from "./power-supply";
+import { cutDarkSites } from "./site-power";
 
 export { isTransferSwitch, SupplyResolver };
 
@@ -202,9 +203,10 @@ function updateVms(sup: SupplyResolver): void {
 }
 
 /** Update `powered`, running flags and the power each device draws; then VMs follow their hosts. */
-export function updateDevices(_world: World, supply: SupplyResolver): void {
+export function updateDevices(world: World, supply: SupplyResolver): void {
   const { plan } = supply;
   for (const i of plan.active) (BY_SLOT[plan.slot[i] as number] as Updater)(supply, i);
+  cutDarkSites(world, supply);
   updateVms(supply);
 }
 

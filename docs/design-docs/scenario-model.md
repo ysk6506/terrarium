@@ -10,12 +10,12 @@ covers:
   - packages/core/src/scenario/library-facility.ts
   - packages/core/src/scenario/library-domains.ts
 verification_log:
-  - "2026-11-06: REQ-096: model.ts의 행동 종류 다섯과 library-k8s.ts의 템플릿 다섯을 더했다"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
   - "2026-11-07: REQ-100 애플리케이션 층이 덮는 코드가 바뀐 것을 확인했고 이 문서의 내용은 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
-covers_hash: a6a3ee03ddfedbda
+  - "2026-11-07: REQ-106 시나리오 아홉이 같은 템플릿 모양을 쓴다. 서술은 그대로 맞다"
+covers_hash: abbfe8f3c929523e
 ---
 # 시나리오 모델 (REQ-033, REQ-034)
 

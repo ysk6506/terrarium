@@ -35,6 +35,7 @@ import { networkLab } from "../../packages/core/src/world/test-support/net-lab";
 import { campusBlueprint } from "../../packages/core/src/world/test-support/sample-campus";
 import { sdnLab } from "../../packages/core/src/world/test-support/sdn-lab";
 import { serviceLab } from "../../packages/core/src/world/test-support/service-lab";
+import { siteBlueprint } from "./site-support";
 
 const rowOf = (id: string) => CONTROL_ROWS.find((r) => r.id === id) as ControlRow;
 
@@ -78,6 +79,13 @@ describe("the list of what can be controlled is made of real things [REQ-069]", 
       "db.failover",
       "db.promote",
       "db.restore",
+      "dbm.failover",
+      "dbm.scale",
+      "dbnode.restart",
+      "dbnode.transfer",
+      "dr.drill",
+      "dr.failback",
+      "dr.failover",
       "firmware.update",
       "host.act",
       "ingress.restart",
@@ -104,6 +112,7 @@ describe("the list of what can be controlled is made of real things [REQ-069]", 
       "setpoint.set",
       "storage.path_switch",
       "vm.migrate",
+      "volume.promote",
     ]);
   });
 
@@ -740,6 +749,97 @@ Object.assign(DRIVES, {
     args: { pod: `web-${podSuffix("web|1")}-${podSuffix("web|1|1")}` },
     changed: happened("k8s.delete_pod", "web"),
     action: { kind: "k8s_delete_pod", target: "web" },
+  },
+} satisfies Record<string, Drive>);
+
+// the site and DR layer, the geo volumes and the two new databases (REQ-106)
+const warm = siteBlueprint("warm");
+const raft = siteBlueprint("raft");
+const managed = siteBlueprint("managed");
+const firstOf = (bp: Blueprint, kind: string, n = 0): string =>
+  bp.entities.filter((e) => e.kind === kind)[n]?.id ?? "";
+const replicatorHost =
+  warm.links.find((l) => l.kind === "hosted_on" && l.from === firstOf(warm, "replication_stream"))
+    ?.to ?? "";
+const faulty = (type: string, target: string) => (w: World) => {
+  w.apply(
+    { type: "fault.add", fault: { id: `f-${type}`, type, target, params: {} } } as never,
+    "test",
+  );
+};
+const movedAway = (w: World) => {
+  w.apply({ type: "dr.failover", target: "dr-plan", site: "site-b" }, "probe");
+};
+
+Object.assign(DRIVES, {
+  "dr.failover|dr_failover": {
+    world: () => warm,
+    tool: "dr_failover",
+    args: { site: "site-b" },
+    changed: happened("dr.failover", "dr-plan"),
+    action: { kind: "dr_failover", target: "dr-plan" },
+  },
+  "dr.failback|dr_failback": {
+    world: () => warm,
+    tool: "dr_failback",
+    args: {},
+    before: movedAway,
+    settle: 1_500,
+    changed: happened("dr.failback", "dr-plan"),
+    action: { kind: "dr_failback", target: "dr-plan" },
+  },
+  "dr.drill|dr_drill": {
+    world: () => warm,
+    tool: "dr_drill",
+    args: {},
+    changed: happened("dr.drill", "dr-plan"),
+    action: { kind: "dr_drill", target: "dr-plan" },
+  },
+  "volume.promote|volume_promote": {
+    world: () => warm,
+    tool: "volume_promote",
+    args: { volume: firstOf(warm, "volume"), site: "site-b" },
+    changed: happened("volume.promote", firstOf(warm, "volume")),
+    action: { kind: "volume_promote", target: firstOf(warm, "volume") },
+  },
+  "dbnode.restart|db_node_restart": {
+    world: () => raft,
+    tool: "db_node_restart",
+    args: { node: firstOf(raft, "db_node", 1) },
+    before: faulty("db_node_lagging", firstOf(raft, "db_node", 1)),
+    settle: 10,
+    changed: happened("dbnode.restart", firstOf(raft, "db_node", 1)),
+    action: { kind: "dbnode_restart", target: firstOf(raft, "db_node", 1) },
+  },
+  "dbnode.transfer|db_transfer_leader": {
+    world: () => raft,
+    tool: "db_transfer_leader",
+    args: { node: firstOf(raft, "db_node", 1) },
+    changed: happened("dbnode.transfer", firstOf(raft, "db_node", 1)),
+    action: { kind: "dbnode_transfer", target: firstOf(raft, "db_node", 1) },
+  },
+  "dbm.failover|db_managed_failover": {
+    world: () => managed,
+    tool: "db_managed_failover",
+    args: { db: firstOf(managed, "db_managed"), az: "2" },
+    changed: happened("dbm.failover", firstOf(managed, "db_managed")),
+    action: { kind: "dbm_failover", target: firstOf(managed, "db_managed") },
+  },
+  "dbm.scale|db_managed_scale_storage": {
+    world: () => managed,
+    tool: "db_managed_scale_storage",
+    args: { db: firstOf(managed, "db_managed") },
+    before: faulty("db_storage_full", firstOf(managed, "db_managed")),
+    settle: 10,
+    changed: happened("dbm.scale", firstOf(managed, "db_managed")),
+    action: { kind: "dbm_scale", target: firstOf(managed, "db_managed") },
+  },
+  "host.replicator|run_command": {
+    world: () => warm,
+    tool: "run_command",
+    args: { host: replicatorHost, cmd: "systemctl restart replicad" },
+    changed: hostAct(replicatorHost, "restart"),
+    action: { kind: "process_restart", target: replicatorHost },
   },
 } satisfies Record<string, Drive>);
 

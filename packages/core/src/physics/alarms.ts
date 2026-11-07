@@ -30,6 +30,7 @@ import { effectiveUtilAt, type Pass, passOf } from "./power";
 import { faultParam, hasFault } from "./power-supply";
 import { sdnAlarms } from "./sdn-alarms";
 import { serviceAlarms } from "./services";
+import { siteDrAlarms } from "./site-alarms";
 
 export const INLET_WARNING_C = 27;
 export const RACK_CRITICAL_C = 32;
@@ -293,6 +294,7 @@ export function desiredAlarms(world: World): Draft[] {
   dbAlarms(world, out);
   k8sAlarms(world, out);
   appAlarms(world, out);
+  siteDrAlarms(world, out);
   sdnAlarms(world, out);
   serviceAlarms(world, out);
   return out;

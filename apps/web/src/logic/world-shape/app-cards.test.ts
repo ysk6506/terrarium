@@ -22,17 +22,11 @@ describe("애플리케이션 칩 네 개는 실선이고 카드는 코어의 고
     });
   }
 
-  test("점선은 다섯 개만 남는다", () => {
+  test("점선은 하나도 남지 않는다 [REQ-106]", () => {
     const dotted = (["storage", "database", "app", "power", "network", "site"] as const).flatMap(
       (l) => (LADDER[l] ?? []).filter((c) => !c.modeled).map((c) => c.id),
     );
-    expect(dotted).toEqual([
-      "sto-geo",
-      "db-distributed-sql",
-      "db-managed-multiaz",
-      "site-dr-warm",
-      "site-multi-active",
-    ]);
+    expect(dotted).toEqual([]);
   });
 
   test("칩을 올릴수록 짓는 것이 늘어난다: 세션 저장소, 브레이커, 메시, 리전", () => {

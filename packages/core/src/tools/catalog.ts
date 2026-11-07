@@ -8,6 +8,7 @@ import { DB_SPECS } from "./catalog-db";
 import { K8S_SPECS } from "./catalog-k8s";
 import { OPS_SPECS } from "./catalog-ops";
 import { SDN_SPECS } from "./catalog-sdn";
+import { SITE_SPECS } from "./catalog-site";
 import { type Realism, standardDescription, TOOL_DOCS, type ToolArea } from "./docs";
 
 export type ToolCategory = "observe" | "protocol" | "act" | "answer";
@@ -421,6 +422,7 @@ export const TOOL_SPECS: readonly ToolSpec[] = [
   ...SDN_SPECS,
   ...K8S_SPECS,
   ...APP_SPECS,
+  ...SITE_SPECS,
 ].map((raw) => {
   const doc = TOOL_DOCS[raw.name];
   if (!doc) throw new Error(`tool '${raw.name}' has no entry in TOOL_DOCS`);

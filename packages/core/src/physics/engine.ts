@@ -16,6 +16,7 @@ import type {
 import { desiredAlarms } from "./alarms";
 import { updateApp } from "./app";
 import { updateDb } from "./db";
+import { updateDbx } from "./dbx";
 import { updateDrs } from "./drs";
 import { advanceFirmware } from "./firmware";
 import { updateK8s } from "./k8s";
@@ -31,6 +32,7 @@ import {
 } from "./power";
 import { updateSdn } from "./sdn";
 import { updateServices } from "./services";
+import { updateSite } from "./site";
 import { updateThermal } from "./thermal";
 
 export interface PhysicsOptions {
@@ -91,6 +93,8 @@ export class Physics {
     events.push(...updateK8s(this.world));
     events.push(...updateSdn(this.world));
     events.push(...updateApp(this.world));
+    events.push(...updateSite(this.world, dt));
+    events.push(...updateDbx(this.world));
     updateServices(this.world, dt);
     events.push(...this.syncAlarms());
     this.updateHealth();

@@ -6,9 +6,11 @@
 import type { EntityKind } from "./blueprint";
 import { APP_FAULT_SPECS } from "./faults-app";
 import { DB_FAULT_SPECS } from "./faults-db";
+import { DBX_FAULT_SPECS } from "./faults-dbx";
 import { K8S_FAULT_SPECS } from "./faults-k8s";
 import { OS_FAULT_SPECS } from "./faults-os";
 import { SDN_FAULT_SPECS, SDN_MISTAKE_SPEC } from "./faults-sdn";
+import { SITE_FAULT_SPECS } from "./faults-site";
 
 export type FaultType =
   | "cooling_unit_failure"
@@ -77,7 +79,22 @@ export type FaultType =
   | "sidecar_crash"
   | "mesh_control_down"
   | "region_down"
-  | "replication_lag_high";
+  | "replication_lag_high"
+  | "site_power_loss"
+  | "wan_link_down"
+  | "wan_degraded"
+  | "replication_broken"
+  | "dr_failover_stuck"
+  | "split_brain"
+  | "dr_site_stale"
+  | "geo_replication_lag"
+  | "geo_replica_broken"
+  | "db_leader_lost"
+  | "db_quorum_lost"
+  | "db_node_lagging"
+  | "db_az_failure"
+  | "db_failover_flapping"
+  | "db_storage_full";
 
 /**
  * Things people do wrong, as opposed to things that break: a port put in the wrong VLAN, a gateway interface left
@@ -372,6 +389,8 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   ...SDN_FAULT_SPECS,
   ...K8S_FAULT_SPECS,
   ...APP_FAULT_SPECS,
+  ...SITE_FAULT_SPECS,
+  ...DBX_FAULT_SPECS,
 ];
 
 /** The mistakes a scenario can make with its configuration blocks, named so a diagnosis can name them. */

@@ -178,6 +178,18 @@ const READERS: Readonly<Record<string, Reader>> = {
     if (s.status === "down") return "멈췄어요";
     return s.lagS > 30 ? `복제 지연 ${Math.round(s.lagS)}초` : "정상";
   },
+  dr_site: (s) => {
+    if (s.kind !== "dr_site") return undefined;
+    if (s.status === "down") return "서버가 모두 꺼졌어요";
+    return `서버 ${s.up}/${s.total}대 돌아요`;
+  },
+  site_link: (s) => {
+    if (s.kind !== "site_link") return undefined;
+    if (s.status === "down") return "끊겼어요";
+    return s.status === "degraded"
+      ? `느려요 ${Math.round(s.latencyMs)}ms`
+      : `정상 ${Math.round(s.latencyMs)}ms`;
+  },
   vm: (s) => (s.kind === "vm" ? (s.running ? `CPU ${pct(s.cpuUsage)}` : "꺼졌어요") : undefined),
 };
 

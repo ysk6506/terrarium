@@ -58,6 +58,13 @@ describe("lookups and labels at the edges [REQ-001]", () => {
       "mesh_sidecar",
       "mesh_control",
       "region",
+      "dr_site",
+      "site_link",
+      "replication_stream",
+      "dr_plan",
+      "volume",
+      "db_node",
+      "db_managed",
     ]);
   });
 

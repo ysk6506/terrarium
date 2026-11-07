@@ -15,6 +15,7 @@ import { gpuLab } from "../../packages/core/src/world/test-support/gpu-lab";
 import { networkLab } from "../../packages/core/src/world/test-support/net-lab";
 import { campusBlueprint } from "../../packages/core/src/world/test-support/sample-campus";
 import { sdnLab } from "../../packages/core/src/world/test-support/sdn-lab";
+import { siteBlueprint } from "./site-support";
 
 const WORLDS: ReadonlyArray<{ name: string; blueprint: () => Blueprint }> = [
   { name: "campus", blueprint: campusBlueprint },
@@ -23,6 +24,11 @@ const WORLDS: ReadonlyArray<{ name: string; blueprint: () => Blueprint }> = [
   { name: "sdn", blueprint: () => sdnLab({ cloudNative: true }) },
   { name: "app mesh", blueprint: () => appLab({ level: "mesh" }) },
   { name: "app multiregion", blueprint: () => appLab({ level: "multiregion" }) },
+  { name: "site warm", blueprint: () => siteBlueprint("warm") },
+  { name: "site split", blueprint: () => siteBlueprint("split") },
+  { name: "consensus db", blueprint: () => siteBlueprint("raft") },
+  { name: "managed db", blueprint: () => siteBlueprint("managed") },
+  { name: "geo storage", blueprint: () => siteBlueprint("geo") },
 ];
 
 const KNOWN_FLOOR: Readonly<Record<string, number>> = { "cooling-failure": 20 };

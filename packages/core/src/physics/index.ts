@@ -8,6 +8,7 @@ export {
 } from "./alarms";
 export { updateApp } from "./app";
 export { baselineLag, CLUSTER_CAUSE, updateDb } from "./db";
+export { updateDbx } from "./dbx";
 export { updateDrs } from "./drs";
 export { DEFAULT_PHYSICS, Physics, type PhysicsOptions } from "./engine";
 export { updateK8s } from "./k8s";
@@ -29,4 +30,5 @@ export {
 export { faultParam } from "./power-supply";
 export { updateSdn } from "./sdn";
 export { updateServices } from "./services";
+export { updateSite } from "./site";
 export { roomHeatW, updateThermal } from "./thermal";

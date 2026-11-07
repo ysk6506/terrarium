@@ -55,7 +55,9 @@ export function pressesToExperiment(services: number): number {
 
 /** "IAP 실험용 · 호스트 3 · VM 9 · 스위치 2 · 5.3억 원" */
 export const builtFact = (name: string, view: ShapeView): string =>
-  `${name} · 호스트 ${view.hosts} · VM ${view.vms} · 스위치 ${view.switches} · ${costText(view.costM)}`;
+  `${name} · 호스트 ${view.hosts} · VM ${view.vms} · 스위치 ${view.switches} · ${costText(view.costM)}${
+    view.dr ? ` · 사이트 둘(${view.dr.label} · ${view.dr.promise})` : ""
+  }`;
 
 /** "이 세계에 맞는 시나리오 23개 · 기본 툴 묶음 · 5번 · 한 번에 약 1시간" */
 export const recommendLine = (scenarios: number): string =>

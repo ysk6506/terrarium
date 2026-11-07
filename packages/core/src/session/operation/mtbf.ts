@@ -64,6 +64,22 @@ export const MTBF_TABLE: readonly Mtbf[] = [
   { type: "mesh_control_down", kinds: ["mesh_control"], hours: 6_000 },
   { type: "region_down", kinds: ["region"], hours: 20_000 },
   { type: "replication_lag_high", kinds: ["region"], hours: 4_000 },
+  // 사이트·DR, 지역 복제, 합의 DB, 관리형 DB (REQ-106)
+  { type: "site_power_loss", kinds: ["dr_site"], hours: 40_000 },
+  { type: "wan_link_down", kinds: ["site_link"], hours: 8_000 },
+  { type: "wan_degraded", kinds: ["site_link"], hours: 5_000 },
+  { type: "replication_broken", kinds: ["replication_stream"], hours: 4_000 },
+  { type: "dr_failover_stuck", kinds: ["dr_plan"], hours: 30_000 },
+  { type: "split_brain", kinds: ["dr_plan"], hours: 50_000 },
+  { type: "dr_site_stale", kinds: ["dr_site"], hours: 10_000 },
+  { type: "geo_replication_lag", kinds: ["volume"], hours: 4_000 },
+  { type: "geo_replica_broken", kinds: ["volume"], hours: 12_000 },
+  { type: "db_leader_lost", kinds: ["db_node"], hours: 6_000 },
+  { type: "db_quorum_lost", kinds: ["db_node"], hours: 25_000 },
+  { type: "db_node_lagging", kinds: ["db_node"], hours: 5_000 },
+  { type: "db_az_failure", kinds: ["db_managed"], hours: 20_000 },
+  { type: "db_failover_flapping", kinds: ["db_managed"], hours: 15_000 },
+  { type: "db_storage_full", kinds: ["db_managed"], hours: 8_000 },
 ];
 
 /**

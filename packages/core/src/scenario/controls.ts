@@ -11,6 +11,7 @@ import type { EntityKind, FaultType, WorldCommand } from "@terrarium/core/world"
 import { APP_CONTROL_ROWS } from "./controls-app";
 import { K8S_CONTROL_ROWS } from "./controls-k8s";
 import { SDN_CONTROL_ROWS } from "./controls-sdn";
+import { SITE_CONTROL_ROWS, SITE_RESPONSES } from "./controls-site";
 import type { ActionKind } from "./model";
 
 /** One way for an agent to make the change: a tool, and what to ask of it. */
@@ -314,6 +315,7 @@ export const CONTROL_ROWS: readonly ControlRow[] = [
   ...SDN_CONTROL_ROWS,
   ...K8S_CONTROL_ROWS,
   ...APP_CONTROL_ROWS,
+  ...SITE_CONTROL_ROWS,
   {
     id: "outdoor.set",
     label: "외기 온도",
@@ -436,4 +438,5 @@ export const FAULT_RESPONSES: Readonly<Record<FaultType, FaultResponse>> = {
   region_down: { remedy: "mitigate", via: ["region.failover"] },
   replication_lag_high: { remedy: "mitigate", via: ["region.failover"] },
   k8s_cni_failure: { remedy: "fix", via: ["host.kubelet"] },
+  ...SITE_RESPONSES,
 };

@@ -8,14 +8,17 @@
 
 import type { FaultType, MistakeType } from "./faults";
 import type { ChipBuild } from "./ladder-build";
+import { DISTRIBUTED_SQL_CHIP, GEO_CHIP, MANAGED_MULTIAZ_CHIP, SITE_CHIPS } from "./ladder-site";
 
 export type {
   AppBuild,
   ChipBuild,
   DatabaseBuild,
+  DbxBuild,
   K8sBuild,
   OverlayBuild,
   PoolBuild,
+  SiteBuild,
 } from "./ladder-build";
 
 /** A fault or a mistake: both are things that go wrong. */
@@ -98,20 +101,12 @@ const c = (
   costM: rest.costM ?? 0,
 });
 
-const dotted = (
-  layer: LayerId,
-  id: string,
-  buildsAs: string,
-  costM = 0,
-  requires?: readonly Need[],
-): ChipMech => c(layer, id, { modeled: false, buildsAs, costM, ...(requires ? { requires } : {}) });
-
 const at = (layer: LayerId, atLeast: string): LadderSpot => ({ layer, atLeast });
 const SHARED: Need = at("storage", "sto-shared");
 const CONTAINERS: Need = at("compute", "cmp-containers");
 const MANY_DB = at("database", "db-distributed-sql");
 
-/** Every choice of every layer, left to right. 44 in all. */
+/** Every choice of every layer, left to right. 46 in all. */
 const APP_SLOWS = [
   "process_crashloop",
   "memory_leak",
@@ -283,7 +278,7 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       slows: ["disk_failure", "storage_node_lost"],
       costM: 90,
     }),
-    dotted("storage", "sto-geo", "sto-dual-controller", 150),
+    GEO_CHIP,
   ],
   database: [
     c("database", "db-single", {
@@ -334,8 +329,8 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       slows: ["db_primary_down", "db_replication_broken"],
       costM: 45,
     }),
-    dotted("database", "db-distributed-sql", "db-auto-failover", 80),
-    dotted("database", "db-managed-multiaz", "db-auto-failover", 120),
+    DISTRIBUTED_SQL_CHIP,
+    MANAGED_MULTIAZ_CHIP,
   ],
   app: [
     c("app", "app-single", { stops: ["process_crashloop", "memory_leak", "cert_expired"] }),
@@ -424,12 +419,7 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
     c("site", "site-one-room", { build: { rooms: 1, buildings: 1 } }),
     c("site", "site-two-rooms", { build: { rooms: 2, buildings: 1 }, costM: 120 }),
     c("site", "site-two-buildings", { build: { rooms: 2, buildings: 2 }, costM: 400 }),
-    dotted("site", "site-dr-warm", "site-two-buildings", 600, [
-      { ...at("storage", "sto-geo"), orElse: at("database", "db-primary-secondary") },
-    ]),
-    dotted("site", "site-multi-active", "site-two-buildings", 1200, [
-      { ...at("storage", "sto-geo"), orElse: MANY_DB },
-    ]),
+    ...SITE_CHIPS,
   ],
 };
 

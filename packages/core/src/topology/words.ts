@@ -66,6 +66,8 @@ const COUNTING: Readonly<Record<TopoKind, readonly [string, string]>> = {
   mesh_sidecar: ["사이드카", "개"],
   mesh_control: ["메시 컨트롤 플레인", "개"],
   region: ["리전", "곳"],
+  dr_site: ["사이트", "곳"],
+  site_link: ["사이트 간 회선", "개"],
 };
 
 /**
@@ -82,6 +84,7 @@ const STAGE_SHORT: Readonly<Record<string, string>> = {
   callee2: "그 아래",
   workload: "워크로드",
   workload2: "그 아래",
+  site: "사이트",
   front: "앞단",
   region: "리전",
   sidecar: "사이드카",

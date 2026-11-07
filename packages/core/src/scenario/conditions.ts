@@ -60,6 +60,14 @@ const PLAIN_ACTIONS: Readonly<Record<string, AgentAction["action"]>> = {
   "circuit.reset": "circuit_reset",
   "mesh.rollback": "mesh_rollback",
   "region.failover": "region_failover",
+  "dr.failover": "dr_failover",
+  "dr.failback": "dr_failback",
+  "dr.drill": "dr_drill",
+  "volume.promote": "volume_promote",
+  "dbnode.restart": "dbnode_restart",
+  "dbnode.transfer": "dbnode_transfer",
+  "dbm.failover": "dbm_failover",
+  "dbm.scale": "dbm_scale",
 };
 
 function serviceAction(c: WorldCommand): AgentAction | undefined {

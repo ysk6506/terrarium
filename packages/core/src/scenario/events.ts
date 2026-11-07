@@ -48,6 +48,15 @@ export const EVENT_LABELS: Readonly<Record<Exclude<EventType, "note">, string>> 
   "circuit.reset": "서킷 브레이커를 리셋한 적",
   "mesh.rollback": "메시 설정을 되돌린 적",
   "region.failover": "트래픽을 다른 리전으로 옮긴 적",
+  "dr.failover": "서비스를 다른 사이트로 전환하기 시작한 적",
+  "dr.failback": "서비스를 본 사이트로 되돌리기 시작한 적",
+  "dr.drill": "전환 모의 훈련을 한 적",
+  "dr.complete": "사이트 전환이 끝난 적",
+  "volume.promote": "볼륨 복사본을 주인으로 올린 적",
+  "dbnode.restart": "합의 DB 노드를 다시 시작한 적",
+  "dbnode.transfer": "합의 DB 리더를 넘긴 적",
+  "dbm.failover": "관리형 DB 영역을 고른 적",
+  "dbm.scale": "관리형 DB 저장소를 늘린 적",
 };
 
 export const EVENT_TYPES = Object.keys(EVENT_LABELS) as (keyof typeof EVENT_LABELS)[];

@@ -21,6 +21,7 @@ import { K8S_HANDLERS } from "./handlers-k8s";
 import { OPS_HANDLERS, type OpsPort } from "./handlers-ops";
 import { SDN_HANDLERS } from "./handlers-sdn";
 import { SERVICE_HANDLERS } from "./handlers-service";
+import { SITE_HANDLERS } from "./handlers-site";
 import { type Runbook, searchRunbooks } from "./runbook";
 
 export interface MetricSource {
@@ -459,6 +460,7 @@ export const HANDLERS: Readonly<Record<string, Handler>> = {
   ...SDN_HANDLERS,
   ...K8S_HANDLERS,
   ...APP_HANDLERS,
+  ...SITE_HANDLERS,
   list_alarms: listAlarms,
   list_entities: listEntities,
   get_entity: getEntity,

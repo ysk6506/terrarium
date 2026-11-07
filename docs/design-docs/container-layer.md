@@ -21,13 +21,13 @@ covers:
   - packages/core/src/sources/worldgen/shaped-k8s.ts
   - packages/core/src/topology/impact-k8s.ts
   - packages/core/src/world/ladder.ts
-covers_hash: f31e344acf47180c
+covers_hash: 1f5b4c644e169de8
 verification_log:
-  - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
   - "2026-11-07: REQ-102(ADR-0123): 사다리·직접 짓기 화면과 말(시운전·미리 보기·전제)을 코드와 대조해 고쳤다"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
+  - "2026-11-07: REQ-106이 사다리 칩과 world/index를 건드렸다. 컨테이너 층 서술은 그대로 맞다"
 ---
 # 컨테이너 층 (REQ-096, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0114](adr/0114-container-layer-amend-tests.md))
 

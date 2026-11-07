@@ -48,7 +48,15 @@ export type VirtualKind =
   | "circuit_breaker"
   | "mesh_sidecar"
   | "mesh_control"
-  | "region";
+  | "region"
+  /** Site and DR layer (REQ-106, ADR-0129): a second site, the link, the copies, the plan; geo volumes; consensus and managed databases. */
+  | "dr_site"
+  | "site_link"
+  | "replication_stream"
+  | "dr_plan"
+  | "volume"
+  | "db_node"
+  | "db_managed";
 export type EntityKind =
   | SpaceKind
   | "rack"
@@ -101,6 +109,13 @@ export const ENTITY_KINDS: readonly EntityKind[] = [
   "mesh_sidecar",
   "mesh_control",
   "region",
+  "dr_site",
+  "site_link",
+  "replication_stream",
+  "dr_plan",
+  "volume",
+  "db_node",
+  "db_managed",
 ]; // prettier-ignore
 
 export const MODELLED_KINDS: ReadonlySet<EntityKind> = new Set([
@@ -161,6 +176,13 @@ export const ALLOWED_PARENTS: Readonly<Record<EntityKind, readonly EntityKind[]>
   mesh_sidecar: [],
   mesh_control: [],
   region: [],
+  dr_site: [],
+  site_link: [],
+  replication_stream: [],
+  dr_plan: [],
+  volume: [],
+  db_node: [],
+  db_managed: [],
 };
 
 /** Where something is, relative to its parent. Units are metres; racks use units (U). */
@@ -224,6 +246,13 @@ export const PLACEMENT_OF: Readonly<Record<EntityKind, Placement["type"] | undef
   mesh_sidecar: undefined,
   mesh_control: undefined,
   region: undefined,
+  dr_site: undefined,
+  site_link: undefined,
+  replication_stream: undefined,
+  dr_plan: undefined,
+  volume: undefined,
+  db_node: undefined,
+  db_managed: undefined,
 };
 
 export type PropValue = string | number | boolean;
@@ -300,6 +329,7 @@ export const LINK_RULES: Readonly<
       "app_instance",
       "mesh_sidecar",
       "region",
+      "replication_stream",
     ],
     to: [
       "cluster",
@@ -311,10 +341,12 @@ export const LINK_RULES: Readonly<
       "region",
       "mesh_control",
       "load_balancer",
+      "dr_site",
+      "dr_plan",
     ],
   },
   managed_by: { from: ["cluster"], to: ["vcenter"] },
-  stored_on: { from: ["vm", "db_instance"], to: ["datastore", "storage_pool"] },
+  stored_on: { from: ["vm", "db_instance", "volume"], to: ["datastore", "storage_pool"] },
   backed_by: { from: ["datastore", "storage_pool"], to: ["storage"] },
   service_on: { from: ["service"], to: ["vm", "server", "storage"] },
   service_via: { from: ["service"], to: ["switch"] },
@@ -330,6 +362,9 @@ export const LINK_RULES: Readonly<
       "k8s_workload",
       "load_balancer",
       "session_store",
+      "volume",
+      "db_node",
+      "db_managed",
     ],
   },
   hosted_on: {
@@ -347,6 +382,8 @@ export const LINK_RULES: Readonly<
       "session_store",
       "mesh_sidecar",
       "mesh_control",
+      "db_node",
+      "replication_stream",
     ],
     to: ["vm", "server", "storage", "switch", "app_instance"],
   },
@@ -413,6 +450,13 @@ const VIRTUAL_KINDS: ReadonlySet<EntityKind> = new Set<EntityKind>([
   "mesh_sidecar",
   "mesh_control",
   "region",
+  "dr_site",
+  "site_link",
+  "replication_stream",
+  "dr_plan",
+  "volume",
+  "db_node",
+  "db_managed",
 ]);
 
 export const isVirtualKind = (kind: EntityKind): kind is VirtualKind => VIRTUAL_KINDS.has(kind);

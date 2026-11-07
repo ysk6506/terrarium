@@ -53,9 +53,14 @@ describe("서비스부터 세계 생성 [REQ-094]", () => {
     expect(planShape(withLayers({ site: "site-two-buildings" })).buildings).toBe(2);
   });
 
-  it("흉내 낼 수 없는 칸은 가까운 칸 모양으로 짓고 같은 결과를 낸다", () => {
+  it("점선이던 칸도 이제 자기 모양으로 짓는다: DR 웜은 둘째 사이트와 복제를 더한다 [REQ-106]", () => {
     const a = generateShaped(withLayers({ site: "site-dr-warm" }));
     const b = generateShaped(withLayers({ site: "site-two-buildings" }));
-    expect(a.counts).toEqual(b.counts);
+    const count = (r: typeof a, kind: string) =>
+      r.blueprint.entities.filter((e) => e.kind === kind).length;
+    expect(count(a, "dr_site")).toBe(2);
+    expect(count(a, "dr_plan")).toBe(1);
+    expect(count(a, "replication_stream")).toBeGreaterThan(0);
+    expect(count(b, "dr_site")).toBe(0);
   });
 });
