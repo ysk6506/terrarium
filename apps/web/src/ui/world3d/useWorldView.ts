@@ -124,7 +124,7 @@ function dragTool(
   return {
     start(x, y) {
       const p = props.current;
-      if (view.crew.hit(x, y) !== undefined) return false;
+      if (view.creatureAt(x, y)) return false;
       const from = view.planPointAt(x, y);
       if (p.readOnly || !p.onDrag || !from) return false;
       const hit = hitAt(view, p.index, x, y);
@@ -153,7 +153,7 @@ export function useStageEvents(
     if (!view) return;
     const here = (x: number, y: number) => {
       // A person stands in front of what is behind them: a click on them is theirs alone.
-      if (view.crew.hit(x, y) !== undefined) return undefined;
+      if (view.creatureAt(x, y)) return undefined;
       const at = view.planPointAt(x, y);
       return at ? { at, hit: hitAt(view, props.current.index, x, y) } : undefined;
     };

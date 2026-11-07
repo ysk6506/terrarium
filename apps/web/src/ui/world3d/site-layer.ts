@@ -18,7 +18,7 @@ export interface SiteLayer extends Layer {
 
 import { type Kit, pylon, yardItemPart } from "./parts";
 import { cars, trees } from "./scatter-layer";
-import { fence, gate, landMesh, parcels, roads } from "./site-ground";
+import { fence, gate, landMesh, parcels, parking, roads } from "./site-ground";
 
 type SiteScene = world3d.SiteScene;
 type Yard = world3d.Yard;
@@ -101,6 +101,7 @@ export function buildSiteLayer(engine: Engine, site: SiteScene): SiteLayer {
   const k: Kit = { b, m: engine.mats };
   group.add(landMesh(engine.mats, site.outline));
   roads(k, site);
+  parking(k, site);
   drawCampus(k, site.campus);
   fence(k, site.outline);
   gate(k, site.gate);
@@ -115,7 +116,10 @@ export function buildSiteLayer(engine: Engine, site: SiteScene): SiteLayer {
   }
   for (const yard of site.yards) yardPlant(k, yard);
   group.add(
-    ...trees(engine.mats, [...site.trees, ...site.campus.trees]),
+    ...trees(engine.mats, [
+      ...world3d.treesAt(site.plan.trees, engine.quality.name),
+      ...site.campus.trees,
+    ]),
     ...cars(engine.mats, [...site.lots, ...site.campus.lots]),
   );
   grid(k, site, group);

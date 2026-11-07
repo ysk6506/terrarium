@@ -214,6 +214,7 @@ export {
   type SettingDef,
   type SettingKey,
   type Settings,
+  type SoundChoice,
   saveSetting,
   type ThemeChoice,
   themeAttribute,

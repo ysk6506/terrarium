@@ -26,6 +26,10 @@ export interface RoadInput {
   readonly obstacles: readonly Bounds[];
   readonly targets: readonly RoadTarget[];
   readonly gate: Pt;
+  /** Width of a road and of the grid cell it is laid on, metres; `ROAD_CELL_M` when left out. */
+  readonly cell?: number;
+  /** Points a trunk road passes through, in order, before any target is served (the spine of a campus). */
+  readonly spine?: readonly Pt[];
 }
 
 export interface RoadPlan {
@@ -43,6 +47,7 @@ interface Grid {
   readonly z0: number;
   readonly cols: number;
   readonly rows: number;
+  readonly cell: number;
   readonly blocked: Uint8Array;
 }
 
@@ -54,28 +59,31 @@ const DIRS: ReadonlyArray<readonly [number, number]> = [
 ];
 const TURN_COST = 0.6;
 const ROAD_COST = 0.3;
+/** Weighted A*: a slightly greedy search that finds a good road, not always the cheapest one, in a fraction of the time. */
+const HEURISTIC = 0.9;
 
 function gridFor(input: RoadInput): Grid {
-  const points = [input.gate, ...input.targets.map((t) => t.door)];
+  const cell = input.cell ?? ROAD_CELL_M;
+  const points = [input.gate, ...input.targets.map((t) => t.door), ...(input.spine ?? [])];
   const around = unionOf([boundsOf(points), ...input.obstacles]) as Bounds;
-  const b = inflate(around, ROAD_CELL_M * 6);
-  const cols = Math.ceil((b.x1 - b.x0) / ROAD_CELL_M);
-  const rows = Math.ceil((b.z1 - b.z0) / ROAD_CELL_M);
+  const b = inflate(around, cell * 6);
+  const cols = Math.ceil((b.x1 - b.x0) / cell);
+  const rows = Math.ceil((b.z1 - b.z0) / cell);
   const blocked = new Uint8Array(cols * rows);
-  const keepOff = input.obstacles.map((o) => inflate(o, ROAD_CELL_M * 0.75));
+  const keepOff = input.obstacles.map((o) => inflate(o, cell * 0.75));
   for (let j = 0; j < rows; j++)
     for (let i = 0; i < cols; i++) {
-      const c = { x: b.x0 + (i + 0.5) * ROAD_CELL_M, z: b.z0 + (j + 0.5) * ROAD_CELL_M };
+      const c = { x: b.x0 + (i + 0.5) * cell, z: b.z0 + (j + 0.5) * cell };
       const cellBox = { x0: c.x - 1, z0: c.z - 1, x1: c.x + 1, z1: c.z + 1 };
       if (!insidePolygon(c, input.outline) || keepOff.some((o) => overlapBounds(o, cellBox)))
         blocked[j * cols + i] = 1;
     }
-  return { x0: b.x0, z0: b.z0, cols, rows, blocked };
+  return { x0: b.x0, z0: b.z0, cols, rows, cell, blocked };
 }
 
 const cellOf = (g: Grid, p: Pt): [number, number] => [
-  Math.min(g.cols - 1, Math.max(0, Math.floor((p.x - g.x0) / ROAD_CELL_M))),
-  Math.min(g.rows - 1, Math.max(0, Math.floor((p.z - g.z0) / ROAD_CELL_M))),
+  Math.min(g.cols - 1, Math.max(0, Math.floor((p.x - g.x0) / g.cell))),
+  Math.min(g.rows - 1, Math.max(0, Math.floor((p.z - g.z0) / g.cell))),
 ];
 
 /** The free cell nearest to a point (the point's own cell when it is free). */
@@ -158,7 +166,7 @@ function route(g: Grid, road: Uint8Array, from: number, to: number): number[] | 
   const toI = to % g.cols;
   const toJ = Math.floor(to / g.cols);
   const estimate = (cell: number) =>
-    (Math.abs((cell % g.cols) - toI) + Math.abs(Math.floor(cell / g.cols) - toJ)) * ROAD_COST;
+    (Math.abs((cell % g.cols) - toI) + Math.abs(Math.floor(cell / g.cols) - toJ)) * HEURISTIC;
   for (let d = 0; d < 4; d++) {
     best[from * 4 + d] = 0;
     heap.push(estimate(from), from * 4 + d);
@@ -199,8 +207,8 @@ function trace(prev: Int32Array, end: number): number[] {
 /** A path's corners, in plan coordinates. */
 function corners(g: Grid, cells: readonly number[]): Pt[] {
   const at = (c: number): Pt => ({
-    x: g.x0 + ((c % g.cols) + 0.5) * ROAD_CELL_M,
-    z: g.z0 + (Math.floor(c / g.cols) + 0.5) * ROAD_CELL_M,
+    x: g.x0 + ((c % g.cols) + 0.5) * g.cell,
+    z: g.z0 + (Math.floor(c / g.cols) + 0.5) * g.cell,
   });
   const out: Pt[] = [];
   for (let k = 0; k < cells.length; k++) {
@@ -220,10 +228,10 @@ function rectsOf(g: Grid, road: Uint8Array): Bounds[] {
   let open = new Map<string, { i0: number; i1: number; j0: number }>();
   const close = (r: { i0: number; i1: number; j0: number }, j1: number) =>
     rects.push({
-      x0: g.x0 + r.i0 * ROAD_CELL_M,
-      z0: g.z0 + r.j0 * ROAD_CELL_M,
-      x1: g.x0 + (r.i1 + 1) * ROAD_CELL_M,
-      z1: g.z0 + j1 * ROAD_CELL_M,
+      x0: g.x0 + r.i0 * g.cell,
+      z0: g.z0 + r.j0 * g.cell,
+      x1: g.x0 + (r.i1 + 1) * g.cell,
+      z1: g.z0 + j1 * g.cell,
     });
   for (let j = 0; j <= g.rows; j++) {
     const now = new Map<string, { i0: number; i1: number; j0: number }>();
@@ -241,15 +249,23 @@ function rectsOf(g: Grid, road: Uint8Array): Bounds[] {
   return rects;
 }
 
-/** Lay roads from the gate to every target. */
+/** Lay roads from the gate: the spine first if there is one, then to every target. */
 export function planRoads(input: RoadInput): RoadPlan {
   const g = gridFor(input);
   const road = new Uint8Array(g.cols * g.rows);
   const routes: Array<{ id: string; line: Pt[] }> = [];
   const reached = new Set<string>();
   const start = freeCellNear(g, input.gate);
-  if (start === undefined) return { cell: ROAD_CELL_M, rects: [], routes, reached };
+  if (start === undefined) return { cell: g.cell, rects: [], routes, reached };
   road[start] = 1;
+  // Each end of the spine is its own road from the gate, so no vehicle has to turn right round on it.
+  for (const [n, wp] of (input.spine ?? []).entries()) {
+    const to = freeCellNear(g, wp);
+    const cells = to === undefined ? undefined : route(g, road, start, to);
+    if (!cells) continue;
+    for (const c of cells) road[c] = 1;
+    routes.push({ id: `spine:${n}`, line: corners(g, cells) });
+  }
   const ordered = [...input.targets].sort(
     (a, b) =>
       Math.hypot(a.door.x - input.gate.x, a.door.z - input.gate.z) -
@@ -263,5 +279,5 @@ export function planRoads(input: RoadInput): RoadPlan {
     routes.push({ id: target.id, line: corners(g, cells) });
     reached.add(target.id);
   }
-  return { cell: ROAD_CELL_M, rects: rectsOf(g, road), routes, reached };
+  return { cell: g.cell, rects: rectsOf(g, road), routes, reached };
 }

@@ -4,11 +4,11 @@ kind: plan
 status: active
 last_verified: 2026-11-07
 verification_log:
-  - "2026-11-06: 12n 깊은 OS 흉내를 구현 끝으로 적었다 (REQ-098)"
-  - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
   - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
   - "2026-11-07: REQ-100 애플리케이션 층: 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
+  - "2026-11-07: 12t 부지 배치·동물 반응을 구현 끝으로 적었다 (REQ-105)"
+  - "2026-11-07: o11 합치기 (부지 배치·동물)"
 ---
 # 구현 계획
 
@@ -57,6 +57,7 @@ verification_log:
 | 12o | 애플리케이션 층과 서비스 호출 그래프 (`calls` 링크와 건강 전파, 앱 개체 일곱, 고장 여덟, 툴 여덟, 셸 `curl -I`·`istioctl proxy-status`, 시나리오 일곱, 사다리의 앱 칩 넷 실선(점선 9에서 5), 칩 카드·IAP 기본 호출·"이 서비스가 부르는 서비스", 정책이 `calls`를 따라감, 토폴로지 호출 선과 머리글 겹침 고치기) | REQ-100 | 구현 끝 ([설명](../../design-docs/application-layer.md), [ADR-0121](../../design-docs/adr/0121-application-layer-and-calls.md)) |
 | 12q | 화면 다듬기 1 (사다리 화면은 조용한 줄 여덟 + 층 하나만 펼침 + 구조 카드는 목록 셋까지, 칩 전제 규칙과 "컴퓨트도 바꾸기", 알아서의 짧은 이유와 전제를 지키는 프리셋, 직접 짓기는 놓기 · 카드 하나 · 아래 막대 하나, "돌려 보기"를 "시운전"으로, 시나리오 편집기의 "미리 보기") | REQ-102 | 구현 끝 ([설명](../../design-docs/world-entry.md), [ADR-0123](../../design-docs/adr/0123-ladder-and-builder-focus.md)) |
 | 12s | 화면 다듬기 2 (서비스부터는 질문 셋 + "실험 시작"으로 클릭 넷, 권장값 한 번에 실험 `POST /api/worlds/:id/quick-experiment`, 서비스 카탈로그 열 장과 내 카드(`service_cards`: 만든 사람·잠김·공유됨), 서비스 행에는 돈·그림 없음, 입구 문은 글뿐인 카드, 이끼 "?"는 올려 볼 때만·떠 있는 버튼은 아래 막대 위로) | REQ-104 | 구현 끝 ([설명](../../design-docs/world-entry.md), [카탈로그](../../design-docs/service-catalog.md), [ADR-0127](../../design-docs/adr/0127-short-world-flow-and-service-catalog.md)) |
+| 12t | 부지 배치 규칙·동물 반응 (도로 → 주차장 → 차 → 나무 순서와 3 m 간격·앞치마 2 m, 서버 40대에 한 칸의 주차장, 그래픽 단계별 나무 수, 고양이·새를 누르면 대답하는 상태 기계와 WebAudio 합성음, 설정의 소리, 움직임 줄이기는 소리와 글만) | REQ-105 | 구현 끝 ([설명](../../design-docs/campus-layout.md), [ADR-0128](../../design-docs/adr/0128-campus-layout-and-animals.md)) |
 | 13 | **오픈 (프로덕션 레디)** — 여러 팀이 믿고 쓴다: 로그인, 운영, 접근성, 부하 | 아래 | 예정 |
 
 결정은 ADR에 있다. 이 계획에는 순서와 상태만 둔다.

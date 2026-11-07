@@ -6,6 +6,7 @@
  * here reads or changes the world; it is scenery with a little charm.
  */
 
+import { standable } from "./campus-plan";
 import { type Bounds, boundsOfBox, centreOf, inflate, insidePolygon, type Pt, unit } from "./plan";
 import type { SiteScene } from "./site";
 
@@ -18,7 +19,8 @@ export type LifeKind =
   | "person"
   | "cat"
   | "deer"
-  | "raccoon";
+  | "raccoon"
+  | "bird";
 
 export const VEHICLE_KINDS: readonly LifeKind[] = ["sedan", "suv", "van", "truck", "tanker"];
 export const isVehicle = (k: LifeKind): boolean => VEHICLE_KINDS.includes(k);
@@ -76,6 +78,7 @@ const SPECS: Readonly<Record<LifeKind, Spec>> = {
   cat: { speed: [0.7, 1.2], dwell: [20, 70], lane: 0 },
   deer: { speed: [1.6, 2.6], dwell: [8, 40], lane: 0 },
   raccoon: { speed: [0.9, 1.5], dwell: [6, 30], lane: 0 },
+  bird: { speed: [0.5, 0.9], dwell: [10, 30], lane: 0 },
 };
 
 const lerp = (r: readonly [number, number], t: number): number => r[0] + (r[1] - r[0]) * t;
@@ -173,6 +176,20 @@ function crosses(a: Pt, b: Pt, boxes: readonly Bounds[]): boolean {
   return false;
 }
 
+/** Whether a straight walk between two points keeps inside the land all the way. */
+function stays(a: Pt, b: Pt, outline: readonly Pt[]): boolean {
+  const steps = Math.ceil(Math.hypot(b.x - a.x, b.z - a.z) / 2);
+  for (let i = 0; i <= steps; i++)
+    if (
+      !insidePolygon(
+        { x: a.x + ((b.x - a.x) * i) / steps, z: a.z + ((b.z - a.z) * i) / steps },
+        outline,
+      )
+    )
+      return false;
+  return true;
+}
+
 interface Ctx {
   readonly site: SiteScene;
   readonly solids: readonly Bounds[];
@@ -213,20 +230,15 @@ function peopleFor(ctx: Ctx, perBuilding: number, limit: number): void {
   const { site } = ctx;
   const until = ctx.out.length + limit;
   for (const [n, b] of site.buildings.entries()) {
-    const door: Pt = { x: b.x - b.w / 4, z: b.z + b.d / 2 + 5 };
-    const lot = site.lots.find((l) => l.forId === b.id);
+    const e = site.plan.entrances.find((x) => x.id === b.id);
+    const lot = site.plan.parking.find((l) => l.forId === b.id);
+    const door: Pt = e ? { x: e.door.x, z: e.door.z } : { x: b.x, z: b.z + b.d / 2 };
     const far: Pt = lot ? centreOf(lot.area) : { x: door.x + 24 * (n % 2 ? 1 : -1), z: door.z + 8 };
     for (let i = 0; i < perBuilding; i++) {
       const side = (unit(n, i) - 0.5) * 6;
-      add(
-        ctx,
-        "person",
-        [
-          { x: door.x + side, z: door.z },
-          { x: far.x + side * 0.4, z: far.z - 4 },
-        ],
-        until,
-      );
+      // They start on the apron beside the door, off the road, and end in the lot.
+      const from = standableNear(site, { x: door.x + side, z: door.z + 1.2 }, door);
+      add(ctx, "person", [from, { x: far.x + side * 0.4, z: far.z - 4 }], until);
     }
   }
   const g = site.gate;
@@ -234,19 +246,76 @@ function peopleFor(ctx: Ctx, perBuilding: number, limit: number): void {
     ctx,
     "person",
     [
-      { x: g.x + 3, z: g.z - 12 },
-      { x: g.x + 6, z: g.z - 13 },
+      standableNear(site, { x: g.x + 3, z: g.z - 12 }, g),
+      standableNear(site, { x: g.x + 6, z: g.z - 13 }, g),
     ],
     until + 1,
   );
+}
+
+/** The point if a visitor can stand there, else the nearest ring point around it that they can. */
+function standableNear(site: SiteScene, p: Pt, about: Pt): Pt {
+  if (standable(site.plan, p)) return p;
+  for (let r = 2; r <= 24; r += 2)
+    for (let k = 0; k < 12; k++) {
+      const q = {
+        x: p.x + Math.cos((k * Math.PI) / 6) * r,
+        z: p.z + Math.sin((k * Math.PI) / 6) * r,
+      };
+      if (standable(site.plan, q) && insidePolygon(q, site.outline)) return q;
+    }
+  return about;
+}
+
+/** Whether a walk from one point to the other is over ground a visitor may stand on, all the way. */
+function clearWalk(site: SiteScene, a: Pt, b: Pt): boolean {
+  const steps = Math.max(1, Math.ceil(Math.hypot(b.x - a.x, b.z - a.z)));
+  for (let i = 0; i <= steps; i++) {
+    const p = { x: a.x + ((b.x - a.x) * i) / steps, z: a.z + ((b.z - a.z) * i) / steps };
+    if (!standable(site.plan, p) || !insidePolygon(p, site.outline)) return false;
+  }
+  return true;
 }
 
 function catsFor(ctx: Ctx, count: number, limit: number): void {
   const until = ctx.out.length + limit;
   for (const [n, b] of ctx.site.buildings.entries()) {
     if (n % 2 === 1 && count < 2) continue;
-    const corner: Pt = { x: b.x + b.w / 2 + 4, z: b.z + b.d / 2 + 4 };
-    add(ctx, "cat", [corner, { x: corner.x + 6, z: corner.z + 2 + unit(n, 4) * 5 }], until);
+    // A cat lies on the grass at a corner of the building, never on the road or in the lot, and its
+    // short stroll stays on grass too.
+    const want = { x: b.x + b.w / 2 + 4, z: b.z + b.d / 2 + 4 };
+    const corner = standableNear(ctx.site, want, want);
+    const steps = [
+      { x: 6, z: 2 + unit(n, 4) * 5 },
+      { x: -6, z: 2 + unit(n, 4) * 5 },
+      { x: 2, z: 6 },
+      { x: 2, z: -6 },
+    ];
+    const to = steps
+      .map((d) => ({ x: corner.x + d.x, z: corner.z + d.z }))
+      .find((q) => clearWalk(ctx.site, corner, q));
+    if (to) add(ctx, "cat", [corner, to], until);
+  }
+}
+
+/** Two or three small birds hopping on the lawn near the trees, each on ground it may stand on. */
+function birdsFor(ctx: Ctx, count: number): void {
+  // Birds live near the buildings, where someone can see them.
+  const around = inflate(ctx.site.cluster, 90);
+  const near = ctx.site.trees.filter(
+    (t) => t.x > around.x0 && t.x < around.x1 && t.z > around.z0 && t.z < around.z1,
+  );
+  if (near.length === 0) return;
+  for (let n = 0; n < count; n++) {
+    for (let attempt = 0; attempt < 16; attempt++) {
+      const t = near[Math.floor(unit(n + 71, attempt) * near.length)] as Pt;
+      const a = unit(n, attempt + 9) * Math.PI * 2;
+      const from = { x: t.x + Math.cos(a) * 3.5, z: t.z + Math.sin(a) * 3.5 };
+      const to = { x: from.x + Math.cos(a + 1) * 3, z: from.z + Math.sin(a + 1) * 3 };
+      if (!clearWalk(ctx.site, from, to) || crosses(from, to, ctx.solids)) continue;
+      add(ctx, "bird", [from, to]);
+      break;
+    }
   }
 }
 
@@ -264,7 +333,7 @@ function wildlifeFor(ctx: Ctx, deer: number, raccoons: number): void {
       if (!b || !c) continue;
       const path = [a, b, c];
       if (crosses(a, b, ctx.solids) || crosses(b, c, ctx.solids)) continue;
-      if (!path.every((p) => insidePolygon(p, ctx.site.outline))) continue;
+      if (!stays(a, b, ctx.site.outline) || !stays(b, c, ctx.site.outline)) continue;
       add(ctx, kind, path);
       break;
     }
@@ -285,5 +354,6 @@ export function lifeOf(site: SiteScene, opts: LifeOptions = {}): Agent[] {
   catsFor(ctx, Math.round(2 * density), 12);
   const size = Math.min(8, 2 + Math.floor(site.trees.length / 300));
   wildlifeFor(ctx, Math.round(size * density), Math.round(size * 0.8 * density));
+  birdsFor(ctx, Math.round((2 + (site.trees.length > 600 ? 1 : 0)) * Math.min(1, density) + 0.01));
   return ctx.out;
 }
