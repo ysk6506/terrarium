@@ -1,0 +1,50 @@
+/**
+ * The public face of the accelerator layer and of the power and cooling ladders (REQ-107, ADR-0130), exported from the world
+ * unit as the namespace `Accel` so the unit's index stays short. Everything here is named; nothing is `export *`.
+ */
+export {
+  CKPT_CORRUPT_S,
+  CKPT_EVERY_S,
+  DRAIN_AFTER_S,
+  fabricOf,
+  GPU_CLOCK_LOSS_PER_C,
+  GPU_THROTTLE_C,
+  gpusOf,
+  hasAccel,
+  ibLinkOf,
+  JOB_RESTART_S,
+  jobDef,
+  jobOnServer,
+  jobsOf,
+  MIG_REPLICAS,
+  nodeAvoid,
+  nodeBad,
+  nvlinkOf,
+  OOM_RESTART_S,
+  poolCapacity,
+  poolDef,
+  poolsOf,
+  SERVING_GIB,
+  STEP_S,
+  schedulerOf,
+  serverOfAccel,
+  swapNodes,
+} from "./accel";
+export { type AccelCommand, isAccelCommand } from "./accel-act";
+export type {
+  AccelStates,
+  AccelStatus,
+  BbuState,
+  DcBusState,
+  GpuState,
+  IbFabricState,
+  IbLinkState,
+  InferencePoolState,
+  JobPhase,
+  NvlinkState,
+  RdhxState,
+  SchedulerState,
+  SubstationState,
+  TankState,
+  TrainingJobState,
+} from "./state-accel";

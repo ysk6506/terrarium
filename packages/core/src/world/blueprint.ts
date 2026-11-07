@@ -10,6 +10,7 @@
  * a server is POWERED by a PDU, a rack is COOLED by a cooling unit, a VM RUNS ON a host.
  */
 import type { Rect, Rotation } from "@terrarium/core/spatial";
+import type { LinkKind } from "./blueprint-links";
 
 export const BLUEPRINT_SCHEMA_VERSION = 1;
 
@@ -56,7 +57,21 @@ export type VirtualKind =
   | "dr_plan"
   | "volume"
   | "db_node"
-  | "db_managed";
+  | "db_managed"
+  /** GPU accelerator layer (REQ-107, ADR-0130): GPUs, NVLink domains, the InfiniBand/RoCE fabric, the scheduler, jobs and pools. */
+  | "gpu"
+  | "nvlink_domain"
+  | "ib_fabric"
+  | "ib_link"
+  | "job_scheduler"
+  | "training_job"
+  | "inference_pool"
+  /** Power and cooling ladders (REQ-107, ADR-0130): rack batteries, 48 V buses, the substation, rear doors, immersion tanks. */
+  | "bbu"
+  | "dc_bus"
+  | "substation"
+  | "rdhx"
+  | "immersion_tank";
 export type EntityKind =
   | SpaceKind
   | "rack"
@@ -116,6 +131,18 @@ export const ENTITY_KINDS: readonly EntityKind[] = [
   "volume",
   "db_node",
   "db_managed",
+  "gpu",
+  "nvlink_domain",
+  "ib_fabric",
+  "ib_link",
+  "job_scheduler",
+  "training_job",
+  "inference_pool",
+  "bbu",
+  "dc_bus",
+  "substation",
+  "rdhx",
+  "immersion_tank",
 ]; // prettier-ignore
 
 export const MODELLED_KINDS: ReadonlySet<EntityKind> = new Set([
@@ -183,6 +210,18 @@ export const ALLOWED_PARENTS: Readonly<Record<EntityKind, readonly EntityKind[]>
   volume: [],
   db_node: [],
   db_managed: [],
+  gpu: [],
+  nvlink_domain: [],
+  ib_fabric: [],
+  ib_link: [],
+  job_scheduler: [],
+  training_job: [],
+  inference_pool: [],
+  bbu: [],
+  dc_bus: [],
+  substation: [],
+  rdhx: [],
+  immersion_tank: [],
 };
 
 /** Where something is, relative to its parent. Units are metres; racks use units (U). */
@@ -253,6 +292,18 @@ export const PLACEMENT_OF: Readonly<Record<EntityKind, Placement["type"] | undef
   volume: undefined,
   db_node: undefined,
   db_managed: undefined,
+  gpu: undefined,
+  nvlink_domain: undefined,
+  ib_fabric: undefined,
+  ib_link: undefined,
+  job_scheduler: undefined,
+  training_job: undefined,
+  inference_pool: undefined,
+  bbu: undefined,
+  dc_bus: undefined,
+  substation: undefined,
+  rdhx: undefined,
+  immersion_tank: undefined,
 };
 
 export type PropValue = string | number | boolean;
@@ -268,129 +319,8 @@ export interface Entity {
   readonly props: Readonly<Record<string, PropValue>>;
 }
 
-export type LinkKind =
-  | "power"
-  | "network"
-  | "cooling"
-  | "runs_on"
-  | "member_of"
-  | "managed_by"
-  | "stored_on"
-  | "backed_by"
-  /** A service runs on this VM, server or storage; `role` is `active` or `standby` (ADR-0091). */
-  | "service_on"
-  /** A service needs the traffic of this switch to reach its users. */
-  | "service_via"
-  /** A service needs this database or storage pool (REQ-095): it reads its state, not its host. */
-  | "depends_on"
-  /** A database instance runs on this VM or server; a storage controller sits in this storage array; a Kubernetes node is this VM or server. */
-  | "hosted_on"
-  /** An SDN controller manages this switch's VTEP (REQ-097). */
-  | "controls"
-  /** A network policy applies to this service (REQ-097). */
-  | "applies_to"
-  /**
-   * A service calls another service (REQ-100, ADR-0121): the caller leans on the callee. Settings: `critical` (the caller
-   * cannot work without the answer), `fanout` (calls it makes for one request) and `timeoutMs`. Workloads of the container
-   * layer may call each other too; that only draws the picture and widens the impact range.
-   */
-  | "calls";
-
-/** Allowed (from kinds, to kinds) per link kind. `from` depends on `to`. */
-export const LINK_RULES: Readonly<
-  Record<LinkKind, { readonly from: readonly EntityKind[]; readonly to: readonly EntityKind[] }>
-> = {
-  power: {
-    from: [
-      "server",
-      "switch",
-      "storage",
-      "rack",
-      "pdu",
-      "cooling_unit",
-      "power_panel",
-      "cdu",
-      "chiller",
-      "ups",
-    ],
-    to: ["pdu", "power_panel", "ups", "generator"],
-  },
-  network: { from: ["server", "storage", "switch"], to: ["switch"] },
-  cooling: { from: ["rack", "cooling_unit", "cdu"], to: ["cooling_unit", "cdu", "chiller"] },
-  runs_on: { from: ["vm"], to: ["server"] },
-  member_of: {
-    from: [
-      "server",
-      "db_instance",
-      "storage_controller",
-      "vtep",
-      "k8s_node",
-      "k8s_workload",
-      "app_instance",
-      "mesh_sidecar",
-      "region",
-      "replication_stream",
-    ],
-    to: [
-      "cluster",
-      "db_cluster",
-      "storage_pool",
-      "overlay_segment",
-      "k8s_cluster",
-      "service",
-      "region",
-      "mesh_control",
-      "load_balancer",
-      "dr_site",
-      "dr_plan",
-    ],
-  },
-  managed_by: { from: ["cluster"], to: ["vcenter"] },
-  stored_on: { from: ["vm", "db_instance", "volume"], to: ["datastore", "storage_pool"] },
-  backed_by: { from: ["datastore", "storage_pool"], to: ["storage"] },
-  service_on: { from: ["service"], to: ["vm", "server", "storage"] },
-  service_via: { from: ["service"], to: ["switch"] },
-  depends_on: {
-    from: ["service"],
-    to: [
-      "db_cluster",
-      "db_instance",
-      "storage_pool",
-      "overlay_segment",
-      "ingress",
-      "nfv_function",
-      "k8s_workload",
-      "load_balancer",
-      "session_store",
-      "volume",
-      "db_node",
-      "db_managed",
-    ],
-  },
-  hosted_on: {
-    from: [
-      "db_instance",
-      "storage_controller",
-      "sdn_controller",
-      "vtep",
-      "nfv_function",
-      "cni",
-      "ingress",
-      "k8s_node",
-      "app_instance",
-      "load_balancer",
-      "session_store",
-      "mesh_sidecar",
-      "mesh_control",
-      "db_node",
-      "replication_stream",
-    ],
-    to: ["vm", "server", "storage", "switch", "app_instance"],
-  },
-  controls: { from: ["sdn_controller"], to: ["switch"] },
-  applies_to: { from: ["network_policy"], to: ["service"] },
-  calls: { from: ["service", "k8s_workload"], to: ["service", "k8s_workload"] },
-};
+export type { LinkKind } from "./blueprint-links";
+export { LINK_RULES } from "./blueprint-links";
 
 export interface Link {
   readonly id: string;
@@ -457,6 +387,18 @@ const VIRTUAL_KINDS: ReadonlySet<EntityKind> = new Set<EntityKind>([
   "volume",
   "db_node",
   "db_managed",
+  "gpu",
+  "nvlink_domain",
+  "ib_fabric",
+  "ib_link",
+  "job_scheduler",
+  "training_job",
+  "inference_pool",
+  "bbu",
+  "dc_bus",
+  "substation",
+  "rdhx",
+  "immersion_tank",
 ]);
 
 export const isVirtualKind = (kind: EntityKind): kind is VirtualKind => VIRTUAL_KINDS.has(kind);

@@ -139,6 +139,7 @@ export function restartAppProcess(ctx: AppActContext, hostId: string, unit: stri
     "redis-server": ["session_store", "session_store_down"],
     [SIDECAR_PROCESS]: ["mesh_sidecar", "sidecar_crash"],
     istiod: ["mesh_control", "mesh_control_down"],
+    slurmctld: ["job_scheduler", "scheduler_down"],
   };
   const hit = kinds[unit];
   if (!hit) return;

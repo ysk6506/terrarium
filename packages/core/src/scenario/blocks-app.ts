@@ -1,4 +1,5 @@
 /** The fields a condition can test on the application-layer entities (REQ-100). */
+import { ACCEL_CONDITION_FIELDS } from "./blocks-accel";
 import { DB_CONDITION_FIELDS } from "./blocks-db";
 import { K8S_CONDITION_FIELDS } from "./blocks-k8s";
 import { SDN_CONDITION_FIELDS } from "./blocks-sdn";
@@ -44,6 +45,7 @@ export const APP_CONDITION_FIELDS: Readonly<
 
 /** The condition fields of every layer-specific entity kind (database, SDN, containers, application). */
 export const LAYER_CONDITION_FIELDS = {
+  ...ACCEL_CONDITION_FIELDS,
   ...DB_CONDITION_FIELDS,
   ...SDN_CONDITION_FIELDS,
   ...K8S_CONDITION_FIELDS,

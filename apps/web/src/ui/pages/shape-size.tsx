@@ -3,6 +3,7 @@
  * from the shape. What a stop costs an hour is per service and per way of stopping (ADR-0108 item 2). When it is built,
  * one line says what came of it, and two buttons: look around the world, or make an experiment on it.
  */
+import { withJosa } from "@terrarium/core/kernel";
 import type { ServiceDraft, ShapePlan } from "@terrarium/core/sources/worldgen";
 import type { Layers } from "@terrarium/core/world";
 import { count, worldScale } from "../../logic";
@@ -62,8 +63,10 @@ export function SizeStep(props: {
         <span className="we-step">3 / 3</span>
       </div>
       <p className="we-sub">
-        {services.map((s) => `${s.name}가 쓰는 호스트는 ${plan.serviceHosts}대예요`).join(". ")}.
-        나머지는 배경이고, 랙·스위치·PDU·냉방기는 고른 모양에 맞춰 세요. 배경이 클수록 에이전트가
+        {services
+          .map((s) => `${withJosa(s.name, "이")} 쓰는 호스트는 ${plan.serviceHosts}대예요`)
+          .join(". ")}
+        . 나머지는 배경이고, 랙·스위치·PDU·냉방기는 고른 모양에 맞춰 세요. 배경이 클수록 에이전트가
         찾을 곳이 많아져요.
       </p>
       <div className="we-two">

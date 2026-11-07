@@ -57,6 +57,8 @@ export class SupplyResolver {
   private liveCounts: Int32Array | undefined;
   /** Per power cable: an operator switched off the outlet it is plugged into (undefined: none anywhere). */
   private readonly cut: Uint8Array | undefined;
+  /** Rack id -> position of its battery pack (BBU, REQ-107); undefined for a world without any. */
+  private readonly bbuAt: Map<string, number> | undefined;
 
   constructor(private readonly world: World) {
     this.plan = powerPlanOf(world.index, world.catalog);
@@ -66,6 +68,7 @@ export class SupplyResolver {
     this.memo = new Int8Array(this.plan.ents.length);
     this.visiting = new Uint8Array(this.plan.ents.length);
     this.cut = cutCables(this.plan, this.states);
+    this.bbuAt = bbuPositions(world);
   }
 
   /** A consumer is fed when it has no power links (assumed utility) or any supplier delivers. */
@@ -184,15 +187,27 @@ export class SupplyResolver {
 
   private compute(i: number): boolean {
     const state = this.states[i] as EntityState;
-    if (state.kind === "ups")
+    if (state.kind === "ups") {
+      if (hasFault(this.faults[i] as readonly Fault[], "ups_module_fail")) return false;
       return (
         (this.fedAt(i) && !hasFault(this.faults[i] as readonly Fault[], "grid_outage")) ||
         state.batteryPct > 0
       );
+    }
     if (state.kind === "generator") return state.phase === "running";
-    if (state.kind === "pdu") return !state.tripped && this.fedAt(i);
+    if (state.kind === "substation") return state.status !== "down";
+    if (state.kind === "pdu") return !state.tripped && (this.fedAt(i) || this.rackBatteryHolds(i));
     if (state.kind === "power_panel") return !state.tripped && this.panelFed(i);
     return false;
+  }
+
+  /** Whether the battery pack of the rack a PDU stands in still carries it (the feed above it is gone). */
+  private rackBatteryHolds(i: number): boolean {
+    if (!this.bbuAt) return false;
+    const rack = (this.plan.ents[i] as { parentId?: string }).parentId;
+    const at = rack === undefined ? undefined : this.bbuAt.get(rack);
+    const bbu = at === undefined ? undefined : this.states[at];
+    return bbu?.kind === "bbu" && bbu.chargePct > 0 && bbu.status !== "down";
   }
 
   private panelFed(i: number): boolean {
@@ -204,6 +219,20 @@ export class SupplyResolver {
       if (toGenerator[p] === 1 && this.deliversAt(outTo[p] as number)) return true;
     return false;
   }
+}
+
+function bbuPositions(world: World): Map<string, number> | undefined {
+  const packs = world.index.ofKind("bbu");
+  if (packs.length === 0) return undefined;
+  const out = new Map<string, number>();
+  for (const bbu of packs) {
+    const rack = world.index
+      .outgoing(bbu.id, "member_of")
+      .find((l) => world.index.find(l.to)?.kind === "rack")?.to;
+    const at = world.index.positionOf(bbu.id);
+    if (rack && at !== undefined) out.set(rack, at);
+  }
+  return out;
 }
 
 /** A power panel of style "ats": it picks the utility side, else a generator. */

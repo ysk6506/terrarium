@@ -9,6 +9,7 @@
  * lookup is wrong is *slow* for the services that feel it. How many dead hosts stop a service depends on its
  * kind: a stateful service stops with any one of its places, a request or batch service only when none is left.
  */
+import { accelHealth } from "./accel-health";
 import { appHealth } from "./app-health";
 import type { Entity } from "./blueprint";
 import { callsHealth } from "./calls-health";
@@ -352,13 +353,14 @@ function healthOf(world: WorldReader, serviceId: string, seen: ReadonlySet<strin
   const overlay = sdnHealth(world, entity, def);
   const app = appHealth(world, entity);
   const site = siteHealth(world, entity);
+  const accel = accelHealth(world, entity);
   const inside = new Set(seen).add(serviceId);
   const calls = callsHealth(world, entity, (id) =>
     inside.has(id) ? "healthy" : healthOf(world, id, inside).status,
   );
   const hosts: ServiceStatus =
     onCluster && verdicts.length === 0 ? "healthy" : fromHosts(def.kind, verdicts);
-  const status = [path, deps, overlay, app, site, calls].reduce<ServiceStatus>(
+  const status = [path, deps, overlay, app, site, accel, calls].reduce<ServiceStatus>(
     (acc, v) => worse(acc, v.status),
     hosts,
   );
@@ -369,6 +371,7 @@ function healthOf(world: WorldReader, serviceId: string, seen: ReadonlySet<strin
     ...overlay.reasons,
     ...app.reasons,
     ...site.reasons,
+    ...accel.reasons,
     ...calls.reasons,
   ];
   return {

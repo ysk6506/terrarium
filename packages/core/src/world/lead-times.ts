@@ -146,6 +146,22 @@ export const LEAD_ROWS: Readonly<Record<FaultType, LeadRow>> = {
   db_az_failure: external([30 * M, 2 * H, 8 * H]),
   db_failover_flapping: remote([30 * M, 2 * H, 8 * H]),
   db_storage_full: remote([15 * M, 1 * H, 4 * H]),
+  // 가속기 층·전원·냉방 확장 (REQ-107)
+  gpu_xid_error: replace([2 * H, 6 * H, 1 * D], [1 * D, 3 * D, 7 * D], false),
+  nvlink_down: replace([2 * H, 8 * H, 1 * D], [1 * D, 3 * D, 7 * D], false),
+  ib_link_flap: visit([1 * H, 4 * H, 12 * H]),
+  gpu_thermal_throttle: visit([1 * H, 4 * H, 1 * D]),
+  gpu_memory_leak_inference: remote([15 * M, 1 * H, 4 * H]),
+  job_stuck_checkpoint: remote([15 * M, 1 * H, 4 * H]),
+  scheduler_down: remote([15 * M, 45 * M, 2 * H]),
+  mig_misconfig: remote([15 * M, 45 * M, 2 * H]),
+  bbu_cell_fault: replace([2 * H, 6 * H, 1 * D], [1 * D, 3 * D, 7 * D], true),
+  dc_bus_sag: visit([2 * H, 8 * H, 1 * D]),
+  utility_feed_loss: external([1 * H, 4 * H, 1 * D]),
+  transformer_overtemp: replace([4 * H, 12 * H, 2 * D], [3 * D, 10 * D, 30 * D], false),
+  ups_module_fail: replace([2 * H, 6 * H, 1 * D], [1 * D, 3 * D, 7 * D], true),
+  rdhx_valve_stuck: visit([2 * H, 6 * H, 1 * D]),
+  fluid_level_low: visit([1 * H, 4 * H, 12 * H]),
 };
 
 // ---------- what the experiment sets ----------

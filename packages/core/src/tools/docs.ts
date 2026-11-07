@@ -7,6 +7,7 @@
  * metrics, service status), `rare` (exists in a few places: topology), `ideal` (does not exist in practice:
  * impact analysis). An experiment that wants realistic results gives `common` tools only.
  */
+import { ACCEL_DOCS } from "./catalog-accel";
 import { APP_DOCS } from "./catalog-app";
 import { DB_DOCS } from "./catalog-db";
 import { K8S_DOCS } from "./catalog-k8s";
@@ -431,4 +432,5 @@ export const TOOL_DOCS: Readonly<Record<string, ToolDoc>> = {
   ...K8S_DOCS,
   ...APP_DOCS,
   ...SITE_DOCS,
+  ...ACCEL_DOCS,
 };

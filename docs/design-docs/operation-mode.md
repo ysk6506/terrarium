@@ -17,13 +17,13 @@ covers:
   - apps/server/src/runtime/dispatcher.ts
   - apps/server/src/runtime/hosts.ts
   - packages/core/src/session/operation/journal.ts
-covers_hash: 4dd9081b3b012fb0
+covers_hash: 2332f298e79bab7f
 verification_log:
-  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
-  - "2026-11-06: o1·o2 합치기"
   - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
   - "2026-11-07: MTBF 표에 REQ-106의 열네 줄을 mtbf.ts와 대조해 더했다"
+  - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장 절을 더하거나 고쳤고 나머지는 코드와 대조해 그대로 맞다"
+  - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
 ---
 # 운영 모드 (REQ-090, [ADR-0094](adr/0094-operation-mode.md))
 
@@ -85,6 +85,12 @@ verification_log:
 | `geo_replication_lag` / `geo_replica_broken` | 지역 복제 볼륨 | 4,000 / 12,000시간 |
 | `db_leader_lost` / `db_quorum_lost` / `db_node_lagging` | 합의 DB 노드 | 6,000 / 25,000 / 5,000시간 |
 | `db_az_failure` / `db_failover_flapping` / `db_storage_full` | 관리형 DB | 20,000 / 15,000 / 8,000시간 |
+| `gpu_xid_error` / `gpu_thermal_throttle` / `gpu_memory_leak_inference` | GPU | 6,000 / 9,000 / 4,000시간 |
+| `nvlink_down` / `ib_link_flap` | NVLink 도메인 / 패브릭 링크 | 12,000 / 5,000시간 |
+| `job_stuck_checkpoint` / `scheduler_down` / `mig_misconfig` | 학습 잡 / 스케줄러 / 추론 풀 | 2,000 / 6,000 / 8,000시간 |
+| `bbu_cell_fault` / `dc_bus_sag` | 랙 배터리 / 48V 버스 | 14,000 / 16,000시간 |
+| `utility_feed_loss` / `transformer_overtemp` | 변전소 | 20,000 / 30,000시간 |
+| `ups_module_fail` / `rdhx_valve_stuck` / `fluid_level_low` | UPS / 리어도어 / 침지 탱크 | 12,000 / 15,000 / 18,000시간 |
 
 표는 `operation/mtbf.ts`가 단일 출처이고 발생기와 시험이 이 값을 읽는다. 새 고장 종류를 더하면 표에도 줄을 더한다(그리고 `FAULT_TOOLS`와 `physics-golden.json`에도, 툴 추가 규칙대로).
 

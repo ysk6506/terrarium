@@ -16,6 +16,7 @@ import type {
   RoomSpec,
 } from "@terrarium/core/sources";
 import type { LocationHint } from "@terrarium/core/spatial";
+import { DENSE_BUDGET, type DenseSpec } from "./dense";
 import type { WorldgenSpec } from "./spec";
 
 const TOR_U = 42;
@@ -52,6 +53,8 @@ export interface RoomContext {
   /** Host-name prefix, e.g. "gh1-3a". */
   readonly host: string;
   readonly vcenter: string;
+  /** The dense racks this room holds (the first room of the world only). */
+  readonly dense?: DenseSpec;
 }
 
 const at = (row: number, column: number): LocationHint => ({
@@ -83,24 +86,44 @@ interface Built {
   loadW: number;
   /** Each rack PDU and the side it hangs on; they are wired to panels once the panels are counted. */
   readonly feeds: Array<{ readonly pdu: string; readonly side: Side; readonly rack: number }>;
+  /** Heat the liquid loop carries off, W (the rooms's air is sized for the rest). */
+  liquidW: number;
+  /** The dense racks, which a CDU or a plant is wired to. */
+  readonly dense: string[];
+  /** Per place `row:col`: a dense rack stands there, or the place is left empty beside one (a dense rack is wider). */
+  readonly slots: ReadonlyMap<string, "dense" | "shadow">;
 }
 
 /** What a built room asks of the electrical room: its load and its panels, by side. */
 export interface RoomPower {
   readonly loadW: number;
   readonly panels: Readonly<Record<Side, readonly string[]>>;
+  /** The CDUs the room's liquid racks hang on, and the heat they carry, kW (REQ-107). */
+  readonly cdus: readonly string[];
+  readonly liquidKw: number;
 }
 
 export function buildRoom(ctx: RoomContext): RoomPower {
-  const built: Built = { racks: [], devices: [], hosts: [], arrays: [], loadW: 0, feeds: [] };
+  const built: Built = {
+    racks: [],
+    devices: [],
+    hosts: [],
+    arrays: [],
+    loadW: 0,
+    feeds: [],
+    liquidW: 0,
+    dense: [],
+    slots: denseSlots(ctx),
+  };
   const spines = [`${ctx.roomId}-spine1`, `${ctx.roomId}-spine2`];
   for (let row = 1; row <= ctx.spec.rows; row++)
     for (let col = 1; col <= ctx.spec.racksPerRow; col++) addRack(ctx, built, row, col, spines);
-  const cooling = coolingUnits(ctx, built.loadW);
-  const loadW = built.loadW + cooling.length * fanPowerW(ctx);
+  const cooling = coolingUnits(ctx, built.loadW - built.liquidW);
+  const cdus = cduUnits(ctx, built);
+  const loadW = built.loadW + cooling.length * fanPowerW(ctx) + cdus.length * CDU_W;
   const perSide = unitsFor(loadW, panelCapacityW(ctx.catalog.getOf(PANEL_MODEL, "power_panel")));
   const panelSpecs = panels(ctx, built.loadW, perSide);
-  const equipment = [...cooling, ...panelSpecs];
+  const equipment = [...cooling, ...cdus, ...panelSpecs];
   const room: RoomSpec = {
     id: ctx.roomId,
     name: ctx.roomName,
@@ -112,9 +135,15 @@ export function buildRoom(ctx: RoomContext): RoomPower {
   ctx.asm.room(ctx.floorId, room);
   for (const rack of built.racks)
     for (const unit of cooling) ctx.asm.link("cooling", rack.id, unit.id);
-  wirePanels(ctx, built, cooling, perSide);
+  for (const rack of built.dense) for (const unit of cdus) ctx.asm.link("cooling", rack, unit.id);
+  wirePanels(ctx, built, [...cooling, ...cdus], perSide);
   if (ctx.spec.vmsPerHost > 0) virtualisation(ctx, built);
-  return { loadW, panels: panelsBySide(ctx, perSide) };
+  return {
+    loadW,
+    panels: panelsBySide(ctx, perSide),
+    cdus: cdus.map((u) => u.id),
+    liquidKw: built.liquidW / 1000,
+  };
 }
 
 const sidesOf = (ctx: RoomContext): readonly Side[] =>
@@ -152,8 +181,17 @@ function wirePanels(
 function addRack(ctx: RoomContext, built: Built, row: number, col: number, spines: string[]): void {
   const rackId = `${ctx.roomId}-r${two(row)}${two(col)}`;
   const label = `${ctx.roomName.split(" ")[0]}-${two(row)}${two(col)}`;
-  built.racks.push({ id: rackId, name: label, hint: at(row, col) });
-  const pdus = pduPair(ctx, built, rackId, label);
+  const role = built.slots.get(`${row}:${col}`);
+  if (role === "shadow") return;
+  const dense = role === "dense" ? ctx.dense : undefined;
+  built.racks.push({
+    id: rackId,
+    name: label,
+    hint: at(row, col),
+    ...(dense ? { modelId: dense.rack, props: denseProps(ctx, dense) } : {}),
+  });
+  if (dense) built.dense.push(rackId);
+  const pdus = pduPair(ctx, built, rackId, label, dense?.pdu ?? PDU_MODEL);
   const tor = device(built, {
     id: `${rackId}-tor`,
     kind: "switch",
@@ -166,6 +204,7 @@ function addRack(ctx: RoomContext, built: Built, row: number, col: number, spine
   built.loadW += 350;
   for (const spine of spines) ctx.asm.link("network", tor, spine);
   if (col === 1) infraRack(ctx, built, { id: rackId, row, pdus, tor }, spines);
+  else if (dense) denseRack(ctx, built, { id: rackId, label, pdus, tor }, dense);
   else computeRack(ctx, built, rackId, label, pdus, tor);
 }
 
@@ -178,13 +217,19 @@ function powerFrom(ctx: RoomContext, id: string, pdus: readonly string[]): void 
   for (const pdu of pdus) ctx.asm.link("power", id, pdu);
 }
 
-function pduPair(ctx: RoomContext, built: Built, rackId: string, label: string): string[] {
+function pduPair(
+  ctx: RoomContext,
+  built: Built,
+  rackId: string,
+  label: string,
+  modelId: string,
+): string[] {
   return sidesOf(ctx).map((side) => {
     const id = device(built, {
       id: `${rackId}-pdu-${side}`,
       kind: "pdu",
       name: `PDU-${label}-${side.toUpperCase()}`,
-      modelId: PDU_MODEL,
+      modelId,
       hint: inUnit(1),
       rackId,
     });
@@ -264,7 +309,7 @@ function computeRack(
     });
     powerFrom(ctx, id, pdus);
     ctx.asm.link("network", id, tor);
-    if (modelId !== "srv-4u-gpu") built.hosts.push(id);
+    if (model.gpus === 0) built.hosts.push(id);
     peak += model.maxPowerW;
     built.loadW += model.idlePowerW + (model.maxPowerW - model.idlePowerW) * SIZING_UTIL;
     unit += model.uHeight;
@@ -272,6 +317,101 @@ function computeRack(
 }
 
 const round2 = (v: number) => Math.round(v * 100) / 100;
+
+// ── dense racks (REQ-107) ──────────────────────────────────────────────────
+
+/** Power one CDU draws with its pumps running, W. */
+const CDU_W = 12_000;
+const CDU_MODEL = "aq-cdu-500kw";
+const CDU_SHARE = 0.6;
+const RDHX_SHARE = 0.75;
+
+/**
+ * Where the dense racks stand: from the far end of the room, a dense rack takes two places of a row (it is wider than a
+ * standard rack, so the place beside it stays empty).
+ */
+function denseSlots(ctx: RoomContext): ReadonlyMap<string, "dense" | "shadow"> {
+  const slots = new Map<string, "dense" | "shadow">();
+  let left = ctx.dense?.racks ?? 0;
+  for (let row = ctx.spec.rows; row >= 1 && left > 0; row--)
+    for (let col = ctx.spec.racksPerRow - 1; col >= 2 && left > 0; col -= 2) {
+      slots.set(`${row}:${col}`, "dense");
+      slots.set(`${row}:${col + 1}`, "shadow");
+      left--;
+    }
+  return slots;
+}
+
+/** Share of the servers' nameplate a dense rack is allotted: GPU racks are provisioned under it, as real ones are. */
+const ALLOTTED = 0.8;
+
+/** A liquid rack that has a leak sensor cuts its servers when it senses a leak; a dense rack has the power it is allotted. */
+function denseProps(ctx: RoomContext, dense: DenseSpec): Record<string, string | number> {
+  const peakW = dense.server
+    ? dense.perRack * ctx.catalog.getOf(dense.server, "server").maxPowerW
+    : 0;
+  return {
+    ...(dense.liquid === "dlc" || dense.liquid === "immersion" ? { leakPolicy: "poweroff" } : {}),
+    ...(dense.gpu && peakW > 0 ? { powerLimitW: Math.round((ALLOTTED * peakW) / 100) * 100 } : {}),
+  };
+}
+
+function denseRack(
+  ctx: RoomContext,
+  built: Built,
+  rack: {
+    readonly id: string;
+    readonly label: string;
+    readonly pdus: string[];
+    readonly tor: string;
+  },
+  dense: DenseSpec,
+): void {
+  const budget = DENSE_BUDGET * (ctx.catalog.getOf(dense.pdu, "pdu").capacityW - 350);
+  let unit = 1;
+  let peak = 0;
+  for (let n = 1; n <= dense.perRack; n++) {
+    const modelId = dense.server ?? serverModel(ctx);
+    const model = ctx.catalog.getOf(modelId, "server");
+    if (peak + model.maxPowerW > budget || unit + model.uHeight - 1 > SERVER_UNITS) break;
+    const id = device(built, {
+      id: `${rack.id}-s${two(n)}`,
+      kind: "server",
+      name: `${ctx.host}-${lower(rack.label).slice(-4)}-${two(n)}`,
+      modelId,
+      hint: inUnit(unit),
+      rackId: rack.id,
+      props: { bmcProfile: weighted(ctx.rng, BMC_MIX), cpuUtil: round2(ctx.rng.uniform(0.1, 0.3)) },
+    });
+    powerFrom(ctx, id, rack.pdus);
+    ctx.asm.link("network", id, rack.tor);
+    if (model.gpus === 0) built.hosts.push(id);
+    peak += model.maxPowerW;
+    const watts = model.idlePowerW + (model.maxPowerW - model.idlePowerW) * SIZING_UTIL;
+    built.loadW += watts;
+    built.liquidW += watts * liquidShareOf(dense, model.liquidShare);
+    unit += model.uHeight;
+  }
+}
+
+/** Share of a server's heat the loop takes: the rear door takes its share of any server's, the plates and the bath their own. */
+const liquidShareOf = (dense: DenseSpec, serverShare: number): number =>
+  dense.liquid === "rdhx" ? RDHX_SHARE : dense.liquid ? serverShare : 0;
+
+/** CDUs for the liquid racks of the room: planned for 60 % of their capacity, one more than the load needs (at least two). */
+function cduUnits(ctx: RoomContext, built: Built): EquipmentSpec[] {
+  if (built.dense.length === 0 || !ctx.dense?.liquid) return [];
+  const cap = ctx.catalog.getOf(CDU_MODEL, "cdu").capacityKw;
+  const count = Math.max(2, Math.ceil(built.liquidW / 1000 / (CDU_SHARE * cap)) + 1);
+  const tag = ctx.roomName.split(" ")[0];
+  return Array.from({ length: count }, (_, i) => ({
+    id: `${ctx.roomId}-cdu${i + 1}`,
+    kind: "cdu" as const,
+    name: `CDU-${tag}-${i + 1}`,
+    modelId: CDU_MODEL,
+    ...(ctx.dense?.manualStandby ? { props: { manualStandby: true } } : {}),
+  }));
+}
 
 function coolingUnits(ctx: RoomContext, loadW: number): EquipmentSpec[] {
   const capacityW = ctx.catalog.getOf(COOLING_MODEL, "cooling_unit").capacityKw * 1000;

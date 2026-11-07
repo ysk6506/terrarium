@@ -82,7 +82,11 @@ export function effectiveUtilAt(pass: Pass, i: number): number {
       if (host === i && (states[v] as StateOf<"vm">).running)
         vmLoad += vmDemandAt(pass, v) * (plan.vcpus[v] as number);
   const runaway = faultParam(faults[i] as readonly Fault[], "cpu_runaway", "util") ?? 0;
-  const util = Math.max(state.cpuUtil + vmLoad / (plan.cores[i] as number), runaway);
+  const util = Math.max(
+    state.cpuUtil + vmLoad / (plan.cores[i] as number),
+    runaway,
+    state.gpuLoad ?? 0,
+  );
   return clamp(state.throttled ? Math.min(util, 0.7) : util, 0, 1);
 }
 
@@ -117,8 +121,27 @@ const updateServer: Updater = (sup, i) => {
   const util = effectiveUtilAt(sup, i);
   state.powered = powered;
   state.psuOk = psuOk;
-  state.powerW = running ? model.idlePowerW + (model.maxPowerW - model.idlePowerW) * util : 0;
+  const full = model.idlePowerW + (model.maxPowerW - model.idlePowerW) * util;
+  state.powerW = running ? cappedW(state, model, full) : 0;
 };
+
+/**
+ * What a power cap leaves of the draw (REQ-107): the cap cuts the part above idle, power can not go below idle, and the
+ * throughput left is the share of that part to the 0.4 power (dynamic power follows frequency to about the 2.5th power, so
+ * the first watts cut cost little speed). `perf` is 1 when nothing is cut.
+ */
+function cappedW(state: StateOf<"server">, model: ServerModel, fullW: number): number {
+  const cap = state.powerCapW;
+  const dyn = fullW - model.idlePowerW;
+  if (cap === undefined || dyn <= 0 || fullW <= cap) {
+    if (cap === undefined) delete state.perf;
+    else state.perf = 1;
+    return fullW;
+  }
+  const kept = Math.max(0, cap - model.idlePowerW) / dyn;
+  state.perf = Math.max(0.1, kept) ** 0.4;
+  return model.idlePowerW + dyn * Math.max(0, kept);
+}
 
 /** A light rack draws what its servers add up to while it is fed; losing its feeds darkens all of them. */
 const updateLightRack: Updater = (sup, i) => {

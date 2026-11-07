@@ -64,9 +64,9 @@ describe("일감과 사다리 [REQ-094]", () => {
     expect(workloadProblem(DEFAULT_WORKLOAD.api)).toBeUndefined();
   });
 
-  it("사다리: 여덟 층에 선택지가 마흔여섯 개이고 층마다 아이디가 겹치지 않는다", () => {
-    expect(LAYER_IDS).toHaveLength(8);
-    expect(CHIP_COUNT).toBe(46);
+  it("사다리: 아홉 층에 선택지가 쉰여섯 개이고 층마다 아이디가 겹치지 않는다", () => {
+    expect(LAYER_IDS).toHaveLength(9);
+    expect(CHIP_COUNT).toBe(56);
     const ids = LAYER_IDS.flatMap((l) => LADDER[l].map((c) => c.id));
     expect(new Set(ids).size).toBe(ids.length);
     expect(

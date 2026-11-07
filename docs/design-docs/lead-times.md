@@ -6,13 +6,13 @@ last_verified: 2026-11-07
 covers:
   - packages/core/src/world/lead-times.ts
   - packages/core/src/world/domains.ts
-covers_hash: 477b0704e771ac72
+covers_hash: eddadcad3a2e98ff
 verification_log:
-  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
-  - "2026-11-06: o1·o2 합치기"
   - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
   - "2026-11-07: REQ-106 열다섯 고장의 행을 LEAD_ROWS와 대조해 더했다"
+  - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장 절을 더하거나 고쳤고 나머지는 코드와 대조해 그대로 맞다"
+  - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
 ---
 # 고장 종류별 리드타임 (ADR-0100)
 
@@ -125,6 +125,26 @@ verification_log:
 | cni_plugin_failure (CNI 고장) | 네트워크팀 | 15m | 45m | 2h | 노드의 플러그인 재시작 | 그 노드에서 `systemctl restart calico-node` |
 | nfv_firewall_overload (가상 방화벽 과부하) | 네트워크팀 | 1h | 4h | 1d | 용량을 늘리거나 분산 | 서비스를 다른 경로로 |
 | network_policy_deny (잘못된 정책 배포, 설정 실수라 고장 목록에 없어 넘길 수 없다) | 네트워크팀 | 15m | 45m | 2h | 변경 승인과 되돌리기 | 정책 되돌리기(`policy_revert`) |
+
+## 가속기 층·전원·냉방 확장 (REQ-107, 고장 15)
+GPU·변압기 같은 교체 갈래는 예비가 없는 것이 기본이다(`예비 없음` 열은 주문 범위, 익일 계약).
+| 고장 | 누가 | 최소 | 보통 | 최대 | 임시 조치 |
+|---|---|---|---|---|---|
+| gpu_xid_error (Xid로 GPU 떨어짐) | 벤더 | 2h | 6h | 1d (주문 1d / 3d / 7d) | `gpu_reset`, 노드 빼기 |
+| nvlink_down (NVLink 끊김) | 벤더 | 2h | 8h | 1d (주문 1d / 3d / 7d) | 노드 빼기 |
+| ib_link_flap (패브릭 링크 플래핑) | 네트워크팀 | 1h | 4h | 12h | 노드 빼기(케이블·트랜시버 점검은 현장 방문) |
+| gpu_thermal_throttle (GPU 열 스로틀) | 시설팀 | 1h | 4h | 1d | 전력 캡으로 클럭 맞추기 |
+| gpu_memory_leak_inference (추론 메모리 누수) | 서비스팀 | 15m | 1h | 4h | GPU 리셋, 풀에서 빼기 |
+| job_stuck_checkpoint (체크포인트 멈춤) | 서비스팀 | 15m | 1h | 4h | 잡 이어가기 |
+| scheduler_down (스케줄러 다운) | 서비스팀 | 15m | 45m | 2h | `slurmctld` 다시 시작 |
+| mig_misconfig (MIG 잘못 설정) | 서비스팀 | 15m | 45m | 2h | 풀 복제본 수 다시 정하기 |
+| bbu_cell_fault (랙 배터리 셀 고장) | 벤더 | 2h | 6h | 1d (예비 있음) | 랙을 비우고 모듈 교체 |
+| dc_bus_sag (48V 버스 처짐) | 시설팀 | 2h | 8h | 1d | 전력 캡으로 부하 줄이기 |
+| utility_feed_loss (수전 한 줄 끊김) | 한전·시설팀 | 1h | 4h | 1d | 다른 수전 줄로 옮기기(`transfer_feed`) |
+| transformer_overtemp (변압기 과열) | 벤더 | 4h | 12h | 2d (주문 3d / 10d / 30d) | 부하 줄이기 |
+| ups_module_fail (UPS 모듈 고장) | 벤더 | 2h | 6h | 1d (예비 있음) | N+1이면 부하를 나머지가 받음 |
+| rdhx_valve_stuck (리어도어 밸브 끼임) | 시설팀 | 2h | 6h | 1d | 전력 캡으로 열 줄이기 |
+| fluid_level_low (침지 수위 낮음) | 시설팀 | 1h | 4h | 12h | 냉각액 보충(현장 방문) |
 
 ## 서비스/OS (고장 10 + 데이터베이스 5 + 컨테이너 8 + 애플리케이션 8)와 사이트·DR (REQ-106)
 | 고장 | 누가 | 최소 | 보통 | 최대 | 임시 조치 |

@@ -75,13 +75,13 @@ covers:
   - apps/web/src/ui/replay/FramesBar.tsx
   - apps/web/src/ui/replay/useClock.ts
   - apps/web/src/logic/topology/words.ts
-covers_hash: 72eb8f2bfe96efa2
+covers_hash: c5da714bdbf7148e
 verification_log:
-  - "2026-11-07: 2026-11-07: REQ-104(ADR-0127) 코드와 대조해 고쳤다"
-  - "2026-11-07: 풍경·동물 줄과 말풍선 줄을 REQ-105(ADR-0128)에 맞게 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: view.ts 디버그 훅 제거 후 재확인"
   - "2026-11-07: o11 합치기 (부지 배치·동물)"
   - "2026-11-07: REQ-106 칩 카드의 복구 목표 줄과 점선 0개로 한 줄을 고쳤고 나머지는 그대로 맞다"
+  - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장이 이 문서의 내용을 바꾸지 않는지 대조했다(층 수·툴 수·칩 수를 세는 문장을 찾아 고쳤고, 나머지는 그대로 맞다)"
+  - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
 ---
 # 웹 화면 (REQ-006, REQ-030~041)
 

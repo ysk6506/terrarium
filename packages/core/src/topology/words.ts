@@ -10,6 +10,7 @@ const IMPACT: Readonly<Record<LayerId, string>> = {
   cooling: "더워지는 중",
   power: "영향 범위",
   network: "영향 범위",
+  accel: "영향 범위",
 };
 
 export function classLabel(cls: TileClass, layer: LayerId): string {
@@ -68,6 +69,10 @@ const COUNTING: Readonly<Record<TopoKind, readonly [string, string]>> = {
   region: ["리전", "곳"],
   dr_site: ["사이트", "곳"],
   site_link: ["사이트 간 회선", "개"],
+  gpu: ["GPU", "장"],
+  ib_fabric: ["패브릭", "개"],
+  job: ["학습 잡", "개"],
+  pool: ["추론 풀", "개"],
 };
 
 /**

@@ -36,6 +36,7 @@ import { campusBlueprint } from "../../packages/core/src/world/test-support/samp
 import { sdnLab } from "../../packages/core/src/world/test-support/sdn-lab";
 import { serviceLab } from "../../packages/core/src/world/test-support/service-lab";
 import { siteBlueprint } from "./site-support";
+import { accelLab, powerLab } from "./test-support/ladder-labs";
 
 const rowOf = (id: string) => CONTROL_ROWS.find((r) => r.id === id) as ControlRow;
 
@@ -75,6 +76,7 @@ describe("the list of what can be controlled is made of real things [REQ-069]", 
       expect(onList.has(command as never)).toBe(false);
     expect([...onList].sort()).toEqual([
       "breaker.reset",
+      "cdu.pump_switch",
       "circuit.reset",
       "db.failover",
       "db.promote",
@@ -86,9 +88,12 @@ describe("the list of what can be controlled is made of real things [REQ-069]", 
       "dr.drill",
       "dr.failback",
       "dr.failover",
+      "feed.transfer",
       "firmware.update",
+      "gpu.reset",
       "host.act",
       "ingress.restart",
+      "job.resume",
       "k8s.cordon",
       "k8s.delete_pod",
       "k8s.drain",
@@ -100,10 +105,13 @@ describe("the list of what can be controlled is made of real things [REQ-069]", 
       "load.set",
       "mesh.rollback",
       "net.set",
+      "node.drain",
       "outdoor.set",
       "outlet.set",
       "policy.revert",
       "policy.set",
+      "pool.scale",
+      "power.cap",
       "power.set",
       "region.failover",
       "sdn.failover",
@@ -281,7 +289,84 @@ const portDown = (device: string) => (w: World) =>
   w.index.allLinks().some((l) => (l.from === device || l.to === device) && w.linkAdminDown(l.id));
 
 /** One call per (row, tool). The key is `row|tool|target` so a row with several targets drives each. */
+// the accelerator layer and the power and cooling ladders (REQ-107, ADR-0130)
+const TRAIN = () => accelLab("gpu-training-cluster", { network: "net-leaf-spine" });
+const POOL = () => accelLab("gpu-serving-pool");
+const POD = () =>
+  accelLab("gpu-liquid-pod", {
+    network: "net-leaf-spine",
+    cooling: "cool-liquid",
+    power: "pwr-ab",
+  });
+const NODE = "hs-dc1-f1-a-r0106-s01";
+const addFault =
+  (type: string, target: string, params: Record<string, number> = {}) =>
+  (w: World) =>
+    w.apply(
+      { type: "fault.add", fault: { id: `drive-${type}`, type, target, params } } as never,
+      "test",
+    );
+const did = (type: string, target: string) => (w: World) =>
+  w.events().some((e) => e.type === type && (e as { target?: string }).target === target);
+
+const REQ107_DRIVES: Record<string, Drive> = {
+  "gpu.reset|gpu_reset": {
+    world: TRAIN,
+    tool: "gpu_reset",
+    args: { server: NODE, gpu: "0" },
+    changed: did("gpu.reset", `${NODE}-gpu0`),
+    action: { kind: "gpu_reset", target: `${NODE}-gpu0` },
+  },
+  "job.resume|job_resume": {
+    world: TRAIN,
+    tool: "job_resume",
+    args: { job: "train-job" },
+    before: addFault("gpu_xid_error", `${NODE}-gpu0`),
+    settle: 60,
+    changed: did("job.resume", "train-job"),
+    action: { kind: "job_resume", target: "train-job" },
+  },
+  "node.drain|node_drain": {
+    world: TRAIN,
+    tool: "node_drain",
+    args: { node: NODE, on: true },
+    changed: did("node.drain", NODE),
+    action: { kind: "node_drain", target: NODE },
+  },
+  "pool.scale|pool_scale": {
+    world: POOL,
+    tool: "pool_scale",
+    args: { pool: "serve-pool", replicas: 12 },
+    changed: did("pool.scale", "serve-pool"),
+    action: { kind: "pool_scale", target: "serve-pool" },
+  },
+  "power.cap|set_power_cap": {
+    world: TRAIN,
+    tool: "set_power_cap",
+    args: { server: NODE, watts: 6000 },
+    changed: did("power.cap", NODE),
+    action: { kind: "power_cap", target: NODE },
+  },
+  "feed.transfer|transfer_feed": {
+    world: () => powerLab("pwr-substation"),
+    tool: "transfer_feed",
+    args: { feed: 2 },
+    before: addFault("utility_feed_loss", "hs-sub", { feed: 1, manual: 1 }),
+    settle: 60,
+    changed: did("feed.transfer", "hs-sub"),
+    action: { kind: "feed_transfer", target: "hs-sub" },
+  },
+  "cdu.pump_switch|cdu_pump_switch": {
+    world: POD,
+    tool: "cdu_pump_switch",
+    args: { cdu: "hs-dc1-f1-a-cdu1" },
+    changed: did("cdu.pump_switch", "hs-dc1-f1-a-cdu1"),
+    action: { kind: "pump_switch", target: "hs-dc1-f1-a-cdu1" },
+  },
+};
+
 const DRIVES: Record<string, Drive> = {
+  ...REQ107_DRIVES,
   "power.server|power_server": {
     world: campusBlueprint,
     tool: "power_server",

@@ -1,13 +1,12 @@
 /** Dynamic state of the world: JSON-serialisable so it can be snapshotted and sent between threads. */
 import type { Catalog, EquipmentModel } from "@terrarium/core/catalog";
-import type { Entity, EntityKind } from "./blueprint";
+import type { EntityKind } from "./blueprint";
 import { bulkOf } from "./bulk";
-import type { Fault } from "./faults";
 import { type FirmwareJob, SHIPPED_FIRMWARE } from "./firmware";
 import type { BlueprintIndex } from "./graph";
-import type { NetPatch } from "./net-config";
 import type { HostOs } from "./os";
 import type { ServiceStatus } from "./service";
+import { ACCEL_FACTORIES, type AccelStates } from "./state-accel";
 import {
   APP_FACTORIES,
   type AppInstanceState,
@@ -63,6 +62,8 @@ export type {
 };
 export type { K8sClusterState, K8sNodeState, K8sWorkloadState, PodPhase, PodState };
 
+import type { Alarm, WorldState } from "./state-world";
+
 export type Health = "ok" | "warning" | "critical";
 
 interface Base {
@@ -80,6 +81,10 @@ export interface ServerState extends Base {
   psuOk: boolean[];
   powerW: number;
   throttled: boolean;
+  /** Power cap in watts (`set_power_cap`, REQ-107), `perf` the throughput it leaves (0..1), `gpuLoad` the load its GPUs are asked. */
+  powerCapW?: number;
+  perf?: number;
+  gpuLoad?: number;
   /** The operating system, once something needed it (see os.ts). */
   os?: HostOs;
   /** Firmware versions; the BMC says "shipped" until it is updated (the profile's own version shows then). */
@@ -156,6 +161,12 @@ export interface RackState extends Base {
   bathC: number;
   /** The most servers of this rack that were rebooting for firmware at the same time. */
   rebootPeak: number;
+  overS?: number; // power-capping meters of a rack with a limit (REQ-107, ADR-0130)
+  overCount?: number;
+  over?: boolean;
+  lossS?: number;
+  hotAt?: number;
+  stopAt?: number;
 }
 export interface CduState extends Base {
   kind: "cdu";
@@ -169,6 +180,7 @@ export interface CduState extends Base {
   loadKw: number;
   capacityKw: number;
   pumpsOk: boolean[];
+  standbyOn?: boolean;
 }
 export interface ChillerState extends Base {
   kind: "chiller";
@@ -283,34 +295,13 @@ export type EntityState =
   | MeshControlState
   | RegionState
   | SiteEntityState
+  | AccelStates
   | SiteState
   | PlainState;
 
 export type StateOf<K extends EntityKind> = Extract<EntityState, { kind: K }>;
 
-export interface Alarm {
-  readonly id: string;
-  readonly entityId: string;
-  readonly code: string;
-  /** Which part of the world raised it when that is not the equipment itself: a service, or a host's operating system. */
-  readonly kind?: "service" | "os";
-  readonly severity: "warning" | "critical";
-  readonly message: string;
-  readonly since: number;
-}
-
-export interface WorldState {
-  t: number;
-  entities: Record<string, EntityState>;
-  /** `up` follows faults; `adminDown` names the ends an operator has shut (absent while none is). */
-  links: Record<string, { up: boolean; adminDown?: { from?: true; to?: true } }>;
-  faults: Record<string, Fault>;
-  alarms: Record<string, Alarm>;
-  /** What operators changed in the layer-2/3 configuration of a switch (REQ-064); absent while nobody has. */
-  netconf?: Record<string, NetPatch>;
-  /** Outdoor air, °C; absent means the default, so worlds that never change it keep their old snapshots and digests. */
-  outdoorC?: number;
-}
+export type { Alarm, WorldState };
 
 /** Outdoor air while no scenario has changed it, °C. */
 export const DEFAULT_OUTDOOR_C = 25;
@@ -458,6 +449,7 @@ const FACTORIES: Partial<Record<EntityKind, Factory>> = {
   ...K8S_FACTORIES,
   ...APP_FACTORIES,
   ...SITE_FACTORIES,
+  ...ACCEL_FACTORIES,
 };
 
 function initial(kind: EntityKind, modelId: string | undefined, catalog: Catalog): EntityState {

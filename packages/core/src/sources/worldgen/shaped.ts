@@ -22,6 +22,7 @@ import { DEFAULT_CAMPUS, SITE_CAMPUS_MIX } from "./campus-spec";
 import { generateWorld } from "./generate";
 import { type AppService, layApp } from "./shaped-app";
 import { contentsOf, type Laying, layCluster, layPool, link, slugOf } from "./shaped-db";
+import { layAccel, layLiquidParts, layRackPower } from "./shaped-gpu";
 import { type HostPool, hostPool, nodesOn, pickHosts, vmsOn } from "./shaped-hosts";
 import { dependsOn, layK8s } from "./shaped-k8s";
 import {
@@ -177,7 +178,7 @@ function layDatabase(
 
 function lay(bp: Blueprint, spec: ShapeSpec, catalog: Catalog): Laying {
   const index = new BlueprintIndex(bp);
-  const pool = hostPool(index);
+  const pool = hostPool(index, catalog);
   const world = buildOf(spec.layers);
   const site = planSites(index, pool, world.site);
   const primaryPool = site?.poolA ?? pool;
@@ -208,6 +209,7 @@ function lay(bp: Blueprint, spec: ShapeSpec, catalog: Catalog): Laying {
   }
   layNetworkOverlay(into, index, { pool: primaryPool, used, spec, placed });
   layApp(into, { index }, apps);
+  layBuildParts(into, { index, catalog, spec, pool: primaryPool, used });
   return into;
 }
 
@@ -297,6 +299,32 @@ function layService(
       hosts: lead.map((h) => h.id),
     },
   };
+}
+
+/** The accelerator layer, the rack batteries and the liquid parts the world's choices ask for (REQ-107). */
+function layBuildParts(
+  into: Laying,
+  ctx: {
+    readonly index: BlueprintIndex;
+    readonly catalog: Catalog;
+    readonly spec: ShapeSpec;
+    readonly pool: HostPool;
+    readonly used: Set<string>;
+  },
+): void {
+  const { index, catalog, spec } = ctx;
+  const build = buildOf(spec.layers);
+  if (build.accel)
+    layAccel(into, {
+      index,
+      catalog,
+      build: build.accel,
+      fabric: spec.layers.network === "net-ai-fabric" ? "roce" : "ib",
+      services: spec.services,
+      schedulerHost: build.accel.scheduler ? pickHosts(ctx.pool, 1, ctx.used)[0]?.id : undefined,
+    });
+  if (build.power?.rackBattery) layRackPower(into, index, catalog);
+  if (build.liquid) layLiquidParts(into, index, catalog);
 }
 
 /** The overlay and the cloud-native network, if the world's network choice asks for them. */

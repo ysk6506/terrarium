@@ -61,8 +61,10 @@ describe("the tool cards [REQ-080]", () => {
     expect(names("get_impact")).toEqual(["get_impact"]);
     expect(names("없음")).toEqual(["get_impact"]);
     expect(names("드묾").sort()).toEqual([
+      "bbu_status",
       "breaker_reset",
       "breaker_status",
+      "cdu_pump_switch",
       "dr_drill",
       "dr_failback",
       "dr_failover",
@@ -70,10 +72,14 @@ describe("the tool cards [REQ-080]", () => {
       "mesh_rollback",
       "mesh_status",
       "overlay_trace",
+      "power_cap_status",
       "region_failover",
       "replication_status",
       "search_runbooks",
+      "set_power_cap",
       "site_status",
+      "substation_status",
+      "transfer_feed",
       "volume_promote",
     ]);
     expect(names("전혀 없는 말")).toEqual([]);

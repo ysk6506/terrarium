@@ -11,6 +11,7 @@
 import type { ScenarioDoc } from "@terrarium/core/scenario";
 import { TOOL_SPECS } from "@terrarium/core/tools";
 import { domainInfo, faultDomain, formatSpan, standsOnCluster } from "@terrarium/core/world";
+import { accelPath } from "./probes-accel";
 import { appPath } from "./probes-app";
 import { onlySilentFaults, sitePath } from "./probes-site";
 import { Session, type SessionConfig } from "./session";
@@ -70,6 +71,11 @@ export interface RecoveryPath {
     | "db_managed_failover"
     | "db_managed_scale_storage"
     | "run_command"
+    | "gpu_reset"
+    | "node_drain"
+    | "job_resume"
+    | "pool_scale"
+    | "cdu_pump_switch"
     | "escalate";
   /** In plain Korean: how it works, or what is missing. */
   readonly note: string;
@@ -365,6 +371,7 @@ function layerPath(config: Config): RecoveryPath {
     k8sPath(config) ??
     overlayPath(config) ??
     appPath(config) ??
+    accelPath(config) ??
     handOver(config) ??
     NO_WAY
   );

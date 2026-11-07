@@ -1,5 +1,5 @@
 /**
- * The HA ladders (REQ-094, ADR-0107): eight layers, each a row of choices from cheap-and-often-down on the left to
+ * The HA ladders (REQ-094, ADR-0107): nine layers, each a row of choices from cheap-and-often-down on the left to
  * dear-and-rarely-down on the right. This file holds what the core needs of a choice: its id, its place in the
  * ladder, whether the core can imitate it at all (a dotted chip, ADR-0107 item 5), what it makes of a generated
  * world, and which faults its structure makes possible. The words, pictures and cards of each choice belong to
@@ -7,10 +7,14 @@
  */
 
 import type { FaultType, MistakeType } from "./faults";
+import { ACCEL_CHIPS } from "./ladder-accel";
 import type { ChipBuild } from "./ladder-build";
+import { at, c } from "./ladder-kit";
+import { COOL_IMMERSION, COOL_RDHX, PWR_BBU, PWR_N1, PWR_SUBSTATION } from "./ladder-power-cooling";
 import { DISTRIBUTED_SQL_CHIP, GEO_CHIP, MANAGED_MULTIAZ_CHIP, SITE_CHIPS } from "./ladder-site";
 
 export type {
+  AccelBuild,
   AppBuild,
   ChipBuild,
   DatabaseBuild,
@@ -18,6 +22,7 @@ export type {
   K8sBuild,
   OverlayBuild,
   PoolBuild,
+  PowerBuild,
   SiteBuild,
 } from "./ladder-build";
 
@@ -27,6 +32,7 @@ export type Problem = FaultType | MistakeType;
 export type LayerId =
   | "network"
   | "compute"
+  | "accel"
   | "storage"
   | "database"
   | "app"
@@ -37,6 +43,7 @@ export type LayerId =
 export const LAYER_IDS: readonly LayerId[] = [
   "network",
   "compute",
+  "accel",
   "storage",
   "database",
   "app",
@@ -85,28 +92,11 @@ export interface ChipMech {
   readonly costM: number;
 }
 
-const c = (
-  layer: LayerId,
-  id: string,
-  rest: Omit<ChipMech, "id" | "layer" | "modeled" | "build" | "stops" | "slows" | "costM"> &
-    Partial<Pick<ChipMech, "modeled" | "build" | "stops" | "slows" | "costM">>,
-): ChipMech => ({
-  ...rest,
-  id,
-  layer,
-  modeled: rest.modeled ?? true,
-  build: rest.build ?? {},
-  stops: rest.stops ?? [],
-  slows: rest.slows ?? [],
-  costM: rest.costM ?? 0,
-});
-
-const at = (layer: LayerId, atLeast: string): LadderSpot => ({ layer, atLeast });
 const SHARED: Need = at("storage", "sto-shared");
 const CONTAINERS: Need = at("compute", "cmp-containers");
 const MANY_DB = at("database", "db-distributed-sql");
 
-/** Every choice of every layer, left to right. 46 in all. */
+/** Every choice of every layer, left to right. 56 in all. */
 const APP_SLOWS = [
   "process_crashloop",
   "memory_leak",
@@ -245,6 +235,7 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       costM: 120,
     }),
   ],
+  accel: ACCEL_CHIPS,
   storage: [
     c("storage", "sto-local", {
       stops: ["disk_failure", "disk_full", "fs_readonly"],
@@ -377,18 +368,24 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       slows: ["breaker_trip", "grid_outage", "ups_battery_degraded", "psu_failure", "outlet_off"],
       costM: 40,
     }),
+    PWR_N1,
     c("power", "pwr-2n-gen", {
-      build: { feeds: 2 },
+      build: { feeds: 2, power: { upsSpare: true, generator: true, fuelHours: 8 } },
       stops: [],
       slows: ["breaker_trip", "grid_outage", "ups_battery_degraded", "generator_start_failure"],
       costM: 220,
     }),
     c("power", "pwr-2n-auto", {
-      build: { feeds: 2 },
+      build: {
+        feeds: 2,
+        power: { upsSpare: true, generator: true, fuelHours: 48, spareGenerator: true },
+      },
       stops: [],
-      slows: ["ats_stuck", "generator_start_failure", "ups_battery_degraded"],
+      slows: ["ats_stuck", "generator_start_failure", "ups_battery_degraded", "ups_module_fail"],
       costM: 330,
     }),
+    PWR_BBU,
+    PWR_SUBSTATION,
   ],
   cooling: [
     c("cooling", "cool-n", {
@@ -408,12 +405,14 @@ export const LADDER: Readonly<Record<LayerId, readonly ChipMech[]>> = {
       slows: ["cooling_unit_failure", "chiller_failure", "chiller_degraded", "setpoint_drift"],
       costM: 90,
     }),
+    COOL_RDHX,
     c("cooling", "cool-liquid", {
-      build: { cooling: "2N", containment: true },
+      build: { cooling: "2N", containment: true, liquid: "dlc" },
       stops: [],
       slows: ["cdu_failure", "cdu_pump_failure", "coolant_leak", "chiller_degraded"],
       costM: 200,
     }),
+    COOL_IMMERSION,
   ],
   site: [
     c("site", "site-one-room", { build: { rooms: 1, buildings: 1 } }),

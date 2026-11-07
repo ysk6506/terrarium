@@ -67,7 +67,8 @@ describe("the board of the whole of Hwaseong is small, complete and quick [REQ-0
       const board = fold(healthy, { layer });
       expect(Date.now() - started).toBeLessThan(3000);
       expect(board.tiles.length).toBeLessThanOrEqual(board.stages.length * 3);
-      expect(board.stats.folded).toBeGreaterThan(10_000);
+      // the accelerator layer is empty in a campus without GPUs (REQ-107)
+      if (layer !== "accel") expect(board.stats.folded).toBeGreaterThan(10_000);
     }
   });
 

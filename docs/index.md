@@ -41,6 +41,8 @@ verification_log:
 - [사이트·DR 층 — 서버룸 하나에서 멀티 사이트까지, 지역 복제, 합의 DB, 관리형 멀티 AZ, 고장 열다섯, 툴 열넷](design-docs/site-dr-layer.md)
 - [SDN 오버레이와 클라우드 네이티브 네트워크 층 — 리프-스파인 위의 가상 네트워크, 고장 일곱, 컨트롤러 전환](design-docs/sdn-network-layer.md)
 - [애플리케이션 층 — 서비스 호출 그래프, 로드 밸런서·세션·브레이커·메시·리전, 고장 여덟](design-docs/application-layer.md)
+- [가속기(GPU) 층 — GPU·NVLink·IB 패브릭·스케줄러·학습 잡·추론 풀, 고장 여덟](design-docs/gpu-layer.md)
+- [전원·냉방 사다리 확장 — N+1 UPS·랙 배터리·변전소, 리어도어·침지, 파워 캐핑(모델만)](design-docs/power-cooling-ladders.md)
 - [모델 등록 — LLM API를 워크스페이스에 등록하고 연결 확인까지 (REQ-099)](design-docs/model-registration.md)
 - [이끼 — 테라리움 도우미가 문서와 화면으로 답하고 화면을 같이 넘기는 법 (REQ-103)](design-docs/moss.md)
 - [세계 인기·좋아요·칭호와 계급 모델 — 점수 식, 칭호 조건표, 메달·계급 규칙, 한계 (REQ-101)](design-docs/ranking-and-titles.md)
@@ -74,6 +76,7 @@ verification_log:
 - [운영 모드 — 끝이 없는 실험, 당겨서 보는 모니터링, 실시간과 빨리 감기](design-docs/operation-mode.md)
 - [운영 에이전트 설계 가이드 — 8시간 동안 지켜보는 에이전트를 만드는 법](guides/operation-agent-guide.md)
 - [용어집 — 화면에 쓰는 말은 여기서 정한다](design-docs/glossary.md)
+- [용어집 층별 말 — SDN·컨테이너·애플리케이션·가속기·사이트](design-docs/glossary-layers.md)
 
 ### ADR
 
@@ -190,6 +193,7 @@ verification_log:
 - [0124 이끼 — 테라리움 도우미: 이름·지식 둘·화면 등록·누락 검사·모델·품질 측정, 먼저 말 걸지 않는다](design-docs/adr/0124-moss-assistant.md)
 - [0125 이끼는 LLM을 연결해야만 쓸 수 있다: 기본 모델이 없으면 꺼져 있고, 점수 질문은 채점 문서를 먼저 찾는다](design-docs/adr/0125-moss-requires-model.md)
 - [0126 run-all은 이끼 검사도 돌린다 (0124 보정)](design-docs/adr/0126-run-all-includes-moss.md)
+- [0130 GPU 가속기 층을 사다리에 올리고, 전원·냉방 사다리를 끝까지 실선으로 늘리며, 파워 캐핑을 모델로 옮긴다](design-docs/adr/0130-gpu-layer-power-cooling-ladders.md)
 - [0122 세계 인기 순서·좋아요·칭호, 그리고 계급 모델 — 점수는 서버가 기록에서 세고, 칭호는 한 번 얻으면 안 잃고, 계급은 아직 화면에 없다](design-docs/adr/0122-world-popularity-likes-titles.md)
 - [0121 애플리케이션 층을 코어 모델로 올리고 서비스 호출 그래프를 넣는다](design-docs/adr/0121-application-layer-and-calls.md)
 - [0116 진짜 호스트 섞기 (폐기, 0117로 대체)](design-docs/adr/0116-real-hosts-in-the-world.md)

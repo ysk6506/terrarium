@@ -53,9 +53,9 @@ export function pressesToExperiment(services: number): number {
   throw new Error("the flow does not end");
 }
 
-/** "IAP 실험용 · 호스트 3 · VM 9 · 스위치 2 · 5.3억 원" */
+/** "IAP 실험용 · 호스트 3 · VM 9 · 스위치 2 · 5.3억 원" (GPU가 있으면 스위치 다음에 "GPU 64"). */
 export const builtFact = (name: string, view: ShapeView): string =>
-  `${name} · 호스트 ${view.hosts} · VM ${view.vms} · 스위치 ${view.switches} · ${costText(view.costM)}${
+  `${name} · 호스트 ${view.hosts} · VM ${view.vms} · 스위치 ${view.switches}${view.gpus > 0 ? ` · GPU ${view.gpus}` : ""} · ${costText(view.costM)}${
     view.dr ? ` · 사이트 둘(${view.dr.label} · ${view.dr.promise})` : ""
   }`;
 

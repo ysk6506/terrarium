@@ -80,6 +80,22 @@ export const MTBF_TABLE: readonly Mtbf[] = [
   { type: "db_az_failure", kinds: ["db_managed"], hours: 20_000 },
   { type: "db_failover_flapping", kinds: ["db_managed"], hours: 15_000 },
   { type: "db_storage_full", kinds: ["db_managed"], hours: 8_000 },
+  // 가속기 층·전원·냉방 확장 (REQ-107)
+  { type: "gpu_xid_error", kinds: ["gpu"], hours: 6_000 },
+  { type: "nvlink_down", kinds: ["nvlink_domain"], hours: 12_000 },
+  { type: "ib_link_flap", kinds: ["ib_link"], hours: 5_000 },
+  { type: "gpu_thermal_throttle", kinds: ["gpu"], hours: 9_000 },
+  { type: "gpu_memory_leak_inference", kinds: ["gpu"], hours: 4_000 },
+  { type: "job_stuck_checkpoint", kinds: ["training_job"], hours: 2_000 },
+  { type: "scheduler_down", kinds: ["job_scheduler"], hours: 6_000 },
+  { type: "mig_misconfig", kinds: ["inference_pool"], hours: 8_000 },
+  { type: "bbu_cell_fault", kinds: ["bbu"], hours: 14_000 },
+  { type: "dc_bus_sag", kinds: ["dc_bus"], hours: 16_000 },
+  { type: "utility_feed_loss", kinds: ["substation"], hours: 20_000 },
+  { type: "transformer_overtemp", kinds: ["substation"], hours: 30_000 },
+  { type: "ups_module_fail", kinds: ["ups"], hours: 12_000 },
+  { type: "rdhx_valve_stuck", kinds: ["rdhx"], hours: 15_000 },
+  { type: "fluid_level_low", kinds: ["immersion_tank"], hours: 18_000 },
 ];
 
 /**

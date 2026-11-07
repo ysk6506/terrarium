@@ -3,6 +3,7 @@
  * for people (Korean); descriptions are for the agent (English, as LLM tool descriptions usually are).
  */
 
+import { ACCEL_SPECS } from "./catalog-accel";
 import { APP_SPECS } from "./catalog-app";
 import { DB_SPECS } from "./catalog-db";
 import { K8S_SPECS } from "./catalog-k8s";
@@ -423,6 +424,7 @@ export const TOOL_SPECS: readonly ToolSpec[] = [
   ...K8S_SPECS,
   ...APP_SPECS,
   ...SITE_SPECS,
+  ...ACCEL_SPECS,
 ].map((raw) => {
   const doc = TOOL_DOCS[raw.name];
   if (!doc) throw new Error(`tool '${raw.name}' has no entry in TOOL_DOCS`);

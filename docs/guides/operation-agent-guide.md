@@ -8,13 +8,13 @@ covers:
   - packages/core/src/session/operation/metrics.ts
   - packages/core/src/session/operation/mtbf.ts
   - apps/server/src/adapters/harness/scripted-operator.ts
-covers_hash: d96dcfdb0067b47c
+covers_hash: de06e95e4b48d3b0
 verification_log:
-  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
-  - "2026-11-06: o1·o2 합치기"
   - "2026-11-07: REQ-100 애플리케이션 층이 덮는 코드가 바뀐 것을 확인했고 이 문서의 내용은 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
   - "2026-11-07: REQ-106 사이트 툴이 더해졌다. 가이드의 흐름은 그대로 맞다"
+  - "2026-11-07: REQ-107: 에이전트용 툴 목록에 새 툴이 늘었음을 대조했고 안내 내용은 그대로 맞다"
+  - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
 ---
 # 운영 에이전트 설계 가이드
 

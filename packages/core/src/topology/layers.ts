@@ -5,6 +5,7 @@
  */
 import type { BlueprintIndex } from "@terrarium/core/world";
 import type { Impact } from "./impact";
+import { accelShape } from "./layer-accel";
 import { coolingShape } from "./layer-cooling";
 import { networkShape } from "./layer-network";
 import { powerShape } from "./layer-power";
@@ -18,6 +19,7 @@ const MAKERS: Readonly<Record<LayerId, (index: BlueprintIndex) => LayerShape>> =
   power: powerShape,
   cooling: coolingShape,
   network: networkShape,
+  accel: accelShape,
 };
 
 const shapes = new WeakMap<BlueprintIndex, Map<LayerId, LayerShape>>();

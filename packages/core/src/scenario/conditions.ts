@@ -68,6 +68,13 @@ const PLAIN_ACTIONS: Readonly<Record<string, AgentAction["action"]>> = {
   "dbnode.transfer": "dbnode_transfer",
   "dbm.failover": "dbm_failover",
   "dbm.scale": "dbm_scale",
+  "gpu.reset": "gpu_reset",
+  "job.resume": "job_resume",
+  "node.drain": "node_drain",
+  "pool.scale": "pool_scale",
+  "power.cap": "power_cap",
+  "feed.transfer": "feed_transfer",
+  "cdu.pump_switch": "pump_switch",
 };
 
 function serviceAction(c: WorldCommand): AgentAction | undefined {

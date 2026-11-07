@@ -65,12 +65,22 @@ const WAYS: Readonly<Record<string, string>> = {
   db_transfer_leader: "리더 넘기기",
   db_managed_failover: "관리형 DB 영역 넘기기",
   db_managed_scale_storage: "저장소 늘리기",
+  gpu_reset: "GPU 리셋하기",
+  job_resume: "잡 이어서 돌리기",
+  node_drain: "노드 비우기",
+  pool_scale: "풀 크기 바꾸기",
+  set_power_cap: "전력 캡 걸기",
+  transfer_feed: "수전 줄 옮기기",
+  cdu_pump_switch: "예비 펌프 돌리기",
 };
 
 export interface ShapeView {
   readonly hosts: number;
   readonly vms: number;
   readonly switches: number;
+  /** GPUs and the kilowatts of the whole world (REQ-107): shown when the world has GPUs. */
+  readonly gpus: number;
+  readonly kw: number;
   readonly costM: number;
   readonly stops: readonly string[];
   readonly slows: readonly string[];
@@ -205,6 +215,8 @@ export function shapeView(spec: ShapeSpec): ShapeView {
       return n + (build.bare ? 0 : s.nodes * (build.k8s?.clusters ?? 1));
     }, 0),
     switches,
+    gpus: plan.gpus,
+    kw: plan.kw,
     costM: (own + plan.spareHosts) * SERVER_COST_M + switches * SWITCH_COST_M + chips,
     stops: names(stops),
     slows: names(slows),

@@ -6,7 +6,6 @@
  * asks whether the shell reaches the *cause* once the agent is on it.
  */
 import type { ScenarioDoc } from "@terrarium/core/scenario";
-import { OS_FAULT_TYPES } from "@terrarium/core/world";
 import { Session, type SessionConfig } from "./session";
 
 type Config = Omit<SessionConfig, "tools" | "seed"> & { readonly seed?: number };
@@ -37,6 +36,7 @@ export const FIRST_LOOK: readonly string[] = [
   "journalctl -b -1 -p err -n 20",
   "ps aux | grep -c defunct",
   "ls -lS /var/log/*/ | head",
+  "nvidia-smi",
 ];
 
 /** The text each fault leaves where those commands look. */
@@ -53,6 +53,14 @@ export const SIGNS: Readonly<Record<string, RegExp>> = {
   kernel_panic: /Kernel panic/,
 };
 
+/** A GPU host: `nvidia-smi` shows the GPU that fell off the bus (REQ-107). */
+const GPU_SIGNS: Readonly<Record<string, RegExp>> = {
+  gpu_xid_error: /ERR!|Xid/,
+  gpu_memory_leak_inference: /ERR!|\b[6-9]\d{4}MiB/,
+};
+
+const ALL_SIGNS: Readonly<Record<string, RegExp>> = { ...SIGNS, ...GPU_SIGNS };
+
 interface Answer {
   readonly host: string;
   readonly fault: string;
@@ -63,7 +71,7 @@ function answerOf(scenario: ScenarioDoc): Answer | undefined {
   for (const e of scenario.expectations) {
     if (e.kind !== "diagnosis") continue;
     const host = e.rootCause[0];
-    const fault = e.faultType.find((f) => (OS_FAULT_TYPES as readonly string[]).includes(f));
+    const fault = e.faultType.find((f) => f in ALL_SIGNS);
     if (host && fault) return { host, fault };
   }
   return undefined;
@@ -78,7 +86,7 @@ export function shellReach(config: Config): ShellReach | undefined {
   if (!target) return undefined;
   const s = Session.create({ ...config, tools: ["run_command", "wait"], seed: config.seed ?? 1 });
   s.start();
-  const sign = SIGNS[target.fault] as RegExp;
+  const sign = ALL_SIGNS[target.fault] as RegExp;
   let calls = 0;
   for (const cmd of FIRST_LOOK) {
     calls++;

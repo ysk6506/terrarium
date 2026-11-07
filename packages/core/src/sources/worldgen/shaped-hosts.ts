@@ -3,6 +3,7 @@
  * rack by rack, the next unused one (rooms in turn, racks spread out), and the VMs laid on them. Split from shaped.ts so
  * the site layer (REQ-106) can pick hosts from one building at a time.
  */
+import type { Catalog } from "@terrarium/core/catalog";
 import type { BlueprintIndex, Entity } from "@terrarium/core/world";
 import { type Laying, link, slugOf } from "./shaped-db";
 import type { ServiceDraft } from "./shaped-plan";
@@ -13,11 +14,11 @@ export const roomOf = (index: BlueprintIndex, server: Entity): string =>
   index.find(server.parentId ?? "")?.parentId ?? "";
 
 /** The servers a service may stand on, grouped room by room and rack by rack, in a fixed order. */
-export function hostPool(index: BlueprintIndex): HostPool {
+export function hostPool(index: BlueprintIndex, catalog: Catalog): HostPool {
   const pool = new Map<string, Map<string, Entity[]>>();
   const servers = index
     .ofKind("server")
-    .filter((s) => !(s.modelId ?? "").includes("gpu"))
+    .filter((s) => (s.modelId ? catalog.getOf(s.modelId, "server").gpus === 0 : true))
     .sort((a, b) => a.id.localeCompare(b.id));
   for (const s of servers) {
     const room = roomOf(index, s);

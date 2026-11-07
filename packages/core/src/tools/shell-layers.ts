@@ -8,6 +8,7 @@ import {
   type ShellCmdResult as R,
   registerShellCommand,
 } from "@terrarium/core/world";
+import { dcgmi, ibstat, nvidiaSmi } from "./shell-accel";
 import { istioctl } from "./shell-app";
 import { crictl, kubectl, type ShellOut } from "./shell-k8s";
 
@@ -34,3 +35,6 @@ function asR(c: Cmd, out: ShellOut): R {
 registerShellCommand("kubectl", (c) => asR(c, kubectl(c.world, c.h.id, [c.name, ...c.args])));
 registerShellCommand("crictl", (c) => asR(c, crictl(c.world, c.h.id, [c.name, ...c.args])));
 registerShellCommand("istioctl", (c) => asR(c, istioctl(c.world, [c.name, ...c.args].slice(1))));
+registerShellCommand("nvidia-smi", (c) => asR(c, nvidiaSmi(c.world, c.h, c.args)));
+registerShellCommand("ibstat", (c) => asR(c, ibstat(c.world, c.h)));
+registerShellCommand("dcgmi", (c) => asR(c, dcgmi(c.world, c.h, c.args)));

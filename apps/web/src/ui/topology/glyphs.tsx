@@ -330,6 +330,15 @@ const Region = ({ state }: GlyphProps) => (
   </>
 );
 
+/** A GPU: a flat board with the chip on it. */
+const Gpu = ({ state }: GlyphProps) => (
+  <>
+    <Box x={0} y={8} w={22} d={9} z={4} tone="olive" />
+    <Box x={0} y={5} w={10} d={6} z={4} tone="steel" />
+    <Led x={-8} y={-1} state={state} />
+  </>
+);
+
 type Glyph = (p: GlyphProps) => React.ReactNode;
 
 const SINGLE: Readonly<Record<TopoKind, Glyph>> = {
@@ -372,6 +381,10 @@ const SINGLE: Readonly<Record<TopoKind, Glyph>> = {
   region: Region,
   dr_site: Region,
   site_link: Controller,
+  gpu: Gpu,
+  ib_fabric: Switch,
+  job: Service,
+  pool: Balancer,
 };
 
 /** Many of a kind: racks stand in a row, servers in a stack; the rest are the single glyph on a stack of bases. */

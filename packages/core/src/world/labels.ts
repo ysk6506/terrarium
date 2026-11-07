@@ -52,6 +52,18 @@ export const KIND_LABELS: Readonly<Record<EntityKind, string>> = {
   volume: "볼륨",
   db_node: "합의 DB 노드",
   db_managed: "관리형 DB",
+  gpu: "GPU",
+  nvlink_domain: "NVLink 도메인",
+  ib_fabric: "InfiniBand/RoCE 패브릭",
+  ib_link: "패브릭 링크",
+  job_scheduler: "잡 스케줄러",
+  training_job: "학습 잡",
+  inference_pool: "추론 풀",
+  bbu: "랙 배터리(BBU)",
+  dc_bus: "48V DC 버스",
+  substation: "자체 변전소",
+  rdhx: "리어도어 열교환기",
+  immersion_tank: "액침 탱크",
 };
 
 export const LINK_LABELS: Readonly<Record<LinkKind, string>> = {

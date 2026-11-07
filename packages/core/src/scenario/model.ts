@@ -62,7 +62,14 @@ export type ActionKind =
   | "dbnode_restart"
   | "dbnode_transfer"
   | "dbm_failover"
-  | "dbm_scale";
+  | "dbm_scale"
+  | "gpu_reset"
+  | "job_resume"
+  | "node_drain"
+  | "pool_scale"
+  | "power_cap"
+  | "feed_transfer"
+  | "pump_switch";
 
 export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   power_off: "전원 끄기",
@@ -108,6 +115,13 @@ export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   dbnode_transfer: "합의 DB 리더 넘기기",
   dbm_failover: "관리형 DB 영역 고르기",
   dbm_scale: "관리형 DB 저장소 늘리기",
+  gpu_reset: "GPU 리셋",
+  job_resume: "학습 잡 이어가기",
+  node_drain: "노드 스케줄에서 빼기",
+  pool_scale: "추론 풀 크기 바꾸기",
+  power_cap: "서버 전력 캡",
+  feed_transfer: "수전 옮기기",
+  pump_switch: "예비 펌프 돌리기",
 };
 
 export const ACTION_KINDS = Object.keys(ACTION_LABELS) as ActionKind[];

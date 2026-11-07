@@ -57,6 +57,13 @@ export const EVENT_LABELS: Readonly<Record<Exclude<EventType, "note">, string>> 
   "dbnode.transfer": "합의 DB 리더를 넘긴 적",
   "dbm.failover": "관리형 DB 영역을 고른 적",
   "dbm.scale": "관리형 DB 저장소를 늘린 적",
+  "gpu.reset": "GPU를 리셋한 적",
+  "job.resume": "학습 잡을 체크포인트에서 이어간 적",
+  "node.drain": "노드를 스케줄에서 뺀(되돌린) 적",
+  "pool.scale": "추론 풀의 복제본 수를 바꾼 적",
+  "power.cap": "서버 전력 캡을 걸거나 푼 적",
+  "feed.transfer": "변전소 수전을 다른 줄로 옮긴 적",
+  "cdu.pump_switch": "CDU 예비 펌프를 돌린 적",
 };
 
 export const EVENT_TYPES = Object.keys(EVENT_LABELS) as (keyof typeof EVENT_LABELS)[];

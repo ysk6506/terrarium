@@ -23,6 +23,7 @@ import { k8sLab } from "../../packages/core/src/world/test-support/k8s-lab";
 import { sampleBlueprint } from "../../packages/core/src/world/test-support/sample";
 import { sdnLab } from "../../packages/core/src/world/test-support/sdn-lab";
 import { siteBlueprint } from "./site-support";
+import { accelLab, coolingLab, powerLab } from "./test-support/ladder-labs";
 
 const FILE = new URL("./physics-golden.json", import.meta.url);
 const catalog = new Catalog();
@@ -70,6 +71,10 @@ const worlds: ReadonlyArray<readonly [string, () => Blueprint]> = [
   ["site dr lab", () => siteBlueprint("warm")],
   ["geo storage lab", () => siteBlueprint("geo")],
   ["distributed db lab", () => siteBlueprint("db")],
+  // the accelerator, power and cooling ladders (REQ-107): GPUs with a fabric and a job, a substation with rack batteries, rear doors and immersion
+  ["gpu training lab", () => accelLab("gpu-training-cluster", { network: "net-leaf-spine" })],
+  ["power ladder lab", () => powerLab("pwr-substation")],
+  ["cooling ladder lab", () => coolingLab("cool-immersion")],
 ];
 
 const stateHash = (world: World): string =>

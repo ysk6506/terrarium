@@ -3,6 +3,16 @@
  * `service.restart` and `vm.migrate` do to the state, and of the database, container and SDN layers above them. The
  * world hands itself over as an `OsWorld`.
  */
+
+import {
+  capServer,
+  drainNode,
+  resetGpu,
+  resumeJob,
+  scalePool,
+  switchPump,
+  transferFeed,
+} from "./accel-act";
 import {
   drainBackend,
   enableBackend,
@@ -174,6 +184,36 @@ function reduceApp(world: OsWorld, command: WorldCommand): boolean {
   }
 }
 
+/** The commands of the accelerator layer and of the power and cooling ladders (REQ-107); false when it is not one of them. */
+function reduceAccel(world: OsWorld, command: WorldCommand): boolean {
+  const ctx = dbContext(world);
+  switch (command.type) {
+    case "gpu.reset":
+      resetGpu(ctx, command.target);
+      return true;
+    case "job.resume":
+      resumeJob(ctx, command.target);
+      return true;
+    case "node.drain":
+      drainNode(ctx, command.target, command.on);
+      return true;
+    case "pool.scale":
+      scalePool(ctx, command.target, command.replicas);
+      return true;
+    case "power.cap":
+      capServer(ctx, command.target, command.watts);
+      return true;
+    case "feed.transfer":
+      transferFeed(ctx, command.target, command.feed);
+      return true;
+    case "cdu.pump_switch":
+      switchPump(ctx, command.target);
+      return true;
+    default:
+      return false;
+  }
+}
+
 /** The commands of the overlay and the cloud-native layer (REQ-097); false when the command is not one of them. */
 function reduceSdn(world: OsWorld, command: WorldCommand): boolean {
   const ctx = sdnContext(world);
@@ -198,9 +238,12 @@ function reduceSdn(world: OsWorld, command: WorldCommand): boolean {
   }
 }
 
-/** The commands of the layers that came after the host and service ones: overlay, application, site. */
+/** The commands of the layers that came after the host and service ones: overlay, application, site, accelerator. */
 const reducedByLayer = (world: OsWorld, command: WorldCommand): boolean =>
-  reduceSdn(world, command) || reduceApp(world, command) || reduceSite(world, command);
+  reduceSdn(world, command) ||
+  reduceApp(world, command) ||
+  reduceSite(world, command) ||
+  reduceAccel(world, command);
 
 export function reduceHostAndService(world: OsWorld, command: WorldCommand): void {
   if (command.type.startsWith("k8s.")) {

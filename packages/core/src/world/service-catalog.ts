@@ -48,6 +48,8 @@ export interface CatalogCard {
   readonly calls: readonly string[];
   /** The ladder layers that matter most for it; the second screen says so. */
   readonly matters: readonly LayerId[];
+  /** The accelerator choice the card brings with it (REQ-107); absent: none, the world keeps `gpu-none`. */
+  readonly accel?: string;
 }
 
 const part = (
@@ -246,7 +248,8 @@ export const SERVICE_CATALOG: readonly CatalogCard[] = [
       { name: "모델 응답 없음", perHourKrw: 6_000_000 },
     ],
     calls: ["cache"],
-    matters: ["compute", "network", "cooling"],
+    matters: ["accel", "compute", "network", "cooling"],
+    accel: "gpu-serving-pool",
   },
   {
     id: "training-pipeline",
@@ -269,7 +272,8 @@ export const SERVICE_CATALOG: readonly CatalogCard[] = [
       { name: "체크포인트 손실", perHourKrw: 4_000_000 },
     ],
     calls: [],
-    matters: ["compute", "storage", "power", "cooling"],
+    matters: ["accel", "compute", "storage", "power", "cooling"],
+    accel: "gpu-training-cluster",
   },
   {
     id: "file-share",

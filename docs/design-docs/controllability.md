@@ -9,12 +9,12 @@ covers:
   - packages/core/src/world/command-check.ts
   - packages/core/src/scenario/controls-site.ts
 verification_log:
-  - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
-  - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
-  - "2026-11-07: o5 합치기 (애플리케이션 층)"
   - "2026-11-07: REQ-106 사이트·DR·합의·관리형 DB 줄 여덟과 고장 표를 코드(controls-site.ts)와 대조해 더했다"
   - "2026-11-07: REQ-106 마무리(툴 인자·설명 문구·고장 설명 다듬기)에 맞춰 다시 대조했다. 서술은 그대로 맞다"
-covers_hash: 26895fe765c65ffc
+  - "2026-11-06: 호스트 조치 두 줄의 명령 예를 깊은 OS 흉내(ADR-0117)에 맞췄다: 지우기는 du·find로 찾은 큰 로그, 다시 시작에 stop·start·kill 추가"
+  - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장 절을 더하거나 고쳤고 나머지는 코드와 대조해 그대로 맞다"
+  - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
+covers_hash: 3bb2c0188686bafd
 ---
 # 제어 가능 요소표 (REQ-069, ADR-0066)
 
@@ -88,6 +88,7 @@ SDN 오버레이와 클라우드 네이티브 조치(REQ-097, [SDN 오버레이�
 애플리케이션 조치(REQ-100, [애플리케이션 층](application-layer.md))는 월드 명령 `lb.drain`·`lb.enable`·`circuit.reset`·`mesh.rollback`·`region.failover`와 호스트 조치 하나(`host.app_process`: 호스트에서 `systemctl restart redis-server|envoy|istiod`)다. `lb.drain`과 `region.failover`는 완화이고(백엔드·리전을 피해 갈 뿐 원인은 그대로), 나머지는 원인을 푼다. `mesh.rollback`은 컨트롤 플레인이 멈춘 동안은 거부된다.
 
 사이트·DR과 합의·관리형 DB 조치(REQ-106, [사이트·DR 층](site-dr-layer.md))는 월드 명령 `dr.failover`·`dr.failback`·`dr.drill`·`volume.promote`·`dbnode.restart`·`dbnode.transfer`·`dbm.failover`·`dbm.scale`이다. 전환은 둘째 사이트가 있어야 받아들여지고, 훈련은 서비스를 옮기지 않으며(마지막 훈련 시각만 기록), 영역 고르기는 고장을 풀지 않고 주인 영역을 고정할 뿐이다.
+가속기·전원·냉방 조치(REQ-107, [가속기 층](gpu-layer.md), [전원·냉방 사다리 확장](power-cooling-ladders.md))는 월드 명령 일곱이다: `gpu.reset`(GPU 리셋, 그 노드의 잡이 죽는다), `job.resume`(체크포인트부터 이어가기), `node.drain`(스케줄에서 빼고 되돌리기), `pool.scale`(풀 복제본 수), `power.cap`(서버 전력 캡), `feed.transfer`(변전소 수전 줄), `cdu.pump_switch`(CDU 예비 펌프). 스케줄러는 `host.app_process`(`slurmctld` 재시작)로 살린다.
 
 월드 명령 가운데 운영자의 것이 아닌 것은 이름이 붙어 있다: 고장 발생·복구(시나리오), 열 보호 종료(물리 엔진), 알람 올리기·지우기(모니터링), 기록.
 
@@ -128,6 +129,15 @@ SDN 오버레이와 클라우드 네이티브 조치(REQ-097, [SDN 오버레이�
 | SDN 컨트롤러 다운 (REQ-097) | 피해를 줄일 수 있어요 | SDN 컨트롤러 전환 |
 | 백엔드 플래핑, 리전 다운, 복제 지연 (REQ-100) | 피해를 줄일 수 있어요 | 백엔드 빼기, 리전 넘기기 |
 | 세션 저장소·사이드카·메시 컨트롤 플레인 다운, 브레이커 굳음, 재시도 폭주 (REQ-100) | 고칠 수 있어요 | 프로세스 다시 시작, 브레이커 리셋, 메시 설정 되돌리기 |
+| GPU Xid·추론 메모리 누수 (REQ-107) | 고칠 수 있어요 | GPU 리셋 |
+| NVLink 끊김, 패브릭 링크 플래핑 (REQ-107) | 피해를 줄일 수 있어요 | 노드 빼기 |
+| GPU 열 스로틀, 48V 버스 처짐, 리어도어 밸브 끼임 (REQ-107) | 피해를 줄일 수 있어요 | 전력 캡 |
+| 체크포인트 멈춤 (REQ-107) | 고칠 수 있어요 | 잡 이어가기 |
+| 스케줄러 다운 (REQ-107) | 고칠 수 있어요 | 호스트에서 명령 실행(`slurmctld` 다시 시작) |
+| MIG 잘못 설정 (REQ-107) | 고칠 수 있어요 | 풀 복제본 수 |
+| 수전 한 줄 끊김 (REQ-107) | 고칠 수 있어요 | 수전 줄 옮기기 |
+| 변압기 과열, UPS 모듈 고장 (REQ-107) | 피해를 줄일 수 있어요 | 서버 끄기·부하 줄이기 |
+| 랙 배터리 셀 고장, 침지 수위 낮음 (REQ-107) | 진단하고 사람을 불러요 | — |
 | 컨트롤러 설정 동기화 실패, EVPN 세션 플랩 | 고칠 수 있어요 | 스위치 설정 재동기화 |
 | 인그레스 컨트롤러 다운 | 고칠 수 있어요 | 인그레스 다시 시작 |
 | CNI 플러그인 고장 | 고칠 수 있어요 | 호스트에서 명령 실행(노드의 플러그인 다시 시작) |

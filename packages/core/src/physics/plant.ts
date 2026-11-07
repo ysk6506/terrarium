@@ -75,7 +75,7 @@ export function updateGenerators(world: World, supply: SupplyResolver, dt: numbe
       started,
       model.burnLitresPerHour * share,
       dt,
-      model.fuelLitres,
+      typeof gen.props.fuelLitres === "number" ? gen.props.fuelLitres : model.fuelLitres,
     );
     world.patch(gen.id, "generator", { phase, startedFor, fuelPct });
   }
@@ -156,7 +156,10 @@ function updateCdu(heat: Heat, i: number, loadW: number, dt: number): void {
   const running =
     state.powered && state.adminOn && !fault(world, id, "cdu_failure") && !leakIsolated(world, id);
   const duty = Math.max(1, model.pumps - 1);
-  const pumpFactor = running ? Math.min(1, pumpsOk.filter(Boolean).length / duty) : 0;
+  // a CDU with manual standby (REQ-107) lets its last pump idle until an operator starts it (`cdu_pump_switch`)
+  const manual = (heat.plan.ents[i] as Entity).props.manualStandby === true && !state.standbyOn;
+  const working = manual ? pumpsOk.slice(0, duty) : pumpsOk;
+  const pumpFactor = running ? Math.min(1, working.filter(Boolean).length / duty) : 0;
   const capacityKw = model.capacityKw * pumpFactor * plantAvailabilityAt(heat, i);
   const loadKw = running ? loadW / 1000 : 0;
   const loopJPerK = model.loopLitres * WATER_J_PER_L_K;

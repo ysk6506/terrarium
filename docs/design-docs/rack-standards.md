@@ -2,7 +2,7 @@
 title: 랙 규격과 PDU 콘센트 — EIA-310, OCP ORv3, 콘센트 켜고 끄기
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/world/outlets.ts
   - packages/core/src/world/operator.ts
@@ -13,12 +13,13 @@ covers:
   - packages/core/src/facades/redfish-power.ts
   - packages/core/src/catalog/builtin/orv3.ts
   - packages/core/src/catalog/models.ts
-covers_hash: 22972eaa8b00a1ef
+covers_hash: 2f68062ea3f73fdc
 verification_log:
   - "2026-11-04: ORv3 랙·파워 셸프·콘센트 제어(REQ-063, ADR-0060)를 코드와 대조해 반영했다"
   - "2026-11-04: 전원 계산의 carries(), 명령 검사·상태 바꾸기를 파일로 나눈 것을 다시 대조했다. 동작은 같다"
   - "2026-11-04: models.ts에 gpuModel 필드가 더해졌다. 랙 규격과 무관하다"
   - "2026-11-06: 2026-11-06: ADR-0091(결정 1·2)·ADR-0102 구현: 서비스 층·OS 층 1차를 코드와 대조해 해당 절을 더하거나 고쳤다. 이 문서가 말하는 나머지 구조는 그대로다"
+  - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장이 이 문서의 내용을 바꾸지 않는지 대조했다(층 수·툴 수·칩 수를 세는 문장을 찾아 고쳤고, 나머지는 그대로 맞다)"
 ---
 # 랙 규격과 PDU 콘센트 (REQ-063, ADR-0060)
 

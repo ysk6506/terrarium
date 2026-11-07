@@ -13,11 +13,13 @@ import type {
   World,
   WorldEvent,
 } from "@terrarium/core/world";
+import { updateAccel } from "./accel";
 import { desiredAlarms } from "./alarms";
 import { updateApp } from "./app";
 import { updateDb } from "./db";
 import { updateDbx } from "./dbx";
 import { updateDrs } from "./drs";
+import { updateFacility, updateSubstations } from "./facility-ext";
 import { advanceFirmware } from "./firmware";
 import { updateK8s } from "./k8s";
 import { updateHostOs } from "./os-physics";
@@ -80,11 +82,13 @@ export class Physics {
 
   private compute(dt: number): WorldEvent[] {
     const events: WorldEvent[] = advanceFirmware(this.world);
+    events.push(...updateSubstations(this.world, dt));
     updateGenerators(this.world, new SupplyResolver(this.world), dt);
     this.updateElectrical();
     updateBatteries(this.world, dt);
     updateThermal(this.world, dt);
     updatePlant(this.world, dt);
+    events.push(...updateFacility(this.world, dt));
     events.push(...this.protect());
     if (events.length > 0) this.updateElectrical();
     events.push(...updateHostOs(this.world, dt));
@@ -95,6 +99,7 @@ export class Physics {
     events.push(...updateApp(this.world));
     events.push(...updateSite(this.world, dt));
     events.push(...updateDbx(this.world));
+    events.push(...updateAccel(this.world, dt));
     updateServices(this.world, dt);
     events.push(...this.syncAlarms());
     this.updateHealth();

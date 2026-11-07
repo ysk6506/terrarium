@@ -10,12 +10,12 @@ covers:
   - packages/core/src/scenario/library-facility.ts
   - packages/core/src/scenario/library-domains.ts
 verification_log:
-  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
-  - "2026-11-06: o1·o2 합치기"
   - "2026-11-07: REQ-100 애플리케이션 층이 덮는 코드가 바뀐 것을 확인했고 이 문서의 내용은 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
   - "2026-11-07: REQ-106 시나리오 아홉이 같은 템플릿 모양을 쓴다. 서술은 그대로 맞다"
-covers_hash: abbfe8f3c929523e
+  - "2026-11-07: REQ-107: 해당 문장을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
+  - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
+covers_hash: 5eba01a1ef075397
 ---
 # 시나리오 모델 (REQ-033, REQ-034)
 
@@ -83,7 +83,7 @@ covers_hash: abbfe8f3c929523e
 
 ## 기본 제공 시나리오
 
-`SCENARIO_TEMPLATES`(library.ts)는 주어진 세계에서 대상을 골라 시나리오를 만든다(예: 가장 많은 랙을 맡은 냉방기).
+`SCENARIO_TEMPLATES`(library.ts)는 주어진 세계에서 대상을 골라 시나리오를 만든다(예: 가장 많은 랙을 맡은 냉방기). 층마다 따로 둔 템플릿(애플리케이션·가속기·전원·냉방)은 `library-app.ts`·`library-accel.ts`·`library-power.ts`에 있고 `library-groups.ts`가 `ALL_SCENARIO_TEMPLATES`와 묶음 이름으로 모은다.
 명세 테스트(`tests/spec/scenarios.test.ts`)가 "에이전트가 투입될 때 기본 툴로 근본 원인이 보인다"를 확인한다.
 아무도 풀 수 없는 시나리오는 아무것도 측정하지 못하기 때문이다. 과제 설명에는 증상만 쓰고 정답을 쓰지 않는다(테스트가 확인).
 

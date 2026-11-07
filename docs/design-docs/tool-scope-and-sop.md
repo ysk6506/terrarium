@@ -13,12 +13,12 @@ covers:
   - packages/core/src/session/tool-pick.ts
   - apps/server/src/runtime/escalations.ts
 verification_log:
-  - "2026-11-06: run_command의 툴 설명(tools/docs.ts)이 깊은 OS 흉내로 바뀐 것을 확인했다. 표의 필요한 툴은 그대로다 (REQ-098)"
-  - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
   - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
   - "2026-11-07: REQ-106 고장 열다섯의 필요한 툴과 툴 80개로 고쳤다"
-covers_hash: e80cc210383c53ef
+  - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장 절을 더하거나 고쳤고 나머지는 코드와 대조해 그대로 맞다"
+  - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
+covers_hash: 8c3fea695e886b30
 ---
 # 툴 범위, 에스컬레이션, 절차서 (REQ-080~082, ADR-0087, ADR-0105)
 
@@ -34,7 +34,7 @@ covers_hash: e80cc210383c53ef
 
 ### 영역 카드와 현실 수준 꼬리표
 
-툴 80개는 일곱 영역 카드에 나뉜다(`TOOL_DOCS`의 `area`). 카드는 접혀 있고 펼치면 세부 툴이 나온다. 맨 위에 검색 한 칸이 있다(툴 이름, 제목, 영역, 흔함·드묾·없음으로 찾는다).
+툴 96개는 일곱 영역 카드에 나뉜다(`TOOL_DOCS`의 `area`). 카드는 접혀 있고 펼치면 세부 툴이 나온다. 맨 위에 검색 한 칸이 있다(툴 이름, 제목, 영역, 흔함·드묾·없음으로 찾는다).
 
 | 영역 | 툴 |
 |---|---|
@@ -198,6 +198,15 @@ covers_hash: e80cc210383c53ef
 | 합의 DB 노드 지연 (`db_node_lagging`) | 고쳐요 | `db_node_restart`, `db_transfer_leader` |
 | 관리형 DB 영역 장애·오락가락 (`db_az_failure`, `db_failover_flapping`) | 피해를 줄여요 | `db_managed_failover` |
 | 관리형 DB 저장소 가득 (`db_storage_full`) | 고쳐요 | `db_managed_scale_storage` |
+| GPU Xid (`gpu_xid_error`), 추론 메모리 누수 (`gpu_memory_leak_inference`) | 고쳐요 | `gpu_reset` |
+| NVLink 끊김 (`nvlink_down`), 패브릭 링크 플래핑 (`ib_link_flap`) | 피해를 줄여요 | `node_drain` |
+| GPU 열 스로틀 (`gpu_thermal_throttle`), 48V 버스 처짐 (`dc_bus_sag`), 리어도어 밸브 끼임 (`rdhx_valve_stuck`) | 피해를 줄여요 | `set_power_cap` |
+| 체크포인트 멈춤 (`job_stuck_checkpoint`) | 고쳐요 | `job_resume` |
+| 스케줄러 다운 (`scheduler_down`) | 고쳐요 | `run_command` (`slurmctld` 다시 시작) |
+| MIG 잘못 설정 (`mig_misconfig`) | 고쳐요 | `pool_scale` |
+| 수전 한 줄 끊김 (`utility_feed_loss`) | 고쳐요 | `transfer_feed` |
+| 변압기 과열 (`transformer_overtemp`), UPS 모듈 고장 (`ups_module_fail`) | 피해를 줄여요 | 서버 끄기·전력 캡 |
+| 랙 배터리 셀 고장 (`bbu_cell_fault`), 침지 수위 낮음 (`fluid_level_low`) | 진단하고 사람을 불러요 | — |
 | 포트 VLAN 오설정 (`port_vlan_mismatch`) | 고쳐요 | `network_cli`, `eapi_request`, `nxapi_request` |
 | 포트 꺼짐 (`port_shutdown`) | 고쳐요 | `network_cli`, `eapi_request`, `nxapi_request`, `snmp_request` |
 | VLAN 인터페이스 꺼짐 (`svi_shutdown`) | 고쳐요 | `network_cli`, `eapi_request`, `nxapi_request` |

@@ -1,6 +1,7 @@
-/** Every built-in template in one list, the groups the picker shows, and the lookup by id (REQ-033, REQ-106). */
+/** Every built-in template in one list, the groups the picker shows, and the lookup by id (REQ-033, REQ-106, REQ-107). */
 
 import { SCENARIO_TEMPLATES } from "./library";
+import { ACCEL_TEMPLATES } from "./library-accel";
 import { APP_TEMPLATES } from "./library-app";
 import { DB_TEMPLATES } from "./library-db";
 import { DOMAIN_TEMPLATES } from "./library-domains";
@@ -10,11 +11,13 @@ import { K8S_TEMPLATES } from "./library-k8s";
 import type { ScenarioTemplate } from "./library-kit";
 import { NETWORK_TEMPLATES } from "./library-network";
 import { OS_TEMPLATES } from "./library-os";
+import { POWER_TEMPLATES } from "./library-power";
 import { SDN_TEMPLATES } from "./library-sdn";
 import { SITE_TEMPLATES } from "./library-site";
 
 /** The groups of built-in templates, one list per layer of the world they break or change (REQ-068 to REQ-097). */
 export {
+  ACCEL_TEMPLATES,
   APP_TEMPLATES,
   DB_TEMPLATES,
   DOMAIN_TEMPLATES,
@@ -23,6 +26,7 @@ export {
   K8S_TEMPLATES,
   NETWORK_TEMPLATES,
   OS_TEMPLATES,
+  POWER_TEMPLATES,
   SCENARIO_TEMPLATES,
   type ScenarioTemplate,
   SDN_TEMPLATES,
@@ -38,6 +42,8 @@ export const ALL_SCENARIO_TEMPLATES: readonly ScenarioTemplate[] = [
   ...OS_TEMPLATES,
   ...[...DB_TEMPLATES, ...SDN_TEMPLATES, ...APP_TEMPLATES, ...K8S_TEMPLATES, ...DOMAIN_TEMPLATES],
   ...SITE_TEMPLATES,
+  ...ACCEL_TEMPLATES,
+  ...POWER_TEMPLATES,
 ];
 
 /** How the new-scenario picker groups the templates: equipment first, then changes people make to settings. */
@@ -52,6 +58,8 @@ export const TEMPLATE_GROUPS: readonly {
     | "network_overlay"
     | "application"
     | "site"
+    | "accelerator"
+    | "power_cooling"
     | "domains";
   readonly label: string;
   readonly templates: readonly ScenarioTemplate[];
@@ -65,6 +73,8 @@ export const TEMPLATE_GROUPS: readonly {
   { id: "network_overlay", label: "SDN·클라우드 네이티브 네트워크", templates: SDN_TEMPLATES },
   { id: "application", label: "애플리케이션 층(로드 밸런서·메시·리전)", templates: APP_TEMPLATES },
   { id: "site", label: "사이트·DR과 합의·관리형 DB", templates: SITE_TEMPLATES },
+  { id: "accelerator", label: "GPU 가속기 층", templates: ACCEL_TEMPLATES },
+  { id: "power_cooling", label: "전원·냉방 사다리(전력 캡 포함)", templates: POWER_TEMPLATES },
   { id: "domains", label: "내 도메인 밖이 원인", templates: DOMAIN_TEMPLATES },
 ];
 

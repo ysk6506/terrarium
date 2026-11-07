@@ -4,7 +4,13 @@
  * (restart a process, free disk, remount, reboot) are `host.act`; they are applied here to the state the world
  * hands over, together with the faults they can clear.
  */
-import { MESH_PROCESS, SESSION_PROCESS, SIDECAR_PROCESS, sidecarOf } from "./app";
+import {
+  MESH_PROCESS,
+  SCHEDULER_PROCESS,
+  SESSION_PROCESS,
+  SIDECAR_PROCESS,
+  sidecarOf,
+} from "./app";
 import type { Entity } from "./blueprint";
 import type { Fault, FaultType } from "./faults";
 import {
@@ -104,6 +110,7 @@ function hostedProcesses(world: WorldReader, id: string): string[] {
     ...(kinds.has("session_store") ? [SESSION_PROCESS] : []),
     ...(kinds.has("mesh_control") ? [MESH_PROCESS] : []),
     ...(kinds.has("replication_stream") ? [REPLICATOR_PROCESS] : []),
+    ...(kinds.has("job_scheduler") ? [SCHEDULER_PROCESS] : []),
     ...(hasSidecar(world, id) ? [SIDECAR_PROCESS] : []),
   ];
 }

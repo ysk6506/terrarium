@@ -20,12 +20,12 @@ covers:
   - packages/core/src/session/shell-reach.ts
   - packages/core/src/scenario/library-os.ts
 verification_log:
-  - "2026-11-06: 최종 코드(world/os 분할, 호스트 조치 열두 가지, 변별력 셋째 물음)와 다시 대조했다"
-  - "2026-11-06: o3 합치기 (깊은 OS 흉내)"
-  - "2026-11-07: REQ-100 애플리케이션 층이 덮는 코드가 바뀐 것을 확인했고 이 문서의 내용은 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
   - "2026-11-07: REQ-106이 호스트 조치 하나(복제기 다시 시작)를 더했다. 서술은 그대로 맞다"
-covers_hash: 6714dbc30b104a14
+  - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장이 이 문서의 내용을 바꾸지 않는지 대조했다(층 수·툴 수·칩 수를 세는 문장을 찾아 고쳤고, 나머지는 그대로 맞다)"
+  - "2026-11-07: REQ-107: shell-reach.ts의 GPU 흔적을 OS 흔적과 따로 두었고 내용은 그대로 맞다"
+  - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
+covers_hash: d0a527fae723d13a
 ---
 # 서비스와 OS 층 (REQ-086, REQ-087, [ADR-0091](adr/0091-service-os-layer-recovery-first.md))
 

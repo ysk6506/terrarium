@@ -244,7 +244,11 @@ function updateServerThermal(heat: Heat, i: number, air: RackAir): void {
     model.maxPowerW > model.idlePowerW
       ? (state.powerW - model.idlePowerW) / (model.maxPowerW - model.idlePowerW)
       : 0;
-  const fanPenalty = model.fanCount > 0 ? 1 + 0.6 * (failed.size / model.fanCount) : 1;
+  // an experiment setting (REQ-107): fans held below full speed stand in for a weak room cooling, as the team's own tests did
+  const fanPct = (heat.plan.ents[i] as Entity).props.fanSpeedPct;
+  const held = typeof fanPct === "number" ? clamp(fanPct, 20, 100) / 100 : 1;
+  const fanPenalty =
+    (model.fanCount > 0 ? 1 + 0.6 * (failed.size / model.fanCount) : 1) * (1 + 1.2 * (1 - held));
   const airC = inletC + model.thermalRiseC * (0.35 + 0.65 * clamp(util, 0, 1)) * fanPenalty;
   const wet = liquidCpuTarget(liquid, model, util, inletC);
   const target = running ? (wet ?? airC) : liquid.cooling === "immersion" ? liquid.bathC : inletC;
