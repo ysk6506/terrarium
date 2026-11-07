@@ -176,6 +176,47 @@
       "kind": "why"
     },
     {
+      "q": "이 실행이 왜 18.2점이에요?",
+      "expect": ["docs/design-docs/measurement.md"],
+      "kind": "why"
+    },
+    {
+      "q": "이 실행이 왜 30점이에요?",
+      "expect": ["docs/design-docs/measurement.md"],
+      "kind": "why"
+    },
+    {
+      "q": "왜 이 실행은 불합격인가요?",
+      "expect": ["docs/design-docs/measurement.md"],
+      "kind": "why"
+    },
+    {
+      "q": "왜 복구 점수가 낮게 나왔어요?",
+      "expect": ["docs/design-docs/measurement.md"],
+      "kind": "why"
+    },
+    {
+      "q": "왜 진단만 맞혔는데 합격하지 못해요?",
+      "expect": [
+        "docs/design-docs/measurement.md",
+        "docs/design-docs/adr/0091-service-os-layer-recovery-first.md"
+      ],
+      "kind": "why"
+    },
+    {
+      "q": "왜 MTTR이 점수에 들어가요?",
+      "expect": [
+        "docs/design-docs/measurement.md",
+        "docs/design-docs/adr/0091-service-os-layer-recovery-first.md"
+      ],
+      "kind": "why"
+    },
+    {
+      "q": "왜 채점표에서 서비스 복구 시간이 0점이에요?",
+      "expect": ["docs/design-docs/measurement.md"],
+      "kind": "why"
+    },
+    {
       "q": "ADR-0001 레이어 아키텍처의 맥락이 뭐예요?",
       "expect": ["docs/design-docs/adr/0001-layered-architecture.md"],
       "kind": "auto"

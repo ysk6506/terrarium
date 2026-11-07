@@ -179,6 +179,7 @@ verification_log:
 - [0118 깊은 OS 흉내를 구현하면서 시험 다섯 곳의 기대값을 고치고 시험을 더한다](design-docs/adr/0118-deep-os-tests.md)
 - [0119 LLM API 등록 — 워크스페이스 단위 모델 연결, 키는 서버에만, 얇은 클라이언트](design-docs/adr/0119-llm-api-registration.md)
 - [0124 이끼 — 테라리움 도우미: 이름·지식 둘·화면 등록·누락 검사·모델·품질 측정, 먼저 말 걸지 않는다](design-docs/adr/0124-moss-assistant.md)
+- [0125 이끼는 LLM을 연결해야만 쓸 수 있다: 기본 모델이 없으면 꺼져 있고, 점수 질문은 채점 문서를 먼저 찾는다](design-docs/adr/0125-moss-requires-model.md)
 - [0122 세계 인기 순서·좋아요·칭호, 그리고 계급 모델 — 점수는 서버가 기록에서 세고, 칭호는 한 번 얻으면 안 잃고, 계급은 아직 화면에 없다](design-docs/adr/0122-world-popularity-likes-titles.md)
 - [0121 애플리케이션 층을 코어 모델로 올리고 서비스 호출 그래프를 넣는다](design-docs/adr/0121-application-layer-and-calls.md)
 - [0116 진짜 호스트 섞기 (폐기, 0117로 대체)](design-docs/adr/0116-real-hosts-in-the-world.md)

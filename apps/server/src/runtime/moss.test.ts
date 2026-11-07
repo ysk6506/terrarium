@@ -1,7 +1,7 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { UnavailableError } from "@terrarium/core/contract";
+import { NoModelError, UnavailableError } from "@terrarium/core/contract";
 import { type LlmClient, LlmError } from "@terrarium/core/llm";
 import { afterEach, describe, expect, test } from "vitest";
 import type { Models } from "./models";
@@ -12,6 +12,7 @@ import {
   findDocsDir,
   htmlToMarkdown,
   isRelevant,
+  type MossChunk,
   MossIndex,
   mossIndexFor,
   tokenize,
@@ -24,6 +25,7 @@ import {
   stateText,
   userPrompt,
 } from "./moss-prompt";
+import { boostFor, isScoringQuestion, SCORING_BOOST, scoringChunk } from "./moss-scoring";
 
 const DOC = `---
 title: 측정의 신뢰
@@ -208,9 +210,9 @@ describe("이끼 asks the default model and never acts [REQ-103]", () => {
     actions: [{ id: "go-home", label: "홈으로 가기" }],
   };
 
-  test("with no default model it says so (503) instead of guessing", async () => {
+  test("with no default model it says so (409 no_model) instead of guessing", async () => {
     await expect(new Moss(models(undefined), { index }).ask(body)).rejects.toBeInstanceOf(
-      UnavailableError,
+      NoModelError,
     );
   });
 
@@ -275,5 +277,75 @@ describe("mockup pages are read as text, and off-topic questions are not 'found'
     expect(on && isRelevant({ ...on, score: 20 })).toBe(true);
     expect(off && isRelevant({ ...off, score: 20 })).toBe(false);
     expect(off && off.coverage < (on?.coverage ?? 0)).toBe(true);
+  });
+});
+
+describe("scoring questions find the scoring docs, and a result's table comes first [REQ-103]", () => {
+  const other = chunkMarkdown(
+    "docs/guides/run-guide.md",
+    "---\ntitle: 실행 안내\n---\n## 실행 점수 보기\n실행 점수 점수 점수는 실행 화면에서 봐요.\n",
+  );
+  const scoring = chunkMarkdown(
+    "docs/design-docs/measurement.md",
+    "---\ntitle: 측정\n---\n## 채점 방법\n점수는 복구 시간과 진단으로 매겨요. 합격은 60점 이상이에요.\n",
+  );
+  const index = new MossIndex([...other, ...scoring]);
+  const state = {
+    점수: "18.2점",
+    합격: "불합격",
+    채점표: [
+      { 항목: "서비스 복구 시간", 판정: "늦음", 점수: "3/35", 이유: "20분 가까이 걸렸어요" },
+      { 항목: "복구 중 악화 없음", 판정: "악화", 점수: "-10/감점", 이유: "web 서비스가 멈췄어요" },
+    ],
+    채점_요약: "복구 우선 채점",
+  };
+
+  test("the scoring words are a fixed list; a question without them is not boosted", () => {
+    for (const q of [
+      "이 실행이 왜 18.2점이에요?",
+      "왜 불합격이에요?",
+      "MTTR이 뭐예요?",
+      "채점은 어떻게 해요?",
+    ])
+      expect(isScoringQuestion(q)).toBe(true);
+    expect(isScoringQuestion("시드가 뭐예요?")).toBe(false);
+    const plain = index.search("실행 화면 안내", 2);
+    expect(plain[0]?.chunk.file).toBe("docs/guides/run-guide.md");
+  });
+
+  test("with a scoring word the chunks of the scoring docs go up by the fixed factor, others stay", () => {
+    const [doc] = scoring;
+    const [guide] = other;
+    expect(boostFor("이 실행이 왜 18.2점이에요?", doc as MossChunk)).toBe(SCORING_BOOST);
+    expect(boostFor("이 실행이 왜 18.2점이에요?", guide as MossChunk)).toBe(1);
+    expect(boostFor("시드가 뭐예요?", doc as MossChunk)).toBe(1);
+    const q = "실행 점수 보기";
+    const hits = index.search(q, 2);
+    const unboosted = new MossIndex([
+      ...other,
+      ...scoring.map((c) => ({ ...c, file: "docs/x.md" })),
+    ]);
+    const gain =
+      (hits.find((h) => h.chunk.file === doc?.file)?.score ?? 0) /
+      (unboosted.search(q, 2).find((h) => h.chunk.file === "docs/x.md")?.score ?? 1);
+    expect(gain).toBeGreaterThan(1);
+  });
+
+  test("a result's scoring table becomes the first chunk, shown as the screen state, and other screens get none", () => {
+    const table = scoringChunk(state);
+    expect(table).toMatchObject({ id: "state#채점표", title: "이 실행의 채점표", synthetic: true });
+    expect(table?.text).toContain("점수 18.2점, 불합격");
+    expect(table?.text).toContain("서비스 복구 시간: 늦음, 3/35점 — 20분 가까이 걸렸어요");
+    expect(scoringChunk({ 화면: "홈" })).toBeUndefined();
+    expect(scoringChunk(undefined)).toBeUndefined();
+    const moss = new Moss({} as Models, { index });
+    expect(moss.retrieve("이 실행이 왜 18.2점이에요?", state)[0]?.id).toBe("state#채점표");
+    expect(moss.retrieve("이 실행이 왜 18.2점이에요?")[0]?.id).not.toBe("state#채점표");
+    const reply = parseReply(
+      JSON.stringify({ answer: "늦게 복구했어요.", sources: ["state#채점표", "state"] }),
+      [table as MossChunk],
+      [],
+    );
+    expect(reply.sources).toEqual([{ kind: "state" }]);
   });
 });

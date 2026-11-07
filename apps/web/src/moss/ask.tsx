@@ -3,8 +3,8 @@
  * 결과·사다리·설정·실험 화면의 숫자와 용어는 모두 이걸로 감싸요 (`moss` 검사의 MOSS004).
  */
 import { withJosa } from "@terrarium/core/kernel";
-import type { ReactNode } from "react";
-import { openMoss } from "./store";
+import { type ReactNode, useSyncExternalStore } from "react";
+import { isAwake, openMoss, subscribe } from "./store";
 
 export function MossAsk({
   question,
@@ -14,6 +14,9 @@ export function MossAsk({
   readonly question: string;
   readonly children: ReactNode;
 }) {
+  // 기본 모델이 없으면 이끼는 꺼져 있어요: 물음표 없이 감싼 것만 그려요 (ADR-0125)
+  const awake = useSyncExternalStore(subscribe, isAwake, isAwake);
+  if (!awake) return <>{children}</>;
   return (
     <span className="moss-ask">
       {children}

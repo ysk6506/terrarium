@@ -6,7 +6,7 @@ import type { MossAnswerView, MossSourceView } from "@terrarium/core/contract";
 import { useEffect, useRef, useState } from "react";
 import type { PageName } from "../../logic";
 import { actionById, closeMoss, consumePending, panelState, SCREENS, subscribe } from "../../moss";
-import { Go, useApp } from "../context";
+import { useApp } from "../context";
 import { type Chat, type Msg, useMossChat } from "./use-moss";
 
 const basename = (file: string) => file.split("/").at(-1) ?? file;
@@ -189,22 +189,8 @@ function Message({ msg, chat }: { readonly msg: Msg; readonly chat: Chat }) {
   }
 }
 
-function Empty({
-  route,
-  chat,
-  awake,
-}: {
-  readonly route: PageName;
-  readonly chat: Chat;
-  readonly awake: boolean;
-}) {
+function Empty({ route, chat }: { readonly route: PageName; readonly chat: Chat }) {
   const screen = SCREENS[route];
-  if (!awake)
-    return (
-      <div className="moss-a">
-        모델을 등록하면 이끼가 깨어나요. <Go to={{ name: "settings" }}>설정에서 모델 등록하기</Go>
-      </div>
-    );
   return (
     <>
       <div className="moss-a">{screen.oneLine}</div>
@@ -219,16 +205,8 @@ function Empty({
   );
 }
 
-/** 입력칸: 질문도 부탁도 여기에. 모델이 없으면 동작 이름만 알아들어요. */
-function Input({
-  chat,
-  awake,
-  focusSeq,
-}: {
-  readonly chat: Chat;
-  readonly awake: boolean;
-  readonly focusSeq: number;
-}) {
+/** 입력칸: 질문도 부탁도 여기에. */
+function Input({ chat, focusSeq }: { readonly chat: Chat; readonly focusSeq: number }) {
   const [text, setText] = useState("");
   const ref = useRef<HTMLInputElement>(null);
   // biome-ignore lint/correctness/useExhaustiveDependencies: `focusSeq` is the request to focus again (Cmd+K, `/`)
@@ -240,12 +218,12 @@ function Input({
       const p = panelState().pending;
       if (!p) return;
       consumePending();
-      if (p.send && awake) chat.send(p.question);
+      if (p.send) chat.send(p.question);
       else setText(p.question);
     };
     take();
     return subscribe(take);
-  }, [chat, awake]);
+  }, [chat]);
   return (
     <form
       className="moss-foot"
@@ -269,13 +247,8 @@ function Input({
   );
 }
 
-export function MossPanel({
-  awake,
-  focusSeq,
-}: {
-  readonly awake: boolean;
-  readonly focusSeq: number;
-}) {
+/** 열린 패널. 기본 모델이 있을 때만 그려져요 (ADR-0125): 여기엔 "모델이 없을 때"가 없다. */
+export function MossPanel({ focusSeq }: { readonly focusSeq: number }) {
   const { page } = useApp();
   const chat = useMossChat();
   const route = page.name;
@@ -298,13 +271,13 @@ export function MossPanel({
         </button>
       </div>
       <div className="moss-body" ref={bodyRef} aria-live="polite">
-        {chat.msgs.length === 0 && <Empty route={route} chat={chat} awake={awake} />}
+        {chat.msgs.length === 0 && <Empty route={route} chat={chat} />}
         {chat.msgs.map((m) => (
           <Message key={m.id} msg={m} chat={chat} />
         ))}
       </div>
       {chat.saying && <p className="moss-saying">{chat.saying}</p>}
-      <Input chat={chat} awake={awake} focusSeq={focusSeq} />
+      <Input chat={chat} focusSeq={focusSeq} />
     </aside>
   );
 }

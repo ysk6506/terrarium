@@ -90,6 +90,17 @@ export function deleteText(view: LlmModelView, others: number): string {
     : DELETE_NOTE;
 }
 
+/** 이끼는 기본 모델이 있어야만 깨어난다 (REQ-103, ADR-0125): 목록에 기본 모델이 하나라도 있는가. 아직 못 읽었으면 없는 걸로 쳐요. */
+export const hasDefaultModel = (list: readonly LlmModelView[] | undefined): boolean =>
+  (list ?? []).some((m) => m.isDefault);
+
+/** 설정 화면이 모델을 더하거나 바꾸거나 지우면 window에 보내는 알림. 이끼가 기본 모델 여부를 다시 읽어요. */
+export const MODELS_CHANGED = "terrarium:models-changed";
+
+/** 모델이 없을 때 이끼 자리에 남는 작은 알약의 글과, 눌렀을 때 가는 곳. */
+export const MOSS_SLEEP_LINE = "모델을 등록하면 이끼가 깨어나요 → 설정";
+export const MODELS_HASH = "#models";
+
 export type ModelSectionState = "loading" | "empty" | "list";
 
 export function sectionState(list: readonly LlmModelView[] | undefined): ModelSectionState {

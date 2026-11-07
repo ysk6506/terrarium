@@ -4,7 +4,7 @@
  */
 import type { LlmModelView } from "@terrarium/core/contract";
 import type { LlmKind } from "@terrarium/core/llm";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   cardFacts,
   checkedWhen,
@@ -13,6 +13,8 @@ import {
   EMPTY_BODY,
   EMPTY_TITLE,
   LIMIT_LINE,
+  MODELS_CHANGED,
+  MODELS_HASH,
   modelKindName,
   modelSectionState,
 } from "../../logic";
@@ -183,9 +185,20 @@ export function ModelSection() {
   const state = modelSectionState(list.data);
   const models = list.data ?? [];
   const { run } = useAction();
-  useModelsMoss(models, list.reload, () => setEditing({}));
+  // 주소가 /settings#models 로 열리면 이 구역으로 (이끼가 꺼져 있을 때의 알약)
+  useEffect(() => {
+    if (window.location.hash === MODELS_HASH)
+      document.getElementById(MODELS_HASH.slice(1))?.scrollIntoView({ block: "start" });
+  }, []);
+  // 모델이 바뀌면 이끼도 다시 읽어요: 기본 모델이 있어야만 깨어나요 (ADR-0125)
+  const reload = useCallback(() => {
+    list.reload();
+    window.dispatchEvent(new Event(MODELS_CHANGED));
+  }, [list.reload]);
+  useModelsMoss(models, reload, () => setEditing({}));
   return (
     <Section
+      id={MODELS_HASH.slice(1)}
       title="모델"
       aside={
         <Button
@@ -211,7 +224,7 @@ export function ModelSection() {
             view={view}
             onEdit={() => setEditing({ view })}
             onDelete={() => setDeleting(view)}
-            onChanged={list.reload}
+            onChanged={reload}
           />
         ))}
         {state === "list" && (
@@ -224,7 +237,7 @@ export function ModelSection() {
         <ModelDialog
           {...(editing.view ? { existing: editing.view } : {})}
           onClose={() => setEditing(undefined)}
-          onSaved={list.reload}
+          onSaved={reload}
         />
       )}
       {deleting && (
@@ -234,7 +247,7 @@ export function ModelSection() {
           onClose={() => setDeleting(undefined)}
           onDeleted={() => {
             setDeleting(undefined);
-            list.reload();
+            reload();
           }}
         />
       )}

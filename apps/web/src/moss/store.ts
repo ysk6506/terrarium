@@ -89,6 +89,21 @@ export function readScreen(route: PageName): unknown {
 
 export const panelState = (): PanelState => panel;
 
+/**
+ * 이끼가 깨어 있는가 (REQ-103, ADR-0125): 기본 모델이 있을 때만 참. 처음엔 꺼져 있고(모델 목록을 읽기 전), 꺼지면 열린 패널과
+ * 미리 채운 질문도 거둬요. `openMoss`는 꺼져 있으면 아무것도 하지 않아서 키·물음표·동작 어디서도 이끼가 열리지 않아요.
+ */
+let awake = false;
+
+export const isAwake = (): boolean => awake;
+
+export function setAwake(next: boolean): void {
+  if (awake === next) return;
+  awake = next;
+  if (!next) panel = { open: false, focusSeq: panel.focusSeq };
+  emit();
+}
+
 function set(next: PanelState): void {
   panel = next;
   emit();
@@ -96,6 +111,7 @@ function set(next: PanelState): void {
 
 /** 패널을 연다. 질문을 주면 입력칸에 채우고, `send`면 바로 보내요. */
 export function openMoss(options: { question?: string; send?: boolean } = {}): void {
+  if (!awake) return;
   set({
     open: true,
     focusSeq: panel.focusSeq + (options.question ? 0 : 1),

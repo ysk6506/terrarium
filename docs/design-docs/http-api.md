@@ -13,13 +13,13 @@ covers:
   - packages/core/src/contract/model-routes.ts
   - packages/core/src/contract/community.ts
   - packages/core/src/contract/community-routes.ts
-covers_hash: d055fa900672841c
+covers_hash: 8961b52d123b8341
 verification_log:
-  - "2026-11-06: 저장해 둔 것 여섯 경로를 routes.ts, responses.ts, contract/presets.ts와 대조해 표에 더했다 (ADR-0112)"
   - "2026-11-06: LLM API 등록"
   - "2026-11-06: LLM API 등록"
   - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
   - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
+  - "2026-11-07: ADR-0125: 이끼는 기본 모델이 있어야만 켜진다(꺼지면 알약만, 409 no_model), 점수 질문 찾기 규칙을 문서에 반영하고 코드와 대조함"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -34,8 +34,8 @@ verification_log:
   API는 저장된 기록, 하네스·에이전트, 대기열처럼 서버에만 있는 것을 준다.
 - **검증은 두 겹.** 계약의 스키마가 모양(타입·범위·크기)을 보고, 소유 단위의 검증기가 의미(부모가 있나, 시나리오가 끝까지 가나)를 본다.
   worldgen 명세는 worldgen의 규칙을 계약 안에서 바로 적용한다.
-- **오류는 한 모양.** `{ error: { code, message, issues? } }`. `message`는 사람이 읽고 바로 고칠 수 있는 한국어 해요체(ADR-0050),
-  `issues`는 `{ path: "recipe.seeds.2", message }` 목록이라 폼이 해당 칸 옆에 띄울 수 있다. core의 오류는 자기 HTTP 상태를 가지고 있고,
+- **오류는 한 모양.** `{ error: { code, message, issues?, reason? } }`. `message`는 사람이 읽고 바로 고칠 수 있는 한국어 해요체(ADR-0050),
+  `issues`는 `{ path: "recipe.seeds.2", message }` 목록이라 폼이 해당 칸 옆에 띄울 수 있다. `reason`은 화면이 갈라 읽을 까닭(예: `no_model`)이고 없을 수도 있다. core의 오류는 자기 HTTP 상태를 가지고 있고,
   그 밖의 예외는 500으로 바꾸면서 내부 정보(파일 경로, DB 메시지)를 숨긴다.
 - **저장은 낙관적 잠금.** 세계·시나리오 저장은 `baseDigest`(편집을 시작한 버전)를 함께 보낸다. 그사이 누가 바꿨으면 409와
   "새로고침한 뒤 다시 시도한다".
@@ -72,7 +72,7 @@ verification_log:
 | `DELETE /api/models/:id` | 지우기(만든 사람만). 저장한 키도 지워진다. 기본이었으면 가장 먼저 등록한 것이 기본이 된다 | |
 | `POST /api/models/:id/check` | 연결 확인: 모델 목록을 읽고(`GET /v1/models`, LiteLLM은 `/model/info`도), 안 되면 기본 모델 이름이 있을 때 `max_tokens: 1` 완성 한 번. 결과(`ok`·`ms`·`via`·`modelCount`·`models`·`reason`·`error`)와 시각을 기록해 모델을 돌려준다. 이 호출은 **서버에서 바깥으로** 나가므로, 나가지 못하는 환경이면 `reason: network`로 그렇게 말한다 | |
 | `POST /api/models/:id/default` | 기본 모델로 정하기(하나만 기본) | |
-| `POST /api/moss/ask` | 이끼에게 묻기(REQ-103, [ADR-0124](adr/0124-moss-assistant.md), [설명](moss.md)) `{screen, question, state?, actions?: [{id, label}]}` → `{answer, answered, sources: [{kind: "doc", id, title, file, path} \| {kind: "state"}], suggestedActions, followUps, model, rough?}`. 서버가 문서 조각(BM25 방식 낱말 점수)과 화면 상태로 프롬프트를 짜 **기본 모델**에 묻는다. 답은 세 문장 안이고, 없는 출처와 `actions`에 없는 동작 id는 버리며, 근거가 없으면 모델을 부르지 않고 "문서에 없어요"로 답한다. **서버는 동작을 실행하지 않는다.** 기본 모델이 없거나 모델이 답하지 않으면 503 | |
+| `POST /api/moss/ask` | 이끼에게 묻기(REQ-103, [ADR-0124](adr/0124-moss-assistant.md), [설명](moss.md)) `{screen, question, state?, actions?: [{id, label}]}` → `{answer, answered, sources: [{kind: "doc", id, title, file, path} \| {kind: "state"}], suggestedActions, followUps, model, rough?}`. 서버가 문서 조각(BM25 방식 낱말 점수)과 화면 상태로 프롬프트를 짜 **기본 모델**에 묻는다. 답은 세 문장 안이고, 없는 출처와 `actions`에 없는 동작 id는 버리며, 근거가 없으면 모델을 부르지 않고 "문서에 없어요"로 답한다. **서버는 동작을 실행하지 않는다.** 기본 모델이 없으면 **409** `{ error: { code: "no_model", reason: "no_model" } }`([ADR-0125](adr/0125-moss-requires-model.md): 이끼는 기본 모델이 있어야만 쓸 수 있다)이고, 모델이 답하지 않으면 503 | |
 | `GET /api/worlds?sort=` | 세계 목록(템플릿 제외). `sort`는 `popular`(기본)·`active`·`new`·`mine`, 밖의 값은 400. 카드마다 `stats`(`experiments30d`·`experiments`·`likes`·`startedByOthers`·`score`·`week`), `likes`, `likedByMe`, `ownerTitles`가 실려 온다 (REQ-101, ADR-0122) | |
 | `POST /api/worlds/:id/like` | 좋아요 `{ worldId, likes, likedByMe }`. 사람마다 세계마다 하나라 다시 눌러도 하나. 없는 세계 404, 이름 없는 사람 403 | |
 | `DELETE /api/worlds/:id/like` | 좋아요 취소(없어도 같은 답) | |

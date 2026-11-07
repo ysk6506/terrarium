@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+import { hasDefaultModel } from "../logic";
 import { numberQuestion, termQuestion } from "./ask";
 import { parseInput } from "./match";
 import { isLive, mark, nextStep, planOf, withStatus } from "./plan";
@@ -16,9 +17,11 @@ import {
   closeMoss,
   consumePending,
   findHandler,
+  isAwake,
   openMoss,
   panelState,
   readScreen,
+  setAwake,
   summaryFor,
   waitForHandler,
 } from "./store";
@@ -146,6 +149,7 @@ describe("the store joins the screen and the panel [REQ-103]", () => {
   });
 
   test("the panel opens with a question to send once, and closes", () => {
+    setAwake(true);
     openMoss({ question: "이 실행이 왜 30점이에요?", send: true });
     expect(panelState()).toMatchObject({
       open: true,
@@ -158,6 +162,32 @@ describe("the store joins the screen and the panel [REQ-103]", () => {
     expect(panelState().focusSeq).toBe(before + 1);
     closeMoss();
     expect(panelState().open).toBe(false);
+    setAwake(false);
+  });
+});
+
+describe("이끼 needs a default model [REQ-103]", () => {
+  const model = (isDefault: boolean) => ({ isDefault }) as never;
+
+  test("only a default model wakes it; none, not yet read, or only non-default ones keep it asleep", () => {
+    expect(hasDefaultModel(undefined)).toBe(false);
+    expect(hasDefaultModel([])).toBe(false);
+    expect(hasDefaultModel([model(false)])).toBe(false);
+    expect(hasDefaultModel([model(false), model(true)])).toBe(true);
+  });
+
+  test("asleep: nothing opens (the keys, the ? marks, the actions all go through openMoss), and sleeping closes an open panel", () => {
+    setAwake(false);
+    expect(isAwake()).toBe(false);
+    openMoss({ question: "이 실행이 왜 30점이에요?", send: true });
+    expect(panelState()).toMatchObject({ open: false });
+    expect(panelState().pending).toBeUndefined();
+    setAwake(true);
+    openMoss({ question: "q", send: true });
+    expect(panelState().open).toBe(true);
+    setAwake(false);
+    expect(panelState()).toMatchObject({ open: false });
+    expect(panelState().pending).toBeUndefined();
   });
 });
 

@@ -32,6 +32,7 @@ export {
   InvalidInputError,
   invalidInput,
   isApiError,
+  NoModelError,
   toErrorReply,
   UnauthenticatedError,
   UnavailableError,

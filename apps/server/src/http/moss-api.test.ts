@@ -41,11 +41,13 @@ const ask = {
 };
 
 describe("POST /api/moss/ask answers from the docs and the screen state [REQ-103]", () => {
-  test("without a default model it is 503 with the way out, and nothing is guessed", async () => {
-    const { send, platform } = setup(() => "{}");
+  test("without a default model it is 409 with reason no_model and the way out, and nothing is guessed", async () => {
+    const { send, platform, prompts } = setup(() => "{}");
     const r = await send("POST", "/api/moss/ask", ask);
-    expect(r.status).toBe(503);
+    expect(r.status).toBe(409);
+    expect(r.body.error).toMatchObject({ code: "no_model", reason: "no_model" });
     expect(JSON.stringify(r.body)).toContain("모델을 등록");
+    expect(prompts).toEqual([]);
     await platform.stop();
   });
 

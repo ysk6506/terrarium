@@ -5,6 +5,7 @@
  */
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { boostFor } from "./moss-scoring";
 
 export interface MossChunk {
   /** `파일#제목-경로` 모양의 고정된 이름. 답의 출처가 이걸 가리킨다. */
@@ -15,6 +16,8 @@ export interface MossChunk {
   readonly path: readonly string[];
   readonly title: string;
   readonly text: string;
+  /** 문서가 아니라 화면 상태로 만든 조각(이 실행의 채점표). 출처로는 "화면 상태"로 보인다. */
+  readonly synthetic?: true;
 }
 
 export interface MossHit {
@@ -334,6 +337,8 @@ export class MossIndex {
         scores.set(doc, score + TITLE_BONUS);
     }
     this.rerank(scores, pairsOf(query));
+    for (const [doc, score] of scores)
+      scores.set(doc, score * boostFor(query, this.chunks[doc] as MossChunk));
     return [...scores]
       .sort((a, b) => b[1] - a[1] || a[0] - b[0])
       .slice(0, k)
