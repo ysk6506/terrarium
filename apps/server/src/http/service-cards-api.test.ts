@@ -2,6 +2,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
+import { DEFAULT_SHAPE } from "../../../../packages/core/src/sources/worldgen";
 import { sampleBlueprint } from "../../../../packages/core/src/world/test-support/sample";
 import { SqliteStore } from "../adapters";
 import { testPlatform, until, YEONSU } from "../runtime/test-support/platform";
@@ -101,6 +102,67 @@ describe("서비스 카드 [REQ-104]", () => {
       harm: [{ name: "a", perHourKrw: 1 }],
     });
     expect(bad.status).toBe(400);
+  });
+});
+
+describe("서비스 카드의 숫자와 세 숫자로 짓는 세계 [REQ-109]", () => {
+  const load = { rps: 300, dataGB: 2_000, users: 1_200, maxDowntimeS: 60 };
+
+  test("[REQ-109] 저장하는 순간 서버에 남고(POST), 숫자가 함께 돌아오며, 고친 숫자도 남는다", async () => {
+    const { send } = setup();
+    const made = await send("POST", "/api/service-cards", { name: "내 웹", card: "web-api", load });
+    expect(made.status).toBe(200);
+    expect(made.body.load).toEqual(load);
+    const listed = (await send("GET", "/api/service-cards")).body;
+    expect(listed).toHaveLength(1);
+    expect(listed[0].load).toEqual(load);
+    const patched = await send("PATCH", `/api/service-cards/${made.body.id}`, {
+      load: { ...load, maxDowntimeS: 30 },
+    });
+    expect(patched.body.load.maxDowntimeS).toBe(30);
+  });
+
+  test("[REQ-109] 말이 안 되는 숫자는 어느 숫자가 문제인지 말하고 막는다", async () => {
+    const { send } = setup();
+    const bad = await send("POST", "/api/service-cards", {
+      name: "x",
+      card: "web-api",
+      load: { ...load, maxDowntimeS: 0 },
+    });
+    expect(bad.status).toBe(400);
+    expect(JSON.stringify(bad.body)).toContain("허용 중단");
+    const extra = await send("POST", "/api/service-cards", {
+      name: "x",
+      card: "web-api",
+      load: { ...load, money: 1 },
+    });
+    expect(extra.status).toBe(400);
+  });
+
+  test("[REQ-109] 세계 만들기는 세 숫자로도, 옛 서버 수로도 받는다. 셋 중 일부만은 막는다", async () => {
+    const { send } = setup();
+    const three = await send("POST", "/api/worlds/generate", {
+      shape: { ...DEFAULT_SHAPE, servers: 120, rooms: 1, racksPerRoom: 6, perRack: 20 },
+    });
+    expect(three.status).toBe(200);
+    expect(three.body.world.provenance.shape).toMatchObject({
+      rooms: 1,
+      racksPerRoom: 6,
+      perRack: 20,
+    });
+    const old = await send("POST", "/api/worlds/generate", {
+      shape: { ...DEFAULT_SHAPE, servers: 48 },
+    });
+    expect(old.status).toBe(200);
+    const part = await send("POST", "/api/worlds/generate", {
+      shape: { ...DEFAULT_SHAPE, servers: 120, rooms: 1 },
+    });
+    expect(part.status).toBe(400);
+    expect(JSON.stringify(part.body)).toContain("셋 다");
+    const wide = await send("POST", "/api/worlds/generate", {
+      shape: { ...DEFAULT_SHAPE, rooms: 9, racksPerRoom: 6, perRack: 20 },
+    });
+    expect(wide.status).toBe(400);
   });
 });
 

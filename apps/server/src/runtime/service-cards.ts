@@ -11,11 +11,20 @@ import type {
 } from "@terrarium/core/contract";
 import { ForbiddenError, InvalidInputError } from "@terrarium/core/contract";
 import type { ServiceCardRecord } from "@terrarium/core/experiments";
-import { catalogCard } from "@terrarium/core/world";
+import { catalogCard, loadProblem } from "@terrarium/core/world";
 import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
 import type { Titles } from "./titles";
 
 const canEdit = (viewer: Viewer, c: ServiceCardRecord): boolean => c.owner === viewer.name;
+
+/** The numbers a card carries must be sayable (REQ-109): the schema checks the shape, this the meaning. */
+function checkLoad(load: CreateServiceCardRequest["load"]): void {
+  const problem = load ? loadProblem(load) : undefined;
+  if (problem)
+    throw new InvalidInputError("서비스 숫자를 확인해 주세요", [
+      { path: "load", message: problem },
+    ]);
+}
 
 export class ServiceCards {
   constructor(
@@ -33,6 +42,7 @@ export class ServiceCards {
       name: c.name,
       card: c.card,
       ...(c.harm ? { harm: c.harm } : {}),
+      ...(c.load ? { load: c.load } : {}),
       owner: c.owner,
       ownerTitles: owned.get(c.owner) ?? [],
       shared: c.shared,
@@ -59,12 +69,14 @@ export class ServiceCards {
       throw new InvalidInputError("피해 등급을 확인해 주세요", [
         { path: "harm", message: `피해 등급은 ${base.tiers.length}개여야 해요` },
       ]);
+    checkLoad(input.load);
     const record: ServiceCardRecord = {
       id: this.ctx.stamps.id("sc"),
       owner: viewer.name,
       name: input.name,
       card: input.card,
       ...(input.harm ? { harm: input.harm } : {}),
+      ...(input.load ? { load: input.load } : {}),
       shared: input.shared,
       createdAt: this.ctx.stamps.now(),
     };
@@ -89,10 +101,12 @@ export class ServiceCards {
       throw new InvalidInputError("피해 등급을 확인해 주세요", [
         { path: "harm", message: `피해 등급은 ${base.tiers.length}개여야 해요` },
       ]);
+    checkLoad(input.load);
     const saved: ServiceCardRecord = {
       ...old,
       name: input.name ?? old.name,
       ...(input.harm ? { harm: input.harm } : {}),
+      ...(input.load ? { load: input.load } : {}),
       shared: input.shared ?? old.shared,
       updatedAt: this.ctx.stamps.now(),
     };
@@ -111,6 +125,7 @@ export class ServiceCards {
       name: input.name ?? old.name,
       card: old.card,
       ...(old.harm ? { harm: old.harm } : {}),
+      ...(old.load ? { load: old.load } : {}),
       shared: false,
       createdAt: this.ctx.stamps.now(),
     };

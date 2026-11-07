@@ -12,9 +12,11 @@ import {
   type Layers,
   layersProblem,
   type ServiceKind,
+  type ServiceLoad,
   type WorkloadProfile,
 } from "@terrarium/core/world";
 import { type DenseSpec, denseOf } from "./dense";
+import { askOf, askTotal, fillFor, type SizeAsk, sizeProblem } from "./shaped-sizing";
 import { type SiteId, sitePreset, type WorldgenSpec } from "./spec";
 
 /** A part of a service's card. `tier` is the layer it sits in (0 上, 1 가운데, 2 아래); `role` says what a count adds up to. */
@@ -73,6 +75,8 @@ export interface ServiceDraft {
   readonly stops: readonly StopRow[];
   readonly harm: readonly HarmTier[];
   readonly workload: WorkloadProfile;
+  /** What it carries (REQ-109): requests, data, people, the stop it allows. Absent (older specs): `GUESS_LOAD`. */
+  readonly load?: ServiceLoad;
   /** The services this one calls, by key (REQ-100). */
   readonly calls?: readonly string[];
   /** Its own choices when it is not shaped like the world's (the "따로 고르기"); absent: the same shape as `ShapeSpec.layers`. */
@@ -83,8 +87,15 @@ export interface ShapeSpec {
   readonly name: string;
   readonly seed: number;
   readonly site: SiteId;
-  /** Servers in the whole world, the service's own included. */
+  /**
+   * Servers in the whole world, the service's own included. With the three numbers below it is their product and
+   * only there for readers of the old spec; without them it is the size.
+   */
   readonly servers: number;
+  /** The size as three numbers (REQ-109): server rooms, racks in a room, servers in a rack. All three or none. */
+  readonly rooms?: number;
+  readonly racksPerRoom?: number;
+  readonly perRack?: number;
   /** Build the site as it really is instead of by the number (the quick choice "실측"). */
   readonly real?: boolean;
   readonly layers: Layers;
@@ -101,6 +112,8 @@ export const SERVERS_PER_RACK = 20;
 /** Racks a generated room holds at most (12 rows of 20, the first of each row an infra rack). */
 const ROOM_RACKS = 240;
 const RACK_KW_HEADROOM = 1.15;
+/** How full a rack is filled when the spec only says how many servers (the generator's own 0.8). */
+const LEGACY_FILL = 0.8;
 
 export interface ShapePlan {
   readonly serviceHosts: number;
@@ -117,6 +130,10 @@ export interface ShapePlan {
   readonly coolers: number;
   readonly kw: number;
   readonly perRack: number;
+  /** Servers the plan counts in the whole world (what the three numbers ask, or what the shape needs when that is more). */
+  readonly servers: number;
+  /** Share of a rack's units filled, from the servers a rack holds. */
+  readonly fill: number;
   /** The accelerator layer (REQ-107): GPU servers and GPUs, the racks they stand in, the CDUs and the kW of the GPUs. */
   readonly gpuServers: number;
   readonly gpus: number;
@@ -180,9 +197,9 @@ const rowsFor = (computeRacksPerRoom: number) => {
 };
 
 /** Rooms, floors and buildings: what the site choice asks for, or more when the racks do not fit. */
-function placesFor(build: ChipBuild, computeRacks: number) {
+function placesFor(build: ChipBuild, computeRacks: number, askedRooms: number) {
   const buildings = build.buildings ?? 1;
-  const asked = build.rooms ?? 1;
+  const asked = Math.max(build.rooms ?? 1, askedRooms * buildings);
   const rooms = Math.max(asked, buildings, Math.ceil(computeRacks / (ROOM_RACKS - 12)));
   const perBuilding = Math.ceil(rooms / buildings);
   return {
@@ -214,14 +231,21 @@ function coolersFor(mode: string, kw: number): number {
 }
 
 /** Servers the world needs: the service hosts, spares and the database instances of bare-metal worlds, doubled for a second site. */
-function serversFor(spec: ShapeSpec, build: ChipBuild, hosts: number): number {
+function serversFor(
+  spec: ShapeSpec,
+  build: ChipBuild,
+  hosts: number,
+  ask: SizeAsk | undefined,
+): number {
   // database instances of bare-metal worlds stand on servers of their own (virtualised ones share the service's hosts)
   const ring =
     build.dbx?.kind === "raft" ? build.dbx.nodes + (build.site?.mode === "active" ? 1 : 0) : 0;
   const dbHosts = build.bare ? spec.services.length * (build.database?.instances ?? ring) : 0;
   // a second site holds the same hardware again (cold and hot: all of it, warm: half of it)
   const needed = hosts + dbHosts;
-  return Math.max(spec.servers, build.site ? needed * 2 + 2 : needed);
+  // the three numbers are one site's: a second building holds the same again
+  const wanted = ask ? askTotal(ask) * (build.buildings ?? 1) : spec.servers;
+  return Math.max(wanted, build.site ? needed * 2 + 2 : needed);
 }
 
 export function planShape(spec: ShapeSpec): ShapePlan {
@@ -232,13 +256,14 @@ export function planShape(spec: ShapeSpec): ShapePlan {
     0,
   );
   const serviceNodes = spec.services.reduce((n, s) => n + s.nodes, 0);
-  const servers = serversFor(spec, build, serviceHosts + spareHosts);
+  const ask = askOf(spec);
+  const servers = serversFor(spec, build, serviceHosts + spareHosts, ask);
   const catalog = defaultCatalog();
-  const plainRacks = Math.max(3, Math.ceil(servers / SERVERS_PER_RACK));
+  const plainRacks = Math.max(3, Math.ceil(servers / (ask?.perRack ?? SERVERS_PER_RACK)));
   const dense = denseOf(build, plainRacks, catalog);
   // a dense rack is wider and takes two places of a row; one more place for the row that cannot be paired
   const computeRacks = plainRacks + (dense ? 2 * dense.racks + 1 : 0);
-  const places = placesFor(build, computeRacks);
+  const places = placesFor(build, computeRacks, ask?.rooms ?? 1);
   const perRoom = Math.ceil(computeRacks / places.rooms);
   const shape = rowsFor(perRoom);
   const racksPerRoom = shape.rows * shape.racksPerRow;
@@ -264,6 +289,8 @@ export function planShape(spec: ShapeSpec): ShapePlan {
     coolers,
     kw,
     perRack: Math.round(servers / computeRacks),
+    servers,
+    fill: ask ? fillFor(ask.perRack) : LEGACY_FILL,
     gpuServers: gpu.servers,
     gpus: gpu.gpus,
     denseRacks: dense?.racks ?? 0,
@@ -289,7 +316,7 @@ export function worldgenSpecOf(spec: ShapeSpec, plan: ShapePlan): WorldgenSpec {
     seed: spec.seed,
     name: spec.name,
     ...plan.layout,
-    fill: 0.8,
+    fill: plan.fill,
     gpuShare: 0,
     containment: build.containment ? "cold" : "none",
     coolingRedundancy: build.cooling ?? "N+1",
@@ -302,13 +329,26 @@ export function worldgenSpecOf(spec: ShapeSpec, plan: ShapePlan): WorldgenSpec {
 
 /** What a problem with the spec is, in words, or undefined. */
 export function shapeProblem(spec: ShapeSpec): string | undefined {
-  const { servers, services } = SHAPE_LIMITS;
+  const { services } = SHAPE_LIMITS;
   if (spec.services.length === 0) return "서비스를 하나는 골라 주세요";
   if (spec.services.length > services.max) return `서비스는 ${services.max}개까지 담아요`;
-  if (!spec.real && (spec.servers < servers.min || spec.servers > servers.max))
-    return `서버는 ${servers.min}~${servers.max}대 사이로 정해요`;
+  const size = sizeSpecProblem(spec);
+  if (size) return size;
   if (!sitePreset(spec.site)) return `알 수 없는 사업장 '${spec.site}'`;
   return spec.services.map((s) => serviceProblem(spec.layers, s)).find(Boolean);
+}
+
+/** What is wrong with the size part of a spec (the three numbers, or the old server count). */
+function sizeSpecProblem(spec: ShapeSpec): string | undefined {
+  const { servers } = SHAPE_LIMITS;
+  if (spec.rooms !== undefined || spec.racksPerRoom !== undefined || spec.perRack !== undefined) {
+    const ask = askOf(spec);
+    if (!ask) return "서버룸·룸당 랙·랙당 서버는 셋 다 함께 정해요";
+    return spec.real ? undefined : sizeProblem(ask);
+  }
+  if (!spec.real && (spec.servers < servers.min || spec.servers > servers.max))
+    return `서버는 ${servers.min}~${servers.max}대 사이로 정해요`;
+  return undefined;
 }
 
 /** What is wrong with one service of a spec, in words, or undefined. */

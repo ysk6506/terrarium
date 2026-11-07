@@ -329,7 +329,7 @@ export { CONTAINMENT_RATE_M_PER_M2 } from "./construction";
 export { SILENT_SITE_FAULTS } from "./faults-site";
 export { bareRects, CORE_SHARE } from "./floor-space";
 export { LINK_LABELS } from "./labels";
-export { type CatalogCard, catalogCard, SERVICE_CATALOG } from "./service-catalog";
+export { type CatalogCard, catalogCard, IAP_LOAD, SERVICE_CATALOG } from "./service-catalog";
 export {
   harmShare,
   impairedAt,
@@ -339,6 +339,17 @@ export {
   statusBefore,
 } from "./service-events";
 export { hostOfVm, hostVerdict, serviceHealth, switchAlive } from "./service-health";
+export {
+  dataText,
+  downtimeText,
+  LOAD_FIELDS,
+  LOAD_LABELS,
+  LOAD_LIMITS,
+  loadProblem,
+  loadText,
+  type ServiceLoad,
+  whole as wholeLoad,
+} from "./service-load";
 export type { SiteCommand } from "./site-act";
 export {
   ACTIVE_DRAIN_S,

@@ -73,8 +73,18 @@ function savedPick(v: ServiceCardView, taken: readonly string[]): Picked | undef
   const base = catalogCard(v.card);
   if (!base) return undefined;
   return {
-    draft: draftFromCard(base, taken, { name: v.name, ...(v.harm ? { harm: v.harm } : {}) }),
-    meta: { owner: v.owner, titles: v.ownerTitles, shared: v.shared, line: base.line },
+    draft: draftFromCard(base, taken, {
+      name: v.name,
+      ...(v.harm ? { harm: v.harm } : {}),
+      ...(v.load ? { load: v.load } : {}),
+    }),
+    meta: {
+      owner: v.owner,
+      titles: v.ownerTitles,
+      shared: v.shared,
+      line: base.line,
+      savedId: v.id,
+    },
   };
 }
 

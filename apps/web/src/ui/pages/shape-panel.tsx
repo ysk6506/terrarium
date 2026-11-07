@@ -1,8 +1,8 @@
 /**
  * "이 모양이면" (ADR-0107 item 3): what the nine choices come to, read off the core: hosts, VMs, switches and price;
- * what stops, what only slows, how to bring it back; how many scenarios fit. It sits under the card of the choice.
+ * what stops, what only slows, how to bring it back (each list at most three, then "외 n가지"); how many scenarios fit. It sits under the card of the choice.
  */
-import { costText, type ShapeView } from "../../logic";
+import { capList, costText, type ShapeView } from "../../logic";
 
 function Line({
   tone,
@@ -17,7 +17,7 @@ function Line({
   return (
     <div className={`we-sh ${tone}`}>
       <b>{title}</b>
-      {items.join(" · ")}
+      {capList(items.join(" · "))}
     </div>
   );
 }

@@ -40,6 +40,16 @@ export async function visitor(browser: Browser, options: VisitorOptions = {}): P
         // storage can be unavailable; the name dialog then appears
       }
     }, name);
+  // A browser that draws with the processor (no graphics card) can ask for the lightest 3D: TERRARIUM_UX_GRAPHICS=min.
+  const graphics = process.env.TERRARIUM_UX_GRAPHICS;
+  if (graphics)
+    await context.addInitScript((choice) => {
+      try {
+        localStorage.setItem("terrarium.settings", JSON.stringify({ graphics: choice }));
+      } catch {
+        // storage can be unavailable; the 3D then picks its own level
+      }
+    }, graphics);
   await context.grantPermissions(["clipboard-read", "clipboard-write"]).catch(() => undefined);
   const page = await context.newPage();
   const problems: string[] = [];

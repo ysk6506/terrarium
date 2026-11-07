@@ -2,9 +2,10 @@
  * 서비스 카드와 빠른 실험 (REQ-104, ADR-0127): 사람이 "내 카드"로 저장한 서비스, 그리고 세계 하나에서 권장값으로
  * 실험을 바로 시작하는 한 번의 요청. 카드의 모양은 늘 기본 제공 카드의 것이라 이름과 피해 숫자만 담겨요.
  */
-import { SERVICE_CATALOG } from "@terrarium/core/world";
+import { SERVICE_CATALOG, type ServiceLoad } from "@terrarium/core/world";
 import { z } from "zod";
 import type { TitleView } from "./community";
+import { LoadSchema } from "./schemas-shape";
 
 export const CARD_NAME_MAX = 60;
 
@@ -28,6 +29,7 @@ export const CreateServiceCardBody = z
     name: Name,
     card: CardId,
     harm: Harm.optional(),
+    load: LoadSchema.optional(),
     shared: z.boolean().default(false),
   })
   .strict();
@@ -36,6 +38,7 @@ export const UpdateServiceCardBody = z
   .object({
     name: Name.optional(),
     harm: Harm.optional(),
+    load: LoadSchema.optional(),
     shared: z.boolean().optional(),
   })
   .strict();
@@ -52,6 +55,8 @@ export interface ServiceCardView {
   readonly name: string;
   readonly card: string;
   readonly harm?: readonly { readonly name: string; readonly perHourKrw: number }[];
+  /** What it carries (REQ-109); absent: the card's own. */
+  readonly load?: ServiceLoad;
   readonly owner: string;
   readonly ownerTitles: readonly TitleView[];
   readonly shared: boolean;

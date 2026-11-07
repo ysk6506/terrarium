@@ -20,7 +20,8 @@ export interface ShapeMoss {
 export function useShapeMoss({ spec, flow, step, last, problem, make, quick }: ShapeMoss): void {
   useMossScreen("newWorld", {
     read: () => shapeState(spec, step, problem),
-    summary: () => `${spec.name} · 서버 ${spec.servers ?? "알아서"}대`,
+    summary: () =>
+      `${spec.name} · 서버룸 ${spec.rooms ?? "알아서"}곳 · 룸당 랙 ${spec.racksPerRoom ?? "알아서"}대 · 랙당 서버 ${spec.perRack ?? "알아서"}대`,
     run: {
       "world-ladders": () => {
         flow.go("ladders");

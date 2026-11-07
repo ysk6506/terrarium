@@ -1,22 +1,19 @@
 /**
  * 서비스부터 ② for a service after the first (ADR-0108 item 5): by default it is shaped like the first, so the screen
- * says so and shows what that comes to; "따로 고르기" opens its own ladders for the layers a service chooses.
+ * says so; "따로 고르기" opens its own ladders for the layers a service chooses.
  */
 import { withJosa } from "@terrarium/core/kernel";
 import { SERVICE_LAYERS, type ServiceDraft } from "@terrarium/core/sources/worldgen";
-import { cardOf, LAYER_INFO, type ShapeView } from "../../logic";
+import { cardOf, LAYER_INFO } from "../../logic";
 import type { Flow } from "./shape-flow";
-import { ShapePanel } from "./shape-panel";
 
 export function SameShape({
   flow,
   service,
-  view,
   at,
 }: {
   readonly flow: Flow;
   readonly service: ServiceDraft;
-  readonly view: ShapeView;
   /** Its place among the services, from 1 (the first is not asked here). */
   readonly at: number;
 }) {
@@ -34,7 +31,7 @@ export function SameShape({
         기본은 {withJosa(first, "과")} 같은 모양이에요. 이 서비스만 다르게 돌리고 싶으면 따로
         골라요.
       </p>
-      <div className="we-layers">
+      <div className="we-layers solo">
         <div className="we-lcol">
           <section className="we-same" data-testid="same-shape" aria-label="같은 모양">
             <h3>같은 모양</h3>
@@ -56,9 +53,6 @@ export function SameShape({
               따로 고르기
             </button>
           </section>
-        </div>
-        <div className="we-rcol">
-          <ShapePanel view={view} />
         </div>
       </div>
     </>

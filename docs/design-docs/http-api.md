@@ -15,11 +15,11 @@ covers:
   - packages/core/src/contract/community-routes.ts
 covers_hash: 82ea57871f8c6bd4
 verification_log:
-  - "2026-11-07: REQ-102(ADR-0123): 사다리·직접 짓기 화면과 말(시운전·미리 보기·전제)을 코드와 대조해 고쳤다"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: 2026-11-07: REQ-104(ADR-0127) 코드와 대조해 고쳤다"
   - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
+  - "2026-11-07: o15 합치기 (2차 피드백 수정)"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -79,13 +79,13 @@ verification_log:
 | `GET /api/users/:id/titles` | 한 사람의 칭호 전부 `{ user, titles: [{ key, label, means, earnedAt }] }`, 보여 줄 차례대로. `:id`는 사람 이름 | |
 | `POST /api/worlds/:id/quick-experiment` | 권장값으로 실험 시작 한 번(REQ-104, [ADR-0127](adr/0127-short-world-flow-and-service-catalog.md), [설명](world-entry.md#실험-시작--권장값-한-번에)) `{ templateIds? }` → `{ experimentId, scenarios, faults, runs, hours, harnessId, agentId, agentName, agentFrom }`. 운영 실험(시나리오 세트) · 기본 툴 + `events_since` · 5번 · 실제 시간 · 최근 쓴 에이전트(없으면 내장 `operator`). 쓸 시나리오가 없으면 400 | |
 | `GET /api/service-cards` | 내 카드와 공유된 서비스 카드(REQ-104, [카탈로그](service-catalog.md)). 만든 사람·칭호·`shared`·`canEdit`(만든 사람만 true) | |
-| `POST /api/service-cards` | 내 카드로 저장 `{ name, card, harm?, shared?: false }`. `card`는 기본 제공 카드 id, `harm`은 그 카드의 등급 수와 같아야 한다(400) | |
-| `PATCH /api/service-cards/:id` | 고치기: 이름·`harm`·`shared` 모두 만든 사람만(403). 공유 안 된 남의 카드는 403. `locked`는 없다(보내면 400) |
+| `POST /api/service-cards` | 내 카드로 저장 `{ name, card, harm?, load?, shared?: false }`. `card`는 기본 제공 카드 id, `harm`은 그 카드의 등급 수와 같아야 한다(400) | |
+| `PATCH /api/service-cards/:id` | 고치기: 이름·`harm`·`load`·`shared` 모두 만든 사람만(403). 공유 안 된 남의 카드는 403. `locked`는 없다(보내면 400) |
 | `POST /api/service-cards/:id/copy` | 복사해서 내 카드로 `{ name? }`. 공유된 남의 카드나 내 카드만(아니면 404·403). 복사본은 내 소유, `shared:false` | |
 | `DELETE /api/service-cards/:id` | 지우기(만든 사람만) | |
 | `GET /api/worlds/:id` | 세계 하나 (blueprint 포함) | |
 | `POST /api/worlds` | 빌더에서 지은 세계 저장 | |
-| `POST /api/worlds/generate` | 사업장 프리셋으로 세계 생성. 본문이 `{ shape }`이면 서비스부터(REQ-094), `template: true`를 더하면 템플릿으로 저장, `startedFrom`(템플릿·세계 id)을 더하면 출처를 세계 기록에 남긴다(REQ-101) | |
+| `POST /api/worlds/generate` | 사업장 프리셋으로 세계 생성. 본문이 `{ shape }`이면 서비스부터(REQ-094; 크기는 `rooms`·`racksPerRoom`·`perRack`(REQ-109)이고 옛 `servers`만 있어도 같은 세계를 짓는다, 서비스마다 `load`(초당 요청·데이터 GB·동시 사용자·허용 중단 초·GPU 시간)를 받는다), `template: true`를 더하면 템플릿으로 저장, `startedFrom`(템플릿·세계 id)을 더하면 출처를 세계 기록에 남긴다(REQ-101) | |
 | `GET /api/world-templates` | 저장해 둔 세계 템플릿 목록(구성은 `provenance.shape`). `GET /api/worlds`에는 나오지 않는다 | |
 | `POST /api/worlds/import` | 현실(KG 등)에서 읽기 전용으로 가져오기 | |
 | `PUT /api/worlds/:id` | 세계 고쳐 저장 (버전 확인) | |

@@ -3,9 +3,10 @@
  * sheet of only what fits the stage the person is on; a kind with several types asks the type next. Esc or a press
  * outside closes it. The button is primary while nothing is picked and secondary once something is.
  */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { builder, won } from "../../logic";
 import { Button } from "../kit";
+import { Anchored } from "./Anchored";
 import type { Builder } from "./useBuilder";
 import { catalog } from "./useBuilder";
 import { widenRoom } from "./widen";
@@ -21,7 +22,7 @@ export function viewOf(b: Builder): builder.ToolView {
   };
 }
 
-/** Close on Esc (before the builder's own Esc runs) and on a press outside the panel. */
+/** Close on Esc (before the builder's own Esc runs) and on a press outside the button and its sheet. */
 function useDismiss(open: boolean, close: () => void) {
   const box = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -33,7 +34,8 @@ function useDismiss(open: boolean, close: () => void) {
       close();
     };
     const away = (e: PointerEvent) => {
-      if (!box.current?.contains(e.target as Node)) close();
+      const inSheet = (e.target as Element | null)?.closest?.('[data-anchored="place"]');
+      if (!inSheet && !box.current?.contains(e.target as Node)) close();
     };
     window.addEventListener("keydown", key, true);
     window.addEventListener("pointerdown", away, true);
@@ -101,6 +103,20 @@ function Land({ b, onDone }: { readonly b: Builder; readonly onDone: () => void 
   );
 }
 
+/** The corner under the button, in stage pixels: where its sheet opens (the same anchoring as the card of a picked thing). */
+function useCorner(open: boolean, box: React.RefObject<HTMLDivElement | null>) {
+  const [corner, setCorner] = useState<builder.StagePoint>();
+  useLayoutEffect(() => {
+    const button = box.current;
+    const stage = button?.parentElement;
+    if (!open || !button || !stage) return setCorner(undefined);
+    const a = button.getBoundingClientRect();
+    const s = stage.getBoundingClientRect();
+    setCorner({ x: Math.round(a.left - s.left), y: Math.round(a.bottom - s.top + 8) });
+  }, [open, box]);
+  return corner;
+}
+
 export function PlaceSheet({ b }: { readonly b: Builder }) {
   const [open, setOpen] = useState(false);
   const [asking, setAsking] = useState<builder.PlaceKind>();
@@ -110,6 +126,7 @@ export function PlaceSheet({ b }: { readonly b: Builder }) {
     setAsking(undefined);
   };
   const box = useDismiss(open, close);
+  const corner = useCorner(open, box);
   const holding = tool.kind !== "select";
   const kinds = builder.placeKinds(level, catalog, viewOf(b));
   const choose = (k: builder.PlaceKind) => {
@@ -119,56 +136,60 @@ export function PlaceSheet({ b }: { readonly b: Builder }) {
     close();
   };
   return (
-    <div className="place" ref={box}>
-      <Button
-        kind={selected.length === 0 && !holding ? "primary" : "plain"}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        data-moss-skip="3D 위에 놓는 일은 사람 몫이에요"
-        onClick={() => {
-          if (holding) return b.setTool({ kind: "select" });
-          setOpen((o) => !o);
-          setAsking(undefined);
-        }}
-      >
-        {holding ? "그만 놓기" : "놓기"}
-      </Button>
+    <>
+      <div className="place" ref={box}>
+        <Button
+          kind={selected.length === 0 && !holding ? "primary" : "plain"}
+          aria-haspopup="menu"
+          aria-expanded={open}
+          data-moss-skip="3D 위에 놓는 일은 사람 몫이에요"
+          onClick={() => {
+            if (holding) return b.setTool({ kind: "select" });
+            setOpen((o) => !o);
+            setAsking(undefined);
+          }}
+        >
+          {holding ? "그만 놓기" : "놓기"}
+        </Button>
+      </div>
       {open && (
-        <div className="place-sheet" role="menu" aria-label={asking ? asking.title : "놓을 것"}>
-          {asking ? (
-            <>
-              <button
-                type="button"
-                className="place-back"
-                data-moss-skip="시트를 한 걸음 되돌리는 보기 조작"
-                onClick={() => setAsking(undefined)}
-              >
-                ‹ {asking.title}
-              </button>
-              {asking.id === "land" && <Land b={b} onDone={close} />}
-              {asking.ask?.map((p) => (
+        <Anchored name="place" mode="below" anchor={corner}>
+          <div className="place-sheet" role="menu" aria-label={asking ? asking.title : "놓을 것"}>
+            {asking ? (
+              <>
                 <button
-                  key={p.label}
                   type="button"
-                  role="menuitem"
-                  className="place-item"
-                  data-moss-skip="3D 위에 놓는 일은 사람 몫이에요"
-                  title={p.hint}
-                  onClick={() => {
-                    b.setTool(p.tool);
-                    close();
-                  }}
+                  className="place-back"
+                  data-moss-skip="시트를 한 걸음 되돌리는 보기 조작"
+                  onClick={() => setAsking(undefined)}
                 >
-                  {p.label.split(" — ").at(-1)}
-                  <small>{p.hint}</small>
+                  ‹ {asking.title}
                 </button>
-              ))}
-            </>
-          ) : (
-            <Kinds kinds={kinds} onChoose={choose} />
-          )}
-        </div>
+                {asking.id === "land" && <Land b={b} onDone={close} />}
+                {asking.ask?.map((p) => (
+                  <button
+                    key={p.label}
+                    type="button"
+                    role="menuitem"
+                    className="place-item"
+                    data-moss-skip="3D 위에 놓는 일은 사람 몫이에요"
+                    title={p.hint}
+                    onClick={() => {
+                      b.setTool(p.tool);
+                      close();
+                    }}
+                  >
+                    {p.label.split(" — ").at(-1)}
+                    <small>{p.hint}</small>
+                  </button>
+                ))}
+              </>
+            ) : (
+              <Kinds kinds={kinds} onChoose={choose} />
+            )}
+          </div>
+        </Anchored>
       )}
-    </div>
+    </>
   );
 }

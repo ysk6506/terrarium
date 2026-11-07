@@ -5,7 +5,7 @@
 import type { WorldCardView } from "@terrarium/core/contract";
 import type { WorldOrigin } from "@terrarium/core/experiments";
 import { count, evidenceHint, evidenceLine, likeLabel, relativeTime } from "../../logic";
-import { Go, useNow } from "../context";
+import { Go, useApp, useNow } from "../context";
 import { TitlePills } from "../titles";
 
 export const ORIGIN_LABELS: Readonly<Record<WorldOrigin, string>> = {
@@ -68,8 +68,16 @@ export function WorldCard({
   readonly compact?: boolean;
 }) {
   const now = useNow();
+  const { navigate } = useApp();
+  // The whole card opens the world (REQ-109): a press on a link, a button or a field keeps its own meaning.
+  const open = (e: React.MouseEvent) => {
+    if ((e.target as Element).closest("a, button, input, textarea, select, label")) return;
+    if (window.getSelection()?.toString()) return;
+    navigate({ name: "world", id: card.id });
+  };
   return (
-    <article className="world-card">
+    // biome-ignore lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: the name inside is the real link for keyboards; the card is only a larger target for the same link
+    <article className="world-card" data-open="world" onClick={open}>
       <div className="wc-head">
         <Go to={{ name: "world", id: card.id }} className="wc-name">
           {card.name}

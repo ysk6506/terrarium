@@ -3,15 +3,31 @@
  * does. The last screen builds the world, says what came of it in one line, and offers to keep the shape as a template.
  */
 import type { ShapedResult } from "@terrarium/core/sources/worldgen";
-import { planShape, type ShapeSpec, shapeProblem } from "@terrarium/core/sources/worldgen";
-import { type ReactNode, useMemo, useState } from "react";
-import { advance, builtFact, recommendLine, retreat, type ShapeView, shapeView } from "../../logic";
+import {
+  DEFAULT_SHAPE,
+  planShape,
+  type ShapeSpec,
+  shapeProblem,
+} from "@terrarium/core/sources/worldgen";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
+import {
+  advance,
+  builtFact,
+  type RowMeta,
+  recommendLine,
+  retreat,
+  type ShapeView,
+  shapeView,
+  type WorldDraft,
+  worldDraft,
+  worthKeeping,
+} from "../../logic";
 import { messageOf, useApp } from "../context";
 import { Button, TextField } from "../kit";
 import { type Flow, type Step, useShapeFlow } from "./shape-flow";
 import { LaddersStep } from "./shape-ladders";
 import { useShapeMoss } from "./shape-moss";
-import type { RowMeta } from "./shape-services";
+import { ShapePanel } from "./shape-panel";
 import { ServicesStep } from "./shape-services";
 import { SizeStep } from "./shape-size";
 
@@ -110,47 +126,52 @@ function Done({
   const { navigate } = useApp();
   const [error, setError] = useState<string>();
   return (
-    <section className="we-done" aria-label="세계를 다 지었어요">
-      <h2>세계를 다 지었어요</h2>
-      <p>{builtFact(flow.spec.name, view)}</p>
-      <div className="we-plan">
-        <div>
-          <b>이렇게 시작해요</b>
-          <br />
-          <small>{recommendLine(view.scenarios)}</small>
+    <div className="we">
+      <section className="we-done" aria-label="세계를 다 지었어요">
+        <h2>세계를 다 지었어요</h2>
+        <p>{builtFact(flow.spec.name, view)}</p>
+        <div className="we-done-sum">
+          <ShapePanel view={view} />
         </div>
-        <Button
-          data-moss-skip="세계 폼 안의 입력"
-          kind="quiet"
-          onClick={() => navigate({ name: "newExperiment", worldId: built.worldId, quick: true })}
-        >
-          바꾸기
-        </Button>
-      </div>
-      <div className="row">
-        <Button
-          data-moss-action="world-quick-start"
-          kind="primary"
-          busy={start.busy}
-          onClick={() => void start.run(built.worldId)}
-        >
-          실험 시작
-        </Button>
-        <Button
-          data-moss-skip="세계 폼 안의 입력"
-          kind="quiet"
-          onClick={() => navigate({ name: "world", id: built.worldId })}
-        >
-          세계 둘러보기
-        </Button>
-      </div>
-      <SaveTemplate spec={flow.spec} onError={setError} />
-      {(error || start.error) && (
-        <p className="we-note" role="alert">
-          {error ?? start.error}
-        </p>
-      )}
-    </section>
+        <div className="we-plan">
+          <div>
+            <b>이렇게 시작해요</b>
+            <br />
+            <small>{recommendLine(view.scenarios)}</small>
+          </div>
+          <Button
+            data-moss-skip="세계 폼 안의 입력"
+            kind="quiet"
+            onClick={() => navigate({ name: "newExperiment", worldId: built.worldId, quick: true })}
+          >
+            바꾸기
+          </Button>
+        </div>
+        <div className="row">
+          <Button
+            data-moss-action="world-quick-start"
+            kind="primary"
+            busy={start.busy}
+            onClick={() => void start.run(built.worldId)}
+          >
+            실험 시작
+          </Button>
+          <Button
+            data-moss-skip="세계 폼 안의 입력"
+            kind="quiet"
+            onClick={() => navigate({ name: "world", id: built.worldId })}
+          >
+            세계 둘러보기
+          </Button>
+        </div>
+        <SaveTemplate spec={flow.spec} onError={setError} />
+        {(error || start.error) && (
+          <p className="we-note" role="alert">
+            {error ?? start.error}
+          </p>
+        )}
+      </section>
+    </div>
   );
 }
 
@@ -298,11 +319,54 @@ function Problem({ text }: { readonly text: string | undefined }) {
 }
 
 /** Where the card of each added service came from, by key (the first one is IAP, "기본 제공"). */
-function useMetas() {
-  const [metas, setMetas] = useState<Readonly<Record<string, RowMeta>>>({});
+function useMetas(kept?: WorldDraft) {
+  const [metas, setMetas] = useState<Readonly<Record<string, RowMeta>>>(kept?.metas ?? {});
   return {
     metas,
     setMeta: (key: string, meta: RowMeta) => setMetas((m) => ({ ...m, [key]: meta })),
+    clearMetas: () => setMetas({}),
+  };
+}
+
+/**
+ * The world in progress is kept for the session (REQ-109): written after every change, read when the screen opens
+ * again, thrown away once the world is built. Only a world made from the services, not a template's "조금 바꿔서".
+ */
+function useKept(enabled: boolean): WorldDraft | undefined {
+  const [kept] = useState(() => (enabled ? worldDraft.read() : undefined));
+  return kept;
+}
+
+function useKeepWriting(on: boolean, draft: WorldDraft, built: boolean): void {
+  useEffect(() => {
+    if (on) worldDraft.write(draft);
+  });
+  useEffect(() => {
+    if (built) worldDraft.clear();
+  }, [built]);
+}
+
+/** The "이어서 할까요?" line of the first screen: there when a world worth keeping was kept, gone once answered. */
+function useResume(kept: WorldDraft | undefined, flow: Flow, clearMetas: () => void) {
+  const [open, setOpen] = useState(
+    () =>
+      kept !== undefined &&
+      worthKeeping(kept, DEFAULT_SHAPE.services[0] as never, DEFAULT_SHAPE.name),
+  );
+  if (!open || !kept) return undefined;
+  return {
+    step: kept.step,
+    onContinue: () => {
+      flow.setLadder(kept.ladder);
+      flow.go(kept.step);
+      setOpen(false);
+    },
+    onRestart: () => {
+      flow.reset();
+      clearMetas();
+      worldDraft.clear();
+      setOpen(false);
+    },
   };
 }
 
@@ -321,14 +385,18 @@ export function ShapeScreen({
   readonly startedFrom?: string;
   readonly onLeave: () => void;
 }) {
-  const flow = useShapeFlow(start, fromTemplate, startAt);
+  const keeps = !start && !fromTemplate;
+  const kept = useKept(keeps);
+  const flow = useShapeFlow(start, fromTemplate, startAt, kept);
   const { spec } = flow;
   const view = useMemo(() => shapeView(spec), [spec]);
   const plan = useMemo(() => planShape(spec), [spec]);
   const problem = shapeProblem(spec);
   const { busy, built, error, make } = useMake(spec, startedFrom);
   const quick = useQuickStart(view.templateIds);
-  const { metas, setMeta } = useMetas();
+  const { metas, setMeta, clearMetas } = useMetas(kept);
+  const resume = useResume(kept, flow, clearMetas);
+  useKeepWriting(keeps && !built, flow.draft(metas), Boolean(built));
   const { last, onBack, onNext, startNow } = useStepper(flow, make, quick, onLeave);
   const sum = summaryOf(flow.step, spec, view);
   useShapeMoss({
@@ -340,16 +408,12 @@ export function ShapeScreen({
     make: async () => void (await make()),
     quick: startNow,
   });
-  if (built)
-    return (
-      <div className="we">
-        <Done built={built} flow={flow} view={view} start={quick} />
-      </div>
-    );
+  if (built) return <Done built={built} flow={flow} view={view} start={quick} />;
   return (
     <div className="we" data-step={flow.step}>
       {flow.step === "services" && (
         <ServicesStep
+          resume={resume}
           services={spec.services}
           scenarios={view.scenarios}
           metas={metas}
@@ -357,15 +421,17 @@ export function ShapeScreen({
           onMeta={setMeta}
         />
       )}
-      {flow.step === "ladders" && <LaddersStep flow={flow} view={view} />}
+      {flow.step === "ladders" && <LaddersStep flow={flow} />}
       {flow.step === "size" && (
         <SizeStep
           services={spec.services}
-          layers={spec.layers}
           plan={plan}
-          servers={spec.servers}
-          real={Boolean(spec.real)}
-          onServers={flow.setServers}
+          size={flow.size}
+          start={flow.sizeDefault}
+          typed={flow.sizeTyped}
+          view={view}
+          onSize={flow.setSize}
+          onReset={flow.resetSize}
           problem={problem}
         />
       )}

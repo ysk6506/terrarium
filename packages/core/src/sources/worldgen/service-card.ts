@@ -3,7 +3,12 @@
  * the draft of a card somebody saved ("내 카드") with the name and numbers they kept. The shape is the card's; the
  * name and the damage numbers are the only things a saved card can differ in.
  */
-import { type CatalogCard, DEFAULT_WORKLOAD, type WorkloadProfile } from "@terrarium/core/world";
+import {
+  type CatalogCard,
+  DEFAULT_WORKLOAD,
+  type ServiceLoad,
+  type WorkloadProfile,
+} from "@terrarium/core/world";
 import type { HarmTier, ServiceDraft } from "./shaped-plan";
 
 /** The key a service gets in a world: the card's id, with a number from the second one on. */
@@ -21,6 +26,7 @@ export const cardOfKey = (key: string): string => key.replace(/-\d+$/, "");
 export interface CardOverrides {
   readonly name?: string;
   readonly harm?: readonly HarmTier[];
+  readonly load?: ServiceLoad;
 }
 
 export function cardWorkload(card: CatalogCard): WorkloadProfile {
@@ -53,6 +59,7 @@ export function draftFromCard(
     stops: card.stops.map((s) => ({ ...s })),
     harm,
     workload: cardWorkload(card),
+    load: { ...(overrides.load ?? card.load) },
     ...(calls.length > 0 ? { calls } : {}),
   };
 }

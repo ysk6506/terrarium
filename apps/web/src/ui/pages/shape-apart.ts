@@ -5,17 +5,26 @@
 import { SERVICE_LAYERS, type ServiceDraft } from "@terrarium/core/sources/worldgen";
 import type { LayerId, Layers } from "@terrarium/core/world";
 import { useCallback, useState } from "react";
-import { type PresetId, presetLayers, resolveServiceLayers } from "../../logic";
+import {
+  type PresetId,
+  presetLayers,
+  type ResolveOptions,
+  resolveServiceLayers,
+} from "../../logic";
 import type { LadderState } from "./shape-flow";
 
 export type ApartMap = Readonly<Record<string, Partial<Layers>>>;
 
 /** The services as the spec carries them: a later one that chose its own has four layers of its own, the rest none. */
-export function shapedServices(services: readonly ServiceDraft[], apart: ApartMap): ServiceDraft[] {
+export function shapedServices(
+  services: readonly ServiceDraft[],
+  apart: ApartMap,
+  options: ResolveOptions = {},
+): ServiceDraft[] {
   return services.map((s, i) => {
     const { layers: _own, ...rest } = s;
     const mine = i > 0 ? apart[s.key] : undefined;
-    return mine ? { ...rest, layers: resolveServiceLayers(rest, mine).layers } : rest;
+    return mine ? { ...rest, layers: resolveServiceLayers(rest, mine, options).layers } : rest;
   });
 }
 
@@ -32,9 +41,15 @@ function apartPreset(mine: Partial<Layers>): PresetId | undefined {
 const fromRow = (row: Layers): Partial<Layers> =>
   Object.fromEntries(SERVICE_LAYERS.map((l) => [l, row[l]]));
 
-export function useApart(services: readonly ServiceDraft[]) {
-  const [apart, setApart] = useState<ApartMap>(() =>
-    Object.fromEntries(services.slice(1).flatMap((s) => (s.layers ? [[s.key, s.layers]] : []))),
+export function useApart(
+  services: readonly ServiceDraft[],
+  restored?: ApartMap,
+  options: ResolveOptions = {},
+) {
+  const [apart, setApart] = useState<ApartMap>(
+    () =>
+      restored ??
+      Object.fromEntries(services.slice(1).flatMap((s) => (s.layers ? [[s.key, s.layers]] : []))),
   );
   const choose = useCallback((key: string, layer: LayerId, chip: string | undefined) => {
     setApart((all) => {
@@ -46,7 +61,7 @@ export function useApart(services: readonly ServiceDraft[]) {
   const stateOf = (service: ServiceDraft, world: Layers): LadderState | undefined => {
     const mine = apart[service.key];
     if (!mine) return undefined;
-    const own = resolveServiceLayers(service, mine);
+    const own = resolveServiceLayers(service, mine, options);
     return {
       manual: mine,
       layers: { ...world, ...own.layers },
@@ -70,5 +85,6 @@ export function useApart(services: readonly ServiceDraft[]) {
     if (head && mine) setApart(({ [head.key]: _taken, ...rest }) => rest);
     return mine;
   };
-  return { apart, stateOf, toggle, adopt };
+  const reset = () => setApart({});
+  return { apart, stateOf, toggle, adopt, reset };
 }

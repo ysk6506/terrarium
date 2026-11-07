@@ -4,6 +4,7 @@ import {
   DAY_PATTERNS,
   LAYER_IDS,
   layersProblem,
+  loadProblem,
   RESOURCES,
   WORKLOAD_KINDS,
   workloadProblem,
@@ -19,6 +20,17 @@ const WorkloadSchema = z
     perMinute: z.number().min(1).max(1_000_000),
     pattern: z.enum(DAY_PATTERNS as unknown as [string, ...string[]]),
     shares: z.object(Object.fromEntries(RESOURCES.map((r) => [r, Share]))).strict(),
+  })
+  .strict();
+
+/** What a service carries (REQ-109); the limits of the numbers are checked after, in Korean (`loadProblem`). */
+export const LoadSchema = z
+  .object({
+    rps: z.number(),
+    dataGB: z.number(),
+    users: z.number(),
+    maxDowntimeS: z.number(),
+    gpuHours: z.number().optional(),
   })
   .strict();
 
@@ -82,6 +94,8 @@ const ServiceDraftSchema = z
       )
       .max(6),
     workload: WorkloadSchema,
+    /** What it carries (REQ-109); absent in older specs. */
+    load: LoadSchema.optional(),
     /** The services this one calls, by key (REQ-100): an optional line of the "+ 서비스 더하기" form. */
     calls: z.array(IdSchema).max(11).optional(),
     /** Its own choices for the four layers a service chooses (ADR-0108 item 5); absent: the world's shape. */
@@ -103,6 +117,10 @@ export const ShapeSpecSchema = z
       .max(2 ** 31 - 1),
     site: z.enum(SITE_IDS),
     servers: z.number().int().min(1).max(250_000),
+    /** The size as three numbers (REQ-109): all three or none; without them `servers` is the size, as before. */
+    rooms: z.number().int().min(1).max(8).optional(),
+    racksPerRoom: z.number().int().min(1).max(240).optional(),
+    perRack: z.number().int().min(1).max(40).optional(),
     real: z.boolean().optional(),
     layers: z.object(Object.fromEntries(LAYER_IDS.map((l) => [l, z.string().max(40)]))).strict(),
     services: z.array(ServiceDraftSchema).max(12),
@@ -112,6 +130,7 @@ export const ShapeSpecSchema = z
     const problem =
       layersProblem(spec.layers as never) ??
       shapeProblem(spec as unknown as ShapeSpec) ??
-      spec.services.map((s) => workloadProblem(s.workload as never)).find(Boolean);
+      spec.services.map((s) => workloadProblem(s.workload as never)).find(Boolean) ??
+      spec.services.map((s) => (s.load ? loadProblem(s.load) : undefined)).find(Boolean);
     if (problem) ctx.addIssue({ code: z.ZodIssueCode.custom, message: problem });
   }) as unknown as z.ZodType<ShapeSpec>;

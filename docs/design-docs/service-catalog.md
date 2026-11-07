@@ -5,15 +5,18 @@ status: active
 last_verified: 2026-11-07
 covers:
   - packages/core/src/world/service-catalog.ts
+  - packages/core/src/world/service-load.ts
   - packages/core/src/sources/worldgen/service-card.ts
   - apps/server/src/runtime/service-cards.ts
   - apps/server/src/runtime/experiments-quick.ts
   - packages/core/src/contract/service-cards.ts
-covers_hash: da80cbd3da6d1836
+covers_hash: ad65ac1e437b410a
 verification_log:
-  - "2026-11-07: 2026-11-07: REQ-104(ADR-0127) 코드와 대조해 고쳤다"
   - "2026-11-07: REQ-107: 해당 문장을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
+  - "2026-11-07: REQ-109: 코드와 대조했다. 해당 문장을 고쳤고 나머지는 그대로 맞다"
+  - "2026-11-07: REQ-109: 코드와 대조했다"
+  - "2026-11-07: o15 합치기 (2차 피드백 수정)"
 ---
 # 서비스 카탈로그 (REQ-104, [ADR-0127](adr/0127-short-world-flow-and-service-catalog.md))
 
@@ -38,15 +41,32 @@ verification_log:
 - **사다리에서 중요한 층**은 둘째 화면의 안내 한 줄("AI 추론 서빙은 가속기·컴퓨트·네트워크·냉방이 특히 중요해요.")에 쓴다. 층을 대신 고르지는 않는다. 다만 AI 추론 서빙은 가속기 칩 `gpu-serving-pool`, 학습 파이프라인은 `gpu-training-cluster`를 기본으로 달고(`CatalogCard.accel`, REQ-107), "알아서"도 이 둘에서만 GPU를 고른다.
 - IAP는 카탈로그 밖의 기본 서비스다(기본 제공 · 잠김). "쿠버네티스 플랫폼" 카드는 IAP와 같은 모양의 작은 판이다.
 
+## 서비스 숫자 (REQ-109, [ADR-0132](adr/0132-world-entry-sizing-and-ux-fixes.md))
+카드마다 `load`가 있다(`workload`는 이미 일감 종류의 이름이라 `load`다): 초당 요청 · 데이터(GB) · 동시 사용자 · 허용 중단(초) · GPU 학습 시간(GPU 카드만). 돈은 없다. "알아서"가 층을 고르고 세계의 크기를 세는 데 쓰고([세계 만들기](world-entry.md)), ①의 회색 한 줄과 "숫자 고치기"에서 사람이 고친다. IAP는 `IAP_LOAD`다. 내 카드는 `load`를 함께 저장하고, 서버가 한도(`LOAD_LIMITS`)를 확인한다.
+
+| 카드 | 초당 요청 | 데이터 | 동시 사용자 | 허용 중단 | GPU 학습 |
+|---|---|---|---|---|---|
+| IAP | 20건 | 300 GB | 40명 | 5분 | 없음 |
+| 웹 API | 300건 | 2 TB | 1,200명 | 1분 | 없음 |
+| 배치 파이프라인 | 5건 | 5 TB | 20명 | 1시간 | 없음 |
+| 데이터베이스 뒤의 앱 | 200건 | 1 TB | 800명 | 30초 | 없음 |
+| 쿠버네티스 플랫폼 | 1,500건 | 3 TB | 2,000명 | 2분 | 없음 |
+| 메시지 큐 | 4,000건 | 500 GB | 300명 | 30초 | 없음 |
+| 캐시 | 20,000건 | 100 GB | 3,000명 | 5분 | 없음 |
+| AI 추론 서빙 | 200건 | 800 GB | 2,000명 | 1분 | 없음 |
+| 학습 파이프라인 | 1건 | 20 TB | 30명 | 2시간 | 5,000시간 |
+| 파일 공유 | 100건 | 50 TB | 1,500명 | 5분 | 없음 |
+| 모니터링 | 500건 | 800 GB | 60명 | 1분 | 없음 |
+
 ## 내 카드 (`service_cards`)
-`POST /api/service-cards { name, card, harm?, shared? }`는 기본 제공 카드에 이름과 피해 숫자(등급 수가 같아야 한다)를 덮어쓴 카드를 저장한다. 모양은 늘 `card`의 것이다.
+`POST /api/service-cards { name, card, harm?, load?, shared? }`는 기본 제공 카드에 이름과 피해 숫자(등급 수가 같아야 한다), 서비스 숫자(`load`)를 덮어쓴 카드를 저장한다. 모양은 늘 `card`의 것이다.
 
 | 칸 | 뜻 |
 |---|---|
 | `owner` | 저장한 사람. 카탈로그에 이름과 칭호 알약으로 보인다 |
 | `shared` (기본 false) | true: 모두의 카탈로그에 보인다. false: 만든 사람에게만 보인다 |
 
-`GET`은 내 카드와 공유된 카드를, `PATCH /:id`는 이름·피해 숫자·`shared`를 만든 사람만, `DELETE /:id`도 만든 사람만 한다. **카드는 늘 잠겨 있다**(REQ-108): `locked` 칸은 없고 보내면 400이다. 남의 카드는 `POST /:id/copy { name? }`로 복사해서 내 카드로 쓴다(복사본은 복사한 사람의 것이고 공유 안 된 상태다). 공유되지 않은 남의 카드는 403이다. 카탈로그를 통해 세계에 더해진 서비스는 카드의 **복사본**이라, 나중에 원본을 고쳐도 이미 지은 세계는 바뀌지 않는다.
+`GET`은 내 카드와 공유된 카드를, `PATCH /:id`는 이름·피해 숫자·`load`·`shared`를 만든 사람만, `DELETE /:id`도 만든 사람만 한다. **카드는 늘 잠겨 있다**(REQ-108): `locked` 칸은 없고 보내면 400이다. 남의 카드는 `POST /:id/copy { name? }`로 복사해서 내 카드로 쓴다(복사본은 복사한 사람의 것이고 공유 안 된 상태다). 공유되지 않은 남의 카드는 403이다. 카탈로그를 통해 세계에 더해진 서비스는 카드의 **복사본**이라, 나중에 원본을 고쳐도 이미 지은 세계는 바뀌지 않는다.
 
 ## 하지 않은 것
 - 카드를 직접 설계(구조·종류 바꾸기)하는 편집기. 모양은 기본 제공 열 장뿐이다.

@@ -119,6 +119,11 @@ async function build(c: Context): Promise<void> {
   // The person points at the floor where the cursor shows a green spot: one click, however many we tried.
   c.d.actions++;
   if (!placed) throw new Error("랙을 놓지 못했다");
+  // REQ-109: the sheet and the cards sit beside what is picked, and the page never scrolls sideways.
+  const wide = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  if (wide > 0) throw new Error(`빌더가 가로로 ${wide}px 넘쳐요`);
   await c.d.press("Control+z");
   await page.waitForTimeout(300);
   if ((await hudText(page)) !== before) throw new Error("되돌리기가 랙을 지우지 못했다");
@@ -138,11 +143,11 @@ async function design(c: Context): Promise<void> {
     .first()
     .waitFor({ timeout: 30 * SECOND });
   const before = await page.locator(".react-flow__node").count();
-  await c.d.drag(
-    page.locator(".palette-item", { hasText: "메모" }).first(),
-    page.locator(".react-flow__pane"),
-    { x: 320, y: 520 },
-  );
+  // the palette opens the question the scenario is furthest along in; 메모 is a flow block
+  const memo = page.locator(".palette-item", { hasText: "메모" }).first();
+  if ((await memo.count()) === 0)
+    await c.d.click(page.getByRole("button", { name: /에이전트가 뭘 하면 되나요/ }));
+  await c.d.drag(memo, page.locator(".react-flow__pane"), { x: 320, y: 520 });
   await page.waitForTimeout(400);
   if ((await page.locator(".react-flow__node").count()) <= before)
     throw new Error("끌어다 놓은 블록이 캔버스에 생기지 않았다");
@@ -365,6 +370,10 @@ async function openTopology(c: Context): Promise<void> {
   await expectPath(c, /^\/worlds\/w-/);
   const open = page.getByRole("button", { name: "토폴로지", exact: true });
   await open.waitFor({ timeout: 60 * SECOND });
+  // A person looks at the 3D world before pressing the eye; on a software-rendered browser the stage of this biggest
+  // world takes seconds to settle, and the picture's clock starts when the press does, not while the stage still loads.
+  await settle(page);
+  await page.waitForTimeout(3 * SECOND);
   const started = Date.now();
   await c.d.click(open);
   const board = page.locator(".topo-board svg");
@@ -384,11 +393,15 @@ async function openTopology(c: Context): Promise<void> {
   );
   const group = page.locator(".topo-hits button[aria-label*='누르면']").first();
   await group.waitFor({ timeout: 10 * SECOND });
+  // A group of one kind opens in place (more tiles), a container adds a crumb; either way the board goes one level down.
   const crumbs = await page.locator(".topo-crumbs button").count();
+  const tilesBefore = await page.locator(".topo-hits li").count();
   await c.d.click(group);
   await page.waitForFunction(
-    (n) => document.querySelectorAll(".topo-crumbs button").length > n,
-    crumbs,
+    ([n, t]) =>
+      document.querySelectorAll(".topo-crumbs button").length > (n as number) ||
+      document.querySelectorAll(".topo-hits li").length !== t,
+    [crumbs, tilesBefore],
     { timeout: 10 * SECOND },
   );
   const after = await page.locator(".topo-hits li").count();

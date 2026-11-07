@@ -1,4 +1,18 @@
 /** The world builder's model: levels, edits, racks, cables, the 3D scene, totals, undo, preview. */
+
+export {
+  type AnchorStore,
+  anchorStore,
+  BAR_HEIGHT,
+  CARD_MARGIN,
+  CARD_MAX_WIDTH,
+  cardWidth,
+  type Placement,
+  type Point as StagePoint,
+  placeCard,
+  SHEET_BELOW,
+  type Size,
+} from "./card-place";
 export {
   link,
   linkProblem,
