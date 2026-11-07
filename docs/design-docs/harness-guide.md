@@ -2,12 +2,13 @@
 title: 품질 하네스 사용법
 kind: guide
 status: active
-last_verified: 2026-10-28
+last_verified: 2026-11-07
 covers:
   - harness/src/run-all.ts
-covers_hash: aafcb1d36a6874c6
+covers_hash: 551362b453d558a0
 verification_log:
   - "2026-10-28: rewritten for TS harness"
+  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
 ---
 # 품질 하네스
 

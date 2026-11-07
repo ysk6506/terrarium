@@ -1,0 +1,5 @@
+{
+  "_": "이끼 답 품질 바닥값 (REQ-103, ADR-0124). floor는 아직 정하지 않았어요: pnpm moss-eval --record 로 measured만 적고, 몇 번 재 본 뒤 floor를 정해요.",
+  "floor": null,
+  "measured": null
+}

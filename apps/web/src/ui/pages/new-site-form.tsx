@@ -118,6 +118,7 @@ function DrawFields({ s }: { readonly s: Shaping }) {
       <SitePad points={s.points} onChange={s.setPoints} />
       <div className="row">
         <Button
+          data-moss-skip="세계 폼 안의 입력"
           size="small"
           disabled={none}
           why="찍은 점이 아직 없어요"
@@ -126,6 +127,7 @@ function DrawFields({ s }: { readonly s: Shaping }) {
           마지막 점 지우기
         </Button>
         <Button
+          data-moss-skip="세계 폼 안의 입력"
           size="small"
           disabled={none}
           why="찍은 점이 아직 없어요"
@@ -250,6 +252,7 @@ export function SmallForm({ onDone }: { readonly onDone: () => void }) {
       </details>
       <div className="dialog-actions">
         <Button
+          data-moss-skip="세계 폼 안의 입력"
           kind="primary"
           type="submit"
           busy={busy}

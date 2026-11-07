@@ -33,7 +33,12 @@ export function AgentCensusLine({
         ))}
         {text.action && (
           <div>
-            <Button size="small" busy={busy ?? false} onClick={onToggle}>
+            <Button
+              data-moss-skip="폼과 대화상자 안"
+              size="small"
+              busy={busy ?? false}
+              onClick={onToggle}
+            >
               {text.action}
             </Button>
           </div>

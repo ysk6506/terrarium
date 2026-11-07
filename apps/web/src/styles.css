@@ -4809,3 +4809,385 @@ button.title-pill:hover {
   text-align: center;
   white-space: normal;
 }
+
+/* ── 이끼 (REQ-103, ADR-0124): 떠 있는 버튼, 옆 패널, 작은 물음표 ───────────────────────────────── */
+
+:root {
+  --moss: #2f7d4f;
+  --moss-soft: #e6f4ea;
+  --on-moss: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --moss: #6fcf97;
+    --moss-soft: #163b26;
+    --on-moss: #0b1f14;
+  }
+}
+
+:root[data-theme="dark"] {
+  --moss: #6fcf97;
+  --moss-soft: #163b26;
+  --on-moss: #0b1f14;
+}
+
+.shell.moss-open .main {
+  padding-right: 360px;
+}
+
+.moss-launch {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.moss-launch.high {
+  bottom: 84px;
+}
+
+.moss-btn {
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--moss);
+  color: var(--on-moss);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+
+.moss-btn:hover {
+  filter: brightness(1.06);
+}
+
+.moss-hint,
+.moss-sleep {
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: 13px;
+  box-shadow: var(--card-shadow);
+}
+
+.moss-sleep {
+  text-decoration: none;
+}
+
+.moss-sleep:hover {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.moss-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+  border-left: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.moss-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.moss-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--moss);
+}
+
+.moss-x {
+  margin-left: auto;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink-3);
+  font: inherit;
+  cursor: pointer;
+}
+
+.moss-x:hover {
+  background: var(--fill);
+  color: var(--ink);
+}
+
+.moss-body {
+  display: grid;
+  flex: 1;
+  gap: 12px;
+  align-content: start;
+  padding: 16px 18px;
+  overflow: auto;
+}
+
+.moss-q-bubble {
+  justify-self: end;
+  max-width: 85%;
+  padding: 9px 13px;
+  border-radius: 14px 14px 4px 14px;
+  background: var(--fill);
+  font-size: 14px;
+}
+
+.moss-a {
+  max-width: 94%;
+  padding: 11px 13px;
+  border-radius: 14px 14px 14px 4px;
+  background: var(--moss-soft);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.moss-a-none {
+  background: var(--fill);
+  color: var(--ink-2);
+}
+
+.moss-wait {
+  color: var(--ink-3);
+}
+
+.moss-a-wrap {
+  display: grid;
+  gap: 8px;
+}
+
+.moss-rough {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.moss-src {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.moss-src summary {
+  cursor: pointer;
+}
+
+.moss-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.moss-chip,
+.moss-chip-src {
+  padding: 6px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 13px;
+}
+
+.moss-chip-src {
+  padding: 1px 8px;
+  font-size: 12px;
+}
+
+.moss-chip {
+  cursor: pointer;
+  text-align: left;
+}
+
+.moss-chip:hover {
+  background: var(--fill);
+  color: var(--ink);
+}
+
+.moss-chip-do {
+  border-color: var(--moss);
+  color: var(--moss);
+  font-weight: 600;
+}
+
+.moss-say {
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.moss-say.bad {
+  color: var(--bad);
+}
+
+.moss-saying {
+  margin: 0;
+  padding: 6px 18px;
+  background: var(--moss-soft);
+  color: var(--moss);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.moss-plan,
+.moss-confirm {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.moss-confirm {
+  border: 2px solid var(--moss);
+}
+
+.moss-confirm.closed {
+  border: 1px solid var(--line);
+}
+
+.moss-plan h5,
+.moss-confirm h5 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.moss-plan ul {
+  margin: 0;
+  padding: 0;
+}
+
+/* biome-ignore lint/style/noDescendingSpecificity: the list rows of the panel are styled apart from the confirm card */
+.moss-plan li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  list-style: none;
+  color: var(--ink-2);
+  font-size: 13.5px;
+}
+
+.moss-confirm p {
+  margin: 0 0 10px;
+  color: var(--ink-2);
+  font-size: 13.5px;
+}
+
+.moss-confirm-row {
+  display: flex;
+  gap: 8px;
+}
+
+.moss-plan-note {
+  margin: 6px 0 0;
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+.moss-plan-note.bad {
+  color: var(--bad);
+}
+
+.moss-tick {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--line-strong);
+  border-radius: 50%;
+}
+
+.moss-tick.done {
+  border-color: var(--good);
+  background: var(--good);
+}
+
+.moss-tick.now {
+  border-color: var(--moss);
+  box-shadow: 0 0 0 3px var(--moss-soft);
+}
+
+.moss-tick.skipped {
+  border-style: dashed;
+}
+
+.moss-foot {
+  padding: 12px 18px;
+  border-top: 1px solid var(--line);
+}
+
+.moss-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--fill);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+}
+
+.moss-input:focus-visible {
+  outline: 2px solid var(--moss);
+}
+
+.moss-ask {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.moss-q {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--moss-soft);
+  color: var(--moss);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.moss-q:hover {
+  background: var(--moss);
+  color: var(--on-moss);
+}
+
+.moss-hl {
+  outline: 2px solid var(--moss);
+  outline-offset: 3px;
+  border-radius: 14px;
+}
+
+@media (max-width: 900px) {
+  .moss-panel {
+    width: 100%;
+  }
+
+  .shell.moss-open .main {
+    padding-right: 0;
+  }
+}

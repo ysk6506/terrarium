@@ -65,7 +65,7 @@ function Reply({
 }) {
   const [text, setText] = useState("");
   return (
-    <div className="stack">
+    <div className="stack" data-moss-skip="사람이 정하는 일">
       <TextField label={W.REPLY_LABEL} value={text} multiline maxLength={2000} onChange={setText} />
       <Button
         kind="primary"
@@ -105,7 +105,7 @@ function Act({
   const target = targets.some((t) => t.id === picked) ? picked : (targets[0]?.id ?? "");
   const value = values[action.id] ?? action.value?.start ?? 0;
   return (
-    <div className="stack">
+    <div className="stack" data-moss-skip="사람이 정하는 일">
       <SelectField
         label="할 일"
         value={actionId}
@@ -171,7 +171,7 @@ function More({
   const [picked, setPicked] = useState<string[]>([...card.tools]);
   const extra = picked.filter((t) => !card.tools.includes(t));
   return (
-    <div className="stack">
+    <div className="stack" data-moss-skip="사람이 정하는 일">
       <ToolPicker selected={picked} onChange={setPicked} given={card.tools} noPresets />
       <Button
         kind="primary"
@@ -222,6 +222,7 @@ function Card({ card, onDone }: { readonly card: EscalationCard; readonly onDone
       className="panel panel-pad escalation-card stack"
       aria-label={W.TITLE}
       data-testid="escalation-card"
+      data-moss-skip="사람이 정하는 일"
     >
       <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
         <h2 style={{ fontSize: 18 }}>

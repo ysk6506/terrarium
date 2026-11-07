@@ -9,7 +9,9 @@ import {
   type SettingDef,
   type Settings,
   saveSetting,
+  type ThemeChoice,
 } from "../../logic";
+import { MossAsk, settingsState, termQuestion, useMossScreen } from "../../moss";
 import { applyTheme, browserStore } from "../browser-store";
 import { PageHead, Section, Segmented } from "../kit";
 import { ModelSection } from "./model-section";
@@ -26,7 +28,9 @@ function Row({
   return (
     <div className="setting-row">
       <div className="setting-text">
-        <b>{def.label}</b>
+        <b className="setting-term">
+          <MossAsk question={termQuestion(def.label)}>{def.label}</MossAsk>
+        </b>
         <p className="small muted">{def.help}</p>
       </div>
       <Segmented
@@ -39,6 +43,15 @@ function Row({
   );
 }
 
+const THEME_WORDS: Readonly<Record<string, ThemeChoice>> = {
+  다크: "dark",
+  어둡: "dark",
+  라이트: "light",
+  밝: "light",
+  시스템: "system",
+  컴퓨터: "system",
+};
+
 export function SettingsPage() {
   const [settings, setSettings] = useState(() => readSettings(browserStore()));
   const choose = (def: SettingDef, value: Settings[keyof Settings]) => {
@@ -46,6 +59,21 @@ export function SettingsPage() {
     setSettings(saved);
     if (def.key === "theme") applyTheme(saved.theme);
   };
+  useMossScreen("settings", {
+    read: () => settingsState({ 그래픽: settings.graphics, 화면_색: settings.theme }),
+    run: {
+      // 이끼의 "화면 색 바꾸기": 화면 색 버튼과 같은 `choose` (REQ-103)
+      "settings-theme": (a) => {
+        const text = String(a.text ?? "");
+        const word = Object.keys(THEME_WORDS).find((w) => text.includes(w));
+        const next = word ? THEME_WORDS[word] : settings.theme === "dark" ? "light" : "dark";
+        const def = SETTING_DEFS.find((d) => d.key === "theme");
+        if (!def || !next) throw new Error("바꿀 화면 색이 없어요");
+        choose(def, next);
+        return `화면 색을 ${def.options.find((o) => o.value === next)?.label ?? next}(으)로 바꿨어요`;
+      },
+    },
+  });
   return (
     <div className="page">
       <PageHead title="설정" lede="화면 설정은 이 브라우저에만 저장돼요. 모델은 서버에 저장돼요." />

@@ -56,6 +56,7 @@ function HoursField({
       <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
         {op.HOUR_CHOICES.map((h) => (
           <Button
+            data-moss-skip="세부 조절"
             key={h}
             size="small"
             kind={config.hours === h ? "primary" : "quiet"}
@@ -249,6 +250,7 @@ export function OperationInstruction({ draft, set }: Props) {
       />
       <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
         <Button
+          data-moss-skip="세부 조절"
           size="small"
           kind="quiet"
           onClick={() => patch({ instruction: op.recommendedInstruction() })}

@@ -73,6 +73,7 @@ function HeaderRows(props: {
               onChange={(e) => set(i, { ...row, value: e.target.value })}
             />
             <Button
+              data-moss-skip="폼과 대화상자 안"
               size="small"
               kind="quiet"
               aria-label={`헤더 ${i + 1} 지우기`}
@@ -90,6 +91,7 @@ function HeaderRows(props: {
       ))}
       <div>
         <Button
+          data-moss-skip="폼과 대화상자 안"
           size="small"
           onClick={() => onChange([...rows, { name: "", value: "", kept: false }])}
         >
@@ -213,7 +215,12 @@ function ResultStep(props: {
             }
           />
           <div>
-            <Button busy={busy} disabled={chosen === ""} onClick={() => onPick(chosen)}>
+            <Button
+              data-moss-skip="폼과 대화상자 안"
+              busy={busy}
+              disabled={chosen === ""}
+              onClick={() => onPick(chosen)}
+            >
               이 모델로 정하기
             </Button>
           </div>
@@ -313,14 +320,21 @@ export function ModelDialog(props: {
       onClose={onClose}
       actions={
         d.step === "result" ? (
-          <Button kind="primary" onClick={onClose}>
+          <Button data-moss-skip="폼과 대화상자 안" kind="primary" onClick={onClose}>
             닫기
           </Button>
         ) : (
           <>
-            <Button onClick={onClose}>닫기</Button>
+            <Button data-moss-skip="폼과 대화상자 안" onClick={onClose}>
+              닫기
+            </Button>
             {d.step === "form" && (
-              <Button kind="primary" busy={d.busy} onClick={d.save}>
+              <Button
+                data-moss-skip="폼과 대화상자 안"
+                kind="primary"
+                busy={d.busy}
+                onClick={d.save}
+              >
                 {existing ? "고친 내용 저장" : "등록하고 연결 확인"}
               </Button>
             )}

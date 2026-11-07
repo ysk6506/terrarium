@@ -148,7 +148,7 @@ export function ServiceCard({
         {onRemove && (
           <>
             {" · "}
-            <Button size="small" kind="quiet" onClick={onRemove}>
+            <Button data-moss-skip="세계 폼 안의 입력" size="small" kind="quiet" onClick={onRemove}>
               이 서비스 빼기
             </Button>
           </>
@@ -197,10 +197,21 @@ function AddService({
       <TextField label="무엇을 주나" value={gives} onChange={setGives} />
       <TextField label="멈추면 어떻게 되나" value={stops} onChange={setStops} />
       <div className="row">
-        <Button kind="primary" type="submit" disabled={!ready} why="이름을 적어 주세요">
+        <Button
+          data-moss-skip="세계 폼 안의 입력"
+          kind="primary"
+          type="submit"
+          disabled={!ready}
+          why="이름을 적어 주세요"
+        >
           서비스 더하기
         </Button>
-        <Button kind="quiet" type="button" onClick={() => setOpen(false)}>
+        <Button
+          data-moss-skip="세계 폼 안의 입력"
+          kind="quiet"
+          type="button"
+          onClick={() => setOpen(false)}
+        >
           그만두기
         </Button>
       </div>

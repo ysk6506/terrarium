@@ -14,6 +14,7 @@ import {
   useState,
 } from "react";
 import { ApiError, SECTIONS, STATUS_TONES, sectionOf, statusLabel, type Tone } from "../logic";
+import { MossAsk, termQuestion } from "../moss";
 import { Go, useApp } from "./context";
 import { Icon } from "./icons";
 
@@ -208,6 +209,8 @@ export function Figures({
     readonly label: string;
     readonly value: ReactNode;
     readonly hint?: string;
+    /** 작은 "?"를 누르면 이끼에게 물을 말. 없으면 "<이름>이 뭐예요?" (REQ-103) */
+    readonly ask?: string;
   }[];
 }) {
   return (
@@ -222,7 +225,9 @@ export function Figures({
           <dd className="figure-value" style={{ margin: 0 }}>
             {f.value}
           </dd>
-          <dt className="figure-label">{f.label}</dt>
+          <dt className="figure-label">
+            <MossAsk question={f.ask ?? termQuestion(f.label)}>{f.label}</MossAsk>
+          </dt>
           {f.hint && <dd className="figure-hint">{f.hint}</dd>}
         </div>
       ))}

@@ -11,6 +11,7 @@ import type {
   TryResult,
 } from "./connections";
 import type { LlmModelView } from "./models";
+import type { MossAnswerView } from "./moss";
 import type { PresetListView, PresetView } from "./presets";
 import type {
   CalibrationView,
@@ -63,6 +64,7 @@ export interface Responses {
   deleteModel: { readonly deleted: boolean };
   checkModel: LlmModelView;
   setDefaultModel: LlmModelView;
+  askMoss: MossAnswerView;
   listWorlds: WorldCardView[];
   likeWorld: LikeView;
   unlikeWorld: LikeView;

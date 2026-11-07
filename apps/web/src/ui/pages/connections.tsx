@@ -5,6 +5,7 @@
 import type { ConnectionView } from "@terrarium/core/contract";
 import { useState } from "react";
 import { splitConnections } from "../../logic";
+import { connectionsState, useMossScreen } from "../../moss";
 import { Go, useAction, useApp, useAsync } from "../context";
 import { Button, Dialog, Empty, Failure, Loading, PageHead } from "../kit";
 import { ConnectionCard } from "./connection-card";
@@ -36,8 +37,10 @@ function DeleteDialog({
       onClose={onClose}
       actions={
         <>
-          <Button onClick={onClose}>닫기</Button>
-          <Button kind="danger" busy={busy} onClick={remove}>
+          <Button data-moss-skip="폼과 대화상자 안" onClick={onClose}>
+            닫기
+          </Button>
+          <Button data-moss-skip="폼과 대화상자 안" kind="danger" busy={busy} onClick={remove}>
             지우기
           </Button>
         </>
@@ -55,10 +58,16 @@ function DeleteDialog({
 function HeadActions({ canAdd, onAdd }: { readonly canAdd: boolean; readonly onAdd: () => void }) {
   return (
     <>
-      <Go to={{ name: "operationGuide" }} className="btn">
+      <Go data-moss-action="go-operation-guide" to={{ name: "operationGuide" }} className="btn">
         운영 모드로 연결
       </Go>
-      <Button kind="primary" disabled={!canAdd} why="서버에 연결 방식이 없어요" onClick={onAdd}>
+      <Button
+        kind="primary"
+        data-moss-action="connections-add"
+        disabled={!canAdd}
+        why="서버에 연결 방식이 없어요"
+        onClick={onAdd}
+      >
         연결 더하기
       </Button>
     </>
@@ -95,6 +104,23 @@ function ReferenceFold(props: {
   );
 }
 
+/** 이끼의 "연결 더하기": 버튼과 같은 `onAdd` (REQ-103) */
+function useConnectionsMoss(
+  views: readonly ConnectionView[] | undefined,
+  canAdd: boolean,
+  onAdd: () => void,
+) {
+  useMossScreen("connections", {
+    read: () => connectionsState(views ?? []),
+    run: {
+      "connections-add": () => {
+        if (!canAdd) throw new Error("서버에 연결 방식이 없어요");
+        onAdd();
+      },
+    },
+  });
+}
+
 export function ConnectionsPage() {
   const { api, reloadMeta } = useApp();
   const list = useAsync((signal) => api.call("listConnections", { signal }), []);
@@ -107,6 +133,7 @@ export function ConnectionsPage() {
   };
   const addable = (connectors.data ?? []).filter((c) => c.fromScreen);
   const { mine, reference } = splitConnections(list.data ?? []);
+  useConnectionsMoss(list.data, addable.length > 0, () => setEditing({}));
   return (
     <div className="page">
       <PageHead

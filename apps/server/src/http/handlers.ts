@@ -69,6 +69,7 @@ export const HANDLERS: Handlers = {
   deleteModel: (p, i) => p.models.remove(i.viewer, id(i)),
   checkModel: (p, i) => p.models.check(id(i)),
   setDefaultModel: (p, i) => p.models.setDefault(id(i)),
+  askMoss: (p, i) => p.moss.ask(i.body),
 
   listWorlds: (p, i) => p.board.list(i.viewer, i.query.sort),
   likeWorld: (p, i) => p.board.like(i.viewer, id(i)),

@@ -18,6 +18,7 @@ import {
   createLlmClient,
   type FetchLike,
   type LlmCheck,
+  type LlmClient,
   type LlmFailReason,
   type LlmKind,
 } from "@terrarium/core/llm";
@@ -224,19 +225,36 @@ export class Models {
     return modelView(saved);
   }
 
+  /** The client for a registered model; throws when its sealed key cannot be opened. */
+  private clientOf(model: LlmModelRecord): LlmClient {
+    const { box } = this.options;
+    return createLlmClient(model.kind as LlmKind, {
+      baseUrl: model.baseUrl,
+      ...(model.sealedKey ? { apiKey: box.open(model.sealedKey) } : {}),
+      headers: Object.fromEntries(model.headers.map((h) => [h.name, box.open(h.sealed)])),
+      ...(model.defaultModel ? { model: model.defaultModel } : {}),
+      ...(this.options.fetch ? { fetch: this.options.fetch } : {}),
+      ...(this.options.timeoutMs ? { timeoutMs: this.options.timeoutMs } : {}),
+    });
+  }
+
+  /** The default model's client and name, for the features that use "the" model (이끼, REQ-103); none if nothing is registered. */
+  async defaultClient(): Promise<
+    { readonly client: LlmClient; readonly name: string; readonly model?: string } | undefined
+  > {
+    const record = (await this.ctx.store.listModels()).find((m) => m.isDefault);
+    if (!record) return undefined;
+    const client = this.clientOf(record);
+    // 모델 이름이 등록에 없으면 마지막 연결 확인이 본 첫 이름, 그것도 없으면 API에 물어 첫 이름을 쓴다.
+    const known = record.defaultModel ?? record.lastCheck?.models[0];
+    const model = known ?? (await client.listModels().catch(() => []))[0];
+    return { client, name: record.name, ...(model ? { model } : {}) };
+  }
+
   private async run(model: LlmModelRecord): Promise<LlmCheck> {
     const now = this.options.now ?? Date.now;
     try {
-      const { box } = this.options;
-      const client = createLlmClient(model.kind as LlmKind, {
-        baseUrl: model.baseUrl,
-        ...(model.sealedKey ? { apiKey: box.open(model.sealedKey) } : {}),
-        headers: Object.fromEntries(model.headers.map((h) => [h.name, box.open(h.sealed)])),
-        ...(model.defaultModel ? { model: model.defaultModel } : {}),
-        ...(this.options.fetch ? { fetch: this.options.fetch } : {}),
-        ...(this.options.timeoutMs ? { timeoutMs: this.options.timeoutMs } : {}),
-      });
-      return await checkLlm(client, {
+      return await checkLlm(this.clientOf(model), {
         now,
         ...(model.defaultModel ? { model: model.defaultModel } : {}),
       });

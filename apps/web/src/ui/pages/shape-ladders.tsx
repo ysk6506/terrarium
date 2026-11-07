@@ -15,6 +15,7 @@ import {
   type PresetId,
   type ShapeView,
 } from "../../logic";
+import { MossAsk, termQuestion } from "../../moss";
 import { Check } from "../kit";
 import { ChipDetail } from "./chip-card";
 import type { Flow, LadderState } from "./shape-flow";
@@ -153,9 +154,11 @@ function Ladder({ layer, state, shown, onShow }: LadderProps) {
       <legend className="sr-only">
         {info.name}, {info.question}
       </legend>
-      <div className="we-lname" aria-hidden="true">
-        {info.name}
-        <small>{info.question}</small>
+      <div className="we-lname">
+        <MossAsk question={termQuestion(`${info.name} 사다리`)}>
+          <span aria-hidden="true">{info.name}</span>
+        </MossAsk>
+        <small aria-hidden="true">{info.question}</small>
       </div>
       <div
         className="we-ladder"

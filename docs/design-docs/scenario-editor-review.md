@@ -2,7 +2,7 @@
 title: 시나리오 편집기 검토 — 처음 쓰는 사람의 눈으로, 토스의 원칙으로
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - apps/web/src/ui/scenario/ScenarioEditorPage.tsx
   - apps/web/src/ui/scenario/Palette.tsx
@@ -12,13 +12,13 @@ covers:
   - apps/web/src/logic/scenario/edit.ts
   - apps/web/src/logic/scenario/questions.ts
   - apps/web/src/logic/scenario/sentences.ts
-covers_hash: 82b5d07f1996261a
+covers_hash: 552295d414e3d194
 verification_log:
-  - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-06: 2a·2b 합치기"
   - "2026-11-06: 2f: 세 번째 검토(질문 셋 팔레트, 선택 블록 뒤에 끼우기, 키, 문장형 채점표)를 Palette·Sheet·Canvas·ScenarioEditorPage와 logic/scenario에 대조해 더했다 (베타 피드백 18~21)"
   - "2026-11-06: 2f: 세 번째 검토 절과 키 표를 Palette·Sheet·Canvas·edit·questions·sentences 코드와 대조했다"
   - "2026-11-06: REQ-101: scenarios.tsx는 세계 목록을 sort=new로 읽도록만 바뀌었다. 이 검토 기록은 그대로 맞다"
+  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
 ---
 # 시나리오 편집기 검토 (REQ-071, ADR-0070)
 

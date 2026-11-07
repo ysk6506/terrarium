@@ -61,6 +61,7 @@ function SecretField({
       {kept && !cleared && !form.values[field.key] && (
         <div>
           <Button
+            data-moss-skip="폼과 대화상자 안"
             size="small"
             kind="quiet"
             onClick={() => patch({ cleared: [...form.cleared, field.key] })}
@@ -73,6 +74,7 @@ function SecretField({
         <div className="row">
           <span className="small muted">저장하면 이 값을 지워요.</span>
           <Button
+            data-moss-skip="폼과 대화상자 안"
             size="small"
             kind="quiet"
             onClick={() => patch({ cleared: form.cleared.filter((k) => k !== field.key) })}
@@ -183,6 +185,7 @@ export function HeaderEditor({
               }
             />
             <Button
+              data-moss-skip="폼과 대화상자 안"
               size="small"
               kind="quiet"
               aria-label={`헤더 ${i + 1} 지우기`}
@@ -200,6 +203,7 @@ export function HeaderEditor({
       ))}
       <div>
         <Button
+          data-moss-skip="폼과 대화상자 안"
           size="small"
           onClick={() => onChange([...rows, { name: "", value: "", secret: true, kept: false }])}
         >
@@ -247,6 +251,7 @@ export function MetaEditor({
               onChange={(e) => onChange(replaceAt(rows, i, { ...row, value: e.target.value }))}
             />
             <Button
+              data-moss-skip="폼과 대화상자 안"
               size="small"
               kind="quiet"
               aria-label={`메타데이터 ${i + 1} 지우기`}
@@ -263,7 +268,11 @@ export function MetaEditor({
         </div>
       ))}
       <div>
-        <Button size="small" onClick={() => onChange([...rows, { key: "", value: "" }])}>
+        <Button
+          data-moss-skip="폼과 대화상자 안"
+          size="small"
+          onClick={() => onChange([...rows, { key: "", value: "" }])}
+        >
           메타데이터 더하기
         </Button>
       </div>

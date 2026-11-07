@@ -2,7 +2,7 @@
 title: HTTP API 계약
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/contract/routes.ts
   - packages/core/src/contract/responses.ts
@@ -13,13 +13,13 @@ covers:
   - packages/core/src/contract/model-routes.ts
   - packages/core/src/contract/community.ts
   - packages/core/src/contract/community-routes.ts
-covers_hash: c31bbc73bf577107
+covers_hash: d055fa900672841c
 verification_log:
-  - "2026-11-06: 2b·2d 합치기"
   - "2026-11-06: 저장해 둔 것 여섯 경로를 routes.ts, responses.ts, contract/presets.ts와 대조해 표에 더했다 (ADR-0112)"
   - "2026-11-06: LLM API 등록"
   - "2026-11-06: LLM API 등록"
   - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
+  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -72,6 +72,7 @@ verification_log:
 | `DELETE /api/models/:id` | 지우기(만든 사람만). 저장한 키도 지워진다. 기본이었으면 가장 먼저 등록한 것이 기본이 된다 | |
 | `POST /api/models/:id/check` | 연결 확인: 모델 목록을 읽고(`GET /v1/models`, LiteLLM은 `/model/info`도), 안 되면 기본 모델 이름이 있을 때 `max_tokens: 1` 완성 한 번. 결과(`ok`·`ms`·`via`·`modelCount`·`models`·`reason`·`error`)와 시각을 기록해 모델을 돌려준다. 이 호출은 **서버에서 바깥으로** 나가므로, 나가지 못하는 환경이면 `reason: network`로 그렇게 말한다 | |
 | `POST /api/models/:id/default` | 기본 모델로 정하기(하나만 기본) | |
+| `POST /api/moss/ask` | 이끼에게 묻기(REQ-103, [ADR-0124](adr/0124-moss-assistant.md), [설명](moss.md)) `{screen, question, state?, actions?: [{id, label}]}` → `{answer, answered, sources: [{kind: "doc", id, title, file, path} \| {kind: "state"}], suggestedActions, followUps, model, rough?}`. 서버가 문서 조각(BM25 방식 낱말 점수)과 화면 상태로 프롬프트를 짜 **기본 모델**에 묻는다. 답은 세 문장 안이고, 없는 출처와 `actions`에 없는 동작 id는 버리며, 근거가 없으면 모델을 부르지 않고 "문서에 없어요"로 답한다. **서버는 동작을 실행하지 않는다.** 기본 모델이 없거나 모델이 답하지 않으면 503 | |
 | `GET /api/worlds?sort=` | 세계 목록(템플릿 제외). `sort`는 `popular`(기본)·`active`·`new`·`mine`, 밖의 값은 400. 카드마다 `stats`(`experiments30d`·`experiments`·`likes`·`startedByOthers`·`score`·`week`), `likes`, `likedByMe`, `ownerTitles`가 실려 온다 (REQ-101, ADR-0122) | |
 | `POST /api/worlds/:id/like` | 좋아요 `{ worldId, likes, likedByMe }`. 사람마다 세계마다 하나라 다시 눌러도 하나. 없는 세계 404, 이름 없는 사람 403 | |
 | `DELETE /api/worlds/:id/like` | 좋아요 취소(없어도 같은 답) | |

@@ -44,9 +44,10 @@ export const kindName = (kind: string): string =>
   MODEL_KIND_CARDS.find((c) => c.kind === kind)?.name ?? kind;
 
 export const EMPTY_TITLE = "아직 등록한 모델이 없어요";
-export const EMPTY_BODY = "등록해 두면 나중에 결과 해석과 안내에 써요.";
-/** Said once under the cards: nothing uses a model yet. */
-export const LIMIT_LINE = "아직 쓰는 곳은 없어요 — 결과 해석과 안내가 생기면 기본 모델을 써요.";
+export const EMPTY_BODY = "등록해 두면 이끼가 이 모델로 답해요.";
+/** Said once under the cards: where the default model is used (이끼, REQ-103) and how rough a small one may be. */
+export const LIMIT_LINE =
+  "쓰는 곳: 이끼 — 기본 모델이 이끼의 답을 만들어요. 작은 모델이면 이끼의 답이 거칠 수 있어요.";
 export const DELETE_NOTE = "등록을 지워요. 저장한 키도 지워져요.";
 
 /** "412ms", or "1.2초" from a second on. */

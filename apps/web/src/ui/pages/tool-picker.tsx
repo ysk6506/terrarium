@@ -48,6 +48,7 @@ function NeedLine({
         {need.missing.length > 0 ? TOOL_WORDS.missing(need.missing.length) : TOOL_WORDS.NEED_ALL}
       </p>
       <Button
+        data-moss-action="exp-pick-tools"
         kind="primary"
         size="small"
         disabled={need.exact}
@@ -104,7 +105,12 @@ function AreaCard({
       </summary>
       <div className="stack" style={{ marginTop: 8, gap: 6 }}>
         {names.length > 0 && (
-          <Button size="small" kind="quiet" onClick={() => onSet(names, !allOn)}>
+          <Button
+            data-moss-skip="세부 조절"
+            size="small"
+            kind="quiet"
+            onClick={() => onSet(names, !allOn)}
+          >
             {allOn ? TOOL_WORDS.AREA_OFF : TOOL_WORDS.AREA_ON}
           </Button>
         )}

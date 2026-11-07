@@ -87,6 +87,7 @@ function LeadCard({ draft, set }: Props) {
         {draft.leadTimes && (
           <div>
             <Button
+              data-moss-skip="세부 조절"
               size="small"
               kind="quiet"
               onClick={() => set(experiment.setLeadTimes(draft, undefined))}

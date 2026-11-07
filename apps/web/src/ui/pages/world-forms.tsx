@@ -174,6 +174,7 @@ export function CampusForm({ onDone }: { readonly onDone: () => void }) {
       {stage && <output className="small muted">{stage}</output>}
       <div className="dialog-actions">
         <Button
+          data-moss-skip="세계 폼 안의 입력"
           kind="primary"
           type="submit"
           busy={busy}

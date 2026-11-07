@@ -2,6 +2,7 @@
 import type { ExperimentSummary } from "@terrarium/core/contract";
 import { useState } from "react";
 import { percent, relativeTime, scoreText } from "../../logic";
+import { experimentsState, useMossRead } from "../../moss";
 import { Go, useApp, useAsync, useNow } from "../context";
 import { Button, Empty, Failure, Loading, PageHead, Segmented, Status } from "../kit";
 import { TitlePills } from "../titles";
@@ -142,11 +143,12 @@ function MetaFilter({
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
-      <Button size="small" type="submit">
+      <Button data-moss-skip="세부 조절" size="small" type="submit">
         거르기
       </Button>
       {value && (
         <Button
+          data-moss-skip="세부 조절"
           size="small"
           kind="quiet"
           onClick={() => {
@@ -158,6 +160,18 @@ function MetaFilter({
         </Button>
       )}
     </form>
+  );
+}
+
+function NewExperiment({ children }: { readonly children: string }) {
+  return (
+    <Go
+      data-moss-action="go-new-experiment"
+      to={{ name: "newExperiment" }}
+      className="btn btn-primary"
+    >
+      {children}
+    </Go>
   );
 }
 
@@ -179,16 +193,13 @@ export function ExperimentsPage() {
       }),
     [mine, me, status, meta],
   );
+  useMossRead("experiments", () => experimentsState(list.data ?? [], mine));
   return (
     <div className="page">
       <PageHead
         title="실험"
         lede="하네스, 에이전트, 툴 조합을 한 세계와 시나리오에 여러 번 돌린 기록."
-        actions={
-          <Go to={{ name: "newExperiment" }} className="btn btn-primary">
-            새 실험
-          </Go>
-        }
+        actions={<NewExperiment>새 실험</NewExperiment>}
       />
       <div className="row" style={{ marginBottom: 16, gap: 16 }}>
         <Segmented
@@ -213,11 +224,7 @@ export function ExperimentsPage() {
       {list.data?.length === 0 && (
         <Empty
           title={mine ? "아직 내 실험이 없어요" : "조건에 맞는 실험이 없어요"}
-          action={
-            <Go to={{ name: "newExperiment" }} className="btn btn-primary">
-              실험 만들기
-            </Go>
-          }
+          action={<NewExperiment>실험 만들기</NewExperiment>}
         >
           세계와 시나리오를 고르고, 하네스와 에이전트를 정하면 바로 돌아요.
         </Empty>
@@ -226,7 +233,7 @@ export function ExperimentsPage() {
       {mine && !me && (
         <p className="small muted" style={{ marginTop: 12 }}>
           이름을 정해야 내 실험을 고를 수 있어요.{" "}
-          <Button size="small" kind="quiet" onClick={askName}>
+          <Button data-moss-skip="세부 조절" size="small" kind="quiet" onClick={askName}>
             이름 정하기
           </Button>
         </p>

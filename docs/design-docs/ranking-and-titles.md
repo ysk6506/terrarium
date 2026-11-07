@@ -2,7 +2,7 @@
 title: 세계 인기·좋아요·칭호와 계급 모델
 kind: spec
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-07
 covers:
   - packages/core/src/experiments/popularity.ts
   - packages/core/src/experiments/community.ts
@@ -24,7 +24,8 @@ verification_log:
   - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
   - "2026-11-06: 코드 대조: 점수 식, 칭호 조건표, 메달 컷, 파일 목록"
   - "2026-11-06: REQ-101 최종 대조"
-covers_hash: 258ae64a104676c9
+  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
+covers_hash: e4c832cd928ef691
 ---
 # 세계 인기·좋아요·칭호와 계급 모델 (REQ-101, [ADR-0122](adr/0122-world-popularity-likes-titles.md))
 

@@ -53,7 +53,9 @@ describe("the model section's state and words [REQ-099]", () => {
     expect(MODEL_KIND_CARDS.map((c) => c.kind)).toEqual(["litellm", "openai", "anthropic"]);
     expect(modelKindName("litellm")).toBe("LiteLLM");
     expect(modelKindName("anthropic")).toBe("Claude 호환");
-    expect(LIMIT_LINE).toBe("아직 쓰는 곳은 없어요 — 결과 해석과 안내가 생기면 기본 모델을 써요.");
+    expect(LIMIT_LINE).toBe(
+      "쓰는 곳: 이끼 — 기본 모델이 이끼의 답을 만들어요. 작은 모델이면 이끼의 답이 거칠 수 있어요.",
+    );
   });
 
   test("the last check reads '답했어요 · 412ms · 모델 23개', or the honest reason", () => {

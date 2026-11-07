@@ -25,10 +25,14 @@ function Hero() {
         <h1 className="home-title">{headline.title}</h1>
         <p className="lede">{headline.lede}</p>
         <div className="row">
-          <Go to={{ name: "newExperiment" }} className="btn btn-primary">
+          <Go
+            data-moss-action="go-new-experiment"
+            to={{ name: "newExperiment" }}
+            className="btn btn-primary"
+          >
             새 실험
           </Go>
-          <Go to={{ name: "worlds" }} className="btn">
+          <Go data-moss-action="go-worlds" to={{ name: "worlds" }} className="btn">
             세계 보기
           </Go>
         </div>

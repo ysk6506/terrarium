@@ -16,6 +16,7 @@ import {
   modelKindName,
   modelSectionState,
 } from "../../logic";
+import { modelsState, pickByText, useMossScreen } from "../../moss";
 import { useAction, useApp, useAsync, useNow } from "../context";
 import { Button, Dialog, Empty, Failure, Loading, Section, ToneDot } from "../kit";
 import { ModelDialog } from "./model-dialog";
@@ -41,8 +42,10 @@ function DeleteDialog(props: {
       onClose={onClose}
       actions={
         <>
-          <Button onClick={onClose}>닫기</Button>
-          <Button kind="danger" busy={busy} onClick={remove}>
+          <Button data-moss-skip="폼과 대화상자 안" onClick={onClose}>
+            닫기
+          </Button>
+          <Button data-moss-skip="폼과 대화상자 안" kind="danger" busy={busy} onClick={remove}>
             지우기
           </Button>
         </>
@@ -89,13 +92,20 @@ function ModelCard(props: {
             )}
           </div>
           <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
-            <Button size="small" kind="primary" busy={busy} onClick={() => act("checkModel")}>
+            <Button
+              size="small"
+              kind="primary"
+              busy={busy}
+              data-moss-action="check-model"
+              onClick={() => act("checkModel")}
+            >
               {busy ? "확인하는 중" : "연결 확인"}
             </Button>
             {!view.isDefault && (
               <Button
                 size="small"
                 busy={busy}
+                data-moss-action="set-default-model"
                 onClick={() => act("setDefaultModel", "기본 모델로 정했어요")}
               >
                 기본으로
@@ -103,10 +113,15 @@ function ModelCard(props: {
             )}
             {mine && (
               <>
-                <Button size="small" onClick={onEdit}>
+                <Button data-moss-skip="폼과 대화상자 안" size="small" onClick={onEdit}>
                   고치기
                 </Button>
-                <Button size="small" kind="danger" onClick={onDelete}>
+                <Button
+                  data-moss-skip="폼과 대화상자 안"
+                  size="small"
+                  kind="danger"
+                  onClick={onDelete}
+                >
                   지우기
                 </Button>
               </>
@@ -122,6 +137,44 @@ function ModelCard(props: {
   );
 }
 
+/** 이끼의 모델 동작: 모델 카드의 버튼과 같은 호출 (REQ-103) */
+function useModelsMoss(models: readonly LlmModelView[], reload: () => void, onAdd: () => void) {
+  const { api } = useApp();
+  const { run } = useAction();
+  const pick = (text: unknown, fallback: LlmModelView | undefined) =>
+    pickByText(String(text ?? ""), models, (m) => m.name) ?? fallback;
+  useMossScreen("settings", {
+    read: () => modelsState(models),
+    run: {
+      "models-add": onAdd,
+      "check-model": async (a) => {
+        const hit = pick(a.text, models.find((m) => m.isDefault) ?? models[0]);
+        if (!hit) throw new Error("등록한 모델이 없어요");
+        if (await run(() => api.call("checkModel", { params: { id: hit.id } }))) reload();
+        return `${hit.name} 연결을 확인했어요`;
+      },
+      "set-default-model": async (a) => {
+        const hit = pick(
+          a.text,
+          models.find((m) => !m.isDefault),
+        );
+        if (!hit) throw new Error("기본으로 정할 다른 모델이 없어요");
+        const done = "기본 모델로 정했어요";
+        if (await run(() => api.call("setDefaultModel", { params: { id: hit.id } }), done))
+          reload();
+        return `${hit.name}이(가) 기본 모델이에요`;
+      },
+    },
+    summary: (id) => {
+      const m =
+        id === "check-model"
+          ? (models.find((x) => x.isDefault) ?? models[0])
+          : models.find((x) => !x.isDefault);
+      return m ? `모델 ${m.name}` : undefined;
+    },
+  });
+}
+
 export function ModelSection() {
   const { api } = useApp();
   const list = useAsync((signal) => api.call("listModels", { signal }), []);
@@ -129,11 +182,18 @@ export function ModelSection() {
   const [deleting, setDeleting] = useState<LlmModelView>();
   const state = modelSectionState(list.data);
   const models = list.data ?? [];
+  const { run } = useAction();
+  useModelsMoss(models, list.reload, () => setEditing({}));
   return (
     <Section
       title="모델"
       aside={
-        <Button size="small" kind="primary" onClick={() => setEditing({})}>
+        <Button
+          size="small"
+          kind="primary"
+          data-moss-action="models-add"
+          onClick={() => setEditing({})}
+        >
           모델 더하기
         </Button>
       }

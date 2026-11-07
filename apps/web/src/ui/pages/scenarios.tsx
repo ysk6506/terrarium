@@ -7,6 +7,7 @@ import { TEMPLATE_GROUPS } from "@terrarium/core/scenario";
 import { type Blueprint, BlueprintIndex } from "@terrarium/core/world";
 import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { relativeTime, scenario } from "../../logic";
+import { scenariosState, useMossRead } from "../../moss";
 import { Go, messageOf, useApp, useAsync, useNow } from "../context";
 import { Button, Dialog, Empty, Failure, Loading, Note, PageHead, SelectField } from "../kit";
 
@@ -161,6 +162,7 @@ function NewScenarioDialog({
       onClose={onClose}
       actions={
         <Button
+          data-moss-skip="편집기에서 직접"
           kind="primary"
           busy={busy}
           disabled={!world || !index}
@@ -267,7 +269,7 @@ function ScenarioBody({
       <Empty
         title="아직 시나리오가 없어요"
         action={
-          <Button kind="primary" onClick={onMake}>
+          <Button data-moss-skip="편집기에서 직접" kind="primary" onClick={onMake}>
             첫 시나리오 만들기
           </Button>
         }
@@ -320,6 +322,7 @@ export function ScenariosPage() {
   );
   const [making, setMaking] = useState(false);
   const worlds = data.data?.worlds ?? [];
+  useMossRead("scenarios", () => scenariosState(data.data?.scenarios ?? []));
   return (
     <div className="page">
       <PageHead
@@ -327,6 +330,7 @@ export function ScenariosPage() {
         lede="세계에 일어날 일과, 에이전트가 무엇을 해야 점수를 받는지. 블록을 끌어다 놓아 만들어요."
         actions={
           <Button
+            data-moss-skip="편집기에서 직접"
             kind="primary"
             icon="plus"
             disabled={worlds.length === 0}
