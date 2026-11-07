@@ -60,7 +60,8 @@ export function SettingsPage() {
     if (def.key === "theme") applyTheme(saved.theme);
   };
   useMossScreen("settings", {
-    read: () => settingsState({ 그래픽: settings.graphics, 화면_색: settings.theme }),
+    read: () =>
+      settingsState({ 그래픽: settings.graphics, 소리: settings.sound, 화면_색: settings.theme }),
     run: {
       // 이끼의 "화면 색 바꾸기": 화면 색 버튼과 같은 `choose` (REQ-103)
       "settings-theme": (a) => {

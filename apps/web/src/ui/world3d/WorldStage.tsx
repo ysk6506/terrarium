@@ -68,7 +68,7 @@ const KEY_TURN = Math.PI / 4;
 
 /** Read after the canvas's name, for anyone who cannot drag: the keys that move the view. An attribute, not text on the page: words drawn on the first screen cost a font file. */
 const STAGE_HELP =
-  "끌어서 돌리고 휠로 확대해요. 키보드로는 Q와 E로 45도씩 돌리고, 더하기와 빼기로 확대하고 줄이고, Esc로 한 단계 나와요. 랙에서 서버를 누르면 랙이 돌아 뒷면이 보이고, 컨테인먼트를 누르면 복도 안으로 들어가요.";
+  "끌어서 돌리고 휠로 확대해요. 키보드로는 Q와 E로 45도씩 돌리고, 더하기와 빼기로 확대하고 줄이고, A로 가운데 가까이의 고양이나 새에게 인사하고, Esc로 한 단계 나와요. 랙에서 서버를 누르면 랙이 돌아 뒷면이 보이고, 컨테인먼트를 누르면 복도 안으로 들어가요.";
 
 /** Q and E turn the view, + and - move in and out, Escape steps back out of a level. */
 function keysFor(view: WorldView, back: () => void) {
@@ -80,6 +80,7 @@ function keysFor(view: WorldView, back: () => void) {
     else if (key === "+" || key === "=")
       view.rig.flyTo({ ...pose, distance: pose.distance / 1.25 }, 150);
     else if (key === "-") view.rig.flyTo({ ...pose, distance: pose.distance * 1.25 }, 150);
+    else if (key === "a") view.animals.greet();
     else if (key === "escape") back();
   };
 }

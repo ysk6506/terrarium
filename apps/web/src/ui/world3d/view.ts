@@ -7,10 +7,11 @@
 import type { Catalog } from "@terrarium/core/catalog";
 import type { BlueprintIndex } from "@terrarium/core/world";
 import * as THREE from "three";
-import { builder, world3d } from "../../logic";
+import { type builder, world3d } from "../../logic";
 import { ActivityLayer } from "./activity-layer";
 import { type AirConfig, type AirMaker, type AirPort, idleAir } from "./air-port";
 import { type Aisle, AisleStage } from "./aisle-stage";
+import { type AnimalStage, animalsFor } from "./animal-stage";
 import { type BuildingLayer, buildBuildingLayer } from "./building-layer";
 import { CrewStage } from "./crew-stage";
 import { createEngine, type Engine } from "./engine";
@@ -21,7 +22,8 @@ import type { RackState } from "./rack-layer";
 import { RackStage } from "./rack-stage";
 import { createRig, type DragTool, type Rig } from "./rig";
 import { buildSiteLayer, type SiteLayer } from "./site-layer";
-import { calm, FILL, ROOM_WALL, TILT } from "./view-look";
+import { buildingOf, floorIndexOf, floorOf, roomOf } from "./view-focus";
+import { calm, FILL, hazeOf, ROOM_WALL, TILT } from "./view-look";
 import { type ScreenPoint, screenOfPlan } from "./view-plan";
 import { startSpin } from "./view-spin";
 
@@ -54,6 +56,9 @@ export class WorldView {
   private airLoaded = false;
   /** The people of the room in view (REQ-074). */
   readonly crew: CrewStage;
+  /** The cats and birds of the site, which answer a click (REQ-105). */
+  readonly animals: AnimalStage;
+  private readonly animalKit;
   private stopSpin?: () => void;
   private level?: builder.Level;
   private plan?: world3d.PlanFrame;
@@ -119,6 +124,12 @@ export class WorldView {
       camera: () => this.engine.view,
     });
     this.crew.setStill(calm());
+    this.animalKit = animalsFor(this.engine, {
+      life: () => this.life,
+      size: () => this.size,
+      camera: () => this.engine.view,
+    });
+    this.animals = this.animalKit.stage;
     this.offs.push(
       this.rig.onClick((x, y) => this.click(x, y)),
       this.rig.onHover((x, y) => {
@@ -126,6 +137,11 @@ export class WorldView {
       }),
     );
     this.resize();
+  }
+
+  /** Whether a pixel of the canvas is over a person of a room or an animal of the site: a click there is theirs alone. */
+  creatureAt(x: number, y: number): boolean {
+    return this.crew.hit(x, y) !== undefined || this.animals.hit(x, y) !== undefined;
   }
 
   get focus(): Focus {
@@ -267,10 +283,8 @@ export class WorldView {
 
   /** Outdoors the far land fades into the sky; indoors there is hardly any haze. */
   private setHaze(kind: Focus["kind"], distance: number): void {
-    if (kind === "site" || kind === "building") this.engine.setFog(distance * 0.8, distance * 1.9);
-    else if (kind === "room") this.engine.setFog(distance * 3 + 30, distance * 9 + 200);
-    else if (kind === "rack") this.engine.setFog(distance * 1.0, distance * 2.4);
-    else this.engine.setFog(120, 600);
+    const [near, far] = hazeOf(kind, distance);
+    this.engine.setFog(near, far);
   }
 
   /** Colour the racks for a layer (power, cooling, heat, …) with what is known about the world. */
@@ -278,20 +292,6 @@ export class WorldView {
     this.shown = { layer, overlay };
     this.building?.layer.recolor(layer, overlay);
     this.rack.setCondition(overlay);
-  }
-
-  /** The building a focus is inside, if it is inside one. */
-  private buildingOf(focus: Focus): string | undefined {
-    if (focus.kind === "site" || !this.index) return undefined;
-    if (focus.kind === "building") return focus.id;
-    return this.index.enclosing(focus.id, "building")?.id;
-  }
-
-  /** The floor a focus is on, if it is on one: a floor itself, or the floor of a room or rack. */
-  private floorOf(focus: Focus): string | undefined {
-    if (focus.kind === "floor") return focus.id;
-    const room = this.roomOf(focus);
-    return room ? this.index?.enclosing(room, "floor")?.id : undefined;
   }
 
   private leaveBuilding(): void {
@@ -323,14 +323,14 @@ export class WorldView {
 
   /** Open the building a focus is in, or close what was open, and set how far its floors part. */
   private openBuildingFor(focus: Focus, animate: boolean): void {
-    const id = this.buildingOf(focus);
+    const id = buildingOf(this.index, focus);
     if (id !== this.building?.id) this.swapBuilding(id);
     const layer = this.building?.layer;
     if (!layer) return;
-    const floor = this.floorOf(focus);
-    layer.setOpenRoom(this.roomOf(focus));
+    const floor = floorOf(this.index, focus);
+    layer.setOpenRoom(roomOf(this.index, focus));
     layer.setExplode(focus.kind === "building" ? 1 : 0, animate ? 700 : 0);
-    const at = floor ? this.floorIndexOf(floor) : undefined;
+    const at = floor ? floorIndexOf(this.index, floor) : undefined;
     layer.showFloorsTo(at);
     layer.setPickFloor(focus.kind === "building" ? undefined : at);
     layer.showContainment(focus.kind !== "rack" && !this.engine.topDown);
@@ -341,18 +341,6 @@ export class WorldView {
     if (!this.aisle.drop()) return false;
     this.focusOn(this.current, animate);
     return true;
-  }
-
-  private roomOf(focus: Focus): string | undefined {
-    if (focus.kind === "room") return focus.id;
-    return focus.kind === "rack" ? this.index?.enclosing(focus.id, "room")?.id : undefined;
-  }
-
-  private floorIndexOf(floorId: string): number | undefined {
-    const building = this.index?.enclosing(floorId, "building");
-    if (!building || !this.index) return undefined;
-    const i = builder.floorsOf(this.index, building.id).findIndex((f) => f.id === floorId);
-    return i < 0 ? undefined : i;
   }
 
   resize(): void {
@@ -469,8 +457,9 @@ export class WorldView {
   }
 
   private click(x: number, y: number): void {
-    // A person stands in front of whatever is behind them: the click is theirs.
-    if (this.crew.click(x, y)) return;
+    // A person stands in front of whatever is behind them: the click is theirs. So is an animal's.
+    // (Animals are not buttons, so this is not a moss action: the path is a click on the canvas.)
+    if (this.crew.click(x, y) || this.animals.click(x, y)) return;
     const tag = this.pickAt(x, y);
     if (!tag) return;
     this.events.onPick?.(tag);
@@ -488,6 +477,7 @@ export class WorldView {
     this.overlay.dispose();
     this.activity.dispose();
     this.crew.dispose();
+    this.animalKit.dispose();
     this.rig.dispose();
     this.leaveBuilding();
     this.life?.dispose();

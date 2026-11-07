@@ -173,11 +173,39 @@ function cat(): Model {
   const p = new Parts();
   p.box(0.2, 0.2, 0.46, [0, 0.12, 0]).ball(0.14, [0, 0.3, 0.3]);
   p.box(0.05, 0.1, 0.04, [-0.08, 0.4, 0.3]).box(0.05, 0.1, 0.04, [0.08, 0.4, 0.3]);
-  p.box(0.05, 0.05, 0.34, [0, 0.3, -0.38]).box(0.05, 0.26, 0.05, [0, 0.3, -0.54]);
   for (const x of [-0.07, 0.07]) for (const z of [-0.16, 0.16]) p.box(0.05, 0.14, 0.05, [x, 0, z]);
   eyes(p, { y: 0.31, z: 0.42, gap: 0.1, size: 0.035 });
   return p.build(2.6, ["#f0b27a", "#8d8d8d", "#3a3a3a", "#f4f1ea", "#c27a3a"]);
 }
+
+/** The cat's tail on its own, so it can swish: it hangs from the rear of the body (the pivot is at its origin). */
+export function catTail(): Model {
+  const p = new Parts();
+  p.box(0.05, 0.05, 0.34, [0, 0, -0.17]).box(0.05, 0.26, 0.05, [0, 0, -0.36]);
+  return p.build(2.6, ["#f0b27a", "#8d8d8d", "#3a3a3a", "#f4f1ea", "#c27a3a"]);
+}
+
+/** Where the tail hangs from, in the cat's own frame. */
+export const CAT_TAIL_AT: readonly [number, number, number] = [0, 0.3, -0.22];
+
+function bird(): Model {
+  const p = new Parts();
+  p.ball(0.11, [0, 0.14, 0], undefined, 0.85).ball(0.07, [0, 0.24, 0.1], undefined);
+  p.box(0.03, 0.03, 0.06, [0, 0.24, 0.17], "#e8a33a").box(0.05, 0.04, 0.14, [0, 0.14, -0.14]);
+  for (const x of [-0.03, 0.03]) p.box(0.015, 0.06, 0.015, [x, 0, 0], "#a9815a");
+  eyes(p, { y: 0.26, z: 0.15, gap: 0.08, size: 0.02 });
+  return p.build(2.8, ["#8a6f55", "#5c7088", "#b36b4a", "#6e7f5a"]);
+}
+
+/** One wing, hinged at its origin: `side` 1 is the right one, -1 the left (built apart, not mirrored). */
+export function birdWing(side: 1 | -1): Model {
+  const p = new Parts();
+  p.box(0.16, 0.015, 0.1, [side * 0.08, 0, 0]);
+  return p.build(2.8, ["#8a6f55", "#5c7088", "#b36b4a", "#6e7f5a"]);
+}
+
+/** Where the wings hang from, in the bird's own frame. */
+export const BIRD_WING_AT: readonly [number, number, number] = [0.07, 0.2, 0];
 
 function deer(): Model {
   const p = new Parts();
@@ -224,6 +252,7 @@ const BUILDERS: Readonly<Record<LifeKind, () => Model>> = {
   cat,
   deer,
   raccoon,
+  bird,
 };
 
 export const modelOf = (kind: LifeKind): Model => BUILDERS[kind]();

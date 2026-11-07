@@ -29,6 +29,20 @@ export {
   runsAlongX,
   WALK_IN_S,
 } from "./aisle";
+export { type Placed, Reactions } from "./animal-pose";
+export {
+  BIRD_LAND_M,
+  CAT_WALK_M,
+  type Cues,
+  cuesOf,
+  type Frame,
+  type ReactiveKind,
+  reactionOf,
+  SAY_S,
+  totalOf,
+  walkDir,
+} from "./animal-react";
+export { envelopeOf, lengthOf, type Note, notesOf } from "./animal-sound";
 export {
   type BuildingScene,
   buildingScene,
@@ -64,6 +78,21 @@ export {
   type Street,
 } from "./campus";
 export { GROUNDS } from "./campus-layouts";
+export {
+  baysFor,
+  campusPlan,
+  standable,
+  TREE_SHARE,
+  treesAt,
+} from "./campus-plan";
+export type {
+  CampusPlan,
+  ClearZone,
+  Entrance,
+  ParkedCar,
+  Parking,
+  PlanTree,
+} from "./campus-plan-types";
 export type {
   Crew,
   CrewActivity,

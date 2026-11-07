@@ -9,7 +9,12 @@ import type { WorldView } from "./view";
 export function CrewBubble({ view }: { readonly view: WorldView }) {
   const [say, setSay] = useState<Say>();
   const ref = useRef<HTMLOutputElement>(null);
-  useEffect(() => view.crew.onSay(setSay), [view]);
+  useEffect(() => {
+    const offs = [view.crew.onSay(setSay), view.animals.onSay(setSay)];
+    return () => {
+      for (const off of offs) off();
+    };
+  }, [view]);
   useEffect(() => {
     const el = ref.current;
     if (!say || !el) return;

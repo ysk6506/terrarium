@@ -58,6 +58,38 @@ export function roads(k: Kit, site: SiteScene): void {
     }
 }
 
+const BAY_LINE = 0.12;
+
+/** The car parks: asphalt with a white line between every two bays and one along the back of each row. */
+export function parking(k: Kit, site: SiteScene): void {
+  const { b, m } = k;
+  for (const lot of site.plan.parking) {
+    const a = lot.area;
+    b.box(m.asphalt, {
+      x: (a.x0 + a.x1) / 2,
+      z: (a.z0 + a.z1) / 2,
+      w: a.x1 - a.x0,
+      d: a.z1 - a.z0,
+      h: 0.1,
+      tile: 32,
+      shadow: false,
+    });
+    for (const bay of lot.bays) {
+      const alongX = lot.along === "x";
+      // The line on the bay's far side along the row; bays share lines, so only the next side is drawn.
+      b.box(m.mark, {
+        x: alongX ? bay.x + bay.w / 2 : bay.x,
+        z: alongX ? bay.z : bay.z + bay.d / 2,
+        w: alongX ? BAY_LINE : bay.w,
+        d: alongX ? bay.d : BAY_LINE,
+        h: 0.02,
+        y: 0.1,
+        shadow: false,
+      });
+    }
+  }
+}
+
 function perimeter(outline: readonly Pt[]): number {
   let n = 0;
   for (let i = 0; i < outline.length; i++) {

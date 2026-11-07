@@ -9,8 +9,12 @@ import type { GraphicsChoice } from "./world3d/quality";
 /** 화면 색: follow the computer, or stay light or dark whatever the computer says (feedback 1). */
 export type ThemeChoice = "system" | "light" | "dark";
 
+/** 소리: whether a click on a cat or a bird may make its sound (REQ-105). Nothing ever plays by itself. */
+export type SoundChoice = "on" | "off";
+
 export interface Settings {
   readonly graphics: GraphicsChoice;
+  readonly sound: SoundChoice;
   readonly theme: ThemeChoice;
 }
 
@@ -23,7 +27,7 @@ export interface SettingDef<K extends SettingKey = SettingKey> {
   readonly options: readonly { readonly value: Settings[K]; readonly label: string }[];
 }
 
-export const DEFAULT_SETTINGS: Settings = { graphics: "auto", theme: "system" };
+export const DEFAULT_SETTINGS: Settings = { graphics: "auto", sound: "on", theme: "system" };
 
 export const SETTINGS_KEY = "terrarium.settings";
 
@@ -49,8 +53,22 @@ const THEME: SettingDef<"theme"> = {
   ],
 };
 
+const SOUND: SettingDef<"sound"> = {
+  key: "sound",
+  label: "소리",
+  help: "고양이나 새를 눌렀을 때 우는 소리를 내요. 끄면 말풍선만 나와요. 저절로 나는 소리는 없어요.",
+  options: [
+    { value: "on", label: "켜짐" },
+    { value: "off", label: "꺼짐" },
+  ],
+};
+
 /** The rows of the settings screen, top to bottom. */
-export const SETTING_DEFS: readonly SettingDef[] = [THEME as SettingDef, GRAPHICS as SettingDef];
+export const SETTING_DEFS: readonly SettingDef[] = [
+  THEME as SettingDef,
+  GRAPHICS as SettingDef,
+  SOUND as SettingDef,
+];
 
 /** The value of `<html data-theme>` for a choice; none for "system", so the computer's own setting decides. */
 export const themeAttribute = (theme: ThemeChoice): "light" | "dark" | undefined =>

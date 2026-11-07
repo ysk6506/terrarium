@@ -30,3 +30,11 @@ export const FILL: Readonly<Record<Focus["kind"], number>> = {
 
 /** The wall behind a rack in view: a soft grey-blue, so the devices stand out and nothing of the yard shows. */
 export const ROOM_WALL = "#aab3bc";
+
+/** Where the fog starts and ends at a level, metres: wide outdoors, nearly none in a room. */
+export function hazeOf(kind: Focus["kind"], distance: number): readonly [number, number] {
+  if (kind === "site" || kind === "building") return [distance * 0.8, distance * 1.9];
+  if (kind === "room") return [distance * 3 + 30, distance * 9 + 200];
+  if (kind === "rack") return [distance * 1.0, distance * 2.4];
+  return [120, 600];
+}

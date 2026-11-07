@@ -13,6 +13,8 @@ import {
 } from "@terrarium/core/world";
 import { floorsOf } from "../builder/levels";
 import { type Campus, planCampus } from "./campus";
+import { planGreen, planGround } from "./campus-plan";
+import type { CampusPlan, PlanSite } from "./campus-plan-types";
 import { COOLING_MODES, type CoolingMode, hallMode, racksIn, serversIn } from "./modes";
 import {
   type Bounds,
@@ -27,15 +29,11 @@ import {
   polygonArea,
   unionOf,
 } from "./plan";
-import { planRoads, ROAD_CELL_M, type RoadPlan } from "./roads";
-import { type ParkingLot, parkingLots, scatterTrees, type Tree } from "./scatter";
+import type { RoadPlan } from "./roads";
+import type { ParkingLot, Tree } from "./scatter";
 
-const TREE_MAX = 4000;
-const TREE_GAP_M = 14;
-
-/** Trees stand wider apart on big land, so the budget reaches all of it instead of running out in the north. */
-const treeGap = (landM2: number): number =>
-  Math.max(TREE_GAP_M * 1.2, Math.sqrt((0.75 * landM2) / TREE_MAX));
+/** The seed of the ground plan: the same world is always laid out the same way. */
+const PLAN_SEED = 5;
 
 export interface BuildingInfo extends Box {
   readonly floors: number;
@@ -95,6 +93,8 @@ export interface SiteScene {
   readonly lots: readonly ParkingLot[];
   /** Streets, blocks and paved ground around the buildings (REQ-048). */
   readonly campus: Campus;
+  /** Where the roads, car parks, parked cars and trees were laid (REQ-105). */
+  readonly plan: CampusPlan;
 }
 
 const FLOOR_H_DEFAULT = 4.5;
@@ -218,20 +218,6 @@ export function gateOf(outline: readonly Pt[], x: number): Pt {
   return outline.reduce((p, q) => (q.z > p.z ? q : p));
 }
 
-function doorOf(area: Bounds, from: Pt): Pt {
-  const c = centreOf(area);
-  const out = ROAD_CELL_M * 1.6;
-  const doors: Pt[] = [
-    { x: c.x, z: area.z1 + out },
-    { x: c.x, z: area.z0 - out },
-    { x: area.x0 - out, z: c.z },
-    { x: area.x1 + out, z: c.z },
-  ];
-  return doors.reduce((a, b) =>
-    Math.hypot(a.x - from.x, a.z - from.z) <= Math.hypot(b.x - from.x, b.z - from.z) ? a : b,
-  );
-}
-
 /** Where the map shows a building this site does not build, as plan bounds. */
 function reservedOf(site: Entity): Array<Bounds & { kind: string }> {
   return parseReserved(site.props.reserved).map((p) => ({
@@ -266,46 +252,38 @@ export function siteScene(index: BlueprintIndex, catalog: Catalog): SiteScene | 
   const built = [...buildings.map(boundsOfBox), ...yards.map((y) => y.area), ...reserved];
   const cluster = unionOf(built) ?? bounds;
   const gate = gateOf(outline, centreOf(cluster).x);
-  const from = { x: centreOf(cluster).x, z: cluster.z1 };
-  const roads = planRoads({
+  const planSite: PlanSite = {
     outline,
-    obstacles: built,
-    gate: { x: gate.x, z: Math.max(cluster.z1 + ROAD_CELL_M * 3, gate.z - ROAD_CELL_M * 2) },
-    targets: [
-      ...buildings.map((b) => ({ id: b.id, door: doorOf(boundsOfBox(b), from) })),
-      ...yards.map((y) => ({ id: y.id, door: doorOf(y.area, from) })),
-    ],
-  });
-  const keepOut = [
-    ...built.map((b) => inflate(b, 6)),
-    ...roads.rects.map((r) => inflate(r, 3)),
-    ...parcels.filter((p) => !p.owned).map((p) => p.area),
-  ];
-  const lots = parkingLots({
-    outline,
-    buildings: buildings.map((b) => ({ id: b.id, bounds: boundsOfBox(b) })),
-    occupied: keepOut.map((b) => inflate(b, -2)),
-    seed: 9,
-  });
+    gate,
+    obstacles: reserved,
+    avoid: parcels.filter((p) => !p.owned).map((p) => p.area),
+    yards: yards.map((y) => ({ id: y.id, area: y.area })),
+  };
+  const ground = planGround(
+    planSite,
+    buildings.map((b) => ({ id: b.id, bounds: boundsOfBox(b), servers: b.servers })),
+    PLAN_SEED,
+  );
+  const roads = ground.roadPlan;
+  const lots: ParkingLot[] = ground.parking.map((p) => ({
+    forId: p.forId,
+    area: p.area,
+    cars: ground.cars.filter((c) => c.parking === p.id),
+  }));
   const campus = planCampus({
     outline,
     buildings: buildings.map(boundsOfBox),
     yards: yards.map((y) => y.area),
     roads: roads.rects,
-    avoid: [...parcels.map((p) => p.area), ...lots.map((l) => l.area)],
+    avoid: [...parcels.map((p) => p.area), ...lots.map((l) => inflate(l.area, 2))],
     reserved,
     cluster,
     landM2: Math.abs(polygonArea(outline)),
     seed: 3,
   });
-  const trees = scatterTrees({
-    outline,
-    area: inflate(cluster, 140),
-    keepOut: [...keepOut, ...campus.occupied, ...campus.aprons, ...lots.map((l) => l.area)],
-    spacing: treeGap(Math.abs(polygonArea(outline))),
-    seed: 5,
-    max: TREE_MAX,
-  });
+  // The blocks and the paved aprons are put to use now, so the trees keep off them too.
+  const trees = planGreen(planSite, ground, [...campus.occupied, ...campus.aprons], PLAN_SEED);
+  const plan: CampusPlan = { ...ground, trees };
   return {
     id: site.id,
     name: site.name,
@@ -320,5 +298,6 @@ export function siteScene(index: BlueprintIndex, catalog: Catalog): SiteScene | 
     trees,
     lots,
     campus,
+    plan,
   };
 }
