@@ -74,10 +74,10 @@ describe("데이터베이스 칩이 세계에 클러스터를 깐다 [REQ-095]",
       expect(index.find(index.outgoing(m.id, "hosted_on")[0]?.to as string)?.kind).toBe("server");
   });
 
-  it("점선 칩은 가장 가까운 칩 모양으로 짓는다", () => {
+  it("분산 SQL은 클러스터가 아니라 합의 노드 셋을 깐다 [REQ-106]", () => {
     const a = build({ database: "db-distributed-sql" });
-    const b = build({ database: "db-auto-failover" });
-    expect(kinds(a, "db_instance")).toHaveLength(kinds(b, "db_instance").length);
+    expect(kinds(a, "db_instance")).toHaveLength(0);
+    expect(kinds(a, "db_node").length).toBeGreaterThanOrEqual(3);
   });
 });
 

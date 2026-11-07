@@ -12,6 +12,7 @@ import { DB_DOCS } from "./catalog-db";
 import { K8S_DOCS } from "./catalog-k8s";
 import { OPS_DOCS } from "./catalog-ops";
 import { SDN_DOCS } from "./catalog-sdn";
+import { SITE_DOCS } from "./catalog-site";
 
 export type Realism = "common" | "rare" | "ideal";
 export type Cost = "low" | "medium" | "high";
@@ -429,4 +430,5 @@ export const TOOL_DOCS: Readonly<Record<string, ToolDoc>> = {
   ...SDN_DOCS,
   ...K8S_DOCS,
   ...APP_DOCS,
+  ...SITE_DOCS,
 };

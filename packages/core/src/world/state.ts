@@ -37,6 +37,7 @@ import {
   placeK8sEntity,
   placePods,
 } from "./state-k8s";
+import { applyServerProps, placeService } from "./state-place";
 import {
   type CniState,
   type IngressState,
@@ -48,6 +49,7 @@ import {
   type SdnControllerState,
   type VtepState,
 } from "./state-sdn";
+import { placeSite, SITE_FACTORIES, type SiteEntityState } from "./state-site";
 
 export type { DbClusterState, DbInstanceState, StorageControllerState, StoragePoolState };
 export type {
@@ -280,6 +282,7 @@ export type EntityState =
   | SidecarState
   | MeshControlState
   | RegionState
+  | SiteEntityState
   | SiteState
   | PlainState;
 
@@ -454,25 +457,12 @@ const FACTORIES: Partial<Record<EntityKind, Factory>> = {
   ...SDN_FACTORIES,
   ...K8S_FACTORIES,
   ...APP_FACTORIES,
+  ...SITE_FACTORIES,
 };
-
-/** A blueprint can say how loaded a server is and which firmware versions it was built with. */
-function applyServerProps(state: StateOf<"server">, props: Entity["props"]): void {
-  if (typeof props.cpuUtil === "number") state.cpuUtil = props.cpuUtil;
-  if (typeof props.bmcVersion === "string") state.bmcVersion = props.bmcVersion;
-  if (typeof props.biosVersion === "string") state.biosVersion = props.biosVersion;
-}
 
 function initial(kind: EntityKind, modelId: string | undefined, catalog: Catalog): EntityState {
   const model = modelId && catalog.has(modelId) ? catalog.get(modelId) : undefined;
   return FACTORIES[kind]?.(model) ?? ({ kind, health: "ok" } as EntityState);
-}
-
-/** A service starts where the blueprint's `service_on` links say: the active places run it, the standby ones wait. */
-function placeService(state: StateOf<"service">, id: string, index: BlueprintIndex): void {
-  for (const link of index.outgoing(id, "service_on")) {
-    (link.props.role === "standby" ? state.standby : state.runsOn).push(link.to);
-  }
 }
 
 export function initialState(index: BlueprintIndex, catalog: Catalog): WorldState {
@@ -487,6 +477,7 @@ export function initialState(index: BlueprintIndex, catalog: Catalog): WorldStat
     placeSdn(state, entity, index);
     placeK8sEntity(state, entity, index);
     placeApp(state, entity, index);
+    placeSite(state, entity, index);
     if (state.kind === "rack") state.util = bulkOf(entity)?.util ?? 0;
     if (state.kind === "cooling_unit" && typeof entity.props.setpointC === "number")
       state.setpointC = entity.props.setpointC;

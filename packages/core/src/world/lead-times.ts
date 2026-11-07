@@ -130,6 +130,22 @@ export const LEAD_ROWS: Readonly<Record<FaultType, LeadRow>> = {
   mesh_control_down: remote([30 * M, 1 * H, 4 * H]),
   region_down: external([1 * H, 4 * H, 1 * D]),
   replication_lag_high: remote([30 * M, 2 * H, 8 * H]),
+  // 사이트·DR, 지역 복제, 합의 DB, 관리형 DB (REQ-106)
+  site_power_loss: external([2 * H, 8 * H, 2 * D]),
+  wan_link_down: external([1 * H, 4 * H, 1 * D]),
+  wan_degraded: external([1 * H, 4 * H, 1 * D]),
+  replication_broken: remote([30 * M, 2 * H, 8 * H]),
+  dr_failover_stuck: remote([15 * M, 1 * H, 4 * H]),
+  split_brain: remote([30 * M, 2 * H, 8 * H]),
+  dr_site_stale: remote([1 * H, 4 * H, 1 * D]),
+  geo_replication_lag: remote([30 * M, 2 * H, 8 * H]),
+  geo_replica_broken: remote([1 * H, 4 * H, 1 * D]),
+  db_leader_lost: remote([5 * M, 30 * M, 2 * H]),
+  db_quorum_lost: remote([15 * M, 1 * H, 4 * H]),
+  db_node_lagging: remote([15 * M, 1 * H, 4 * H]),
+  db_az_failure: external([30 * M, 2 * H, 8 * H]),
+  db_failover_flapping: remote([30 * M, 2 * H, 8 * H]),
+  db_storage_full: remote([15 * M, 1 * H, 4 * H]),
 };
 
 // ---------- what the experiment sets ----------

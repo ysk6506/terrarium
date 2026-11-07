@@ -10,6 +10,7 @@ verification_log:
   - "2026-11-07: 연결 화면 절을 web-ui-connections.md로 나눔 (DOC050)"
   - "2026-11-07: ADR-0126"
   - "2026-11-07: 부지 배치 규칙·동물 반응 (REQ-105, ADR-0128)"
+  - "2026-11-07: 사이트·DR 층과 남은 점선 다섯 (REQ-106, ADR-0129)"
 ---
 # 문서 색인
 
@@ -37,6 +38,7 @@ verification_log:
 - [서비스와 OS 층 — 장비 위에서 무엇이 도는가, 가짜 셸, OS 고장](design-docs/service-os-layer.md)
 - [데이터베이스 층과 스토리지 HA 층 — 서비스가 기대는 두 겹, 고장 여덟, 자동 페일오버](design-docs/db-storage-layers.md)
 - [컨테이너 층 — 쿠버네티스 클러스터·노드·파드, 고장 여덟, 클러스터가 알아서 하는 일, DRS](design-docs/container-layer.md)
+- [사이트·DR 층 — 서버룸 하나에서 멀티 사이트까지, 지역 복제, 합의 DB, 관리형 멀티 AZ, 고장 열다섯, 툴 열넷](design-docs/site-dr-layer.md)
 - [SDN 오버레이와 클라우드 네이티브 네트워크 층 — 리프-스파인 위의 가상 네트워크, 고장 일곱, 컨트롤러 전환](design-docs/sdn-network-layer.md)
 - [애플리케이션 층 — 서비스 호출 그래프, 로드 밸런서·세션·브레이커·메시·리전, 고장 여덟](design-docs/application-layer.md)
 - [모델 등록 — LLM API를 워크스페이스에 등록하고 연결 확인까지 (REQ-099)](design-docs/model-registration.md)
@@ -184,6 +186,7 @@ verification_log:
 - [0118 깊은 OS 흉내를 구현하면서 시험 다섯 곳의 기대값을 고치고 시험을 더한다](design-docs/adr/0118-deep-os-tests.md)
 - [0119 LLM API 등록 — 워크스페이스 단위 모델 연결, 키는 서버에만, 얇은 클라이언트](design-docs/adr/0119-llm-api-registration.md)
 - [0127 서비스부터는 질문 셋과 "실험 시작"(클릭 넷), 서비스는 카탈로그에서 고르고 내 카드로 저장·공유한다, 입구 그림은 비운다](design-docs/adr/0127-short-world-flow-and-service-catalog.md)
+- [0129 마지막 점선 다섯을 실선으로 — 사이트·DR 사다리, 지역 복제, 분산 SQL, 관리형 멀티 AZ](design-docs/adr/0129-site-dr-geo-storage-distributed-db.md)
 - [0124 이끼 — 테라리움 도우미: 이름·지식 둘·화면 등록·누락 검사·모델·품질 측정, 먼저 말 걸지 않는다](design-docs/adr/0124-moss-assistant.md)
 - [0125 이끼는 LLM을 연결해야만 쓸 수 있다: 기본 모델이 없으면 꺼져 있고, 점수 질문은 채점 문서를 먼저 찾는다](design-docs/adr/0125-moss-requires-model.md)
 - [0126 run-all은 이끼 검사도 돌린다 (0124 보정)](design-docs/adr/0126-run-all-includes-moss.md)

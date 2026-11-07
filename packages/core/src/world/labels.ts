@@ -45,6 +45,13 @@ export const KIND_LABELS: Readonly<Record<EntityKind, string>> = {
   mesh_sidecar: "메시 사이드카",
   mesh_control: "메시 컨트롤 플레인",
   region: "리전",
+  dr_site: "사이트",
+  site_link: "사이트 간 회선",
+  replication_stream: "복제 스트림",
+  dr_plan: "DR 계획",
+  volume: "볼륨",
+  db_node: "합의 DB 노드",
+  db_managed: "관리형 DB",
 };
 
 export const LINK_LABELS: Readonly<Record<LinkKind, string>> = {

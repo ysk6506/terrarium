@@ -77,8 +77,11 @@ describe("서비스마다 다른 모양 [REQ-094]", () => {
     expect(() => generateShaped(two({ ...BARE, compute: "cmp-nope" }))).toThrow(/정산 배치/);
   });
 
-  it("흉내 낼 수 없는 칸을 고르면 어느 서비스가 가까운 모양으로 지어졌는지 알린다", () => {
-    const dotted = generateShaped(two({ ...BARE, database: "db-distributed-sql" }));
-    expect(dotted.notes.some((n) => n.startsWith("정산 배치: "))).toBe(true);
+  it("점선이던 칸도 자기 모양으로 지어서 가까운 모양으로 지었다는 알림이 없다 [REQ-106]", () => {
+    const built = generateShaped(two({ ...BARE, database: "db-distributed-sql" }));
+    expect(built.notes.some((n) => n.startsWith("정산 배치: "))).toBe(false);
+    expect(
+      built.blueprint.entities.filter((e) => e.kind === "db_node").length,
+    ).toBeGreaterThanOrEqual(3);
   });
 });

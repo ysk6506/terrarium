@@ -1,7 +1,7 @@
 /**
  * The card of one choice on a ladder (ADR-0108 item 4): a picture, a paragraph, and four short facts. The picture is
  * data, not markup: rows of boxes, lines between rows, and the one box (or none) that breaks. One drawing routine
- * (`ui/pages/chip-art.tsx`) turns it into an SVG in the app's colours, so all 44 pictures look like one set.
+ * (`ui/pages/chip-art.tsx`) turns it into an SVG in the app's colours, so all 46 pictures look like one set.
  */
 import type { LayerId } from "@terrarium/core/world";
 
@@ -32,6 +32,8 @@ export interface ChipCard {
   readonly mustNot: string;
   readonly faults: string;
   readonly cost: string;
+  /** What a site choice promises, from the core's numbers: "RTO 15분 · RPO 36초" (REQ-106). */
+  readonly promise?: string;
   /** One line under the ladder when this one is chosen: what it comes to. */
   readonly result: string;
   readonly diagram: Diagram;

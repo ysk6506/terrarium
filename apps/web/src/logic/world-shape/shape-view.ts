@@ -2,7 +2,7 @@
  * "이 모양이면" (ADR-0107 item 3, ADR-0108 item 4): what the eight choices come to, read off the core and not written
  * by hand. The numbers are the plan's (`planShape`, the same count the generator follows); the faults are the union
  * of what each modelled choice stops or slows; the ways to bring it back are the tools of `FAULT_TOOLS`; the
- * scenarios are the library's templates whose problems the shape can have. A dotted choice adds none of these.
+ * scenarios are the library's templates whose problems the shape can have. (Every choice is solid since REQ-106; `dotted` stays and is empty.)
  */
 import {
   ALL_SCENARIO_TEMPLATES,
@@ -20,7 +20,15 @@ import {
   type ServiceDraft,
   type ShapeSpec,
 } from "@terrarium/core/sources/worldgen";
-import { LADDER, LAYER_IDS, type Layers } from "@terrarium/core/world";
+import {
+  drTargets,
+  LADDER,
+  LAYER_IDS,
+  type Layers,
+  linkMsOf,
+  SITE_MODE_LABELS,
+  spanText,
+} from "@terrarium/core/world";
 import { won } from "../format";
 import { cardOf } from "./ladders";
 
@@ -50,6 +58,13 @@ const WAYS: Readonly<Record<string, string>> = {
   kubectl_rollout_restart: "롤아웃 재시작하기",
   kubectl_scale: "레플리카 줄이기",
   kubectl_drain: "노드 비우기",
+  dr_failover: "사이트 전환하기",
+  dr_failback: "본 사이트로 되돌리기",
+  volume_promote: "복제 볼륨 승격하기",
+  db_node_restart: "DB 노드 다시 띄우기",
+  db_transfer_leader: "리더 넘기기",
+  db_managed_failover: "관리형 DB 영역 넘기기",
+  db_managed_scale_storage: "저장소 늘리기",
 };
 
 export interface ShapeView {
@@ -69,6 +84,8 @@ export interface ShapeView {
   readonly problems: readonly ScopeKey[];
   /** Layers whose choice the core cannot imitate. */
   readonly dotted: readonly string[];
+  /** The second site, when the world has one: what it is and what it promises (REQ-106). */
+  readonly dr?: { readonly label: string; readonly promise: string };
 }
 
 const NETWORK_TEAM: ReadonlySet<ScopeKey> = new Set<ScopeKey>([
@@ -77,6 +94,8 @@ const NETWORK_TEAM: ReadonlySet<ScopeKey> = new Set<ScopeKey>([
   "vxlan_tunnel_down",
   "nfv_firewall_overload",
   "sdn_controller_down",
+  "wan_link_down",
+  "wan_degraded",
 ]);
 
 /** Who a problem is handed to when no tool cures it. */
@@ -135,7 +154,7 @@ function waysOf(problems: readonly ScopeKey[]): string[] {
     if (need.tools.length === 0) out.add("넘기기");
     else for (const t of need.tools) if (WAYS[t]) out.add(WAYS[t] as string);
   }
-  return [...out].slice(0, 8);
+  return [...out].slice(0, 12);
 }
 
 const SERVER_COST_M = 15;
@@ -143,6 +162,19 @@ const SWITCH_COST_M = 24;
 
 const costOf = (layer: (typeof LAYER_IDS)[number], id: string) =>
   LADDER[layer].find((c) => c.id === id)?.costM ?? 0;
+
+/** "DR 웜 · RTO 15분 · RPO 36초": what the second site is and promises, from the core's numbers. */
+function drOf(build: ReturnType<typeof buildOf>): { dr: NonNullable<ShapeView["dr"]> } | object {
+  const site = build.site;
+  if (!site) return {};
+  const t = drTargets(site.mode, linkMsOf(site.distanceKm));
+  return {
+    dr: {
+      label: SITE_MODE_LABELS[site.mode],
+      promise: `RTO ${spanText(t.rtoS)} · RPO ${spanText(t.rpoS)}`,
+    },
+  };
+}
 
 export function shapeView(spec: ShapeSpec): ShapeView {
   const build = buildOf(spec.layers);
@@ -181,6 +213,7 @@ export function shapeView(spec: ShapeSpec): ShapeView {
     templateIds: templates.map((t) => t.id),
     handover: handoverOf(templates),
     problems: [...set],
+    ...drOf(build),
     dotted: [
       ...new Set(
         shapes.flatMap((layers) =>

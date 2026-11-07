@@ -14,6 +14,9 @@ enforced_by:
   - tests/spec/sdn-worldgen.test.ts
   - tests/spec/sdn-scenarios.test.ts
   - tests/spec/sdn-generated.test.ts
+  - tests/spec/site-dr.test.ts
+  - tests/spec/site-db.test.ts
+  - tests/spec/site-scenarios.test.ts
   - tests/spec/k8s-physics.test.ts
   - tests/spec/k8s-scenarios.test.ts
   - tests/spec/k8s-worldgen.test.ts

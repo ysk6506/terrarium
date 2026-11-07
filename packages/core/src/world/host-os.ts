@@ -20,6 +20,7 @@ import {
 import { archiveBytes, archivePaths, bytesAt, ROOT_BYTES } from "./os/layout";
 import { CNI_PROCESS, INGRESS_PROCESS, SDN_PROCESS } from "./sdn";
 import { serviceDef } from "./service";
+import { REPLICATOR_PROCESS } from "./site-dr";
 import type { EntityState } from "./state";
 import type { WorldReader } from "./world";
 
@@ -102,6 +103,7 @@ function hostedProcesses(world: WorldReader, id: string): string[] {
     ...(kinds.has("k8s_node") ? K8S_PROCESSES : []),
     ...(kinds.has("session_store") ? [SESSION_PROCESS] : []),
     ...(kinds.has("mesh_control") ? [MESH_PROCESS] : []),
+    ...(kinds.has("replication_stream") ? [REPLICATOR_PROCESS] : []),
     ...(hasSidecar(world, id) ? [SIDECAR_PROCESS] : []),
   ];
 }

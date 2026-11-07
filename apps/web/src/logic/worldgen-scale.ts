@@ -332,6 +332,9 @@ export function planFigures(
   return [
     { value: count(plan.racks), unit: `랙 · ${plan.perRack}대씩` },
     { value: count(plan.rooms), unit: "서버룸" },
+    ...(plan.buildings > 1
+      ? [{ value: count(plan.buildings), unit: build.site ? "건물 · 사이트 둘" : "건물" }]
+      : []),
     { value: count(plan.switches), unit: `스위치 · 리프 ${count(leaves)} + 스파인 ${plan.spines}` },
     { value: count(plan.pdus), unit: `PDU · ${sides}` },
     { value: count(plan.coolers), unit: `냉방기 · ${cooling}` },
@@ -350,5 +353,11 @@ export function doneLine(
     counts.serviceVms > 0
       ? `호스트 ${counts.serviceHosts} · VM ${counts.serviceVms}`
       : `서버 ${counts.serviceHosts}`;
-  return `세계를 다 지었어요 — 서버룸 ${count(counts.rooms)} · 랙 ${count(counts.racks)} · 서버 ${count(counts.servers)} · ${names}(${own}) · 시나리오 ${scenarios}개`;
+  const where =
+    counts.sites > 0
+      ? `사이트 ${count(counts.sites)} · `
+      : counts.buildings > 1
+        ? `건물 ${count(counts.buildings)} · `
+        : "";
+  return `세계를 다 지었어요 — ${where}서버룸 ${count(counts.rooms)} · 랙 ${count(counts.racks)} · 서버 ${count(counts.servers)} · ${names}(${own}) · 시나리오 ${scenarios}개`;
 }

@@ -26,6 +26,19 @@ import {
   takeOver,
 } from "./sdn-act";
 import { failover, restartService, type ServiceActContext } from "./service-act";
+import {
+  completeMove,
+  promoteVolume,
+  restartNode,
+  restartReplicator,
+  runDrill,
+  type SiteActContext,
+  scaleStorage,
+  startFailback,
+  startFailover,
+  switchZone,
+  transferLeader,
+} from "./site-act";
 import type { WorldCommand, WorldReader } from "./world";
 
 /** The part of a world the reducers need beyond reading it. */
@@ -89,6 +102,52 @@ function afterRestart(world: OsWorld, command: Extract<WorldCommand, { type: "ho
   if (command.arg === CNI_PROCESS) restartCni(sdnContext(world), command.target);
   if (command.arg === INGRESS_PROCESS) restartIngressProcess(sdnContext(world), command.target);
   if (command.arg) restartAppProcess(dbContext(world), command.target, command.arg);
+  if (command.arg) restartReplicator(siteContext(world), command.target, command.arg);
+}
+
+function siteContext(world: OsWorld): SiteActContext {
+  return {
+    world,
+    t: world.time(),
+    dropFault: (id) => world.dropFault(id),
+    service: () => ({ world, t: world.time(), host: (id) => hostContext(world, id) }),
+  };
+}
+
+/** The commands of the site and DR layer, the geo volumes and the databases of REQ-106; false when it is not one of them. */
+function reduceSite(world: OsWorld, command: WorldCommand): boolean {
+  const ctx = siteContext(world);
+  switch (command.type) {
+    case "dr.failover":
+      startFailover(ctx, command.target, command.site, command.auto !== true);
+      return true;
+    case "dr.failback":
+      startFailback(ctx, command.target);
+      return true;
+    case "dr.drill":
+      runDrill(ctx, command.target);
+      return true;
+    case "dr.complete":
+      completeMove(ctx, command.target);
+      return true;
+    case "volume.promote":
+      promoteVolume(ctx, command.target, command.site);
+      return true;
+    case "dbnode.restart":
+      restartNode(ctx, command.target);
+      return true;
+    case "dbnode.transfer":
+      transferLeader(ctx, command.target);
+      return true;
+    case "dbm.failover":
+      switchZone(ctx, command.target, command.az);
+      return true;
+    case "dbm.scale":
+      scaleStorage(ctx, command.target);
+      return true;
+    default:
+      return false;
+  }
 }
 
 /** The commands of the application layer (REQ-100); false when the command is not one of them. */
@@ -139,12 +198,16 @@ function reduceSdn(world: OsWorld, command: WorldCommand): boolean {
   }
 }
 
+/** The commands of the layers that came after the host and service ones: overlay, application, site. */
+const reducedByLayer = (world: OsWorld, command: WorldCommand): boolean =>
+  reduceSdn(world, command) || reduceApp(world, command) || reduceSite(world, command);
+
 export function reduceHostAndService(world: OsWorld, command: WorldCommand): void {
   if (command.type.startsWith("k8s.")) {
     reduceK8s(world, command);
     return;
   }
-  if (reduceSdn(world, command) || reduceApp(world, command)) return;
+  if (reducedByLayer(world, command)) return;
   const ctx: ServiceActContext = {
     world,
     t: world.time(),

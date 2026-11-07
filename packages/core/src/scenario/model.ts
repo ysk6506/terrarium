@@ -54,7 +54,15 @@ export type ActionKind =
   | "lb_enable"
   | "circuit_reset"
   | "mesh_rollback"
-  | "region_failover";
+  | "region_failover"
+  | "dr_failover"
+  | "dr_failback"
+  | "dr_drill"
+  | "volume_promote"
+  | "dbnode_restart"
+  | "dbnode_transfer"
+  | "dbm_failover"
+  | "dbm_scale";
 
 export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   power_off: "전원 끄기",
@@ -92,6 +100,14 @@ export const ACTION_LABELS: Readonly<Record<ActionKind, string>> = {
   circuit_reset: "서킷 브레이커 리셋",
   mesh_rollback: "메시 설정 되돌리기",
   region_failover: "리전 옮기기",
+  dr_failover: "사이트 전환",
+  dr_failback: "본 사이트로 되돌리기",
+  dr_drill: "전환 모의 훈련",
+  volume_promote: "볼륨 복사본 올리기",
+  dbnode_restart: "합의 DB 노드 다시 시작",
+  dbnode_transfer: "합의 DB 리더 넘기기",
+  dbm_failover: "관리형 DB 영역 고르기",
+  dbm_scale: "관리형 DB 저장소 늘리기",
 };
 
 export const ACTION_KINDS = Object.keys(ACTION_LABELS) as ActionKind[];

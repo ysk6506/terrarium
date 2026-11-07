@@ -18,13 +18,13 @@ covers:
   - packages/core/src/sources/worldgen/shaped-db.ts
   - packages/core/src/topology/layer-network.ts
   - packages/core/src/oracle/recovery.ts
-covers_hash: 98e14b09e2d55f4c
+covers_hash: e8a452f3a77b744d
 verification_log:
-  - "2026-11-07: o5 합치기 (애플리케이션 층)"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: REQ-102(ADR-0123): 사다리·직접 짓기 화면과 말(시운전·미리 보기·전제)을 코드와 대조해 고쳤다"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
+  - "2026-11-07: REQ-106으로 분산 SQL·관리형 멀티 AZ·지역 복제가 실선이 된 서술을 고쳤다"
 ---
 # 데이터베이스 층과 스토리지 HA 층 (REQ-095, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0111](adr/0111-db-storage-layers-amend-tests.md))
 
@@ -39,7 +39,7 @@ verification_log:
 - **진짜 데이터베이스가 아니다.** 쓰기와 읽기, 트랜잭션, 쿼리는 없다. 인스턴스는 역할·상태·복제 지연 몇 숫자이고, 셸은 그 상태로 `pg_isready`와 `psql` 출력의 모양을 흉내 낸다(허용된 질의 둘뿐).
 - **복제 지연은 초 하나다.** 잃는 쓰기의 양은 "복제 지연 초"로만 말한다. 쓰는 양이나 트랜잭션 수와 곱하지 않는다.
 - **백업은 번호와 나이다.** 내용은 없고, 깨졌는지는 복원할 때 검사로 드러난다.
-- **분산 SQL·합의, 클라우드 관리형 멀티 AZ, 지역 복제는 점선이다.** 코어가 모르는 구조라 고를 수는 있어도 고장과 시나리오를 더하지 않고, 가장 가까운 칸(자동 페일오버, 듀얼 컨트롤러)의 모양으로 짓는다.
+- **분산 SQL·합의, 클라우드 관리형 멀티 AZ, 지역 복제는 REQ-106에서 실선이 되었다**([ADR-0129](adr/0129-site-dr-geo-storage-distributed-db.md), [사이트·DR 층](site-dr-layer.md)). 분산 SQL은 `db_cluster`가 아니라 셋 이상의 `db_node`(리더·term)이고 고장 셋(`db_leader_lost`, `db_quorum_lost`, `db_node_lagging`)과 툴 셋(`db_cluster_status`, `db_node_restart`, `db_transfer_leader`)이 있다. 관리형 멀티 AZ는 영역별 `db_managed`이고 고장 셋(`db_az_failure`, `db_failover_flapping`, `db_storage_full`)과 툴 셋(`db_managed_status`, `db_managed_failover`, `db_managed_scale_storage`)이 있다. 지역 복제는 `replicaSite`와 복제 스트림이 있는 볼륨이고 고장 둘(`geo_replication_lag`, `geo_replica_broken`)과 툴 둘(`volume_replication_status`, `volume_promote`)이 있다. 이 층의 점선은 이제 없다.
 
 ## 개체와 상태
 
@@ -136,7 +136,7 @@ verification_log:
 
 `world/ladder.ts`에서 데이터베이스 다섯 칩과 스토리지 두 칩(듀얼 컨트롤러+멀티패스, 분산 3벌)이 `modeled: true`가 되었고, `build`로 `database`(모양·인스턴스 수·페일오버·감지 시간·쿼럼·공유 디스크)와 `pool`(방식·멀티패스·노드 수·복제본 수)을 말한다. 점선은 분산 SQL·클라우드 관리형 멀티 AZ(→ 자동 페일오버), 지역 복제(→ 듀얼 컨트롤러)다.
 
-공유 디스크 액티브-액티브(`db-shared-aa`)는 스토리지가 공유 SAN·NAS 이상일 때만 골라지고, DR 사이트·멀티 사이트·멀티 리전 같은 점선은 복제 칩이 받쳐 줘야 한다(전제 규칙, REQ-102, [world-entry](world-entry.md)).
+공유 디스크 액티브-액티브(`db-shared-aa`)는 스토리지가 공유 SAN·NAS 이상일 때만 골라지고, DR 웜·핫·멀티 사이트·멀티 리전은 복제 칩이 받쳐 줘야 한다(전제 규칙, REQ-102, [world-entry](world-entry.md)).
 
 | 칩 | 짓는 것 | 멈추는 고장 | 느려지는 고장 |
 |---|---|---|---|
@@ -173,6 +173,6 @@ verification_log:
 ## 하지 않은 것
 
 - 쓰기 부하와 복제 지연의 관계(부하가 크면 지연이 느는 것)는 없다. 지연은 고장이 만든다.
-- 분산 SQL의 합의, 관리형 DB의 가용 영역, 지역 복제는 점선이다.
+- 분산 SQL의 합의는 노드 사이의 과반과 리더(term)만 흉내 낸다. 로그 복제의 항목 하나하나, 스냅샷, 멤버십 변경은 없다. 관리형 DB의 영역은 둘(액티브는 셋)이고 공급자 쪽 점검·패치 창은 없다.
 - 서비스마다 다른 데이터베이스 모양은 고르지 못한다(ADR-0108 결정 5와 같은 한계). 서비스마다 같은 모양의 클러스터가 하나씩 깔린다.
 - 재복제를 부하로 빠르게 하거나 늦추는 것은 없다. 노드 상실에서 에이전트가 줄일 수 있는 피해는 없고, 그래서 그 시나리오는 보고만 잰다.

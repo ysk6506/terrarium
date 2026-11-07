@@ -1,5 +1,13 @@
 /** Cards of the power, cooling and site ladders (ADR-0107 item 3). */
+import { drTargets, linkMsOf, spanText } from "@terrarium/core/world";
 import { type ChipCard, rows } from "./card-types";
+import { faultsOf } from "./cards-data";
+
+/** "RTO 15분 · RPO 36초": what a DR choice promises, worked out by the core from the mode and the distance (REQ-106). */
+function promiseOf(mode: "cold" | "warm" | "hot" | "active", km: number): string {
+  const t = drTargets(mode, linkMsOf(km));
+  return `RTO ${spanText(t.rtoS)} · RPO ${spanText(t.rpoS)}`;
+}
 
 export const POWER_CARDS: readonly ChipCard[] = [
   {
@@ -226,17 +234,58 @@ export const SITE_CARDS: readonly ChipCard[] = [
     ),
   },
   {
+    id: "site-dr-cold",
+    layer: "site",
+    label: "DR 콜드",
+    what: "멀리 다른 사업장에 복구용 자리만 마련해 두고 장비는 꺼 둬요. 본 사이트가 사라지면 사람이 이미지와 백업으로 다시 세워요. 가장 싸지만 한참 걸리고, 마지막 백업 이후 데이터는 잃어요.",
+    canLose: "본 사이트 전체 (몇 시간 걸려 다시 세우면)",
+    mustNot: "오래된 이미지 · 마지막 백업 이후의 데이터",
+    faults: faultsOf("site-dr-cold"),
+    promise: promiseOf("cold", 300),
+    cost: "복구 사이트 자리와 회선 · 3억 원쯤",
+    result: `본 사이트가 사라지면 사람이 다시 세워요 · ${promiseOf("cold", 300)}`,
+    diagram: rows(
+      "본 사이트와 꺼진 복구 사이트가 백업으로만 이어지고 본 사이트가 끊김",
+      [
+        ["사이트", 2, "bus"],
+        ["서버룸", 2, "one"],
+      ],
+      [0, 0],
+    ),
+  },
+  {
     id: "site-dr-warm",
     layer: "site",
-    label: "DR 사이트(웜)",
-    what: "멀리 다른 사업장에 복구용 사이트를 켜 둬요. 본 사이트가 사라지면 사람이 전환해 이어가요. 전환에 시간이 걸려요.",
-    canLose: "본 사이트 전체 (전환하면)",
+    label: "DR 웜",
+    what: "복구 사이트에 장비 절반을 켜 두고 데이터를 비동기로 계속 복제해요. 본 사이트가 사라지면 사람이 전환해요. 전환에 십수 분이 걸리고, 복제가 밀린 만큼은 잃어요.",
+    canLose: "본 사이트 전체 (사람이 전환하면)",
     mustNot: "복제가 밀린 최신 데이터 · 전환 절차 실패",
-    faults: "복제 지연 · 전환 실패 · 복구 사이트 용량 부족",
-    cost: "복구 사이트 장비의 일부 + 회선",
-    result: "건물 둘 모양으로 지어요. 복구 사이트 전환은 아직 흉내 낼 수 없어요",
+    faults: faultsOf("site-dr-warm"),
+    promise: promiseOf("warm", 100),
+    cost: "복구 사이트 장비의 절반 + 회선 · 6억 원쯤",
+    result: `사람이 전환하면 복구 사이트에서 이어요 · ${promiseOf("warm", 100)}`,
     diagram: rows(
       "본 사이트와 복구 사이트가 복제로 이어지고 본 사이트가 끊김",
+      [
+        ["사이트", 2, "bus"],
+        ["서버룸", 2, "one"],
+      ],
+      [0, 0],
+    ),
+  },
+  {
+    id: "site-dr-hot",
+    layer: "site",
+    label: "DR 핫",
+    what: "복구 사이트가 같은 크기로 켜져 있고 데이터를 동기로 복제해요. 본 사이트가 사라지면 시스템이 알아채 스스로 전환해요. 동기라 쓰기마다 회선을 기다려서 거리가 멀면 느려요.",
+    canLose: "본 사이트 전체 (자동 전환)",
+    mustNot: "회선 · 전환 감지 실패",
+    faults: faultsOf("site-dr-hot"),
+    promise: promiseOf("hot", 50),
+    cost: "복구 사이트 장비 전부 + 회선 · 9억 원쯤",
+    result: `스스로 전환해요 · ${promiseOf("hot", 50)}`,
+    diagram: rows(
+      "본 사이트와 같은 크기의 복구 사이트가 동기 복제로 이어지고 본 사이트가 끊김",
       [
         ["사이트", 2, "bus"],
         ["서버룸", 2, "one"],
@@ -248,19 +297,20 @@ export const SITE_CARDS: readonly ChipCard[] = [
     id: "site-multi-active",
     layer: "site",
     label: "멀티 사이트 액티브-액티브",
-    what: "사이트 둘 이상이 동시에 일해요. 하나가 사라져도 전환 없이 이어져요. 데이터를 항상 맞춰야 해서 가장 어렵고 비싸요.",
+    what: "사이트 둘이 동시에 일하고 글로벌 밸런서가 요청을 나눠요. 하나가 사라지면 밸런서가 빼 버려서 전환 없이 이어져요. 두 곳에 같이 쓰므로 회선이 끊기면 갈라질 수 있어(스플릿 브레인) 가장 어렵고 비싸요.",
     canLose: "사이트 하나 통째 (전환 없이)",
-    mustNot: "사이트 사이 데이터 불일치",
-    faults: "사이트 정지 · 사이트 간 지연 · 데이터 충돌",
-    cost: "사이트 수만큼 두 배 이상",
-    result: "건물 둘 모양으로 지어요. 멀티 사이트는 아직 흉내 낼 수 없어요",
+    mustNot: "회선이 끊겨 두 곳이 따로 쓰는 일 · 데이터 충돌",
+    faults: faultsOf("site-multi-active"),
+    promise: promiseOf("active", 100),
+    cost: "사이트 수만큼 두 배 · 12억 원쯤",
+    result: `전환 없이 이어요 · ${promiseOf("active", 100)}`,
     diagram: rows(
-      "사이트 셋이 서로 이어져 모두 일하고 사이트 하나가 끊김",
+      "사이트 둘이 서로 이어져 모두 일하고 사이트 하나가 끊김",
       [
-        ["사이트", 3, "bus"],
-        ["서버룸", 3, "one"],
+        ["사이트", 2, "bus"],
+        ["서버룸", 2, "one"],
       ],
-      [0, 2],
+      [0, 1],
     ),
   },
 ];

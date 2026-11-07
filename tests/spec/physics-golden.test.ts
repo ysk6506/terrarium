@@ -22,6 +22,7 @@ import { appLab } from "../../packages/core/src/world/test-support/app-lab";
 import { k8sLab } from "../../packages/core/src/world/test-support/k8s-lab";
 import { sampleBlueprint } from "../../packages/core/src/world/test-support/sample";
 import { sdnLab } from "../../packages/core/src/world/test-support/sdn-lab";
+import { siteBlueprint } from "./site-support";
 
 const FILE = new URL("./physics-golden.json", import.meta.url);
 const catalog = new Catalog();
@@ -65,6 +66,10 @@ const worlds: ReadonlyArray<readonly [string, () => Blueprint]> = [
   ["container cluster", () => k8sLab({ second: true })],
   // the application layer (REQ-100): balancer, replicas, sessions, breakers, mesh and two regions
   ["app layer lab", () => appLab({ level: "multiregion" })],
+  // the site and DR layer, geo storage and the two new databases (REQ-106): a warm DR site, a geo volume, a consensus ring
+  ["site dr lab", () => siteBlueprint("warm")],
+  ["geo storage lab", () => siteBlueprint("geo")],
+  ["distributed db lab", () => siteBlueprint("db")],
 ];
 
 const stateHash = (world: World): string =>

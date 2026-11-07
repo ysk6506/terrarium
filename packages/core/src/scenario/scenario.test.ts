@@ -153,6 +153,21 @@ describe("scenario palette [REQ-034]", () => {
       "mesh_control_down",
       "region_down",
       "replication_lag_high",
+      "site_power_loss",
+      "wan_link_down",
+      "wan_degraded",
+      "replication_broken",
+      "dr_failover_stuck",
+      "split_brain",
+      "dr_site_stale",
+      "geo_replication_lag",
+      "geo_replica_broken",
+      "db_leader_lost",
+      "db_quorum_lost",
+      "db_node_lagging",
+      "db_az_failure",
+      "db_failover_flapping",
+      "db_storage_full",
     ]);
     // In the campus sample every supported fault has something to act on.
     const campus = paletteFor(new BlueprintIndex(campusBlueprint()));

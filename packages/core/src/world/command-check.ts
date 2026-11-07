@@ -15,6 +15,7 @@ import { checkNetChange } from "./net-check";
 import { outletCount } from "./outlets";
 import { checkSdnCommand, isSdnCommand, type SdnCommand } from "./sdn-act";
 import { checkServiceCommand } from "./service-act";
+import { checkSiteCommand, isSiteCommand, type SiteCommand } from "./site-act";
 import type { WorldCommand, WorldReader } from "./world";
 
 /** What the world can answer about itself beyond its reader: whether a fault or a network link is there. */
@@ -140,6 +141,7 @@ function checkLayerCommand(world: WorldReader, command: WorldCommand): void {
   if (isDbCommand(command.type)) checkDbCommand(world, command as DbCommand);
   else if (isSdnCommand(command.type)) checkSdnCommand(world, command as SdnCommand);
   else if (isAppCommand(command.type)) checkAppCommand(world, command as AppCommand);
+  else if (isSiteCommand(command.type)) checkSiteCommand(world, command as SiteCommand);
   else if (isK8sCommand(command.type)) checkK8sCommand(world, command as K8sCommand);
   else if (command.type === "host.act") checkHostAct(world, command.target, command.action);
   else if (command.type === "vm.migrate" || command.type.startsWith("service."))

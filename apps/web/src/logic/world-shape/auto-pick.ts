@@ -34,10 +34,23 @@ export const PRESET_LABELS: Readonly<Record<PresetId, string>> = {
 const firstModeled = (layer: LayerId): string =>
   (LADDER[layer].find((c) => c.modeled) ?? (LADDER[layer][0] as { id: string })).id;
 
-/** The right-most choice the core can imitate. */
+/**
+ * Choices the steady row leaves out, though they are solid: each doubles the hardware again (active-active), or is a
+ * different kind of database or a cloud one rather than a step up (REQ-106). "멈추지 않게" stops at the DR hot site.
+ */
+const BEYOND_STEADY: ReadonlySet<string> = new Set([
+  "site-multi-active",
+  "sto-geo",
+  "db-distributed-sql",
+  "db-managed-multiaz",
+]);
+
+/** The right-most choice the core can imitate that a preset would take. */
 const lastModeled = (layer: LayerId): string =>
-  ([...LADDER[layer]].reverse().find((c) => c.modeled) ?? (LADDER[layer].at(-1) as { id: string }))
-    .id;
+  (
+    [...LADDER[layer]].reverse().find((c) => c.modeled && !BEYOND_STEADY.has(c.id)) ??
+    (LADDER[layer].at(-1) as { id: string })
+  ).id;
 
 const eachLayer = (pick: (layer: LayerId) => string): Layers =>
   Object.fromEntries(Object.keys(LADDER).map((l) => [l, pick(l as LayerId)])) as Layers;
@@ -132,9 +145,11 @@ const CHOOSERS: Readonly<Record<LayerId, Chooser>> = {
       : { id: "pwr-ab", why: "한 줄이 꺼져도 돌아야 해서" },
   cooling: () => ({ id: "cool-n1", why: "냉방기 하나는 쉬어도 되게" }),
   site: (need) =>
-    need.perHour >= 20_000_000
-      ? { id: "site-two-rooms", why: "멈추면 피해가 커서 방 하나가 막혀도 돌게" }
-      : { id: "site-one-room", why: "서버룸 하나로 충분해서" },
+    need.perHour >= 100_000_000
+      ? { id: "site-dr-warm", why: "멈추면 피해가 커서 사이트가 통째로 사라져도 이어가게" }
+      : need.perHour >= 20_000_000
+        ? { id: "site-two-rooms", why: "멈추면 피해가 커서 방 하나가 막혀도 돌게" }
+        : { id: "site-one-room", why: "서버룸 하나로 충분해서" },
 };
 
 const isVirtual = (chosen: Layers): boolean =>

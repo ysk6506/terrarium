@@ -30,7 +30,27 @@ export interface ChipBuild {
   readonly k8s?: K8sBuild;
   /** The application layer the app choice builds for every service: balancer, replicas, sessions, breakers, mesh, regions (REQ-100). */
   readonly app?: AppBuild;
+  /** The second site the site choice builds, from a cold DR site up to active-active (REQ-106). */
+  readonly site?: SiteBuild;
+  /** Volumes keep a copy at the other site (the geo-replicated storage choice, REQ-106). */
+  readonly geo?: boolean;
+  /** A consensus database ring or a managed multi-AZ database in place of a db_cluster (REQ-106). */
+  readonly dbx?: DbxBuild;
 }
+
+/** What the site choice builds beyond the first site: the second site's mode, its distance and its share of the hardware. */
+export interface SiteBuild {
+  readonly mode: "cold" | "warm" | "hot" | "active";
+  /** Kilometres between the sites; the one-way latency of the link follows from it. */
+  readonly distanceKm: number;
+  /** Share of a service's nodes that stand at the second site (cold keeps all of them, powered off). */
+  readonly share: number;
+}
+
+/** A database that is not a `db_cluster`: a ring of voting nodes (Raft), or a managed service over availability zones. */
+export type DbxBuild =
+  | { readonly kind: "raft"; readonly nodes: number }
+  | { readonly kind: "managed"; readonly azs: 2 | 3 };
 
 /**
  * What an application choice from "stateless" up builds around every service. Each choice keeps what the one before it had:

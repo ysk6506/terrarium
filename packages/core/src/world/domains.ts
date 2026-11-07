@@ -146,6 +146,21 @@ export const FAULT_DOMAIN: Readonly<Record<FaultType, Domain>> = {
   mesh_control_down: "service_os",
   region_down: "service_os",
   replication_lag_high: "service_os",
+  site_power_loss: "facility",
+  wan_link_down: "network",
+  wan_degraded: "network",
+  replication_broken: "service_os",
+  dr_failover_stuck: "service_os",
+  split_brain: "service_os",
+  dr_site_stale: "service_os",
+  geo_replication_lag: "storage",
+  geo_replica_broken: "storage",
+  db_leader_lost: "service_os",
+  db_quorum_lost: "service_os",
+  db_node_lagging: "service_os",
+  db_az_failure: "service_os",
+  db_failover_flapping: "service_os",
+  db_storage_full: "service_os",
 };
 
 /** The domain of the mistakes people make (a wrong VLAN, a shut port, a PDU outlet switched off). */

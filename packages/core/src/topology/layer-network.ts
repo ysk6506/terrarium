@@ -5,9 +5,11 @@
  * the servers, because a stage with nothing in it is not drawn.
  */
 import { type BlueprintIndex, breakerEnds, type Link } from "@terrarium/core/world";
+import { sitesOfService } from "./impact-site";
 import { type LayerShape, ShapeBuilder } from "./shape";
 
 export const NETWORK_STAGES = [
+  { id: "site", label: "사이트" },
   { id: "service", label: "서비스" },
   { id: "callee", label: "호출받는 서비스" },
   { id: "callee2", label: "그 아래 서비스" },
@@ -33,29 +35,30 @@ export const NETWORK_STAGES = [
   { id: "virtual", label: "VM·클러스터" },
 ] as const;
 
-const SERVICE = 0;
-const CALLEE = 1;
-const CALLEE2 = 2;
-const FRONT = 3;
-const REGION = 4;
-const SIDECAR = 5;
-const REPLICA = 6;
-const WORKLOAD = 7;
-const WORKLOAD2 = 8;
-const CLUSTER = 9;
-const KNODE = 10;
-const DATABASE = 11;
-const INSTANCE = 12;
-const POOL = 13;
-const DOOR = 14;
-const SEGMENT = 15;
-const CONTROLLER = 16;
-const VTEP = 17;
-const CORE = 18;
-const SPINE = 19;
-const TOR = 20;
-const HOST = 21;
-const VIRTUAL = 22;
+const SITE = 0;
+const SERVICE = 1;
+const CALLEE = 2;
+const CALLEE2 = 3;
+const FRONT = 4;
+const REGION = 5;
+const SIDECAR = 6;
+const REPLICA = 7;
+const WORKLOAD = 8;
+const WORKLOAD2 = 9;
+const CLUSTER = 10;
+const KNODE = 11;
+const DATABASE = 12;
+const INSTANCE = 13;
+const POOL = 14;
+const DOOR = 15;
+const SEGMENT = 16;
+const CONTROLLER = 17;
+const VTEP = 18;
+const CORE = 19;
+const SPINE = 20;
+const TOR = 21;
+const HOST = 22;
+const VIRTUAL = 23;
 
 /** Steps from a switch down to the nearest ToR: 0 for a ToR (or a switch nothing leans on), then 1, 2... */
 function depthsOf(index: BlueprintIndex): Map<string, number> {
@@ -91,6 +94,8 @@ function addEquipment(index: BlueprintIndex, b: ShapeBuilder): void {
   const depth = callDepths(index);
   for (const e of index.ofKind("service"))
     b.add(e.id, [SERVICE, CALLEE, CALLEE2][depth.get(e.id) ?? 0] as number, "service");
+  for (const e of index.ofKind("dr_site")) b.add(e.id, SITE, "dr_site");
+  for (const e of index.ofKind("site_link")) b.add(e.id, SITE, "site_link");
   addApp(index, b);
   addDatabase(index, b);
   addContainers(index, b);
@@ -190,6 +195,7 @@ const DRAWN_DOWN: ReadonlySet<Link["kind"]> = new Set([
 export function networkShape(index: BlueprintIndex): LayerShape {
   const b = new ShapeBuilder(NETWORK_STAGES);
   addEquipment(index, b);
+  layLeans(index, b);
   // a breaker watches one call: the caller leans on it
   for (const br of index.ofKind("circuit_breaker")) {
     const ends = breakerEnds(index, br);
@@ -201,4 +207,10 @@ export function networkShape(index: BlueprintIndex): LayerShape {
     else if (way === "down") b.link(l.from, l.to);
   }
   return b.build();
+}
+
+/** A service leans on the site its nodes stand in (both, for a pair that runs at two), so the site stage comes first. */
+function layLeans(index: BlueprintIndex, b: ShapeBuilder): void {
+  for (const svc of index.ofKind("service"))
+    for (const site of sitesOfService(index, svc.id)) b.link(site, svc.id);
 }

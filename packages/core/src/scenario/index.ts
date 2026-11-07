@@ -50,9 +50,10 @@ export {
   SCENARIO_TEMPLATES,
   type ScenarioTemplate,
   SDN_TEMPLATES,
+  SITE_TEMPLATES,
   scenarioTemplate,
   TEMPLATE_GROUPS,
-} from "./library";
+} from "./library-all";
 export {
   ACTION_KINDS,
   ACTION_LABELS,

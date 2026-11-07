@@ -20,6 +20,8 @@ import { cutOffHosts } from "./net-reach";
 import { AUTH_SKEW_S, DISK_FULL_PCT, type HostOs } from "./os";
 import { sdnHealth } from "./sdn-health";
 import { type ServiceDef, type ServiceKind, type ServiceStatus, serviceDef } from "./service";
+import { siteOf } from "./site-dr";
+import { drainedSites, drCovers, drCoversWorkloads, siteHealth } from "./site-health";
 import type { WorldReader } from "./world";
 
 /** What made a place not ok, for tools that act on it (the shell says "connection refused" for a dead process, a timeout for a dead host). */
@@ -308,12 +310,15 @@ function fromDeps(
   let status: ServiceStatus = "healthy";
   const reasons: string[] = [];
   for (const dep of dependenciesOf(world.index, service.id)) {
+    if (drCovers(world, service.id, dep)) continue;
     const v = dependencyVerdict(world, dep, def);
     if (v.state === "ok") continue;
     status = worse(status, v.state === "dead" ? "down" : "degraded");
     if (v.why) reasons.push(v.why);
   }
-  const workloads = workloadsOfService(world.index, service.id);
+  const workloads = drCoversWorkloads(world, service.id)
+    ? []
+    : workloadsOfService(world.index, service.id);
   if (workloads.length > 0) {
     const v = workloadsVerdict(world, workloads);
     if (v.state !== "ok") {
@@ -336,19 +341,24 @@ function healthOf(world: WorldReader, serviceId: string, seen: ReadonlySet<strin
   const state = world.stateAs(serviceId, "service");
   // a service on a cluster stands on its pods: the machines under the nodes reach it through the nodes
   const onCluster = standsOnCluster(world, serviceId);
-  const places = onCluster ? state.runsOn.filter((id) => !isNodeHost(world, id)) : state.runsOn;
+  const own = onCluster ? state.runsOn.filter((id) => !isNodeHost(world, id)) : state.runsOn;
+  const drained = drainedSites(world);
+  // a global balancer of an active-active pair has taken a dead site out: its places no longer count against the service
+  const places =
+    drained.length > 0 ? own.filter((id) => !drained.includes(siteOf(world.index, id) ?? "")) : own;
   const verdicts = places.map((id) => hostVerdict(world, id, def));
   const path = fromPath(world, entity);
   const deps = fromDeps(world, entity, def);
   const overlay = sdnHealth(world, entity, def);
   const app = appHealth(world, entity);
+  const site = siteHealth(world, entity);
   const inside = new Set(seen).add(serviceId);
   const calls = callsHealth(world, entity, (id) =>
     inside.has(id) ? "healthy" : healthOf(world, id, inside).status,
   );
   const hosts: ServiceStatus =
     onCluster && verdicts.length === 0 ? "healthy" : fromHosts(def.kind, verdicts);
-  const status = [path, deps, overlay, app, calls].reduce<ServiceStatus>(
+  const status = [path, deps, overlay, app, site, calls].reduce<ServiceStatus>(
     (acc, v) => worse(acc, v.status),
     hosts,
   );
@@ -358,6 +368,7 @@ function healthOf(world: WorldReader, serviceId: string, seen: ReadonlySet<strin
     ...deps.reasons,
     ...overlay.reasons,
     ...app.reasons,
+    ...site.reasons,
     ...calls.reasons,
   ];
   return {

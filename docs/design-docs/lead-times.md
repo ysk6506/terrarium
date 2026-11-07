@@ -6,13 +6,13 @@ last_verified: 2026-11-07
 covers:
   - packages/core/src/world/lead-times.ts
   - packages/core/src/world/domains.ts
-covers_hash: 2cb1ed649fef0046
+covers_hash: 477b0704e771ac72
 verification_log:
-  - "2026-11-06: REQ-096: 컨테이너 고장 여덟의 행을 LEAD_ROWS와 대조해 더했다 (리드타임은 모두 원격)"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
   - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
+  - "2026-11-07: REQ-106 열다섯 고장의 행을 LEAD_ROWS와 대조해 더했다"
 ---
 # 고장 종류별 리드타임 (ADR-0100)
 
@@ -126,7 +126,7 @@ verification_log:
 | nfv_firewall_overload (가상 방화벽 과부하) | 네트워크팀 | 1h | 4h | 1d | 용량을 늘리거나 분산 | 서비스를 다른 경로로 |
 | network_policy_deny (잘못된 정책 배포, 설정 실수라 고장 목록에 없어 넘길 수 없다) | 네트워크팀 | 15m | 45m | 2h | 변경 승인과 되돌리기 | 정책 되돌리기(`policy_revert`) |
 
-## 서비스/OS (고장 10 + 데이터베이스 5 + 컨테이너 8 + 애플리케이션 8)
+## 서비스/OS (고장 10 + 데이터베이스 5 + 컨테이너 8 + 애플리케이션 8)와 사이트·DR (REQ-106)
 | 고장 | 누가 | 최소 | 보통 | 최대 | 임시 조치 |
 |---|---|---|---|---|---|
 | 디스크 꽉 참, 로그 폭주 | OS팀 | 15m | 30m | 1h | 로그 정리 |
@@ -156,6 +156,25 @@ verification_log:
 | mesh_control_down (메시 컨트롤 플레인) | OS/서비스팀 | 30m | 1h | 4h | istiod 다시 시작 | 트래픽은 그대로 흐른다. 새 설정만 못 민다 |
 | region_down (리전 다운, 외부) | 클라우드팀 | 1h | 4h | 1d | 리전 복구 | `region_failover`로 바로 다른 리전으로 (기다리면 5분 뒤 알아서) |
 | replication_lag_high (복제 지연) | OS/서비스팀 | 30m | 2h | 8h | 복제 원인 찾아 고침 | 밀리지 않은 리전에 트래픽 고정 |
+
+### 사이트·DR, 지역 복제, 합의 DB, 관리형 DB (REQ-106, 열다섯)
+| 고장 | 누가 | 최소 | 보통 | 최대 | 임시 조치 |
+|---|---|---|---|---|---|
+| site_power_loss (사이트 정전, 외부) | 시설팀 | 2h | 8h | 2d | 한전·사이트 전기 복구 | `dr_failover`로 다른 사이트에서 돌린다 |
+| wan_link_down (회선 끊김, 외부) | 네트워크팀 | 1h | 4h | 1d | 통신사 복구 | 비동기 복제는 밀린다. 급하면 전환은 하지 않는다 |
+| wan_degraded (회선 느림, 외부) | 네트워크팀 | 1h | 4h | 1d | 통신사 복구 | 동기 복제가 느려지면 비동기로 물러난다 |
+| replication_broken (복제 깨짐) | OS/서비스팀 | 30m | 2h | 8h | 복제기 다시 시작 | 지연 알림을 보고 복제 상태를 읽는다 |
+| dr_failover_stuck (전환 멈춤) | OS/서비스팀 | 15m | 1h | 4h | 전환 마저 끝내기 | `dr_failover` |
+| split_brain (두 사이트 모두 주인) | OS/서비스팀 | 30m | 2h | 8h | 남길 쪽 고르기 | `dr_failover` |
+| dr_site_stale (콜드 이미지 낡음) | OS/서비스팀 | 1h | 4h | 1d | 이미지 다시 굽기 | 전환 시간이 2시간 늘어난다 |
+| geo_replication_lag (지역 복제 지연) | 스토리지팀 | 30m | 2h | 8h | 복제 원인 찾기 | 볼륨을 올리면 밀린 만큼 잃는다 |
+| geo_replica_broken (복사본 깨짐) | 스토리지팀 | 1h | 4h | 1d | 복사본 다시 만들기 | 볼륨을 올릴 수 없다 |
+| db_leader_lost (합의 DB 리더 상실) | OS/서비스팀 | 5m | 30m | 2h | 노드 다시 시작 | 알아서 10초 안에 새 리더 |
+| db_quorum_lost (과반 상실) | OS/서비스팀 | 15m | 1h | 4h | 노드 다시 시작 | `db_node_restart` |
+| db_node_lagging (노드 지연) | OS/서비스팀 | 15m | 1h | 4h | 노드 다시 시작 | 리더 넘기기 |
+| db_az_failure (관리형 DB 영역 장애, 외부) | OS/서비스팀 | 30m | 2h | 8h | 공급자 복구 | 알아서 넘어간다. `db_managed_failover` |
+| db_failover_flapping (영역 오락가락) | OS/서비스팀 | 30m | 2h | 8h | 공급자 점검 | `db_managed_failover`로 영역 고정 |
+| db_storage_full (저장소 가득) | OS/서비스팀 | 15m | 1h | 4h | 저장소 늘리기 | `db_managed_scale_storage` |
 
 ## 정직한 한계
 - 값은 업계 통상 SLA와 경험값이며 사내 계약·사업장 실측으로 바꿔야 한다. 지금 바꿀 수 있는 것은 위의 네 가지(벤더 SLA, 예비 부품 모두 있음·없음, 야간·주말 가산, 일을 맡는 때)뿐이다.

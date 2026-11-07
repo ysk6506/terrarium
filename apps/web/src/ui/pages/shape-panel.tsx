@@ -48,6 +48,12 @@ export function ShapePanel({ view }: { readonly view: ShapeView }) {
       <Line tone="bad" title="멈추는 고장" items={view.stops} />
       <Line tone="warn" title="느려지는 고장" items={view.slows} />
       <Line tone="good" title="살리는 길" items={view.ways} />
+      {view.dr && (
+        <div className="we-sh good">
+          <b>복구 목표</b>
+          {view.dr.label} · {view.dr.promise}
+        </div>
+      )}
       <p className="we-shape-foot">
         시나리오 <b>{view.scenarios}개</b>가 이 모양에 맞아요.
         {view.handover.length > 0 && (

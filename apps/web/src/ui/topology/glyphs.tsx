@@ -370,6 +370,8 @@ const SINGLE: Readonly<Record<TopoKind, Glyph>> = {
   mesh_sidecar: Replica,
   mesh_control: Controller,
   region: Region,
+  dr_site: Region,
+  site_link: Controller,
 };
 
 /** Many of a kind: racks stand in a row, servers in a stack; the rest are the single glyph on a stack of bases. */

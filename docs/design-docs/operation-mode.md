@@ -17,13 +17,13 @@ covers:
   - apps/server/src/runtime/dispatcher.ts
   - apps/server/src/runtime/hosts.ts
   - packages/core/src/session/operation/journal.ts
-covers_hash: 106507366b52a3db
+covers_hash: 4dd9081b3b012fb0
 verification_log:
-  - "2026-11-06: REQ-096: mtbf.ts의 컨테이너 고장 여덟 행을 MTBF 표에 더했다"
   - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-06: o1·o2 합치기"
   - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
+  - "2026-11-07: MTBF 표에 REQ-106의 열네 줄을 mtbf.ts와 대조해 더했다"
 ---
 # 운영 모드 (REQ-090, [ADR-0094](adr/0094-operation-mode.md))
 
@@ -78,6 +78,13 @@ verification_log:
 | `retry_storm` / `mesh_control_down` | 메시 컨트롤 플레인 | 7,000 / 6,000시간 |
 | `sidecar_crash` | 사이드카 | 5,000시간 |
 | `region_down` / `replication_lag_high` | 리전 | 20,000 / 4,000시간 |
+| `site_power_loss` / `dr_site_stale` | 사이트 | 40,000 / 10,000시간 |
+| `wan_link_down` / `wan_degraded` | 사이트 간 회선 | 8,000 / 5,000시간 |
+| `replication_broken` | 복제 스트림 | 4,000시간 |
+| `dr_failover_stuck` / `split_brain` | DR 계획 | 30,000 / 50,000시간 |
+| `geo_replication_lag` / `geo_replica_broken` | 지역 복제 볼륨 | 4,000 / 12,000시간 |
+| `db_leader_lost` / `db_quorum_lost` / `db_node_lagging` | 합의 DB 노드 | 6,000 / 25,000 / 5,000시간 |
+| `db_az_failure` / `db_failover_flapping` / `db_storage_full` | 관리형 DB | 20,000 / 15,000 / 8,000시간 |
 
 표는 `operation/mtbf.ts`가 단일 출처이고 발생기와 시험이 이 값을 읽는다. 새 고장 종류를 더하면 표에도 줄을 더한다(그리고 `FAULT_TOOLS`와 `physics-golden.json`에도, 툴 추가 규칙대로).
 
