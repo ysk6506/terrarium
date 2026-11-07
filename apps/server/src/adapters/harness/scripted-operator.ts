@@ -4,11 +4,14 @@
  * `events_since`, and puts back what it moved. It is the yardstick the scenarios "내 도메인 밖이 원인" are calibrated
  * with: what a careful operator does with a wait of hours or days.
  *
+ *   0  if the alarms name a fault of the site, GPU, power or cooling layer: `baseline-layers.ts` has the script (REQ-108)
  *   1  for each service that is not well: a VM goes to another server, any other service to its standby
  *   2  the cause is read from the reason the service gives: bad memory is the server team's, a cable that does not
  *      answer is the network team's; the matching domain is handed over with `escalate`
  *   3  wait with `wait` and look at `events_since` until the team is done
  *   4  undo what was moved, and answer
+ *
+ * Before it changes anything it waits while the cluster recovers by itself (`hands-off.ts`).
  */
 import type {
   AgentInfo,
@@ -16,6 +19,8 @@ import type {
   AgentRunRequest,
   ToolEndpoint,
 } from "@terrarium/core/experiments";
+import { findLayerCause, refineFault, respond } from "./baseline-layers";
+import { alarmsOf, data, has, Watch } from "./hands-off";
 
 export const OPERATOR_AGENT: AgentInfo = {
   id: "operator",
@@ -38,17 +43,6 @@ type Undo =
 
 const HOUR_S = 3600;
 const MAX_WAITS = 120;
-
-const has = (tools: ToolEndpoint, name: string) => tools.specs.some((s) => s.name === name);
-
-async function data<T>(
-  tools: ToolEndpoint,
-  name: string,
-  args: Record<string, unknown>,
-): Promise<T | undefined> {
-  const r = await tools.call(name, args);
-  return r.ok ? (r.data as T) : undefined;
-}
 
 const troubled = async (tools: ToolEndpoint): Promise<ServiceRow[]> =>
   ((await data<ServiceRow[]>(tools, "list_services", {})) ?? []).filter(
@@ -167,6 +161,14 @@ async function hurtRows(tools: ToolEndpoint): Promise<ServiceRow[]> {
   );
 }
 
+/** The services in trouble once the system has had its say: what it brought back by itself is left alone. */
+async function settledRows(tools: ToolEndpoint, watch: Watch): Promise<ServiceRow[]> {
+  const rows = await hurtRows(tools);
+  if (rows.length === 0) return rows;
+  const held = await watch.holdOff(await alarmsOf(tools));
+  return held.waited ? hurtRows(tools) : rows;
+}
+
 /** Keep each hurt service alive once, and hand the cause over to its team the first time it is seen. */
 async function keepAndHandOver(
   tools: ToolEndpoint,
@@ -192,7 +194,7 @@ async function keepAndHandOver(
 /** Look at what is new; keep what is hurt alive; hand the cause over once; put things back when a team is done. */
 async function lookAndAct(
   req: AgentRunRequest,
-  state: { cursor: number; open: Map<string, Open> },
+  state: { cursor: number; open: Map<string, Open>; watch: Watch },
 ): Promise<void> {
   const { tools } = req;
   const news = await data<{ cursor: number; events: Array<{ type: string }> }>(
@@ -201,7 +203,7 @@ async function lookAndAct(
     { cursor: state.cursor },
   );
   state.cursor = news?.cursor ?? state.cursor;
-  await keepAndHandOver(tools, await hurtRows(tools), state.open);
+  await keepAndHandOver(tools, await settledRows(tools, state.watch), state.open);
   if (!news?.events.some((e) => e.type === "done")) return;
   for (const [domain, open] of state.open) {
     for (const u of open.undo) await tools.call(u.tool, u.args);
@@ -215,7 +217,11 @@ async function lookAndAct(
  * an operation ends when its hours are used or a person stops it.
  */
 async function resident(req: AgentRunRequest): Promise<AgentRunOutcome> {
-  const state = { cursor: 0, open: new Map<string, Open>() };
+  const state = {
+    cursor: 0,
+    open: new Map<string, Open>(),
+    watch: new Watch(req.tools, req.signal),
+  };
   const woken = { value: false };
   const off = req.operation?.wake?.subscribe(() => {
     woken.value = true;
@@ -232,9 +238,15 @@ async function resident(req: AgentRunRequest): Promise<AgentRunOutcome> {
 export async function operator(req: AgentRunRequest): Promise<AgentRunOutcome> {
   if (req.operation) return resident(req);
   const { tools } = req;
-  const hurt = await firstTrouble(tools, req.signal);
+  const watch = new Watch(tools, req.signal);
+  const alarms = await alarmsOf(tools);
+  const layer = findLayerCause(alarms);
+  if (layer) return answerLayer(req, watch, alarms, layer);
+  let hurt = await firstTrouble(tools, req.signal);
   if (hurt.length === 0)
     return { status: "finished", message: "멈춘 서비스가 없어 할 일이 없었어요" };
+  const held = await watch.holdOff(alarms);
+  if (held.waited) hurt = await troubled(tools);
   const rows = await Promise.all(
     hurt.map((h) =>
       data<ServiceRow>(tools, "service_status", { service: h.id }).then((s) => s ?? h),
@@ -249,6 +261,26 @@ export async function operator(req: AgentRunRequest): Promise<AgentRunOutcome> {
   if (cause && has(tools, "escalate") && has(tools, "events_since"))
     await handOver(req, rows, cause, undo);
   await tools.call("submit_diagnosis", diagnosisOf(cause, rows, undo));
+  return { status: "finished" };
+}
+
+/** A fault of the site, GPU, power or cooling layer: its script, then the answer. */
+async function answerLayer(
+  req: AgentRunRequest,
+  watch: Watch,
+  alarms: Awaited<ReturnType<typeof alarmsOf>>,
+  found: NonNullable<ReturnType<typeof findLayerCause>>,
+): Promise<AgentRunOutcome> {
+  const { tools } = req;
+  const finding = await refineFault(tools, found);
+  const done = await respond(tools, watch, finding, alarms);
+  await tools.call("submit_diagnosis", {
+    rootCause: done.fault?.root ?? finding.root,
+    faultType: done.fault?.type ?? finding.fault,
+    summary: `${finding.root}의 ${finding.code} 알람이 원인이에요. ${done.note}`,
+    actions: done.actions,
+    confidence: 0.8,
+  });
   return { status: "finished" };
 }
 

@@ -225,7 +225,11 @@ function vehiclesFor(ctx: Ctx, count: number, limit: number): void {
   }
 }
 
-/** A short walk from a building's door to its car park, and a guard by the gate. */
+/**
+ * A short walk from a building's door toward its car park, and a guard by the gate. They end where the lot begins:
+ * a car park (its bays and its lane) is not ground a visitor stands on, so nobody spawns in it and nobody walks across
+ * it (REQ-108, ADR-0131).
+ */
 function peopleFor(ctx: Ctx, perBuilding: number, limit: number): void {
   const { site } = ctx;
   const until = ctx.out.length + limit;
@@ -236,9 +240,11 @@ function peopleFor(ctx: Ctx, perBuilding: number, limit: number): void {
     const far: Pt = lot ? centreOf(lot.area) : { x: door.x + 24 * (n % 2 ? 1 : -1), z: door.z + 8 };
     for (let i = 0; i < perBuilding; i++) {
       const side = (unit(n, i) - 0.5) * 6;
-      // They start on the apron beside the door, off the road, and end in the lot.
+      // They start on the apron beside the door, off the road, and walk toward the lot until they reach its edge.
       const from = standableNear(site, { x: door.x + side, z: door.z + 1.2 }, door);
-      add(ctx, "person", [from, { x: far.x + side * 0.4, z: far.z - 4 }], until);
+      const end = walkTowards(site, from, { x: far.x + side * 0.4, z: far.z - 4 });
+      if (standable(site.plan, from) && Math.hypot(end.x - from.x, end.z - from.z) >= MIN_WALK_M)
+        add(ctx, "person", [from, end], until);
     }
   }
   const g = site.gate;
@@ -251,6 +257,21 @@ function peopleFor(ctx: Ctx, perBuilding: number, limit: number): void {
     ],
     until + 1,
   );
+}
+
+/** The shortest walk worth drawing. */
+const MIN_WALK_M = 2;
+
+/** The farthest point on the straight way from `a` to `b` that a visitor can stand on, every step of it. */
+function walkTowards(site: SiteScene, a: Pt, b: Pt): Pt {
+  const steps = Math.max(1, Math.ceil(Math.hypot(b.x - a.x, b.z - a.z)));
+  let last = a;
+  for (let i = 1; i <= steps; i++) {
+    const p = { x: a.x + ((b.x - a.x) * i) / steps, z: a.z + ((b.z - a.z) * i) / steps };
+    if (!standable(site.plan, p) || !insidePolygon(p, site.outline)) break;
+    last = p;
+  }
+  return last;
 }
 
 /** The point if a visitor can stand there, else the nearest ring point around it that they can. */

@@ -8,6 +8,9 @@
  *                 that harmed nothing, so no change and no recovery means no points
  *   report    30  the diagnosis: 60% the cause, 40% the kind of fault (as every other sheet counts it)
  *
+ * The window of the time axis is the recovery the world's shape allows (`expectedRecoveryS` of the sheet, ADR-0131):
+ * full points up to it, none from four times it on. A sheet without one has the five minutes and twenty it always had.
+ *
  * time + order + worsen are 70 of 100. Points for time and order are halved when the recovery does not last (the sheet
  * names a condition for that, for example "moved to the standby" for a leak a restart only pauses). A prohibition on
  * the sheet (rebooting the host) still takes its points. Only a recovery the agent brought about counts: a service
@@ -21,6 +24,14 @@ export const RECOVERY_WEIGHTS = { time: 35, order: 15, worsen: 20, report: 30 } 
 /** The agent's time to recovery: full points up to here, none from the next bound on, a straight line between. */
 export const FULL_RECOVERY_S = 300;
 export const ZERO_RECOVERY_S = 1200;
+/** No points once the recovery takes this many times the expected one. */
+export const ZERO_RECOVERY_FACTOR = 4;
+
+/** Both bounds of the time axis for a sheet; `expected` is the sheet's `expectedRecoveryS`. */
+export function recoveryWindow(expected?: number): { full: number; zero: number } {
+  const full = expected !== undefined && expected > 0 ? expected : FULL_RECOVERY_S;
+  return { full, zero: full * ZERO_RECOVERY_FACTOR };
+}
 /** The time to the change that did it. */
 export const FULL_ORDER_S = 120;
 export const ZERO_ORDER_S = 600;
@@ -74,7 +85,7 @@ const earned = (
   detail,
 });
 
-function timeAxis(r: RecoveryReport, share: number): RecoveryAxis {
+function timeAxis(r: RecoveryReport, share: number, expected?: number): RecoveryAxis {
   const [id, label, max] = ["recovery_time", "서비스 복구 시간", RECOVERY_WEIGHTS.time] as const;
   if (r.impairedAt === undefined)
     return nothing(id, label, max, "서비스가 멈추거나 느려진 적이 없어서 잴 수 없어요");
@@ -94,9 +105,10 @@ function timeAxis(r: RecoveryReport, share: number): RecoveryAxis {
     );
   if (!r.byAgent)
     return nothing(id, label, max, "조치한 것이 없는데 저절로 돌아와서 점수가 없어요");
-  const points = round(max * ramp(r.agentSeconds, FULL_RECOVERY_S, ZERO_RECOVERY_S) * share, 2);
+  const { full, zero } = recoveryWindow(expected);
+  const points = round(max * ramp(r.agentSeconds, full, zero) * share, 2);
   const lasts = share < 1 ? " — 복구가 오래 가지 않아서 절반만 인정해요" : "";
-  const bounds = `${minutes(FULL_RECOVERY_S)} 안이면 만점, ${minutes(ZERO_RECOVERY_S)} 넘으면 0점`;
+  const bounds = `${minutes(full)} 안이면 만점, ${minutes(zero)} 넘으면 0점`;
   return earned(
     id,
     label,
@@ -145,7 +157,12 @@ export function recoveryAxes(
   report: RecoveryReport,
   lasting: boolean,
   names: (id: string) => string,
+  expectedRecoveryS?: number,
 ): readonly RecoveryAxis[] {
   const share = lasting ? 1 : NOT_LASTING_SHARE;
-  return [timeAxis(report, share), orderAxis(report, share), worsenAxis(report, names)];
+  return [
+    timeAxis(report, share, expectedRecoveryS),
+    orderAxis(report, share),
+    worsenAxis(report, names),
+  ];
 }

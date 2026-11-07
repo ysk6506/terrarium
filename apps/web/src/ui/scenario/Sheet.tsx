@@ -7,6 +7,7 @@
 import type { Expectation, ExpectationKind } from "@terrarium/core/scenario";
 import { useState } from "react";
 import { scenario } from "../../logic";
+import { NumberField } from "../fields";
 import { Button, MenuButton, Note } from "../kit";
 import { Calibration } from "./Calibration";
 import { Body } from "./SheetBodies";
@@ -106,6 +107,29 @@ function Line(props: {
   );
 }
 
+/** The recovery time a sheet with services expects of its world: the window of the time points (REQ-108, ADR-0131). */
+function ExpectedRecovery({ e }: { readonly e: ScenarioEditor }) {
+  if (e.doc.scoring !== "recovery") return null;
+  const seconds = e.doc.expectedRecoveryS;
+  return (
+    <div className="stack" style={{ margin: "8px 0" }}>
+      <NumberField
+        label="기대 복구 시간"
+        unit="분"
+        min={1}
+        max={scenario.MAX_EXPECTED_MINUTES}
+        value={seconds === undefined ? 5 : Math.round(seconds / 60)}
+        onChange={(v) =>
+          e.change((d) =>
+            scenario.setExpectedRecovery(d, v === undefined || v <= 5 ? undefined : v),
+          )
+        }
+        help={scenario.EXPECTED_RECOVERY_NOTE}
+      />
+    </div>
+  );
+}
+
 export function Sheet({
   e,
   openSheet,
@@ -142,6 +166,7 @@ export function Sheet({
         {notes.map((n) => (
           <Note key={n}>{n}</Note>
         ))}
+        <ExpectedRecovery e={e} />
         <ul className="stack" style={{ gap: 0, margin: 0, padding: 0, listStyle: "none" }}>
           {e.doc.expectations.length === 0 && (
             <li className="muted">

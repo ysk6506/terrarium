@@ -17,7 +17,6 @@ import { Editable } from "./shape-edit";
 export interface RowMeta {
   readonly owner: string;
   readonly titles: ServiceCardView["ownerTitles"];
-  readonly locked: boolean;
   readonly shared: boolean;
   readonly line: string;
 }
@@ -30,7 +29,7 @@ function lineOf(s: ServiceDraft, meta?: RowMeta): string {
   return catalogCard(cardOfKey(s.key))?.line ?? s.gives;
 }
 
-/** "내 카드로 저장" and then "공유하기": the card is private and locked until its owner shares it. */
+/** "내 카드로 저장" and then "공유하기": the card is private until its owner shares it, and always locked. */
 function useSavedCard(draft: ServiceDraft, cardId: string | undefined) {
   const { api, toast } = useApp();
   const [saved, setSaved] = useState<ServiceCardView>();
@@ -46,7 +45,7 @@ function useSavedCard(draft: ServiceDraft, cardId: string | undefined) {
       if (!cardId) return;
       setSaved(
         await api.call("createServiceCard", {
-          body: { name: draft.name, card: cardId, locked: true, shared: false },
+          body: { name: draft.name, card: cardId, shared: false },
         }),
       );
       toast("내 카드로 저장했어요. 공유하기 전에는 나만 봐요");
@@ -128,7 +127,7 @@ function Row(props: {
         {meta && <TitlePills who={meta.owner} titles={meta.titles} />}
       </div>
       <div className="we-svc-flags">
-        {(meta?.locked ?? true) && <span>잠김</span>}
+        <span>잠김</span>
         {(saved?.shared ?? meta?.shared) && <span>공유됨</span>}
       </div>
       <Acts

@@ -118,6 +118,19 @@ export function updateExpectation(
   };
 }
 
+/** The longest an override of the expected recovery may be: two days, the limit the contract allows. */
+export const MAX_EXPECTED_MINUTES = 2880;
+/** The one line under the field: what the number is (REQ-108, ADR-0131). */
+export const EXPECTED_RECOVERY_NOTE = "기대 복구 시간 — 이 모양이 허락하는 시간이에요";
+
+/** Set the recovery time the sheet expects, in minutes; nothing puts it back to the five minutes. */
+export function setExpectedRecovery(doc: ScenarioDoc, minutes: number | undefined): ScenarioDoc {
+  const { expectedRecoveryS: _drop, ...rest } = doc;
+  if (minutes === undefined || !Number.isFinite(minutes)) return rest;
+  const m = Math.min(MAX_EXPECTED_MINUTES, Math.max(1, Math.round(minutes)));
+  return { ...rest, expectedRecoveryS: m * 60 };
+}
+
 export const removeExpectation = (doc: ScenarioDoc, id: string): ScenarioDoc => ({
   ...doc,
   expectations: doc.expectations.filter((e) => e.id !== id),

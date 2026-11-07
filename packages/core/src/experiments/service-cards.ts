@@ -4,15 +4,13 @@
  */
 export interface ServiceCardRecord {
   readonly id: string;
-  /** Who saved it; only they change who else may change it, share it or delete it. */
+  /** Who saved it; only they edit it, share it or delete it. A card is always locked: others copy it (REQ-108, ADR-0131). */
   readonly owner: string;
   readonly name: string;
   /** The built-in card it is made from (`web-api` ...). */
   readonly card: string;
   /** Damage numbers per way of stopping, in the card's order. Absent: the card's own. */
   readonly harm?: readonly { readonly name: string; readonly perHourKrw: number }[];
-  /** True (default): others copy it, only the owner edits the original. False: anyone may edit name and numbers. */
-  readonly locked: boolean;
   /** True: it shows in everybody's catalog. False (default): only the owner sees it. */
   readonly shared: boolean;
   readonly createdAt: string;

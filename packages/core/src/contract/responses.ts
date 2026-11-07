@@ -69,6 +69,7 @@ export interface Responses {
   listServiceCards: ServiceCardView[];
   createServiceCard: ServiceCardView;
   updateServiceCard: ServiceCardView;
+  copyServiceCard: ServiceCardView;
   deleteServiceCard: { readonly deleted: boolean };
   quickExperiment: QuickExperimentView;
   listWorlds: WorldCardView[];

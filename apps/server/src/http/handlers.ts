@@ -73,6 +73,7 @@ export const HANDLERS: Handlers = {
   listServiceCards: (p, i) => p.serviceCards.list(i.viewer),
   createServiceCard: (p, i) => p.serviceCards.create(i.viewer, i.body),
   updateServiceCard: (p, i) => p.serviceCards.update(i.viewer, id(i), i.body),
+  copyServiceCard: (p, i) => p.serviceCards.copy(i.viewer, id(i), i.body),
   deleteServiceCard: (p, i) => p.serviceCards.remove(i.viewer, id(i)),
   quickExperiment: (p, i) => p.experiments.quick(i.viewer, id(i), i.body),
 

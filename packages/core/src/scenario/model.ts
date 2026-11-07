@@ -270,6 +270,12 @@ export interface ScenarioDoc {
    * supplies the diagnosis, the prohibitions and the conditions for a lasting recovery.
    */
   readonly scoring?: "recovery";
+  /**
+   * The recovery time this world's shape allows for the fault (REQ-108, ADR-0131): the RTO of the site chip, the time a
+   * restore or a storage extension takes. The time axis of the recovery score gives full points up to here and none from
+   * four times here on. Absent means the five minutes every sheet had before.
+   */
+  readonly expectedRecoveryS?: number;
   /** Which built-in template it came from, if any (informational). */
   readonly template?: string;
   /** The team's way of handling this situation (ADR-0087 item 6); the experiment decides whether the agent gets it. */

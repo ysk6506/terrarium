@@ -42,7 +42,12 @@ import {
 } from "@terrarium/core/world";
 import { analyzeHandoffs, type HandoffReport } from "./handoff";
 import { analyzeRecovery, type RecoveryReport, serviceHarms } from "./recovery";
-import { RECOVERY_WEIGHTS, type RecoveryAxis, recoveryAxes } from "./recovery-score";
+import {
+  RECOVERY_WEIGHTS,
+  type RecoveryAxis,
+  recoveryAxes,
+  recoveryWindow,
+} from "./recovery-score";
 
 /** Bump when scoring rules change; it is part of the benchmark key (REQ-039). */
 export const ORACLE_VERSION = "3";
@@ -147,6 +152,8 @@ export interface Score {
   readonly scoring: Scoring;
   /** What the run did for the services; only in a recovery-first score. */
   readonly recovery?: RecoveryReport;
+  /** The recovery time the sheet expects of this world, which the time axis is scored against (REQ-108, ADR-0131). */
+  readonly expectedRecoveryS?: number;
   /** What the run handed to other teams and what it did meanwhile; only when it handed something over (REQ-093). */
   readonly handoff?: HandoffReport;
   /** 0..100, or null when the sheet has nothing to earn. */
@@ -413,11 +420,12 @@ function scoreRecovery(outcome: RunOutcome): Score {
   const raw = scoreExpectations(outcome);
   const harms = serviceHarms(outcome.world.index);
   const handoff = handoffOf(outcome);
+  const expected = outcome.doc.expectedRecoveryS;
   const report = analyzeRecovery(outcome.events ?? [], harms, outcome.endedAt);
   const lasting = raw.filter((i) => i.kind === "final_state").every((i) => i.verdict === "pass");
   const name = (id: string) => outcome.world.index.find(id)?.name ?? id;
   const items = [
-    ...recoveryAxes(report, lasting, name).map(axisItem),
+    ...recoveryAxes(report, lasting, name, expected).map(axisItem),
     ...reportItem(raw, outcome.doc),
     ...raw.filter((i) => i.kind === "forbidden_action"),
     ...handoffItems(handoff),
@@ -427,6 +435,7 @@ function scoreRecovery(outcome: RunOutcome): Score {
     version: ORACLE_VERSION,
     scoring: "recovery",
     recovery: report,
+    expectedRecoveryS: recoveryWindow(expected).full,
     ...(handoff ? { handoff } : {}),
     ...t,
     items,

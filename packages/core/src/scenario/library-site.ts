@@ -19,6 +19,7 @@ import type { BlueprintIndex, Domain, Entity, FaultType } from "@terrarium/core/
 import {
   drPlanDef,
   drPlans,
+  EXTEND_DELAY_S,
   managedOf,
   ownerOf,
   ringOf,
@@ -61,6 +62,8 @@ interface Plan {
   readonly forbid: readonly { action: ActionKind; penalty: number }[];
   readonly timeLimitS: number;
   readonly budget: number;
+  /** The recovery time this world's shape allows (REQ-108, ADR-0131); absent means the five minutes. */
+  readonly expected?: (index: BlueprintIndex) => number;
 }
 
 const OWN: readonly Domain[] = ["service_os", "virtualization"];
@@ -294,12 +297,18 @@ function template(plan: Plan): ScenarioTemplate {
         `${c.where}에서 일어나요. 서비스 ${c.services.length}개가 느껴요.`,
         flow,
         sheet(plan, c),
+        plan.expected?.(index),
       );
     },
   };
 }
 
 const HOUR = 3600;
+
+/** The longest recovery any plan of the world promises: the RTO of its site chip (a cold site's four hours, a warm one's fifteen minutes). */
+const planRto = (index: BlueprintIndex): number =>
+  Math.max(0, ...drPlans(index).map((p) => drPlanDef(p).rtoS));
+
 const REBOOT = [{ action: "restart", penalty: 15 }] as const;
 const NO_FAILOVER = [{ action: "dr_failover", penalty: 25 }] as const;
 
@@ -318,6 +327,7 @@ const powerLoss = template({
   forbid: REBOOT,
   timeLimitS: 8 * HOUR,
   budget: 40,
+  expected: planRto,
 });
 
 const stuck = template({
@@ -335,6 +345,7 @@ const stuck = template({
   forbid: REBOOT,
   timeLimitS: 8 * HOUR,
   budget: 50,
+  expected: planRto,
 });
 
 const wanCut = template({
@@ -438,6 +449,7 @@ const full = template({
   forbid: REBOOT,
   timeLimitS: HOUR,
   budget: 30,
+  expected: () => EXTEND_DELAY_S,
 });
 
 const geoBroken = template({

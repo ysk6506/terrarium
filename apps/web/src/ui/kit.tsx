@@ -209,6 +209,8 @@ export function Figures({
     readonly label: string;
     readonly value: ReactNode;
     readonly hint?: string;
+    /** 숫자 아래 한 줄 (예: 기대 복구 15분 · 실제 11분) */
+    readonly note?: string;
     /** 작은 "?"를 누르면 이끼에게 물을 말. 없으면 "<이름>이 뭐예요?" (REQ-103) */
     readonly ask?: string;
   }[];
@@ -228,6 +230,11 @@ export function Figures({
           <dt className="figure-label">
             <MossAsk question={f.ask ?? termQuestion(f.label)}>{f.label}</MossAsk>
           </dt>
+          {f.note && (
+            <dd className="figure-hint" data-note="expected">
+              {f.note}
+            </dd>
+          )}
           {f.hint && <dd className="figure-hint">{f.hint}</dd>}
         </div>
       ))}
