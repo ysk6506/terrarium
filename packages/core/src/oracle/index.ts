@@ -44,3 +44,15 @@ export {
   ZERO_RECOVERY_FACTOR,
   ZERO_RECOVERY_S,
 } from "./recovery-score";
+export {
+  change,
+  eachServer,
+  path,
+  type ReferenceKey,
+  type ReferencePath,
+  type ReferenceStep,
+  read,
+  type StepArgs,
+  sh,
+} from "./reference-path";
+export { REFERENCE_PATHS, REFERENCE_VARIANTS } from "./reference-paths";

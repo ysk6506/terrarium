@@ -84,7 +84,17 @@ describe("every built-in scenario tells an agent that knows from one that does n
       )
       .map((c) => c.id)
       .sort();
-    expect(diagnosisOnly).toEqual(["fan-failure-throttle", "plant-loop-down", "sensor-drift"]);
+    // the last four are sheets where the right move is to look, name the cause and leave it alone (ADR-0133): the cluster
+    // mends a database or a controller pair by itself in this world, and a cut line or a broken copy stops no service
+    expect(diagnosisOnly).toEqual([
+      "db-primary-down",
+      "fan-failure-throttle",
+      "geo-replica-broken",
+      "plant-loop-down",
+      "sdn-controller-down",
+      "sensor-drift",
+      "wan-link-cut",
+    ]);
   }, 180_000);
 });
 

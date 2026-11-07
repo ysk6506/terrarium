@@ -10,11 +10,11 @@ covers:
   - apps/server/src/adapters/harness/scripted-operator.ts
 covers_hash: 5e0ab460d256edb4
 verification_log:
-  - "2026-11-07: o5 합치기 (애플리케이션 층)"
   - "2026-11-07: REQ-106 사이트 툴이 더해졌다. 가이드의 흐름은 그대로 맞다"
   - "2026-11-07: REQ-107: 에이전트용 툴 목록에 새 툴이 늘었음을 대조했고 안내 내용은 그대로 맞다"
   - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
   - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
+  - "2026-11-07: operator는 관찰 기반 규칙 전문가, 정답 풀이는 시험 도구임을 확인 (ADR-0133)"
 ---
 # 운영 에이전트 설계 가이드
 
@@ -119,6 +119,8 @@ cursor = 0
 ## 5. 기준 에이전트 `operator`
 
 테라리움에 들어 있는 `operator`가 이 루프의 최소 구현이에요. 운영 모드에서는 5분마다 `events_since`를 보고, 서비스를 먼저 살리고, 원인이 다른 팀의 것이면 한 번 `escalate`하고, 팀이 끝내면 옮긴 것을 되돌려요. 소스는 `apps/server/src/adapters/harness/scripted-operator.ts`예요. 사이트·DR, GPU, 전원·냉방 알람은 알아보고(`baseline-layers.ts`), 클러스터가 스스로 복구하는 중이면(`events_since`의 `auto_recovery`, 상태 툴의 카운트다운·"전환 중") 손대지 않고 기다려요(`hands-off.ts`). 이 기다림이 에이전트를 설계할 때도 좋은 본보기예요. 내 에이전트의 점수를 이것과 나란히 놓고 보세요.
+
+`operator`는 **정답을 아는 에이전트가 아니에요.** 알람 코드, 오류 이유, 프로브 결과 같은 툴 출력만 보고 갈래를 정하는 규칙 기반 전문가라서, 주입한 고장이나 시나리오 정의는 받지 않아요(`tests/spec/operator-isolation.test.ts`가 지켜요). 그래서 100점을 못 받는 시트가 많은데 그게 정직한 값이에요. 시트마다 `operator`·`triage`·`guess`·`idle`이 몇 점인지는 [측정](../design-docs/measurement.md)의 표에 있어요. 같은 표의 "정답 풀이" 열은 정답을 아는 시험 도구가 모든 시트에서 100점을 받는다는 뜻이에요. 채점기가 틀려서 못 받는 점수는 없다는 보증이에요(REQ-110, ADR-0133).
 
 ## 6. 자주 하는 실수
 

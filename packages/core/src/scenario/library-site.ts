@@ -114,7 +114,9 @@ function planCase(manualOnly: boolean, modes?: readonly string[]) {
       target: index.entity(def.primary),
       roots: [def.primary, plan.id],
       services: list,
-      ends: [is(plan.id, "serving", def.dr)],
+      // two active sites do not hand the lead to each other: the one that is gone is taken out of the rotation and the
+      // plan keeps naming the site that led (ADR-0133), so only a plan that moves has a site to end up serving from
+      ends: def.mode === "active" ? [] : [is(plan.id, "serving", def.dr)],
       where: `${index.entity(def.primary).name} 전체`,
     };
   };
@@ -195,6 +197,13 @@ function managedCase(index: BlueprintIndex): Case | string {
     if (db) return { target: db, roots: [db.id], services: [svc], where: db.name };
   }
   return NEED.managed;
+}
+
+/** A flapping database ends pinned to a zone: a write that pauses every five minutes is not a service that has stopped. */
+function flappingCase(index: BlueprintIndex): Case | string {
+  const c = managedCase(index);
+  if (typeof c === "string") return c;
+  return { ...c, ends: [is(c.target.id, "pinned", true)] };
 }
 
 function volumeCase(index: BlueprintIndex): Case | string {
@@ -306,8 +315,11 @@ function template(plan: Plan): ScenarioTemplate {
 const HOUR = 3600;
 
 /** The longest recovery any plan of the world promises: the RTO of its site chip (a cold site's four hours, a warm one's fifteen minutes). */
-const planRto = (index: BlueprintIndex): number =>
-  Math.max(0, ...drPlans(index).map((p) => drPlanDef(p).rtoS));
+const planRto = (index: BlueprintIndex): number => {
+  const rto = Math.max(0, ...drPlans(index).map((p) => drPlanDef(p).rtoS));
+  // the move takes its RTO from the moment it is pressed; five minutes to see the site is gone and press it (ADR-0133)
+  return rto > 300 ? rto + 300 : rto;
+};
 
 const REBOOT = [{ action: "restart", penalty: 15 }] as const;
 const NO_FAILOVER = [{ action: "dr_failover", penalty: 25 }] as const;
@@ -426,7 +438,7 @@ const flapping = template({
   fault: "db_failover_flapping",
   own: OWN,
   cause: "service_os",
-  find: managedCase,
+  find: flappingCase,
   report: (s) => `${s.name}의 쓰기가 몇 분마다 한 번씩 끊긴다는 알림이 왔다.`,
   waitS: 320,
   forbid: REBOOT,

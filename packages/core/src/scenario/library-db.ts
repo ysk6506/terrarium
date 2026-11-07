@@ -16,6 +16,7 @@
 import type { BlueprintIndex, Domain, Entity, FaultType } from "@terrarium/core/world";
 import {
   controllersOf,
+  DEFAULT_REBUILD_S,
   dbClusterDef,
   instancesOf,
   nodesOfPool,
@@ -353,6 +354,8 @@ const nodeLostSheet = template({
   report: (s) => `${s.name}가 느려졌다는 알림이 왔다.`,
   waitS: 30,
   forbid: () => [...NO_PROMOTE, NO_RESTORE],
+  // the pool makes the copy again by itself: the rebuild and the five minutes of the default window (ADR-0133)
+  expectedS: DEFAULT_REBUILD_S + 300,
 });
 
 const restoreSheet = template({
@@ -370,8 +373,8 @@ const restoreSheet = template({
   waitS: 30,
   forbid: () => [],
   timeLimitS: 5400,
-  // a restore takes twenty minutes whatever the agent does
-  expectedS: RESTORE_S,
+  // the restore itself takes RESTORE_S from the moment it starts; the five minutes of the default window are the time to find the backup (ADR-0133)
+  expectedS: RESTORE_S + 300,
 });
 
 export const DB_TEMPLATES: readonly ScenarioTemplate[] = [

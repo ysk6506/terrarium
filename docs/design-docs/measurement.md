@@ -13,13 +13,15 @@ covers:
   - packages/core/src/session/shell-reach.ts
   - packages/core/src/session/session-parts.ts
   - packages/core/src/oracle/handoff.ts
+  - packages/core/src/oracle/reference-path.ts
+  - packages/core/src/oracle/reference-paths.ts
 verification_log:
-  - "2026-11-07: REQ-107: shell-reach.ts의 GPU 흔적을 OS 흔적과 따로 두었고 내용은 그대로 맞다"
-  - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
   - "2026-11-07: REQ-108: 기대 복구 시간(채점 창)을 3절에 더했고 한계 문장을 고쳤다. 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-07: REQ-108: 코드와 대조했고 필요한 서술(기대 복구 시간, 서비스 카드 복사, 숫자 보정)을 고쳤다. 나머지는 그대로 맞다"
-covers_hash: eb91531178b27f8e
+  - "2026-11-07: 채점 보증 5절, 점수표, 손대지 않는 것이 정답인 시트 설명, 만점 목록 일곱으로 갱신 (ADR-0133)"
+  - "2026-11-07: ADR-0133 변경 후 코드와 대조: 점수표, 기대 복구 시간, 손대지 않는 것이 정답인 시트"
+covers_hash: 0176fb209a642844
 ---
 # 측정의 신뢰 (REQ-070, ADR-0067)
 
@@ -163,11 +165,107 @@ covers_hash: eb91531178b27f8e
 - 미리 데운 세계(`warm`)로 시작해도 같은 결과다.
 - 툴 조합만 바꾼 두 실행은 세계, 시나리오, 채점 버전의 digest가 같다 (같은 시험지). 실험이 고르지 않은 툴은 호출해도 거절된다.
 
+## 5. 채점이 늘 맞고 같게 나오는지 시험이 보증한다 (REQ-110, ADR-0133)
+
+에이전트와 하네스 구조를 견주려면 채점기가 먼저 맞아야 한다. 그래서 **정답을 아는 정답 풀이**를 시험 도구로 둔다. 선택할 수 있는 에이전트가 아니고 `tests/spec/test-support/reference-solver.ts`에만 산다. 주입한 고장을 알고, 고장 종류마다 정해진 길(`packages/core/src/oracle/reference-path*.ts`의 데이터)을 에이전트와 같은 `ToolEndpoint`로 걷는다: 읽기 → 고치기 → 확인 → 진짜 원인으로 답하기. 스스로 낫는 고장(핫 사이트, 분산 스토리지의 재구성, 컨트롤러 쌍)은 "읽고 손대지 않고 답하기"가 길이다.
+
+| 보증 | 시험 | 내용 |
+|---|---|---|
+| 길이 있다 | `reference-coverage.test.ts` | 고장·실수 종류마다 길이 있다. 새 종류에 길이 없으면 컴파일이 깨진다 |
+| 정답은 100점 | `reference-solutions.test.ts` | 내장 템플릿 전부(사이트 모드 넷)와 템플릿이 없는 고장 종류마다 탐침 시트에서 정확히 100점, 모든 항목이 가득 차고 감점이 없다 |
+| 같은 점수 | `reference-determinism.test.ts` | 계층마다 대표 시트를 세 번(한 번은 호출마다 실제 지연을 끼워) 돌려 점수 분해가 바이트까지 같다 |
+| 틀리면 덜 받는다 | `reference-mutations.test.ts` | 틀린 원인·종류, 고치기 빼기, 엉뚱한 대상, 순서 뒤집기, 서버 끄기, 늦은 시작이 100 미만이고 이름 붙은 항목이 깎인다. 아무것도 안 함 < 보고만 함 < 정답 풀이 |
+| `operator`는 정답지가 아니다 | `operator-isolation.test.ts` | 소스가 `ToolEndpoint` 타입과 형제 파일만 가져오고, 요청의 `specs`·`call` 말고는 건드리지 않는다 |
+
+**복구 시간은 시뮬레이션 시계로만 잰다.** 툴 호출 하나는 30 시뮬레이션 초이고 `wait`는 그 초만큼이다. 채점·세션·세계·물리·툴·시나리오 코드에는 실제 시계(`Date.now`·`performance.now`·`setTimeout`)와 `Math.random`이 없다. 모델이 오래 생각하거나 하네스가 느려도 점수가 달라지지 않는다. 호출 수는 툴 예산으로 점수에 쓰이지만 호출에 걸린 시간은 쓰이지 않는다.
+
+**손대지 않는 것이 정답인 시트.** 서비스가 한 번도 멈추지 않았거나 클러스터가 스스로 고쳤고 아무것도 악화시키지 않았다면, 시간·순서·악화 세 축은 **보고(진단)가 완전하고 끝 상태가 유지될 때만** 만점을 받는다. 고쳐야 끝나는 시트(영역 고정 같은)는 가만히 있으면 끝 상태가 안 서서 이 길을 못 탄다. 아무것도 안 하거나 찍은 쪽은 보고 몫이 0이라 여전히 0이다(부분 점수는 이 길에서 비율로 새지 않는다). 에이전트가 직접 복구한 경우의 점수는 전과 같다.
+
+### 내장 에이전트의 시트별 점수 (참고 기준선)
+
+`operator`는 툴 출력만 보는 규칙 기반 전문가라서 100점을 못 받는 시트가 많다. 그것이 정직한 값이다. `triage`는 보고만 하고, `guess`와 `idle`은 그대로 어리석다. 점수는 시드 1, 시트마다 기본 세계에서 잰 값이다(`ScriptedHarness`).
+
+| 시트 | 정답 풀이 | operator | triage | guess | idle |
+|---|---|---|---|---|---|
+| `fan-failure-throttle` | 100 | 0 | 100 | 60 | 0 |
+| `cooling-failure` | 100 | 18.2 | 90.9 | 61.8 | 18.2 |
+| `sensor-drift` | 100 | 0 | 100 | 60 | 0 |
+| `pdu-breaker-cascade` | 100 | 0 | 60 | 0 | 0 |
+| `vm-cpu-spike-escalation` | 100 | 0 | 65 | 39 | 0 |
+| `plant-loop-down` | 100 | 0 | 60 | 60 | 0 |
+| `cdu-failure` | 100 | 0 | 39 | 39 | 0 |
+| `outage-generator-fails` | 100 | 0 | 0 | 39 | 0 |
+| `wrong-vlan-port` | 100 | 0 | 0 | 0 | 0 |
+| `port-shut-by-mistake` | 100 | 0 | 0 | 0 | 0 |
+| `gateway-interface-shut` | 100 | 0 | 0 | 0 | 0 |
+| `static-route-removed` | 100 | 0 | 0 | 0 | 0 |
+| `bgp-neighbor-shut` | 100 | 0 | 39 | 39 | 0 |
+| `gpu-rail-port-shut` | 100 | 0 | 0 | 0 | 0 |
+| `pdu-outlet-off` | 100 | 0 | 0 | 0 | 0 |
+| `firmware-one` | 100 | 0 | 0 | 0 | 0 |
+| `firmware-rack` | 100 | 0 | 0 | 0 | 0 |
+| `firmware-failure` | 100 | 0 | 0 | 0 | 0 |
+| `os-disk-full` | 100 | 18 | 18 | 0 | 0 |
+| `os-memory-leak` | 100 | 61.6 | 0 | 0 | 0 |
+| `os-process-crashloop` | 100 | 18 | 0 | 0 | 0 |
+| `os-fs-readonly` | 100 | 18 | 18 | 0 | 0 |
+| `os-ntp-drift` | 100 | 18 | 0 | 0 | 0 |
+| `db-primary-down` [replicated] | 100 | 0 | 18 | 18 | 0 |
+| `db-replication-broken` [replicated] | 100 | 0 | 18 | 18 | 0 |
+| `db-split-brain` [auto failover] | 100 | 0 | 18 | 18 | 0 |
+| `db-shared-path-cut` [shared] | 100 | 0 | 0 | 0 | 0 |
+| `storage-node-lost` [distributed] | 100 | 0 | 18 | 0 | 0 |
+| `db-restore-corrupt-backup` [single] | 100 | 0 | 18 | 18 | 0 |
+| `sdn-controller-down` [two controllers] | 100 | 0 | 18 | 18 | 0 |
+| `sdn-sync-failed` [sdn] | 100 | 0 | 0 | 0 | 0 |
+| `sdn-tunnel-down` [sdn] | 100 | 0 | 0 | 0 | 0 |
+| `netpolicy-wrong-deploy` [cloud native] | 100 | 0 | 18 | 18 | 0 |
+| `ingress-down` [cloud native] | 100 | 0 | 18 | 18 | 0 |
+| `cni-plugin-failure` [cloud native] | 100 | 0 | 18 | 18 | 0 |
+| `lb-backend-flapping` [lb] | 100 | 0 | 18 | 18 | 0 |
+| `session-store-down` [stateless] | 100 | 0 | 18 | 18 | 0 |
+| `breaker-stuck-open` [microservices] | 100 | 0 | 18 | 18 | 0 |
+| `retry-storm` [mesh] | 100 | 0 | 18 | 18 | 0 |
+| `sidecar-crash` [mesh] | 100 | 0 | 0 | 0 | 0 |
+| `mesh-control-stuck` [mesh] | 100 | 0 | 18 | 18 | 0 |
+| `region-down` [multiregion] | 100 | 0 | 18 | 0 | 0 |
+| `k8s-worker-down` [k8s] | 100 | 0 | 18 | 18 | 0 |
+| `k8s-crashloop` [k8s] | 100 | 0 | 0 | 0 | 0 |
+| `k8s-etcd-quorum` [k8s] | 100 | 0 | 18 | 18 | 0 |
+| `k8s-pending` [k8s] | 100 | 0 | 0 | 0 | 0 |
+| `k8s-disk-pressure` [shaped] | 100 | 0 | 18 | 18 | 0 |
+| `domain-memory-vendor` | 100 | 97.2 | 0 | 0 | 0 |
+| `domain-port-network` | 100 | 97.2 | 30 | 0 | 0 |
+| `site-power-loss` [cold] | 100 | 97.2 | 96.3 | 0 | 0 |
+| `dr-failover-stuck` [warm] | 100 | 85 | 85 | 0 | 0 |
+| `wan-link-cut` [warm] | 100 | 100 | 100 | 0 | 0 |
+| `replication-broken` [warm] | 100 | 100 | 100 | 18 | 0 |
+| `split-brain` [split] | 100 | 100 | 100 | 18 | 0 |
+| `db-quorum-lost` [raft] | 100 | 99.1 | 98.1 | 0 | 0 |
+| `db-managed-flapping` [managed] | 100 | 0 | 0 | 0 | 0 |
+| `db-managed-storage-full` [managed] | 100 | 0 | 0 | 0 | 0 |
+| `geo-replica-broken` [warm] | 100 | 100 | 100 | 18 | 0 |
+| `gpu-xid-error` [train] | 100 | 100 | 100 | 18 | 0 |
+| `nvlink-down` | 100 | 0 | 18 | 18 | 0 |
+| `ib-link-flap` | 100 | 0 | 18 | 18 | 0 |
+| `gpu-memory-leak` | 100 | 18 | 18 | 18 | 0 |
+| `job-stuck-checkpoint` [train] | 100 | 100 | 99.1 | 0 | 0 |
+| `mig-misconfig` | 100 | 0 | 18 | 18 | 0 |
+| `scheduler-down-job` | 100 | 0 | 0 | 0 | 0 |
+| `utility-feed-loss` [power] | 100 | 100 | 100 | 0 | 0 |
+| `cdu-pump-fail` [pod] | 100 | 99.1 | 97.2 | 0 | 0 |
+| `power-cap-rack-limit` | 100 | 0 | 37.5 | 22.5 | 0 |
+| `power-cap-cooling-short` | 100 | 0 | 37.5 | 22.5 | 0 |
+| `site-power-loss` [hot] | 100 | 100 | 100 | 0 | 0 |
+| `site-power-loss` [active] | 100 | 100 | 100 | 0 | 0 |
+
+탐침 시트는 어떤 템플릿도 주입하지 않는 고장 종류 39개예요. 정답 풀이는 모두 100점이고, 가장 높은 점수는 operator 100, triage 100, guess 18, idle 0점이에요. triage가 100점인 탐침(`grid_outage`·`psu_failure`·`disk_failure`·`wan_degraded`)은 서비스가 한 번도 멈추지 않거나 이중화가 받아 주는 고장이라 손대지 않고 정확히 답하는 것이 정답이에요.
+
 ## 지금 알려진 한계 (정직하게)
 
 내장 시나리오를 세 세계(샘플 캠퍼스, 네트워크 랩, GPU 랩)에 돌려 본 결과다.
 
-- **정답만 말하면 만점인 시나리오가 셋**이다: `fan-failure-throttle`, `sensor-drift`, `plant-loop-down` (ADR-0075, REQ-073). 이 셋은 진단 능력만 잰다. 팬 고장에는 "서버 전원 끄기 금지"가 있어 잘못 건드리면 깎이지만, 가만히 있고 답만 내면 만점이다. 냉각 플랜트 정지는 부하를 덜어도 감점이 없고, 덜어서 얻는 것도 없다.
+- **정답만 말하면 만점인 시나리오가 일곱**이다: `fan-failure-throttle`, `sensor-drift`, `plant-loop-down` (ADR-0075, REQ-073)과, 가만히 보고 정확히 답하는 것이 정답인 `db-primary-down`(자동 전환 세계), `sdn-controller-down`(컨트롤러 쌍), `wan-link-cut`, `geo-replica-broken`(ADR-0133). 앞의 셋은 진단 능력만 잰다. 팬 고장에는 "서버 전원 끄기 금지"가 있어 잘못 건드리면 깎이지만, 가만히 있고 답만 내면 만점이다. 냉각 플랜트 정지는 부하를 덜어도 감점이 없고, 덜어서 얻는 것도 없다.
 - **운영을 채점하는 내장 시나리오는 넷**이다. 정답만 아는 기준 에이전트는 `vm-cpu-spike-escalation`, `cdu-failure`, `outage-generator-fails`에서 65점이고(합격은 하지만 만점은 아님), 정답과 조치를 함께 하면 100점이다. `pdu-breaker-cascade`는 전부터 조치를 채점했다. 물리가 조치를 갈라 주는 곳에만 넣었다: VM 폭주는 VM을 멈추면 알람이 풀리고, CDU 정지는 수랭 서버를 끄면 CPU가 내려가고, 정전은 배터리를 낡게(`ups_battery_degraded` 0.1) 만들어 20분 안에 서버를 끄느냐로 배터리가 0%냐 11%냐 갈린다. 시험이 정답만 낸 쪽이 70점 아래, 정답과 조치를 한 쪽이 90점 이상이고 25점 넘게 높은지 확인한다.
 - **`cooling-failure`는 정답만 말하면 90.9점**이다. "다른 냉방기 설정 온도 낮추기"가 필수 조치(10점)로 있기 때문이다. 샘플 캠퍼스는 냉방기 하나가 멈춰도 다른 하나가 방을 맡고(냉방기 용량 각 100 kW, 부하는 수 kW), 서버는 열 보호로 꺼지지 않는다. 그래서 그 조치로 얻는 온도 차이는 작고, 이 점수는 물리가 아니라 "정답을 알면 이렇게 하는 것"을 채점한다. ADR-0075는 목록이 넷으로 줄 것이라 적었지만 이 10점 때문에 실제 목록은 셋이다(ADR-0076).
 - **`cooling-failure`는 아무것도 안 해도 18.2점**이다. 이 실행이 왜 18.2점인지 물으면 이 이유예요. "서버가 살아 있다" 항목(합 110점 중 20점)이 저절로 참이기 때문이다. 이 항목은 이제 서버가 켜져 있고(`adminOn`) 열 보호로 꺼진 적이 없을 때(`event` 조건) 참이다. 에이전트가 서버를 끄면 거짓이 된다. 시험이 이 점수를 알려진 예외로 적어 두었다. 세계가 다르면 값이 다르므로 자기 세계에서 `calibrate`를 돌려 봐야 한다.
@@ -177,11 +275,11 @@ covers_hash: eb91531178b27f8e
 
 ## 시험은 무엇을 지키나
 
-- `tests/spec/calibration.test.ts`: 내장 시나리오 전부에서 모르는 쪽이 10점 이하(예외는 이름을 적음), 합격하지 않고, 정답을 아는 쪽과 30점 이상 차이. 만점인 시나리오 목록이 정확히 위 셋. 빠르게 낸 엉터리 답이 효율 점수를 못 받음.
+- `tests/spec/calibration.test.ts`: 내장 시나리오 전부에서 모르는 쪽이 10점 이하(예외는 이름을 적음), 합격하지 않고, 정답을 아는 쪽과 30점 이상 차이. 만점인 시나리오 목록이 정확히 위 일곱. 빠르게 낸 엉터리 답이 효율 점수를 못 받음.
 - `tests/spec/operation-scoring.test.ts`: 조치를 채점하는 시나리오 셋에서 정답만 낸 실행은 70점 아래, 정답과 조치를 함께 한 실행은 90점 이상이고 25점 넘게 높다. 채점표가 사실만 말한다(서버를 끈 에이전트는 살아 있지 않다, 부하를 덜어도 감점이 없다, 설명이 그 세계에서 일어나는 일만 말한다). REQ-073.
 - `tests/spec/reproducibility.test.ts`: 위 재현성 네 가지.
 - `packages/core/src/oracle/recovery.test.ts`: 사건 기록만으로 복구 시간, 비용, 악화, 에이전트의 복구를 읽는 것, 네 축의 배점(앞의 셋이 70점).
-- `tests/spec/expected-recovery.test.ts`: 창의 계산(기본 5/20분, 15분이면 15/60분), 시트별 기대 복구 시간(콜드 4시간·웜 15분·복원 20분, 나머지는 없음), 같은 실행을 예전 창과 새 창으로 채점해 점수가 오르는 것, 시트에 필드가 있으면 `scenarioDigest`가 다른 것.
+- `tests/spec/expected-recovery.test.ts`: 창의 계산(기본 5/20분, 15분이면 15/60분), 시트별 기대 복구 시간(콜드 4시간 5분·웜 20분·복원 25분, 창이 있는 시트 목록), 같은 실행을 예전 창과 새 창으로 채점해 점수가 오르는 것, 시트에 필드가 있으면 `scenarioDigest`가 다른 것.
 - `tests/spec/baseline-agents.test.ts`: 내장 에이전트가 사이트·GPU·전원·냉방 층에서 하는 일과, 클러스터가 스스로 복구하는 동안 손대지 않는 것, 기존 세계의 점수가 안 내려가는 것.
 - `tests/spec/recovery-scoring.test.ts`: 기준 에이전트 아홉의 순서(복구 먼저 > 원인 먼저 > 재시작만), 끝난 실행을 사건으로 다시 채점하면 같은 값, 결과 첫 줄의 서비스, 기본 툴 묶음으로 OS 고장이 풀리는 것, 템플릿마다 서비스를 옮겨 살리는 길, 흔한 툴로 닿는 길.
 

@@ -70,7 +70,14 @@ function updateIbLink(world: World, link: Entity): void {
 
 function updateFabric(world: World, fabric: Entity): void {
   const links = world.index.incoming(fabric.id, "member_of").map((l) => l.from);
-  const mine = links.filter((id) => world.index.find(id)?.kind === "ib_link");
+  const sched = schedulerOf(world.index);
+  const drained = sched ? (world.stateAs(sched.id, "job_scheduler").drained ?? []) : [];
+  // a drained node carries no job: its link, flapping or not, no longer says anything about the fabric
+  const mine = links.filter(
+    (id) =>
+      world.index.find(id)?.kind === "ib_link" &&
+      !drained.includes(serverOfAccel(world.index.entity(id))),
+  );
   const down = mine.filter((id) => world.stateAs(id, "ib_link").status === "down").length;
   const s = world.stateAs(fabric.id, "ib_fabric");
   delete s.why;

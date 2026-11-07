@@ -10,12 +10,12 @@ covers:
   - packages/core/src/scenario/library-facility.ts
   - packages/core/src/scenario/library-domains.ts
 verification_log:
-  - "2026-11-07: o5 합치기 (애플리케이션 층)"
   - "2026-11-07: REQ-106 시나리오 아홉이 같은 템플릿 모양을 쓴다. 서술은 그대로 맞다"
   - "2026-11-07: REQ-107: 해당 문장을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
   - "2026-11-07: REQ-108: 코드와 대조했고 필요한 서술(기대 복구 시간, 서비스 카드 복사, 숫자 보정)을 고쳤다. 나머지는 그대로 맞다"
-covers_hash: 1597b4b4dbc45abd
+  - "2026-11-07: ADR-0133에 맞춰 대조: 기대 복구 시간(+5분), 손대지 않는 것이 정답인 시트의 만점, 링크 흔들림 서술"
+covers_hash: 1ae0ebb47acf1870
 ---
 # 시나리오 모델 (REQ-033, REQ-034)
 

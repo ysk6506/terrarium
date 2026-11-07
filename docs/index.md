@@ -195,6 +195,7 @@ verification_log:
 - [0132 세계 만들기의 크기는 서비스 숫자로 세고, 알아서는 숫자의 규칙 표이며, 빌더 카드는 고른 물체 옆에 붙는다 (베타 피드백 2차)](design-docs/adr/0132-world-entry-sizing-and-ux-fixes.md)
 - [0130 GPU 가속기 층을 사다리에 올리고, 전원·냉방 사다리를 끝까지 실선으로 늘리며, 파워 캐핑을 모델로 옮긴다](design-docs/adr/0130-gpu-layer-power-cooling-ladders.md)
 - [0131 기준 에이전트가 DR을 알고, 복구 채점의 시간 창이 세계의 모양을 따른다](design-docs/adr/0131-baseline-dr-and-expected-recovery-window.md)
+- [0133 채점 정확성 보증: 정답 풀이·결정성·변이 검사](design-docs/adr/0133-grading-correctness-reference-solver.md)
 - [0122 세계 인기 순서·좋아요·칭호, 그리고 계급 모델 — 점수는 서버가 기록에서 세고, 칭호는 한 번 얻으면 안 잃고, 계급은 아직 화면에 없다](design-docs/adr/0122-world-popularity-likes-titles.md)
 - [0121 애플리케이션 층을 코어 모델로 올리고 서비스 호출 그래프를 넣는다](design-docs/adr/0121-application-layer-and-calls.md)
 - [0116 진짜 호스트 섞기 (폐기, 0117로 대체)](design-docs/adr/0116-real-hosts-in-the-world.md)

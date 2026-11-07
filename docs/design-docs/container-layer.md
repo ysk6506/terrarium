@@ -21,13 +21,13 @@ covers:
   - packages/core/src/sources/worldgen/shaped-k8s.ts
   - packages/core/src/topology/impact-k8s.ts
   - packages/core/src/world/ladder.ts
-covers_hash: aa59292e5ac5d134
+covers_hash: dd7d5e2bf415aef0
 verification_log:
-  - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: REQ-106이 사다리 칩과 world/index를 건드렸다. 컨테이너 층 서술은 그대로 맞다"
   - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장이 이 문서의 내용을 바꾸지 않는지 대조했다(층 수·툴 수·칩 수를 세는 문장을 찾아 고쳤고, 나머지는 그대로 맞다)"
   - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
+  - "2026-11-07: ADR-0133에 맞춰 대조: 기대 복구 시간(+5분), 손대지 않는 것이 정답인 시트의 만점, 링크 흔들림 서술"
 ---
 # 컨테이너 층 (REQ-096, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0114](adr/0114-container-layer-amend-tests.md))
 
