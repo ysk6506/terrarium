@@ -4,7 +4,7 @@
  * change it. This file only builds the sentences; the screen turns each token into a text, a number box or a button.
  */
 
-import { RECOVERY_WEIGHTS } from "@terrarium/core/oracle";
+import { FULL_RECOVERY_S, RECOVERY_WEIGHTS } from "@terrarium/core/oracle";
 import {
   ACTION_LABELS,
   type Expectation,
@@ -17,7 +17,7 @@ import {
   isDiagnosisType,
   isFaultType,
 } from "@terrarium/core/world";
-import { PASS_RULE_TEXT } from "../format";
+import { formatDuration, PASS_RULE_TEXT } from "../format";
 import { conditionLine } from "./group";
 
 export type NumberField = "weight" | "penalty" | "minutes" | "maxCalls";
@@ -185,6 +185,7 @@ export function scoringNotes(doc: ScenarioDoc): string[] {
     const w = RECOVERY_WEIGHTS;
     out.push(
       `서비스를 얼마나 빨리 되살렸는지로 채점해요 — 복구 시간 ${w.time}점, 복구 순서 ${w.order}점, 복구 중 악화 없음 ${w.worsen}점, 진단과 보고 ${w.report}점. 아래 줄은 진단과 하면 안 되는 일, 복구가 이어지는지를 정해요.`,
+      `복구 시간은 기대 복구 시간(${formatDuration(doc.expectedRecoveryS ?? FULL_RECOVERY_S)}) 안이면 만점이고, 그 4배를 넘으면 0점이에요.`,
     );
   }
   const steps = doc.runbook?.steps.length ?? 0;

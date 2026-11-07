@@ -12,6 +12,19 @@ export interface Figure {
   readonly label: string;
   readonly value: string;
   readonly hint: string;
+  /** A short line under the number, such as the recovery the world's shape allowed against the one the run took. */
+  readonly note?: string;
+  /** What 이끼 is asked when the small "?" is pressed; the label's own question when absent. */
+  readonly ask?: string;
+}
+
+/** "기대 복구 15분 · 실제 11분": what this world's shape allows against what the agent took (REQ-108, ADR-0131). */
+export function expectedLine(score: Score | undefined): string | undefined {
+  const r = score?.recovery;
+  const expected = score?.expectedRecoveryS;
+  if (!r || expected === undefined || r.impairedAt === undefined) return undefined;
+  const actual = r.recovered ? formatDuration(Math.round(r.agentSeconds)) : "복구 못 함";
+  return `기대 복구 ${formatDuration(expected)} · 실제 ${actual}`;
 }
 
 /** What a result says when the tools a real team has never lead to the equipment the answer names. */
@@ -22,9 +35,16 @@ export function recoveryFigures(score: Score | undefined): readonly Figure[] {
   const r = score?.recovery;
   if (!r || score?.scoring !== "recovery") return [];
   const worse = r.worsened.length;
+  const note = expectedLine(score);
   return [
     {
       label: "서비스 복구 시간",
+      ...(note
+        ? {
+            note,
+            ask: "기대 복구 시간은 어떻게 정해지고, 이 실행의 복구 시간 점수에 어떻게 쓰였어요?",
+          }
+        : {}),
       value: r.recovered ? formatDuration(Math.round(r.seconds)) : "복구 못 함",
       hint:
         r.impairedAt === undefined

@@ -27,12 +27,8 @@ describe("서비스 카드 [REQ-104]", () => {
     const { send } = setup();
     const made = await send("POST", "/api/service-cards", { name: "내 캐시", card: "cache" });
     expect(made.status).toBe(200);
-    expect(made.body).toMatchObject({
-      locked: true,
-      shared: false,
-      owner: "yeonsu",
-      canEdit: true,
-    });
+    expect(made.body).toMatchObject({ shared: false, owner: "yeonsu", canEdit: true });
+    expect(made.body).not.toHaveProperty("locked");
     expect((await send("GET", "/api/service-cards", undefined, "jimin")).body).toEqual([]);
     expect((await send("GET", "/api/service-cards")).body).toHaveLength(1);
     await send("PATCH", `/api/service-cards/${made.body.id}`, { shared: true });
@@ -41,7 +37,7 @@ describe("서비스 카드 [REQ-104]", () => {
     expect(seen.body[0]).toMatchObject({ canEdit: false, owner: "yeonsu" });
   });
 
-  test("[REQ-104] 잠긴 카드는 만든 사람만 고치고 지운다. 잠금을 풀면 이름만 남도 고친다", async () => {
+  test("[REQ-108] 카드는 늘 잠겨 있다: 만든 사람만 고치고 지우고, 잠금 옵션은 받지 않는다", async () => {
     const { send } = setup();
     const id = (
       await send("POST", "/api/service-cards", { name: "큐", card: "message-queue", shared: true })
@@ -49,10 +45,49 @@ describe("서비스 카드 [REQ-104]", () => {
     const url = `/api/service-cards/${id}`;
     expect((await send("PATCH", url, { name: "바꿈" }, "jimin")).status).toBe(403);
     expect((await send("DELETE", url, undefined, "jimin")).status).toBe(403);
-    await send("PATCH", url, { locked: false });
-    expect((await send("PATCH", url, { name: "바꿈" }, "jimin")).body.name).toBe("바꿈");
-    expect((await send("PATCH", url, { shared: false }, "jimin")).status).toBe(403);
+    // `locked` is gone: asking for it is a mistake, not a way to open the card
+    expect((await send("PATCH", url, { locked: false })).status).toBe(400);
+    expect(
+      (await send("POST", "/api/service-cards", { name: "x", card: "cache", locked: false }))
+        .status,
+    ).toBe(400);
+    expect((await send("PATCH", url, { name: "바꿈" }, "jimin")).status).toBe(403);
+    expect((await send("PATCH", url, { name: "내가 고침" })).body.name).toBe("내가 고침");
     expect((await send("DELETE", url)).body).toEqual({ deleted: true });
+  });
+
+  test("[REQ-108] 남의 공유 카드는 복사해서 내 카드로 쓴다: 복사본은 복사한 사람의 것이고 공유하지 않은 채 시작한다", async () => {
+    const { send } = setup();
+    const made = await send("POST", "/api/service-cards", {
+      name: "큐",
+      card: "message-queue",
+      shared: true,
+    });
+    const url = `/api/service-cards/${made.body.id}/copy`;
+    const copy = await send("POST", url, { name: "지민의 큐" }, "jimin");
+    expect(copy.status).toBe(200);
+    expect(copy.body).toMatchObject({
+      name: "지민의 큐",
+      card: "message-queue",
+      owner: "jimin",
+      shared: false,
+      canEdit: true,
+    });
+    expect(copy.body.id).not.toBe(made.body.id);
+    // the copy is the copier's to change; the original is still the maker's
+    expect(
+      (await send("PATCH", `/api/service-cards/${copy.body.id}`, { shared: true }, "jimin")).status,
+    ).toBe(200);
+    expect(
+      (await send("PATCH", `/api/service-cards/${made.body.id}`, { name: "x" }, "jimin")).status,
+    ).toBe(403);
+    // a card that is not shared cannot be copied by somebody else
+    const hidden = await send("POST", "/api/service-cards", { name: "비공개", card: "cache" });
+    expect(
+      (await send("POST", `/api/service-cards/${hidden.body.id}/copy`, {}, "jimin")).status,
+    ).toBe(403);
+    // a copy without a name keeps the name
+    expect((await send("POST", url, {}, "jimin")).body.name).toBe("큐");
   });
 
   test("[REQ-104] 없는 기본 카드와 등급 수가 다른 피해는 막힌다", async () => {
@@ -130,7 +165,6 @@ describe("서비스 카드 저장 [REQ-104]", () => {
       const made = await one.platform.serviceCards.create(YEONSU, {
         name: "내 큐",
         card: "message-queue",
-        locked: true,
         shared: true,
       });
       first.close();

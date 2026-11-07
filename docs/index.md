@@ -4,13 +4,11 @@ kind: reference
 status: active
 last_verified: 2026-11-07
 verification_log:
-  - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
-  - "2026-11-07: REQ-100 애플리케이션 층: 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
-  - "2026-11-07: o5 합치기 (애플리케이션 층)"
-  - "2026-11-07: 연결 화면 절을 web-ui-connections.md로 나눔 (DOC050)"
   - "2026-11-07: ADR-0126"
   - "2026-11-07: 부지 배치 규칙·동물 반응 (REQ-105, ADR-0128)"
   - "2026-11-07: 사이트·DR 층과 남은 점선 다섯 (REQ-106, ADR-0129)"
+  - "2026-11-07: ADR-0131 (REQ-108) 링크를 더했다"
+  - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
 ---
 # 문서 색인
 
@@ -194,6 +192,7 @@ verification_log:
 - [0125 이끼는 LLM을 연결해야만 쓸 수 있다: 기본 모델이 없으면 꺼져 있고, 점수 질문은 채점 문서를 먼저 찾는다](design-docs/adr/0125-moss-requires-model.md)
 - [0126 run-all은 이끼 검사도 돌린다 (0124 보정)](design-docs/adr/0126-run-all-includes-moss.md)
 - [0130 GPU 가속기 층을 사다리에 올리고, 전원·냉방 사다리를 끝까지 실선으로 늘리며, 파워 캐핑을 모델로 옮긴다](design-docs/adr/0130-gpu-layer-power-cooling-ladders.md)
+- [0131 기준 에이전트가 DR을 알고, 복구 채점의 시간 창이 세계의 모양을 따른다](design-docs/adr/0131-baseline-dr-and-expected-recovery-window.md)
 - [0122 세계 인기 순서·좋아요·칭호, 그리고 계급 모델 — 점수는 서버가 기록에서 세고, 칭호는 한 번 얻으면 안 잃고, 계급은 아직 화면에 없다](design-docs/adr/0122-world-popularity-likes-titles.md)
 - [0121 애플리케이션 층을 코어 모델로 올리고 서비스 호출 그래프를 넣는다](design-docs/adr/0121-application-layer-and-calls.md)
 - [0116 진짜 호스트 섞기 (폐기, 0117로 대체)](design-docs/adr/0116-real-hosts-in-the-world.md)

@@ -285,6 +285,7 @@ export const ScenarioDocSchema = z
       .max(2000),
     expectations: z.array(ExpectationSchema).max(100),
     scoring: z.literal("recovery").optional(),
+    expectedRecoveryS: z.number().int().min(30).max(172_800).optional(),
     template: z.string().max(64).optional(),
     runbook: RunbookSchema.optional(),
   })

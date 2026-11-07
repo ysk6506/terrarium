@@ -48,6 +48,54 @@ interface Built {
   readonly counts: ShapedResult["counts"];
 }
 
+/** The template row is one small link until it is wanted (REQ-108, ADR-0131). */
+function SaveTemplate({
+  spec,
+  onError,
+}: {
+  readonly spec: Flow["spec"];
+  readonly onError: (message: string) => void;
+}) {
+  const { api, toast } = useApp();
+  const [name, setName] = useState(spec.name);
+  const [saved, setSaved] = useState(false);
+  const [asking, setAsking] = useState(false);
+  const save = async () => {
+    try {
+      await api.call("generateWorld", {
+        body: { shape: spec, template: true, name: name.trim() || spec.name },
+      });
+      setSaved(true);
+      toast("템플릿으로 저장했어요. 새 세계 첫 화면에서 다시 쓸 수 있어요");
+    } catch (err) {
+      onError(messageOf(err));
+    }
+  };
+  return (
+    <div className="we-save">
+      {saved ? (
+        <small className="muted">템플릿으로 저장했어요</small>
+      ) : asking ? (
+        <>
+          <TextField label="템플릿 이름" value={name} onChange={setName} maxLength={80} />
+          <Button data-moss-skip="세계 폼 안의 입력" onClick={() => void save()}>
+            이 구성을 템플릿으로 저장
+          </Button>
+        </>
+      ) : (
+        <button
+          type="button"
+          className="we-link"
+          data-moss-skip="세계 폼 안의 입력"
+          onClick={() => setAsking(true)}
+        >
+          템플릿으로 저장
+        </button>
+      )}
+    </div>
+  );
+}
+
 function Done({
   built,
   flow,
@@ -59,21 +107,8 @@ function Done({
   readonly view: ShapeView;
   readonly start: Start;
 }) {
-  const { api, navigate, toast } = useApp();
-  const [name, setName] = useState(flow.spec.name);
-  const [saved, setSaved] = useState(false);
+  const { navigate } = useApp();
   const [error, setError] = useState<string>();
-  const save = async () => {
-    try {
-      await api.call("generateWorld", {
-        body: { shape: flow.spec, template: true, name: name.trim() || flow.spec.name },
-      });
-      setSaved(true);
-      toast("템플릿으로 저장했어요. 새 세계 첫 화면에서 다시 쓸 수 있어요");
-    } catch (err) {
-      setError(messageOf(err));
-    }
-  };
   return (
     <section className="we-done" aria-label="세계를 다 지었어요">
       <h2>세계를 다 지었어요</h2>
@@ -109,12 +144,7 @@ function Done({
           세계 둘러보기
         </Button>
       </div>
-      <div className="we-save">
-        <TextField label="템플릿 이름" value={name} onChange={setName} maxLength={80} />
-        <Button data-moss-skip="세계 폼 안의 입력" disabled={saved} onClick={() => void save()}>
-          {saved ? "템플릿으로 저장했어요" : "이 구성을 템플릿으로 저장"}
-        </Button>
-      </div>
+      <SaveTemplate spec={flow.spec} onError={setError} />
       {(error || start.error) && (
         <p className="we-note" role="alert">
           {error ?? start.error}

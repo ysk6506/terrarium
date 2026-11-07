@@ -89,6 +89,43 @@ describe("life on the site [REQ-006] [REQ-036]", () => {
       }
   });
 
+  test("people never spawn or walk onto a car park: no bay, no lane, on any of several lands [REQ-108]", () => {
+    const lands = [7, 11, 23].map((seed) => {
+      const bp = generateCampus(
+        {
+          ...DEFAULT_CAMPUS,
+          site: "giheung",
+          seed,
+          buildings: 5,
+          floors: 2,
+          hallsPerFloor: 2,
+          podsPerHall: 6,
+          detail: 0.3,
+        },
+        catalog,
+      ).blueprint;
+      const land = siteScene(new BlueprintIndex(bp), catalog);
+      if (!land) throw new Error("no site");
+      return land;
+    });
+    let walkers = 0;
+    for (const land of lands) {
+      const lots = land.plan.parking.map((l) => l.area);
+      expect(lots.length).toBeGreaterThan(0);
+      for (const a of lifeOf(land).filter((x) => x.kind === "person")) {
+        walkers++;
+        for (let t = 0; t < 400; t += 0.5) {
+          const p = poseAt(a, t);
+          expect(
+            lots.some((l) => p.x > l.x0 && p.x < l.x1 && p.z > l.z0 && p.z < l.z1),
+            `a person at ${p.x.toFixed(1)}, ${p.z.toFixed(1)} stands in a car park`,
+          ).toBe(false);
+        }
+      }
+    }
+    expect(walkers).toBeGreaterThan(0);
+  });
+
   test("an agent rests at both ends of its path and faces the way it walks", () => {
     const a = agents.find((x) => x.kind === "person");
     if (!a) throw new Error("no person");

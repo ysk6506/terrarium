@@ -5,7 +5,7 @@
 import type { ServiceCardView } from "@terrarium/core/contract";
 import { draftFromCard, type ServiceDraft } from "@terrarium/core/sources/worldgen";
 import { type CatalogCard, catalogCard, SERVICE_CATALOG } from "@terrarium/core/world";
-import { useApp, useAsync } from "../context";
+import { messageOf, useApp, useAsync } from "../context";
 import { Button, Dialog } from "../kit";
 import type { RowMeta } from "./shape-services";
 
@@ -23,38 +23,60 @@ function Item(props: {
   readonly titles?: ServiceCardView["ownerTitles"];
   readonly flags: readonly string[];
   readonly onPick: () => void;
+  /** Only on somebody else's card: copy it into a card of my own. */
+  readonly onCopy?: () => void;
 }) {
   return (
-    <button
-      type="button"
-      className="we-ci"
-      data-moss-skip="세계 폼 안의 입력"
-      onClick={props.onPick}
-    >
-      <b>{props.name}</b>
-      <small>{props.line}</small>
-      <span className="we-ci-who">
-        {props.owner}
-        {props.titles && props.titles.length > 0 && (
-          <span className="we-ci-titles">
-            {props.titles.slice(0, 2).map((t) => (
-              <em key={t.key}>{t.label}</em>
-            ))}
-          </span>
-        )}
-      </span>
-      {props.flags.length > 0 && <span className="we-ci-flags">{props.flags.join(" · ")}</span>}
-    </button>
+    <div className="we-ci-box">
+      <button
+        type="button"
+        className="we-ci"
+        data-moss-skip="세계 폼 안의 입력"
+        onClick={props.onPick}
+      >
+        <b>{props.name}</b>
+        <small>{props.line}</small>
+        <span className="we-ci-who">
+          {props.owner}
+          {props.titles && props.titles.length > 0 && (
+            <span className="we-ci-titles">
+              {props.titles.slice(0, 2).map((t) => (
+                <em key={t.key}>{t.label}</em>
+              ))}
+            </span>
+          )}
+        </span>
+        {props.flags.length > 0 && <span className="we-ci-flags">{props.flags.join(" · ")}</span>}
+      </button>
+      {props.onCopy && (
+        <button
+          type="button"
+          className="we-link"
+          data-moss-skip="세계 폼 안의 입력"
+          onClick={props.onCopy}
+        >
+          복사해서 내 카드로
+        </button>
+      )}
+    </div>
   );
 }
 
 const builtInMeta = (c: CatalogCard): RowMeta => ({
   owner: BUILT_IN,
   titles: [],
-  locked: true,
   shared: false,
   line: c.line,
 });
+
+function savedPick(v: ServiceCardView, taken: readonly string[]): Picked | undefined {
+  const base = catalogCard(v.card);
+  if (!base) return undefined;
+  return {
+    draft: draftFromCard(base, taken, { name: v.name, ...(v.harm ? { harm: v.harm } : {}) }),
+    meta: { owner: v.owner, titles: v.ownerTitles, shared: v.shared, line: base.line },
+  };
+}
 
 export function ServiceSheet({
   taken,
@@ -65,26 +87,23 @@ export function ServiceSheet({
   readonly onPick: (p: Picked) => void;
   readonly onClose: () => void;
 }) {
-  const { api, identity } = useApp();
+  const { api, identity, toast } = useApp();
   const cards = useAsync((signal) => api.call("listServiceCards", { signal }), []);
+  // somebody else's card is locked: copying it makes a card of my own that I can change and share
+  const copy = async (v: ServiceCardView) => {
+    try {
+      await api.call("copyServiceCard", { params: { id: v.id }, body: {} });
+      toast("내 카드로 복사했어요. 공유하기 전에는 나만 봐요");
+      cards.reload();
+    } catch (err) {
+      toast(messageOf(err));
+    }
+  };
   const pickBuiltIn = (c: CatalogCard) =>
     onPick({ draft: draftFromCard(c, taken), meta: builtInMeta(c) });
   const pickSaved = (v: ServiceCardView) => {
-    const base = catalogCard(v.card);
-    if (!base) return;
-    onPick({
-      draft: draftFromCard(base, taken, {
-        name: v.name,
-        ...(v.harm ? { harm: v.harm } : {}),
-      }),
-      meta: {
-        owner: v.owner,
-        titles: v.ownerTitles,
-        locked: v.locked,
-        shared: v.shared,
-        line: base.line,
-      },
-    });
+    const picked = savedPick(v, taken);
+    if (picked) onPick(picked);
   };
   return (
     <Dialog
@@ -98,7 +117,8 @@ export function ServiceSheet({
       }
     >
       <p className="we-sub">
-        기본 제공과 사람들이 공유한 카드예요. 모양은 정해져 있고, 잠긴 카드는 복사해서만 고쳐요.
+        기본 제공과 사람들이 공유한 카드예요. 모양은 정해져 있고, 카드는 늘 잠겨 있어서 남의 카드는
+        복사해서 내 카드로 써요.
       </p>
       <div className="we-cat">
         {SERVICE_CATALOG.map((c) => (
@@ -118,8 +138,9 @@ export function ServiceSheet({
             line={catalogCard(v.card)?.line ?? ""}
             owner={v.owner === identity.name ? `${v.owner} (나)` : v.owner}
             titles={v.ownerTitles}
-            flags={[v.locked ? "잠김" : "", v.shared ? "공유됨" : "나만 봐요"].filter(Boolean)}
+            flags={["잠김", v.shared ? "공유됨" : "나만 봐요"]}
             onPick={() => pickSaved(v)}
+            {...(v.canEdit ? {} : { onCopy: () => void copy(v) })}
           />
         ))}
       </div>

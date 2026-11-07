@@ -1,7 +1,12 @@
 /** 서비스 카드 네 경로와 빠른 실험(REQ-104, ADR-0127). routes.ts의 표에 펼쳐 넣어요. */
 
 import type { RouteSpec } from "./routes";
-import { CreateServiceCardBody, QuickExperimentBody, UpdateServiceCardBody } from "./service-cards";
+import {
+  CopyServiceCardBody,
+  CreateServiceCardBody,
+  QuickExperimentBody,
+  UpdateServiceCardBody,
+} from "./service-cards";
 
 const json = "json" as const;
 
@@ -15,15 +20,24 @@ export const SERVICE_CARD_ROUTES = {
   createServiceCard: {
     method: "POST",
     path: "/api/service-cards",
-    summary: "서비스를 내 카드로 저장 (기본 제공 카드 + 이름·피해 숫자). 처음엔 잠김, 공유 안 함",
+    summary:
+      "서비스를 내 카드로 저장 (기본 제공 카드 + 이름·피해 숫자). 카드는 늘 잠겨 있고, 처음엔 공유 안 함",
     body: CreateServiceCardBody,
     produces: json,
   },
   updateServiceCard: {
     method: "PATCH",
     path: "/api/service-cards/:id",
-    summary: "카드 고치기 (만든 사람만. 잠기지 않은 카드는 누구나 이름·피해 숫자만)",
+    summary: "카드 고치기 (만든 사람만). 남의 카드는 복사해서 고쳐요",
     body: UpdateServiceCardBody,
+    produces: json,
+  },
+  copyServiceCard: {
+    method: "POST",
+    path: "/api/service-cards/:id/copy",
+    summary:
+      "공유된 카드를 복사해서 내 카드로 (복사본은 내 소유, 공유 안 함. 이름만 바꿀 수 있어요)",
+    body: CopyServiceCardBody,
     produces: json,
   },
   deleteServiceCard: {

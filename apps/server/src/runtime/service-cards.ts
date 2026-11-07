@@ -1,9 +1,10 @@
 /**
  * Service cards (REQ-104, ADR-0127): a catalog card somebody saved with the name and damage numbers they kept. The
  * catalog lists the viewer's own cards and everybody's shared ones. Only the owner changes who may see or edit a card
- * and deletes it; a card that is not locked may have its name and numbers changed by anyone.
+ * and deletes it. A card is always locked: everybody else copies it into a card of their own (REQ-108, ADR-0131).
  */
 import type {
+  CopyServiceCardRequest,
   CreateServiceCardRequest,
   ServiceCardView,
   UpdateServiceCardRequest,
@@ -14,8 +15,7 @@ import { catalogCard } from "@terrarium/core/world";
 import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
 import type { Titles } from "./titles";
 
-const canEdit = (viewer: Viewer, c: ServiceCardRecord): boolean =>
-  c.owner === viewer.name || !c.locked;
+const canEdit = (viewer: Viewer, c: ServiceCardRecord): boolean => c.owner === viewer.name;
 
 export class ServiceCards {
   constructor(
@@ -35,7 +35,6 @@ export class ServiceCards {
       ...(c.harm ? { harm: c.harm } : {}),
       owner: c.owner,
       ownerTitles: owned.get(c.owner) ?? [],
-      locked: c.locked,
       shared: c.shared,
       canEdit: canEdit(viewer, c),
       createdAt: c.createdAt,
@@ -66,7 +65,6 @@ export class ServiceCards {
       name: input.name,
       card: input.card,
       ...(input.harm ? { harm: input.harm } : {}),
-      locked: input.locked,
       shared: input.shared,
       createdAt: this.ctx.stamps.now(),
     };
@@ -82,11 +80,9 @@ export class ServiceCards {
     const old = must(await this.ctx.store.getServiceCard(id), "서비스 카드");
     if (!old.shared && old.owner !== viewer.name)
       throw new ForbiddenError("공유되지 않은 카드예요");
-    const sharing = input.shared !== undefined || input.locked !== undefined;
-    if (sharing) ownerOnly(viewer, old.owner, "공유·잠금 바꾸기");
-    else if (!canEdit(viewer, old))
+    if (!canEdit(viewer, old))
       throw new ForbiddenError(
-        `잠긴 카드는 만든 사람(${old.owner})만 고칠 수 있어요. 복사해서 쓰세요`,
+        `카드는 만든 사람(${old.owner})만 고칠 수 있어요. 복사해서 내 카드로 쓰세요`,
       );
     const base = must(catalogCard(old.card), "기본 제공 카드");
     if (input.harm && input.harm.length !== base.tiers.length)
@@ -97,12 +93,29 @@ export class ServiceCards {
       ...old,
       name: input.name ?? old.name,
       ...(input.harm ? { harm: input.harm } : {}),
-      locked: input.locked ?? old.locked,
       shared: input.shared ?? old.shared,
       updatedAt: this.ctx.stamps.now(),
     };
     await this.ctx.store.putServiceCard(saved);
     return this.one(viewer, saved);
+  }
+
+  /** A shared card (or my own) copied into a new card owned by whoever copies it, not shared yet. */
+  async copy(viewer: Viewer, id: string, input: CopyServiceCardRequest): Promise<ServiceCardView> {
+    const old = must(await this.ctx.store.getServiceCard(id), "서비스 카드");
+    if (!old.shared && old.owner !== viewer.name)
+      throw new ForbiddenError("공유되지 않은 카드예요");
+    const record: ServiceCardRecord = {
+      id: this.ctx.stamps.id("sc"),
+      owner: viewer.name,
+      name: input.name ?? old.name,
+      card: old.card,
+      ...(old.harm ? { harm: old.harm } : {}),
+      shared: false,
+      createdAt: this.ctx.stamps.now(),
+    };
+    await this.ctx.store.putServiceCard(record);
+    return this.one(viewer, record);
   }
 
   async remove(viewer: Viewer, id: string): Promise<{ readonly deleted: boolean }> {

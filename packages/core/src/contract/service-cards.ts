@@ -28,7 +28,6 @@ export const CreateServiceCardBody = z
     name: Name,
     card: CardId,
     harm: Harm.optional(),
-    locked: z.boolean().default(true),
     shared: z.boolean().default(false),
   })
   .strict();
@@ -37,11 +36,14 @@ export const UpdateServiceCardBody = z
   .object({
     name: Name.optional(),
     harm: Harm.optional(),
-    locked: z.boolean().optional(),
     shared: z.boolean().optional(),
   })
   .strict();
 
+/** 다른 사람의 공유 카드를 복사해 내 카드로: 이름만 바꿀 수 있고, 복사본은 내 것이며 공유하지 않은 채로 시작해요. */
+export const CopyServiceCardBody = z.object({ name: Name.optional() }).strict();
+
+export type CopyServiceCardRequest = z.output<typeof CopyServiceCardBody>;
 export type CreateServiceCardRequest = z.output<typeof CreateServiceCardBody>;
 export type UpdateServiceCardRequest = z.output<typeof UpdateServiceCardBody>;
 
@@ -52,9 +54,8 @@ export interface ServiceCardView {
   readonly harm?: readonly { readonly name: string; readonly perHourKrw: number }[];
   readonly owner: string;
   readonly ownerTitles: readonly TitleView[];
-  readonly locked: boolean;
   readonly shared: boolean;
-  /** Whether the person asking may change it: they own it, or it is not locked. */
+  /** Whether the person asking may change it: only the owner does (REQ-108, ADR-0131: a card is always locked). */
   readonly canEdit: boolean;
   readonly createdAt: string;
 }

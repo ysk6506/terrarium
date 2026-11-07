@@ -19,6 +19,8 @@ export function scenarioDigest(doc: ScenarioDoc): string {
     expectations: [...doc.expectations].sort(byId).map(({ label: _label, ...rest }) => rest),
     // only where it is set, so the digest of every sheet scored as written stays what it was
     ...(doc.scoring ? { scoring: doc.scoring } : {}),
+    // the window of the time points decides the score, so a different expected recovery is a different sheet (REQ-108)
+    ...(doc.expectedRecoveryS !== undefined ? { expectedRecoveryS: doc.expectedRecoveryS } : {}),
     // the runbook can change what an agent does and how SOP compliance is read, so it is part of the version
     ...(doc.runbook ? { runbook: doc.runbook } : {}),
   });

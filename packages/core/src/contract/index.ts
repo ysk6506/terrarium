@@ -158,6 +158,8 @@ export {
 } from "./schemas";
 export {
   CARD_NAME_MAX,
+  CopyServiceCardBody,
+  type CopyServiceCardRequest,
   CreateServiceCardBody,
   type CreateServiceCardRequest,
   QuickExperimentBody,

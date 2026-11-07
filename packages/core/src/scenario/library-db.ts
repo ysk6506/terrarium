@@ -21,6 +21,7 @@ import {
   nodesOfPool,
   poolDef,
   poolOfInstance,
+  RESTORE_S,
 } from "@terrarium/core/world";
 import { agent, allOf, doc, Flow, type ScenarioTemplate, SUBMIT } from "./library-kit";
 import type { ActionKind, Condition, Expectation } from "./model";
@@ -57,6 +58,8 @@ interface Plan {
     c: Case,
   ) => ReadonlyArray<{ readonly action: ActionKind; readonly penalty: number }>;
   readonly timeLimitS?: number;
+  /** Seconds the shape of the world takes to recover from this, when more than the five minutes (REQ-108, ADR-0131). */
+  readonly expectedS?: number;
 }
 
 const BUDGET = 30;
@@ -263,6 +266,7 @@ function template(plan: Plan): ScenarioTemplate {
         `${c.cluster.name}에서 일어나요${c.auto ? " (스스로 페일오버하는 클러스터)" : ""}. 서비스 ${c.services.length}개가 기대요.`,
         flow,
         sheet(plan, c),
+        plan.expectedS,
       );
     },
   };
@@ -366,6 +370,8 @@ const restoreSheet = template({
   waitS: 30,
   forbid: () => [],
   timeLimitS: 5400,
+  // a restore takes twenty minutes whatever the agent does
+  expectedS: RESTORE_S,
 });
 
 export const DB_TEMPLATES: readonly ScenarioTemplate[] = [

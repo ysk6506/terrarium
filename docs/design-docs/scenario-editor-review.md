@@ -12,13 +12,13 @@ covers:
   - apps/web/src/logic/scenario/edit.ts
   - apps/web/src/logic/scenario/questions.ts
   - apps/web/src/logic/scenario/sentences.ts
-covers_hash: 8430067f493c05ab
+covers_hash: b27bfddb4b1bd923
 verification_log:
-  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
   - "2026-11-06: REQ-093 구현(도메인·넘기기·측정·화면)에 맞춰 코드와 대조해 고침"
   - "2026-11-07: REQ-102(ADR-0123): 사다리·직접 짓기 화면과 말(시운전·미리 보기·전제)을 코드와 대조해 고쳤다"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
+  - "2026-11-07: REQ-108: 코드와 대조했고 필요한 서술(기대 복구 시간, 서비스 카드 복사, 숫자 보정)을 고쳤다. 나머지는 그대로 맞다"
 ---
 # 시나리오 편집기 검토 (REQ-071, ADR-0070)
 

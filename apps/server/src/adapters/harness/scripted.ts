@@ -3,7 +3,8 @@
  * They give every benchmark a floor and a yardstick before any real agent is connected, keep a fresh
  * server useful, and exercise the whole run path in tests and capacity measurement.
  *
- *   triage  follows alarms upstream: the alarmed thing that explains the most other alarms is the cause
+ *   triage  follows alarms upstream: the alarmed thing that explains the most other alarms is the cause; where the cause
+ *           is in the site, GPU, power or cooling layer it also does the one thing that layer's script says (REQ-108)
  *   guess   names a random alarmed entity and a random fault type: what chance scores
  *   idle    looks at the alarms and stops: what doing nothing scores
  *   operator  keeps services alive, hands a cause outside its domain to the team that owns it, undoes after (REQ-093)
@@ -17,16 +18,12 @@ import type {
   ToolEndpoint,
 } from "@terrarium/core/experiments";
 import { SeededRng } from "@terrarium/core/kernel";
+import { LAYER_CODES, refineFault, respond } from "./baseline-layers";
+import { type AlarmRow, alarmsOf, codeOf, Watch } from "./hands-off";
 import { OPERATOR_AGENT, operator } from "./scripted-operator";
 
 const pick = <T>(rng: SeededRng, xs: readonly T[]): T =>
   xs[Math.floor(rng.random() * xs.length)] as T;
-
-interface AlarmRow {
-  readonly entityId: string;
-  readonly code: string;
-  readonly severity: "warning" | "critical";
-}
 
 /** Alarm codes that point at a cause, and the fault they mean. */
 export const CAUSE_CODES: Readonly<Record<string, string>> = {
@@ -43,8 +40,8 @@ export const CAUSE_CODES: Readonly<Record<string, string>> = {
   link_down: "link_down",
 };
 
-/** "link_down.l-7" → "link_down". */
-const codeOf = (a: AlarmRow) => a.code.split(".")[0] as string;
+/** What triage reads as a cause: the codes above and those of the layers above the servers (`guess` keeps to the first). */
+const KNOWN_CAUSES: Readonly<Record<string, string>> = { ...CAUSE_CODES, ...LAYER_CODES };
 
 const AGENTS: readonly AgentInfo[] = [
   {
@@ -66,10 +63,7 @@ const AGENTS: readonly AgentInfo[] = [
   OPERATOR_AGENT,
 ];
 
-async function alarms(tools: ToolEndpoint): Promise<AlarmRow[]> {
-  const r = await tools.call("list_alarms", {});
-  return r.ok ? (r.data as AlarmRow[]) : [];
-}
+const alarms = alarmsOf;
 
 /** Alarms, waiting a little if the world has not shown anything yet. */
 async function firstAlarms(tools: ToolEndpoint, signal: AbortSignal): Promise<AlarmRow[]> {
@@ -92,9 +86,16 @@ interface Candidate {
 async function candidates(tools: ToolEndpoint, found: readonly AlarmRow[]): Promise<Candidate[]> {
   const alarmed = [...new Set(found.map((a) => a.entityId))];
   const withCause = alarmed.filter((id) =>
-    found.some((a) => a.entityId === id && CAUSE_CODES[codeOf(a)]),
+    found.some((a) => a.entityId === id && KNOWN_CAUSES[codeOf(a)]),
   );
-  const pool = (withCause.length > 0 ? withCause : alarmed).slice(0, 8);
+  // a fault of the site, GPU, power or cooling layer comes first: a whole site down drowns in the alarms of what fell with it
+  const layered = withCause.filter((id) =>
+    found.some((a) => a.entityId === id && LAYER_CODES[codeOf(a)]),
+  );
+  const pool = (layered.length > 0 ? layered : withCause.length > 0 ? withCause : alarmed).slice(
+    0,
+    8,
+  );
   const canImpact = tools.specs.some((s) => s.name === "get_impact");
   const out: Candidate[] = [];
   for (const id of pool) {
@@ -120,7 +121,7 @@ async function candidates(tools: ToolEndpoint, found: readonly AlarmRow[]): Prom
 
 function faultFor(id: string, found: readonly AlarmRow[]): string {
   const mine = found.filter((a) => a.entityId === id).map(codeOf);
-  for (const code of mine) if (CAUSE_CODES[code]) return CAUSE_CODES[code] as string;
+  for (const code of mine) if (KNOWN_CAUSES[code]) return KNOWN_CAUSES[code] as string;
   // A server that looks hot while nothing around it does: the sensor is lying.
   if (mine.includes("inlet_high") && found.filter((a) => codeOf(a) === "inlet_high").length === 1)
     return "sensor_drift";
@@ -128,17 +129,31 @@ function faultFor(id: string, found: readonly AlarmRow[]): string {
   return "unknown";
 }
 
+/** The layer fault the best candidate's alarm means, when it is one of the site, GPU, power or cooling layers. */
+async function layerFinding(tools: ToolEndpoint, id: string, found: readonly AlarmRow[]) {
+  const code = found
+    .filter((a) => a.entityId === id)
+    .map(codeOf)
+    .find((c) => LAYER_CODES[c]);
+  if (!code) return undefined;
+  return refineFault(tools, { fault: LAYER_CODES[code] as string, root: id, code });
+}
+
 async function triage(req: AgentRunRequest): Promise<AgentRunOutcome> {
   const found = await firstAlarms(req.tools, req.signal);
   if (found.length === 0) return { status: "finished", message: "알람이 없어 진단하지 않았어요" };
   const [best] = await candidates(req.tools, found);
   if (!best || req.signal.aborted) return { status: "cancelled" };
-  const faultType = faultFor(best.id, found);
+  const layer = await layerFinding(req.tools, best.id, found);
+  const done = layer
+    ? await respond(req.tools, new Watch(req.tools, req.signal), layer, found)
+    : undefined;
+  const faultType = done?.fault?.type ?? layer?.fault ?? faultFor(best.id, found);
   await req.tools.call("submit_diagnosis", {
-    rootCause: best.id,
+    rootCause: done?.fault?.root ?? best.id,
     faultType,
-    summary: `${best.id}의 알람이 다른 알람 ${best.explains}개를 설명해요 (${faultType}).`,
-    actions: [],
+    summary: `${best.id}의 알람이 다른 알람 ${best.explains}개를 설명해요 (${faultType}).${done ? ` ${done.note}` : ""}`,
+    actions: done?.actions ?? [],
     confidence: best.explains > 0 ? 0.7 : 0.4,
   });
   return { status: "finished" };

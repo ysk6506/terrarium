@@ -1,12 +1,33 @@
 /**
  * What `events_since` shows (REQ-093, ADR-0094 item 4): the run's record cut down to what an operator would see. The
  * alarms that were raised and cleared, a machine that shut itself down, and what the teams the agent handed work to
- * are doing. The agent's own calls, the tickets and above all the faults themselves (the world's truth) stay out. The
- * cursor is a position in the record, so a call with the cursor of the last one gives exactly what is new.
+ * are doing. The agent's own calls, the tickets and above all the faults themselves (the world's truth) stay out. What
+ * the system did by itself (a cluster promoting a replica, a hot site switching over: cause `cluster`) shows as
+ * `auto_recovery`, so an agent can tell that something is already recovering and leave it alone (REQ-108, ADR-0131).
+ * The cursor is a position in the record, so a call with the cursor of the last one gives exactly what is new.
  */
 import { withJosa } from "@terrarium/core/kernel";
+import { CLUSTER_CAUSE } from "@terrarium/core/physics";
 import type { VisibleEvent } from "@terrarium/core/tools";
 import type { RunEvent } from "@terrarium/core/world";
+
+/** What the system did by itself, in a few words, for the commands that carry no text of their own. */
+const AUTO_TEXT: Readonly<Record<string, string>> = {
+  "db.promote": "데이터베이스가 스스로 새 주 인스턴스를 올렸어요",
+  "sdn.failover": "SDN 컨트롤러가 스스로 대기 쪽으로 넘어갔어요",
+  "dr.failover": "사이트가 스스로 복구 사이트로 넘어가기 시작했어요",
+  "dr.complete": "사이트 전환이 스스로 끝났어요",
+  "vm.migrate": "VM을 스스로 다른 서버로 옮겼어요",
+};
+const autoText = (type: string): string => AUTO_TEXT[type] ?? "시스템이 스스로 복구하고 있어요";
+
+/** What the cluster did by itself (not an alarm coming or going), shown so an agent can leave it alone. */
+function autoRecovery(e: RunEvent & { kind: "world" }): VisibleEvent | undefined {
+  const c = e.command;
+  if (e.cause !== CLUSTER_CAUSE || c.type === "alarm.raise" || c.type === "alarm.clear")
+    return undefined;
+  return { t: e.t, type: "auto_recovery", text: c.type === "note" ? c.text : autoText(c.type) };
+}
 
 export function visibleEvent(
   e: RunEvent,
@@ -28,6 +49,8 @@ export function visibleEvent(
   }
   if (e.kind !== "world") return undefined;
   const c = e.command;
+  const auto = autoRecovery(e);
+  if (auto) return auto;
   if (c.type === "alarm.raise")
     return {
       t: e.t,

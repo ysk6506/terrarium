@@ -87,6 +87,7 @@ export function doc(
   description: string,
   flow: Flow,
   expectations: Expectation[],
+  expectedRecoveryS?: number,
 ): ScenarioDoc {
   return {
     schemaVersion: SCENARIO_SCHEMA_VERSION,
@@ -99,8 +100,16 @@ export function doc(
     edges: flow.edges,
     expectations,
     ...(template.scoring ? { scoring: template.scoring } : {}),
+    ...(template.scoring &&
+    expectedRecoveryS !== undefined &&
+    expectedRecoveryS > DEFAULT_EXPECTED_S
+      ? { expectedRecoveryS: Math.round(expectedRecoveryS) }
+      : {}),
   };
 }
+
+/** The five minutes a recovery was given before the window followed the shape of the world (REQ-108); never less. */
+export const DEFAULT_EXPECTED_S = 300;
 
 export const needs = (index: BlueprintIndex, kinds: EntityKind[]) =>
   kinds.every((k) => index.ofKind(k).length > 0)

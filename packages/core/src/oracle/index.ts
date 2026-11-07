@@ -38,6 +38,9 @@ export {
   FULL_RECOVERY_S,
   RECOVERY_WEIGHTS,
   ramp,
+  recoveryAxes,
+  recoveryWindow,
   ZERO_ORDER_S,
+  ZERO_RECOVERY_FACTOR,
   ZERO_RECOVERY_S,
 } from "./recovery-score";

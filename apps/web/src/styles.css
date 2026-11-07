@@ -3964,6 +3964,19 @@ ol.elevation li:first-child .u-slot {
   align-items: end;
   flex-wrap: wrap;
 }
+.we-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink-3);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.we-link:hover {
+  color: var(--ink-2);
+}
 .we-note {
   color: var(--ink-3);
   font-size: 13px;
@@ -5288,6 +5301,14 @@ ol.uu li {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
+}
+.we-ci-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.we-ci-box .we-ci {
+  flex: 1;
 }
 .we-ci {
   display: flex;

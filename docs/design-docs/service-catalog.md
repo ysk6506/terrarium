@@ -9,10 +9,11 @@ covers:
   - apps/server/src/runtime/service-cards.ts
   - apps/server/src/runtime/experiments-quick.ts
   - packages/core/src/contract/service-cards.ts
-covers_hash: 6700c1ec8cb21e95
+covers_hash: da80cbd3da6d1836
 verification_log:
   - "2026-11-07: 2026-11-07: REQ-104(ADR-0127) 코드와 대조해 고쳤다"
   - "2026-11-07: REQ-107: 해당 문장을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
+  - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
 ---
 # 서비스 카탈로그 (REQ-104, [ADR-0127](adr/0127-short-world-flow-and-service-catalog.md))
 
@@ -38,15 +39,14 @@ verification_log:
 - IAP는 카탈로그 밖의 기본 서비스다(기본 제공 · 잠김). "쿠버네티스 플랫폼" 카드는 IAP와 같은 모양의 작은 판이다.
 
 ## 내 카드 (`service_cards`)
-`POST /api/service-cards { name, card, harm?, locked?, shared? }`는 기본 제공 카드에 이름과 피해 숫자(등급 수가 같아야 한다)를 덮어쓴 카드를 저장한다. 모양은 늘 `card`의 것이다.
+`POST /api/service-cards { name, card, harm?, shared? }`는 기본 제공 카드에 이름과 피해 숫자(등급 수가 같아야 한다)를 덮어쓴 카드를 저장한다. 모양은 늘 `card`의 것이다.
 
 | 칸 | 뜻 |
 |---|---|
 | `owner` | 저장한 사람. 카탈로그에 이름과 칭호 알약으로 보인다 |
-| `locked` (기본 true) | true: 다른 사람은 복사해서 쓰고 원본은 만든 사람만 고친다. false: 누구나 이름·피해 숫자를 고친다 |
 | `shared` (기본 false) | true: 모두의 카탈로그에 보인다. false: 만든 사람에게만 보인다 |
 
-`GET`은 내 카드와 공유된 카드를, `PATCH /:id`는 이름·피해 숫자(잠금을 풀었으면 누구나, 아니면 만든 사람만)와 `locked`·`shared`(만든 사람만)를, `DELETE /:id`는 만든 사람만 한다. 공유되지 않은 남의 카드는 403이다. 카탈로그를 통해 세계에 더해진 서비스는 카드의 **복사본**이라, 나중에 원본을 고쳐도 이미 지은 세계는 바뀌지 않는다.
+`GET`은 내 카드와 공유된 카드를, `PATCH /:id`는 이름·피해 숫자·`shared`를 만든 사람만, `DELETE /:id`도 만든 사람만 한다. **카드는 늘 잠겨 있다**(REQ-108): `locked` 칸은 없고 보내면 400이다. 남의 카드는 `POST /:id/copy { name? }`로 복사해서 내 카드로 쓴다(복사본은 복사한 사람의 것이고 공유 안 된 상태다). 공유되지 않은 남의 카드는 403이다. 카탈로그를 통해 세계에 더해진 서비스는 카드의 **복사본**이라, 나중에 원본을 고쳐도 이미 지은 세계는 바뀌지 않는다.
 
 ## 하지 않은 것
 - 카드를 직접 설계(구조·종류 바꾸기)하는 편집기. 모양은 기본 제공 열 장뿐이다.
