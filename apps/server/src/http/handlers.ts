@@ -70,6 +70,11 @@ export const HANDLERS: Handlers = {
   checkModel: (p, i) => p.models.check(id(i)),
   setDefaultModel: (p, i) => p.models.setDefault(id(i)),
   askMoss: (p, i) => p.moss.ask(i.body),
+  listServiceCards: (p, i) => p.serviceCards.list(i.viewer),
+  createServiceCard: (p, i) => p.serviceCards.create(i.viewer, i.body),
+  updateServiceCard: (p, i) => p.serviceCards.update(i.viewer, id(i), i.body),
+  deleteServiceCard: (p, i) => p.serviceCards.remove(i.viewer, id(i)),
+  quickExperiment: (p, i) => p.experiments.quick(i.viewer, id(i), i.body),
 
   listWorlds: (p, i) => p.board.list(i.viewer, i.query.sort),
   likeWorld: (p, i) => p.board.like(i.viewer, id(i)),

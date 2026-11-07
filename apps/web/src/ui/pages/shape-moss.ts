@@ -13,9 +13,11 @@ export interface ShapeMoss {
   readonly last: boolean;
   readonly problem: string | undefined;
   readonly make: () => Promise<void>;
+  /** 세계를 짓고 권장 설정으로 실험까지 시작해요. */
+  readonly quick: () => Promise<void>;
 }
 
-export function useShapeMoss({ spec, flow, step, last, problem, make }: ShapeMoss): void {
+export function useShapeMoss({ spec, flow, step, last, problem, make, quick }: ShapeMoss): void {
   useMossScreen("newWorld", {
     read: () => shapeState(spec, step, problem),
     summary: () => `${spec.name} · 서버 ${spec.servers ?? "알아서"}대`,
@@ -31,6 +33,14 @@ export function useShapeMoss({ spec, flow, step, last, problem, make }: ShapeMos
         }
         if (problem) throw new Error(problem);
         await make();
+      },
+      "world-quick-start": async () => {
+        if (!last) {
+          flow.go("size");
+          return "마지막 화면으로 넘겼어요. 거기서 실험 시작을 다시 눌러 주세요";
+        }
+        if (problem) throw new Error(problem);
+        await quick();
       },
     },
   });

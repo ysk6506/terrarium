@@ -41,7 +41,7 @@ export function StepBar({ b }: { readonly b: Builder }) {
   const reach = (i: number) =>
     i === 0 ? crumbs[0]?.level : i === 1 || i === 2 ? crumbs[i]?.level : undefined;
   return (
-    <nav className="stage-steps" aria-label="짓는 단계">
+    <nav className="stage-steps" data-bottom-bar aria-label="짓는 단계">
       <ol className="steps">
         {STEPS.map((label, i) => {
           const go = reach(i);

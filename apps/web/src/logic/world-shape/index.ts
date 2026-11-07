@@ -23,4 +23,16 @@ export {
   LAYER_INFO,
 } from "./ladders";
 export { costText, hostsText, type ShapeView, shapeView } from "./shape-view";
+export {
+  advance,
+  builtFact,
+  type Place,
+  pressesToExperiment,
+  QUICK,
+  recommendLine,
+  retreat,
+  START,
+  STEPS,
+  type Step,
+} from "./short-flow";
 export { guessWorkload, type WorkloadView, workloadView } from "./workload-view";

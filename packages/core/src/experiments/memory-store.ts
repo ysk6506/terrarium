@@ -13,6 +13,7 @@ import type {
   WorldSummary,
 } from "./ports";
 import type { PresetKind, PresetRecord } from "./presets";
+import type { ServiceCardRecord } from "./service-cards";
 
 const copy = <T>(value: T): T => structuredClone(value);
 
@@ -75,6 +76,7 @@ export class MemoryStore implements ExperimentStore {
   private readonly journals = new Map<string, { entries: JournalEntry[]; lastAt?: string }>();
   private readonly presets = new Map<string, PresetRecord>();
   private readonly models = new Map<string, LlmModelRecord>();
+  private readonly serviceCards = new Map<string, ServiceCardRecord>();
   private readonly likes = new Map<string, WorldLike>();
   private readonly marks = new Map<string, CalibrationMark>();
   private readonly awards = new Map<string, TitleAward>();
@@ -276,6 +278,25 @@ export class MemoryStore implements ExperimentStore {
 
   async deleteModel(id: string): Promise<boolean> {
     return this.models.delete(id);
+  }
+
+  async putServiceCard(card: ServiceCardRecord): Promise<void> {
+    this.serviceCards.set(card.id, copy(card));
+  }
+
+  async getServiceCard(id: string): Promise<ServiceCardRecord | undefined> {
+    const c = this.serviceCards.get(id);
+    return c && copy(c);
+  }
+
+  async listServiceCards(): Promise<ServiceCardRecord[]> {
+    return [...this.serviceCards.values()]
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id))
+      .map(copy);
+  }
+
+  async deleteServiceCard(id: string): Promise<boolean> {
+    return this.serviceCards.delete(id);
   }
 
   async putLike(like: WorldLike): Promise<void> {

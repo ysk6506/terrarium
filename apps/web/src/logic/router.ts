@@ -24,6 +24,8 @@ export type Page =
       readonly scenarioId?: string;
       /** The world the new experiment starts on (after "바로 실험 만들기"). */
       readonly worldId?: string;
+      /** Open pre-filled with the recommended settings of "실험 시작" (REQ-104). */
+      readonly quick?: boolean;
     }
   | { readonly name: "experiment"; readonly id: string }
   | { readonly name: "run"; readonly id: string }
@@ -111,6 +113,7 @@ const PATTERNS: ReadonlyArray<[RegExp, (m: RegExpExecArray, q: URLSearchParams) 
       ...(q.get("fork") ? { forkOf: q.get("fork") as string } : {}),
       ...(q.get("scenario") ? { scenarioId: q.get("scenario") as string } : {}),
       ...(q.get("world") ? { worldId: q.get("world") as string } : {}),
+      ...(q.get("quick") === "1" ? { quick: true } : {}),
     }),
   ],
   [new RegExp(`^/experiments/${ID}$`), (m) => ({ name: "experiment", id: m[1] as string })],
@@ -165,7 +168,12 @@ const HREFS: { readonly [N in PageName]: (page: Of<N>) => string } = {
   scenario: (p) => `/scenarios/${enc(p.id)}`,
   experiments: (p) => withQuery("/experiments", { mine: p.mine ? "1" : undefined }),
   newExperiment: (p) =>
-    withQuery("/experiments/new", { fork: p.forkOf, scenario: p.scenarioId, world: p.worldId }),
+    withQuery("/experiments/new", {
+      fork: p.forkOf,
+      scenario: p.scenarioId,
+      world: p.worldId,
+      quick: p.quick ? "1" : undefined,
+    }),
   experiment: (p) => `/experiments/${enc(p.id)}`,
   run: (p) => `/runs/${enc(p.id)}`,
   benchmarks: (p) => withQuery("/benchmarks", { set: p.set }),

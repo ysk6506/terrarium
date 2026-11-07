@@ -4,6 +4,9 @@ kind: spec
 status: active
 last_verified: 2026-11-07
 covers:
+  - apps/web/src/moss/bar-offset.ts
+  - apps/web/src/moss/ask.tsx
+  - apps/web/src/ui/moss/Launcher.tsx
   - apps/server/src/runtime/moss.ts
   - apps/server/src/runtime/moss-index.ts
   - apps/server/src/runtime/moss-prompt.ts
@@ -23,7 +26,8 @@ verification_log:
   - "2026-11-07: ADR-0125: 이끼는 기본 모델이 있어야만 켜진다(꺼지면 알약만, 409 no_model), 점수 질문 찾기 규칙을 문서에 반영하고 코드와 대조함"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
-covers_hash: dd436821b9f82789
+  - "2026-11-07: 2026-11-07: REQ-104(ADR-0127) 코드와 대조해 고쳤다"
+covers_hash: b54d08aa1ad54972
 ---
 # 이끼 (REQ-103, [ADR-0124](adr/0124-moss-assistant.md), [ADR-0125](adr/0125-moss-requires-model.md))
 
@@ -112,6 +116,10 @@ covers_hash: dd436821b9f82789
 
 1. **부스트.** 질문에 채점 낱말이 있으면 `measurement.md`와 ADR-0091·ADR-0104 조각의 점수에 `SCORING_BOOST`(2배)를 곱한다. 채점 낱말은 `점수`, 숫자 바로 뒤의 `점`, `점이에요`·`점인가요`, `채점`, `합격`·`불합격`, `감점`·`만점`, `MTTR`, `복구 시간/순서/점수`, `진단 점수`다. 이미 낱말이 맞은 조각만 오르고, 곱셈이라 순서만 바뀐다. 2배는 은행 전체로 재서 고른 값이고 더 크게 하면 채점 낱말이 든 다른 질문의 문서를 밀어낸다.
 2. **이 실행의 채점표.** 화면 상태에 `채점표`(결과 화면의 `runState`)가 있으면, 점수·합격·항목별 판정·점수·이유·요약으로 "이 실행의 채점표" 조각을 만들어 문서 조각 앞에 둔다. 모델 프롬프트의 첫 조각이고, 출처에는 문서가 아니라 "화면 상태"로 보인다.
+
+## 화면에서의 자리 (REQ-104)
+- **"?"는 올려 볼 때만 보인다.** `MossAsk`의 "?"(`.moss-q`)는 감싼 글자 위에 포인터가 있거나(`:hover`) 그 안에 포커스가 있거나(`:focus-within`, `:focus-visible`) 할 때만 보이고(`opacity`), 터치 화면(`hover: none`)에서는 늘 보인다. 화면 읽기 이름("이끼에게 묻기: …")은 그대로다.
+- **떠 있는 이끼 버튼과 첫 인사는 아래 막대를 가리지 않는다.** 아래 막대(`we-bar`·빌더 `stage-steps`·실험 만들기 `summary-card`, 새 막대는 `data-bottom-bar`만 달면 된다)의 높이를 `moss/bar-offset.ts`가 재서 CSS 변수 `--bottom-bar-h`에 넣고, 버튼의 `bottom`은 `max(22px, 막대 높이 + 16px)`다. 막대가 없으면 제자리, 둘이면 가장 높은 것을 따른다.
 
 ## 누락 없이 — `moss` 검사
 

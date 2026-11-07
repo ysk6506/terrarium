@@ -148,6 +148,13 @@ export const SCREENS: Readonly<Record<PageName, ScreenSpec>> = {
         confirm: "이 모양으로 세계를 만들어요. {요약}",
       },
       {
+        id: "world-quick-start",
+        label: "실험 시작",
+        kind: "change",
+        aliases: ["바로 실험", "실험 시작해"],
+        confirm: "세계를 짓고 권장 설정(5번, 기본 툴)으로 실험을 시작해요. {요약}",
+      },
+      {
         id: "ladder-preset-auto",
         label: "알아서 고르기",
         kind: "change",

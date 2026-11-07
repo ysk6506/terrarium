@@ -25,6 +25,13 @@ export {
   SITE_CAMPUS_MIX,
 } from "./campus-spec";
 export { generateWorld, type WorldgenResult } from "./generate";
+export {
+  type CardOverrides,
+  cardOfKey,
+  cardWorkload,
+  catalogKey,
+  draftFromCard,
+} from "./service-card";
 export { generateShaped, type ShapedResult } from "./shaped";
 export {
   customService,

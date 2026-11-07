@@ -24,6 +24,7 @@ import { findDocsDir } from "./moss-index";
 import { Presets } from "./presets";
 import { Results } from "./results";
 import { Scenarios } from "./scenarios";
+import { ServiceCards } from "./service-cards";
 import { Titles } from "./titles";
 import { watchStore } from "./watched-store";
 import { WorldBoard } from "./world-board";
@@ -152,6 +153,7 @@ export class Platform {
   readonly presets: Presets;
   /** The model APIs the workspace registered for later (REQ-099, ADR-0119). */
   readonly models: Models;
+  readonly serviceCards: ServiceCards;
   /** 이끼, the helper that answers from the repo docs and the screen's state (REQ-103, ADR-0124). */
   readonly moss: Moss;
   /** The world list in popularity order with hearts (REQ-101, ADR-0122). */
@@ -213,6 +215,7 @@ export class Platform {
       ...(options.llm ?? {}),
       ...(options.adapters.allowedHosts ? { allowedHosts: options.adapters.allowedHosts } : {}),
     });
+    this.serviceCards = new ServiceCards(this.ctx, this.titles);
     const docsDir = options.docsDir ?? findDocsDir();
     this.moss = new Moss(this.models, docsDir ? { docsDir } : {});
     this.experiments = new Experiments(

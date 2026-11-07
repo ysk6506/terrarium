@@ -12,6 +12,7 @@ import type { Journal, JournalEntry } from "./journal";
 import type { LlmModelRecord } from "./llm-models";
 import type { Experiment, HarnessRunInfo, RunRecord, ScenarioRecord, WorldRecord } from "./model";
 import type { PresetKind, PresetRecord } from "./presets";
+import type { ServiceCardRecord } from "./service-cards";
 
 export interface HarnessInfo {
   readonly id: string;
@@ -271,6 +272,12 @@ export interface ExperimentStore {
   /** Every registered model API, in the order they were registered. */
   listModels(): Promise<LlmModelRecord[]>;
   deleteModel(id: string): Promise<boolean>;
+  /** Save or replace a service card (REQ-104). */
+  putServiceCard(card: ServiceCardRecord): Promise<void>;
+  getServiceCard(id: string): Promise<ServiceCardRecord | undefined>;
+  /** Every saved service card, oldest first. */
+  listServiceCards(): Promise<ServiceCardRecord[]>;
+  deleteServiceCard(id: string): Promise<boolean>;
   /** Put a heart on a world; asking twice leaves one (REQ-101). */
   putLike(like: WorldLike): Promise<void>;
   /** Take the heart back. False when there was none. */

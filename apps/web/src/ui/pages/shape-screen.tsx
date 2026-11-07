@@ -5,15 +5,43 @@
 import type { ShapedResult } from "@terrarium/core/sources/worldgen";
 import { planShape, type ShapeSpec, shapeProblem } from "@terrarium/core/sources/worldgen";
 import { type ReactNode, useMemo, useState } from "react";
-import { type ShapeView, shapeView, worldScale } from "../../logic";
+import { advance, builtFact, recommendLine, retreat, type ShapeView, shapeView } from "../../logic";
 import { messageOf, useApp } from "../context";
 import { Button, TextField } from "../kit";
-import { type Flow, STEPS, type Step, useShapeFlow } from "./shape-flow";
+import { type Flow, type Step, useShapeFlow } from "./shape-flow";
 import { LaddersStep } from "./shape-ladders";
 import { useShapeMoss } from "./shape-moss";
+import type { RowMeta } from "./shape-services";
 import { ServicesStep } from "./shape-services";
 import { SizeStep } from "./shape-size";
-import { WorkloadStep } from "./shape-workload";
+
+interface Start {
+  readonly busy: boolean;
+  readonly error: string | undefined;
+  readonly run: (worldId: string) => Promise<void>;
+}
+
+/** "실험 시작": one request on a built world, then the experiment's page. */
+function useQuickStart(templateIds: readonly string[]): Start {
+  const { api, navigate } = useApp();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string>();
+  const run = async (worldId: string) => {
+    setBusy(true);
+    setError(undefined);
+    try {
+      const done = await api.call("quickExperiment", {
+        params: { id: worldId },
+        body: { templateIds: [...templateIds] },
+      });
+      navigate({ name: "experiment", id: done.experimentId });
+    } catch (err) {
+      setError(messageOf(err));
+      setBusy(false);
+    }
+  };
+  return { busy, error, run };
+}
 
 interface Built {
   readonly worldId: string;
@@ -23,11 +51,13 @@ interface Built {
 function Done({
   built,
   flow,
-  scenarios,
+  view,
+  start,
 }: {
   readonly built: Built;
   readonly flow: Flow;
-  readonly scenarios: number;
+  readonly view: ShapeView;
+  readonly start: Start;
 }) {
   const { api, navigate, toast } = useApp();
   const [name, setName] = useState(flow.spec.name);
@@ -45,41 +75,52 @@ function Done({
     }
   };
   return (
-    <>
-      <output className="we-done">
-        ✓ &nbsp;{worldScale.doneLine(built.counts, flow.spec.services, scenarios)}
-      </output>
+    <section className="we-done" aria-label="세계를 다 지었어요">
+      <h2>세계를 다 지었어요</h2>
+      <p>{builtFact(flow.spec.name, view)}</p>
+      <div className="we-plan">
+        <div>
+          <b>이렇게 시작해요</b>
+          <br />
+          <small>{recommendLine(view.scenarios)}</small>
+        </div>
+        <Button
+          data-moss-skip="세계 폼 안의 입력"
+          kind="quiet"
+          onClick={() => navigate({ name: "newExperiment", worldId: built.worldId, quick: true })}
+        >
+          바꾸기
+        </Button>
+      </div>
+      <div className="row">
+        <Button
+          data-moss-action="world-quick-start"
+          kind="primary"
+          busy={start.busy}
+          onClick={() => void start.run(built.worldId)}
+        >
+          실험 시작
+        </Button>
+        <Button
+          data-moss-skip="세계 폼 안의 입력"
+          kind="quiet"
+          onClick={() => navigate({ name: "world", id: built.worldId })}
+        >
+          세계 둘러보기
+        </Button>
+      </div>
       <div className="we-save">
         <TextField label="템플릿 이름" value={name} onChange={setName} maxLength={80} />
         <Button data-moss-skip="세계 폼 안의 입력" disabled={saved} onClick={() => void save()}>
           {saved ? "템플릿으로 저장했어요" : "이 구성을 템플릿으로 저장"}
         </Button>
       </div>
-      {error && (
+      {(error || start.error) && (
         <p className="we-note" role="alert">
-          {error}
+          {error ?? start.error}
         </p>
       )}
-      <div className="we-bar">
-        <span className="we-bar-sum">
-          세계 이름 <b>{flow.spec.name}</b>
-        </span>
-        <span className="we-spacer" />
-        <Button
-          data-moss-skip="세계 폼 안의 입력"
-          onClick={() => navigate({ name: "world", id: built.worldId })}
-        >
-          세계 둘러보기
-        </Button>
-        <Button
-          data-moss-action="go-new-experiment"
-          kind="primary"
-          onClick={() => navigate({ name: "newExperiment", worldId: built.worldId })}
-        >
-          바로 실험 만들기
-        </Button>
-      </div>
-    </>
+    </section>
   );
 }
 
@@ -91,63 +132,49 @@ function Bar(props: {
   readonly onNext: () => void;
   readonly nextLabel: string;
   readonly nextDisabled?: string | undefined;
+  /** On the last screen: build the world and stop there (the primary press also starts the experiment). */
+  readonly onMake?: () => void;
 }) {
   return (
-    <div className="we-bar">
+    <div className="we-bar" data-bottom-bar>
       <span className="we-bar-sum">{props.sum}</span>
       <span className="we-spacer" />
       <Button data-moss-skip="세계 폼 안의 입력" kind="quiet" onClick={props.onBack}>
         이전
       </Button>
-      <Button
-        kind="primary"
-        data-moss-action="world-build"
-        busy={props.busy}
-        disabled={props.nextDisabled !== undefined}
-        why={props.nextDisabled}
-        onClick={props.onNext}
-      >
-        {props.nextLabel}
-      </Button>
+      {props.onMake && (
+        <Button
+          data-moss-action="world-build"
+          disabled={props.nextDisabled !== undefined}
+          why={props.nextDisabled}
+          onClick={props.onMake}
+        >
+          세계만 만들기
+        </Button>
+      )}
+      {props.onMake ? (
+        <Button
+          kind="primary"
+          data-moss-action="world-quick-start"
+          busy={props.busy}
+          disabled={props.nextDisabled !== undefined}
+          why={props.nextDisabled}
+          onClick={props.onNext}
+        >
+          {props.nextLabel}
+        </Button>
+      ) : (
+        <Button
+          kind="primary"
+          data-moss-action="world-build"
+          busy={props.busy}
+          onClick={props.onNext}
+        >
+          {props.nextLabel}
+        </Button>
+      )}
     </div>
   );
-}
-
-const NEXT: Readonly<Record<Step, Step | undefined>> = {
-  services: "ladders",
-  ladders: "work",
-  work: "size",
-  size: undefined,
-};
-const BACK: Readonly<Record<Step, Step | undefined>> = {
-  services: undefined,
-  ladders: "services",
-  work: "ladders",
-  size: "work",
-};
-
-/** The second screen asks once per service: "next" and "back" walk the services before they leave it. */
-function stepOn(flow: Flow, next: Step | undefined, make: () => Promise<void>): void {
-  if (flow.step === "ladders" && flow.ladder < flow.spec.services.length - 1) {
-    flow.setLadder(flow.ladder + 1);
-  } else if (next) {
-    if (next === "ladders") flow.setLadder(0);
-    flow.go(next);
-  } else {
-    void make();
-  }
-}
-
-function stepBack(flow: Flow, back: Step | undefined, leave: () => void): void {
-  if (flow.step === "ladders" && flow.ladder > 0) {
-    flow.setLadder(flow.ladder - 1);
-  } else if (back) {
-    // coming back to the second screen from the third lands on the last service
-    if (back === "ladders") flow.setLadder(flow.spec.services.length - 1);
-    flow.go(back);
-  } else {
-    leave();
-  }
 }
 
 /** Build the world the spec comes to, and keep what came of it. */
@@ -156,7 +183,7 @@ function useMake(spec: ShapeSpec, startedFrom?: string) {
   const [busy, setBusy] = useState(false);
   const [built, setBuilt] = useState<Built>();
   const [error, setError] = useState<string>();
-  const make = async () => {
+  const make = async (): Promise<Built | undefined> => {
     setBusy(true);
     setError(undefined);
     try {
@@ -165,10 +192,13 @@ function useMake(spec: ShapeSpec, startedFrom?: string) {
       });
       const world = saved.world;
       const counts = (world.provenance?.counts ?? {}) as ShapedResult["counts"];
-      setBuilt({ worldId: world.id, counts });
+      const made = { worldId: world.id, counts };
+      setBuilt(made);
       toast(`${world.name}을 만들었어요`);
+      return made;
     } catch (err) {
       setError(messageOf(err));
+      return undefined;
     } finally {
       setBusy(false);
     }
@@ -192,13 +222,58 @@ function summaryOf(step: Step, spec: ShapeSpec, view: ShapeView): ReactNode {
         </b>
       </>
     ),
-    work: <>일감을 정하고 나면 서버 수를 물어요</>,
     size: (
       <>
         세계 이름 <b>{spec.name}</b>
       </>
     ),
   }[step];
+}
+
+/** The bar's moves: 다음/이전 walk the screens (`short-flow`), and the last 다음 builds the world and starts the experiment. */
+function useStepper(
+  flow: Flow,
+  make: () => Promise<Built | undefined>,
+  quick: Start,
+  onLeave: () => void,
+) {
+  const count = flow.spec.services.length;
+  const at = { step: flow.step, ladder: flow.ladder };
+  const startNow = async () => {
+    const made = await make();
+    if (made) await quick.run(made.worldId);
+  };
+  const go = (to: ReturnType<typeof advance> | ReturnType<typeof retreat>, leave: () => void) => {
+    if (to === "make" || to === "leave") return leave();
+    flow.setLadder(to.ladder);
+    flow.go(to.step);
+  };
+  return {
+    at,
+    count,
+    last: advance(at, count) === "make",
+    startNow,
+    onBack: () => go(retreat(at, count), onLeave),
+    onNext: () => go(advance(at, count), () => void startNow()),
+  };
+}
+
+function Problem({ text }: { readonly text: string | undefined }) {
+  if (!text) return null;
+  return (
+    <p className="we-note" role="alert">
+      {text}
+    </p>
+  );
+}
+
+/** Where the card of each added service came from, by key (the first one is IAP, "기본 제공"). */
+function useMetas() {
+  const [metas, setMetas] = useState<Readonly<Record<string, RowMeta>>>({});
+  return {
+    metas,
+    setMeta: (key: string, meta: RowMeta) => setMetas((m) => ({ ...m, [key]: meta })),
+  };
 }
 
 export function ShapeScreen({
@@ -222,30 +297,37 @@ export function ShapeScreen({
   const plan = useMemo(() => planShape(spec), [spec]);
   const problem = shapeProblem(spec);
   const { busy, built, error, make } = useMake(spec, startedFrom);
-  const at = STEPS.indexOf(flow.step);
-  const next = NEXT[flow.step];
-  const back = BACK[flow.step];
+  const quick = useQuickStart(view.templateIds);
+  const { metas, setMeta } = useMetas();
+  const { last, onBack, onNext, startNow } = useStepper(flow, make, quick, onLeave);
   const sum = summaryOf(flow.step, spec, view);
-  useShapeMoss({ spec, flow, step: flow.step, last: !next, problem, make });
+  useShapeMoss({
+    spec,
+    flow,
+    step: flow.step,
+    last,
+    problem,
+    make: async () => void (await make()),
+    quick: startNow,
+  });
   if (built)
     return (
       <div className="we">
-        <Done built={built} flow={flow} scenarios={view.scenarios} />
+        <Done built={built} flow={flow} view={view} start={quick} />
       </div>
     );
   return (
-    <div className="we" data-step={STEPS[at]}>
+    <div className="we" data-step={flow.step}>
       {flow.step === "services" && (
         <ServicesStep
           services={spec.services}
           scenarios={view.scenarios}
+          metas={metas}
           onChange={flow.setServices}
+          onMeta={setMeta}
         />
       )}
       {flow.step === "ladders" && <LaddersStep flow={flow} view={view} />}
-      {flow.step === "work" && (
-        <WorkloadStep services={spec.services} view={view} onChange={flow.setServices} />
-      )}
       {flow.step === "size" && (
         <SizeStep
           services={spec.services}
@@ -254,23 +336,19 @@ export function ShapeScreen({
           servers={spec.servers}
           real={Boolean(spec.real)}
           onServers={flow.setServers}
-          onServices={flow.setServices}
           problem={problem}
         />
       )}
-      {error && (
-        <p className="we-note" role="alert">
-          {error}
-        </p>
-      )}
+      <Problem text={error ?? quick.error} />
       <Bar
         flow={flow}
         sum={sum}
-        busy={busy}
-        onBack={() => stepBack(flow, back, onLeave)}
-        onNext={() => stepOn(flow, next, make)}
-        nextLabel={next ? "다음" : "세계 만들기"}
-        nextDisabled={next ? undefined : problem}
+        busy={busy || quick.busy}
+        onBack={onBack}
+        onNext={onNext}
+        nextLabel={last ? "실험 시작" : "다음"}
+        nextDisabled={last ? problem : undefined}
+        {...(last ? { onMake: () => void make() } : {})}
       />
     </div>
   );

@@ -4,8 +4,9 @@
  * structure card of the choice under the hand. The same screen serves a service that chose its own shape.
  */
 import { withJosa } from "@terrarium/core/kernel";
-import { SERVICE_LAYERS, type ServiceDraft } from "@terrarium/core/sources/worldgen";
+import { cardOfKey, SERVICE_LAYERS, type ServiceDraft } from "@terrarium/core/sources/worldgen";
 import {
+  catalogCard,
   LAYER_IDS,
   type LayerId,
   pointlessOf,
@@ -13,7 +14,7 @@ import {
   withChoice,
 } from "@terrarium/core/world";
 import { type KeyboardEvent, type RefObject, useRef, useState } from "react";
-import { PRESET_LABELS, type PresetId, type ShapeView } from "../../logic";
+import { LAYER_INFO, PRESET_LABELS, type PresetId, type ShapeView } from "../../logic";
 import { useMossActions } from "../../moss";
 import { ChipDetail } from "./chip-card";
 import { LayerDetail, LayerRow, type Notice, rowFacts } from "./ladder-rows";
@@ -133,6 +134,13 @@ function escapeOf(ui: ReturnType<typeof useOpen>, table: RefObject<HTMLDivElemen
   };
 }
 
+/** "웹 API는 컴퓨트·네트워크·애플리케이션이 특히 중요해요." for a service made from a catalog card. */
+function mattersLine(service: ServiceDraft | undefined): string {
+  const card = service ? catalogCard(cardOfKey(service.key)) : undefined;
+  if (!service || !card) return "";
+  return ` ${withJosa(service.name, "은")} ${withJosa(card.matters.map((l) => LAYER_INFO[l].name).join("·"), "이")} 특히 중요해요.`;
+}
+
 function QHead(props: { readonly title: string; readonly at: number; readonly count: number }) {
   const step = props.count > 1 ? `서비스 ${props.at + 1} / ${props.count}` : "2 / 3";
   return (
@@ -220,7 +228,9 @@ export function LaddersStep({ flow, view }: { readonly flow: Flow; readonly view
   return (
     <>
       <QHead title={title} at={at} count={services.length} />
-      <p className="we-sub">층을 누르면 고를 수 있어요. 모르는 층은 알아서 골라져 있어요.</p>
+      <p className="we-sub">
+        층을 누르면 고를 수 있어요. 모르는 층은 알아서 골라져 있어요.{mattersLine(service)}
+      </p>
       {apart && service && <Lead flow={flow} service={service} />}
       <Presets state={state} />
       <div className="we-layers">
