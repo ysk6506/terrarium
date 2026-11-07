@@ -119,6 +119,11 @@ async function build(c: Context): Promise<void> {
   // The person points at the floor where the cursor shows a green spot: one click, however many we tried.
   c.d.actions++;
   if (!placed) throw new Error("랙을 놓지 못했다");
+  // REQ-109: the sheet and the cards sit beside what is picked, and the page never scrolls sideways.
+  const wide = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  if (wide > 0) throw new Error(`빌더가 가로로 ${wide}px 넘쳐요`);
   await c.d.press("Control+z");
   await page.waitForTimeout(300);
   if ((await hudText(page)) !== before) throw new Error("되돌리기가 랙을 지우지 못했다");

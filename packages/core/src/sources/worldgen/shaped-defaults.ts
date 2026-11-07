@@ -5,6 +5,7 @@
  */
 import {
   DEFAULT_WORKLOAD,
+  IAP_LOAD,
   type Layers,
   type ServiceKind,
   type WorkloadProfile,
@@ -68,6 +69,7 @@ export const IAP_DRAFT: ServiceDraft = {
   ],
   harm: IAP_HARM,
   workload: IAP_WORKLOAD,
+  load: IAP_LOAD,
 };
 
 /** "보통": a virtualised cluster on a leaf-spine network, A+B feeds, N+1 cooling, one room. */

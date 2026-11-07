@@ -76,6 +76,7 @@ export function ServiceSheet({
       draft: draftFromCard(base, taken, {
         name: v.name,
         ...(v.harm ? { harm: v.harm } : {}),
+        ...(v.load ? { load: v.load } : {}),
       }),
       meta: {
         owner: v.owner,
@@ -83,6 +84,7 @@ export function ServiceSheet({
         locked: v.locked,
         shared: v.shared,
         line: base.line,
+        savedId: v.id,
       },
     });
   };

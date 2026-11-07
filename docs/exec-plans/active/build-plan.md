@@ -4,6 +4,7 @@ kind: plan
 status: active
 last_verified: 2026-11-07
 verification_log:
+  - "2026-11-07: 12x 베타 피드백 2차 수정 (REQ-109)"
   - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
   - "2026-11-07: REQ-100 애플리케이션 층: 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
@@ -62,6 +63,7 @@ verification_log:
 | 12t | 부지 배치 규칙·동물 반응 (도로 → 주차장 → 차 → 나무 순서와 3 m 간격·앞치마 2 m, 서버 40대에 한 칸의 주차장, 그래픽 단계별 나무 수, 고양이·새를 누르면 대답하는 상태 기계와 WebAudio 합성음, 설정의 소리, 움직임 줄이기는 소리와 글만) | REQ-105 | 구현 끝 ([설명](../../design-docs/campus-layout.md), [ADR-0128](../../design-docs/adr/0128-campus-layout-and-animals.md)) |
 | 12u | 남은 점선 다섯을 실선으로 (사이트·DR 사다리: 서버룸 하나 → 둘 → 건물 둘 → DR 콜드 → 웜 → 핫 → 멀티 사이트 액티브-액티브와 RTO/RPO, 개체 `dr_site`·`site_link`·`replication_stream`·`dr_plan`, 지역 복제 볼륨, 합의 DB(`db_node`), 관리형 멀티 AZ(`db_managed`), 고장 열다섯, 툴 열넷, 알아서 하는 일 `cluster`, 시나리오 아홉, 칩 카드 일곱과 "복구 목표", 토폴로지 사이트 단계, 점선 0개) | REQ-106 | 구현 끝 ([설명](../../design-docs/site-dr-layer.md), [ADR-0129](../../design-docs/adr/0129-site-dr-geo-storage-distributed-db.md)) |
 | 12v | 가속기(GPU) 층과 전원·냉방 사다리 확장 (가속기 층 칩 다섯, 전원 N+1 UPS·랙 배터리·자체 변전소, 냉방 리어도어·침지, 개체 열두 종류·고장 열다섯·툴 열여섯·시나리오 열한 개, 파워 캐핑 모델과 시나리오 둘, 위상 보드의 가속기 층) | REQ-107 | 구현 끝([가속기 층](../../design-docs/gpu-layer.md), [전원·냉방 사다리](../../design-docs/power-cooling-ladders.md)) |
+| 12x | 베타 피드백 2차 수정 (서비스 숫자 기본값과 숫자로 고르는 알아서 규칙 표, 서버룸·룸당 랙·랙당 서버 크기, 하던 세계 이어서 하기와 내 카드 서버 저장, 사다리의 요약 카드를 ③으로, 세계 카드 전체 누르기, 빌더 카드를 고른 물체 옆에 붙이기) | REQ-109 | 구현 끝([세계 만들기](../../design-docs/world-entry.md), [ADR-0132](../../design-docs/adr/0132-world-entry-sizing-and-ux-fixes.md)) |
 | 13 | **오픈 (프로덕션 레디)** — 여러 팀이 믿고 쓴다: 로그인, 운영, 접근성, 부하 | 아래 | 예정 |
 
 결정은 ADR에 있다. 이 계획에는 순서와 상태만 둔다.

@@ -15,6 +15,7 @@ covers:
   - packages/core/src/contract/community-routes.ts
 covers_hash: 4b1f3f6880302348
 verification_log:
+  - "2026-11-07: REQ-109: 서비스부터 요청의 크기 칸(rooms·racksPerRoom·perRack)과 서비스 숫자"
   - "2026-11-06: 저장해 둔 것 여섯 경로를 routes.ts, responses.ts, contract/presets.ts와 대조해 표에 더했다 (ADR-0112)"
   - "2026-11-07: REQ-102(ADR-0123): 사다리·직접 짓기 화면과 말(시운전·미리 보기·전제)을 코드와 대조해 고쳤다"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
@@ -84,7 +85,7 @@ verification_log:
 | `DELETE /api/service-cards/:id` | 지우기(만든 사람만) | |
 | `GET /api/worlds/:id` | 세계 하나 (blueprint 포함) | |
 | `POST /api/worlds` | 빌더에서 지은 세계 저장 | |
-| `POST /api/worlds/generate` | 사업장 프리셋으로 세계 생성. 본문이 `{ shape }`이면 서비스부터(REQ-094), `template: true`를 더하면 템플릿으로 저장, `startedFrom`(템플릿·세계 id)을 더하면 출처를 세계 기록에 남긴다(REQ-101) | |
+| `POST /api/worlds/generate` | 사업장 프리셋으로 세계 생성. 본문이 `{ shape }`이면 서비스부터(REQ-094; 크기는 `rooms`·`racksPerRoom`·`perRack`(REQ-109)이고 옛 `servers`만 있어도 같은 세계를 짓는다, 서비스마다 `load`(초당 요청·데이터 GB·동시 사용자·허용 중단 초·GPU 시간)를 받는다), `template: true`를 더하면 템플릿으로 저장, `startedFrom`(템플릿·세계 id)을 더하면 출처를 세계 기록에 남긴다(REQ-101) | |
 | `GET /api/world-templates` | 저장해 둔 세계 템플릿 목록(구성은 `provenance.shape`). `GET /api/worlds`에는 나오지 않는다 | |
 | `POST /api/worlds/import` | 현실(KG 등)에서 읽기 전용으로 가져오기 | |
 | `PUT /api/worlds/:id` | 세계 고쳐 저장 (버전 확인) | |

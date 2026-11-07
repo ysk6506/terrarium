@@ -6,6 +6,7 @@
  */
 import type { LayerId } from "./ladder";
 import type { ServiceKind } from "./service";
+import type { ServiceLoad } from "./service-load";
 import type { WorkloadKind } from "./workload";
 
 export interface CardPart {
@@ -50,7 +51,12 @@ export interface CatalogCard {
   readonly matters: readonly LayerId[];
   /** The accelerator choice the card brings with it (REQ-107); absent: none, the world keeps `gpu-none`. */
   readonly accel?: string;
+  /** What the card carries by default (REQ-109): the numbers "알아서" and the sizing start from; a person edits them on the row. */
+  readonly load: ServiceLoad;
 }
+
+/** IAP's own numbers: forty teammates, a few requests a second, a graph and some logs. It is not a catalog card. */
+export const IAP_LOAD: ServiceLoad = { rps: 20, dataGB: 300, users: 40, maxDowntimeS: 300 };
 
 const part = (
   label: string,
@@ -90,6 +96,7 @@ export const SERVICE_CATALOG: readonly CatalogCard[] = [
     ],
     calls: [],
     matters: ["compute", "network", "app"],
+    load: { rps: 300, dataGB: 2_000, users: 1_200, maxDowntimeS: 60 },
   },
   {
     id: "batch-pipeline",
@@ -119,6 +126,7 @@ export const SERVICE_CATALOG: readonly CatalogCard[] = [
     ],
     calls: [],
     matters: ["compute", "storage"],
+    load: { rps: 5, dataGB: 5_000, users: 20, maxDowntimeS: 3_600 },
   },
   {
     id: "app-db",
@@ -148,6 +156,7 @@ export const SERVICE_CATALOG: readonly CatalogCard[] = [
     ],
     calls: [],
     matters: ["database", "storage", "compute"],
+    load: { rps: 200, dataGB: 1_000, users: 800, maxDowntimeS: 30 },
   },
   {
     id: "k8s-platform",
@@ -180,6 +189,7 @@ export const SERVICE_CATALOG: readonly CatalogCard[] = [
     ],
     calls: [],
     matters: ["compute", "network", "storage"],
+    load: { rps: 1_500, dataGB: 3_000, users: 2_000, maxDowntimeS: 120 },
   },
   {
     id: "message-queue",
@@ -203,6 +213,7 @@ export const SERVICE_CATALOG: readonly CatalogCard[] = [
     ],
     calls: [],
     matters: ["compute", "storage"],
+    load: { rps: 4_000, dataGB: 500, users: 300, maxDowntimeS: 30 },
   },
   {
     id: "cache",
@@ -226,6 +237,7 @@ export const SERVICE_CATALOG: readonly CatalogCard[] = [
     ],
     calls: [],
     matters: ["compute", "network"],
+    load: { rps: 20_000, dataGB: 100, users: 3_000, maxDowntimeS: 300 },
   },
   {
     id: "ai-serving",
@@ -249,6 +261,7 @@ export const SERVICE_CATALOG: readonly CatalogCard[] = [
     ],
     calls: ["cache"],
     matters: ["accel", "compute", "network", "cooling"],
+    load: { rps: 200, dataGB: 800, users: 2_000, maxDowntimeS: 60 },
     accel: "gpu-serving-pool",
   },
   {
@@ -273,6 +286,7 @@ export const SERVICE_CATALOG: readonly CatalogCard[] = [
     ],
     calls: [],
     matters: ["accel", "compute", "storage", "power", "cooling"],
+    load: { rps: 1, dataGB: 20_000, users: 30, maxDowntimeS: 7_200, gpuHours: 5_000 },
     accel: "gpu-training-cluster",
   },
   {
@@ -297,6 +311,7 @@ export const SERVICE_CATALOG: readonly CatalogCard[] = [
     ],
     calls: [],
     matters: ["storage", "power"],
+    load: { rps: 100, dataGB: 50_000, users: 1_500, maxDowntimeS: 300 },
   },
   {
     id: "monitoring",
@@ -320,6 +335,7 @@ export const SERVICE_CATALOG: readonly CatalogCard[] = [
     ],
     calls: [],
     matters: ["compute", "storage"],
+    load: { rps: 500, dataGB: 800, users: 60, maxDowntimeS: 60 },
   },
 ];
 

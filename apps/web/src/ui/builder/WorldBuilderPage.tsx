@@ -113,6 +113,7 @@ function Stage3D(
   props: StageProps & {
     readonly map: boolean;
     readonly worldId: string;
+    readonly anchor: builder.AnchorStore;
     readonly setMapRoom: (id: string | undefined) => void;
   },
 ) {
@@ -140,6 +141,7 @@ function Stage3D(
       handles={shownHandles(map, gestures)}
       {...(overlay ? { overlay } : {})}
       {...gestures.events}
+      onAnchor={props.anchor.set}
       {...(level.kind === "room"
         ? { air: airInput(b, level.id, map, props.setMapRoom, at, setAt) }
         : {})}
@@ -211,6 +213,7 @@ function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
   const { level, preview } = b.state;
   const { map, setMapRoom, topology, openTopology } = useViews(level);
   const moment = useRunMoment(preview);
+  const anchor = useMemo(builder.anchorStore, []);
   usePageTitle(initial.name);
   useBuilderHabits(b);
   return (
@@ -228,11 +231,18 @@ function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
           {topology ? (
             <TopologyStage b={b} {...moment} />
           ) : (
-            <Stage3D b={b} map={map} worldId={initial.id} setMapRoom={setMapRoom} {...moment} />
+            <Stage3D
+              b={b}
+              map={map}
+              worldId={initial.id}
+              anchor={anchor}
+              setMapRoom={setMapRoom}
+              {...moment}
+            />
           )}
           {!map && !topology && <PlaceSheet b={b} />}
           {!map && <NextChip b={b} worldId={initial.id} />}
-          {!map && <StageCards b={b} />}
+          {!map && <StageCards b={b} anchor={anchor} />}
           {!map && <StepBar b={b} />}
         </div>
       </div>

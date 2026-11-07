@@ -193,6 +193,7 @@ verification_log:
 - [0124 이끼 — 테라리움 도우미: 이름·지식 둘·화면 등록·누락 검사·모델·품질 측정, 먼저 말 걸지 않는다](design-docs/adr/0124-moss-assistant.md)
 - [0125 이끼는 LLM을 연결해야만 쓸 수 있다: 기본 모델이 없으면 꺼져 있고, 점수 질문은 채점 문서를 먼저 찾는다](design-docs/adr/0125-moss-requires-model.md)
 - [0126 run-all은 이끼 검사도 돌린다 (0124 보정)](design-docs/adr/0126-run-all-includes-moss.md)
+- [0132 세계 만들기의 크기는 서비스 숫자로 세고, 알아서는 숫자의 규칙 표이며, 빌더 카드는 고른 물체 옆에 붙는다 (베타 피드백 2차)](design-docs/adr/0132-world-entry-sizing-and-ux-fixes.md)
 - [0130 GPU 가속기 층을 사다리에 올리고, 전원·냉방 사다리를 끝까지 실선으로 늘리며, 파워 캐핑을 모델로 옮긴다](design-docs/adr/0130-gpu-layer-power-cooling-ladders.md)
 - [0122 세계 인기 순서·좋아요·칭호, 그리고 계급 모델 — 점수는 서버가 기록에서 세고, 칭호는 한 번 얻으면 안 잃고, 계급은 아직 화면에 없다](design-docs/adr/0122-world-popularity-likes-titles.md)
 - [0121 애플리케이션 층을 코어 모델로 올리고 서비스 호출 그래프를 넣는다](design-docs/adr/0121-application-layer-and-calls.md)

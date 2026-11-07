@@ -181,7 +181,9 @@ export function shapeState(spec: ShapeSpec, step: string, problem: string | unde
     단계: step,
     이름: spec.name,
     서비스: spec.services.map((s) => s.name),
-    서버: spec.servers ?? "알아서",
+    서버룸: spec.rooms ?? "알아서",
+    룸당_랙: spec.racksPerRoom ?? "알아서",
+    랙당_서버: spec.perRack ?? "알아서",
     막힌_이유: problem ?? null,
   };
 }

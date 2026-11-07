@@ -6,6 +6,7 @@
 import { useEffect, useState } from "react";
 import { builder } from "../../logic";
 import { Button } from "../kit";
+import { Anchored, usePickAnchor } from "./Anchored";
 import { OneCard } from "./OneCard";
 import { ServerCard, ServiceCard } from "./ServerCards";
 import type { Builder } from "./useBuilder";
@@ -66,26 +67,56 @@ function ManyPicked({ b }: { readonly b: Builder }) {
   );
 }
 
-export function StageCards({ b }: { readonly b: Builder }) {
+/** The card of what is picked: beside the thing in the picture, inside the stage (REQ-109). */
+function PickedCard({
+  b,
+  host,
+  anchor,
+}: {
+  readonly b: Builder;
+  readonly host: ReturnType<typeof useHostPick>;
+  readonly anchor: builder.StagePoint | undefined;
+}) {
   const { selected, index } = b.state;
-  const host = useHostPick(b);
   const one = selected.length === 1 ? index.find(selected[0] as string) : undefined;
+  if (selected.length > 1)
+    return (
+      <Anchored name="many" anchor={undefined}>
+        <ManyPicked b={b} />
+      </Anchored>
+    );
+  if (!one) return null;
   return (
-    <>
-      {host.serviceId && <HostHint onStop={() => host.setServiceId(undefined)} />}
-      {selected.length > 1 && <ManyPicked b={b} />}
-      {one?.kind === "service" && (
+    <Anchored name={one.kind} anchor={anchor}>
+      {one.kind === "service" ? (
         <ServiceCard
           entity={one}
           b={b}
           picking={host.serviceId === one.id}
           onPick={(on) => host.setServiceId(on ? one.id : undefined)}
         />
-      )}
-      {one && HOSTS.has(one.kind) && <ServerCard entity={one} b={b} />}
-      {one && one.kind !== "service" && !HOSTS.has(one.kind) && (
+      ) : HOSTS.has(one.kind) ? (
+        <ServerCard entity={one} b={b} />
+      ) : (
         <OneCard key={one.id} entity={one} b={b} />
       )}
+    </Anchored>
+  );
+}
+
+export function StageCards({
+  b,
+  anchor,
+}: {
+  readonly b: Builder;
+  readonly anchor: builder.AnchorStore;
+}) {
+  const host = useHostPick(b);
+  const at = usePickAnchor(anchor);
+  return (
+    <>
+      {host.serviceId && <HostHint onStop={() => host.setServiceId(undefined)} />}
+      <PickedCard b={b} host={host} anchor={at} />
     </>
   );
 }

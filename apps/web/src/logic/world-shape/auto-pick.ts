@@ -7,7 +7,12 @@
 
 import { withJosa } from "@terrarium/core/kernel";
 import type { ServiceDraft, ServiceLayers } from "@terrarium/core/sources/worldgen";
-import { MIDDLE_LAYERS, SERVICE_LAYERS } from "@terrarium/core/sources/worldgen";
+import {
+  GUESS_LOAD,
+  loadOf,
+  MIDDLE_LAYERS,
+  SERVICE_LAYERS,
+} from "@terrarium/core/sources/worldgen";
 import {
   type ChipMech,
   cheapestWay,
@@ -17,10 +22,13 @@ import {
   type Layers,
   placeOf,
   SERVICE_CATALOG,
+  type ServiceLoad,
   unmetNeeds,
   unmetOf,
+  wholeLoad,
 } from "@terrarium/core/world";
 import { cardOf } from "./ladders";
+import { applyRules } from "./load-rules";
 
 export type PresetId = "auto" | "cheap" | "middle" | "steady";
 
@@ -80,6 +88,19 @@ function steadyRow(): Layers {
 
 export const STEADY_LAYERS: Layers = steadyRow();
 
+/** The numbers the world carries when several services share it: the busiest, the most people, all the data, the strictest stop. */
+function loadOfAll(services: readonly ServiceDraft[]): Required<ServiceLoad> {
+  const loads = services.map((s) => wholeLoad(loadOf(s)));
+  if (loads.length === 0) return wholeLoad(GUESS_LOAD);
+  return {
+    rps: Math.max(...loads.map((l) => l.rps)),
+    users: Math.max(...loads.map((l) => l.users)),
+    dataGB: loads.reduce((n, l) => n + l.dataGB, 0),
+    maxDowntimeS: Math.min(...loads.map((l) => l.maxDowntimeS)),
+    gpuHours: loads.reduce((n, l) => n + l.gpuHours, 0),
+  };
+}
+
 /** What a service asks of the layers: how big it is and how much a stop costs. */
 interface Need {
   readonly nodes: number;
@@ -92,6 +113,8 @@ interface Need {
   readonly accel?: string;
   /** The service whose card brings it. */
   readonly accelBy?: string;
+  /** What the services carry (REQ-109): the numbers the rules below read. */
+  readonly load: Required<ServiceLoad>;
 }
 
 const isCluster = (s: ServiceDraft): boolean =>
@@ -113,6 +136,7 @@ const strongestAccel = (
 };
 
 function needOf(services: readonly ServiceDraft[]): Need {
+  const load = loadOfAll(services);
   const top = services.reduce<Need | undefined>((best, s) => {
     const perHour = s.harm.reduce((m, t) => Math.max(m, t.perHourKrw), 0);
     return !best || perHour > best.perHour
@@ -123,10 +147,11 @@ function needOf(services: readonly ServiceDraft[]): Need {
           name: s.name,
           k8s: isCluster(s),
           accel: accelOf(s),
+          load,
         }
       : best;
   }, undefined);
-  if (!top) return { nodes: 1, perHour: 0, kind: "request", name: "서비스", k8s: false };
+  if (!top) return { nodes: 1, perHour: 0, kind: "request", name: "서비스", k8s: false, load };
   // accelerators are one building's: the largest GPU choice any service brings, not only the costliest service's
   const accel = strongestAccel(services);
   return { ...top, accel: accel?.id, accelBy: accel?.by };
@@ -247,13 +272,32 @@ export interface Resolved {
   readonly why: Readonly<Partial<Record<LayerId, string>>>;
 }
 
+/** The cost preset on top of "알아서" (REQ-109): `-1` ("싸게") moves every picked layer one choice left, `1` ("멈추지 않게") one right. */
+export interface ResolveOptions {
+  readonly cost?: -1 | 0 | 1;
+}
+
+/** The nearest choice the core can imitate one step to the left (cheaper) or right (steadier), or the same when there is none. */
+function stepped(layer: LayerId, id: string, dir: -1 | 1): string {
+  const chips = LADDER[layer];
+  for (let i = placeOf(layer, id) + dir; i >= 0 && i < chips.length; i += dir) {
+    const chip = chips[i] as ChipMech;
+    if (chip.modeled && !(dir === 1 && BEYOND_STEADY.has(chip.id))) return chip.id;
+  }
+  return id;
+}
+
+/** A layer whose choice the services bring (the GPUs) stays where they put it, whatever the cost preset says. */
+const COST_FIXED: ReadonlySet<LayerId> = new Set<LayerId>(["accel"]);
+
 /**
  * The eight choices: a layer the person chose (`manual`) stays as chosen; every other layer is on "알아서" and is
- * worked out from the service and from the layers before it.
+ * worked out from the service, from the numbers it carries (`load-rules.ts`) and from the layers before it.
  */
 export function resolveLayers(
   services: readonly ServiceDraft[],
   manual: Partial<Layers>,
+  options: ResolveOptions = {},
 ): Resolved {
   const need = needOf(services);
   const layers: Record<string, string> = {};
@@ -265,9 +309,15 @@ export function resolveLayers(
       layers[layer] = chosen;
       continue;
     }
-    const picked = CHOOSERS[layer](need, { ...MIDDLE_LAYERS, ...layers } as Layers);
-    layers[layer] = picked.id;
-    why[layer] = picked.why;
+    const base = CHOOSERS[layer](need, { ...MIDDLE_LAYERS, ...layers } as Layers);
+    const picked = applyRules(layer, base, need.load);
+    const dir = COST_FIXED.has(layer) ? 0 : (options.cost ?? 0);
+    const moved = dir === 0 ? picked.id : stepped(layer, picked.id, dir);
+    layers[layer] = moved;
+    why[layer] =
+      moved === picked.id
+        ? picked.why
+        : `${picked.why}, ${dir < 0 ? "싸게 쪽이라 한 칸 낮춰서" : "멈추지 않게 쪽이라 한 칸 올려서"}`;
     auto.add(layer);
   }
   mend(layers, auto, why);
@@ -281,8 +331,9 @@ export function resolveLayers(
 export function resolveServiceLayers(
   service: ServiceDraft,
   manual: Partial<Layers>,
+  options: ResolveOptions = {},
 ): { readonly layers: ServiceLayers; readonly why: Resolved["why"] } {
-  const { layers, why } = resolveLayers([service], manual);
+  const { layers, why } = resolveLayers([service], manual, options);
   return {
     layers: Object.fromEntries(SERVICE_LAYERS.map((l) => [l, layers[l]])) as ServiceLayers,
     why,

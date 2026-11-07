@@ -10,13 +10,13 @@ covers:
   - apps/web/src/ui/builder/Toolbox.tsx
   - apps/web/src/ui/builder/WorldBuilderPage.tsx
   - apps/web/src/ui/pages/new-world.tsx
-covers_hash: 0274bded8deb7aa9
+covers_hash: 7465d2e7b2338db3
 verification_log:
-  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
-  - "2026-11-07: REQ-102: 이 검토는 당시 상태의 기록이다. 빌더 둘레는 web-ui.md가 지금 모습을 말한다"
   - "2026-11-07: REQ-102 뒤의 모습을 가리키는 말을 덧붙였다"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
+  - "2026-11-07: REQ-109: 코드와 대조했다. 해당 문장을 고쳤고 나머지는 그대로 맞다"
+  - "2026-11-07: REQ-109: 코드와 대조했다"
 ---
 # 세계 만들기 검토 (베타 피드백 4·12, ADR-0083 예정)
 

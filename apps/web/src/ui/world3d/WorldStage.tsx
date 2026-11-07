@@ -55,6 +55,8 @@ export interface WorldStageProps extends StageEvents {
   readonly onWatch?: (entityId: string) => void;
   /** On the room level: the temperature and airflow map (REQ-072), from what "시운전" recorded. */
   readonly air?: AirInput;
+  /** Where the one picked thing shows on the canvas, in pixels, as the camera moves (REQ-109); none when nothing or several are picked. */
+  readonly onAnchor?: (at: { readonly x: number; readonly y: number } | undefined) => void;
   readonly children?: ReactNode;
 }
 
@@ -263,6 +265,25 @@ function StageOverlays({ view, props, around, layer, onLayer, life, onLife }: Ov
   );
 }
 
+/** Report where the one picked thing is on the canvas (the top of its outline), after every frame that moves it. */
+function useAnchor(view: WorldView | undefined, props: WorldStageProps): void {
+  const { scene, selected, onAnchor } = props;
+  useEffect(() => {
+    if (!view || !onAnchor) return;
+    const box =
+      scene && selected?.length === 1 ? world3d.outlinesOf(scene, selected)[0] : undefined;
+    if (!box) return onAnchor(undefined);
+    const place = () => {
+      const at = view.screenOf({ x: box.x, y: box.y + box.h / 2, z: box.z });
+      onAnchor(at?.visible ? { x: Math.round(at.x), y: Math.round(at.y) } : undefined);
+    };
+    place();
+    return view.onRender(place);
+  }, [view, scene, selected, onAnchor]);
+  // a stage that goes away (the topology eye) takes the place with it
+  useEffect(() => () => onAnchor?.(undefined), [onAnchor]);
+}
+
 /** The room the camera is in: the builder's level, or where the viewer has gone. */
 function roomInView(level: builder.Level | undefined, focus: Focus): string | undefined {
   if (level) return level.kind === "room" ? level.id : undefined;
@@ -278,6 +299,7 @@ export function WorldStage(props: WorldStageProps) {
   const layer = props.explore ? chosen : props.overlay?.heat ? "heat" : "plain";
   useWorldContent(view, { ...props, layer });
   useStageEvents(view, useLatest(props));
+  useAnchor(view, props);
   const around = useAmbience(view, props, lifeOn);
   const back = useStepBack(view, props.index, props.level !== undefined);
   const activity = props.activity ?? noActivity;

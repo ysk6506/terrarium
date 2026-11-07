@@ -63,6 +63,26 @@ export {
   shapeProblem,
 } from "./shaped-plan";
 export {
+  askOf,
+  askTotal,
+  BACKGROUND,
+  defaultSize,
+  fillFor,
+  GUESS_LOAD,
+  loadOf,
+  PER_SERVER,
+  SIZE_LIMITS,
+  type SizeAsk,
+  serversForLoad,
+  sizeFields,
+  sizeFor,
+  sizeFromServers,
+  sizeProblem,
+  sizeTotals,
+  sizingNotes,
+  workloadServers,
+} from "./shaped-sizing";
+export {
   outlineLand,
   SITE_SHAPES,
   type SitePlace,

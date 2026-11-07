@@ -6,6 +6,7 @@ export {
   presetLayers,
   presetOf,
   type Resolved,
+  type ResolveOptions,
   resolveLayers,
   resolveServiceLayers,
   STEADY_LAYERS,
@@ -22,6 +23,7 @@ export {
   type Join,
   LAYER_INFO,
 } from "./ladders";
+export { LOAD_RULE_ROWS, LOAD_RULES, type LoadRule } from "./load-rules";
 export { costText, hostsText, type ShapeView, shapeView } from "./shape-view";
 export {
   advance,

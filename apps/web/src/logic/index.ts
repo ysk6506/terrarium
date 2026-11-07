@@ -254,6 +254,13 @@ export {
   WORLD_SORT_OPTIONS,
 } from "./world-board";
 export {
+  type DraftStep,
+  type RowMeta,
+  type WorldDraft,
+  worldDraft,
+  worthKeeping,
+} from "./world-draft";
+export {
   advance,
   builtFact,
   CARD_LIST_MAX,
@@ -269,12 +276,15 @@ export {
   guessWorkload,
   type Join,
   LAYER_INFO,
+  LOAD_RULE_ROWS,
+  LOAD_RULES,
   PRESET_LABELS,
   type PresetId,
   presetLayers,
   pressesToExperiment,
   QUICK,
   type Resolved,
+  type ResolveOptions,
   recommendLine,
   resolveLayers,
   resolveServiceLayers,
