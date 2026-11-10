@@ -17,6 +17,8 @@ export interface TestConfigRules {
   readonly coverage_include: readonly string[];
   readonly coverage_exclude_allowed: readonly string[];
   readonly forbidden_test_options: readonly string[];
+  /** `setupFiles` is forbidden unless it lists exactly these files (ADR-0140). */
+  readonly allowed_setup_files?: readonly string[];
 }
 
 /** The object literal assigned to property `name` anywhere in the file. */
@@ -61,6 +63,8 @@ function checkVitestConfig(root: string, rules: TestConfigRules): Violation[] {
   const coverageObj = findObject(sf, "coverage");
   const out: Violation[] = [];
   for (const option of rules.forbidden_test_options) {
+    const setup = option === "setupFiles" ? stringArray(property(testObj, option)) : undefined;
+    if (setup && sameSet(setup, rules.allowed_setup_files ?? [])) continue;
     if (property(testObj, option) !== undefined) {
       out.push(
         violation(

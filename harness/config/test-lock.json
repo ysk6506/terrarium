@@ -60918,6 +60918,140 @@
    "added": "2026-10-28",
    "amended_by": null
   },
+  "harness/src/checks/test-config.test.ts::<import:0458d18f>": {
+   "kind": "support",
+   "hash": "0458d18f1a491d16",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::<import:1415b001>": {
+   "kind": "support",
+   "hash": "1415b001cc67fcc6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::<import:46dc40aa>": {
+   "kind": "support",
+   "hash": "46dc40aa82ca0ed6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::<import:50321f6c>": {
+   "kind": "support",
+   "hash": "50321f6c860a7a17",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::=configCodes": {
+   "kind": "support",
+   "hash": "b274d8cd0803203e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::=read": {
+   "kind": "support",
+   "hash": "a02ca9415c6b60bb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::=REAL": {
+   "kind": "support",
+   "hash": "63811c58bfe4d972",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::the one allowed vitest setup file [REQ-023] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::the one allowed vitest setup file [REQ-023] > any other setup file is still a violation": {
+   "kind": "test",
+   "hash": "28c9d54f17d48810",
+   "asserts": 2,
+   "literals": [
+    "\"TCFG001\"",
+    "\"TCFG001\"",
+    "\"TCFG001\"",
+    "\"TCFG001\"",
+    "\"\\\"tests/setup/other.ts\\\"\"",
+    "\"\\\"tests/setup/other.ts\\\"\"",
+    "\"\\\"tests/setup/yield-between-tests.ts\\\", \\\"tests/setup/other.ts\\\"\"",
+    "\"\\\"tests/setup/yield-between-tests.ts\\\", \\\"tests/setup/other.ts\\\"\"",
+    "\"any other setup file is still a violation\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::the one allowed vitest setup file [REQ-023] > the listed setup file is accepted": {
+   "kind": "test",
+   "hash": "38cd2631f695e8c5",
+   "asserts": 1,
+   "literals": [
+    "\"\\\"tests/setup/yield-between-tests.ts\\\"\"",
+    "\"\\\"tests/setup/yield-between-tests.ts\\\"\"",
+    "\"the listed setup file is accepted\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
   "harness/src/checks/testguard.test.ts::<import:30102eeb>": {
    "kind": "support",
    "hash": "30102eeb700389a0",
