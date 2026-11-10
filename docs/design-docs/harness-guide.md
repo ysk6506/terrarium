@@ -2,13 +2,14 @@
 title: 품질 하네스 사용법
 kind: guide
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-10
 covers:
   - harness/src/run-all.ts
-covers_hash: 551362b453d558a0
+covers_hash: 2e1acf34d4c75225
 verification_log:
   - "2026-10-28: rewritten for TS harness"
   - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
+  - "2026-11-10: TRACE 예정 표시와 CI 조각·합계 검사를 적음 (ADR-0140)"
 ---
 # 품질 하네스
 
@@ -22,7 +23,7 @@ verification_log:
 | 기술 부채 | `harness/src/checks/debt.ts` | `DEBT*` | ADR-0003 |
 | 테스트 변조 방지 | `harness/src/checks/testguard.ts` | `TEST*` `TCFG*` `TLOCK*` | ADR-0004 |
 | 커버리지 | `harness/src/checks/coverage.ts` | `COV*` | ADR-0004, ADR-0012 |
-| 요구사항 추적 | `harness/src/checks/traceability.ts` | `TRACE*` | ADR-0004 |
+| 요구사항 추적 (`**예정(ADR-NNNN)**` 요구는 따로 나열) | `harness/src/checks/traceability.ts` | `TRACE*` | ADR-0004, ADR-0140 |
 | 가드레일 보호 | `harness/src/checks/protected.ts` | `PROT*` | ADR-0005 |
 | UX Honeycomb | `harness/src/ux/` | `UX*` | [UX 측정](ux-honeycomb.md) |
 
@@ -37,3 +38,5 @@ verification_log:
 
 1. 기본 브랜치 보호: `ci` 워크플로 통과 필수, 직접 push 금지.
 2. "코드 소유자 승인 필수"를 켜고 `.github/CODEOWNERS`의 `@terrarium-maintainers`를 실제 사용자나 팀으로 바꾼다.
+
+CI는 이 검사들을 `structure` 작업으로 따로 돌리고, 테스트는 조각으로 나눠 병렬로 돌린다. 조각 합계 검사는 `harness/src/ci/shard-sum.ts` ([ADR-0140](adr/0140-ci-shards-and-merge-gate.md)).

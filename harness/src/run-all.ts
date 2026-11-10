@@ -6,7 +6,7 @@ import { run as docs } from "./checks/docs";
 import { run as moss } from "./checks/moss";
 import { run as protectedPaths } from "./checks/protected";
 import { run as testguard } from "./checks/testguard";
-import { run as traceability } from "./checks/traceability";
+import { plannedLines, run as traceability } from "./checks/traceability";
 import { findRoot, finish, flag, isMain, parseArgs, today, type Violation } from "./common";
 
 export type Check = readonly [name: string, run: () => Violation[]];
@@ -31,6 +31,7 @@ export function main(argv: readonly string[], out: (line: string) => void = cons
   let failed = 0;
   for (const [name, run] of checks(root, flag(flags, "base"), flags.has("with-coverage")))
     failed += finish(name, run(), out);
+  for (const line of plannedLines(root)) out(line);
   out(failed === 0 ? "\nALL CHECKS PASSED" : `\n${failed} CHECK(S) FAILED`);
   return failed === 0 ? 0 : 1;
 }

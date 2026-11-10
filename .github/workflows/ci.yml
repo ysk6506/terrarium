@@ -1,25 +1,163 @@
+# CI is the merge gate (ADR-0140): every test runs on every merge, spread over parallel shards.
+# Gating: lint-types, test (shards) + test-summary, structure. The `gate` job is the one required check.
+# Non-gating, with a debt item each: coverage (TD-0002), ux (TD-0004).
 name: ci
 on:
   pull_request:
   push:
     branches: [main]
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  SHARDS: 12
+
 jobs:
-  check:
+  lint-types:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm lint
+      - run: pnpm typecheck
+
+  # No coverage instrumentation here: it slows the simulation tests enough to hit their time limits.
+  # Coverage is measured in its own job. The test timeout is the one in vitest.config.ts, unchanged.
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm exec vitest run --shard=${{ matrix.shard }}/${{ env.SHARDS }} --reporter=default --reporter=json --outputFile.json=shard-${{ matrix.shard }}.json
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-shard-${{ matrix.shard }}
+          path: shard-${{ matrix.shard }}.json
+          if-no-files-found: error
+
+  # Every listed test must have run exactly once, passed and not been skipped.
+  test-summary:
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: test-shard-*
+          path: shards
+          merge-multiple: true
+      - run: pnpm exec vitest list --json=list.json > /dev/null
+      - run: pnpm tsx harness/src/ci/shard-sum.ts list.json shards/shard-*.json
+
+  # Pass/fail of the tests is decided by the gating shards above. This job measures coverage with a
+  # longer timeout (instrumented simulations are slow) and checks the floors. Non-gating until TD-0002
+  # (due 2026-11-21) is closed: the floors have not been measured since 2026-11-07.
+  coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm exec vitest run --coverage --shard=${{ matrix.shard }}/${{ env.SHARDS }} --reporter=blob --testTimeout=300000
+        continue-on-error: true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: blob-${{ matrix.shard }}
+          path: .vitest-reports
+          include-hidden-files: true
+          if-no-files-found: error
+
+  coverage-floors:
+    needs: coverage
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true # TD-0002, due 2026-11-21
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
         with:
-          node-version: 22
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
+          pattern: blob-*
+          path: .vitest-reports
+          merge-multiple: true
+      - run: pnpm exec vitest --merge-reports --coverage
+      - name: Coverage per unit against the floors
+        run: |
+          base=""
+          if [ "${{ github.event_name }}" = "pull_request" ]; then base="--base origin/${{ github.base_ref }}"; fi
+          pnpm tsx harness/src/checks/coverage.ts $base | tee coverage-floors.txt
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            coverage-floors.txt
+            coverage/coverage-summary.json
+
+  structure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
       # Pull requests are compared with the base branch: protected paths, the test lock, the debt
-      # baseline and coverage/UX floors may not be loosened without an ADR.
+      # baseline may not be loosened without an ADR.
       - if: github.event_name == 'pull_request'
-        run: pnpm lint && pnpm typecheck && pnpm test && pnpm tsx harness/src/run-all.ts --with-coverage --base origin/${{ github.base_ref }}
+        run: pnpm tsx harness/src/run-all.ts --base origin/${{ github.base_ref }}
       - if: github.event_name != 'pull_request'
-        run: pnpm check
+        run: pnpm tsx harness/src/run-all.ts
+
+  # Browser measurement of the UI. Non-gating until TD-0004 (due 2026-11-24) splits journeys from timings.
+  ux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm build
+      - name: UX gate (40 minute limit)
+        run: |
+          set -o pipefail
+          node_modules/.bin/tsx -e "import {main,runChild} from './harness/src/ux/run.ts'; main([],console.log,(c,a,o)=>runChild(c,a,{...o,timeoutMs:40*60_000})).then(c=>process.exit(c))" 2>&1 | tee ux.log
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ux
+          path: |
+            ux.log
+            docs/generated/ux-score.json
+
+  gate:
+    needs: [lint-types, test, test-summary, structure]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo '${{ toJSON(needs) }}'
+          test "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped') }}" = "false"

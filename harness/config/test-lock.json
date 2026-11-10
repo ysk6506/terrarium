@@ -61849,6 +61849,327 @@
    "added": "2026-10-28",
    "amended_by": null
   },
+  "harness/src/checks/traceability.test.ts::<import:0458d18f>": {
+   "kind": "support",
+   "hash": "0458d18f1a491d16",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::<import:46dc40aa>": {
+   "kind": "support",
+   "hash": "46dc40aa82ca0ed6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::<import:50321f6c>": {
+   "kind": "support",
+   "hash": "50321f6c860a7a17",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::<import:82a4a117>": {
+   "kind": "support",
+   "hash": "82a4a11797f186b1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::=ADR": {
+   "kind": "support",
+   "hash": "785386e3485e9ad5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::=PLANNED": {
+   "kind": "support",
+   "hash": "beb3677ceb01ab33",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::=read": {
+   "kind": "support",
+   "hash": "a02ca9415c6b60bb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::=REAL": {
+   "kind": "support",
+   "hash": "63811c58bfe4d972",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::=repo": {
+   "kind": "support",
+   "hash": "f072f7e647f6a4f9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::=REQS": {
+   "kind": "support",
+   "hash": "ce737b9b9e146b01",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::=SPEC": {
+   "kind": "support",
+   "hash": "38d40d34c0f42e02",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::planned requirements in the traceability check [REQ-023] [REQ-025] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::planned requirements in the traceability check [REQ-023] [REQ-025] > a planned requirement must cite an ADR that exists": {
+   "kind": "test",
+   "hash": "72c284f41058f248",
+   "asserts": 1,
+   "literals": [
+    "\"TRACE005\"",
+    "\"TRACE005\"",
+    "\"a planned requirement must cite an ADR that exists\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::planned requirements in the traceability check [REQ-023] [REQ-025] > a planned requirement that a test already cites must drop the marker": {
+   "kind": "test",
+   "hash": "a7ec99b6e0558007",
+   "asserts": 2,
+   "literals": [
+    "\"TRACE006\"",
+    "\"TRACE006\"",
+    "\"a planned requirement that a test already cites must drop the marker\"",
+    "\"b [REQ-002]\"",
+    "\"tests/spec/b.test.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::planned requirements in the traceability check [REQ-023] [REQ-025] > a planned requirement without a test is listed, not failed": {
+   "kind": "test",
+   "hash": "89b347cae9a4dafb",
+   "asserts": 3,
+   "literals": [
+    "\"ADR-0007\"",
+    "\"ADR-0007\"",
+    "\"REQ-002 (ADR-0007)\"",
+    "\"REQ-002 (ADR-0007)\"",
+    "\"REQ-002\"",
+    "\"REQ-002\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"a planned requirement without a test is listed, not failed\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::planned requirements in the traceability check [REQ-023] [REQ-025] > the same requirement without the marker still fails": {
+   "kind": "test",
+   "hash": "45a9458825d23d7d",
+   "asserts": 1,
+   "literals": [
+    "\"TRACE001\"",
+    "\"TRACE001\"",
+    "\"later\"",
+    "\"later\"",
+    "\"the same requirement without the marker still fails\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum.test.ts::<import:db1084c0>": {
+   "kind": "support",
+   "hash": "db1084c09c3ab8b8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum.test.ts::=list": {
+   "kind": "support",
+   "hash": "0891ab930c60f373",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum.test.ts::=report": {
+   "kind": "support",
+   "hash": "e7f5a8ce060f34f1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum.test.ts::shard sum: every test runs exactly once per CI run > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum.test.ts::shard sum: every test runs exactly once per CI run > a file in two shards or in none is reported": {
+   "kind": "test",
+   "hash": "83eba07c43b28450",
+   "asserts": 2,
+   "literals": [
+    "\"/r/packages/a/src/x.test.ts\"",
+    "\"/r/packages/a/src/x.test.ts\"",
+    "\"/r/packages/a/src/x.test.ts\"",
+    "\"/r/tests/spec/y.test.ts\"",
+    "\"a file in two shards or in none is reported\"",
+    "\"packages/a/src/x.test.ts: listed 2, shards ran 4\"",
+    "\"packages/a/src/x.test.ts: listed 2, shards ran 4\"",
+    "\"passed\"",
+    "\"passed\"",
+    "\"passed\"",
+    "\"passed\"",
+    "\"passed\"",
+    "\"passed\"",
+    "\"passed\"",
+    "\"tests/spec/y.test.ts: listed 1, shards ran 0\"",
+    "\"tests/spec/y.test.ts: listed 1, shards ran 0\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum.test.ts::shard sum: every test runs exactly once per CI run > failed and skipped tests are reported": {
+   "kind": "test",
+   "hash": "e689ac65ab88ff4f",
+   "asserts": 1,
+   "literals": [
+    "\"/r/packages/a/src/x.test.ts\"",
+    "\"/r/tests/spec/y.test.ts\"",
+    "\"1 test(s) failed\"",
+    "\"1 test(s) failed\"",
+    "\"1 test(s) were skipped, todo or not run\"",
+    "\"1 test(s) were skipped, todo or not run\"",
+    "\"failed and skipped tests are reported\"",
+    "\"failed\"",
+    "\"passed\"",
+    "\"skipped\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum.test.ts::shard sum: every test runs exactly once per CI run > shards that cover the list once pass": {
+   "kind": "test",
+   "hash": "5d6f200d8f203104",
+   "asserts": 1,
+   "literals": [
+    "\"/runner/packages/a/src/x.test.ts\"",
+    "\"/runner/tests/spec/y.test.ts\"",
+    "\"passed\"",
+    "\"passed\"",
+    "\"passed\"",
+    "\"shards that cover the list once pass\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
   "harness/src/common.test.ts::<import:007beb93>": {
    "kind": "support",
    "hash": "007beb93cef3e58d",
