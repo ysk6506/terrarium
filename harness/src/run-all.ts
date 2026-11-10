@@ -6,18 +6,30 @@ import { run as docs } from "./checks/docs";
 import { run as moss } from "./checks/moss";
 import { run as protectedPaths } from "./checks/protected";
 import { run as testguard } from "./checks/testguard";
-import { plannedLines, run as traceability } from "./checks/traceability";
+import { report as traceability } from "./checks/traceability";
 import { findRoot, finish, flag, isMain, parseArgs, today, type Violation } from "./common";
 
 export type Check = readonly [name: string, run: () => Violation[]];
 
-export function checks(root: string, base: string | undefined, withCoverage: boolean): Check[] {
+export function checks(
+  root: string,
+  base: string | undefined,
+  withCoverage: boolean,
+  notes: string[] = [],
+): Check[] {
   const plan: Check[] = [
     ["architecture", () => architecture(root)],
     ["docs", () => docs(root)],
     ["debt", () => debt(root, today(), base)],
     ["test-integrity", () => testguard(root, base)],
-    ["traceability", () => traceability(root)],
+    [
+      "traceability",
+      () => {
+        const { violations, planned } = traceability(root);
+        notes.push(...planned);
+        return violations;
+      },
+    ],
     ["moss", () => moss(root)],
     ["protected-paths", () => protectedPaths(root, base)],
   ];
@@ -29,9 +41,10 @@ export function main(argv: readonly string[], out: (line: string) => void = cons
   const { flags } = parseArgs(argv);
   const root = findRoot(flag(flags, "root"));
   let failed = 0;
-  for (const [name, run] of checks(root, flag(flags, "base"), flags.has("with-coverage")))
+  const notes: string[] = [];
+  for (const [name, run] of checks(root, flag(flags, "base"), flags.has("with-coverage"), notes))
     failed += finish(name, run(), out);
-  for (const line of plannedLines(root)) out(line);
+  for (const line of notes) out(line);
   out(failed === 0 ? "\nALL CHECKS PASSED" : `\n${failed} CHECK(S) FAILED`);
   return failed === 0 ? 0 : 1;
 }

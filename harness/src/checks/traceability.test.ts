@@ -3,7 +3,7 @@ import path from "node:path";
 import { describe, expect, test } from "vitest";
 import { findRoot } from "../common";
 import { miniRepo } from "../test-support/mini-repo";
-import { plannedLines, plannedRequirements, run } from "./traceability";
+import { plannedRequirements, report, run } from "./traceability";
 
 const REAL = findRoot();
 const read = (file: string) => readFileSync(path.join(REAL, file), "utf8");
@@ -32,7 +32,7 @@ describe("planned requirements in the traceability check [REQ-023] [REQ-025]", (
     const root = repo(PLANNED, ADR);
     expect(run(root)).toEqual([]);
     expect([...plannedRequirements(root)]).toEqual([["REQ-002", "ADR-0007"]]);
-    expect(plannedLines(root).join("\n")).toContain("REQ-002 (ADR-0007)");
+    expect(report(root).planned.join("\n")).toContain("REQ-002 (ADR-0007)");
   });
 
   test("the same requirement without the marker still fails", () => {
@@ -46,6 +46,6 @@ describe("planned requirements in the traceability check [REQ-023] [REQ-025]", (
   test("a planned requirement that a test already cites must drop the marker", () => {
     const root = repo(PLANNED, { ...ADR, "tests/spec/b.test.ts": SPEC("b [REQ-002]") });
     expect(run(root).map((v) => v.code)).toEqual(["TRACE006"]);
-    expect(plannedLines(root)).toEqual([]);
+    expect(report(root).planned).toEqual([]);
   });
 });

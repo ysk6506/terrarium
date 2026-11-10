@@ -62,23 +62,6 @@ const adrExists = (root: string, adr: string): boolean => {
   return existsSync(dir) && readdirSync(dir).some((name) => name.startsWith(prefix));
 };
 
-/** One line per planned requirement that still has no test, for the verdict output. */
-export function plannedLines(root: string): string[] {
-  const covered = coveredIds(root);
-  const open = [...plannedRequirements(root)].filter(([id]) => !covered.has(id));
-  if (open.length === 0) return [];
-  return [`PLAN traceability: 예정 ${open.length}건 (테스트 없음, 실패 아님)`].concat(
-    open.map(([id, adr]) => `     ${id} (${adr})`),
-  );
-}
-
-function coveredIds(root: string): Set<string> {
-  const covered = new Set<string>();
-  for (const file of testFiles(root, loadTestsConfig(root)))
-    for (const [id] of citations(root, file)) covered.add(id);
-  return covered;
-}
-
 /** Requirement ids cited in describe/test titles of a file, with line numbers. */
 export function citations(root: string, file: string): Array<[string, number]> {
   const sf = parse(file, readFileSync(path.join(root, file), "utf8"));
@@ -94,7 +77,8 @@ export function citations(root: string, file: string): Array<[string, number]> {
   return found;
 }
 
-export function run(root: string): Violation[] {
+/** The verdict plus, apart from it, the planned (예정) requirements that still have no test. */
+export function report(root: string): { violations: Violation[]; planned: string[] } {
   const { ids, violations } = requirementIds(root);
   const config = loadTestsConfig(root);
   const covered = new Set<string>();
@@ -148,6 +132,7 @@ export function run(root: string): Violation[] {
         ),
       );
   }
+  const open = [...planned].filter(([id]) => !covered.has(id));
   for (const id of ids.filter((i) => !covered.has(i) && !planned.has(i))) {
     violations.push(
       violation(
@@ -159,14 +144,23 @@ export function run(root: string): Violation[] {
       ),
     );
   }
-  return violations;
+  const lines =
+    open.length === 0
+      ? []
+      : [`PLAN traceability: 예정 ${open.length}건 (테스트 없음, 실패 아님)`].concat(
+          open.map(([id, adr]) => `     ${id} (${adr})`),
+        );
+  return { violations, planned: lines };
 }
+
+export const run = (root: string): Violation[] => report(root).violations;
 
 export function main(argv: readonly string[], out: (line: string) => void = console.log): number {
   const { flags } = parseArgs(argv);
   const root = findRoot(flag(flags, "root"));
-  const code = finish("traceability", run(root), out);
-  for (const line of plannedLines(root)) out(line);
+  const { violations, planned } = report(root);
+  const code = finish("traceability", violations, out);
+  for (const line of planned) out(line);
   return code;
 }
 

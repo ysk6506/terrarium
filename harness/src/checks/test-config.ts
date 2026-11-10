@@ -45,6 +45,14 @@ function property(
   return prop && ts.isPropertyAssignment(prop) ? prop.initializer : undefined;
 }
 
+/** Every assignment of `name` in the object literal (a repeated key counts each time). */
+function properties(obj: ts.ObjectLiteralExpression | undefined, name: string): ts.Expression[] {
+  const found: ts.Expression[] = [];
+  for (const p of obj?.properties ?? [])
+    if (ts.isPropertyAssignment(p) && p.name.getText() === name) found.push(p.initializer);
+  return found;
+}
+
 function stringArray(node: ts.Expression | undefined): string[] | undefined {
   if (!node || !ts.isArrayLiteralExpression(node)) return undefined;
   const values = node.elements.map((e) => (ts.isStringLiteralLike(e) ? e.text : undefined));
@@ -63,9 +71,13 @@ function checkVitestConfig(root: string, rules: TestConfigRules): Violation[] {
   const coverageObj = findObject(sf, "coverage");
   const out: Violation[] = [];
   for (const option of rules.forbidden_test_options) {
-    const setup = option === "setupFiles" ? stringArray(property(testObj, option)) : undefined;
-    if (setup && sameSet(setup, rules.allowed_setup_files ?? [])) continue;
-    if (property(testObj, option) !== undefined) {
+    const found = properties(testObj, option);
+    const allowed = option === "setupFiles" ? (rules.allowed_setup_files ?? []) : undefined;
+    const permitted = (node: ts.Expression): boolean => {
+      const list = stringArray(node);
+      return !!allowed && !!list && sameSet(list, allowed);
+    };
+    if (found.some((node) => !permitted(node))) {
       out.push(
         violation(
           "TCFG001",

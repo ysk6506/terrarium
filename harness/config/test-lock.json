@@ -62023,9 +62023,9 @@
    "added": "2026-11-10",
    "amended_by": null
   },
-  "harness/src/checks/traceability.test.ts::<import:82a4a117>": {
+  "harness/src/checks/traceability.test.ts::<import:e71fddbd>": {
    "kind": "support",
-   "hash": "82a4a11797f186b1",
+   "hash": "e71fddbddd356cf0",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -62033,9 +62033,9 @@
    "added": "2026-11-10",
    "amended_by": null
   },
-  "harness/src/checks/traceability.test.ts::<import:e71fddbd>": {
+  "harness/src/checks/traceability.test.ts::<import:fe0bf8b2>": {
    "kind": "support",
-   "hash": "e71fddbddd356cf0",
+   "hash": "fe0bf8b271ddef94",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -62139,7 +62139,7 @@
   },
   "harness/src/checks/traceability.test.ts::planned requirements in the traceability check [REQ-023] [REQ-025] > a planned requirement that a test already cites must drop the marker": {
    "kind": "test",
-   "hash": "a7ec99b6e0558007",
+   "hash": "2736c058261637a1",
    "asserts": 2,
    "literals": [
     "\"TRACE006\"",
@@ -62155,7 +62155,7 @@
   },
   "harness/src/checks/traceability.test.ts::planned requirements in the traceability check [REQ-023] [REQ-025] > a planned requirement without a test is listed, not failed": {
    "kind": "test",
-   "hash": "89b347cae9a4dafb",
+   "hash": "04d9c694eea85953",
    "asserts": 3,
    "literals": [
     "\"ADR-0007\"",

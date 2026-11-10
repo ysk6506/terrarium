@@ -5,11 +5,12 @@ status: active
 last_verified: 2026-11-10
 covers:
   - harness/src/run-all.ts
-covers_hash: 2e1acf34d4c75225
+covers_hash: df9fc43705b6eec4
 verification_log:
   - "2026-10-28: rewritten for TS harness"
   - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
   - "2026-11-10: TRACE 예정 표시와 CI 조각·합계 검사를 적음 (ADR-0140)"
+  - "2026-11-10: run-all이 예정 요구를 따로 출력하게 된 것을 반영 (ADR-0140)"
 ---
 # 품질 하네스
 
