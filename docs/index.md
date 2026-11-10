@@ -2,13 +2,13 @@
 title: 문서 색인
 kind: reference
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-10
 verification_log:
-  - "2026-11-07: ADR-0126"
   - "2026-11-07: 부지 배치 규칙·동물 반응 (REQ-105, ADR-0128)"
   - "2026-11-07: 사이트·DR 층과 남은 점선 다섯 (REQ-106, ADR-0129)"
   - "2026-11-07: ADR-0131 (REQ-108) 링크를 더했다"
   - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
+  - "2026-11-10: 물리 전수 조사와 모델 자리 설계 (ADR-0136)"
 ---
 # 문서 색인
 
@@ -40,6 +40,7 @@ verification_log:
 - [SDN 오버레이와 클라우드 네이티브 네트워크 층 — 리프-스파인 위의 가상 네트워크, 고장 일곱, 컨트롤러 전환](design-docs/sdn-network-layer.md)
 - [애플리케이션 층 — 서비스 호출 그래프, 로드 밸런서·세션·브레이커·메시·리전, 고장 여덟](design-docs/application-layer.md)
 - [가속기(GPU) 층 — GPU·NVLink·IB 패브릭·스케줄러·학습 잡·추론 풀, 고장 여덟](design-docs/gpu-layer.md)
+- [물리 법칙이 닿는 자리와 모델 자리 — 열네 자리, 세 깊이, 법칙 검사](design-docs/physics-laws.md)
 - [전원·냉방 사다리 확장 — N+1 UPS·랙 배터리·변전소, 리어도어·침지, 파워 캐핑(모델만)](design-docs/power-cooling-ladders.md)
 - [모델 등록 — LLM API를 워크스페이스에 등록하고 연결 확인까지 (REQ-099)](design-docs/model-registration.md)
 - [이끼 — 테라리움 도우미가 문서와 화면으로 답하고 화면을 같이 넘기는 법 (REQ-103)](design-docs/moss.md)
@@ -196,6 +197,7 @@ verification_log:
 - [0130 GPU 가속기 층을 사다리에 올리고, 전원·냉방 사다리를 끝까지 실선으로 늘리며, 파워 캐핑을 모델로 옮긴다](design-docs/adr/0130-gpu-layer-power-cooling-ladders.md)
 - [0131 기준 에이전트가 DR을 알고, 복구 채점의 시간 창이 세계의 모양을 따른다](design-docs/adr/0131-baseline-dr-and-expected-recovery-window.md)
 - [0133 채점 정확성 보증: 정답 풀이·결정성·변이 검사](design-docs/adr/0133-grading-correctness-reference-solver.md)
+- [0136 물리가 닿는 열네 자리를 모델 자리로 만들고, 법칙 검사와 프로필 지문으로 채점을 지킨다](design-docs/adr/0136-physics-inventory-and-model-slots.md)
 - [0122 세계 인기 순서·좋아요·칭호, 그리고 계급 모델 — 점수는 서버가 기록에서 세고, 칭호는 한 번 얻으면 안 잃고, 계급은 아직 화면에 없다](design-docs/adr/0122-world-popularity-likes-titles.md)
 - [0121 애플리케이션 층을 코어 모델로 올리고 서비스 호출 그래프를 넣는다](design-docs/adr/0121-application-layer-and-calls.md)
 - [0116 진짜 호스트 섞기 (폐기, 0117로 대체)](design-docs/adr/0116-real-hosts-in-the-world.md)
