@@ -14932,7 +14932,7 @@
   },
   "apps/server/src/main.test.ts::starting and stopping the server [REQ-030] > a config file is all it takes; data lives next to it and survives a restart": {
    "kind": "test",
-   "hash": "c84adf2ec9e3fef1",
+   "hash": "2647437e8169574e",
    "asserts": 4,
    "literals": [
     "\"./state\"",
@@ -14942,13 +14942,17 @@
     "\"200\"",
     "\"60000\"",
     "\"POST\"",
+    "\"TERRARIUM_TEST_ADMIN\"",
     "\"a config file is all it takes; data lives next to it and survives a restart\"",
     "\"application/json\"",
     "\"builtin\"",
     "\"builtin\"",
     "\"content-type\"",
+    "\"invented-admin-token\"",
+    "\"invented-admin-token\"",
     "\"sample\"",
     "\"terrarium.json\"",
+    "\"x-terrarium-admin-token\"",
     "\"x-terrarium-user\"",
     "\"yeonsu\"",
     "\"남는 세계\"",
@@ -14959,8 +14963,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/mcp/gateway-slot.test.ts::<hook:afterAll>": {
    "kind": "support",
