@@ -18,24 +18,16 @@ import {
   type CampusSpec,
   CHOICE_LABELS,
   campusProblems,
-  type ShapeSpec,
   SITE_PRESETS,
-  shapeProblem,
   specProblems,
   type WorldgenSpec,
 } from "@terrarium/core/sources/worldgen";
 import {
   BLUEPRINT_SCHEMA_VERSION,
   type Blueprint,
-  DAY_PATTERNS,
   ENTITY_KINDS,
-  LAYER_IDS,
   LINK_RULES,
   type LinkKind,
-  layersProblem,
-  RESOURCES,
-  WORKLOAD_KINDS,
-  workloadProblem,
 } from "@terrarium/core/world";
 import { z } from "zod";
 
