@@ -75,13 +75,13 @@ covers:
   - apps/web/src/ui/replay/FramesBar.tsx
   - apps/web/src/ui/replay/useClock.ts
   - apps/web/src/logic/topology/words.ts
-covers_hash: 56c7df4fe908826c
+covers_hash: 14d0ebd5a133cbe4
 verification_log:
-  - "2026-11-11: main(process-compare 9cf2ce8) 합친 뒤 코드와 대조; own-card-only·process-compare 여정과 ADR-0134 내용 모두 유지"
   - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
   - "2026-11-11: 2026-11-11: 폰에서 이끼 알약이 탭 줄 위에 서게 한 것을 반영 (ADR-0141)"
   - "2026-11-11: 2026-11-11: 고르기 버튼의 호버 그림자를 코드와 대조해 맞음 (ADR-0141)"
   - "2026-11-11: ADR-0146: 이끼 알약이 떠 있지 않고 홈에서만 흐름 안, 키보드 도움말은 3D 탭 첫 한 번, 좁은 폭 제목 줄 나눔을 코드와 대조해 맞춤"
+  - "2026-11-11: ADR-0146: 하늘 돔 깊이 검사 제거와 3D 상자 크기 변화 때 다시 맞춤을 코드와 대조해 맞음"
 ---
 # 웹 화면 (REQ-006, REQ-030~041)
 
