@@ -36318,6 +36318,94 @@
    "added": "2026-11-07",
    "amended_by": null
   },
+  "apps/web/src/logic/experiment-fork-counts.test.ts::<import:3811edd1>": {
+   "kind": "support",
+   "hash": "3811edd1f3a93236",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/web/src/logic/experiment-fork-counts.test.ts::<import:abf9f1f6>": {
+   "kind": "support",
+   "hash": "abf9f1f65a457547",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/web/src/logic/experiment-fork-counts.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/web/src/logic/experiment-fork-counts.test.ts::=base": {
+   "kind": "support",
+   "hash": "5d55e52bbb328827",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/web/src/logic/experiment-fork-counts.test.ts::a fork keeps how many situations and how many repeats the original ran [REQ-118] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/web/src/logic/experiment-fork-counts.test.ts::a fork keeps how many situations and how many repeats the original ran [REQ-118] > changing only the agent leaves both counts out of the request, so the fork keeps them": {
+   "kind": "test",
+   "hash": "43f1f7041ade175a",
+   "asserts": 1,
+   "literals": [
+    "\"changing only the agent leaves both counts out of the request, so the fork keeps them\"",
+    "\"guess\"",
+    "\"guess\"",
+    "\"guess\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/web/src/logic/experiment-fork-counts.test.ts::a fork keeps how many situations and how many repeats the original ran [REQ-118] > the form starts at the original's counts, and one repeat when the original had none": {
+   "kind": "test",
+   "hash": "301d2a454e094c23",
+   "asserts": 3,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"20\"",
+    "\"20\"",
+    "\"20\"",
+    "\"20\"",
+    "\"20\"",
+    "\"20\"",
+    "\"3\"",
+    "\"3\"",
+    "\"3\"",
+    "\"the form starts at the original's counts, and one repeat when the original had none\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "apps/web/src/logic/experiment-metadata.test.ts::<import:3811edd1>": {
    "kind": "support",
    "hash": "3811edd1f3a93236",

@@ -16,6 +16,8 @@
   --line: #e5e8eb;
   --line-strong: #d1d6db;
   --cobalt: #1b64da;
+  --cobalt-wash: color-mix(in srgb, var(--cobalt) 30%, transparent);
+  --vignette-edge: rgb(30 38 48 / 0.55);
   --cobalt-soft: #e8f1ff;
   --primary: #1b64da;
   --primary-hover: #1957c2;
@@ -1367,7 +1369,7 @@ button.tag {
 .stage-vignette {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 48%, transparent 45%, rgb(30 38 48 / 0.55) 100%);
+  background: radial-gradient(ellipse at 50% 48%, transparent 45%, var(--vignette-edge) 100%);
   pointer-events: none;
 }
 
@@ -5499,7 +5501,7 @@ ol.uu li {
 .uu-c.e:hover,
 .uu-c.e[aria-pressed="true"] {
   border: 1.5px solid var(--cobalt);
-  background: color-mix(in srgb, var(--cobalt) 30%, transparent);
+  background: var(--cobalt-wash);
 }
 .ocard .acts {
   display: flex;
