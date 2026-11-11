@@ -1,5 +1,5 @@
 # CI is the merge gate (ADR-0140): every test runs on every merge, spread over parallel shards.
-# Gating: lint-types, test (shards) + test-summary, structure. The `gate` job is the one required check.
+# Gating: lint-types, test (shards), test-heavy + test-summary, structure. The `gate` job is the one required check.
 # Non-gating, with a debt item each: coverage (TD-0002), ux (TD-0004).
 name: ci
 on:
@@ -16,6 +16,7 @@ permissions:
 
 env:
   SHARDS: 12
+  HEAVY: tests/spec/calibration.test.ts
 
 jobs:
   lint-types:
@@ -39,7 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - run: pnpm exec vitest run --shard=${{ matrix.shard }}/${{ env.SHARDS }} --reporter=default --reporter=json --outputFile.json=shard-${{ matrix.shard }}.json
+      - run: pnpm exec vitest run --shard=${{ matrix.shard }}/${{ env.SHARDS }} --exclude=${{ env.HEAVY }} --reporter=default --reporter=json --outputFile.json=shard-${{ matrix.shard }}.json
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -47,9 +48,26 @@ jobs:
           path: shard-${{ matrix.shard }}.json
           if-no-files-found: error
 
+  # One spec file has a single test that runs about a minute without yielding to the event loop. Next to other
+  # workers it slows down past the runner's 60 s progress limit and the run ends with "Timeout calling
+  # onTaskUpdate". It runs here alone; the shards exclude it, and test-summary checks it ran exactly once.
+  test-heavy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm exec vitest run ${{ env.HEAVY }} --reporter=default --reporter=json --outputFile.json=shard-heavy.json
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-shard-heavy
+          path: shard-heavy.json
+          if-no-files-found: error
+
   # Every listed test must have run exactly once, passed and not been skipped.
   test-summary:
-    needs: test
+    needs: [test, test-heavy]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -154,7 +172,7 @@ jobs:
             docs/generated/ux-score.json
 
   gate:
-    needs: [lint-types, test, test-summary, structure]
+    needs: [lint-types, test, test-heavy, test-summary, structure]
     if: always()
     runs-on: ubuntu-latest
     steps:
