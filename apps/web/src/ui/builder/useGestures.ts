@@ -94,11 +94,11 @@ function hintOf(
 /** The plan of a gesture in progress, or of just pointing with a tool that shows where it would go. */
 function planOf(
   where: builder.Where,
-  b: Builder,
+  tool: Builder["state"]["tool"],
+  rotation: Builder["state"]["rotation"],
   d: Drag | undefined,
   at: PlanPoint | undefined,
 ): builder.Plan | undefined {
-  const { tool, rotation } = b.state;
   if (d?.kind === "handle" && d.handle) return builder.handlePlan(where, d.handle, d.from, d.to);
   if (d?.kind === "move" && d.id) return builder.movePlan(where, d.id, d.from, d.to);
   if (d) return builder.planFor(where, tool, rotation, d.from, d.to);
@@ -140,11 +140,14 @@ export function useGestures(b: Builder): Gestures {
   const [pointer, setPointer] = useState<{ at?: PlanPoint; hit?: string }>({});
   const [drag, setDrag] = useState<Drag>();
   const [dragged, setDragged] = useState(() => hasLearned(browserStore(), "drag"));
-  const where: builder.Where = { bp: blueprint, index, catalog, level };
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `where` is rebuilt from these each render
+  // `index` is derived from `blueprint` alone (useBuilder), so `where` changes exactly when blueprint or level does.
+  const where = useMemo<builder.Where>(
+    () => ({ bp: blueprint, index, catalog, level }),
+    [blueprint, index, level],
+  );
   const plan = useMemo(
-    () => planOf(where, b, drag, pointer.at),
-    [drag, pointer.at, blueprint, level, tool, rotation],
+    () => planOf(where, tool, rotation, drag, pointer.at),
+    [where, tool, rotation, drag, pointer.at],
   );
 
   const events: StageEvents = {
@@ -186,7 +189,7 @@ export function useGestures(b: Builder): Gestures {
       if (phase === "move") setDrag(next);
       else {
         setDrag(undefined);
-        commit(b, planOf(where, b, next, undefined));
+        commit(b, planOf(where, tool, rotation, next, undefined));
       }
       return true;
     },
