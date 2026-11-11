@@ -137,7 +137,9 @@ const propsOf =
   (id: string, props: Record<string, unknown>) =>
   (bp: Bp): Bp => ({
     ...bp,
-    entities: bp.entities.map((e) => (e.id === id ? { ...e, props: { ...e.props, ...props } } : e)),
+    entities: bp.entities.map((e) =>
+      e.id === id ? ({ ...e, props: { ...e.props, ...props } } as typeof e) : e,
+    ),
   });
 
 describe("the overlay tools when the blueprint is missing a piece [REQ-097][REQ-099]", () => {

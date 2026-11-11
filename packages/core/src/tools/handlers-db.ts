@@ -25,7 +25,7 @@ import type { Args, ToolContext } from "./handlers";
 
 type Handler = (ctx: ToolContext, args: Args) => unknown;
 
-const str = (args: Args, key: string): string => String(args[key]);
+const str = (args: Args, key: string): string => String(args[key] ?? "");
 
 /** The cluster an id names: the cluster itself, or the cluster of an instance. */
 function clusterNamed(world: WorldPort, id: string): Entity {
