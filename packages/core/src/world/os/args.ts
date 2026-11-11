@@ -75,6 +75,8 @@ export function parseArgs(args: readonly string[], spec: FlagSpec): Parsed {
 }
 
 export const has = (p: Parsed, flag: string): boolean => p.flags.has(flag);
+/** Whether any of the spellings of an option (`s`, `--symbolic`) was given. */
+export const hasAny = (p: Parsed, ...flags: string[]): boolean => flags.some((f) => p.flags.has(f));
 
 /** A flag's value as a non-negative integer; `def` when absent, NaN when it is not one. */
 export function intOf(p: Parsed, flag: string, def: number): number {
@@ -97,22 +99,49 @@ export function allValues(
   for (let i = 0; i < args.length; i++) {
     const arg = args[i] as string;
     if (arg === "--") break;
-    if (arg.startsWith("--")) {
-      const eq = arg.indexOf("=");
-      const name = arg.slice(2, eq < 0 ? undefined : eq);
-      if (spec.long?.[name] !== "val") continue;
-      const value = eq < 0 ? (args[++i] ?? "") : arg.slice(eq + 1);
-      if (name === long) out.push(value);
-    } else if (arg.length > 1 && arg.startsWith("-")) {
-      for (let k = 1; k < arg.length; k++) {
-        const ch = arg.charAt(k);
-        if (!spec.val?.includes(ch)) continue;
-        const inline = arg.slice(k + 1);
-        const value = inline !== "" ? inline : (args[++i] ?? "");
-        if (ch === short) out.push(value);
-        break;
-      }
-    }
+    const got = arg.startsWith("--")
+      ? longValue(args, i, spec, long)
+      : arg.length > 1 && arg.startsWith("-")
+        ? shortValue(args, i, spec, short)
+        : undefined;
+    if (!got) continue;
+    i += got.used;
+    if (got.value !== undefined) out.push(got.value);
   }
   return out;
+}
+
+type Taken = { value: string | undefined; used: number };
+
+/** `--name=value` or `--name value`: the value when it is the wanted option, and how many extra arguments it used. */
+function longValue(
+  args: readonly string[],
+  i: number,
+  spec: FlagSpec,
+  long?: string,
+): Taken | undefined {
+  const arg = args[i] as string;
+  const eq = arg.indexOf("=");
+  const name = arg.slice(2, eq < 0 ? undefined : eq);
+  if (spec.long?.[name] !== "val") return undefined;
+  const value = eq < 0 ? (args[i + 1] ?? "") : arg.slice(eq + 1);
+  return { value: name === long ? value : undefined, used: eq < 0 ? 1 : 0 };
+}
+
+/** `-x value` or `-xvalue` (also inside a bundle like `-ne`): the value when it is the wanted option. */
+function shortValue(
+  args: readonly string[],
+  i: number,
+  spec: FlagSpec,
+  short: string,
+): Taken | undefined {
+  const arg = args[i] as string;
+  for (let k = 1; k < arg.length; k++) {
+    const ch = arg.charAt(k);
+    if (!spec.val?.includes(ch)) continue;
+    const inline = arg.slice(k + 1);
+    const value = inline !== "" ? inline : (args[i + 1] ?? "");
+    return { value: ch === short ? value : undefined, used: inline !== "" ? 0 : 1 };
+  }
+  return undefined;
 }

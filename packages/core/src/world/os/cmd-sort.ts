@@ -3,7 +3,7 @@
  * `-s`, `-c` and `-o`. Order is by byte (the C locale); a host with `LANG=en_US.UTF-8` would order letters and
  * punctuation by its locale, which this fake does not do (see "정직한 한계").
  */
-import { allValues, has, parseArgs } from "./args";
+import { allValues, has, hasAny, parseArgs } from "./args";
 import { normalize } from "./fs";
 import { errText, readInputs } from "./io";
 import { act, type Cmd, fail, joinLines, linesOf, ok, type R, unsupported } from "./types";
@@ -159,38 +159,52 @@ function disorder(
   return undefined;
 }
 
+/** The comparison `sort` orders by: the keys, then (unless -s) the whole line as a last resort. */
+function comparison(p: ReturnType<typeof parseArgs>, byKey: (a: string, b: string) => number) {
+  const lastResort = hasAny(p, "s", "--stable") ? 0 : 1;
+  const direction = on(p, "r") ? -1 : 1;
+  return (a: string, b: string): number => byKey(a, b) || lastResort * order(a, b) * direction;
+}
+
+/** `-o FILE`: write the result there (through the world) instead of printing it. */
+function writeOutput(c: Cmd, target: string, text: string, errors: readonly string[]): R {
+  const path = normalize(c.cwd, target);
+  const denied = c.fs.denyWrite(path);
+  const code = errors.length ? 2 : 0;
+  if (denied)
+    return fail(
+      `sort: open failed: ${target}: ${denied === "ro" ? "Read-only file system" : "Permission denied"}`,
+      2,
+    );
+  act(c, "write", path, text);
+  return { out: "", err: errText(errors), code };
+}
+
+/** The keys of the call (`-k`, or the whole line), or the refusal for one that cannot be done. */
+function keysOf(args: readonly string[], p: ReturnType<typeof parseArgs>): Key[] | R {
+  const specs = allValues(args, SORT_FLAGS, "k", "key").map((s) => keyOf(s, p));
+  const bad = specs.find((k): k is string => typeof k === "string");
+  if (bad !== undefined) return unsupported("sort", `-k ${bad} (글자 위치는 안 돼요)`);
+  return specs.length ? (specs as Key[]) : [wholeLine(p)];
+}
+
 export function sort(c: Cmd): R {
   const p = parseArgs(c.args, SORT_FLAGS);
   if (p.bad) return unsupported("sort", p.bad);
-  const specs = [...allValues(c.args, SORT_FLAGS, "k", "key")].map((s) => keyOf(s, p));
-  const bad = specs.find((k): k is string => typeof k === "string");
-  if (bad !== undefined) return unsupported("sort", `-k ${bad} (글자 위치는 안 돼요)`);
-  const keys = specs.length ? (specs as Key[]) : [wholeLine(p)];
-  const sep = p.flags.get("t") ?? p.flags.get("--field-separator");
-  const byKey = byKeys(keys, sep);
-  const lastResort = has(p, "s") || has(p, "--stable") ? 0 : 1;
-  const reverse = on(p, "r");
-  const cmp = (a: string, b: string): number =>
-    byKey(a, b) || lastResort * order(a, b) * (reverse ? -1 : 1);
+  const keys = keysOf(c.args, p);
+  if (!Array.isArray(keys)) return keys;
+  const byKey = byKeys(keys, p.flags.get("t") ?? p.flags.get("--field-separator"));
+  const cmp = comparison(p, byKey);
   const { inputs, errors } = readInputs(c, p.rest);
   const rows = linesOf(inputs.map((i) => i.text).join(""));
-  const unique = on(p, "u") || has(p, "--unique");
-  if (has(p, "c") || has(p, "--check"))
+  const unique = hasAny(p, "u", "--unique");
+  if (hasAny(p, "c", "--check"))
     return disorder(rows, inputs[0]?.name ?? "-", unique ? byKey : cmp, unique) ?? ok("");
   rows.sort(cmp);
   const kept = unique
     ? rows.filter((l, i) => i === 0 || byKey(l, rows[i - 1] as string) !== 0)
     : rows;
   const target = p.flags.get("o") ?? p.flags.get("--output");
-  if (target === undefined)
-    return { ...ok(joinLines(kept)), err: errText(errors), code: errors.length ? 2 : 0 };
-  const path = normalize(c.cwd, target);
-  const denied = c.fs.denyWrite(path);
-  if (denied)
-    return fail(
-      `sort: open failed: ${target}: ${denied === "ro" ? "Read-only file system" : "Permission denied"}`,
-      2,
-    );
-  act(c, "write", path, joinLines(kept));
-  return { out: "", err: errText(errors), code: errors.length ? 2 : 0 };
+  if (target !== undefined) return writeOutput(c, target, joinLines(kept), errors);
+  return { ...ok(joinLines(kept)), err: errText(errors), code: errors.length ? 2 : 0 };
 }

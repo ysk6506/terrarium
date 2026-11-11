@@ -3,7 +3,7 @@
  * `host.act` (`mkdir`, `symlink`) like every other write, so a replay and a fast-forward give the same tree.
  * Hard links are not simulated: a tree that is described, not stored, has no inodes to share.
  */
-import { has, parseArgs } from "./args";
+import { has, hasAny, parseArgs } from "./args";
 import { shown } from "./cmd-fs";
 import { baseName, LINK_LOOP, normalize, parentOf } from "./fs";
 import { act, type Cmd, fail, ok, type R, unsupported } from "./types";
@@ -56,8 +56,8 @@ export function mkdir(c: Cmd): R {
   if (has(p, "m")) return unsupported("mkdir", "-m (권한은 정하지 않아요)");
   if (p.rest.length === 0)
     return fail("mkdir: missing operand\nTry 'mkdir --help' for more information.", 1);
-  const parents = has(p, "p") || has(p, "--parents");
-  const verbose = has(p, "v") || has(p, "--verbose");
+  const parents = hasAny(p, "p", "--parents");
+  const verbose = hasAny(p, "v", "--verbose");
   const say: string[] = [];
   const errs = p.rest
     .map((name) => makeDir(c, name, { parents, verbose }, say))
@@ -82,29 +82,32 @@ export function ln(c: Cmd): R {
     long: { symbolic: "bool", force: "bool", verbose: "bool" },
   });
   if (p.bad) return unsupported("ln", p.bad);
-  if (!has(p, "s") && !has(p, "--symbolic"))
+  if (!hasAny(p, "s", "--symbolic"))
     return unsupported("ln", "하드 링크는 못 만들어요 (-s만 돼요)");
   const [target, name = baseName(p.rest[0] ?? "")] = p.rest;
   if (target === undefined || p.rest.length > 2)
     return fail(target === undefined ? "ln: missing file operand" : "ln: extra operand", 1);
   const { path, label } = linkPlace(c, target, name);
-  const failed = `ln: failed to create symbolic link '${label}'`;
-  if (c.fs.exists(path) && !(has(p, "f") || has(p, "--force")))
-    return fail(`${failed}: File exists`, 1);
-  if (c.fs.isDir(path) && !c.fs.stat(path)?.target) return fail(`${failed}: File exists`, 1);
-  const why = blocker(c, path);
-  if (why) return fail(`${failed}: ${why}`, 1);
+  const why = linkBlocker(c, path, hasAny(p, "f", "--force"));
+  if (why) return fail(`ln: failed to create symbolic link '${label}': ${why}`, 1);
   act(c, "symlink", path, target);
-  return ok(has(p, "v") || has(p, "--verbose") ? `'${label}' -> '${target}'\n` : "");
+  return ok(hasAny(p, "v", "--verbose") ? `'${label}' -> '${target}'\n` : "");
+}
+
+/** Why `ln -s` cannot put a link at `path`, or undefined when it can. */
+function linkBlocker(c: Cmd, path: string, force: boolean): string | undefined {
+  if (c.fs.exists(path) && !force) return "File exists";
+  if (c.fs.isDir(path) && !c.fs.stat(path)?.target) return "File exists";
+  return blocker(c, path);
 }
 
 type Canon = "none" | "f" | "e" | "m";
 
 /** Which of `readlink`'s modes the options ask for: the link itself, or the final place with all, all but the last, or none of the parts there. */
 function canonMode(p: ReturnType<typeof parseArgs>): Canon {
-  if (has(p, "e") || has(p, "--canonicalize-existing")) return "e";
-  if (has(p, "m") || has(p, "--canonicalize-missing")) return "m";
-  return has(p, "f") || has(p, "--canonicalize") ? "f" : "none";
+  if (hasAny(p, "e", "--canonicalize-existing")) return "e";
+  if (hasAny(p, "m", "--canonicalize-missing")) return "m";
+  return hasAny(p, "f", "--canonicalize") ? "f" : "none";
 }
 
 /** The answer of `readlink` for one path, or undefined when it has none (the exit code is then 1). */
@@ -132,7 +135,7 @@ export function readlink(c: Cmd): R {
   });
   if (p.bad) return unsupported("readlink", p.bad);
   if (p.rest.length === 0) return fail("readlink: missing operand", 1);
-  const end = has(p, "n") || has(p, "--no-newline") ? "" : "\n";
+  const end = hasAny(p, "n", "--no-newline") ? "" : "\n";
   const answers = p.rest.map((name) => readOne(c, canonMode(p), shown(c, name)));
   return {
     out: answers.map((a) => (a === undefined ? "" : `${a}${end}`)).join(""),

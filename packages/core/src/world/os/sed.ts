@@ -1,5 +1,5 @@
 /** `sed` of the fake shell (ADR-0117 decision 4): the stream editor, run for real over the file text. */
-import { allValues, has, parseArgs } from "./args";
+import { allValues, hasAny, parseArgs } from "./args";
 import { normalize } from "./fs";
 import { errText, readInputs } from "./io";
 import { posixRegExp } from "./regex";
@@ -277,14 +277,20 @@ export function sed(c: Cmd): R {
   const rest = [...p.rest];
   const scripts = scriptsOf(c, rest);
   if ("code" in scripts) return scripts;
-  const cmds = compileScript(scripts, has(p, "E") || has(p, "r") || has(p, "--regexp-extended"));
+  const cmds = compileScript(scripts, hasAny(p, "E", "r", "--regexp-extended"));
   if ("code" in cmds) return cmds;
-  const quiet = has(p, "n") || has(p, "--quiet") || has(p, "--silent");
+  const quiet = hasAny(p, "n", "--quiet", "--silent");
   const { inputs, errors } = readInputs(c, rest);
-  if (has(p, "i") || has(p, "--in-place"))
-    return inPlaceEdit(c, inputs, cmds, { quiet, suffix, nul: has(p, "z") }, errors);
-  const nul = has(p, "z") || has(p, "--null-data");
-  const separate = has(p, "s") || has(p, "--separate");
+  if (hasAny(p, "i", "--in-place"))
+    return inPlaceEdit(
+      c,
+      inputs,
+      cmds,
+      { quiet, suffix, nul: hasAny(p, "z", "--null-data") },
+      errors,
+    );
+  const nul = hasAny(p, "z", "--null-data");
+  const separate = hasAny(p, "s", "--separate");
   const streams = separate ? inputs.map((i) => i.text) : [oneStream(inputs.map((i) => i.text))];
   return {
     out: streams.map((text) => edit(text, cmds, quiet, nul)).join(""),
