@@ -232,9 +232,14 @@ function spreadFindings(a: Omit<ExperimentAnalysis, "findings">): string[] {
         ]
       : ["점수 차이는 주로 상황이 달라서 생겨요 — 상황을 늘려 보세요"];
   }
+  // no situation has two runs: its luck cannot be told from the agent's wobble, so the advice says which count to raise
   if (a.score && a.score.n > 1 && a.score.stdev >= 15)
     return [
-      `실행마다 점수가 크게 달라요 (표준편차 ${a.score.stdev}점) — 실행을 늘려 보는 것이 좋아요`,
+      `실행마다 점수가 크게 달라요 (표준편차 ${a.score.stdev}점) — ${
+        a.withinSeed
+          ? "실행을 늘려 보는 것이 좋아요"
+          : "상황이 달라서인지 에이전트가 흔들려서인지는 같은 상황을 여러 번 돌려야 알 수 있어요"
+      }`,
     ];
   return [];
 }

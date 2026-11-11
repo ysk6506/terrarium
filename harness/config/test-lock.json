@@ -74101,13 +74101,13 @@
   },
   "packages/core/src/analysis/seed-statistics.test.ts::=GOLDEN": {
    "kind": "support",
-   "hash": "3cb5213ef14d541a",
+   "hash": "26dc0bc7be91a0d1",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-11",
-   "amended_by": null
+   "amended_by": "0158-repeats-per-seed-and-seed-level-statistics.md"
   },
   "packages/core/src/analysis/seed-statistics.test.ts::=harness": {
    "kind": "support",

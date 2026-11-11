@@ -10,6 +10,7 @@ import {
 import type { ExperimentView, RunSummary } from "@terrarium/core/contract";
 import { END_REASON_LABELS } from "@terrarium/core/oracle";
 import { describeLeadSettings, domainInfo } from "@terrarium/core/world";
+import type { ReactNode } from "react";
 import {
   DOT_LABELS,
   DOT_MARKS,
@@ -35,6 +36,18 @@ export const designText = (a: Pick<ExperimentAnalysis, "seeds" | "repeats">): st
       ? `상황 ${a.seeds}개 × ${a.repeats}번씩`
       : `상황 ${a.seeds}개`;
 
+/** "71.5점 ± 19.5" whose spread does not split from its sign: when it does not fit, it moves to the next line whole. */
+function withSpread(text: string): ReactNode {
+  const [mean, spread] = text.split(" ± ");
+  return spread === undefined ? (
+    text
+  ) : (
+    <>
+      {mean} <span style={{ whiteSpace: "nowrap" }}>± {spread}</span>
+    </>
+  );
+}
+
 export function ResultFigures({ a }: { readonly a: ExperimentAnalysis }) {
   const done = a.progress.completed;
   return (
@@ -47,7 +60,7 @@ export function ResultFigures({ a }: { readonly a: ExperimentAnalysis }) {
         },
         {
           label: "평균 점수",
-          value: meanText(a.score, "점"),
+          value: withSpread(meanText(a.score, "점")),
           note: designText(a),
           hint: "오차는 95% 신뢰구간. 상황이 적으면 넓어요",
         },
