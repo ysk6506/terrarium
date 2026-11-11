@@ -4,11 +4,11 @@ kind: reference
 status: active
 last_verified: 2026-11-11
 verification_log:
-  - "2026-11-11: 소스 관리 문서와 ADR-0151 링크"
   - "2026-11-11: ADR-0152 링크"
   - "2026-11-11: ADR-0153 링크"
   - "2026-11-11: ADR-0154 링크"
   - "2026-11-11: ADR-0155 링크"
+  - "2026-11-11: ADR-0156 링크"
 ---
 # 문서 색인
 
@@ -225,6 +225,7 @@ verification_log:
 - [0153 운영 모드의 세계는 고가용으로 설계하고, 오픈 베타에 넣는다](design-docs/adr/0153-operation-mode-worlds-are-highly-available-open-beta.md)
 - [0154 현실 데이터는 수천만 개체까지 본다 — 줄로 저장하고, 범위로 보고 복사하며, 재서 정한다](design-docs/adr/0154-reality-scale-tens-of-millions-rows-scopes-measure.md)
 - [0155 수집의 관측성 — 지표는 밖으로 내보내고, 데이터가 평소와 다른지 보고, 로그에 내용을 찍지 않는다](design-docs/adr/0155-ingestion-observability.md)
+- [0156 영향 범위는 포트 단위까지 묶음의 뜻으로 계산하고, 메모리의 색인에서 1초·수 초 안에 답한다](design-docs/adr/0156-blast-radius-ports-redundancy-groups-in-memory-index.md)
 - [0122 세계 인기 순서·좋아요·칭호, 그리고 계급 모델 — 점수는 서버가 기록에서 세고, 칭호는 한 번 얻으면 안 잃고, 계급은 아직 화면에 없다](design-docs/adr/0122-world-popularity-likes-titles.md)
 - [0121 애플리케이션 층을 코어 모델로 올리고 서비스 호출 그래프를 넣는다](design-docs/adr/0121-application-layer-and-calls.md)
 - [0116 진짜 호스트 섞기 (폐기, 0117로 대체)](design-docs/adr/0116-real-hosts-in-the-world.md)
