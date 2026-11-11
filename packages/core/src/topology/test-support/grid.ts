@@ -4,6 +4,7 @@
  * transfer switch with a generator, a ToR per room under a spine per building under one core. It is not checked
  * against the catalog (the board reads the structure and the states, not the models), so a test can make thousands of
  * racks in a few milliseconds and put faults and alarms wherever it wants.
+ * (경로 시험용으로 이 줄을 바꿨다. 버리는 PR이다.)
  */
 import { Catalog } from "@terrarium/core/catalog";
 import {

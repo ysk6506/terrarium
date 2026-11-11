@@ -85,3 +85,5 @@ covers_hash: 12f569ec613ee392
 2. ADR에 `amends_tests`와 `test_change_reason`을 적고 봉인해요 ([ADR-0004](adr/0004-test-lock.md)).
 3. 기대값을 바꾼 뒤 `pnpm tsx harness/src/checks/testguard.ts lock --amend <ADR 파일>`로 잠금을 고쳐요. 바뀐 키만 고치고 다른 키는 그대로 두어요.
 4. 기대값을 도구로 다시 뽑을 때는 도우미(`impactFingerprints`, `facadeFingerprints`, `recordCases`)를 임시 시험에서 찍어요. 시험 쪽에는 "다시 쓰기" 모드를 두지 않아요.
+
+(경로 시험용 한 줄. 버리는 PR이라 병합하지 않아요.)
