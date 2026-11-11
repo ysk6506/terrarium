@@ -82,6 +82,7 @@ export function Verdict({
             </MossAsk>
           </p>
         )}
+        {words.errorNote(a.score) && <p className="res-quiet">{words.errorNote(a.score)}</p>}
         {quiet && <p className="res-quiet">{quiet}</p>}
         {pending && <p className="res-quiet">{pending}</p>}
       </div>

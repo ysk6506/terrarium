@@ -61,9 +61,9 @@ export function SituationsCard({
   const shake = a.repeats > 1 ? sit.shakeLine(a.withinSeed?.spread) : undefined;
   const source = a.repeats > 1 ? sit.sourceOfDifference(a.findings) : undefined;
   return (
-    <section className="res-card res-situations" aria-label="상황마다">
+    <section className="res-card res-situations" aria-label="상황마다 어땠나요">
       <div className="res-card-head">
-        <h2>상황마다</h2>
+        <h2>상황마다 어땠나요</h2>
         <p className="res-sentence">{sit.situationsSentence(rows, a.repeats)}</p>
       </div>
       <div className="res-scroll">

@@ -34,6 +34,10 @@ export function scoreLine(score: ExperimentAnalysis["score"]): string {
   return `평균 ${score.mean.toFixed(1)}점${spread}. ${PASS_TAIL}`;
 }
 
+/** With one situation there is no spread to give, so say that the error is not known yet rather than say nothing. */
+export const errorNote = (score: ExperimentAnalysis["score"]): string | undefined =>
+  score && score.n <= 1 ? "한 상황만 돌려서 오차는 아직 몰라요. 상황을 늘리면 보여요." : undefined;
+
 /** "진단까지 30초 · 툴 3번 사용 · 토큰 1,204": only what has a value, or nothing. */
 export function quietLine(a: ExperimentAnalysis): string | undefined {
   const parts = [

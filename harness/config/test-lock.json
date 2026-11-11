@@ -42092,6 +42092,68 @@
    "added": "2026-11-11",
    "amended_by": null
   },
+  "apps/web/src/logic/result-error.test.ts::<import:1951b62b>": {
+   "kind": "support",
+   "hash": "1951b62b7b17539e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/web/src/logic/result-error.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/web/src/logic/result-error.test.ts::=score": {
+   "kind": "support",
+   "hash": "19f22139f884bdc6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/web/src/logic/result-error.test.ts::what the result page says when the error is unknown > [REQ-118] with one situation the page says the error is not known yet": {
+   "kind": "test",
+   "hash": "aac7d64ecb4c88e5",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"12\"",
+    "\"12\"",
+    "\"5\"",
+    "\"5\"",
+    "\"[REQ-118] with one situation the page says the error is not known yet\"",
+    "\"오차는 아직 몰라요\"",
+    "\"오차는 아직 몰라요\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/web/src/logic/result-error.test.ts::what the result page says when the error is unknown > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "apps/web/src/logic/result-export.test.ts::<import:01378a68>": {
    "kind": "support",
    "hash": "01378a689e32d605",

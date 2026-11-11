@@ -9,11 +9,11 @@ covers:
   - tests/e2e/ux/probes-detail.ts
 covers_hash: 87255ef1b8636946
 verification_log:
-  - "2026-11-11: 2026-11-11: 러너 측정 결과와 cancel 여정의 느린 세계를 반영 (ADR-0141)"
-  - "2026-11-11: 2026-11-11: 기록을 작업 로그에도 찍는 것을 반영 (ADR-0141)"
   - "2026-11-11: 여정 표에 repeat(7)를 더하고 fork 설명과 여정 수를 코드(JOURNEYS, JOURNEY_BUDGETS)와 대조"
   - "2026-11-11: result page split into tabs (ADR-0171); checked against covered code"
   - "2026-11-11: share budget 4, result tabs (ADR-0171)"
+  - "2026-11-11: keyboard probe uses the export dialog; share budget 4"
+  - "2026-11-11: keyboard probe uses the export dialog; share budget 4"
 ---
 # UX를 숫자로 재는 법 (REQ-041, [ADR-0031](adr/0031-ux-honeycomb-measurement.md))
 
@@ -56,7 +56,7 @@ UI를 바꿨다면 `pnpm ux`를 한 번 돌려야 `pnpm check`가 통과한다(�
 | 찾기 쉬움 (findable) | 닿는 길 | 홈에서 안의 링크를 두 번 눌러 화면 10종(목록, 세계, 시나리오, 실험, 실행, 벤치마크, 새 실험)에 닿는가 |
 | | 위치 표시 | 화면마다 자기 제목, 본문 제목, 내비게이션에 현재 구역 표시가 있는가 |
 | 접근성 (accessible) | axe | 모든 화면을 밝은 테마와 어두운 테마로 axe-core에 걸어 치명 0.2, 심각 0.1, 보통 0.02점씩 깎는다 |
-| | 키보드 | 탭과 엔터만으로 메뉴 이동, 실험 시작, 공유 메뉴 열고 닫기, 대화상자 열고 닫기(초점 복귀), 탭 전환을 하는가 |
+| | 키보드 | 탭과 엔터만으로 메뉴 이동, 실험 시작, 내보내기 대화상자 열고 닫기, 대화상자 열고 닫기(초점 복귀), 탭 전환을 하는가 |
 | | 보이는 초점 | 탭으로 지나간 칸마다 초점 표시(외곽선이나 그림자)가 있는가 |
 | | 누르는 크기 (`targets`) | 보이는 컨트롤(문장 속 링크 제외)의 높이가 32 px 이상이고 너비가 24 px 이상인 비율 |
 | | 움직임 줄이기 | 줄이기를 켜면 움직이는 요소가 없는가 |
