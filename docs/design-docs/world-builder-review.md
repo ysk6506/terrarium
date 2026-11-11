@@ -10,13 +10,13 @@ covers:
   - apps/web/src/ui/builder/Toolbox.tsx
   - apps/web/src/ui/builder/WorldBuilderPage.tsx
   - apps/web/src/ui/pages/new-world.tsx
-covers_hash: 2b1ccefe143f0e4b
+covers_hash: 7167958efccef051
 verification_log:
-  - "2026-11-07: REQ-109: 코드와 대조했다. 해당 문장을 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: REQ-109: 코드와 대조했다"
   - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
   - "2026-11-11: ADR-0146: 이끼 알약이 떠 있지 않고 홈에서만 흐름 안, 키보드 도움말은 3D 탭 첫 한 번, 좁은 폭 제목 줄 나눔을 코드와 대조해 맞춤"
   - "2026-11-11: ADR-0146: 홈 이끼 한 줄 위치, 좁은 폭에서 다음 칩이 아래 막대에 드는 것을 코드와 대조해 맞춤"
+  - "2026-11-11: ADR-0146: 다음 칩이 토폴로지 보기에서도 아래 막대에 드는 것을 코드와 대조해 맞춤"
 ---
 # 세계 만들기 검토 (베타 피드백 4·12, ADR-0083 예정)
 

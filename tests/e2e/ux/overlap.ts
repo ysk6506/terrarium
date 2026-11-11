@@ -62,6 +62,7 @@ const READ = `(() => {
   const found = [];
   for (const [name, selector] of parts) {
     document.querySelectorAll(selector).forEach((el, i) => {
+      if (el.matches(".next-chip") && el.closest(".stage-steps")) return; // the 다음 chip in the bar is part of the bar
       const r = el.getBoundingClientRect();
       if (r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== "hidden")
         found.push({ name: i ? name + " " + (i + 1) : name, left: r.left, top: r.top, right: r.right, bottom: r.bottom });

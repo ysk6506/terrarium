@@ -218,8 +218,9 @@ function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
   const { map, setMapRoom, topology, openTopology } = useViews(level);
   const moment = useRunMoment(preview);
   const next = useNextChip(b, initial.id);
-  // on a phone the chip sits in the bar at the foot, not over the board (ADR-0146)
+  // on a phone, and over the topology (its replay bar is where the chip would float), the chip sits in the bar at the foot (ADR-0146)
   const narrow = useMediaQuery("(max-width: 640px)");
+  const inBar = narrow || topology;
   const anchor = useMemo(builder.anchorStore, []);
   usePageTitle(initial.name);
   useBuilderHabits(b);
@@ -251,9 +252,9 @@ function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
           {topology && <TopologyStage b={b} {...moment} />}
           {!map && !topology && <PlaceSheet b={b} />}
           {!map && next.ask}
-          {!map && !narrow && next.chip}
+          {!map && !inBar && next.chip}
           {!map && <StageCards b={b} anchor={anchor} />}
-          {!map && <StepBar b={b} topology={topology} chip={narrow ? next.chip : undefined} />}
+          {!map && <StepBar b={b} topology={topology} chip={inBar ? next.chip : undefined} />}
         </div>
       </div>
     </div>

@@ -2817,6 +2817,15 @@ body:has(.run-panel[open]) .moss-launch.high {
   cursor: pointer;
 }
 
+.stage-steps .next-chip {
+  /* in the bar (a phone, or the topology with its replay bar), not over the board (ADR-0146) */
+  position: static;
+  min-height: 32px;
+  padding: 4px 12px;
+  font-size: 14px;
+  box-shadow: none;
+}
+
 .next-chip:hover {
   background: var(--cobalt-soft);
 }
@@ -5231,14 +5240,6 @@ button.title-pill:hover {
   }
   .stage-steps .step-spacer {
     display: none;
-  }
-  /* the 다음 chip rides in the bar on a phone, not over the board */
-  .stage-steps .next-chip {
-    position: static;
-    min-height: 32px;
-    padding: 4px 12px;
-    font-size: 14px;
-    box-shadow: none;
   }
   .stage-steps .step-sum {
     flex: 1 1 100%;
