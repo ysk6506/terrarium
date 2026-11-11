@@ -23,6 +23,7 @@ import {
   STEPS,
   type Step,
   type WorldDraft,
+  worldNameFor,
 } from "../../logic";
 import { shapedServices, useApart } from "./shape-apart";
 
@@ -148,7 +149,7 @@ function useSpec(p: {
   const size = useMemo<SizeAsk>(() => ({ ...sizeDefault, ...typed }), [sizeDefault, typed]);
   const spec = useMemo<ShapeSpec>(
     () => ({
-      name: name.trim() || first.name,
+      name: worldNameFor(name.trim() || first.name, shaped),
       seed: first.seed,
       site: first.site,
       ...sizeFields(size),

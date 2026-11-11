@@ -94,3 +94,7 @@ export const simTime = (seconds: number) => `+${formatDuration(seconds)}`;
 /** What a pass takes. The number is the core's, read, never retyped: the screen and the scoring must say the same. */
 export const PASS_RULE_TEXT = `진단을 맞히고 ${PASS_MARK}점 이상이면 합격이에요`;
 export const PASS_SHARE_TEXT = `진단을 맞히고 ${PASS_MARK}점 이상을 받은 실행의 비율`;
+
+/** "(서버 랙 6 + 기반 랙 1)": the racks of servers, and those at the head of each row that hold the network and the storage (REQ-111). */
+export const rackParts = (racks: number, base: number): string =>
+  `(서버 랙 ${count(racks - base)} + 기반 랙 ${count(base)})`;

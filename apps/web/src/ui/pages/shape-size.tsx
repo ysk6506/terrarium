@@ -1,22 +1,17 @@
 /**
  * 서비스부터 ③ (REQ-109, ADR-0132): three numbers — 서버룸 몇 곳, 룸당 랙 몇 대, 랙당 서버 몇 대. They start from what the
  * services carry (rooms and racks computed to fit the servers those numbers need); what the chosen shape adds on top (a
- * second site, GPU racks) is said in one line under the total. The right column is the quiet summary of the whole shape
- * that used to sit on the ladders. Racks, switches, PDUs, cooling units and kW are counted from all of it.
+ * second site, GPU racks) is said in one line under the total. The right column says in words what happens at this size. Every
+ * number here comes from `sizeView` (REQ-111): servers, racks (of servers and of the network and storage), rooms, switches, PDUs, cooling units, kW.
  */
 import {
-  askTotal,
-  loadOf,
   type ServiceDraft,
   type ShapePlan,
   SIZE_LIMITS,
   type SizeAsk,
-  serversForLoad,
-  sizeTotals,
-  sizingNotes,
 } from "@terrarium/core/sources/worldgen";
 import { useEffect, useState } from "react";
-import { count, type ShapeView } from "../../logic";
+import { type ShapeView, sizeView } from "../../logic";
 import { Button } from "../kit";
 import { ShapePanel } from "./shape-panel";
 
@@ -88,12 +83,6 @@ function Stepper(props: {
   );
 }
 
-/** "서비스가 쓰는 서버는 약 30대예요. 배경까지 120대로 시작해요." */
-function startLine(services: readonly ServiceDraft[], start: SizeAsk): string {
-  const need = services.reduce((n, s) => n + serversForLoad(loadOf(s)), 0);
-  return `서비스가 필요로 하는 서버는 모두 ${count(need)}대쯤이에요. 찾을 곳이 되도록 배경 서버를 더해 ${count(askTotal(start))}대로 시작해요.`;
-}
-
 export function SizeStep(props: {
   readonly services: readonly ServiceDraft[];
   readonly plan: ShapePlan;
@@ -106,8 +95,8 @@ export function SizeStep(props: {
   readonly problem: string | undefined;
 }) {
   const { plan, size } = props;
-  const total = sizeTotals(plan);
-  const notes = sizingNotes(size, plan);
+  // every number of this screen is worked out here, once, from the plan the generator follows (REQ-111)
+  const sums = sizeView({ services: props.services, size, start: props.start, plan });
   const touched = Object.keys(props.typed).length > 0;
   return (
     <>
@@ -115,7 +104,7 @@ export function SizeStep(props: {
         <h1>서버는 어떻게 놓을까요?</h1>
         <span className="we-step">3 / 3</span>
       </div>
-      <p className="we-sub">{startLine(props.services, props.start)}</p>
+      <p className="we-sub">{sums.startLine}</p>
       <div className="we-two">
         <section className="we-panel" aria-label="서버 놓기">
           {ROWS.map((r) => (
@@ -131,12 +120,11 @@ export function SizeStep(props: {
             />
           ))}
           <p className="we-total" data-testid="size-total">
-            서버 <b>{count(total.servers)}대</b> · 랙 <b>{count(total.racks)}대</b> · 서버룸{" "}
-            <b>{count(total.rooms)}곳</b>
+            {sums.totalLine}
           </p>
-          {notes.length > 0 && (
+          {sums.notes.length > 0 && (
             <p className="we-note" data-testid="size-notes">
-              {notes.join(" · ")}
+              {sums.notes.join(" · ")}
             </p>
           )}
           {props.problem && (
@@ -144,10 +132,8 @@ export function SizeStep(props: {
               {props.problem}
             </p>
           )}
-          <p className="we-note">
-            스위치 {count(plan.switches)}대 · PDU {count(plan.pdus)}대 · 냉방기{" "}
-            {count(plan.coolers)}대 · {count(plan.kw)} kW는 이 모양에 맞춰 세요. 토폴로지는 접어서
-            보여 줘요.
+          <p className="we-note" data-testid="size-parts">
+            {sums.partsLine}
           </p>
           {touched && (
             <Button

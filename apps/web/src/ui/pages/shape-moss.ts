@@ -24,11 +24,13 @@ export function useShapeMoss({ spec, flow, step, last, problem, make, quick }: S
       `${spec.name} · 서버룸 ${spec.rooms ?? "알아서"}곳 · 룸당 랙 ${spec.racksPerRoom ?? "알아서"}대 · 랙당 서버 ${spec.perRack ?? "알아서"}대`,
     run: {
       "world-ladders": () => {
+        if (spec.services.length === 0) throw new Error(problem ?? "서비스를 하나는 골라 주세요");
         flow.go("ladders");
         return "층마다 모양을 고르는 사다리 화면이에요";
       },
       "world-build": async () => {
         if (!last) {
+          if (spec.services.length === 0) throw new Error(problem ?? "서비스를 하나는 골라 주세요");
           flow.go("size");
           return "마지막 화면으로 넘겼어요. 거기서 세계 만들기를 다시 눌러 주세요";
         }
@@ -37,6 +39,7 @@ export function useShapeMoss({ spec, flow, step, last, problem, make, quick }: S
       },
       "world-quick-start": async () => {
         if (!last) {
+          if (spec.services.length === 0) throw new Error(problem ?? "서비스를 하나는 골라 주세요");
           flow.go("size");
           return "마지막 화면으로 넘겼어요. 거기서 실험 시작을 다시 눌러 주세요";
         }

@@ -13,6 +13,7 @@ import { type ReactNode, useEffect, useMemo, useState } from "react";
 import {
   advance,
   builtFact,
+  noServicesReason,
   type RowMeta,
   recommendLine,
   retreat,
@@ -62,6 +63,16 @@ function useQuickStart(templateIds: readonly string[]): Start {
 interface Built {
   readonly worldId: string;
   readonly counts: ShapedResult["counts"];
+}
+
+/** What the built world holds in the words of screen ③: the racks at the head of each row are not racks of servers. */
+function madeOf(counts: ShapedResult["counts"]) {
+  return {
+    servers: counts.servers,
+    racks: counts.racks,
+    baseRacks: counts.baseRacks,
+    rooms: counts.rooms,
+  };
 }
 
 /** The template row is one small link until it is wanted (REQ-108, ADR-0131). */
@@ -129,7 +140,7 @@ function Done({
     <div className="we">
       <section className="we-done" aria-label="세계를 다 지었어요">
         <h2>세계를 다 지었어요</h2>
-        <p>{builtFact(flow.spec.name, view)}</p>
+        <p>{builtFact(flow.spec.name, view, madeOf(built.counts))}</p>
         <div className="we-done-sum">
           <ShapePanel view={view} />
         </div>
@@ -219,6 +230,8 @@ function Bar(props: {
           kind="primary"
           data-moss-action="world-build"
           busy={props.busy}
+          disabled={props.nextDisabled !== undefined}
+          why={props.nextDisabled}
           onClick={props.onNext}
         >
           {props.nextLabel}
@@ -260,11 +273,14 @@ function useMake(spec: ShapeSpec, startedFrom?: string) {
 /** The line at the foot of the bar: where the screen stands. */
 function summaryOf(step: Step, spec: ShapeSpec, view: ShapeView): ReactNode {
   return {
-    services: (
-      <>
-        <b>{spec.services.map((s) => s.name).join(" · ")}</b> · 시나리오 {view.scenarios}개
-      </>
-    ),
+    services:
+      spec.services.length === 0 ? (
+        <b>서비스를 골라 주세요</b>
+      ) : (
+        <>
+          <b>{spec.services.map((s) => s.name).join(" · ")}</b> · 시나리오 {view.scenarios}개
+        </>
+      ),
     ladders: (
       <>
         지금 모양:{" "}
@@ -307,6 +323,17 @@ function useStepper(
     onBack: () => go(retreat(at, count), onLeave),
     onNext: () => go(advance(at, count), () => void startNow()),
   };
+}
+
+/** Why 다음 is not pressable: the last screen waits for a whole spec, the first for at least one service. */
+function waitingFor(
+  step: Step,
+  last: boolean,
+  spec: ShapeSpec,
+  problem: string | undefined,
+): string | undefined {
+  if (last) return problem;
+  return step === "services" ? noServicesReason(spec.services.length) : undefined;
 }
 
 function Problem({ text }: { readonly text: string | undefined }) {
@@ -443,7 +470,7 @@ export function ShapeScreen({
         onBack={onBack}
         onNext={onNext}
         nextLabel={last ? "실험 시작" : "다음"}
-        nextDisabled={last ? problem : undefined}
+        nextDisabled={waitingFor(flow.step, last, spec, problem)}
         {...(last ? { onMake: () => void make() } : {})}
       />
     </div>

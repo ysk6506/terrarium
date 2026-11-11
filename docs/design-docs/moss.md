@@ -2,7 +2,7 @@
 title: 이끼 — 테라리움 도우미가 문서와 화면으로 답하고 화면을 같이 넘기는 법
 kind: spec
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-11
 covers:
   - apps/web/src/moss/bar-offset.ts
   - apps/web/src/moss/ask.tsx
@@ -22,12 +22,12 @@ covers:
   - apps/web/src/logic/models.ts
   - harness/src/checks/moss.ts
 verification_log:
-  - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
-  - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: 2026-11-07: REQ-104(ADR-0127) 코드와 대조해 고쳤다"
+  - "2026-11-11: bar-offset.ts: --below-bar-h 추가, 막대의 부모 크기 변화도 관찰. 해당 단락에 반영"
   - "2026-11-07: 프로세스 비교 화면의 이끼 동작과 MossAsk 타일을 적었다"
   - "2026-11-07: 프로세스 비교 화면은 읽기만 등록하고 동작은 없다고 적었다"
-covers_hash: 6d91360f06341d78
+  - "2026-11-11: main(process-compare 9cf2ce8) 합친 뒤 코드와 대조; own-card-only·process-compare 여정과 ADR-0134 내용 모두 유지"
+covers_hash: efe469508e710562
 ---
 # 이끼 (REQ-103, [ADR-0124](adr/0124-moss-assistant.md), [ADR-0125](adr/0125-moss-requires-model.md))
 
@@ -120,7 +120,7 @@ covers_hash: 6d91360f06341d78
 
 ## 화면에서의 자리 (REQ-104)
 - **"?"는 올려 볼 때만 보인다.** `MossAsk`의 "?"(`.moss-q`)는 감싼 글자 위에 포인터가 있거나(`:hover`) 그 안에 포커스가 있거나(`:focus-within`, `:focus-visible`) 할 때만 보이고(`opacity`), 터치 화면(`hover: none`)에서는 늘 보인다. 화면 읽기 이름("이끼에게 묻기: …")은 그대로다.
-- **떠 있는 이끼 버튼과 첫 인사는 아래 막대를 가리지 않는다.** 아래 막대(`we-bar`·빌더 `stage-steps`·실험 만들기 `summary-card`, 새 막대는 `data-bottom-bar`만 달면 된다)의 높이를 `moss/bar-offset.ts`가 재서 CSS 변수 `--bottom-bar-h`에 넣고, 버튼의 `bottom`은 `max(22px, 막대 높이 + 16px)`다. 막대가 없으면 제자리, 둘이면 가장 높은 것을 따른다.
+- **떠 있는 이끼 버튼과 첫 인사는 아래 막대를 가리지 않는다.** 아래 막대(`we-bar`·빌더 `stage-steps`·실험 만들기 `summary-card`, 새 막대는 `data-bottom-bar`만 달면 된다)의 높이를 `moss/bar-offset.ts`가 재서 CSS 변수 `--bottom-bar-h`에 넣고, 버튼의 `bottom`은 `max(22px, 막대 높이 + 16px)`다. 막대가 없으면 제자리, 둘이면 가장 높은 것을 따른다. 막대 아래에 남는 틈(폰의 탭 줄)은 `--below-bar-h`에 따로 넣는다. 빌더의 "다음" 칩과 에이전트 칩은 무대 안에 있어서, 이끼 알약이 그 위로 올라갈 때 이 틈을 더한다(REQ-111, ADR-0134). 막대 둘레(부모)가 크기를 바꿔도 다시 재므로, 화면 폭을 바꿔도 값이 낡지 않는다.
 
 ## 누락 없이 — `moss` 검사
 

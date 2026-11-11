@@ -172,3 +172,61 @@ export function nameOf(who: ActivityWho): { readonly title: string; readonly det
     detail: `${who.harness} · ${who.experiment}`,
   };
 }
+
+/** Runs that look the same in the list: one line with how many there are ("운영 (규칙 기반) ×5"). */
+export interface WorkerGroup {
+  readonly key: string;
+  readonly title: string;
+  readonly detail: string;
+  readonly doing: string;
+  /** Where the run named last (the group's first one that named a place). */
+  readonly target?: string;
+  readonly count: number;
+  /** The run a press on the line takes the camera to: the latest one that named a place. */
+  readonly pick?: string;
+  readonly idle: boolean;
+  /** The colour of the first run of the group. */
+  readonly hue: number;
+}
+
+/** "에이전트 5개가 일하는 중": what the collapsed chip says. */
+export const workersLine = (count: number): string => `에이전트 ${count}개가 일하는 중`;
+
+/**
+ * Identical agents (the same name, harness, experiment, last act and place) are one line with a count, the latest
+ * first. `place` names the equipment a run is at.
+ */
+export function groupWorkers(
+  workers: readonly Worker[],
+  now: number,
+  place: (id: string) => string | undefined,
+): WorkerGroup[] {
+  const groups = new Map<string, WorkerGroup>();
+  for (const w of [...workers].sort((a, b) => b.lastAt - a.lastAt)) {
+    const name = nameOf(w.who);
+    const doing = doingOf(w);
+    const target = w.at ? place(w.at) : undefined;
+    const idle = isIdle(w, now);
+    const key = [name.title, name.detail, doing, target ?? "", idle].join("|");
+    const found = groups.get(key);
+    if (found)
+      groups.set(key, {
+        ...found,
+        count: found.count + 1,
+        ...(found.pick || !w.at ? {} : { pick: w.runId }),
+      });
+    else
+      groups.set(key, {
+        key,
+        title: name.title,
+        detail: name.detail,
+        doing,
+        ...(target ? { target } : {}),
+        count: 1,
+        ...(w.at ? { pick: w.runId } : {}),
+        idle,
+        hue: w.hue,
+      });
+  }
+  return [...groups.values()];
+}

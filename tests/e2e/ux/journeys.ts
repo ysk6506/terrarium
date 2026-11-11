@@ -7,7 +7,9 @@ import { readFileSync } from "node:fs";
 import { Catalog } from "@terrarium/core/catalog";
 import { DEFAULT_CAMPUS, generateCampus, SITE_CAMPUS_MIX } from "@terrarium/core/sources/worldgen";
 import type { Browser, Page } from "playwright";
-import { Driver, nav, type Visitor, visitor } from "./driver";
+import { Driver, nav, visitor } from "./driver";
+import { type Context, expectPath, home, SECOND } from "./journey-kit";
+import { ownCardOnly } from "./journey-own-card";
 import { settle } from "./site";
 
 export type JourneyId =
@@ -21,6 +23,7 @@ export type JourneyId =
   | "compare"
   | "site"
   | "build-small"
+  | "own-card-only"
   | "topology"
   | "process-compare";
 
@@ -32,24 +35,6 @@ export interface Outcome {
   readonly problems: readonly string[];
   /** Screens the journey passed through. */
   readonly screens: number;
-}
-
-interface Context {
-  readonly browser: Browser;
-  readonly base: string;
-  readonly v: Visitor;
-  readonly d: Driver;
-}
-
-const SECOND = 1000;
-
-async function home(c: Context): Promise<void> {
-  await c.v.page.goto(c.base, { waitUntil: "load" });
-  await settle(c.v.page);
-}
-
-async function expectPath(c: Context, pattern: RegExp): Promise<void> {
-  await c.v.page.waitForURL((url) => pattern.test(url.pathname), { timeout: 15 * SECOND });
 }
 
 /** The experiment page is done when the pass rate shows a number. */
@@ -467,6 +452,7 @@ export const JOURNEYS: ReadonlyArray<readonly [JourneyId, (c: Context) => Promis
   // last: it leaves a bare scenario behind, and the journeys above want the default one to be a real scenario
   ["author", author],
   ["build-small", buildSmall],
+  ["own-card-only", ownCardOnly],
   // last: it uses no scenario, and the Hwaseong world it uploads is the biggest one in the list (it is deleted after)
   ["topology", topology],
 ];
