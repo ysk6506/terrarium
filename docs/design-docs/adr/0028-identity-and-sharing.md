@@ -9,6 +9,8 @@ enforced_by:
   - apps/server/src/runtime/results.test.ts
 touches_protected: []
 decision_hash: f272311558296171
+amended_by:
+  - 0174-permissions-proxy-identity-three-scopes-audit.md
 ---
 # ADR-0028 누가 무엇을 할 수 있나
 

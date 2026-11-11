@@ -8,6 +8,8 @@ enforced_by:
   - packages/core/src/analysis/analysis.test.ts
 touches_protected: []
 decision_hash: 6749f36c53aed5cd
+amended_by:
+  - 0158-repeats-per-seed-and-seed-level-statistics.md
 ---
 # ADR-0023 같은 시험지끼리만 줄 세운다
 

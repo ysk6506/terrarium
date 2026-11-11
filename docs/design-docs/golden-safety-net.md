@@ -33,7 +33,7 @@ covers_hash: 12f569ec613ee392
 
 지문은 글자 수와 안정 해시(`hashHex`, 64비트)예요. `길이:해시` 꼴이고, 영향 범위는 앞에 `영향 장비/랙/서버` 수를 붙여 읽기 쉽게 했어요. 기대값은 시험 파일의 문자열 값이고 실행 때 다시 만들지 않아요.
 
-| 종류 | 파일 | 무엇을 | 개수 |
+| 종류 | 시험 파일 | 무엇을 | 개수 |
 |---|---|---|---|
 | 영향 범위 (REQ-078) | `tests/spec/golden-impact-{iap,campus,sdn,train,fabric}.test.ts` | 세계마다, 지원하는 고장 종류를 첫 대상과 마지막 대상(링크 고장은 스위치끼리 업링크도)에 넣고 물리를 120초 돌린 뒤 `impactOf`의 영향 장비·방·랙·서버 수·심각도·서비스 영향·고장/알람 출처 | 447 |
 | 파사드 (REQ-062, REQ-065) | `tests/spec/golden-facade.test.ts` | 스위치마다 인터페이스·이웃(CLI), BGP·ECMP·EVPN·경로·설정 글(CLI), SNMP 인터페이스 걷기. 업링크 하나를 끊은 뒤 그 양 끝 스위치도 | 120 |
@@ -53,7 +53,7 @@ covers_hash: 12f569ec613ee392
 | `train` | `accelLab("gpu-training-cluster", { network: "net-leaf-spine" })`, 시드 7 | GPU, IB 패브릭, leaf-spine, 전력 한도 |
 | `fabric` | `gpuLab()` | 클라우드 패브릭: 케이블마다 eBGP, leaf-spine 사이 ECMP (`maximum-paths`) |
 
-같은 템플릿을 받을 수 있는 세계가 여럿이면 세계마다 걸어요. 어느 세계도 못 받는 템플릿 여섯(`sidecar-crash`, `split-brain`, `gpu-memory-leak`, `mig-misconfig`, `utility-feed-loss`, `cdu-pump-fail`)은 정답 풀이 시험이 쓰는 세계(`operatorCases`)에서 한 번씩 걸어요(`extra`). 그래서 내장 템플릿 69개가 모두 한 번 이상 들어 있어요.
+같은 템플릿을 받을 수 있는 세계가 여럿이면 세계마다 걸어요. 어느 세계도 못 받는 템플릿 여섯(`sidecar-crash`, `split-brain`, `gpu-memory-leak`, `mig-misconfig`, `utility-feed-loss`, `cdu-pump-fail`)은 정답 풀이 시험이 쓰는 세계(`operatorCases`)에서 한 번씩 걸어요(`extra`). 그래서 내장 템플릿 <!-- fact:scenario_templates -->69<!-- /fact -->개가 모두 한 번 이상 들어 있어요.
 
 ## 시간과 결정성
 

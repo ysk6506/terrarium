@@ -7,6 +7,9 @@ enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-115·117 예정). 만들 때 enforced_by를 묶음의 출처·같은 세계 시험으로 바꾼다.
 decision_hash: e37a9dab5f24bcb3
+amends:
+  - 0161-shape-sample-test-fills-the-gaps.md
+  - 0156-blast-radius-ports-redundancy-groups-in-memory-index.md
 ---
 # ADR-0164 ECMP는 장비 설정에서 읽고, 위치 엑셀은 목록으로 받고, VMware의 쿠버네티스와 VDI 둘을 대응 표에 넣는다
 

@@ -3,11 +3,14 @@ title: Terrarium
 kind: guide
 status: active
 last_verified: 2026-11-05
+follows:
+  - docs/product-specs/requirements.md
+  - docs/design-docs/product-design.md
+follows_hash: e5b958803f823b44
 ---
-
 # Terrarium
 
-사내 Agent/Harness 평가용 스테이트풀 IT 인프라 시뮬레이터이자 실험 플랫폼.
+**IT 인프라를 운영하는 AI 에이전트와 하네스를, 현실 장비를 건드리지 않고 정확하고 일관되게 평가하는 사내 실험장.**
 
 ## 한 문장으로
 

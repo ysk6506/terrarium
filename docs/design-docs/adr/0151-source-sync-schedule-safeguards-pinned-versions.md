@@ -9,6 +9,10 @@ no_enforcement_reason: 구현 전 결정 기록이다(REQ-115 예정). 만들 �
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: ba53a2e9a533ac9e
+amends:
+  - 0150-reality-worlds-are-a-requirement-decisions-and-proposals.md
+amended_by:
+  - 0153-operation-mode-worlds-are-highly-available-open-beta.md
 ---
 # ADR-0151 소스는 주기로 동기화하고, 적용은 안전장치를 거치며, 실험은 세계의 판에 묶인다
 

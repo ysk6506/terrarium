@@ -3,6 +3,9 @@ title: 파워 캐핑 참고 — 연수 님 팀이 실제로 검증한 랙 단위
 kind: reference
 status: active
 last_verified: 2026-11-06
+follows:
+  - docs/design-docs/power-cooling-ladders.md
+follows_hash: ade56917ef608e60
 ---
 # 파워 캐핑 참고 — 실제로 검증된 것 (ADR-0096 구현 때 읽는다)
 

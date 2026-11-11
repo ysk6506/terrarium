@@ -5,6 +5,10 @@ status: active
 last_verified: 2026-11-07
 verification_log:
   - "2026-11-07: o15 합치기 (2차 피드백 수정)"
+follows:
+  - docs/design-docs/topology.md
+  - docs/design-docs/web-ui.md
+follows_hash: db86771a56561fe5
 ---
 # 토폴로지 보기 (REQ-078, REQ-083, REQ-086)
 

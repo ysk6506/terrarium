@@ -9,6 +9,8 @@ no_enforcement_reason: 구현 전 결정 기록이다(REQ-115 예정). 만들 �
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 23959cbb5e3f7241
+amends:
+  - 0150-reality-worlds-are-a-requirement-decisions-and-proposals.md
 ---
 # ADR-0152 현실에서 만든 세계는 관리자가 다루고 복사해서 실험하며, 엑셀과 SPL이 첫 길이다
 

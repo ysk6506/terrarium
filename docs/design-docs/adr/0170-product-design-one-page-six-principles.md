@@ -9,6 +9,11 @@ no_enforcement_reason: 일하는 방식의 결정이라 기계가 확인하지 �
 touches_protected:
   - AGENTS.md
 decision_hash: 718d3dc17208798e
+amends:
+  - 0144-reality-data-pipeline-ontology-manager-world-kinds.md
+  - 0167-data-pipeline-words-from-practice.md
+amended_by:
+  - 0180-docs-follow-decisions-not-only-code.md
 ---
 # ADR-0170 제품의 값과 원칙 여섯을 한 장에 두고, 요구사항은 그 한 장에 대 본 뒤 설계한다
 

@@ -7,6 +7,10 @@ verification_log:
   - "2026-11-11: 처음 씀. reality-data-and-ontology.md 3·4·5절, source-management.md 9·10절, ADR-0156 2·3번, model-standards.md와 대조"
   - "2026-11-11: ECMP는 장비 설정에서, 실장도는 만들지 않음 (ADR-0164)"
   - "2026-11-11: ADR-0167의 말로 다시 씀. 뜻은 그대로"
+follows:
+  - docs/design-docs/reality-data-and-ontology.md
+  - docs/design-docs/model-standards.md
+follows_hash: e5463cdf16e4066a
 ---
 # 샘플 검증 (REQ-115 예정, ADR-0161)
 

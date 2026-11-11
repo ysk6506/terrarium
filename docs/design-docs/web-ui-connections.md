@@ -3,6 +3,10 @@ title: 연결 화면 — 내 연결·하네스 종류·기준 에이전트
 kind: spec
 status: active
 last_verified: 2026-11-07
+follows:
+  - docs/design-docs/web-ui.md
+  - docs/design-docs/harness-protocol.md
+follows_hash: 08514e0d37e17325
 ---
 # 연결 화면 (REQ-051~053, ADR-0048)
 

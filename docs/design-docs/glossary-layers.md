@@ -1,10 +1,13 @@
 ---
-title: "용어집 층별 말 — SDN·컨테이너·애플리케이션·가속기·사이트"
+title: 용어집 층별 말 — SDN·컨테이너·애플리케이션·가속기·사이트
 kind: guide
 status: active
 last_verified: 2026-11-07
 verification_log:
   - "2026-11-07: o13 합치기: 용어집이 400줄을 넘어 층별 말(SDN·컨테이너·애플리케이션·가속기·사이트·DR)을 이 문서로 옮겼다"
+follows:
+  - docs/design-docs/glossary.md
+follows_hash: 769080267670cf24
 ---
 # 용어집: 층별 말
 

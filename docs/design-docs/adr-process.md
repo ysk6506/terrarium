@@ -2,9 +2,21 @@
 title: ADR 작성 절차
 kind: guide
 status: active
-last_verified: 2026-10-28
+last_verified: 2026-11-11
+covers:
+  - harness/config/docs.yaml
+  - harness/src/checks/doc-adr.ts
+  - harness/src/checks/doc-follow.ts
+  - harness/src/checks/doc-diff.ts
+  - harness/src/checks/doc-decisions.ts
+  - harness/src/checks/doc-claims.ts
+  - harness/src/checks/doc-facts.ts
+covers_hash: 0ae5830665f771a1
+verified_body: 164fdb5349a60b16
+unchanged_reverifies: 0
+verification_log:
+  - "2026-11-11: 새 앞부분 키(updates_docs, amends)와 명령(link-amends, decisions, audit)을 적음 (ADR-0180)"
 ---
-
 # ADR (Architecture Decision Record)
 
 결정은 저장소에 남아야 한다. 채팅·머릿속의 결정은 다음 에이전트에게 존재하지 않는다.
@@ -31,17 +43,31 @@ enforced_by: [ARCH010]  # 규칙 코드 또는 테스트 경로. 못 하면 [non
 touches_protected: []   # 이 ADR로 바꾸는 보호 경로 (harness/**, package.json ...)
 amends_tests: []        # 요구사항 변경으로 바꾸는 잠긴 테스트 키
 test_change_reason: ""  # amends_tests를 쓸 때: 왜 요구사항이 바뀌었는지 (40자 이상)
+updates_docs: [docs/design-docs/product-design.md]  # 이 결정이 바꾸는 문서. 같은 변경에서 실제로 고쳐야 한다 (DOC090)
+# updates_docs: []      # 바꾸는 문서가 없으면 빈 목록과
+# updates_docs_reason: "..."
+amends: [0165-....md]   # 앞선 결정의 일부를 바꿀 때: 그 ADR 파일 이름 (전체를 대체하면 아래 superseded)
 ```
 
-4. 봉인: `pnpm tsx harness/src/checks/docs.ts seal-adr docs/design-docs/adr/NNNN-....md`
-5. [색인](../index.md)에 링크한다.
+4. 앞선 결정의 일부를 바꾸면 `pnpm tsx harness/src/checks/docs.ts link-amends docs/design-docs/adr/NNNN-....md`로 대상 ADR의 앞부분에 `amended_by`를 남긴다 (`DOC091`이 양쪽이 맞는지 본다). 대상 ADR도 보호 경로이므로 이 ADR의 `touches_protected`에 대상 파일을 적는다.
+5. 봉인: `pnpm tsx harness/src/checks/docs.ts seal-adr docs/design-docs/adr/NNNN-....md`
+6. 색인에는 줄을 더하지 않는다. [색인](../index.md)은 결정 기록 폴더를 가리킬 뿐이고, 결정 목록은 하네스가 만든다: `pnpm tsx harness/src/checks/docs.ts decisions`가 [결정 목록](../generated/decisions.md)을 쓴다. 이 파일은 5시간마다 도는 정리 작업이 main에서 새로 만들고, 결정마다 커밋하지 않는다 (낡았으면 `DOC098` 알림만 나온다). [제품 설계 한 장](product-design.md) 4절도 손으로 표를 고치지 않는다. 그 문서를 고쳐야 하는 결정이면 `updates_docs`에 적는다.
 
 ## 봉인된 ADR은 수정 금지
 
 본문을 고치면 `DOC070`으로 실패한다. 결정을 바꾸려면 **새 ADR**을 쓰고
-이전 ADR의 `status: superseded`, `superseded_by: NNNN-....md`를 설정한다. (front matter는 봉인 대상이 아니다.)
+이전 ADR의 `status: superseded`, `superseded_by: NNNN-....md`를 설정한다. 일부만 바꾸면 `amends`와 `link-amends`로 양쪽에 남긴다. (front matter는 봉인 대상이 아니다.)
 
 ## 결정은 강제 장치와 연결한다
 
 `enforced_by`가 가리키는 규칙 코드나 테스트가 실제로 있어야 한다 (`DOC080`).
 기계가 확인할 수 없는 결정은 `[none]`과 사유를 적는다. 그런 결정이 많아지면 방향을 잃은 것이다.
+
+## 문서는 결정도 따라간다 (ADR-0180)
+
+- 코드를 묘사하지 않는 문서는 `covers` 대신 `follows`(다른 문서나 ADR의 경로·글롭)를 둔다. 따라가는 문서의 본문이 바뀌면 `DOC010`으로 낡았다고 알린다 (`DOC092`는 둘 다 없는 문서).
+- 문서가 가리키는 것은 있어야 한다 (`DOC094`): `TERRARIUM_` 환경 변수, `pnpm` 명령, `METHOD /api/...` 길, 검사 코드, `파일.ts`의 `이름`, `ADR-NNNN`, `REQ-NNN`.
+- 코드에서 셀 수 있는 숫자는 `<!-- fact:tools -->96<!-- /fact -->`처럼 적으면 세어서 견준다 (`DOC095`). `reverify`로는 못 고친다. 숫자를 고친다.
+- 시험을 말하는 표는 `시험 파일` 칸에 시험 경로를 적는다 (`DOC096`, 알림). 아직 없으면 '예정'.
+- 본문은 그대로이고 `reverify`만 된 문서는 구조 검사 요약에 알림(`DOC097`)으로 나오고, `docs.ts audit-queue`가 다른 눈이 읽을 차례를 보여 준다. 읽은 뒤 `docs.ts audit <문서> --note "한 줄"`.
+- 제품 목표 문장은 `requirements.md`의 "제품 목표" 아래 굵은 한 줄이 원본이다. README.md와 AGENTS.md 첫 단락에 그대로 있어야 한다 (`DOC093`).

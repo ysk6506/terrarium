@@ -8,6 +8,12 @@ enforced_by:
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: b4605bdf5e0483db
+amends:
+  - 0084-topology-view.md
+amended_by:
+  - 0151-source-sync-schedule-safeguards-pinned-versions.md
+  - 0152-reality-worlds-admin-fork-excel-spl.md
+  - 0153-operation-mode-worlds-are-highly-available-open-beta.md
 ---
 # ADR-0150 현실 데이터로 세계 만들기는 요구사항이고, 그 설계를 결정과 제안으로 나눈다
 

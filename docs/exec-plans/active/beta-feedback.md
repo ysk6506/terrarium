@@ -12,6 +12,9 @@ verification_log:
   - "2026-11-05: 11번 반영 내용 확인"
   - "2026-11-05: 11번 반영 내용 확인"
   - "2026-11-05: 1·3·4·10·12를 반영으로 바꾸고 반영 내용을 적었다 (작업 #90)"
+follows:
+  - docs/exec-plans/active/beta-rounds.md
+follows_hash: e1b57630471e38a0
 ---
 # 클로즈 베타 피드백 장부
 

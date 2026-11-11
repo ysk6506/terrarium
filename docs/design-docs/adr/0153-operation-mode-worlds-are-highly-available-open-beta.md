@@ -9,6 +9,9 @@ no_enforcement_reason: 구현 전 결정 기록이다(REQ-116 예정, 오픈 베
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 5531d1a6307ac6ad
+amends:
+  - 0150-reality-worlds-are-a-requirement-decisions-and-proposals.md
+  - 0151-source-sync-schedule-safeguards-pinned-versions.md
 ---
 # ADR-0153 운영 모드의 세계는 고가용으로 설계하고, 오픈 베타에 넣는다
 

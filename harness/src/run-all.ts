@@ -2,6 +2,7 @@
 import { run as architecture } from "./checks/architecture";
 import { run as coverage } from "./checks/coverage";
 import { run as debt } from "./checks/debt";
+import { report as docsDiff } from "./checks/doc-diff";
 import { run as docs } from "./checks/docs";
 import { report as ignores } from "./checks/ignores";
 import { run as moss } from "./checks/moss";
@@ -22,6 +23,14 @@ export function checks(
   const plan: Check[] = [
     ["architecture", () => architecture(root)],
     ["docs", () => docs(root)],
+    [
+      "docs-follow",
+      () => {
+        const { violations, notes: docNotes } = docsDiff(root, base);
+        notes.push(...docNotes);
+        return violations;
+      },
+    ],
     ["debt", () => debt(root, today(), base)],
     [
       "ignores",

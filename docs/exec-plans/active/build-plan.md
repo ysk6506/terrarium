@@ -9,6 +9,10 @@ verification_log:
   - "2026-11-07: 12u 남은 점선 다섯을 실선으로 구현 끝으로 적었다 (REQ-106)"
   - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-07: o15 합치기 (2차 피드백 수정)"
+follows:
+  - docs/design-docs/product-design.md
+  - docs/exec-plans/active/beta-rounds.md
+follows_hash: d1fd1dd56b0c4f70
 ---
 # 구현 계획
 

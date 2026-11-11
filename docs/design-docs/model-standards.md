@@ -9,6 +9,10 @@ verification_log:
   - "2026-11-11: ADR-0167의 말로 다시 씀. 뜻은 그대로"
   - "2026-11-11: ADR-0168에 맞춤: 실험용 복사본은 같은 의미로 움직이고 시뮬레이션은 정밀·기본 두 단계"
   - "2026-11-11: 세 층을 버리고 모델 하나로 (ADR-0169). 넓히는 완료 조건 다섯"
+follows:
+  - docs/design-docs/reality-data-and-ontology.md
+  - docs/design-docs/product-design.md
+follows_hash: 5244b784164d7718
 ---
 # 표준 모델 대조 (REQ-115·117 예정, ADR-0157)
 

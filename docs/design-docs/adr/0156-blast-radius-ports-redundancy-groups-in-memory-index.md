@@ -9,6 +9,14 @@ no_enforcement_reason: 구현 전 결정 기록이다(REQ-117 예정). 성능 �
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 0c43ebc5aa9e3d45
+amends:
+  - 0154-reality-scale-tens-of-millions-rows-scopes-measure.md
+  - 0144-reality-data-pipeline-ontology-manager-world-kinds.md
+amended_by:
+  - 0161-shape-sample-test-fills-the-gaps.md
+  - 0164-ecmp-from-device-config-list-excel-k8s-vdi.md
+  - 0168-experiment-copy-behaves-like-the-operation-world.md
+  - 0169-one-model-for-invented-and-real-worlds.md
 ---
 # ADR-0156 영향 범위는 포트 단위까지 묶음의 뜻으로 계산하고, 메모리의 색인에서 1초·수 초 안에 답한다
 

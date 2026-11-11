@@ -9,6 +9,11 @@ no_enforcement_reason: 구현 전 결정 기록이다. 단계 A·B를 만들 때
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 1137c5239f2988a5
+amended_by:
+  - 0156-blast-radius-ports-redundancy-groups-in-memory-index.md
+  - 0165-dataset-refine-ontology-link-layers-open-types.md
+  - 0167-data-pipeline-words-from-practice.md
+  - 0170-product-design-one-page-six-principles.md
 ---
 # ADR-0144 현실 데이터는 네 단으로 들어오고, 세계는 현실과 실험 두 종류이며, 모델은 핵심을 잠그고 넓힌다
 
