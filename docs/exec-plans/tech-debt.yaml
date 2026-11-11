@@ -3,6 +3,9 @@
 #   - every TODO/FIXME/HACK/XXX comment must read TODO(TD-NNNN) and point at an open item here
 #   - open items past `due` fail the build; so does exceeding the open-debt budget (harness/config/debt.yaml)
 #   - closing an item (done/wontfix) needs a `resolution`, and no marker for it may remain in code
+#   - an item may name the architecture units it touches with `units: [core.world]`; the quality table
+#     (docs/generated/quality.md) also places an item where code comments cite it (ADR-0148)
+#   - a suppression comment, skipped test or `continue-on-error` may cite an open item as its basis (IGN*, ADR-0148)
 # Statuses: open | done | wontfix. Severity: low | medium | high.
 items:
   - id: TD-0001
@@ -17,6 +20,7 @@ items:
     title: "커버리지 하한 미달 단위가 하나 남았다: core.world 97.41/98.5 (290개 모자람; 나머지 단위는 모두 하한 이상). 다 채우면 coverage-floors를 게이트로 올린다 (ADR-0142, ADR-0143)"
     severity: high
     cost: "CI가 초록이 되면 커버리지를 재고, 하한 아래인 단위에 테스트를 더한다"
+    units: [core.world]
     created: "2026-11-10"
     due: "2026-11-21"
     status: open

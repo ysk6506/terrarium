@@ -207,8 +207,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       process.once("SIGTERM", stop);
     },
     (err: unknown) => {
-      // biome-ignore lint/suspicious/noConsole: the process entry point reports why it could not start
-      console.error(err instanceof Error ? err.message : err);
+      // The process entry point reports why it could not start.
+      process.stderr.write(`${err instanceof Error ? err.message : String(err)}\n`);
       process.exit(1);
     },
   );

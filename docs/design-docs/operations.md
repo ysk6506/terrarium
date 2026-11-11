@@ -2,17 +2,17 @@
 title: 서버 운영 — 설치와 사내 시스템 연결
 kind: guide
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-11
 covers:
   - apps/server/src/adapters/config.ts
   - apps/server/src/main.ts
-covers_hash: 681aa990cc5e239f
+covers_hash: c6a080abbc6d871d
 verification_log:
-  - "2026-11-03: 서버·core가 사람에게 돌려주는 안내 문장이 해요체로 바뀐 것만 확인했다. 동작과 본문은 그대로 (ADR-0050)"
   - "2026-11-04: GoClaw·Hermes 연결과 고정 도구 주소 설명을 하네스 항목에 추가하고, 나머지는 현재 코드와 맞는지 다시 읽었다"
   - "2026-11-04: main.ts에서 항상 참인 secretBox 확인(죽은 가지)만 지웠다. 고정 도구 주소가 서버 열쇠에서 나온다는 본문과 같다"
   - "2026-11-05: config.ts의 하네스 traces 항목(none·default·clickstack·langfuse)과 전역 telemetry가 기본값이라는 것을 설정 표와 확인 목록에 맞췄다 (ADR-0085)"
   - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
+  - "2026-11-11: main.ts의 시작 실패 보고를 console.error에서 process.stderr.write로 바꿨다(ADR-0148). 본문 서술과 어긋난 곳 없음"
 ---
 # 서버 운영
 
