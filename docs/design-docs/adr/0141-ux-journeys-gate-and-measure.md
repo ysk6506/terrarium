@@ -13,6 +13,7 @@ touches_protected:
   - .github/workflows/ci.yml
   - harness/src/ux/run.ts
   - harness/src/ux/run.test.ts
+  - harness/src/ux/groups.test.ts
   - harness/src/ux/score.ts
   - harness/src/checks/moss.ts
   - harness/src/checks/moss.test.ts
