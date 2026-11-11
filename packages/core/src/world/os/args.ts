@@ -82,3 +82,37 @@ export function intOf(p: Parsed, flag: string, def: number): number {
   if (v === undefined) return def;
   return /^\d+$/.test(v) ? Number(v) : Number.NaN;
 }
+
+/**
+ * Every value of an option that may be given more than once (`-e a -e b`, `-ea`, `-ne a`, `--expression=a`), in
+ * order. `parseArgs` keeps only the last one; the spec is the one the call was parsed with.
+ */
+export function allValues(
+  args: readonly string[],
+  spec: FlagSpec,
+  short: string,
+  long?: string,
+): string[] {
+  const out: string[] = [];
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i] as string;
+    if (arg === "--") break;
+    if (arg.startsWith("--")) {
+      const eq = arg.indexOf("=");
+      const name = arg.slice(2, eq < 0 ? undefined : eq);
+      if (spec.long?.[name] !== "val") continue;
+      const value = eq < 0 ? (args[++i] ?? "") : arg.slice(eq + 1);
+      if (name === long) out.push(value);
+    } else if (arg.length > 1 && arg.startsWith("-")) {
+      for (let k = 1; k < arg.length; k++) {
+        const ch = arg.charAt(k);
+        if (!spec.val?.includes(ch)) continue;
+        const inline = arg.slice(k + 1);
+        const value = inline !== "" ? inline : (args[++i] ?? "");
+        if (ch === short) out.push(value);
+        break;
+      }
+    }
+  }
+  return out;
+}

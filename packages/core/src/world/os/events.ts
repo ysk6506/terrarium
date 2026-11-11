@@ -84,7 +84,7 @@ function background(h: OsHost, from: number, to: number, emit: Emit): void {
 }
 
 /** The shell command an operator action stands for, as `sudo` would log it. */
-const SUDO_COMMANDS: Readonly<Record<string, (arg: string) => string>> = {
+const SUDO_COMMANDS: Readonly<Record<string, (arg: string, data: string) => string>> = {
   free_disk: () => "/usr/sbin/logrotate -f /etc/logrotate.conf",
   remount_rw: () => "/usr/bin/mount -o remount,rw /",
   reboot: () => "/usr/sbin/reboot",
@@ -92,11 +92,13 @@ const SUDO_COMMANDS: Readonly<Record<string, (arg: string) => string>> = {
   remove: (arg) => `/usr/bin/rm ${arg}`,
   truncate: (arg) => `/usr/bin/truncate -s 0 ${arg}`,
   write: (arg) => `/usr/bin/tee ${arg}`,
+  mkdir: (arg) => `/usr/bin/mkdir ${arg}`,
+  symlink: (arg, data) => `/usr/bin/ln -s ${data} ${arg}`,
 };
 
 function commandOfAction(e: Extract<WorldEvent, { type: "host.act" }>): string {
   const arg = e.arg ?? "";
-  return SUDO_COMMANDS[e.action]?.(arg) ?? `/usr/bin/systemctl ${e.action} ${arg}`;
+  return SUDO_COMMANDS[e.action]?.(arg, e.data ?? "") ?? `/usr/bin/systemctl ${e.action} ${arg}`;
 }
 
 const parseAlarmId = (id: string): { code: string; entity: string } => {

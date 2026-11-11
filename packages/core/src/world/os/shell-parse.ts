@@ -185,7 +185,9 @@ class Assembler {
   private current: Token[] = [];
 
   private syntax(op: string): Refused {
-    return new Refused(`bash: syntax error near unexpected token \`${op}'`);
+    return new Refused(
+      `bash: syntax error near unexpected token \`${op === "\n" ? "newline" : op}'`,
+    );
   }
 
   add(t: Token): void {
@@ -204,7 +206,8 @@ class Assembler {
 
   private endPipeline(op: string, next: Join): void {
     if (this.current.length === 0 && this.pipeline.length === 0) {
-      if (next === ";" && this.steps.length > 0) return;
+      // an empty line between commands is fine, an empty command before `;` `&&` `||` is not
+      if (op === "\n" && this.steps.length > 0) return;
       throw this.syntax(op);
     }
     this.endCmd(op);
@@ -266,6 +269,8 @@ const WRITERS = new Set([
   "touch",
   "cp",
   "mv",
+  "mkdir",
+  "ln",
 ]);
 const CHANGING_VERBS = new Set([
   "start",

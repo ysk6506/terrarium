@@ -1,12 +1,13 @@
-/** `grep`, `egrep`, `fgrep` and `sort` of the fake shell (ADR-0117 decision 4): the real options, JavaScript regular expressions underneath. */
-import { has, intOf, parseArgs } from "./args";
-import { normalize } from "./fs";
+/** `grep`, `egrep` and `fgrep` of the fake shell (ADR-0117 decision 4): the real options, JavaScript regular expressions underneath. */
+import { allValues, has, intOf, parseArgs } from "./args";
+import { baseName, normalize } from "./fs";
+import { globToRegExp } from "./glob";
 import { errText, readInputs } from "./io";
 import { escapeLiteral, translate } from "./regex";
-import { type Cmd, fail, joinLines, linesOf, ok, type R, unsupported } from "./types";
+import { type Cmd, fail, joinLines, linesOf, type R, unsupported } from "./types";
 
 const GREP_FLAGS = {
-  bool: "ivcnEFrRlLwxohHqsaIPz",
+  bool: "ivcnEFrRlLwxohHqsaIP",
   val: "emABCf",
   long: {
     color: "val",
@@ -21,6 +22,7 @@ const GREP_FLAGS = {
     "line-number": "bool",
     recursive: "bool",
     regexp: "val",
+    file: "val",
   },
 } as const;
 
@@ -32,25 +34,45 @@ function wrapped(p: Flags, body: string): string {
   return p.flags.has("w") ? `\\b(?:${body})\\b` : body;
 }
 
-/** The regular expression of a grep call, or the error to print. */
-function compile(c: Cmd, p: Flags, src: string): RegExp | R {
+/** The regular expression of a grep call: one alternative per pattern, or the error to print. */
+function compile(c: Cmd, p: Flags, sources: readonly string[]): RegExp | R {
   const fixed = p.flags.has("F") || c.name === "fgrep";
   const extended = p.flags.has("E") || p.flags.has("P") || c.name === "egrep";
   const ignoreCase = p.flags.has("i");
   try {
-    const body = fixed ? escapeLiteral(src) : translate(src, extended);
-    return new RegExp(wrapped(p, body), ignoreCase ? "i" : "");
+    const bodies = sources.map((src) => (fixed ? escapeLiteral(src) : translate(src, extended)));
+    const body =
+      bodies.length === 1 ? (bodies[0] as string) : bodies.map((b) => `(?:${b})`).join("|");
+    return new RegExp(bodies.length === 0 ? "(?!)" : wrapped(p, body), ignoreCase ? "i" : "");
   } catch {
     return fail("grep: Invalid regular expression", 2);
   }
 }
 
+/** The patterns of `-e` (each, and each line of it), of `-f` files, or the first word; and the files left. */
+function patternsOf(c: Cmd, p: Flags): { sources: string[]; files: string[] } | R {
+  const given = allValues(c.args, GREP_FLAGS, "e", "regexp");
+  const lists = allValues(c.args, GREP_FLAGS, "f", "file");
+  const rest = [...p.rest];
+  const sources = given.flatMap((g) => g.split("\n"));
+  for (const name of lists) {
+    const text = c.fs.read(normalize(c.cwd, name));
+    if (text === undefined) return fail(`grep: ${name}: No such file or directory`, 2);
+    sources.push(...linesOf(text));
+  }
+  if (given.length === 0 && lists.length === 0) {
+    const first = rest.shift();
+    if (first === undefined) return fail("Usage: grep [OPTION]... PATTERNS [FILE]...", 2);
+    sources.push(...first.split("\n"));
+  }
+  return { sources, files: rest };
+}
+
 function patternOf(c: Cmd, p: Flags): { re: RegExp; files: string[] } | R {
-  const explicit = p.flags.get("e") ?? p.flags.get("--regexp");
-  const src = explicit ?? p.rest[0];
-  if (src === undefined) return fail("Usage: grep [OPTION]... PATTERNS [FILE]...", 2);
-  const re = compile(c, p, src);
-  return "code" in re ? re : { re, files: explicit === undefined ? p.rest.slice(1) : p.rest };
+  const found = patternsOf(c, p);
+  if ("code" in found) return found;
+  const re = compile(c, p, found.sources);
+  return "code" in re ? re : { re, files: found.files };
 }
 
 interface Match {
@@ -91,6 +113,17 @@ function withContext(m: Match, before: number, after: number): Row[] {
   return out;
 }
 
+/** Whether `--include` and `--exclude` let a file name through. */
+function wanted(c: Cmd, name: string): boolean {
+  const include = allValues(c.args, GREP_FLAGS, "", "include");
+  const exclude = allValues(c.args, GREP_FLAGS, "", "exclude");
+  const base = baseName(name);
+  return (
+    (include.length === 0 || include.some((g) => globToRegExp(g).test(base))) &&
+    !exclude.some((g) => globToRegExp(g).test(base))
+  );
+}
+
 function allFiles(c: Cmd, files: readonly string[], recursive: boolean): string[] {
   const names: string[] = [];
   for (const f of files) {
@@ -104,22 +137,33 @@ function allFiles(c: Cmd, files: readonly string[], recursive: boolean): string[
       );
     else names.push(f);
   }
-  return names;
+  return names.filter((n) => wanted(c, n));
 }
 
 interface Shown {
   readonly p: Flags;
-  readonly multi: boolean;
+  /** Whether each line starts with the name of its file (`-H`, or several files and no `-h`). */
+  readonly names: boolean;
+  readonly re: RegExp;
   readonly ctx: [number, number];
+}
+
+/** The parts of a line that matched, for `-o`; none when the lines asked for are the ones that did not match. */
+function parts(line: string, s: Shown): string[] {
+  if (s.p.flags.has("v")) return [];
+  const all = new RegExp(s.re.source, `${s.re.flags}g`);
+  return [...line.matchAll(all)].map((m) => m[0]).filter((m) => m !== "");
 }
 
 function describeMatch(m: Match, s: Shown): string[] {
   const label = (i: number, sep: string): string =>
-    `${s.multi && !s.p.flags.has("h") ? `${m.file}${sep}` : ""}${s.p.flags.has("n") ? `${i + 1}${sep}` : ""}`;
+    `${s.names ? `${m.file}${sep}` : ""}${s.p.flags.has("n") ? `${i + 1}${sep}` : ""}`;
   return withContext(m, s.ctx[0], s.ctx[1]).flatMap((row) => {
     if (row === "--") return ["--"];
-    if (s.p.flags.has("o") && row.hit) return (m.lines[row.i] as string).match(/.+/g) ?? [];
-    return [`${label(row.i, row.hit ? ":" : "-")}${m.lines[row.i]}`];
+    const line = m.lines[row.i] as string;
+    if (s.p.flags.has("o"))
+      return row.hit ? parts(line, s).map((x) => `${label(row.i, ":")}${x}`) : [];
+    return [`${label(row.i, row.hit ? ":" : "-")}${line}`];
   });
 }
 
@@ -139,7 +183,7 @@ function grepFile(
   if (has(p, "L")) return { out: hit ? [] : [input.name], hit };
   if (has(p, "c"))
     return {
-      out: [s.multi ? `${input.name}:${found.hits.length}` : String(found.hits.length)],
+      out: [s.names ? `${input.name}:${found.hits.length}` : String(found.hits.length)],
       hit,
     };
   return { out: describeMatch({ file: input.name, ...found }, s), hit };
@@ -156,15 +200,33 @@ function exitCode(p: Flags, errors: number, anyHit: boolean): number {
   return anyHit || has(p, "c") ? 0 : 1;
 }
 
+/** `--color=always` writes escape codes this fake does not make; `auto` and `never` print plain text, as a pipe does. */
+function colorBlocked(p: Flags): string | undefined {
+  const mode = p.flags.get("--color") ?? p.flags.get("--colour");
+  return mode !== undefined && !["", "auto", "never", "none", "no"].includes(mode)
+    ? `--color=${mode}`
+    : undefined;
+}
+
 export function grep(c: Cmd): R {
   const p = parseArgs(c.args, GREP_FLAGS);
   if (p.bad) return unsupported("grep", p.bad);
+  const color = colorBlocked(p);
+  if (color) return unsupported("grep", color);
   const parsed = patternOf(c, p);
   if ("code" in parsed) return parsed;
   const recursive = has(p, "r") || has(p, "R") || has(p, "--recursive");
   const files = parsed.files.length === 0 && recursive ? ["."] : parsed.files;
   const { inputs, errors } = readInputs(c, allFiles(c, files, recursive));
-  const shown: Shown = { p, multi: inputs.length > 1 || recursive, ctx: contextOf(p) };
+  // a single file named on the command line is not labelled, even with -r (a directory is)
+  const several =
+    inputs.length > 1 || files.some((f) => recursive && c.fs.isDir(normalize(c.cwd, f)));
+  const shown: Shown = {
+    p,
+    names: has(p, "H") || (several && !has(p, "h")),
+    re: parsed.re,
+    ctx: contextOf(p),
+  };
   const results = inputs.map((input) => grepFile(input, parsed.re, shown));
   const anyHit = results.some((r) => r.hit);
   return {
@@ -172,78 +234,4 @@ export function grep(c: Cmd): R {
     err: has(p, "s") ? "" : errText(errors),
     code: exitCode(p, errors.length, anyHit),
   };
-}
-
-// ── sort ────────────────────────────────────────────────────────────────────────────────────
-
-interface Key {
-  readonly field: number;
-  readonly numeric: boolean;
-  readonly reverse: boolean;
-}
-
-function keyOf(spec: string | undefined, flags: { n: boolean; r: boolean }): Key {
-  if (spec === undefined) return { field: 0, numeric: flags.n, reverse: flags.r };
-  const m = /^(\d+)(?:,\d+)?([a-zA-Z]*)/.exec(spec);
-  return {
-    field: Number(m?.[1] ?? 0),
-    numeric: flags.n || (m?.[2] ?? "").includes("n"),
-    reverse: flags.r || (m?.[2] ?? "").includes("r"),
-  };
-}
-
-function fieldOf(line: string, field: number, sep: string | undefined): string {
-  if (field === 0) return line;
-  const parts = sep === undefined ? line.trim().split(/\s+/) : line.split(sep);
-  return parts[field - 1] ?? "";
-}
-
-const leadingNumber = (s: string): number => {
-  const m = /^\s*(-?\d+(?:\.\d+)?)/.exec(s);
-  return m ? Number(m[1]) : 0;
-};
-
-const HUMAN: Readonly<Record<string, number>> = {
-  K: 1024,
-  M: 1024 ** 2,
-  G: 1024 ** 3,
-  T: 1024 ** 4,
-};
-const humanNumber = (s: string): number => {
-  const m = /^\s*(\d+(?:\.\d+)?)([KMGT]?)/.exec(s);
-  return m ? Number(m[1]) * (HUMAN[m[2] ?? ""] ?? 1) : 0;
-};
-
-export function sort(c: Cmd): R {
-  const p = parseArgs(c.args, { bool: "nrufhbcsV", val: "ktoT" });
-  if (p.bad) return unsupported("sort", p.bad);
-  const key = keyOf(p.flags.get("k"), { n: has(p, "n"), r: has(p, "r") });
-  const human = has(p, "h");
-  const sep = p.flags.get("t");
-  const { inputs, errors } = readInputs(c, p.rest);
-  const fold = has(p, "f");
-  const value = (l: string): string => {
-    const f = fieldOf(l, key.field, sep);
-    return fold ? f.toLowerCase() : f;
-  };
-  const cmp = (a: string, b: string): number => {
-    const [x, y] = [value(a), value(b)];
-    const r = human
-      ? humanNumber(x) - humanNumber(y)
-      : key.numeric
-        ? leadingNumber(x) - leadingNumber(y)
-        : x < y
-          ? -1
-          : x > y
-            ? 1
-            : 0;
-    return (r !== 0 ? r : a < b ? -1 : a > b ? 1 : 0) * (key.reverse ? -1 : 1);
-  };
-  let rows = linesOf(inputs.map((i) => i.text).join("")).sort(cmp);
-  if (has(p, "u"))
-    rows = rows.filter(
-      (l, i) =>
-        i === 0 || cmp(l, rows[i - 1] as string) !== 0 || value(l) !== value(rows[i - 1] as string),
-    );
-  return { ...ok(joinLines(rows)), err: errText(errors), code: errors.length ? 2 : 0 };
 }

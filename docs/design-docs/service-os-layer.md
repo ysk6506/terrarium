@@ -140,7 +140,7 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 
 ### 가상 파일시스템 (`os/fs.ts`, `fs-etc.ts`, `fs-proc.ts`, `fs-var.ts`)
 
-호스트마다 파일 트리를 **그때그때 서술**한다(저장하는 덩어리가 없다). 파일 내용은 읽을 때만 만든다. 운영자가 쓴 것(`>`, `>>`, `tee`, `sed -i`, `cp`, `touch`)과 지운 것은 호스트 상태(`files`·`removed`)에 사건으로 남아 트리 위에 덮인다.
+호스트마다 파일 트리를 **그때그때 서술**한다(저장하는 덩어리가 없다). 파일 내용은 읽을 때만 만든다. 운영자가 쓴 것(`>`, `>>`, `tee`, `sed -i`, `cp`, `touch`), 만든 것(`mkdir`, `ln -s`)과 지운 것은 호스트 상태(`files`·`removed`)에 사건으로 남아 트리 위에 덮인다.
 
 | 자리 | 들어 있는 것 | 어디서 나오나 |
 |---|---|---|
@@ -182,14 +182,14 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 
 | 분야 | 명령과 되는 옵션 |
 |---|---|
-| 읽기·찾기 | `cat`(-n), `ls`(-l -a -h -R -d -t -S -r -F), `stat`(-c), `find`(-name -iname -type -size -mtime -mmin -newer -user -empty -maxdepth -print -ls -delete -exec), `du`(-s -h -a -c -d --max-depth), `which`, `env`, `wc`(-l -w -c), `head`·`tail`(-n -c -N, `-f`는 안 됨) |
-| 글 다루기 | `grep`·`egrep`·`fgrep`(-i -v -c -n -E -F -r -l -L -w -x -o -h -q -s -m -A -B -C -e), `awk`(-F -v -f, `$N` `NF` `NR`, 패턴, `BEGIN`·`END`, `printf`, 배열, `if`·`for`·`while`, 내장 함수), `sed`(`s///[g\|p\|N]` `d` `p` `q` `y` `a` `i` `c` `=` 주소·범위·`!`, -n -e -E -i), `sort`(-n -r -u -k -t -f -h), `uniq`(-c -d -u -i), `cut`(-d -f -c), `tr`(-d -s -c, 문자 클래스), `xargs`(-n -I -r), `tee`(-a), `echo`, `printf`, `test`·`[` |
+| 읽기·찾기 | `cat`(-n), `ls`(-l -a -h -R -d -t -S -r -F; 디렉터리를 가리키는 링크는 -l·-d가 아니면 안을 보여 줌), `stat`(-c), `readlink`(-f -e -m -n), `find`(-name -iname -type -size -mtime -mmin -newer -user -empty -maxdepth -print -ls -delete -exec), `du`(-s -h -a -c -d --max-depth), `which`, `env`, `wc`(-l -w -c), `head`·`tail`(-n -c -N, `-f`는 안 됨) |
+| 글 다루기 | `grep`·`egrep`·`fgrep`(-i -v -c -n -E -F -r -l -L -w -x -o -h -H -q -s -m -A -B -C, -e 여러 번, -f 파일, --include·--exclude), `awk`(-F -v -f, `$N` `NF` `NR`, 패턴, `BEGIN`·`END`, `printf`, 배열, `if`·`for`·`while`, 내장 함수), `sed`(`s///[g\|p\|N]`과 바꿀 글의 `\U \L \u \l \E`, `d` `p` `q` `y` `a` `i` `c` `=` `h` `H` `g` `G` `x`, 주소·범위·`!`, -n -e(여러 번, `-ne`·`-e1d` 꼴도) -f -E -r -s -z -i[접미사]), `sort`(-n -r -u -f -h -b -V -s -c -o -t, -k는 여러 개와 `F,F` 범위와 키별 `nrfhbV`, 긴 옵션 몇 개), `uniq`(-c -d -u -i), `cut`(-d -f -c), `tr`(-d -s -c, 문자 클래스), `xargs`(-n -I -r), `tee`(-a), `echo`, `printf`, `test`·`[` |
 | 시스템 | `ps`(aux, -ef, -eo, -p -C -u, --sort), `top`(-b -n -o -p), `free`(-m -g -h), `df`(-h -T -i), `uptime`, `date`(+FORMAT -d -u), `hostname`, `uname`, `mount`, `lsblk`, `lsof`(-i -p 파일), `kill`·`pkill`·`pgrep`·`pidof`·`nice`, `dmesg`(-T -l), `journalctl`, `systemctl`, `timedatectl`, `chronyc`(tracking sources), `openssl x509`(-dates -enddate -checkend -subject -in), `logrotate`(-f -d) |
 | 네트워크 | `ping`, `curl`(-I -s -S -o -w -f), `dig`(+short @서버), `nslookup`, `ss`·`netstat`(-tulnpa -r), `ip`(a r l) |
-| 쓰기 | `rm`(-r -f -v), `truncate -s 0`, `touch`, `cp`, `mv`, `tee`, `>` `>>`, `sed -i`, `kill`, `systemctl start·stop·restart·enable·disable`, `logrotate -f`, `mount -o remount,rw`, `reboot` |
+| 쓰기 | `rm`(-r -f -v), `truncate -s 0`, `touch`, `cp`, `mv`, `mkdir`(-p -v), `ln -s`(-f -v), `tee`, `>` `>>`, `sed -i`, `kill`, `systemctl start·stop·restart·enable·disable`, `logrotate -f`, `mount -o remount,rw`, `reboot` |
 | 다른 층 | `pg_isready`, `psql -c`, `multipath -ll`(데이터베이스 호스트, [데이터베이스 층](db-storage-layers.md)). `kubectl get nodes\|pods\|deployments [-n <ns>]`, `kubectl describe node <이름>`, `crictl ps`(쿠버네티스 노드인 호스트, 컨테이너 층이 `registerShellCommand`로 달고 노드가 아닌 호스트에서는 `command not found`, [컨테이너 층](container-layer.md)). `systemctl restart kubelet\|containerd\|calico-node`는 위 `systemctl`이 하고, 노드의 디스크 압박과 CNI 고장 같은 그 층의 상태도 함께 풀린다([SDN 층](sdn-network-layer.md)) |
 
-쓰는 명령은 월드 명령 `host.act`가 되어 사건으로 남는다(다시 시작, 멈춤·시작, 켜기·끄기, 신호, 지우기, 쓰기, 비우기, 로그 돌리기, 다시 마운트, 재부팅). 사건 기록과 복구 우선 채점이 예전 툴 조치와 같이 읽는다. 파이프 속(`find … \| xargs rm`, `find -exec rm`, `sudo …`)에 숨은 쓰기도 조치로 센다(`callEffect`).
+쓰는 명령은 월드 명령 `host.act`가 되어 사건으로 남는다(다시 시작, 멈춤·시작, 켜기·끄기, 신호, 지우기, 쓰기, 비우기, 디렉터리 만들기 `mkdir`, 링크 만들기 `symlink`, 로그 돌리기, 다시 마운트, 재부팅). 만든 디렉터리와 링크는 호스트 상태의 `files`에 `dir`·`link` 항목으로 남고, 되감기·빨리 감기·기록 재생이 같은 트리를 다시 만든다. 사건 기록과 복구 우선 채점이 예전 툴 조치와 같이 읽는다. 파이프 속(`find … \| xargs rm`, `find -exec rm`, `sudo …`)에 숨은 쓰기도 조치로 센다(`callEffect`).
 
 ### 고장 열 가지가 보이는 길
 
@@ -219,6 +219,25 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 - 묵은 로그는 날짜별 네 파일로 나뉜다(디스크 꽉 참뿐 아니라 쿠버네티스 노드의 디스크 압박도 노드 VM에 같은 큰 로그를 남긴다). 지우면 그 파일 몫만큼 디스크가 비고, 90% 밑으로 내려오면 디스크 꽉 참이 풀린다. 열린 파일을 지워도 공간이 안 돌아오는 일(삭제된 파일을 쥔 프로세스)은 흉내 내지 않는다.
 - 지난 줄의 PID는 지금 PID로 찍힌다(재시작 반복의 에러 줄만 그때의 PID).
 - 저널은 마지막 6시간(`--since`로 24시간까지)만 만든다. 그 앞은 없다.
+
+### 흉내 내지 않는 것 (REQ-098)
+
+없는 명령은 진짜 최소 호스트처럼 `bash: xyz: command not found`(127)이고 "흉내 밖"으로 센다. 있는 명령의 안 되는 옵션은 `명령 옵션: 이 흉내에서는 안 돼요`(2)이고 역시 센다. 틀린 글을 찍느니 거절한다.
+
+- 없는 명령: `chmod`, `chown`, `chgrp`, `mknod`, `mkfifo`, `install`, `rmdir`, `dd`, `tar`, `gzip`, `vi`·`vim`·`nano`. 권한과 소유자는 만들지 않는다(디렉터리는 `drwxr-xr-x root`, 링크는 `lrwxrwxrwx root`).
+- `ln`은 심볼릭 링크(`-s`)만 만든다. 하드 링크(`ln a b`)는 거절한다: 트리를 서술하는 쪽에는 같이 쓰는 inode가 없다. `mkdir -m`도 거절한다.
+- 링크는 링크 위치로 읽고 쓰고(`cat`, `>`, `touch`, `ls`, `cd`, `readlink -f`), `find`·`du`·`rm`은 링크 자체를 다룬다(따라가지 않는다). 링크 고리는 "없는 곳"이다(`Too many levels of symbolic links` 대신 `No such file or directory`).
+- `find /`와 `du /`는 트리 전체를 돈다. 출력은 다른 명령처럼 `run_command`가 400줄에서 자른다.
+
+**`grep`·`sed`·`awk`·`sort`가 GNU와 다른 곳** (고친 것은 빼고 남은 것만):
+
+| 명령 | 다른 점 |
+|---|---|
+| 넷 모두 | 정규식은 자바스크립트 엔진이 POSIX 문법에서 옮겨 돈다: 갈래(`a\|ab`)는 가장 긴 것이 아니라 먼저 맞는 것을 고른다. `LANG=en_US.UTF-8`이라도 글자 순서는 바이트 순서(C 로캘)다: `sort`는 대문자가 소문자보다 앞서고 구두점을 무시하지 않는다. |
+| `grep` | `--color=always`, `-z`는 거절. `-w`는 자바스크립트 `\b`로 단어 경계를 본다(패턴이 `-`·`.`로 시작하면 GNU와 다를 수 있다). 파일 사이의 `--` 구분선은 없다. `--exclude-dir`, `-b`, `-T`, `-U`는 거절. `-P`는 확장 정규식처럼 옮긴다. |
+| `sed` | 명령 `n N D P b t T l r w e z F`, `first~step`·`addr,+N`·`addr,~N` 주소, `0,/re/`, 빈 정규식(`s//x/`, 직전 정규식 다시 쓰기), `s///w`·`e`·`m` 표시는 없다(없는 명령은 문법 오류 `unknown command`). 오류 문구의 `char 0`은 위치가 아니라 자리 채움이다. `-i`의 접미사에 `*`·`/`가 있으면 거절. `--version`, `-u`, `-l`, `--posix`는 거절. |
+| `awk` | `getline`, `print > 파일`·`print \| 명령`·`system()`, 사용자 함수(`function`), gawk 전용 함수(`gensub`, `strftime`, `systime`, `asort`…)는 없다(거절하거나 `function … never defined`). 레코드 구분자 `RS`는 줄바꿈만이고, 다른 값을 정하는 모든 길(`-v RS=`, `RS=` 인자, 프로그램 안의 `RS = …`)은 거절한다. `--version`은 거절. 변수 인자(`name=값`)는 첫 파일을 읽기 전에 한꺼번에 정해진다(파일 사이에서 바뀌지 않는다). |
+| `sort` | `-M -d -g -R -m -z`는 거절. `-k F.C`(칸 안의 글자 위치)는 거절. 칸은 공백 덩어리로 나뉘고 키는 앞 공백을 뺀 칸에서 시작한다(`-b`를 준 것과 같다). 긴 옵션은 `--reverse --unique --numeric-sort --ignore-case --human-numeric-sort --version-sort --stable --check --key --field-separator --output`만 된다. |
 
 ## 서비스 툴
 

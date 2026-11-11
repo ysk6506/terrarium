@@ -3,11 +3,13 @@ import { awk } from "./awk";
 import { multipath, pgIsReady, psql } from "./cmd-db";
 import { find } from "./cmd-find";
 import { cp, du, env, ls, rm, stat, touch, truncate } from "./cmd-fs";
-import { grep, sort } from "./cmd-grep";
+import { grep } from "./cmd-grep";
+import { ln, mkdir, readlink } from "./cmd-link";
 import { dmesg, journalctl } from "./cmd-log";
 import { curl, dig, nslookup, ping } from "./cmd-net";
 import { kill, nice, pgrep, pidof, pkill, ps, top } from "./cmd-proc";
 import { ip, lsof, netstat, ss } from "./cmd-sock";
+import { sort } from "./cmd-sort";
 import {
   date,
   df,
@@ -90,6 +92,9 @@ export const COMMANDS: Readonly<Record<string, Handler>> = {
   touch,
   cp,
   mv: cp,
+  mkdir,
+  ln,
+  readlink,
   test: testCmd,
   "[": testCmd,
   whoami,

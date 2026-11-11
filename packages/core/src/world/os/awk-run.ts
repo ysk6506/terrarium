@@ -73,6 +73,8 @@ export class Rt {
   }
 
   set(name: string, v: Val): void {
+    if (name === "RS" && toStr(v) !== "\n")
+      throw new AwkSyntax("RS (레코드 구분자는 줄바꿈만 돼요)는 이 흉내에서 안 돼요", "awk RS");
     this.vars.set(name, v);
     if (name === "NF") this.setNF(toNum(v));
   }
