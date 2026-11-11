@@ -34,7 +34,7 @@ const remember = (): void => {
   }
 };
 
-export function KeysHint() {
+export function KeysHint({ picked }: { readonly picked: boolean }) {
   const [wide, setWide] = useState(isWide);
   const [open, setOpen] = useState(() => !seen() && isWide());
   useEffect(() => {
@@ -47,6 +47,10 @@ export function KeysHint() {
     query.addEventListener("change", change);
     return () => query.removeEventListener("change", change);
   }, []);
+  // 무언가를 고르면 그 카드가 자리를 쓰니, 처음 한 번의 안내는 거기서 접어요
+  useEffect(() => {
+    if (picked) setOpen(false);
+  }, [picked]);
   const close = () => {
     remember();
     setOpen(false);

@@ -6,6 +6,7 @@
 import type { Page } from "playwright";
 import { nav } from "./driver";
 import { type Context, expectPath, home, SECOND } from "./journey-kit";
+import { layoutAtWidths } from "./layout";
 import { overlapAtWidths } from "./overlap";
 import { settle } from "./site";
 
@@ -86,11 +87,15 @@ async function lookAtTheWorld(c: Context): Promise<void> {
     .catch(() => undefined);
   const problem = await overlapAtWidths(page);
   if (problem) throw new Error(`빌더 아래 오른쪽: ${problem}`);
+  const layout = await layoutAtWidths(page, "빌더");
+  if (layout) throw new Error(layout);
 }
 
 export async function ownCardOnly(c: Context): Promise<void> {
   const { page } = c.v;
   await home(c);
+  const first = await layoutAtWidths(page, "처음 화면");
+  if (first) throw new Error(first);
   await c.d.click(nav(page, "세계"));
   await c.d.click(page.getByRole("link", { name: /^새 세계/ }));
   await c.d.click(page.getByRole("button", { name: /인프라가 필요해요/ }));

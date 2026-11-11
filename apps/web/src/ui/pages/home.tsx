@@ -6,6 +6,7 @@ import { lazy, Suspense, useState } from "react";
 import { pickHeadline, STARTS } from "../../logic";
 import { Go, useApp, useAsync } from "../context";
 import { Loading, Section } from "../kit";
+import { SleepPill, useAwake } from "../moss/Launcher";
 import { EscalationCards } from "./escalation";
 import { ExperimentTable } from "./experiments";
 import { OperationCards } from "./operation-card";
@@ -19,6 +20,7 @@ function Hero() {
   const newest = [...(worlds.data ?? [])].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0];
   // One headline per visit: it must not change while someone is reading it.
   const [headline] = useState(() => pickHeadline());
+  const awake = useAwake();
   return (
     <div className="home-hero">
       <div className="stack" style={{ gap: 18 }}>
@@ -36,6 +38,11 @@ function Hero() {
             세계 보기
           </Go>
         </div>
+        {!awake && (
+          <p className="moss-sleep-line">
+            <SleepPill />
+          </p>
+        )}
       </div>
       {newest && (
         <Suspense fallback={<Loading lines={4} />}>

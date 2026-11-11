@@ -3,7 +3,9 @@
  * (부지 › 건물 › 서버룸 › 랙), the sums of that step (money is here and nowhere else), what needs fixing, "?", and the
  * one button that moves on.
  */
+
 import type { Entity } from "@terrarium/core/world";
+import type { ReactNode } from "react";
 import { builder } from "../../logic";
 import { Go } from "../context";
 import { Button } from "../kit";
@@ -31,7 +33,16 @@ function depth(b: Builder, rack: Entity | undefined): number {
   return level.kind === "floor" ? 1 : 0;
 }
 
-export function StepBar({ b }: { readonly b: Builder }) {
+export function StepBar({
+  b,
+  topology,
+  chip,
+}: {
+  readonly b: Builder;
+  readonly topology: boolean;
+  /** The 다음 chip, when the bar carries it (a narrow screen). */
+  readonly chip?: ReactNode;
+}) {
   const { index, level, world } = b.state;
   const rack = rackOfPick(b);
   const at = depth(b, rack);
@@ -81,7 +92,9 @@ export function StepBar({ b }: { readonly b: Builder }) {
           서버룸으로
         </Button>
       )}
-      <KeysHint />
+      {/* R·Delete·두 번 누르기는 3D 편집 키라 토폴로지에서는 뜻이 없어요 (ADR-0146) */}
+      {!topology && <KeysHint picked={b.state.selected.length > 0} />}
+      {chip}
       <Go to={{ name: "scenarios", worldId: world.id }} className="btn btn-small">
         다 지었어요
       </Go>

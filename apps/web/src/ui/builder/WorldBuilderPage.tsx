@@ -6,12 +6,13 @@ import type { WorldRecord } from "@terrarium/core/experiments";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { builder, hallTopology, type world3d } from "../../logic";
 import { useApp, useAsync, useLeaveGuard, usePageTitle } from "../context";
+import { useMediaQuery } from "../hooks";
 import { Failure, Loading } from "../kit";
 import { FramesBar } from "../replay/FramesBar";
 import { useActivity } from "../world3d/useActivity";
 import { WorldStage } from "../world3d/WorldStage";
 import { BuilderBar } from "./BuilderBar";
-import { NextChip } from "./NextChip";
+import { useNextChip } from "./NextChip";
 import { PlaceSheet } from "./PlaceSheet";
 import { StageCards } from "./StageCards";
 import { StepBar } from "./StepBar";
@@ -216,6 +217,10 @@ function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
   const { level, preview } = b.state;
   const { map, setMapRoom, topology, openTopology } = useViews(level);
   const moment = useRunMoment(preview);
+  const next = useNextChip(b, initial.id);
+  // on a phone, and over the topology (its replay bar is where the chip would float), the chip sits in the bar at the foot (ADR-0146)
+  const narrow = useMediaQuery("(max-width: 640px)");
+  const inBar = narrow || topology;
   const anchor = useMemo(builder.anchorStore, []);
   usePageTitle(initial.name);
   useBuilderHabits(b);
@@ -246,9 +251,10 @@ function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
           </div>
           {topology && <TopologyStage b={b} {...moment} />}
           {!map && !topology && <PlaceSheet b={b} />}
-          {!map && <NextChip b={b} worldId={initial.id} />}
+          {!map && next.ask}
+          {!map && !inBar && next.chip}
           {!map && <StageCards b={b} anchor={anchor} />}
-          {!map && <StepBar b={b} />}
+          {!map && <StepBar b={b} topology={topology} chip={inBar ? next.chip : undefined} />}
         </div>
       </div>
     </div>
