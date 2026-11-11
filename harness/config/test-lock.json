@@ -60751,6 +60751,237 @@
    "added": "2026-10-28",
    "amended_by": null
   },
+  "harness/src/checks/docs-main.test.ts::<import:0458d18f>": {
+   "kind": "support",
+   "hash": "0458d18f1a491d16",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::<import:46dc40aa>": {
+   "kind": "support",
+   "hash": "46dc40aa82ca0ed6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::<import:50321f6c>": {
+   "kind": "support",
+   "hash": "50321f6c860a7a17",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::<import:6c4348aa>": {
+   "kind": "support",
+   "hash": "6c4348aabc71ab10",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::<import:92f44056>": {
+   "kind": "support",
+   "hash": "92f440565031fda5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::=ADR": {
+   "kind": "support",
+   "hash": "58afb1a232565eb4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::=adrRepo": {
+   "kind": "support",
+   "hash": "6665cf1f48b6817d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::=codes": {
+   "kind": "support",
+   "hash": "1e147ce15717fbb1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::=docsRepo": {
+   "kind": "support",
+   "hash": "2e4b9bc743283333",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::=front": {
+   "kind": "support",
+   "hash": "3b4d4d313014b971",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::=realConfig": {
+   "kind": "support",
+   "hash": "c119bd1c43e4f785",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::=TODAY": {
+   "kind": "support",
+   "hash": "c21c406035953da1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::docs command line [REQ-020] [REQ-021] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::docs command line [REQ-020] [REQ-021] > =quiet": {
+   "kind": "support",
+   "hash": "3493ded8a07a581d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::docs command line [REQ-020] [REQ-021] > reverify writes the note into the doc and exits 0, with the root taken from --root": {
+   "kind": "test",
+   "hash": "0a5e1683cfdec3a4",
+   "asserts": 2,
+   "literals": [
+    "\"--note\"",
+    "\"--root\"",
+    "\"0\"",
+    "\"0\"",
+    "\"checked\"",
+    "\"checked\"",
+    "\"checked\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"reverify writes the note into the doc and exits 0, with the root taken from --root\"",
+    "\"reverify\"",
+    "\"src/*.ts\"",
+    "\"utf8\"",
+    "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::docs command line [REQ-020] [REQ-021] > seal-adr seals a decision doc so that the docs check no longer asks for a hash": {
+   "kind": "test",
+   "hash": "8ce4edd85a1a32db",
+   "asserts": 3,
+   "literals": [
+    "\"--root\"",
+    "\"--root\"",
+    "\"0\"",
+    "\"0\"",
+    "\"DOC071\"",
+    "\"DOC071\"",
+    "\"DOC071\"",
+    "\"DOC071\"",
+    "\"seal-adr seals a decision doc so that the docs check no longer asks for a hash\"",
+    "\"seal-adr\"",
+    "\"seal-adr\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::docs command line [REQ-020] [REQ-021] > with no command it runs the check and exits 1 when a rule fails, 0 when the docs are clean": {
+   "kind": "test",
+   "hash": "a833f9bc01dd8e97",
+   "asserts": 2,
+   "literals": [
+    "\"--root\"",
+    "\"--root\"",
+    "\"--root\"",
+    "\"--root\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"docs/bad.md\"",
+    "\"no front matter\\n\"",
+    "\"with no command it runs the check and exits 1 when a rule fails, 0 when the docs are clean\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "harness/src/checks/docs.test.ts::<import:0458d18f>": {
    "kind": "support",
    "hash": "0458d18f1a491d16",
@@ -63816,6 +64047,157 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum-main.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum-main.test.ts::<import:407d8bc0>": {
+   "kind": "support",
+   "hash": "407d8bc02657ce1f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum-main.test.ts::<import:e217454e>": {
+   "kind": "support",
+   "hash": "e217454e41ff0ea5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum-main.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum-main.test.ts::<import:fc38e4e0>": {
+   "kind": "support",
+   "hash": "fc38e4e01244139f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum-main.test.ts::=report": {
+   "kind": "support",
+   "hash": "e7f5a8ce060f34f1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum-main.test.ts::shard sum command line > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum-main.test.ts::shard sum command line > =files": {
+   "kind": "support",
+   "hash": "df9fcb4666e55461",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum-main.test.ts::shard sum command line > =listed": {
+   "kind": "support",
+   "hash": "c50f9f88ba0c54d3",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum-main.test.ts::shard sum command line > a missing test prints each problem and exits 1": {
+   "kind": "test",
+   "hash": "dea7df16305b4813",
+   "asserts": 2,
+   "literals": [
+    "\"/r/tests/spec/a.test.ts\"",
+    "\"1\"",
+    "\"1\"",
+    "\"FAIL tests/spec/a.test.ts: listed 2, shards ran 1\"",
+    "\"FAIL tests/spec/a.test.ts: listed 2, shards ran 1\"",
+    "\"a missing test prints each problem and exits 1\"",
+    "\"passed\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum-main.test.ts::shard sum command line > shards that ran every listed test once print OK and exit 0": {
+   "kind": "test",
+   "hash": "942f14e28bb32845",
+   "asserts": 4,
+   "literals": [
+    "\"/r/tests/spec/a.test.ts\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"OK\"",
+    "\"OK\"",
+    "\"listed 2 tests in 1 files; shards ran 2 in 1 files\"",
+    "\"listed 2 tests in 1 files; shards ran 2 in 1 files\"",
+    "\"passed\"",
+    "\"passed\"",
+    "\"shard report 1: 2 tests\"",
+    "\"shard report 1: 2 tests\"",
+    "\"shards that ran every listed test once print OK and exit 0\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum-main.test.ts::shard sum command line > without a list and a report it prints the usage and exits 2": {
+   "kind": "test",
+   "hash": "127c884bb434e7c8",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"2\"",
+    "\"2\"",
+    "\"usage:\"",
+    "\"usage:\"",
+    "\"without a list and a report it prints the usage and exits 2\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "harness/src/ci/shard-sum.test.ts::<import:db1084c0>": {
