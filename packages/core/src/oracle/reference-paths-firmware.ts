@@ -1,5 +1,5 @@
 /** Reference paths of the firmware work (REQ-110, ADR-0133): one image at a time, and wait until the server is back. */
-import { change, eachServer, path, type ReferencePath, read } from "./reference-path";
+import { change, eachAlarm, eachServer, path, type ReferencePath, read } from "./reference-path";
 
 const BMC_WAIT_S = 260;
 const BIOS_WAIT_S = 400;
@@ -21,30 +21,25 @@ const BIOS_ROUND = path([], [eachServer(image("bios-2.4.1.bin"), wait(BIOS_WAIT_
 
 export const FIRMWARE_PATHS = {
   firmware_update: BIOS_ROUND,
-  // a failed update leaves an alarm and the old version: the same image once more, which mends it
+  // a failed update leaves an alarm and the old version: once the round is done, the same image once more on the server the
+  // alarm names (and on no other, which would only spend the window)
   firmware_update_failure: path(
     [],
     [
       eachServer(image("bios-2.4.1.bin"), wait(BIOS_WAIT_S)),
-      eachServer(image("bios-2.4.1.bin"), wait(BIOS_WAIT_S)),
+      read("list_alarms"),
+      eachAlarm("firmware_update_failed", image("bios-2.4.1.bin"), wait(BIOS_WAIT_S)),
     ],
     [],
     { settleS: 1 },
   ),
 } as const satisfies Partial<Record<string, ReferencePath>>;
 
-/** The sheet that asks for the BMC as well as the BIOS, on the one empty server. */
+/** The sheet that asks for the BMC as well as the BIOS, on one empty server (the sheet's first). */
 export const FIRMWARE_VARIANTS = {
   "firmware-one": path(
     [look],
-    [
-      eachServer(
-        image("bmc-8.40.bin"),
-        wait(BMC_WAIT_S),
-        image("bios-2.4.1.bin"),
-        wait(BIOS_WAIT_S),
-      ),
-    ],
+    [image("bmc-8.40.bin"), wait(BMC_WAIT_S), image("bios-2.4.1.bin"), wait(BIOS_WAIT_S)],
     [],
     { settleS: 1 },
   ),

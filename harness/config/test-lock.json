@@ -137798,13 +137798,13 @@
   },
   "tests/spec/golden-scenario-campus.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "72ab252f5a06d2d2",
+   "hash": "9bf9b86d3e45eefd",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-11",
-   "amended_by": null
+   "amended_by": "0172-offered-scenario-means-reference-solution-reaches-full-score.md"
   },
   "tests/spec/golden-scenario-campus.test.ts::the reference solution gives the recorded score and world on campus [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",
@@ -137853,13 +137853,13 @@
   },
   "tests/spec/golden-scenario-extra.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "c805c9f09a9baf27",
+   "hash": "99e4aa681f2915fc",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-11",
-   "amended_by": null
+   "amended_by": "0172-offered-scenario-means-reference-solution-reaches-full-score.md"
   },
   "tests/spec/golden-scenario-extra.test.ts::the reference solution gives the recorded score and world on extra [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",
@@ -137916,13 +137916,13 @@
   },
   "tests/spec/golden-scenario-fabric.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "43e8b223d6657c74",
+   "hash": "1b7931fd7faee580",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-11",
-   "amended_by": null
+   "amended_by": "0172-offered-scenario-means-reference-solution-reaches-full-score.md"
   },
   "tests/spec/golden-scenario-fabric.test.ts::the reference solution gives the recorded score and world on fabric [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",
@@ -137981,13 +137981,13 @@
   },
   "tests/spec/golden-scenario-iap.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "03c5a855b65253ce",
+   "hash": "0c121b62246fe2af",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-11",
-   "amended_by": null
+   "amended_by": "0172-offered-scenario-means-reference-solution-reaches-full-score.md"
   },
   "tests/spec/golden-scenario-iap.test.ts::the reference solution gives the recorded score and world on iap [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",
@@ -138046,13 +138046,13 @@
   },
   "tests/spec/golden-scenario-sdn.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "44657a43747d6fd0",
+   "hash": "0455475b5fc89fba",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-11",
-   "amended_by": null
+   "amended_by": "0172-offered-scenario-means-reference-solution-reaches-full-score.md"
   },
   "tests/spec/golden-scenario-sdn.test.ts::the reference solution gives the recorded score and world on sdn [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",
@@ -138111,13 +138111,13 @@
   },
   "tests/spec/golden-scenario-train.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "b43e9e5a1ca50098",
+   "hash": "301e4ece8234deef",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-11",
-   "amended_by": null
+   "amended_by": "0172-offered-scenario-means-reference-solution-reaches-full-score.md"
   },
   "tests/spec/golden-scenario-train.test.ts::the reference solution gives the recorded score and world on train [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",
@@ -147038,6 +147038,198 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-04",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-solvable.test.ts::<import:118aca58>": {
+   "kind": "support",
+   "hash": "118aca580a14d7cc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-solvable.test.ts::<import:4eb3d6bb>": {
+   "kind": "support",
+   "hash": "4eb3d6bb692369be",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-solvable.test.ts::<import:7204bf2e>": {
+   "kind": "support",
+   "hash": "7204bf2ecd9ba923",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-solvable.test.ts::<import:adaef8b9>": {
+   "kind": "support",
+   "hash": "adaef8b9bca3bf85",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-solvable.test.ts::<import:bf621bae>": {
+   "kind": "support",
+   "hash": "bf621bae3936db78",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-solvable.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-solvable.test.ts::=AT_LEAST": {
+   "kind": "support",
+   "hash": "110f86cfb10f6746",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-solvable.test.ts::=shortOf": {
+   "kind": "support",
+   "hash": "96e583ba230fb539",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-solvable.test.ts::a world that cannot reach the answer key says why it does not offer the scenario [REQ-110] [REQ-001] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-solvable.test.ts::a world that cannot reach the answer key says why it does not offer the scenario [REQ-110] [REQ-001] > =reasonOn": {
+   "kind": "support",
+   "hash": "d5a59be718132867",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-solvable.test.ts::a world that cannot reach the answer key says why it does not offer the scenario [REQ-110] [REQ-001] > a world with the workload, the room and the servers still offers them": {
+   "kind": "test",
+   "hash": "34131458b544d464",
+   "asserts": 2,
+   "literals": [
+    "\"a world with the workload, the room and the servers still offers them\"",
+    "\"iap\"",
+    "\"iap\"",
+    "\"iap\"",
+    "\"iap\"",
+    "\"k8s-disk-pressure\"",
+    "\"k8s-disk-pressure\"",
+    "\"k8s-pending\"",
+    "\"k8s-pending\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-solvable.test.ts::a world that cannot reach the answer key says why it does not offer the scenario [REQ-110] [REQ-001] > campus has no batch work to scale down and no room for every pod once the node is back": {
+   "kind": "test",
+   "hash": "b76f15f329522345",
+   "asserts": 2,
+   "literals": [
+    "\"campus has no batch work to scale down and no room for every pod once the node is back\"",
+    "\"campus\"",
+    "\"campus\"",
+    "\"campus\"",
+    "\"campus\"",
+    "\"k8s-disk-pressure\"",
+    "\"k8s-disk-pressure\"",
+    "\"k8s-pending\"",
+    "\"k8s-pending\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-solvable.test.ts::a world that cannot reach the answer key says why it does not offer the scenario [REQ-110] [REQ-001] > campus has no server in its recovery site to move the services to": {
+   "kind": "test",
+   "hash": "b1942b4295866be9",
+   "asserts": 2,
+   "literals": [
+    "\"campus has no server in its recovery site to move the services to\"",
+    "\"campus\"",
+    "\"campus\"",
+    "\"campus\"",
+    "\"campus\"",
+    "\"dr-failover-stuck\"",
+    "\"dr-failover-stuck\"",
+    "\"site-power-loss\"",
+    "\"site-power-loss\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-solvable.test.ts::an offered scenario is one the reference solution finishes with 100 [REQ-110] [REQ-001] > <stmt:572a9ba5>": {
+   "kind": "support",
+   "hash": "572a9ba5364af8c0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-solvable.test.ts::an offered scenario is one the reference solution finishes with 100 [REQ-110] [REQ-001] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-solvable.test.ts::an offered scenario is one the reference solution finishes with 100 [REQ-110] [REQ-001] > the matrix still offers a real set of templates on every world": {
+   "kind": "test",
+   "hash": "f9a0c405b737bb1f",
+   "asserts": 1,
+   "literals": [
+    "\"the matrix still offers a real set of templates on every world\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/operation-scoring.test.ts::<import:085bdb25>": {

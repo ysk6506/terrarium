@@ -32,8 +32,8 @@ const EXPECTED: Readonly<Record<string, string>> = {
   "firmware-one@fabric:world": "5072:1aee056f26dd8f10",
   "firmware-rack@fabric:score": "100 1294:0d0b00c86f557404",
   "firmware-rack@fabric:world": "5069:197fa65cc9c14118",
-  "firmware-failure@fabric:score": "100 1273:0e755deb3a476710",
-  "firmware-failure@fabric:world": "5185:1dfb386dcd23a010",
+  "firmware-failure@fabric:score": "100 1272:11987988bb37e817",
+  "firmware-failure@fabric:world": "5185:0543e020c0f2e015",
 };
 
 describe("the reference solution gives the recorded score and world on fabric [REQ-110] [REQ-001]", () => {

@@ -13,6 +13,10 @@ import { extraCases, recordCases } from "./test-support/golden-scenario";
 const EXPECTED: Readonly<Record<string, string>> = {
   "sidecar-crash@extra:score": "100 1319:0faed6bf5624d610",
   "sidecar-crash@extra:world": "11219:0288dac073375204",
+  "site-power-loss@extra:score": "100 1752:1e01ce32761ee419",
+  "site-power-loss@extra:world": "133845:0f97b3e297bf0918",
+  "dr-failover-stuck@extra:score": "100 1279:1e530aa93f97be0f",
+  "dr-failover-stuck@extra:world": "133381:1059c19b06068705",
   "split-brain@extra:score": "100 1265:069d1c7e95b55f1c",
   "split-brain@extra:world": "70814:12129a278aabed18",
   "gpu-memory-leak@extra:score": "100 1330:035d054b01f8af01",

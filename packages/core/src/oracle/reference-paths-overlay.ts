@@ -50,7 +50,8 @@ export const OVERLAY_PATHS = {
   ),
   k8s_resource_exhausted: path(
     [alarms, kube],
-    [change("kubectl_scale", { workload: "report", replicas: 0 })],
+    // the workload no service waits on gives up its room
+    [change("kubectl_scale", { workload: "{idle}", replicas: 0 })],
   ),
   k8s_disk_pressure: path(
     [alarms, kube],
