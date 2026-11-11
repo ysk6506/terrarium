@@ -136,7 +136,7 @@ export function MossHost() {
     <>
       {awake && panel.open && <MossPanel focusSeq={panel.focusSeq} />}
       {!(awake && panel.open) && (
-        <div className={`moss-launch${high ? " high" : ""}`}>
+        <aside className={`moss-launch${high ? " high" : ""}`} aria-label="이끼">
           {!awake ? (
             <SleepPill />
           ) : (
@@ -153,7 +153,7 @@ export function MossHost() {
               </button>
             </>
           )}
-        </div>
+        </aside>
       )}
     </>
   );

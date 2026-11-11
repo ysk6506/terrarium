@@ -42,6 +42,8 @@ export interface WorldStageProps extends StageEvents {
   readonly overlay?: world3d.Overlay;
   readonly readOnly?: boolean;
   readonly label?: string;
+  /** Behind another view (the builder's topology eye): the stage keeps its place and draws nothing until it is shown again. */
+  readonly paused?: boolean;
   /** Turn slowly about the view, degrees a second (a showcase). */
   readonly spin?: number;
   /** Show the bar for moving between levels and layers. */
@@ -274,9 +276,10 @@ function StageOverlays({ view, props, around, layer, onLayer, life, onLife }: Ov
 
 /** Report where the one picked thing is on the canvas (the top of its outline), after every frame that moves it. */
 function useAnchor(view: WorldView | undefined, props: WorldStageProps): void {
-  const { scene, selected, onAnchor } = props;
+  const { scene, selected, onAnchor, paused } = props;
   useEffect(() => {
     if (!view || !onAnchor) return;
+    if (paused) return onAnchor(undefined);
     const box =
       scene && selected?.length === 1 ? world3d.outlinesOf(scene, selected)[0] : undefined;
     if (!box) return onAnchor(undefined);
@@ -286,7 +289,7 @@ function useAnchor(view: WorldView | undefined, props: WorldStageProps): void {
     };
     place();
     return view.onRender(place);
-  }, [view, scene, selected, onAnchor]);
+  }, [view, scene, selected, onAnchor, paused]);
   // a stage that goes away (the topology eye) takes the place with it
   useEffect(() => () => onAnchor?.(undefined), [onAnchor]);
 }
@@ -307,6 +310,7 @@ export function WorldStage(props: WorldStageProps) {
   useWorldContent(view, { ...props, layer });
   useStageEvents(view, useLatest(props));
   useAnchor(view, props);
+  useEffect(() => view?.setPaused(props.paused ?? false), [view, props.paused]);
   const around = useAmbience(view, props, lifeOn);
   const back = useStepBack(view, props.index, props.level !== undefined);
   const activity = props.activity ?? noActivity;

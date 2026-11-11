@@ -92,7 +92,18 @@ function BoardBody({
       {list.error && <Failure error={list.error} retry={list.reload} />}
       {!list.data && !list.error && <Loading />}
       {quiet && <p className="small muted">{quiet}</p>}
-      {empty && <Empty title={empty.title}>{empty.body}</Empty>}
+      {empty && (
+        <Empty
+          title={empty.title}
+          action={
+            <Go data-moss-action="go-new-world" to={{ name: "newWorld" }} className="btn btn-small">
+              세계 만들기
+            </Go>
+          }
+        >
+          {empty.body}
+        </Empty>
+      )}
       {shown.length > 0 && (
         <div className="world-grid">
           {shown.map((c) => (

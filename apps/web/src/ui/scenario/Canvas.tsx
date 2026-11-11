@@ -116,7 +116,11 @@ function useFlowGraph(e: ScenarioEditor) {
           data: n as BlockData,
           selected: n.id === e.selected,
           deletable: n.type !== "start",
-          domAttributes: { "aria-roledescription": "블록", "aria-selected": n.id === e.selected },
+          // a block is a group, which takes no aria-selected: the chosen one says so with aria-current
+          domAttributes: {
+            "aria-roledescription": "블록",
+            ...(n.id === e.selected ? { "aria-current": "true" as const } : {}),
+          },
         }),
       ),
     [flow, e.selected],

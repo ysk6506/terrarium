@@ -3,8 +3,10 @@
  * how asking a person is answered, whether faults stay inside the given tools, and whether the agent gets the
  * scenario's runbook, is made to find it, or does not have it.
  */
+
 import type { ScenarioRecord } from "@terrarium/core/experiments";
 import type { EscalationMode, FaultScope, SopMode } from "@terrarium/core/session";
+import { useId } from "react";
 import { experiment, HUMAN_WORDS as W } from "../../logic";
 import { Note, Segmented, TextField } from "../kit";
 
@@ -36,11 +38,18 @@ const SOP: readonly { readonly value: SopMode; readonly label: string }[] = [
 
 function Escalation({ draft, set }: Props) {
   const asks = draft.tools.includes("ask_human");
+  const why = useId();
   return (
     <div className="stack human-setting" style={{ gap: 6 }}>
       <b>{W.ESC_TITLE}</b>
-      <p className="small muted">{asks ? W.ESC_HELP : W.ESC_NEEDS_TOOL}</p>
-      <div aria-disabled={!asks} style={asks ? undefined : { opacity: 0.5, pointerEvents: "none" }}>
+      <p id={why} className="small muted">
+        {asks ? W.ESC_HELP : W.ESC_NEEDS_TOOL}
+      </p>
+      <div
+        aria-disabled={!asks}
+        aria-describedby={asks ? undefined : why}
+        style={asks ? undefined : { opacity: 0.5, pointerEvents: "none" }}
+      >
         <Segmented
           label={W.ESC_TITLE}
           value={draft.escalation.mode}

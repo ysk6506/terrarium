@@ -3,7 +3,7 @@
  * button say why, does a number say what it counts, does a button answer the pointer. The browser only
  * counts; harness/src/ux/score.ts scores.
  */
-import { asVisitor, open, pagesOf, type Site, type Tally } from "./site";
+import { eachPage, open, type Site, type Tally } from "./site";
 
 /** Controls in view that are too small, switched-off buttons, and bare numbers. */
 export const READ_DETAILS = `() => {
@@ -96,40 +96,38 @@ export async function detail(site: Site, notes: string[]): Promise<Detail> {
     units: { tried: 0, ok: 0 },
     hover: { tried: 0, ok: 0 },
   };
-  await asVisitor(site, {}, async (v) => {
-    for (const p of pagesOf(site.ids)) {
-      if (p.missing) continue;
-      await open(v.page, site.base, p.path);
-      const found = (await v.page.evaluate(`(${READ_DETAILS})()`)) as Details;
-      const small = found.controls.filter((c) => c.h < TARGET_H || c.w < TARGET_W);
-      out.targets.tried += found.controls.length;
-      out.targets.ok += found.controls.length - small.length;
-      if (small.length > 0)
-        notes.push(
-          `targets: ${p.key}에 ${TARGET_W}×${TARGET_H}px보다 작은 컨트롤 ${small.length}개: ${small
-            .slice(0, 3)
-            .map((c) => `${c.name}(${c.w}×${c.h})`)
-            .join(", ")}`,
-        );
-      const silent = found.off.filter((b) => !b.why);
-      out.disabledWhy.tried += found.off.length;
-      out.disabledWhy.ok += found.off.length - silent.length;
-      if (silent.length > 0)
-        notes.push(
-          `disabled: ${p.key}의 꺼진 버튼이 이유를 말하지 않음: ${silent.map((b) => b.name).join(", ")}`,
-        );
-      const bare = found.numbers.filter((n) => !n.said);
-      out.units.tried += found.numbers.length;
-      out.units.ok += found.numbers.length - bare.length;
-      if (bare.length > 0)
-        notes.push(
-          `units: ${p.key}에 무엇인지 말하지 않는 숫자: ${bare
-            .slice(0, 4)
-            .map((n) => n.value)
-            .join(", ")}`,
-        );
-      await hoverSome(v.page, p.key, out.hover, notes);
-    }
+  await eachPage(site, {}, async (v, p) => {
+    if (p.missing) return;
+    await open(v.page, site.base, p.path);
+    const found = (await v.page.evaluate(`(${READ_DETAILS})()`)) as Details;
+    const small = found.controls.filter((c) => c.h < TARGET_H || c.w < TARGET_W);
+    out.targets.tried += found.controls.length;
+    out.targets.ok += found.controls.length - small.length;
+    if (small.length > 0)
+      notes.push(
+        `targets: ${p.key}에 ${TARGET_W}×${TARGET_H}px보다 작은 컨트롤 ${small.length}개: ${small
+          .slice(0, 3)
+          .map((c) => `${c.name}(${c.w}×${c.h})`)
+          .join(", ")}`,
+      );
+    const silent = found.off.filter((b) => !b.why);
+    out.disabledWhy.tried += found.off.length;
+    out.disabledWhy.ok += found.off.length - silent.length;
+    if (silent.length > 0)
+      notes.push(
+        `disabled: ${p.key}의 꺼진 버튼이 이유를 말하지 않음: ${silent.map((b) => b.name).join(", ")}`,
+      );
+    const bare = found.numbers.filter((n) => !n.said);
+    out.units.tried += found.numbers.length;
+    out.units.ok += found.numbers.length - bare.length;
+    if (bare.length > 0)
+      notes.push(
+        `units: ${p.key}에 무엇인지 말하지 않는 숫자: ${bare
+          .slice(0, 4)
+          .map((n) => n.value)
+          .join(", ")}`,
+      );
+    await hoverSome(v.page, p.key, out.hover, notes);
   });
   return out;
 }
@@ -152,7 +150,9 @@ async function hoverSome(
     await page.mouse.move(0, 0);
     await page.waitForTimeout(220);
     const before = await b.evaluate(look);
-    await b.hover({ timeout: 2000 }).catch(() => undefined);
+    // The pointer goes to the middle of the button directly: `hover()` waits for animation frames to settle, which a
+    // software-rendered 3D screen cannot give in time, and the wait is not what is being measured.
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await page.waitForTimeout(260);
     const after = await b.evaluate(look);
     tried++;

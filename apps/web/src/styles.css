@@ -457,6 +457,13 @@ p {
   background: var(--primary-hover);
 }
 
+.btn.btn-chosen,
+.btn.btn-chosen:hover {
+  background: var(--control-hover);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 2px var(--primary);
+}
+
 .btn-quiet {
   background: transparent;
   color: var(--ink-3);
@@ -613,6 +620,7 @@ p {
 .segmented button:hover:not([aria-pressed="true"], [aria-selected="true"]) {
   background: var(--glass-60);
   color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
 }
 
 .segmented button[aria-pressed="true"]:hover,
@@ -1122,6 +1130,14 @@ button.tag {
   min-width: 0;
   min-height: 0;
   background: var(--sunk);
+}
+
+.stage-hold {
+  display: contents;
+}
+
+.stage-hold[hidden] {
+  display: none;
 }
 
 .stage canvas {
@@ -4592,6 +4608,19 @@ body:has(.run-panel[open]) .moss-launch.high {
 }
 
 button.title-pill {
+  min-width: 32px;
+  min-height: 32px;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* A checkbox in a table cell: the box is small, the label around it is what a finger hits (REQ-114). */
+.hit-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
   cursor: pointer;
 }
 
@@ -4682,6 +4711,7 @@ button.title-pill:hover {
 
 :root {
   --moss: #2f7d4f;
+  --moss-ink: #226a43;
   --moss-soft: #e6f4ea;
   --on-moss: #ffffff;
 }
@@ -4689,6 +4719,7 @@ button.title-pill:hover {
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --moss: #6fcf97;
+    --moss-ink: #6fcf97;
     --moss-soft: #163b26;
     --on-moss: #0b1f14;
   }
@@ -4696,6 +4727,7 @@ button.title-pill:hover {
 
 :root[data-theme="dark"] {
   --moss: #6fcf97;
+  --moss-ink: #6fcf97;
   --moss-soft: #163b26;
   --on-moss: #0b1f14;
 }
@@ -4712,6 +4744,13 @@ button.title-pill:hover {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+@media (max-width: 640px) {
+  /* The tab strip is at the bottom on a phone: the pill rests above it instead of over its labels (ADR-0141). */
+  .moss-launch:not(.high) {
+    bottom: max(92px, calc(var(--bottom-bar-h, 0px) + var(--below-bar-h, 0px) + 16px));
+  }
 }
 
 .moss-launch.high {
@@ -5884,7 +5923,7 @@ ol.uu li {
 
 .pl-tag-agent {
   background: var(--moss-soft);
-  color: var(--moss);
+  color: var(--moss-ink);
 }
 
 .pl-tag-physical {

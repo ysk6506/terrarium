@@ -33,15 +33,37 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   readonly size?: "small" | "normal";
   readonly icon?: string;
   readonly busy?: boolean;
+  /** A choice among several that is the chosen one: it looks chosen without being a second main button (ADR-0141). */
+  readonly chosen?: boolean;
   /** What to tell when the button is switched off: shown as a hint and read out by screen readers. */
   readonly why?: string;
 };
+
+function buttonClasses(o: {
+  readonly kind: string;
+  readonly size: string;
+  readonly chosen: boolean | undefined;
+  readonly icon: boolean;
+  readonly className: string | undefined;
+}): string {
+  return [
+    "btn",
+    o.kind !== "plain" && `btn-${o.kind}`,
+    o.size === "small" && "btn-small",
+    o.chosen && "btn-chosen",
+    o.icon && "btn-icon",
+    o.className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
 
 export function Button({
   kind = "plain",
   size = "normal",
   icon,
   busy,
+  chosen,
   why,
   children,
   className,
@@ -51,15 +73,7 @@ export function Button({
 }: ButtonProps) {
   const whyId = useId();
   const reason = disabled && !busy ? why : undefined;
-  const classes = [
-    "btn",
-    kind !== "plain" && `btn-${kind}`,
-    size === "small" && "btn-small",
-    !children && "btn-icon",
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const classes = buttonClasses({ kind, size, chosen, icon: !children, className });
   return (
     <>
       <button
@@ -67,6 +81,7 @@ export function Button({
         className={classes}
         disabled={disabled || busy}
         aria-busy={busy || undefined}
+        aria-pressed={chosen ?? rest["aria-pressed"]}
         title={reason ?? title}
         {...rest}
         aria-describedby={reason ? whyId : rest["aria-describedby"]}

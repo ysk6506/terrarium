@@ -14,6 +14,8 @@ covers:
   - packages/core/src/contract/moss.ts
   - packages/core/src/contract/moss-routes.ts
   - apps/web/src/moss/registry.ts
+  - apps/web/src/moss/registry-scenario.ts
+  - apps/web/src/moss/registry-global.ts
   - apps/web/src/moss/types.ts
   - apps/web/src/moss/store.ts
   - apps/web/src/moss/ask.tsx
@@ -22,12 +24,12 @@ covers:
   - apps/web/src/logic/models.ts
   - harness/src/checks/moss.ts
 verification_log:
-  - "2026-11-07: 2026-11-07: REQ-104(ADR-0127) 코드와 대조해 고쳤다"
   - "2026-11-11: bar-offset.ts: --below-bar-h 추가, 막대의 부모 크기 변화도 관찰. 해당 단락에 반영"
   - "2026-11-07: 프로세스 비교 화면의 이끼 동작과 MossAsk 타일을 적었다"
   - "2026-11-07: 프로세스 비교 화면은 읽기만 등록하고 동작은 없다고 적었다"
   - "2026-11-11: main(process-compare 9cf2ce8) 합친 뒤 코드와 대조; own-card-only·process-compare 여정과 ADR-0134 내용 모두 유지"
-covers_hash: efe469508e710562
+  - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
+covers_hash: 002548e698fa2173
 ---
 # 이끼 (REQ-103, [ADR-0124](adr/0124-moss-assistant.md), [ADR-0125](adr/0125-moss-requires-model.md))
 
@@ -60,7 +62,7 @@ covers_hash: efe469508e710562
 
 ## 화면 등록부 (screen registry)
 
-`apps/web/src/moss/registry.ts` 한 곳에 라우트마다 한 칸이 있다.
+`apps/web/src/moss/registry.ts`가 라우트마다 한 칸을 모아 낸다. 칸은 영역별 파일(`registry-global|world|scenario|experiment|other.ts`, 보조 `registry-kit.ts`)에 적고, 한 파일이 500줄을 넘지 않는다. `moss` 검사는 `registry*.ts`를 모두 하나로 읽는다(ADR-0141).
 
 ```ts
 { route, title, oneLine, stateLabel, questions: [칩 셋],
@@ -71,7 +73,7 @@ covers_hash: efe469508e710562
 - **`change`**(세계·시나리오·실험을 바꾸거나 시작·삭제)는 "이렇게 할게요" 카드가 **하기 / 그만**을 물은 뒤에만 한다. `navigate`·`read`는 바로 한다. 카드의 한 줄에는 화면이 알려 준 지금 상태가 들어간다("IAP 실험용 · 시나리오 12개 · 기본 툴 묶음 · 5번").
 - **여러 단계 일**(`steps`)은 체크리스트로 보인다. 마지막 `change`만 카드를 거친다. **사용자가 화면을 직접 누르거나 치면 멈추고 "이어서 할까요?"를 묻는다.**
 - 동작 하나를 하는 동안 대상(`data-moss-action`)에 1초 동안 이끼 초록 테두리가 둘리고, 한 줄 말("사다리로 갈게요")이 뜬다.
-- 프로세스 비교(REQ-112)의 `scenarioProcess` 화면은 읽기만 이끼에게 알리고 동작은 두지 않는다(버튼은 `data-moss-skip`). 결과 화면의 단계·사람·시간·툴 타일에 "?"가 있고, "이끼의 설명"은 기본 모델이 있을 때만 그려진다.
+- 프로세스 비교(REQ-112)의 `scenarioProcess` 화면은 읽기와 동작 셋을 이끼에게 알린다: `process-add-step`(빈 단계 한 줄), `process-save`(저장, 카드 확인), `process-experiment`(저장한 표로 새 실험). 행 안의 편집 버튼만 `data-moss-skip`이다. 결과 화면의 단계·사람·시간·툴 타일에 "?"가 있고, "이끼의 설명"은 기본 모델이 있을 때만 그려진다.
 - 숫자와 용어에는 작은 **"?"**(`MossAsk`)가 붙는다. 누르면 "이 실행이 왜 30점이에요?"처럼 질문이 채워진 채 패널이 열려 바로 묻는다. 결과 화면의 점수 타일, 사다리의 층 이름과 칸 카드, 설정의 용어, 실험의 지표에 있다.
 
 ## 입력과 패널

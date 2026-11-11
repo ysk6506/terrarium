@@ -110,7 +110,7 @@ function Floors({ b, building }: { readonly b: Builder; readonly building: Entit
         <Button
           key={f.id}
           size="small"
-          kind={builder.sameLevel(level, { kind: "floor", id: f.id }) ? "primary" : "plain"}
+          chosen={builder.sameLevel(level, { kind: "floor", id: f.id })}
           data-moss-skip="층을 보는 보기 조작"
           onClick={() => b.go({ kind: "floor", id: f.id })}
         >

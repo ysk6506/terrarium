@@ -2,7 +2,7 @@
 title: 품질 하네스 사용법
 kind: guide
 status: active
-last_verified: 2026-11-10
+last_verified: 2026-11-11
 covers:
   - harness/src/run-all.ts
 covers_hash: df9fc43705b6eec4
@@ -11,6 +11,7 @@ verification_log:
   - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
   - "2026-11-10: TRACE 예정 표시와 CI 조각·합계 검사를 적음 (ADR-0140)"
   - "2026-11-10: run-all이 예정 요구를 따로 출력하게 된 것을 반영 (ADR-0140)"
+  - "2026-11-11: 2026-11-11: UX 검사를 여정(게이트)과 측정(게이트 아님)으로 나눔, REQ-114 (ADR-0141)"
 ---
 # 품질 하네스
 
@@ -26,7 +27,7 @@ verification_log:
 | 커버리지 | `harness/src/checks/coverage.ts` | `COV*` | ADR-0004, ADR-0012 |
 | 요구사항 추적 (`**예정(ADR-NNNN)**` 요구는 따로 나열) | `harness/src/checks/traceability.ts` | `TRACE*` | ADR-0004, ADR-0140 |
 | 가드레일 보호 | `harness/src/checks/protected.ts` | `PROT*` | ADR-0005 |
-| UX Honeycomb | `harness/src/ux/` | `UX*` | [UX 측정](ux-honeycomb.md) |
+| UX Honeycomb (여정은 CI 게이트 `ux-journeys`, 측정은 게이트 아닌 `ux-measure`) | `harness/src/ux/` | `UX*` | [UX 측정](ux-honeycomb.md), ADR-0141 |
 
 ## 명령
 

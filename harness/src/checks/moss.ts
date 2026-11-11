@@ -26,6 +26,20 @@ import { appRoutes, buttonsIn, referencedActions, scanRegistry, tileClasses } fr
 
 const APP = "apps/web/src/ui/App.tsx";
 const REGISTRY = "apps/web/src/moss/registry.ts";
+const MOSS_DIR = "apps/web/src/moss";
+/** The registry is the assembler `registry.ts` plus the per-area files `registry-*.ts` (ADR-0141): all are read as one. */
+const isRegistryFile = (name: string): boolean => /^registry(-[a-z]+)?\.ts$/.test(name);
+
+export function readRegistry(root: string): ReturnType<typeof scanRegistry> {
+  const routes = new Set<string>();
+  const actions: ReturnType<typeof scanRegistry>["actions"][number][] = [];
+  for (const file of listFiles(root, [MOSS_DIR], isRegistryFile)) {
+    const one = scanRegistry(file, readText(path.join(root, file)));
+    for (const r of one.routes) routes.add(r);
+    actions.push(...one.actions);
+  }
+  return { routes, actions };
+}
 const INDEX = "apps/server/src/runtime/moss-index.ts";
 const PAGES = "apps/web/src/ui/pages";
 const UI = "apps/web/src/ui";
@@ -42,7 +56,7 @@ export const TILE_CLASSES: readonly string[] = [
 const tsx = (name: string): boolean => name.endsWith(".tsx") || name.endsWith(".ts");
 
 function routeRules(root: string, v: Violation[]): void {
-  const reg = scanRegistry(REGISTRY, readText(path.join(root, REGISTRY)));
+  const reg = readRegistry(root);
   const routes = appRoutes(APP, readText(path.join(root, APP)));
   for (const r of routes)
     if (!reg.routes.has(r))
@@ -69,7 +83,7 @@ function routeRules(root: string, v: Violation[]): void {
 }
 
 function actionRules(root: string, v: Violation[]): void {
-  const reg = scanRegistry(REGISTRY, readText(path.join(root, REGISTRY)));
+  const reg = readRegistry(root);
   const known = new Set(reg.actions.map((a) => a.id));
   const used = new Set<string>();
   for (const file of listFiles(root, [UI], tsx)) {
@@ -113,9 +127,7 @@ function actionRules(root: string, v: Violation[]): void {
 }
 
 function buttonRules(root: string, v: Violation[]): void {
-  const known = new Set(
-    scanRegistry(REGISTRY, readText(path.join(root, REGISTRY))).actions.map((a) => a.id),
-  );
+  const known = new Set(readRegistry(root).actions.map((a) => a.id));
   for (const file of listFiles(root, [PAGES], (n) => n.endsWith(".tsx"))) {
     for (const b of buttonsIn(file, readText(path.join(root, file)))) {
       if (b.skip || (b.action && known.has(b.action))) continue;
