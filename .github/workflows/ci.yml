@@ -73,9 +73,23 @@ jobs:
           path: shard-heavy.json
           if-no-files-found: error
 
+  # What an unsharded run would run, counted while the shards are busy.
+  test-list:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm exec vitest list --json=list.json > /dev/null
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-list
+          path: list.json
+          if-no-files-found: error
+
   # Every listed test must have run exactly once, passed and not been skipped.
   test-summary:
-    needs: [test, test-heavy]
+    needs: [test, test-heavy, test-list]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -87,7 +101,9 @@ jobs:
           pattern: test-shard-*
           path: shards
           merge-multiple: true
-      - run: pnpm exec vitest list --json=list.json > /dev/null
+      - uses: actions/download-artifact@v4
+        with:
+          name: test-list
       - run: pnpm tsx harness/src/ci/shard-sum.ts list.json shards/shard-*.json
 
   # Pass/fail of the tests is decided by the gating shards above. This job measures coverage with a
@@ -180,7 +196,7 @@ jobs:
             docs/generated/ux-score.json
 
   gate:
-    needs: [lint-types, test, test-heavy, test-summary, structure]
+    needs: [lint-types, test, test-heavy, test-list, test-summary, structure]
     if: always()
     runs-on: ubuntu-latest
     steps:
