@@ -4,11 +4,11 @@ kind: reference
 status: active
 last_verified: 2026-11-11
 verification_log:
-  - "2026-11-11: main 합치기: ADR-0143·0144·0145 링크"
   - "2026-11-11: ADR-0147 링크를 더함"
   - "2026-11-11: 품질 등급표와 ADR-0148 링크를 더함"
   - "2026-11-11: ADR-0149 링크"
   - "2026-11-11: ADR-0150 링크"
+  - "2026-11-11: ADR-0150 제목"
 ---
 # 문서 색인
 
@@ -217,7 +217,7 @@ verification_log:
 - [0143 깊은 OS 흉내를 GNU에 더 가깝게 하고 커버리지 하한을 채운다](design-docs/adr/0143-shell-fidelity-and-coverage-gate.md)
 - [0144 현실 데이터는 네 단으로 들어오고, 세계는 현실과 실험 두 종류이며, 모델은 핵심을 잠그고 넓힌다](design-docs/adr/0144-reality-data-pipeline-ontology-manager-world-kinds.md)
 - [0149 소스의 역할은 구성·사건·실측 셋이고, 읽기 전용은 허용 목록과 계정으로 지킨다](design-docs/adr/0149-source-roles-and-read-only-allowlist.md)
-- [0150 현실 데이터로 세계 만들기는 요구사항이고, 오늘의 설계를 결정과 제안으로 나눈다](design-docs/adr/0150-reality-worlds-are-a-requirement-decisions-and-proposals.md)
+- [0150 현실 데이터로 세계 만들기는 요구사항이고, 그 설계를 결정과 제안으로 나눈다](design-docs/adr/0150-reality-worlds-are-a-requirement-decisions-and-proposals.md)
 - [0122 세계 인기 순서·좋아요·칭호, 그리고 계급 모델 — 점수는 서버가 기록에서 세고, 칭호는 한 번 얻으면 안 잃고, 계급은 아직 화면에 없다](design-docs/adr/0122-world-popularity-likes-titles.md)
 - [0121 애플리케이션 층을 코어 모델로 올리고 서비스 호출 그래프를 넣는다](design-docs/adr/0121-application-layer-and-calls.md)
 - [0116 진짜 호스트 섞기 (폐기, 0117로 대체)](design-docs/adr/0116-real-hosts-in-the-world.md)
