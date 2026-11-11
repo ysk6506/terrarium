@@ -3,12 +3,11 @@
  * 오른쪽은 테라리움이 실행의 기록에서 코드로 센 값이에요. 적은 표가 없으면 잰 값만 보이고 숫자를 지어내지 않아요.
  */
 import { AGENT_WHO, type LedgerRow, type ProcessNumbers } from "@terrarium/core/analysis";
-import type { ExperimentView, ProcessCompareView } from "@terrarium/core/contract";
+import type { ProcessCompareView } from "@terrarium/core/contract";
 import { processCompare as pc } from "../../logic";
 import { MossAsk } from "../../moss";
 import { Go, useApp, useAsync } from "../context";
 import { Empty, Section } from "../kit";
-import { WorldOntology } from "./process-ontology";
 
 const { COMPARE_WORDS: W } = pc;
 
@@ -213,16 +212,5 @@ export function ProcessCompare({
       )}
       <Ledger ledger={view.ledger} runs={view.runs} />
     </Section>
-  );
-}
-
-/** What the result page adds under the findings: the before/after comparison and what the world needs for E2E. */
-export function ProcessSections({ view }: { readonly view: ExperimentView }) {
-  const id = view.experiment.id;
-  return (
-    <>
-      <ProcessCompare experimentId={id} finished={view.progress.finished} />
-      <WorldOntology worldId={view.experiment.recipe.worldId} experimentId={id} />
-    </>
   );
 }

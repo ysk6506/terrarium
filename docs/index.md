@@ -4,11 +4,11 @@ kind: reference
 status: active
 last_verified: 2026-11-11
 verification_log:
-  - "2026-11-11: ADR-0172 링크"
   - "2026-11-11: main을 합친 뒤 다시 대조: ADR-0172와 ADR-0174, 커버리지 시험 추가가 함께 들어감"
   - "2026-11-11: main을 합친 뒤 양쪽 변경을 함께 둠"
   - "2026-11-11: main을 합친 뒤 양쪽 변경을 함께 둠"
   - "2026-11-11: ADR-0181 링크"
+  - "2026-11-11: main을 합친 뒤 양쪽 변경을 함께 둠"
 ---
 # 문서 색인
 
@@ -235,6 +235,7 @@ verification_log:
 - [0156 영향 범위는 포트 단위까지 묶음의 뜻으로 계산하고, 메모리의 색인에서 1초·수 초 안에 답한다](design-docs/adr/0156-blast-radius-ports-redundancy-groups-in-memory-index.md)
 - [0157 모델은 층마다 표준에서 뼈대를 빌리고, 종류는 세 층이며, 가상화 플랫폼은 대응 표로 받는다](design-docs/adr/0157-model-standards-three-tiers-platform-mapping.md)
 - [0161 생김새 견본 시험에서 막힌 열아홉 곳을 메운다 — 손질은 여덟 가지, 딸린 요청, 다듬어 견주기, 묶음의 출처](design-docs/adr/0161-shape-sample-test-fills-the-gaps.md)
+- [0171 실험 결과의 첫 화면은 세 물음에 답하고, 나머지는 탭 뒤로 간다](design-docs/adr/0171-result-page-answers-three-questions.md)
 - [0181 테라리움의 라이선스는 Apache License 2.0이다](design-docs/adr/0181-license-apache-2.md)
 - [0177 제품 목표의 "현실을 닮은 세계"에 현실의 데이터로 지은 세계를 적고, 맨 위 문서를 목표에 맞춘다](design-docs/adr/0177-goal-text-reality-worlds-and-top-level-docs.md)
 - [0174 권한은 프록시가 넘겨준 신원, 역할 둘, 공개 범위 셋, 감사 기록으로 한다](design-docs/adr/0174-permissions-proxy-identity-three-scopes-audit.md)

@@ -1,10 +1,10 @@
 {
   "measuredOn": "2026-11-11",
-  "webHash": "fe12f3ca7ce2052c",
+  "webHash": "3ddee1ff123a206c",
   "scores": {
     "useful": 100,
     "usable": 100,
-    "desirable": 96.4,
+    "desirable": 94.9,
     "findable": 100,
     "accessible": 100,
     "credible": 100,
@@ -38,7 +38,7 @@
       },
       "share": {
         "ok": true,
-        "actions": 5
+        "actions": 4
       },
       "fork": {
         "ok": true,
@@ -66,7 +66,7 @@
       },
       "process-compare": {
         "ok": true,
-        "actions": 10
+        "actions": 12
       }
     },
     "clean": {
@@ -86,8 +86,8 @@
       "ok": 3
     },
     "load": {
-      "kb": 824.7919921875,
-      "ms": 382,
+      "kb": 878.560546875,
+      "ms": 400,
       "sceneDrawn": true
     },
     "reach": {
@@ -124,40 +124,40 @@
       "ok": 4
     },
     "provenance": {
-      "tried": 13,
-      "ok": 13
+      "tried": 7,
+      "ok": 7
     },
     "value": {
       "tried": 7,
       "ok": 7
     },
     "voice": {
-      "tried": 1022,
-      "ok": 1022
+      "tried": 872,
+      "ok": 872
     },
     "oneThing": {
       "tried": 13,
       "ok": 13
     },
     "buttons": {
-      "tried": 176,
-      "ok": 176
+      "tried": 170,
+      "ok": 170
     },
     "targets": {
-      "tried": 539,
-      "ok": 539
+      "tried": 521,
+      "ok": 521
     },
     "disabledWhy": {
-      "tried": 12,
-      "ok": 12
+      "tried": 10,
+      "ok": 10
     },
     "units": {
-      "tried": 52,
-      "ok": 52
+      "tried": 20,
+      "ok": 20
     },
     "hover": {
-      "tried": 31,
-      "ok": 31
+      "tried": 33,
+      "ok": 33
     }
   }
 }

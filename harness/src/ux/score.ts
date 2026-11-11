@@ -33,7 +33,7 @@ export const JOURNEY_BUDGETS = {
   run: 6,
   repeat: 7,
   cancel: 8,
-  share: 5,
+  share: 4,
   fork: 6,
   compare: 4,
   site: 8,
