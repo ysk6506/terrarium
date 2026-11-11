@@ -5,13 +5,14 @@
  * a later look reads first. Worked out for everyone at once and remembered until a write that matters (see `watchStore`).
  */
 import type { TitleView } from "@terrarium/core/contract";
-import type {
-  CalibrationMark,
-  Experiment,
-  ScenarioRecord,
-  TitleAward,
-  WorldLike,
-  WorldSummary,
+import {
+  type CalibrationMark,
+  type Experiment,
+  PUBLIC_SIGHT,
+  type ScenarioRecord,
+  type TitleAward,
+  type WorldLike,
+  type WorldSummary,
 } from "@terrarium/core/experiments";
 import type { PlatformContext } from "./context";
 
@@ -182,13 +183,17 @@ export class Titles {
 
   private async facts(): Promise<TitleFacts> {
     const { store } = this.ctx;
-    const [worlds, scenarios, experiments, likes, marks] = await Promise.all([
-      store.listWorlds(),
-      store.listScenarios(),
-      store.listExperiments(),
+    // Titles are earned from what is for everyone: a private world, scenario or experiment earns nothing, and a heart on
+    // one does not count. A title once earned is never lost, so narrowing something later takes nothing away.
+    const [worlds, scenarios, experiments, allLikes, marks] = await Promise.all([
+      store.listWorlds(PUBLIC_SIGHT),
+      store.listScenarios(undefined, PUBLIC_SIGHT),
+      store.listExperiments({ visibleTo: PUBLIC_SIGHT }),
       store.listLikes(),
       store.listCalibrationMarks(),
     ]);
+    const open = new Set(worlds.map((w) => w.id));
+    const likes = allLikes.filter((l) => open.has(l.worldId));
     return {
       worlds,
       scenarios,

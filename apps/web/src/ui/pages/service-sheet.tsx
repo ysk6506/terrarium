@@ -97,7 +97,7 @@ export function ServiceSheet({
   readonly onPick: (p: Picked) => void;
   readonly onClose: () => void;
 }) {
-  const { api, identity, toast } = useApp();
+  const { api, me, toast } = useApp();
   const cards = useAsync((signal) => api.call("listServiceCards", { signal }), []);
   // somebody else's card is locked: copying it makes a card of my own that I can change and share
   const copy = async (v: ServiceCardView) => {
@@ -146,7 +146,7 @@ export function ServiceSheet({
             key={v.id}
             name={v.name}
             line={catalogCard(v.card)?.line ?? ""}
-            owner={v.owner === identity.name ? `${v.owner} (나)` : v.owner}
+            owner={v.owner === me ? `${v.owner} (나)` : v.owner}
             titles={v.ownerTitles}
             flags={["잠김", v.shared ? "공유됨" : "나만 봐요"]}
             onPick={() => pickSaved(v)}

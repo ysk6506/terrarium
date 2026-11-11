@@ -62,7 +62,7 @@ describe("an agent that changed gets a new version when an experiment is made [R
     const changed = await s.experiment(ADMIN);
     expect(changed.experiment.agentVersion).toBe(2);
 
-    const history = await s.platform.agentVersions.history(s.connection.id, "triage");
+    const history = await s.platform.agentVersions.history(ADMIN, s.connection.id, "triage");
     expect(history.pending).toBeUndefined();
     expect(history.versions.map((v) => v.n)).toEqual([2, 1]);
     expect(history.versions[0]).toMatchObject({
@@ -80,20 +80,20 @@ describe("an agent that changed gets a new version when an experiment is made [R
     // The other agent of the harness has its own history.
     expect((await s.experiment(YEONSU, "fixer")).experiment.agentVersion).toBe(1);
     expect(
-      (await s.platform.agentVersions.history(s.connection.id, "fixer")).versions,
+      (await s.platform.agentVersions.history(ADMIN, s.connection.id, "fixer")).versions,
     ).toHaveLength(1);
   });
 
   test("the history says what the next experiment would add, without adding it", async () => {
     const s = await setup();
-    const before = await s.platform.agentVersions.history(s.connection.id, "triage");
+    const before = await s.platform.agentVersions.history(ADMIN, s.connection.id, "triage");
     expect(before).toMatchObject({ versions: [], pending: { first: true, changes: [] } });
     await s.experiment();
     expect(
-      (await s.platform.agentVersions.history(s.connection.id, "triage")).pending,
+      (await s.platform.agentVersions.history(ADMIN, s.connection.id, "triage")).pending,
     ).toBeUndefined();
     s.agents[0] = { id: "triage", name: "새 분류", model: "m-1", facts: { graph: "v1" } };
-    const preview = await s.platform.agentVersions.history(s.connection.id, "triage");
+    const preview = await s.platform.agentVersions.history(ADMIN, s.connection.id, "triage");
     expect(preview.pending).toEqual({
       first: false,
       changes: [{ field: "name", label: "이름", before: "분류", after: "새 분류" }],
@@ -105,11 +105,11 @@ describe("an agent that changed gets a new version when an experiment is made [R
     const s = await setup();
     await s.experiment();
     s.agents.length = 0;
-    const view = await s.platform.agentVersions.history(s.connection.id, "triage");
+    const view = await s.platform.agentVersions.history(ADMIN, s.connection.id, "triage");
     expect(view.versions).toHaveLength(1);
     expect(view.pending).toBeUndefined();
     expect(view.pendingError).toContain("triage");
-    await expect(s.platform.agentVersions.history("nope", "triage")).rejects.toBeInstanceOf(
+    await expect(s.platform.agentVersions.history(ADMIN, "nope", "triage")).rejects.toBeInstanceOf(
       NotFoundError,
     );
   });
@@ -122,7 +122,7 @@ describe("an agent that changed gets a new version when an experiment is made [R
       s.platform.experiments.fork(YEONSU, parent.experiment.id, { change: {} }),
     ).rejects.toThrow();
     expect(
-      (await s.platform.agentVersions.history(s.connection.id, "triage")).versions,
+      (await s.platform.agentVersions.history(ADMIN, s.connection.id, "triage")).versions,
     ).toHaveLength(1);
 
     const fork = await s.platform.experiments.fork(YEONSU, parent.experiment.id, {
@@ -145,7 +145,7 @@ describe("an agent that changed gets a new version when an experiment is made [R
     const made = await Promise.all([s.experiment(), s.experiment(), s.experiment()]);
     expect(made.map((m) => m.experiment.agentVersion)).toEqual([2, 2, 2]);
     expect(
-      (await s.platform.agentVersions.history(s.connection.id, "triage")).versions,
+      (await s.platform.agentVersions.history(ADMIN, s.connection.id, "triage")).versions,
     ).toHaveLength(2);
   });
 });
@@ -220,10 +220,10 @@ describe("people add, change and delete versions [REQ-053]", () => {
     await s.experiment();
     await expect(
       s.platform.agentVersions.add(JIMIN, s.connection.id, "triage", { label: "가로채기" }),
-    ).rejects.toBeInstanceOf(ForbiddenError);
+    ).rejects.toBeInstanceOf(NotFoundError);
     await expect(
       s.platform.agentVersions.remove(JIMIN, s.connection.id, "triage", 1),
-    ).rejects.toBeInstanceOf(ForbiddenError);
+    ).rejects.toBeInstanceOf(NotFoundError);
     await expect(
       s.platform.agentVersions.add(JIMIN, "builtin", "triage", { label: "누구나" }),
     ).rejects.toBeInstanceOf(ForbiddenError);
@@ -231,7 +231,7 @@ describe("people add, change and delete versions [REQ-053]", () => {
       label: "관리자",
     });
     expect(admin.versions[0]).toMatchObject({ n: 1, by: "admin-kim", label: "관리자" });
-    const looked = await s.platform.agentVersions.history(s.connection.id, "triage");
+    const looked = await s.platform.agentVersions.history(ADMIN, s.connection.id, "triage");
     expect(looked.versions).toHaveLength(1);
   });
 
@@ -241,7 +241,7 @@ describe("people add, change and delete versions [REQ-053]", () => {
     await s.platform.agentVersions.add(ADMIN, "builtin", "triage", {});
     const made = await s.experiment();
     await s.platform.experiments.cancel(YEONSU, made.experiment.id);
-    for (const e of await s.platform.experiments.list({}))
+    for (const e of await s.platform.experiments.list(ADMIN, {}))
       await s.platform.experiments.cancel(YEONSU, e.experiment.id).catch(() => undefined);
     await s.platform.connections.remove(YEONSU, s.connection.id);
     expect(await s.store.listAgentHistories(s.connection.id)).toEqual([]);

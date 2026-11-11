@@ -11,7 +11,7 @@ import type {
   UpdateModelRequest,
 } from "@terrarium/core/contract";
 import { InvalidInputError } from "@terrarium/core/contract";
-import type { LlmCheckRecord, LlmModelRecord } from "@terrarium/core/experiments";
+import { type LlmCheckRecord, type LlmModelRecord, scopeOf } from "@terrarium/core/experiments";
 import { ConflictError } from "@terrarium/core/kernel";
 import {
   checkLlm,
@@ -25,7 +25,8 @@ import {
 import type { SecretBox } from "../adapters";
 import { addressProblem, problem } from "./connection-form";
 import { must, type PlatformContext, type Viewer } from "./context";
-import { allow } from "./permissions";
+import { allow, canSee, mustSee, standing } from "./permissions";
+import { canChangeScope, changeScope, startingScope } from "./scoping";
 
 export interface ModelsOptions {
   readonly box: Pick<SecretBox, "seal" | "open">;
@@ -55,7 +56,7 @@ const checkView = (c: LlmCheckRecord): ModelCheckView => ({
   ...(c.error ? { error: c.error } : {}),
 });
 
-export const modelView = (m: LlmModelRecord): LlmModelView => ({
+export const modelView = (m: LlmModelRecord, viewer: Viewer): LlmModelView => ({
   id: m.id,
   name: m.name,
   kind: m.kind as LlmKind,
@@ -66,6 +67,11 @@ export const modelView = (m: LlmModelRecord): LlmModelView => ({
   headers: m.headers.map((h) => h.name),
   isDefault: m.isDefault,
   owner: m.owner,
+  sharing: {
+    scope: scopeOf(m),
+    ...(m.group ? { group: m.group } : {}),
+    canChange: canChangeScope(viewer, m.owner),
+  },
   createdAt: m.createdAt,
   ...(m.updatedAt ? { updatedAt: m.updatedAt } : {}),
   ...(m.lastCheck ? { lastCheck: checkView(m.lastCheck) } : {}),
@@ -93,12 +99,22 @@ export class Models {
     private readonly options: ModelsOptions,
   ) {}
 
-  async list(): Promise<LlmModelView[]> {
-    return (await this.ctx.store.listModels()).map(modelView);
+  /** What the person sees of a registration: their own, what is shared with them, and the default model (everyone uses it). */
+  private seeable(viewer: Viewer, m: LlmModelRecord): boolean {
+    return m.isDefault || canSee(viewer, standing(m));
   }
 
-  private async find(id: string): Promise<LlmModelRecord> {
-    return must(await this.ctx.store.getModel(id), "등록한 모델");
+  async list(viewer: Viewer): Promise<LlmModelView[]> {
+    return (await this.ctx.store.listModels())
+      .filter((m) => this.seeable(viewer, m))
+      .map((m) => modelView(m, viewer));
+  }
+
+  /** A registration, if the person can see it; one they cannot answers as one that is not there. */
+  private async find(viewer: Viewer, id: string): Promise<LlmModelRecord> {
+    const found = must(await this.ctx.store.getModel(id), "등록한 모델");
+    mustSee(viewer, found.isDefault ? {} : standing(found), "등록한 모델");
+    return found;
   }
 
   private async nameTaken(name: string, exceptId?: string): Promise<boolean> {
@@ -123,9 +139,11 @@ export class Models {
       // the first one registered is the default until someone chooses another
       isDefault: (await this.ctx.store.listModels()).length === 0,
       createdAt: this.ctx.stamps.now(),
+      // a registration carries its maker's key: private until they say otherwise
+      ...startingScope(viewer, input, "private"),
     };
     await this.ctx.store.putModel(record);
-    return modelView(record);
+    return modelView(record, viewer);
   }
 
   /** The headers after an edit: a row with a value is sealed anew, a row without one keeps the value it had. */
@@ -162,8 +180,9 @@ export class Models {
   }
 
   async update(viewer: Viewer, id: string, input: UpdateModelRequest): Promise<LlmModelView> {
-    const old = await this.find(id);
-    allow(viewer, "change", { owner: old.owner }, "고치기");
+    const found = await this.find(viewer, id);
+    allow(viewer, "change", { owner: found.owner }, "고치기");
+    const old = changeScope(viewer, found, input, "모델 공개 범위 바꾸기");
     if (input.baseUrl !== undefined) addressIssue(input.baseUrl, this.options.allowedHosts);
     if (input.name !== undefined && (await this.nameTaken(input.name, id)))
       throw new ConflictError(NAME_TAKEN);
@@ -182,11 +201,11 @@ export class Models {
       updatedAt: this.ctx.stamps.now(),
     };
     await this.ctx.store.putModel(saved);
-    return modelView(saved);
+    return modelView(saved, viewer);
   }
 
   async remove(viewer: Viewer, id: string): Promise<{ readonly deleted: boolean }> {
-    const old = await this.find(id);
+    const old = await this.find(viewer, id);
     allow(viewer, "remove", { owner: old.owner }, "지우기");
     await this.ctx.store.deleteModel(id);
     if (old.isDefault) {
@@ -199,19 +218,20 @@ export class Models {
   async setDefault(viewer: Viewer, id: string): Promise<LlmModelView> {
     // Every user's helper questions go to this model, so choosing it is for administrators.
     allow(viewer, "administer", {}, "기본 모델 정하기");
-    const chosen = await this.find(id);
+    const chosen = await this.find(viewer, id);
     for (const m of await this.ctx.store.listModels())
       if (m.isDefault && m.id !== id) await this.ctx.store.putModel({ ...m, isDefault: false });
     const saved = { ...chosen, isDefault: true };
     await this.ctx.store.putModel(saved);
-    return modelView(saved);
+    return modelView(saved, viewer);
   }
 
   /** Read the list, else one short completion; keep what came back on the record. */
   async check(viewer: Viewer, id: string): Promise<LlmModelView> {
-    const model = await this.find(id);
-    // A check opens the sealed key and calls out with it, so it is for the one who registered it.
-    allow(viewer, "use", { owner: model.owner }, "연결 확인");
+    const model = await this.find(viewer, id);
+    // A check opens the sealed key and calls out with it: whoever can see the registration may ask for one, and the
+    // default model is everyone's whatever its scope says.
+    allow(viewer, "use", model.isDefault ? {} : standing(model), "연결 확인");
     const result = await this.run(model);
     const lastCheck: LlmCheckRecord = {
       at: this.ctx.stamps.now(),
@@ -227,7 +247,7 @@ export class Models {
     const current = (await this.ctx.store.getModel(id)) ?? model;
     const saved = { ...current, lastCheck };
     await this.ctx.store.putModel(saved);
-    return modelView(saved);
+    return modelView(saved, viewer);
   }
 
   /** The client for a registered model; throws when its sealed key cannot be opened. */

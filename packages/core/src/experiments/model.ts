@@ -14,10 +14,11 @@ import type {
   TimePolicy,
 } from "@terrarium/core/session";
 import type { Blueprint, Domain, LeadTimeSettings } from "@terrarium/core/world";
+import type { Shared } from "./scope";
 
 export type WorldOrigin = "builder" | "worldgen" | "import" | "sample" | "template";
 
-export interface WorldRecord {
+export interface WorldRecord extends Shared {
   readonly id: string;
   readonly name: string;
   readonly owner: string;
@@ -32,7 +33,7 @@ export interface WorldRecord {
   readonly startedFrom?: string;
 }
 
-export interface ScenarioRecord {
+export interface ScenarioRecord extends Shared {
   readonly id: string;
   readonly worldId: string;
   readonly name: string;
@@ -116,7 +117,7 @@ export interface Snapshot {
   readonly physics?: string;
 }
 
-export interface Experiment {
+export interface Experiment extends Shared {
   readonly id: string;
   readonly name: string;
   readonly owner: string;

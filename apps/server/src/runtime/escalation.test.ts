@@ -2,6 +2,7 @@ import { ForbiddenError, InvalidInputError } from "@terrarium/core/contract";
 import type { RunResult } from "@terrarium/core/session";
 import { describe, expect, test } from "vitest";
 import {
+  ADMIN,
   JIMIN,
   recipe,
   ScriptHarness,
@@ -216,13 +217,13 @@ describe("a draft runbook from the best run [REQ-082]", () => {
     });
     const { platform: p } = testPlatform([walker]);
     const { world, scenario } = await seed(p);
-    expect(await p.scenarios.runbookDraft(scenario.id)).toEqual({});
+    expect(await p.scenarios.runbookDraft(ADMIN, scenario.id)).toEqual({});
     const made = await p.experiments.create(YEONSU, {
       name: "기준선",
       recipe: recipe(world.id, scenario.id, { harnessId: "walker", agentId: "a", runs: 2 }),
     });
     await settled(p, YEONSU, made.experiment.id);
-    const draft = await p.scenarios.runbookDraft(scenario.id);
+    const draft = await p.scenarios.runbookDraft(ADMIN, scenario.id);
     expect(draft.from).toMatchObject({ experimentName: "기준선" });
     expect(draft.from?.score).toBeGreaterThan(50);
     expect(draft.runbook?.steps.map((s) => s.tools)).toEqual([

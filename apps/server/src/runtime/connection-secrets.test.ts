@@ -1,10 +1,11 @@
-import { ForbiddenError, InvalidInputError } from "@terrarium/core/contract";
+import { InvalidInputError } from "@terrarium/core/contract";
 import { MemoryStore } from "@terrarium/core/experiments";
+import { NotFoundError } from "@terrarium/core/kernel";
 import { describe, expect, test } from "vitest";
 import { SecretBox } from "../adapters";
 import { FakeFetch, json } from "../adapters/test-support/fake-fetch";
 import type { Stamps } from "./ids";
-import { JIMIN, recipe, seed, testPlatform, YEONSU } from "./test-support/platform";
+import { ADMIN, JIMIN, recipe, seed, testPlatform, YEONSU } from "./test-support/platform";
 
 const DAY = 86_400_000;
 const T0 = Date.UTC(2026, 9, 1);
@@ -57,7 +58,7 @@ describe("a token typed on the screen is used, kept sealed and never shown again
     expect(record?.secrets?.token).toMatch(/^v1:/);
     for (const text of [
       JSON.stringify(view),
-      JSON.stringify(await platform.connections.views()),
+      JSON.stringify(await platform.connections.views(ADMIN)),
       JSON.stringify(await platform.meta(YEONSU)),
       JSON.stringify(record),
     ])
@@ -90,7 +91,7 @@ describe("a token typed on the screen is used, kept sealed and never shown again
       first.store,
     );
     await again.platform.start();
-    const [, view] = await again.platform.connections.views();
+    const [, view] = await again.platform.connections.views(ADMIN);
     expect(view).toMatchObject({ status: "ok", secrets: ["token"] });
     expect(lastAgentsCall(first.fake)?.headers.authorization).toBe("Bearer kept");
 
@@ -105,7 +106,7 @@ describe("a token typed on the screen is used, kept sealed and never shown again
       first.store,
     );
     await lost.platform.start();
-    const [, broken] = await lost.platform.connections.views();
+    const [, broken] = await lost.platform.connections.views(ADMIN);
     expect(broken?.status).toBe("unreachable");
     expect(broken?.error).toContain("서버의 암호 키");
     expect(JSON.stringify(broken)).not.toContain("kept");
@@ -219,17 +220,17 @@ describe("changing a connection keeps its secrets unless told otherwise [REQ-051
     const { platform, fake, id } = await made();
     await expect(
       platform.connections.update(JIMIN, id, { config: { url } }),
-    ).rejects.toBeInstanceOf(ForbiddenError);
+    ).rejects.toBeInstanceOf(NotFoundError);
     await expect(
       platform.connections.check(JIMIN, { connector: "http", id, config: { url } }),
-    ).rejects.toBeInstanceOf(ForbiddenError);
+    ).rejects.toBeInstanceOf(NotFoundError);
     await expect(
       platform.connections.update(YEONSU, "builtin", { config: {} }),
     ).rejects.toMatchObject({ message: "서버 설정 파일에 적힌 연결은 화면에서 바꿀 수 없어요" });
     await expect(
       platform.connections.update(YEONSU, id, { config: { url: "ftp://nope.test" } }),
     ).rejects.toBeInstanceOf(InvalidInputError);
-    const [, view] = await platform.connections.views();
+    const [, view] = await platform.connections.views(ADMIN);
     expect(view?.config).toEqual({ url });
     const tried = await platform.connections.check(YEONSU, {
       connector: "http",
@@ -281,7 +282,7 @@ describe("a connection nobody uses for a month is removed, after a warning [REQ-
     expect(await platform.sweepConnections()).toEqual([]);
     c.days(51);
     expect(await platform.sweepConnections()).toEqual([view.id]);
-    const builtin = (await platform.connections.views()).find((v) => v.id === "builtin");
+    const builtin = (await platform.connections.views(ADMIN)).find((v) => v.id === "builtin");
     expect(builtin?.daysLeft).toBeUndefined();
     expect(builtin?.expiresAt).toBeUndefined();
   });

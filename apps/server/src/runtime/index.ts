@@ -42,11 +42,13 @@ export { isScoringQuestion, SCORING_FILES, scoringChunk } from "./moss-scoring";
 export {
   allow,
   allowRunOn,
+  canSee,
   type Decision,
   isAdmin,
   isSignedIn,
   may,
   type Resource,
+  sightOf,
 } from "./permissions";
 export { Platform, type PlatformOptions, withCapacity } from "./platform";
 export { Presets } from "./presets";

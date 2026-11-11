@@ -366,7 +366,10 @@ export function App({ api, identity }: { readonly api: Api; readonly identity: I
   }, [meta.data, identity]);
 
   const proxied = meta.data?.user.source === "proxy" || meta.data?.user.source === "sso";
-  const me = proxied ? meta.data?.user.name : identity.name;
+  // Ownership is compared on the login id (ADR-0174), which is what the server stores as `owner`; the name is for showing.
+  // Typed names are their own id, so there the two are the same.
+  const me = proxied ? meta.data?.user.id : identity.name;
+  const myName = proxied ? meta.data?.user.name : identity.name;
   const services: AppServices = useMemo(
     () => ({
       api,
@@ -391,7 +394,7 @@ export function App({ api, identity }: { readonly api: Api; readonly identity: I
       <div className={`shell${mossOpen ? " moss-open" : ""}`}>
         <Rail
           page={page}
-          {...(me ? { me } : {})}
+          {...(myName ? { me: myName } : {})}
           proxied={proxied}
           onName={() => !proxied && setAsking(true)}
         />

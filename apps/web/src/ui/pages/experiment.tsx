@@ -17,7 +17,6 @@ import {
   Empty,
   Failure,
   Loading,
-  MenuButton,
   NumberField,
   PageHead,
   Section,
@@ -39,64 +38,10 @@ import {
 import { SubjectPanel } from "./experiment-subject";
 import { OperationCards } from "./operation-card";
 import { ProcessSections } from "./process-compare";
+import { ShareMenu } from "./share-menu";
 import { useLive } from "./useLive";
 
 const ACTIVE = new Set(["queued", "running"]);
-
-function ShareMenu({ view }: { readonly view: ExperimentView }) {
-  const { api, toast } = useApp();
-  const id = view.experiment.id;
-  const copy = async (text: string, done: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast(done);
-    } catch {
-      toast("복사하지 못했어요. 브라우저가 클립보드를 막고 있어요", "bad");
-    }
-  };
-  const shareLink = async () => {
-    try {
-      const share = await api.call("createShare", { params: { id }, body: {} });
-      await copy(share.url, "링크를 복사했어요. 받은 사람은 로그인 없이 보고서를 볼 수 있어요");
-    } catch (err) {
-      toast(err instanceof Error ? err.message : String(err), "bad");
-    }
-  };
-  const copyText = async () => {
-    try {
-      await copy(
-        await api.call("experimentReport", { params: { id }, query: { format: "text" } }),
-        "보고서 글을 복사했어요",
-      );
-    } catch (err) {
-      toast(err instanceof Error ? err.message : String(err), "bad");
-    }
-  };
-  return (
-    <MenuButton
-      label="공유"
-      icon="share"
-      items={[
-        {
-          label: "링크 복사",
-          hint: "로그인 없이 보고서가 열려요",
-          onSelect: () => void shareLink(),
-        },
-        {
-          label: "HTML 보고서 열기",
-          hint: "한 파일로 저장해 메일에 붙일 수 있어요",
-          onSelect: () =>
-            window.open(
-              api.url("experimentReport", { id }, { format: "html" }),
-              "_blank",
-              "noopener",
-            ),
-        },
-        { label: "글로 복사", hint: "메신저에 붙여 넣기 좋아요", onSelect: () => void copyText() },
-      ]}
-    />
-  );
-}
 
 function CancelButton({
   view,

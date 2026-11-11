@@ -193,8 +193,9 @@ function registerEvents(app: FastifyInstance, options: AppOptions, auth: Authent
   app.get(ROUTES.experimentEvents.path, async (req, reply) => {
     const id = (req.params as { id: string }).id;
     let first: ExperimentEvent;
+    let viewer: Viewer;
     try {
-      const viewer = await viewerFor(ROUTES.experimentEvents, req, auth);
+      viewer = await viewerFor(ROUTES.experimentEvents, req, auth);
       const view = await options.platform.experiments.view(viewer, id);
       first = {
         type: "experiment",
@@ -211,24 +212,69 @@ function registerEvents(app: FastifyInstance, options: AppOptions, auth: Authent
     let off = () => {};
     const write = openStream<ExperimentEvent>(req, reply, options, () => off());
     write(first);
-    off = options.platform.events.subscribe(id, write);
+    // the scope can be narrowed while the stream is open: the person is asked again every few events
+    const platform = options.platform;
+    const still = rechecked(() => platform.gate.canSeeExperiment(viewer, id));
+    off = platform.events.subscribe(
+      id,
+      inOrder((e) => still().then((ok) => ok && write(e))),
+    );
   });
+}
+
+/** How many events pass between two looks at whether the person may still see what they are following. */
+const RECHECK_EVERY = 25;
+
+/** The answer to `ask`, asked again every `RECHECK_EVERY` calls. */
+function rechecked(ask: () => Promise<boolean>): () => Promise<boolean> {
+  let calls = 0;
+  let last = true;
+  return async () => {
+    if (calls++ % RECHECK_EVERY === 0) last = await ask().catch(() => false);
+    return last;
+  };
+}
+
+/** Events handled one after the other, in the order they came, though each handling waits for an answer. */
+function inOrder<E>(handle: (e: E) => Promise<unknown>): (e: E) => void {
+  let chain: Promise<unknown> = Promise.resolve();
+  return (e) => {
+    chain = chain.then(() => handle(e)).catch(() => undefined);
+  };
 }
 
 /** Who is working in one world now (REQ-050): the runs already going, then every call as it happens. */
 function registerActivity(app: FastifyInstance, options: AppOptions, auth: Authenticator): void {
   app.get(ROUTES.worldActivity.path, async (req, reply) => {
     const id = (req.params as { id: string }).id;
+    let viewer: Viewer;
     try {
-      await viewerFor(ROUTES.worldActivity, req, auth);
-      await options.platform.worlds.get(id);
+      viewer = await viewerFor(ROUTES.worldActivity, req, auth);
+      // the activity of a world follows the world's scope: one the person cannot see is a 404
+      await options.platform.gate.world(viewer, id);
     } catch (err) {
       return sendError(reply, err);
     }
     let off = () => {};
     const write = openStream<ActivityEvent>(req, reply, options, () => off());
-    for (const e of options.platform.events.workingIn(id)) write(e);
-    off = options.platform.events.subscribeWorld(id, write);
+    // every run in the world is shown only if its experiment is one the person may see
+    const { platform } = options;
+    const stills = new Map<string, () => Promise<boolean>>();
+    const send = inOrder<ActivityEvent>(async (e) => {
+      const still =
+        stills.get(e.runId) ??
+        rechecked(() =>
+          platform.gate.run(viewer, e.runId).then(
+            () => true,
+            () => false,
+          ),
+        );
+      stills.set(e.runId, still);
+      if (await still()) write(e);
+      if (e.type === "end") stills.delete(e.runId);
+    });
+    for (const e of platform.events.workingIn(id)) send(e);
+    off = platform.events.subscribeWorld(id, send);
   });
 }
 

@@ -18,13 +18,13 @@ covers:
   - apps/web/src/ui/pages/process-table.tsx
   - apps/web/src/ui/pages/process-compare.tsx
   - apps/web/src/ui/pages/process-ontology.tsx
-covers_hash: 726f7fe8a5db8a3c
+covers_hash: 2499814887eea38e
 verification_log:
-  - "2026-11-10: 내려받는 파일 이름 규칙(exportName)을 코드와 대조해 더했다"
   - "2026-11-10: 파일 이름 규칙을 fileName 그대로(한글 유지)로 되돌려 대조했다"
   - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
   - "2026-11-11: 2026-11-11: 이끼 동작 셋을 코드와 대조해 맞음 (ADR-0141)"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
+  - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
 ---
 # 프로세스 비교 (REQ-112, [ADR-0135](adr/0135-process-compare.md))
 
@@ -138,3 +138,7 @@ verification_log:
 - 적은 값을 어림해 채우지 않아요. 모델이 표를 대신 적지도 않아요.
 - 비용(돈)은 이 비교에 넣지 않아요. 돈은 실험의 "바꾸기"와 `capacity.md`가 다뤄요.
 - 승인 줄은 에이전트가 `ask_human`을 부른 실행에만 나와요. 내장 에이전트는 부르지 않으므로 그 실행에는 승인 줄이 없어요.
+
+## 공개 범위 (ADR-0174 나 단계)
+
+비교와 온톨로지는 보는 사람에게 보이는 시나리오·실험만 써요. 시나리오가 보이지 않으면 현재 업무 표 없이 비교해요. 자세한 규칙은 [권한](permissions.md).

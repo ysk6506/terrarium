@@ -33,6 +33,8 @@ export type WorldCardView = WorldSummary & {
   readonly likes: number;
   readonly likedByMe: boolean;
   readonly ownerTitles: readonly TitleView[];
+  /** Whether the person asking may change who sees it. */
+  readonly canChangeScope?: boolean;
 };
 
 export interface LikeView {

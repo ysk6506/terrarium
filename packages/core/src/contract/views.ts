@@ -116,6 +116,8 @@ export interface CalibrationView extends Calibration {
 
 export interface ExperimentSummary {
   readonly experiment: Experiment;
+  /** Whether the person asking may change who sees it (its maker and admins). Filled in lists and views. */
+  readonly canChangeScope?: boolean;
   /** The owner's titles (REQ-101), filled in lists where owners are shown. */
   readonly ownerTitles?: readonly TitleView[];
   readonly status: ExperimentStatus;
@@ -197,6 +199,15 @@ export interface RunWorldView {
 }
 
 export type TelemetryView = Telemetry;
+
+/** A world as one person sees it: whether they may change who sees it comes with it. */
+export type WorldWithScope = WorldRecord & { readonly canChangeScope?: boolean };
+export type ScenarioWithScope = ScenarioRecord & { readonly canChangeScope?: boolean };
+
+/** One share link of an experiment, for the list of links (ADR-0174). */
+export interface ShareListItem extends ShareView {
+  readonly createdBy: string;
+}
 
 export interface ShareView {
   readonly token: string;

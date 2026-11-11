@@ -15,13 +15,13 @@ covers:
   - apps/web/src/logic/models.ts
   - apps/web/src/ui/pages/model-section.tsx
   - apps/web/src/ui/pages/model-dialog.tsx
-covers_hash: 4a1c23a3ef8dd4c3
+covers_hash: 0a0fff619055e0a8
 verification_log:
-  - "2026-11-06: LLM API 등록"
   - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
   - "2026-11-07: ADR-0125: 이끼는 기본 모델이 있어야만 켜진다(꺼지면 알약만, 409 no_model), 점수 질문 찾기 규칙을 문서에 반영하고 코드와 대조함"
   - "2026-11-11: model-section.tsx에서 안 쓰는 useAction 호출만 지움, 문서 내용과 동작은 그대로"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
+  - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
 ---
 # 모델 등록 (REQ-099, [ADR-0119](adr/0119-llm-api-registration.md))
 
@@ -74,3 +74,9 @@ verification_log:
 - 스트리밍과 툴 호출은 하지 않는다. 한 번 묻고 한 번 받는다.
 - 토큰·비용 한도는 없다. 이끼는 답 하나에 `max_tokens` 700으로 부르고, 한도는 쓰는 기능이 더 붙을 때 정한다.
 - 기본 모델이 하나다. 기능마다 다른 모델을 고르는 것은 없다.
+
+## 공개 범위 (ADR-0174 나 단계)
+
+- 등록한 모델은 처음에 **나만**이에요(`scope`, `group`을 만들 때·고칠 때 적어요). 목록에는 기본 모델과 내게 보이는 것만 나오고, 보이지 않는 것을 확인·고치기·지우기 하면 404예요. 응답의 `sharing`에 범위와 내가 바꿀 수 있는지가 있어요.
+- **관리자가 정한 기본 모델은 범위와 상관없이 로그인한 누구나 써요**(확인 포함). 모든 사용자의 도우미 질문이 그 모델로 가기 때문이에요. 처음 등록한 모델이 자동으로 기본이 되는 예전 동작도 그대로라서, 그 모델이 "나만"이어도 모두가 쓰게 돼요.
+- 범위가 없는 예전 등록은 "모두"로 읽어요. 자세한 규칙은 [권한](permissions.md).

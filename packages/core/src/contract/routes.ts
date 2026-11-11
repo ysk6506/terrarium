@@ -34,6 +34,7 @@ import {
   UpdateWorldBody,
 } from "./requests";
 import { SERVICE_CARD_ROUTES } from "./service-card-routes";
+import { SHARE_ROUTES } from "./share-routes";
 
 export type { Responses } from "./responses";
 
@@ -125,6 +126,7 @@ export const ROUTES = {
   ...COMMUNITY_ROUTES,
   ...SERVICE_CARD_ROUTES,
   ...PROCESS_ROUTES,
+  ...SHARE_ROUTES,
 
   listWorldTemplates: {
     method: "GET",

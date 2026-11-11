@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { SecretBox, SqliteStore } from "../adapters";
-import { person, testPlatform } from "../runtime/test-support/platform";
+import { ADMIN, person, testPlatform } from "../runtime/test-support/platform";
 import { buildApp } from "./app";
 import { headerAuthenticator } from "./identity";
 import { SELF_ONLY } from "./viewer";
@@ -199,9 +199,10 @@ describe("registering model APIs: add, list, change, delete [REQ-099]", () => {
     expect((await send("DELETE", `/api/models/${made.body.id}`, undefined, "jimin")).status).toBe(
       403,
     );
+    // the first one registered is the default, and the default is usable by everyone whatever its scope (ADR-0174)
     expect(
       (await send("POST", `/api/models/${made.body.id}/check`, undefined, "jimin")).status,
-    ).toBe(403);
+    ).toBe(200);
     expect(
       (await send("POST", `/api/models/${made.body.id}/check`, undefined, "yeonsu")).status,
     ).toBe(200);
@@ -401,7 +402,7 @@ describe("registrations survive a restart, sealed [REQ-099]", () => {
       { adapters: { secretBox: box }, llm: { fetch: up.fetch } },
       second,
     );
-    const [again] = await two.platform.models.list();
+    const [again] = await two.platform.models.list(ADMIN);
     expect(again).toMatchObject({ id: made.id, keyHint: "…ab12", isDefault: true });
     const checked = await two.platform.models.check(person("yeonsu", "proxy"), made.id);
     expect(checked.lastCheck).toMatchObject({ ok: true, modelCount: 2 });

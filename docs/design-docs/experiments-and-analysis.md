@@ -18,13 +18,13 @@ covers:
   - packages/core/src/world/incidents.ts
   - apps/server/src/runtime/executor-operation.ts
   - packages/core/src/session/run-events.ts
-covers_hash: ec409d8cf3abeb8b
+covers_hash: 70b99311adde9a72
 verification_log:
-  - "2026-11-11: REQ-118 시드당 반복: 실행 키(시드·반복), 시드 단위 통계, 순위 조건(시드 3개), 한도 60, 화면 반영을 코드와 대조해 고쳤다. 이 문서의 나머지는 그대로 맞다"
   - "2026-11-11: 상황 문구, 점수 차이 출처 문단(spreadFindings)을 코드와 대조"
   - "2026-11-11: 상황 문구, 시험 이름표, 둘째 질문 단추와 상황별 구역 머리를 코드와 대조"
   - "2026-11-11: 단계 문구와 한 실행뿐일 때의 조언 절반을 코드와 대조"
   - "2026-11-11: ADR-0163: 실험 상태 규칙(멈춤이 하나라도 있으면 멈춤) 한 줄을 더하고 experimentStatus, 순위표와 통계의 완료 실행 기준을 코드와 대조했다. 나머지는 그대로 맞다"
+  - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
 ---
 # 실험과 결과 분석 (REQ-015, REQ-030~033, REQ-037~040)
 
@@ -147,3 +147,7 @@ verification_log:
      5번 넘게 모두 맞히면 너무 쉬운지 의심한다.
   2. 툴 오류를 메시지 모양으로 묶은 것(id와 숫자는 지운다) — 에이전트가 기대했지만 시뮬레이터가 못 하는 동작의 후보.
   3. 가져온 세계에서 매핑하지 못한 라벨·관계와 가정 — 실제 구성 중 세계에 빠진 것.
+
+## 공개 범위 (ADR-0174 나 단계)
+
+실행·보고서·진단·사건·텔레메트리·내보내기·넘기기 카드·두 스트림은 그 실험의 범위를 따라요. 갈래 실험의 "부모와 견줘 어땠나"는 보는 사람이 부모를 볼 수 있을 때만 붙고, 공유 링크의 보고서는 만든 사람의 눈으로 만들어요. 계보와 갈래 목록에서도 보이지 않는 실험은 빠져요. 자세한 규칙은 [권한](permissions.md).

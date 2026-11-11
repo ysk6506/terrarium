@@ -13,13 +13,13 @@ covers:
   - packages/core/src/contract/model-routes.ts
   - packages/core/src/contract/community.ts
   - packages/core/src/contract/community-routes.ts
-covers_hash: cd562149b0e6a238
+covers_hash: 06d7b29acab72c27
 verification_log:
-  - "2026-11-10: 물리 프로필(REQ-113) 반영: 새 라우트·벤치마크 키 지문"
   - "2026-11-07: REQ-112의 경로 넷을 표에 더했다"
   - "2026-11-11: main 합치기 뒤 다시 읽음: 물리 프로필(REQ-113) 반영 문단과 라우트 행이 main의 새 내용과 함께 맞다"
   - "2026-11-11: REQ-118 시드당 반복: 실행 키(시드·반복), 시드 단위 통계, 순위 조건(시드 3개), 한도 60, 화면 반영을 코드와 대조해 고쳤다. 이 문서의 나머지는 그대로 맞다"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
+  - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -137,9 +137,17 @@ verification_log:
 | `open` | 신원 방식이 들여보낸 누구나. 누구인지 알려 주는 `meta` 하나 | 1 |
 | `signedIn` | 로그인한 누구나. 읽기, 만들기, 내 것만 보이는 저장해 둔 것 | 47 |
 | `admin` | 관리자만, 앱이 핸들러 앞에서 막는다 (기본 모델 정하기, 소스에서 세계 가져오기) | 2 |
-| `{ action }` | 무엇에 하는 일인지 안 뒤 핸들러가 `may(viewer, action, resource)`로 정한다 | 31 |
+| `{ action }` | 무엇에 하는 일인지 안 뒤 핸들러가 `may(viewer, action, resource)`로 정한다 | 33 |
 
-`{ action }`의 열두 가지 말(열세째 `administer`는 `admin` 정책이 쓴다): `change`·`remove`·`cancel`·`addRuns`·`answerEscalation`·`calibrate`·`editProcess`·`createShare`는 만든 사람과 관리자, `editAgentVersions`는 만든 사람과 관리자(설정 파일의 연결은 관리자), `use`(연결·모델 쓰기, 그 연결로 실험 만들기·복제)는 설정 파일의 연결이면 로그인한 누구나·화면에서 만든 것이면 만든 사람과 관리자, `deleteShare`는 링크를 만든 사람·실험을 만든 사람·관리자, `like`는 이름이 있는 사람. 소유는 로그인 ID로 견준다. 판정은 `apps/server/src/runtime/permissions.ts`의 `may` 한 곳이다.
+`{ action }`의 열네 가지 말(열다섯째 `administer`는 `admin` 정책이 쓴다): `change`·`remove`·`cancel`·`addRuns`·`answerEscalation`·`calibrate`·`editProcess`·`createShare`·`listShares`·`changeScope`는 만든 사람과 관리자, `editAgentVersions`는 만든 사람과 관리자(설정 파일의 연결은 관리자), `use`(연결·모델 쓰기, 그 연결로 실험 만들기·복제)는 **그것이 내게 보이는 사람**(설정 파일의 연결과 관리자가 정한 기본 모델은 로그인한 누구나), `deleteShare`는 링크를 만든 사람·실험을 만든 사람·관리자, `like`는 이름이 있는 사람. 소유는 로그인 ID로 견준다. 판정은 `apps/server/src/runtime/permissions.ts`의 `may` 한 곳이다.
+
+### 공개 범위 (ADR-0174 나 단계, [권한](permissions.md#3-공개-범위는-셋))
+
+- 세계·시나리오·실험·화면에서 만든 연결·모델 등록은 `scope`(`private`·`group`·`everyone`)와 `group`을 가진다. 만들 때와 바꿀 때(`PUT /api/worlds/:id`, `PUT /api/scenarios/:id`, `PUT /api/connections/:id`, `PATCH /api/models/:id`, 실험은 `PUT /api/experiments/:id/scope`) 요청에 `scope`·`group`을 적는다. 바꾸기는 한 함수(`changeScope`)를 지난다. 그룹이 하나도 없는 사람이 `group`을 고르면 400에 까닭이 실린다.
+- 처음 값: 세계·시나리오·실험은 `everyone`, 연결·모델은 `private`. 범위가 없는 예전 기록은 종류와 상관없이 `everyone`으로 읽는다.
+- 볼 수 없는 것은 **목록에 없고 하나를 물으면 404**다(이미 있는 것과 같은 말). 보이지만 내 것이 아니면 바꾸기는 403이다. 딸린 길(실행·보고서·진단·사건·세계·텔레메트리·넘기기 카드·두 스트림·내보내기)은 세계나 실험의 범위를 따른다. 순위표와 세계 인기·좋아요·칭호는 `everyone`만 센다.
+- 응답: 세계·시나리오·실험은 `scope`·`group`과 `canChangeScope`(내가 바꿀 수 있나)를 싣고, 연결·모델은 `sharing: { scope, group?, canChange }`를 싣는다(연결의 `scope`는 "harness|agent"라는 다른 뜻이라 따로 뒀다).
+- `GET /api/experiments/:id/shares`: 그 실험의 링크 목록(만든 사람과 관리자만, 기간이 지난 링크 제외). 항목은 링크 보기에 `createdBy`를 더한 것이다.
 
 ### 연결 (REQ-051, REQ-053)
 

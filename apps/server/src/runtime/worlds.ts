@@ -15,8 +15,14 @@ import {
   UnavailableError,
   type UpdateWorldRequest,
   type WorldPhysicsView,
+  type WorldWithScope,
 } from "@terrarium/core/contract";
-import type { WorldOrigin, WorldRecord, WorldSummary } from "@terrarium/core/experiments";
+import {
+  type WorldOrigin,
+  type WorldRecord,
+  type WorldSummary,
+  withScope,
+} from "@terrarium/core/experiments";
 import { ConflictError, TerrariumError } from "@terrarium/core/kernel";
 import { DEFAULT_PROFILE, fingerprintOf, isDefaultProfile } from "@terrarium/core/physics/slots";
 import { importReality } from "@terrarium/core/sources/realimport";
@@ -34,7 +40,8 @@ import {
   validateBlueprint,
 } from "@terrarium/core/world";
 import { must, type PlatformContext, type Viewer } from "./context";
-import { allow } from "./permissions";
+import { allow, sightOf } from "./permissions";
+import { canChangeScope, changeScope, type ScopeChoice, startingScope } from "./scoping";
 
 /** Blueprint problems as form issues: the path names the entity or link that is wrong. */
 export function blueprintIssues(issues: readonly Issue[]) {
@@ -58,12 +65,21 @@ export class Worlds {
   constructor(private readonly ctx: PlatformContext) {}
 
   /** The worlds to run; the templates kept for starting new ones are listed apart. */
-  async list(): Promise<WorldSummary[]> {
-    return (await this.ctx.store.listWorlds()).filter((w) => w.origin !== "template");
+  async list(viewer: Viewer): Promise<WorldSummary[]> {
+    return (await this.ctx.store.listWorlds(sightOf(viewer))).filter(
+      (w) => w.origin !== "template",
+    );
   }
 
-  async templates(): Promise<WorldSummary[]> {
-    return (await this.ctx.store.listWorlds()).filter((w) => w.origin === "template");
+  async templates(viewer: Viewer): Promise<WorldSummary[]> {
+    return (await this.ctx.store.listWorlds(sightOf(viewer))).filter(
+      (w) => w.origin === "template",
+    );
+  }
+
+  /** A world as one person sees it: with the scope it reads as, and whether they may change it. */
+  seenBy(viewer: Viewer, world: WorldRecord): WorldWithScope {
+    return { ...withScope(world), canChangeScope: canChangeScope(viewer, world.owner) };
   }
 
   async get(id: string): Promise<WorldRecord> {
@@ -94,8 +110,11 @@ export class Worlds {
     viewer: Viewer,
     name: string,
     origin: WorldOrigin,
-    provenance?: Record<string, unknown>,
-    startedFrom?: string,
+    extra: {
+      readonly provenance?: Record<string, unknown>;
+      readonly startedFrom?: string;
+      readonly scope: ScopeChoice;
+    },
   ) {
     return {
       id: this.ctx.stamps.id("w"),
@@ -103,13 +122,15 @@ export class Worlds {
       owner: viewer.id,
       origin,
       createdAt: this.ctx.stamps.now(),
-      ...(provenance ? { provenance } : {}),
-      ...(startedFrom ? { startedFrom } : {}),
+      // a world is for everyone unless its maker says otherwise: comparing worlds is what the product is for
+      ...startingScope(viewer, extra.scope, "everyone"),
+      ...(extra.provenance ? { provenance: extra.provenance } : {}),
+      ...(extra.startedFrom ? { startedFrom: extra.startedFrom } : {}),
     };
   }
 
   create(viewer: Viewer, req: CreateWorldRequest): Promise<SavedWorld> {
-    return this.save(this.fresh(viewer, req.name, "builder"), req.blueprint);
+    return this.save(this.fresh(viewer, req.name, "builder", { scope: req }), req.blueprint);
   }
 
   /** A world from services (REQ-094): the spec is kept in the record, so a template can build the same world again. */
@@ -124,13 +145,11 @@ export class Worlds {
     // where it started from is kept only when that place exists (REQ-101): a stale id is not a reason to refuse a save
     const from = req.startedFrom ? await this.ctx.store.getWorld(req.startedFrom) : undefined;
     const saved = await this.save(
-      this.fresh(
-        viewer,
-        req.name ?? req.shape.name,
-        origin,
-        { shape: req.shape, counts: result.counts, notes: result.notes },
-        from?.id,
-      ),
+      this.fresh(viewer, req.name ?? req.shape.name, origin, {
+        provenance: { shape: req.shape, counts: result.counts, notes: result.notes },
+        ...(from ? { startedFrom: from.id } : {}),
+        scope: req,
+      }),
       result.blueprint,
     );
     return { ...saved, stats };
@@ -146,7 +165,10 @@ export class Worlds {
     const preset = sitePreset(spec.site);
     const name = req.name ?? spec.name ?? `${preset?.name ?? spec.site} 생성 세계`;
     const saved = await this.save(
-      this.fresh(viewer, name, "worldgen", { spec, notes: result.notes }),
+      this.fresh(viewer, name, "worldgen", {
+        provenance: { spec, notes: result.notes },
+        scope: req,
+      }),
       result.blueprint,
     );
     return { ...saved, stats: result.stats };
@@ -156,7 +178,9 @@ export class Worlds {
     // It reads the company's systems with the server's own account, so it is for administrators (ADR-0152).
     allow(viewer, "administer", {}, "소스에서 세계 가져오기");
     const entry = must(this.ctx.sources.get(req.source), `현실 소스 '${req.source}'`);
-    const base = this.fresh(viewer, req.name ?? `${entry.view.name}에서 가져온 세계`, "import");
+    const base = this.fresh(viewer, req.name ?? `${entry.view.name}에서 가져온 세계`, "import", {
+      scope: {},
+    });
     let imported: Awaited<ReturnType<typeof importReality>>;
     try {
       imported = await importReality(entry.source, {
@@ -188,7 +212,13 @@ export class Worlds {
       throw new ConflictError(
         "그사이 이 세계가 바뀌었어요. 새로고침해서 바뀐 내용을 본 뒤 다시 저장해 주세요",
       );
-    const { blueprint, digest: _digest, updatedAt: _updatedAt, ...base } = current;
+    const scoped = changeScope(viewer, current, req, "세계 공개 범위 바꾸기");
+    if (req.name === undefined && req.blueprint === undefined) {
+      // only who sees it changed: the blueprint is not looked at again
+      await this.ctx.store.putWorld(scoped);
+      return { world: scoped, issues: [] };
+    }
+    const { blueprint, digest: _digest, updatedAt: _updatedAt, ...base } = scoped;
     return this.save({ ...base, name: req.name ?? current.name }, req.blueprint ?? blueprint);
   }
 

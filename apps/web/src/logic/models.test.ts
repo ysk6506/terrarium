@@ -28,6 +28,7 @@ const view = (extra: Partial<LlmModelView> = {}): LlmModelView => ({
   headers: ["X-Gateway-Token"],
   isDefault: false,
   owner: "yeonsu",
+  sharing: { scope: "private", canChange: true },
   createdAt: "2026-11-06T01:00:00.000Z",
   ...extra,
 });

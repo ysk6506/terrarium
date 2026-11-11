@@ -1,10 +1,11 @@
-import { ForbiddenError, InvalidInputError } from "@terrarium/core/contract";
+import { InvalidInputError } from "@terrarium/core/contract";
 import { MemoryStore } from "@terrarium/core/experiments";
 import { ConflictError, NotFoundError } from "@terrarium/core/kernel";
 import { describe, expect, test } from "vitest";
 import { FakeFetch, json } from "../adapters/test-support/fake-fetch";
 import { addressProblem } from "./connections";
 import {
+  ADMIN,
   JIMIN,
   recipe,
   ScriptHarness,
@@ -32,7 +33,7 @@ const harness = { connector: "http", name: "회사 하네스", config: { url: "h
 describe("the connections people register, and the ones the config file names [REQ-051]", () => {
   test("a fresh server lists the built-in agent as a read-only connection", async () => {
     const { platform } = setup();
-    const [builtin] = await platform.connections.views();
+    const [builtin] = await platform.connections.views(ADMIN);
     expect(builtin).toMatchObject({
       id: "builtin",
       source: "config",
@@ -83,7 +84,7 @@ describe("the connections people register, and the ones the config file names [R
     expect(checked).toMatchObject({ ok: true, notes: [] });
     expect(checked.agents).toHaveLength(2);
     expect(checked.ms).toBeGreaterThanOrEqual(0);
-    expect(await platform.connections.views()).toHaveLength(1);
+    expect(await platform.connections.views(ADMIN)).toHaveLength(1);
   });
 
   test("a harness that answers badly, or finds nothing, is told apart from a wrong form", async () => {
@@ -242,9 +243,7 @@ describe("the connections people register, and the ones the config file names [R
   test("only whoever connected it can remove it, and not while runs are on it", async () => {
     const { platform } = setup();
     const view = await platform.connections.create(YEONSU, harness);
-    await expect(platform.connections.remove(JIMIN, view.id)).rejects.toBeInstanceOf(
-      ForbiddenError,
-    );
+    await expect(platform.connections.remove(JIMIN, view.id)).rejects.toBeInstanceOf(NotFoundError);
     await expect(platform.connections.remove(YEONSU, "builtin")).rejects.toMatchObject({
       message: "서버 설정 파일에 적힌 연결은 화면에서 지울 수 없어요",
     });
@@ -263,7 +262,7 @@ describe("the connections people register, and the ones the config file names [R
 
     expect(await platform.connections.remove(YEONSU, view.id)).toEqual({ deleted: true });
     expect(platform.connections.get(view.id)).toBeUndefined();
-    expect((await platform.connections.views()).map((v) => v.id)).not.toContain(view.id);
+    expect((await platform.connections.views(ADMIN)).map((v) => v.id)).not.toContain(view.id);
   });
 
   test("what people connected is still there after a restart; one that no longer builds is shown, not lost", async () => {
@@ -282,7 +281,7 @@ describe("the connections people register, and the ones the config file names [R
       first.store,
     );
     await second.platform.start();
-    const broken = (await second.platform.connections.views()).find((v) => v.id === kept.id);
+    const broken = (await second.platform.connections.views(ADMIN)).find((v) => v.id === kept.id);
     expect(broken).toMatchObject({ status: "unreachable", owner: "yeonsu", source: "screen" });
     expect(broken?.error).toBe("서버에는 'HARNESS_TOKEN'라는 환경 변수가 없어요");
     expect(second.platform.connections.get(kept.id)).toBeUndefined();
@@ -300,9 +299,9 @@ describe("the connections people register, and the ones the config file names [R
     const view = await platform.connections.create(YEONSU, harness);
     expect(view.agents).toHaveLength(2);
     fake.on("GET", /^\/agents$/, () => json({ agents: [AGENTS[0]] }));
-    expect((await platform.connections.views()).find((v) => v.id === view.id)?.agents).toHaveLength(
-      2,
-    );
+    expect(
+      (await platform.connections.views(ADMIN)).find((v) => v.id === view.id)?.agents,
+    ).toHaveLength(2);
     expect((await platform.connections.recheck(YEONSU, view.id)).agents).toHaveLength(2);
   });
 
@@ -321,7 +320,7 @@ describe("the connections people register, and the ones the config file names [R
         ],
       },
     });
-    const view = (await platform.connections.views()).find((v) => v.id === "odd");
+    const view = (await platform.connections.views(ADMIN)).find((v) => v.id === "odd");
     expect(view).toMatchObject({
       source: "config",
       connector: "test",

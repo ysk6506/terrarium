@@ -19,6 +19,7 @@ import {
   WorldgenSpecSchema,
 } from "./schemas";
 import { ShapeSpecSchema } from "./schemas-shape";
+import { ScopeFields } from "./scope";
 
 /** Query strings arrive as text; numbers are converted, blanks are treated as absent. */
 const blankToUndefined = (v: unknown) => (v === "" ? undefined : v);
@@ -39,12 +40,14 @@ export const MetadataBody = z
 
 // ── worlds ───────────────────────────────────────────────────────────────────────────────────
 
-export const CreateWorldBody = z.object({ name: NameSchema, blueprint: BlueprintSchema }).strict();
+export const CreateWorldBody = z
+  .object({ name: NameSchema, blueprint: BlueprintSchema, ...ScopeFields })
+  .strict();
 
 /** A small grid of rooms from a few sizes (`spec`), or a whole campus on a site's real shape (`campus`). */
 export const GenerateWorldBody = z.union([
-  z.object({ name: NameSchema.optional(), spec: WorldgenSpecSchema }).strict(),
-  z.object({ name: NameSchema.optional(), campus: CampusSpecSchema }).strict(),
+  z.object({ name: NameSchema.optional(), spec: WorldgenSpecSchema, ...ScopeFields }).strict(),
+  z.object({ name: NameSchema.optional(), campus: CampusSpecSchema, ...ScopeFields }).strict(),
   /** From services (REQ-094); `template: true` keeps the spec as a template instead of a world to run. */
   z
     .object({
@@ -53,6 +56,7 @@ export const GenerateWorldBody = z.union([
       template: z.boolean().optional(),
       /** The template this was made from (REQ-101), so its popularity can count the start. */
       startedFrom: IdSchema.optional(),
+      ...ScopeFields,
     })
     .strict(),
 ]);
@@ -78,9 +82,10 @@ export const UpdateWorldBody = z
     baseDigest: z.string().min(1).max(64),
     name: NameSchema.optional(),
     blueprint: BlueprintSchema.optional(),
+    ...ScopeFields,
   })
   .strict()
-  .refine((b) => b.name !== undefined || b.blueprint !== undefined, {
+  .refine((b) => b.name !== undefined || b.blueprint !== undefined || b.scope !== undefined, {
     message: "바꿀 이름이나 세계가 없어요",
   });
 
@@ -89,9 +94,23 @@ export const UpdateWorldBody = z
 export const ScenarioQuery = z.object({ worldId: QueryId }).strict();
 
 export const CreateScenarioBody = z.union([
-  z.object({ worldId: IdSchema, templateId: IdSchema, name: NameSchema.optional() }).strict(),
-  z.object({ worldId: IdSchema, doc: ScenarioDocSchema, name: NameSchema.optional() }).strict(),
-  z.object({ worldId: IdSchema, name: NameSchema.optional() }).strict(),
+  z
+    .object({
+      worldId: IdSchema,
+      templateId: IdSchema,
+      name: NameSchema.optional(),
+      ...ScopeFields,
+    })
+    .strict(),
+  z
+    .object({
+      worldId: IdSchema,
+      doc: ScenarioDocSchema,
+      name: NameSchema.optional(),
+      ...ScopeFields,
+    })
+    .strict(),
+  z.object({ worldId: IdSchema, name: NameSchema.optional(), ...ScopeFields }).strict(),
 ]);
 
 export const UpdateScenarioBody = z
@@ -99,9 +118,10 @@ export const UpdateScenarioBody = z
     baseDigest: z.string().min(1).max(64),
     name: NameSchema.optional(),
     doc: ScenarioDocSchema.optional(),
+    ...ScopeFields,
   })
   .strict()
-  .refine((b) => b.name !== undefined || b.doc !== undefined, {
+  .refine((b) => b.name !== undefined || b.doc !== undefined || b.scope !== undefined, {
     message: "바꿀 이름이나 시나리오가 없어요",
   });
 
@@ -155,6 +175,7 @@ export const CreateExperimentBody = z
     recipe: RecipeBody,
     note: NoteSchema.optional(),
     metadata: MetadataBody.optional(),
+    ...ScopeFields,
   })
   .strict();
 
@@ -184,6 +205,7 @@ export const ForkBody = z
     note: NoteSchema.optional(),
     /** Replaces the parent's; left out, the fork keeps them. */
     metadata: MetadataBody.optional(),
+    ...ScopeFields,
   })
   .strict();
 
@@ -373,6 +395,7 @@ export const CreateConnectionBody = z
     /** Attached to every experiment run on it (REQ-052). */
     metadata: MetadataBody.optional(),
     traces: TracesBody.optional(),
+    ...ScopeFields,
   })
   .strict();
 
@@ -389,6 +412,7 @@ export const UpdateConnectionBody = z
     headers: HeadersBody.optional(),
     metadata: MetadataBody.optional(),
     traces: TracesBody.optional(),
+    ...ScopeFields,
   })
   .strict();
 

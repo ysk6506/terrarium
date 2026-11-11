@@ -6,9 +6,6 @@
 import {
   analyzeExperiment,
   type ExperimentAnalysis,
-  groupBySeed,
-  meanOf,
-  seedMeans,
   type Telemetry,
 } from "@terrarium/core/analysis";
 import {
@@ -23,27 +20,27 @@ import {
   type QuickExperimentView,
   type RecipeRequest,
   type RunSummary,
+  type ScopeRequest,
   UnavailableError,
 } from "@terrarium/core/contract";
 import {
   benchmarkKey,
   DEFAULT_SEEDS,
   type Experiment,
-  type ExperimentFilter,
-  experimentStatus,
   forkExperiment,
   isTerminal,
   newRun,
   normalizeTools,
   OPERATION_SCENARIO_ID,
-  progressOf,
   type Recipe,
   type RunRecord,
   recipeProblems,
   repeatsOf,
+  type Sight,
   type Snapshot,
   type Subject,
   seedsUpTo,
+  seen,
   sizeProblems,
 } from "@terrarium/core/experiments";
 import { hashValue, InvalidValueError } from "@terrarium/core/kernel";
@@ -63,89 +60,30 @@ import type { AgentVersions } from "./agent-versions";
 import { must, type PlatformContext, type Viewer } from "./context";
 import type { Dispatcher } from "./dispatcher";
 import { summaryOf } from "./executor";
+import {
+  asIssues,
+  filterOf,
+  forkChange,
+  optionsOf,
+  planOf,
+  REAL_TIME,
+  type RunPlan,
+} from "./experiment-plan";
+import { summarize } from "./experiment-summary";
 import { quickPlan } from "./experiments-quick";
-import { allow, allowRunOn, mayCancel } from "./permissions";
+import { Gate } from "./gate";
+import { allow, allowRunOn, mayCancel, mustSee, sightOf, standing } from "./permissions";
 import type { Scenarios } from "./scenarios";
+import { canChangeScope, changeScope, startingScope } from "./scoping";
 import { present, subjectOf } from "./subject";
 import type { Titles } from "./titles";
+
+export { summarize };
 
 const PROFILE_KEYS = {
   vcenter: BUILTIN_PROFILES.filter((p) => p.protocol === "vcenter").map((p) => p.key),
   vrops: BUILTIN_PROFILES.filter((p) => p.protocol === "vrops").map((p) => p.key),
 };
-
-const asIssues = (problems: readonly string[], path = "recipe") =>
-  problems.map((message) => ({ path, message }));
-
-const FILTER_KEYS = ["owner", "worldId", "scenarioId", "benchmarkKey", "parentId", "meta"] as const;
-
-/** The parts of a query the store can filter on; the text search is called `q` in an address and `text` in the store. */
-function filterOf(query: ExperimentQueryParams): ExperimentFilter {
-  const filter: Record<string, string> = {};
-  for (const key of FILTER_KEYS) if (query[key]) filter[key] = query[key];
-  if (query.q) filter.text = query.q;
-  return filter;
-}
-
-/** Pass rate and mean score over seeds, not runs (ADR-0158): a seed's runs are folded into one value first. */
-export function summarize(experiment: Experiment, runs: readonly RunRecord[]): ExperimentSummary {
-  const groups = groupBySeed(runs.filter((r) => r.status === "completed" && r.result));
-  const scores = seedMeans(groups, (r) => r.result?.score.total);
-  const rates = seedMeans(groups, (r) => (r.result?.score.passed ? 1 : 0));
-  return {
-    experiment,
-    status: experimentStatus(runs),
-    progress: progressOf(runs),
-    passRate: rates.length === 0 ? 0 : meanOf(rates),
-    ...(scores.length > 0 ? { meanScore: Math.round(meanOf(scores) * 10) / 10 } : {}),
-  };
-}
-
-/**
- * What a fork changes in the recipe. Finding the runbook is a tool the agent needs, so a change of the tools or of the
- * runbook choice leaves the tool list agreeing with it: "찾게 함" has the finder, any other choice does not.
- */
-function forkChange(parent: Recipe, change: ForkRequest["change"]): Partial<Recipe> {
-  const sop = change.sop ?? parent.sop;
-  const tools = change.tools ?? (change.sop ? parent.tools : undefined);
-  if (!tools) return change;
-  const wanted = sop === "search" ? [...tools, FINDER] : tools.filter((t) => t !== FINDER);
-  return { ...change, tools: normalizeTools(wanted) };
-}
-
-/** The choices of a recipe that are left out when not made, so an experiment that does not use them reads as it always did. */
-function optionsOf(req: RecipeRequest): Partial<Recipe> {
-  return {
-    ...(req.escalation ? { escalation: req.escalation } : {}),
-    ...(req.faultScope ? { faultScope: req.faultScope } : {}),
-    ...(req.sop ? { sop: req.sop } : {}),
-    ...(req.domains && req.domains.length > 0 ? { domains: req.domains } : {}),
-    ...(req.leadTimes ? { leadTimes: req.leadTimes } : {}),
-    ...(req.operation ? { operation: req.operation } : {}),
-  };
-}
-
-const FINDER = "search_runbooks";
-
-/** One run to make: which seed, and which time that seed is run (from 1). */
-interface RunPlan {
-  readonly seed: number;
-  readonly repeat: number;
-}
-
-/**
- * The runs of the given rounds over the given seeds, a round at a time: when an experiment is stopped halfway,
- * every seed it got to has the same number of runs, give or take one round.
- */
-function planOf(seeds: readonly number[], firstRepeat: number, lastRepeat: number): RunPlan[] {
-  const out: RunPlan[] = [];
-  for (let repeat = firstRepeat; repeat <= lastRepeat; repeat++)
-    for (const seed of seeds) out.push({ seed, repeat });
-  return out;
-}
-
-/** An operation follows the clock driver; the session is synced to the wall clock at real speed (ADR-0094). */
-const REAL_TIME = { kind: "realtime", speed: 1 } as const;
 
 export class Experiments {
   constructor(
@@ -154,7 +92,11 @@ export class Experiments {
     private readonly dispatcher: Dispatcher,
     private readonly versions: AgentVersions,
     private readonly titles?: Titles,
-  ) {}
+  ) {
+    this.gate = new Gate(ctx);
+  }
+
+  private readonly gate: Gate;
 
   async get(id: string): Promise<Experiment> {
     return must(await this.ctx.store.getExperiment(id), `실험 ${id}`);
@@ -305,8 +247,23 @@ export class Experiments {
     }
   }
 
+  /**
+   * Using needs sight: the world, the scenario and the connection a recipe points at must all be ones the person can see.
+   * One that is not there is left to the checks that name it.
+   */
+  private async mustSeeRecipe(
+    viewer: Viewer,
+    recipe: Pick<Recipe, "worldId" | "scenarioId" | "harnessId">,
+  ): Promise<void> {
+    allowRunOn(viewer, this.ctx.harnesses, recipe.harnessId);
+    const world = await this.ctx.store.getWorld(recipe.worldId);
+    if (world) mustSee(viewer, standing(world), `세계 ${recipe.worldId}`);
+    const scenario = await this.ctx.store.getScenario(recipe.scenarioId);
+    if (scenario) mustSee(viewer, standing(scenario), `시나리오 ${recipe.scenarioId}`);
+  }
+
   async create(viewer: Viewer, req: CreateExperimentRequest): Promise<ExperimentView> {
-    allowRunOn(viewer, this.ctx.harnesses, req.recipe.harnessId);
+    await this.mustSeeRecipe(viewer, req.recipe);
     const recipe = this.recipeOf(req.recipe);
     const { snapshot, subject } = await this.resolve(recipe);
     const experiment: Experiment = {
@@ -321,6 +278,8 @@ export class Experiments {
       ...(present(req.metadata) ? { metadata: req.metadata } : {}),
       subject,
       agentVersion: await this.versions.observe(viewer, subject),
+      // an experiment is for everyone unless its maker says otherwise: the leaderboards are made of them
+      ...startingScope(viewer, req, "everyone"),
     };
     await this.launch(experiment, planOf(recipe.seeds, 1, repeatsOf(recipe)));
     return this.view(viewer, experiment.id);
@@ -332,16 +291,18 @@ export class Experiments {
     worldId: string,
     req: QuickExperimentRequest,
   ): Promise<QuickExperimentView> {
+    // using a world needs sight of it, before anything about it is worked out
+    await this.gate.world(viewer, worldId);
     const plan = await quickPlan(this.ctx, viewer, worldId, req);
     const view = await this.create(viewer, plan.request);
     return { experimentId: view.experiment.id, ...plan.info };
   }
 
   async fork(viewer: Viewer, id: string, req: ForkRequest): Promise<ExperimentView> {
-    const parent = await this.get(id);
+    const parent = await this.gate.experiment(viewer, id);
     const change = forkChange(parent.recipe, req.change);
     const target = { ...parent.recipe, ...change };
-    allowRunOn(viewer, this.ctx.harnesses, target.harnessId);
+    await this.mustSeeRecipe(viewer, target);
     // Same world and scenario: the same versions the parent ran. Another one: its current version.
     const sameTask =
       target.worldId === parent.recipe.worldId &&
@@ -367,7 +328,11 @@ export class Experiments {
       snapshot,
     );
     // Looked at only now: a fork that is refused for changing nothing leaves the agent's versions alone.
-    const child = { ...forked, agentVersion: await this.versions.observe(viewer, subject) };
+    const child = {
+      ...forked,
+      agentVersion: await this.versions.observe(viewer, subject),
+      ...startingScope(viewer, req, "everyone"),
+    };
     await this.launch(child, planOf(child.recipe.seeds, 1, repeatsOf(child.recipe)));
     return this.view(viewer, child.id);
   }
@@ -377,7 +342,7 @@ export class Experiments {
    * add rounds to every seed it has. Either way the recipe says what the experiment is now, and stays within the limits.
    */
   async addRuns(viewer: Viewer, id: string, req: AddRunsRequest): Promise<ExperimentView> {
-    const experiment = await this.get(id);
+    const experiment = await this.gate.experiment(viewer, id);
     allow(viewer, "addRuns", { owner: experiment.owner }, "실행 더하기");
     const runs = await this.ctx.store.listRuns(id);
     const { recipe } = experiment;
@@ -412,7 +377,7 @@ export class Experiments {
   }
 
   async cancel(viewer: Viewer, id: string): Promise<ExperimentView> {
-    const experiment = await this.get(id);
+    const experiment = await this.gate.experiment(viewer, id);
     allow(viewer, "cancel", { owner: experiment.owner }, "실험 멈추기");
     const runs = await this.ctx.store.listRuns(id);
     await Promise.all(
@@ -425,11 +390,29 @@ export class Experiments {
     return summarize(experiment, await this.ctx.store.listRuns(experiment.id));
   }
 
-  async list(query: ExperimentQueryParams): Promise<ExperimentSummary[]> {
-    const found = await this.ctx.store.listExperiments(filterOf(query));
+  /** Who changes the scope of an experiment: its maker and admins; the views say so. */
+  private standingOf(viewer: Viewer, summary: ExperimentSummary): ExperimentSummary {
+    return { ...summary, canChangeScope: canChangeScope(viewer, summary.experiment.owner) };
+  }
+
+  /** Change who can see an experiment; its runs, reports and streams follow (ADR-0174). */
+  async setScope(viewer: Viewer, id: string, req: ScopeRequest): Promise<ExperimentView> {
+    const experiment = await this.gate.experiment(viewer, id);
+    await this.ctx.store.putExperiment(
+      changeScope(viewer, experiment, req, "실험 공개 범위 바꾸기"),
+    );
+    return this.view(viewer, id);
+  }
+
+  async list(viewer: Viewer, query: ExperimentQueryParams): Promise<ExperimentSummary[]> {
+    // the filter is part of the store's query: what the person may not see is never loaded
+    const found = await this.ctx.store.listExperiments({
+      ...filterOf(query),
+      visibleTo: sightOf(viewer),
+    });
     const out: ExperimentSummary[] = [];
     for (const e of found) {
-      const summary = await this.summaryOf(e);
+      const summary = this.standingOf(viewer, await this.summaryOf(e));
       if (query.status === undefined || summary.status === query.status) out.push(summary);
       if (out.length >= (query.limit ?? 50)) break;
     }
@@ -451,11 +434,14 @@ export class Experiments {
     experiment: Experiment,
     runs?: readonly RunRecord[],
     telemetry?: ReadonlyMap<string, Telemetry>,
+    looker?: Sight,
   ): Promise<ExperimentAnalysis> {
     const own = runs ?? (await this.ctx.store.listRuns(experiment.id));
-    const parent = experiment.parentId
+    const found = experiment.parentId
       ? await this.ctx.store.getExperiment(experiment.parentId)
       : undefined;
+    // compared with the parent only when the one looking may see the parent: scores of a private experiment do not leak
+    const parent = found && (looker === undefined || seen(looker, found)) ? found : undefined;
     const parentAnalysis = parent
       ? analyzeExperiment({ experiment: parent, runs: await this.ctx.store.listRuns(parent.id) })
       : undefined;
@@ -465,14 +451,15 @@ export class Experiments {
     );
   }
 
-  private async ancestors(experiment: Experiment): Promise<ExperimentSummary[]> {
+  private async ancestors(viewer: Viewer, experiment: Experiment): Promise<ExperimentSummary[]> {
     const chain: ExperimentSummary[] = [];
-    const seen = new Set([experiment.id]);
-    for (let id = experiment.parentId; id && !seen.has(id); ) {
-      seen.add(id);
+    const walked = new Set([experiment.id]);
+    for (let id = experiment.parentId; id && !walked.has(id); ) {
+      walked.add(id);
       const e = await this.ctx.store.getExperiment(id);
-      if (!e) break;
-      chain.unshift(await this.summaryOf(e));
+      // the line stops at the first ancestor the person may not see; the older ones are not theirs to find
+      if (!e || !seen(sightOf(viewer), e)) break;
+      chain.unshift(this.standingOf(viewer, await this.summaryOf(e)));
       id = e.parentId;
     }
     return chain;
@@ -484,16 +471,21 @@ export class Experiments {
   }
 
   async view(viewer: Viewer, id: string): Promise<ExperimentView> {
-    const experiment = await this.get(id);
+    const experiment = await this.gate.experiment(viewer, id);
     const runs = await this.ctx.store.listRuns(id);
-    const forks = await this.ctx.store.listExperiments({ parentId: id });
-    const summary = summarize(experiment, runs);
+    const forks = await this.ctx.store.listExperiments({
+      parentId: id,
+      visibleTo: sightOf(viewer),
+    });
+    const summary = this.standingOf(viewer, summarize(experiment, runs));
     return {
       ...summary,
       runs: runs.map((r) => this.runSummary(r)),
-      analysis: await this.analysis(experiment, runs),
-      ancestors: await this.ancestors(experiment),
-      forks: await Promise.all(forks.reverse().map((f) => this.summaryOf(f))),
+      analysis: await this.analysis(experiment, runs, undefined, sightOf(viewer)),
+      ancestors: await this.ancestors(viewer, experiment),
+      forks: await Promise.all(
+        forks.reverse().map(async (f) => this.standingOf(viewer, await this.summaryOf(f))),
+      ),
       canCancel: !isTerminal(summary.status) && mayCancel(viewer, experiment.owner),
     };
   }

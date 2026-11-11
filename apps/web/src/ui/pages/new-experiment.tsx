@@ -34,7 +34,7 @@ interface Start {
 
 /** Where the form starts: a fork's parent as it was, a chosen scenario, or empty. */
 function useStart(forkOf?: string, scenarioId?: string, worldId?: string, quick = false) {
-  const { api, identity } = useApp();
+  const { api, me } = useApp();
   return useAsync(
     async (signal): Promise<Start> => {
       const worlds = await api.call("listWorlds", { query: { sort: "new" }, signal });
@@ -54,7 +54,7 @@ function useStart(forkOf?: string, scenarioId?: string, worldId?: string, quick 
         const world = await api.call("getWorld", { params: { id: worldId }, signal });
         const shape = world.provenance?.shape as ShapeSpec | undefined;
         const mine = await api.call("listExperiments", {
-          query: { owner: identity.name, limit: 1 },
+          query: { ...(me ? { owner: me } : {}), limit: 1 },
           signal,
         });
         const last = mine[0]?.experiment.recipe;

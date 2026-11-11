@@ -4,6 +4,7 @@ import { ForbiddenError, UnavailableError } from "@terrarium/core/contract";
 import { NotFoundError } from "@terrarium/core/kernel";
 import { describe, expect, test } from "vitest";
 import { buildAdapters, parseConfig } from "../adapters";
+import { sightOf } from "./permissions";
 import {
   ADMIN,
   JIMIN,
@@ -75,7 +76,7 @@ describe("one run in depth, with the harness's telemetry [REQ-037]", () => {
     expect(view.experiment.experiment.id).toBe(e.experiment.id);
     const raw = await p.results.telemetry(done.runs[0]?.id as string);
     expect(raw.spans).toHaveLength(1);
-    const md = await p.results.report(e.experiment.id, "md");
+    const md = await p.results.report(e.experiment.id, "md", sightOf(ADMIN));
     expect(md).toContain("# 추적");
     await expect(p.results.run("r-404")).rejects.toBeInstanceOf(NotFoundError);
   });
@@ -124,11 +125,11 @@ describe("sharing results [REQ-038]", () => {
     });
     await settled(p, YEONSU, e.experiment.id);
     const id = e.experiment.id;
-    const html = await p.results.report(id, "html", "https://t/e/1");
+    const html = await p.results.report(id, "html", sightOf(ADMIN), "https://t/e/1");
     expect(html).toContain("<title>공유할 실험 — 테라리움</title>");
     expect(html).toContain("내장");
     expect(html).toContain('<svg class="spark"');
-    expect(await p.results.report(id, "text")).toContain("[테라리움] 공유할 실험");
+    expect(await p.results.report(id, "text", sightOf(ADMIN))).toContain("[테라리움] 공유할 실험");
     // only the experiment's maker (or an admin) opens a door to its report
     await expect(
       p.results.createShare(JIMIN, id, {}, "https://terrarium.internal/"),
@@ -201,9 +202,11 @@ describe("benchmarks and the digital twin [REQ-039] [REQ-015]", () => {
       agentId: "guess",
       world: { name: "가져온 홀" },
     });
-    expect(await p.results.twinRecords({ agentId: "triage" })).toEqual([]);
-    expect(await p.results.twinRecords({ harnessId: "builtin", owner: "yeonsu" })).toHaveLength(2);
-    const brief = await p.results.twinBrief({});
+    expect(await p.results.twinRecords(ADMIN, { agentId: "triage" })).toEqual([]);
+    expect(
+      await p.results.twinRecords(ADMIN, { harnessId: "builtin", owner: "yeonsu" }),
+    ).toHaveLength(2);
+    const brief = await p.results.twinBrief(ADMIN, {});
     expect(brief).toContain("# 시뮬레이터 모델링 브리프");
     expect(brief).toContain("### 가져온 홀");
     expect(brief).toContain("- 가정:");

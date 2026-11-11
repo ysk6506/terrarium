@@ -1,4 +1,5 @@
 /** core.experiments: recipes, lineage, lifecycle, fair scheduling and the platform's ports (REQ-030~032, REQ-039, REQ-040). */
+
 export {
   type AgentHistory,
   type AgentKey,
@@ -138,4 +139,15 @@ export {
   sizeProblemsOf,
 } from "./recipe";
 export { DEFAULT_LIMITS, FairScheduler, type QueuedRun, type SchedulerLimits } from "./scheduler";
+export {
+  PUBLIC_SIGHT,
+  SCOPES,
+  type Scope,
+  type Shared,
+  type Sight,
+  scopeOf,
+  scopeProblem,
+  seen,
+  withScope,
+} from "./scope";
 export type { ServiceCardRecord } from "./service-cards";
