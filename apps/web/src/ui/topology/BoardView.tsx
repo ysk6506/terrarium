@@ -80,6 +80,43 @@ export interface Pulse {
   readonly active: boolean;
 }
 
+/** 이름과 상태 줄은 읽히는 바탕 위에 그려서 어떤 선도 글자를 지나지 않아요 (ADR-0146). */
+function Label({ tile, y }: { readonly tile: Tile; readonly y: number }) {
+  const w = Math.max(textWidth(tile.name), tile.line ? textWidth(tile.line) : 0);
+  return (
+    <>
+      <rect
+        className="lbl-bg"
+        x={-(w / 2) - 5}
+        y={y - 13}
+        width={w + 10}
+        height={tile.line ? 32 : 18}
+        rx={6}
+      />
+      <text
+        className="lbl"
+        y={y}
+        textAnchor="middle"
+        textLength={squeeze(tile.name)}
+        lengthAdjust="spacingAndGlyphs"
+      >
+        {tile.name}
+      </text>
+      {tile.line && (
+        <text
+          className="st"
+          y={y + 15}
+          textAnchor="middle"
+          textLength={squeeze(tile.line)}
+          lengthAdjust="spacingAndGlyphs"
+        >
+          {tile.line}
+        </text>
+      )}
+    </>
+  );
+}
+
 function TileView({ at, pulse }: { readonly at: hallTopology.Placed; readonly pulse?: Pulse }) {
   const { tile } = at;
   const state = tile.partner
@@ -105,35 +142,7 @@ function TileView({ at, pulse }: { readonly at: hallTopology.Placed; readonly pu
       <g transform="translate(0,-6)">
         <Glyph kind={tile.kind} group={tile.group} state={tile.state} />
       </g>
-      {/* 이름과 상태 줄은 읽히는 바탕 위에 그려서 어떤 선도 글자를 지나지 않아요 (ADR-0146) */}
-      <rect
-        className="lbl-bg"
-        x={-(Math.max(textWidth(tile.name), tile.line ? textWidth(tile.line) : 0) / 2) - 5}
-        y={label - 13}
-        width={Math.max(textWidth(tile.name), tile.line ? textWidth(tile.line) : 0) + 10}
-        height={tile.line ? 32 : 18}
-        rx={6}
-      />
-      <text
-        className="lbl"
-        y={label}
-        textAnchor="middle"
-        textLength={squeeze(tile.name)}
-        lengthAdjust="spacingAndGlyphs"
-      >
-        {tile.name}
-      </text>
-      {tile.line && (
-        <text
-          className="st"
-          y={label + 15}
-          textAnchor="middle"
-          textLength={squeeze(tile.line)}
-          lengthAdjust="spacingAndGlyphs"
-        >
-          {tile.line}
-        </text>
-      )}
+      <Label tile={tile} y={label} />
       <Bar tile={tile} y={label + 21} />
     </g>
   );
