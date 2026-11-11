@@ -104,9 +104,9 @@ items:
     due: "2026-12-22"
     status: open
   - id: TD-0014
-    title: "웹 화면의 useExhaustiveDependencies 끄기 7곳(useGestures, context, fields, moss/Panel 둘, process-ontology, useWorldView)이 낡은 값을 읽는 버그인지 판정되지 않았다. 줄에는 번호 없이 harness/config/ignores.yaml의 basis_by_rule이 이 항목을 근거로 삼는다 (ADR-0148)"
+    title: "웹 화면의 useExhaustiveDependencies 끄기 6곳(context, fields, moss/Panel 둘, process-ontology, useWorldView)이 낡은 값을 읽는 버그인지 판정되지 않았다 (처음 7곳 중 useGestures는 버그가 아니라고 판정하고 의존성을 다 적어 끄기를 없앴다). 줄에는 번호 없이 harness/config/ignores.yaml의 basis_by_rule이 이 항목을 근거로 삼는다 (ADR-0148)"
     severity: medium
-    cost: "한 곳씩 읽어 의존성 누락이 낡은 값을 읽는 진짜 버그인지 판정한다. 버그면 고치고, 일부러 그런 것이면 이유와 ADR 번호를 줄에 적는다. 7곳이 모두 정리되면 basis_by_rule의 항목을 지우고 닫는다"
+    cost: "한 곳씩 읽어 의존성 누락이 낡은 값을 읽는 진짜 버그인지 판정한다. 버그면 고치고, 일부러 그런 것이면 이유와 ADR 번호를 줄에 적는다. 남은 6곳이 모두 정리되면 basis_by_rule의 항목을 지우고 닫는다"
     units: [web.ui]
     created: "2026-11-11"
     due: "2026-12-08"
