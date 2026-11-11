@@ -2,7 +2,7 @@
 title: 현실의 가격 — 땅, 건물, 장비값의 근거와 믿을 만한 정도
 kind: spec
 status: active
-last_verified: 2026-11-05
+last_verified: 2026-11-07
 covers:
   - packages/core/src/world/land.ts
   - packages/core/src/world/construction.ts
@@ -14,12 +14,12 @@ covers:
   - packages/core/src/catalog/builtin/orv3.ts
   - apps/web/src/logic/builder/stats.ts
 verification_log:
-  - "2026-11-04: it.ts의 rail leaf·스파인 값 180백만 원을 문서와 대조"
   - "2026-11-05: REQ-075: construction.ts의 방 마감이 조각 넓이의 합(roomArea)을 쓰는 것을 적었다. 단가는 그대로"
   - "2026-11-05: REQ-076: construction.ts에 창고(0.2)와 로비·하역장(0.3) 마감 단가를 더한 것을 표에 적었다. 나머지 단가는 그대로"
   - "2026-11-05: REQ-077 세계 만들기 재설계(작업 #90) 반영: 코드와 대조해 맞는 것을 확인했다"
   - "2026-11-05: 2026-11-05: 합친 뒤 코드(ADR-0081 실제 크기와 ADR-0083 세계 만들기 재설계)와 다시 대조: 크기와 모양 절, 냉방과 전기, m² 단위, 서버룸 이름이 맞다"
-covers_hash: 127b27c871f5199e
+  - "2026-11-07: 2026-11-07: REQ-111(ADR-0134): 기반 랙·서버 수 합계·빌더 오른쪽 아래 칩을 코드와 대조해 고쳤고 나머지는 그대로 맞다"
+covers_hash: 39db09f3a34ca8f5
 ---
 # 현실의 가격 (REQ-059)
 

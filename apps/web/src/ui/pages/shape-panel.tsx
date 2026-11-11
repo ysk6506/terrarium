@@ -1,8 +1,9 @@
 /**
- * "이 모양이면" (ADR-0107 item 3): what the nine choices come to, read off the core: hosts, VMs, switches and price;
- * what stops, what only slows, how to bring it back (each list at most three, then "외 n가지"); how many scenarios fit. It sits under the card of the choice.
+ * "이 크기에서 일어나는 일" (ADR-0107 item 3, ADR-0134): what the choices come to, read off the core and in words only:
+ * what stops, what only slows, how to bring it back (each list at most three, then "외 n가지"); how many scenarios fit.
+ * It has no counts of hosts, VMs, switches or money: the size is said once, by the total on the left of screen ③.
  */
-import { capList, costText, type ShapeView } from "../../logic";
+import { capList, type ShapeView } from "../../logic";
 
 function Line({
   tone,
@@ -25,38 +26,8 @@ function Line({
 export function ShapePanel({ view }: { readonly view: ShapeView }) {
   const handover = view.handover.map((h) => `${h.team} ${h.count}`).join(" · ");
   return (
-    <section className="we-shape" aria-label="이 모양이면">
-      <h3>이 모양이면</h3>
-      <div className="we-shape-n">
-        <div>
-          <b>{view.hosts}</b>
-          <small>호스트</small>
-        </div>
-        <div>
-          <b>{view.vms}</b>
-          <small>VM</small>
-        </div>
-        <div>
-          <b>{view.switches}</b>
-          <small>스위치</small>
-        </div>
-        {view.gpus > 0 && (
-          <>
-            <div>
-              <b>{view.gpus}</b>
-              <small>GPU</small>
-            </div>
-            <div>
-              <b>{view.kw}</b>
-              <small>kW</small>
-            </div>
-          </>
-        )}
-        <div>
-          <b>{costText(view.costM).replace(/ 원$/, "")}</b>
-          <small>원 · 대략</small>
-        </div>
-      </div>
+    <section className="we-shape" aria-label="이 크기에서 일어나는 일">
+      <h3>이 크기에서 일어나는 일</h3>
       <Line tone="bad" title="멈추는 고장" items={view.stops} />
       <Line tone="warn" title="느려지는 고장" items={view.slows} />
       <Line tone="good" title="살리는 길" items={view.ways} />

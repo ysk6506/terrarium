@@ -51,6 +51,9 @@ export async function visitor(browser: Browser, options: VisitorOptions = {}): P
       }
     }, graphics);
   await context.grantPermissions(["clipboard-read", "clipboard-write"]).catch(() => undefined);
+  // On a crowded machine every wait takes longer: TERRARIUM_UX_SLOW=4 gives each wait four times the usual 30 seconds.
+  const slow = Number(process.env.TERRARIUM_UX_SLOW);
+  if (slow > 1) context.setDefaultTimeout(30_000 * slow);
   const page = await context.newPage();
   const problems: string[] = [];
   page.on("console", (m) => {

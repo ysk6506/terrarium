@@ -17,6 +17,7 @@ import type {
 } from "@terrarium/core/sources";
 import type { LocationHint } from "@terrarium/core/spatial";
 import { DENSE_BUDGET, type DenseSpec } from "./dense";
+import { fitServer } from "./rack-fit";
 import type { WorldgenSpec } from "./spec";
 
 const TOR_U = 42;
@@ -55,6 +56,8 @@ export interface RoomContext {
   readonly vcenter: string;
   /** The dense racks this room holds (the first room of the world only). */
   readonly dense?: DenseSpec;
+  /** Plain compute racks this room holds, when the world counts them (REQ-111); absent: every place of a row. */
+  readonly computeRacks?: number;
 }
 
 const at = (row: number, column: number): LocationHint => ({
@@ -92,6 +95,7 @@ interface Built {
   readonly dense: string[];
   /** Per place `row:col`: a dense rack stands there, or the place is left empty beside one (a dense rack is wider). */
   readonly slots: ReadonlyMap<string, "dense" | "shadow">;
+  plain: number; // plain compute racks made so far
 }
 
 /** What a built room asks of the electrical room: its load and its panels, by side. */
@@ -114,6 +118,7 @@ export function buildRoom(ctx: RoomContext): RoomPower {
     liquidW: 0,
     dense: [],
     slots: denseSlots(ctx),
+    plain: 0,
   };
   const spines = [`${ctx.roomId}-spine1`, `${ctx.roomId}-spine2`];
   for (let row = 1; row <= ctx.spec.rows; row++)
@@ -178,18 +183,28 @@ function wirePanels(
   });
 }
 
+/** A world that counts its racks leaves the places beyond the count empty (REQ-111). */
+function beyondCount(ctx: RoomContext, built: Built, col: number, dense?: DenseSpec): boolean {
+  if (col === 1 || dense) return false;
+  if (ctx.computeRacks !== undefined && built.plain >= ctx.computeRacks) return true;
+  built.plain += 1;
+  return false;
+}
+
+/** A dense rack's model and props; the head of a row is marked infra (network and storage, no servers). */
+function rackExtras(ctx: RoomContext, col: number, dense?: DenseSpec) {
+  if (dense) return { modelId: dense.rack, props: denseProps(ctx, dense) };
+  return col === 1 ? { props: { infra: true } } : {};
+}
+
 function addRack(ctx: RoomContext, built: Built, row: number, col: number, spines: string[]): void {
   const rackId = `${ctx.roomId}-r${two(row)}${two(col)}`;
   const label = `${ctx.roomName.split(" ")[0]}-${two(row)}${two(col)}`;
   const role = built.slots.get(`${row}:${col}`);
   if (role === "shadow") return;
   const dense = role === "dense" ? ctx.dense : undefined;
-  built.racks.push({
-    id: rackId,
-    name: label,
-    hint: at(row, col),
-    ...(dense ? { modelId: dense.rack, props: denseProps(ctx, dense) } : {}),
-  });
+  if (beyondCount(ctx, built, col, dense)) return;
+  built.racks.push({ id: rackId, name: label, hint: at(row, col), ...rackExtras(ctx, col, dense) });
   if (dense) built.dense.push(rackId);
   const pdus = pduPair(ctx, built, rackId, label, dense?.pdu ?? PDU_MODEL);
   const tor = device(built, {
@@ -294,8 +309,10 @@ function computeRack(
   const budget = PDU_BUDGET * (ctx.catalog.getOf(PDU_MODEL, "pdu").capacityW - 350);
   let unit = 1;
   let peak = 0;
-  for (let n = 1; unit <= SERVER_UNITS * ctx.spec.fill; n++) {
-    const modelId = serverModel(ctx);
+  const exact = ctx.spec.serversPerRack;
+  for (let n = 1; exact === undefined ? unit <= SERVER_UNITS * ctx.spec.fill : n <= exact; n++) {
+    const fit = exact === undefined ? undefined : { left: exact - n, unit, peak, budget };
+    const modelId = fitServer(ctx.catalog, serverModel(ctx), fit);
     const model = ctx.catalog.getOf(modelId, "server");
     if (peak + model.maxPowerW > budget || unit + model.uHeight - 1 > SERVER_UNITS) break;
     const id = device(built, {

@@ -7,13 +7,13 @@ covers:
   - harness/src/ux/score.ts
   - tests/e2e/ux/probes-voice.ts
   - tests/e2e/ux/probes-detail.ts
-covers_hash: 6faf17d6c7eeec12
+covers_hash: 6cb89f4c75877457
 verification_log:
-  - "2026-11-04: 여정 표에 author(빈 캔버스에서 시험지 점검까지, 예산 8)를 더하고 score.ts의 JOURNEY_BUDGETS·JOURNEY_LABELS, journeys.ts와 대조했다. 여정 수는 열 개"
   - "2026-11-05: REQ-077 세계 만들기 재설계(작업 #90) 반영: 코드와 대조해 맞는 것을 확인했다"
   - "2026-11-05: 여정 표에 topology(예산 5, 화성 실제 크기에서 타일 150개 이하·첫 그림 3초)를 더하고 score.ts의 JOURNEY_BUDGETS·JOURNEY_LABELS, journeys.ts와 대조했다. 여정 수는 열한 개"
   - "2026-11-05: ADR-0083(build-small, import 없음)과 ADR-0084(topology)를 합친 뒤 score.ts·journeys.ts와 대조: 여정 열한 개, 순서 author → build-small → topology"
   - "2026-11-07: REQ-102(ADR-0123): 사다리·직접 짓기 화면과 말(시운전·미리 보기·전제)을 코드와 대조해 고쳤다"
+  - "2026-11-07: 2026-11-07: REQ-111(ADR-0134): IAP 빼기·내 카드만·③ 숫자 하나·기반 랙·빌더 오른쪽 아래 칩을 코드와 대조해 고쳤고 나머지는 그대로 맞다"
 ---
 # UX를 숫자로 재는 법 (REQ-041, [ADR-0031](adr/0031-ux-honeycomb-measurement.md))
 
@@ -79,13 +79,14 @@ UI를 바꿨다면 `pnpm ux`를 한 번 돌려야 `pnpm check`가 통과한다(�
 | compare | 4 | 벤치마크에서 줄을 골라 조건을 바꿔 해 보는 화면까지 간다 |
 | site | 6 | 작게 시작으로 작은 사업장을 만들고, 팔고 있는 땅을 사서 "팔고 있는 땅이 n곳"이 줄어드는 것을 보고, 되돌린다 |
 | build-small | 8 | 작게 시작 → 다음 할 일 칩으로 서버룸 채우기(랙 24대) → 시운전까지 (REQ-077, ADR-0083). 맨 뒤에 둔다 |
+| own-card-only | 18 | 서비스부터에서 웹 API를 더해 "내 카드로 저장"하고 IAP를 뺀 뒤, 서비스 0개에서 다음이 막히는 것을 보고, 저장한 카드를 골라 ②("웹 API는 어떻게 돌리나요? · 서비스 1 / 1")·③(합계 형식, 숫자 타일 없음)을 지나 실험을 시작하고, 지은 세계의 빌더를 열어 1440·1280·1024·390px에서 다음 칩·에이전트 칩·이끼 알약·아래 막대가 겹치지 않는지 잰다 (REQ-111, ADR-0134) |
 | topology | 5 | 화성을 실제 크기로 올려 두고 세계 목록에서 열어 토폴로지를 누른다. **타일이 150개 이하**이고 **첫 그림이 3초 안에** 나오는지 재고, 층(전원)을 바꾸고, 접힌 묶음 하나를 펼친다 (REQ-078). 끝나면 그 세계를 숨긴다. 맨 뒤 여정이다 |
 
 ## 코드 위치와 고치는 법
 
 - `harness/src/ux/score.ts`: 항목과 예산, 점수 계산, 측정 파일 읽기. 측정이 바뀌면 이 문서의 표도 함께 바꾼다.
 - `harness/src/ux/check.ts`, `run.ts`: 기록과 하한 검사(`UX001`~`UX005`), 명령.
-- `tests/e2e/ux/`: 브라우저에서 세는 쪽. `journeys.ts`(여정), `probes-*.ts`(나머지 측정: 말투는 `probes-voice.ts`, 작은 부분은 `probes-detail.ts`), `measure.ts`(조립).
+- `tests/e2e/ux/`: 브라우저에서 세는 쪽. `journeys.ts`(여정), `journey-own-card.ts`(내 카드만), `overlap.ts`(겹침 재기), `probes-*.ts`(나머지 측정: 말투는 `probes-voice.ts`, 작은 부분은 `probes-detail.ts`), `measure.ts`(조립).
 - 새 화면이나 새 여정을 더하면 측정에도 더한다. 측정하지 않는 화면은 점수에서 보이지 않을 뿐 좋은 것이 아니다.
 
 ## 기계가 재지 못하는 것 (사람이 확인한다)

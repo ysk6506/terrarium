@@ -84,6 +84,10 @@ export interface WorldgenSpec {
   /** Dense racks (GPU or liquid) in the first room, and the power plant of a power choice from N+1 UPS up (REQ-107). */
   readonly dense?: DenseSpec;
   readonly plant?: PlantSpec;
+  /** Servers in each plain compute rack, exactly (a shaped world, REQ-111); absent: the rack is filled by units. */
+  readonly serversPerRack?: number;
+  /** Plain compute racks in the whole world, spread evenly over its rooms; absent: every place of a row holds one. */
+  readonly computeRacks?: number;
 }
 
 export const DEFAULT_WORLDGEN: Omit<WorldgenSpec, "site" | "seed"> = {

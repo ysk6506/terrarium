@@ -5,6 +5,7 @@ export {
   applyActivity,
   doingOf,
   EFFECT_LABELS,
+  groupWorkers,
   IDLE_MS,
   isIdle,
   MAX_WORKERS,
@@ -13,6 +14,8 @@ export {
   parseActivity,
   WORKER_HUES,
   type Worker,
+  type WorkerGroup,
+  workersLine,
 } from "./activity";
 export {
   type CensusText,
@@ -278,6 +281,9 @@ export {
   LAYER_INFO,
   LOAD_RULE_ROWS,
   LOAD_RULES,
+  ladderHead,
+  type MadeTotals,
+  noServicesReason,
   PRESET_LABELS,
   type PresetId,
   presetLayers,
@@ -285,15 +291,20 @@ export {
   QUICK,
   type Resolved,
   type ResolveOptions,
+  racksText,
   recommendLine,
+  removeService,
   resolveLayers,
   resolveServiceLayers,
   retreat,
   type ShapeView,
+  type SizeView,
   STEPS,
   type Step,
   shapeView,
+  sizeView,
   workloadView,
+  worldNameFor,
 } from "./world-shape";
 export * as world3d from "./world3d";
 export * as worldScale from "./worldgen-scale";

@@ -13,6 +13,11 @@ const KEYS: ReadonlyArray<readonly [string, string]> = [
   ["두 번 누르기", "안으로"],
 ];
 
+/** The width the builder turns into a bottom sheet at; a phone has no keyboard to teach (REQ-111). */
+const WIDE = "(min-width: 900px)";
+
+const isWide = (): boolean => globalThis.matchMedia?.(WIDE).matches ?? true;
+
 const seen = (): boolean => {
   try {
     return globalThis.localStorage?.getItem(KEY) === "1";
@@ -30,7 +35,18 @@ const remember = (): void => {
 };
 
 export function KeysHint() {
-  const [open, setOpen] = useState(() => !seen());
+  const [wide, setWide] = useState(isWide);
+  const [open, setOpen] = useState(() => !seen() && isWide());
+  useEffect(() => {
+    const query = globalThis.matchMedia?.(WIDE);
+    if (!query) return;
+    const change = () => {
+      setWide(query.matches);
+      if (!query.matches) setOpen(false);
+    };
+    query.addEventListener("change", change);
+    return () => query.removeEventListener("change", change);
+  }, []);
   const close = () => {
     remember();
     setOpen(false);
@@ -46,6 +62,7 @@ export function KeysHint() {
     window.addEventListener("keydown", down);
     return () => window.removeEventListener("keydown", down);
   }, []);
+  if (!wide) return null;
   return (
     <>
       <button

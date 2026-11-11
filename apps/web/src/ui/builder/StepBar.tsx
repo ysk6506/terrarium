@@ -71,6 +71,7 @@ export function StepBar({ b }: { readonly b: Builder }) {
             {i > 0 && " · "}
             {part.label && `${part.label} `}
             <b style={part.bad ? { color: "var(--bad)" } : undefined}>{part.value}</b>
+            {part.note && <small className="step-note"> {part.note}</small>}
           </span>
         ))}
       </span>

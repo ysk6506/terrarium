@@ -81,6 +81,7 @@ export {
   sizeTotals,
   sizingNotes,
   workloadServers,
+  worldTotals,
 } from "./shaped-sizing";
 export {
   outlineLand,

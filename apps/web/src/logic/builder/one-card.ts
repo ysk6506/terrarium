@@ -5,7 +5,7 @@
  */
 import type { Catalog } from "@terrarium/core/catalog";
 import type { BlueprintIndex, Entity } from "@terrarium/core/world";
-import { count, watts, won } from "../format";
+import { count, rackParts, watts, won } from "../format";
 import { powerHeadroomW } from "./hud";
 import type { Level } from "./levels";
 import type { SiteUse } from "./power";
@@ -42,12 +42,14 @@ function placeFact(index: BlueprintIndex, catalog: Catalog, e: Entity): string {
   const inside = [e, ...index.descendants(e.id)];
   const racks = inside.filter((x) => x.kind === "rack").length;
   const servers = inside.filter((x) => x.kind === "server").length;
+  const base = inside.filter((x) => x.kind === "rack" && x.props.infra === true).length;
+  const racksText = `랙 ${count(racks)}대${base > 0 ? ` ${rackParts(racks, base)}` : ""}`;
   if (e.kind === "room") {
     const s = levelStats(index, catalog, { kind: "room", id: e.id });
-    return `랙 ${count(racks)}대 · 서버 ${count(servers)}대 · 발열 ${watts(s.itTypicalW)} / 냉방 ${count(s.coolingKw)} kW`;
+    return `${racksText} · 서버 ${count(servers)}대 · 발열 ${watts(s.itTypicalW)} / 냉방 ${count(s.coolingKw)} kW`;
   }
   const rooms = inside.filter((x) => x.kind === "room").length;
-  return `서버룸 ${count(rooms)}개 · 랙 ${count(racks)}대 · 서버 ${count(servers)}대`;
+  return `서버룸 ${count(rooms)}개 · ${racksText} · 서버 ${count(servers)}대`;
 }
 
 /** The one line under the name: how the picked thing stands, with its air when a trial run has been made. */
@@ -71,6 +73,8 @@ export function factLine(
 export interface BarPart {
   readonly label?: string;
   readonly value: string;
+  /** What the number is made of, in small type after it. */
+  readonly note?: string;
   readonly bad?: true;
 }
 
@@ -93,7 +97,11 @@ export function barSum(
   const stats = levelStats(index, catalog, level);
   const left = powerHeadroomW(stats, site);
   return [
-    { label: "랙", value: `${count(stats.racks)}대` },
+    {
+      label: "랙",
+      value: `${count(stats.racks)}대`,
+      ...(stats.baseRacks > 0 ? { note: rackParts(stats.racks, stats.baseRacks) } : {}),
+    },
     { label: "서버", value: `${count(stats.servers)}대` },
     {
       label: "전원 여유",

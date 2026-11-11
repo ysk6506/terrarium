@@ -20967,6 +20967,117 @@
    "added": "2026-10-29",
    "amended_by": null
   },
+  "apps/web/src/logic/activity-group.test.ts::<import:45a1261f>": {
+   "kind": "support",
+   "hash": "45a1261f9eb2038c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/activity-group.test.ts::<import:983e3f78>": {
+   "kind": "support",
+   "hash": "983e3f784d37b419",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/activity-group.test.ts::=worker": {
+   "kind": "support",
+   "hash": "b537649039869849",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/activity-group.test.ts::지금 일하는 에이전트 [REQ-111] > [REQ-111] 다른 일을 하는 에이전트는 따로 남고, 눌렀을 때 갈 곳은 장비를 말한 가장 최근 런이다": {
+   "kind": "test",
+   "hash": "9bdaa9428d375404",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"3\"",
+    "\"[REQ-111] 다른 일을 하는 에이전트는 따로 남고, 눌렀을 때 갈 곳은 장비를 말한 가장 최근 런이다\"",
+    "\"r2\"",
+    "\"r2\"",
+    "\"rack-1\"",
+    "\"rack-1\"",
+    "\"rack-9\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/activity-group.test.ts::지금 일하는 에이전트 [REQ-111] > [REQ-111] 똑같은 에이전트 다섯은 한 줄에 ×5로 묶인다": {
+   "kind": "test",
+   "hash": "58dfd25a9034070a",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"3\"",
+    "\"4\"",
+    "\"5\"",
+    "\"5\"",
+    "\"5\"",
+    "\"[REQ-111] 똑같은 에이전트 다섯은 한 줄에 ×5로 묶인다\"",
+    "\"운영 (규칙 기반)\"",
+    "\"운영 (규칙 기반)\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/activity-group.test.ts::지금 일하는 에이전트 [REQ-111] > [REQ-111] 접힌 한 줄은 '에이전트 5개가 일하는 중'이다": {
+   "kind": "test",
+   "hash": "8c7917bea2654532",
+   "asserts": 1,
+   "literals": [
+    "\"5\"",
+    "\"5\"",
+    "\"[REQ-111] 접힌 한 줄은 '에이전트 5개가 일하는 중'이다\"",
+    "\"에이전트 5개가 일하는 중\"",
+    "\"에이전트 5개가 일하는 중\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/activity-group.test.ts::지금 일하는 에이전트 [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
   "apps/web/src/logic/activity.test.ts::<import:09f3af03>": {
    "kind": "support",
    "hash": "09f3af03a9cd45d5",
@@ -27867,6 +27978,156 @@
    ],
    "skips": 0,
    "added": "2026-11-03",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/rack-parts.test.ts::<import:10de6813>": {
+   "kind": "support",
+   "hash": "10de6813fdb230d2",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/rack-parts.test.ts::<import:118aca58>": {
+   "kind": "support",
+   "hash": "118aca580a14d7cc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/rack-parts.test.ts::<import:2dfd4be4>": {
+   "kind": "support",
+   "hash": "2dfd4be417c9f5a7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/rack-parts.test.ts::<import:5ad6a20b>": {
+   "kind": "support",
+   "hash": "5ad6a20b24acb389",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/rack-parts.test.ts::<import:983e3f78>": {
+   "kind": "support",
+   "hash": "983e3f784d37b419",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/rack-parts.test.ts::<import:b2677072>": {
+   "kind": "support",
+   "hash": "b26770722ae02ccc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/rack-parts.test.ts::<import:cb0c1161>": {
+   "kind": "support",
+   "hash": "cb0c116113bbd81b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/rack-parts.test.ts::빌더 아래 막대의 랙·서버는 ③의 합계와 같다 [REQ-111] > [REQ-111] 막대는 '랙 7대 (서버 랙 6 + 기반 랙 1) · 서버 120대'라고 말한다": {
+   "kind": "test",
+   "hash": "0aaede08fd7d2a3e",
+   "asserts": 6,
+   "literals": [
+    "\"[REQ-111] 막대는 '랙 7대 (서버 랙 6 + 기반 랙 1) · 서버 120대'라고 말한다\"",
+    "\"랙\"",
+    "\"서버\"",
+    "\"서버\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/rack-parts.test.ts::빌더 아래 막대의 랙·서버는 ③의 합계와 같다 [REQ-111] > [REQ-111] 서버룸을 고르면 그 카드도 같은 말로 센다": {
+   "kind": "test",
+   "hash": "717d5d7b9e75de5b",
+   "asserts": 1,
+   "literals": [
+    "\"0\"",
+    "\"[REQ-111] 서버룸을 고르면 그 카드도 같은 말로 센다\"",
+    "\"room\"",
+    "\"room\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/rack-parts.test.ts::빌더 아래 막대의 랙·서버는 ③의 합계와 같다 [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/rack-parts.test.ts::빌더 아래 막대의 랙·서버는 ③의 합계와 같다 [REQ-111] > =catalog": {
+   "kind": "support",
+   "hash": "e0d83f2b24742ae5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/rack-parts.test.ts::빌더 아래 막대의 랙·서버는 ③의 합계와 같다 [REQ-111] > =index": {
+   "kind": "support",
+   "hash": "fe6a7540f581b341",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/rack-parts.test.ts::빌더 아래 막대의 랙·서버는 ③의 합계와 같다 [REQ-111] > =level": {
+   "kind": "support",
+   "hash": "de390a1b175fd87c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/builder/rack-parts.test.ts::빌더 아래 막대의 랙·서버는 ③의 합계와 같다 [REQ-111] > =spec": {
+   "kind": "support",
+   "hash": "9c18f26ed46f62c5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
    "amended_by": null
   },
   "apps/web/src/logic/builder/rack-standard.test.ts::<import:1e1bfbc6>": {
@@ -43300,6 +43561,330 @@
   "apps/web/src/logic/world-shape/load-rules.test.ts::알아서의 규칙 표: 숫자가 층을 고른다 [REQ-109] > <suite>": {
    "kind": "support",
    "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::<import:1e7c234e>": {
+   "kind": "support",
+   "hash": "1e7c234e0de0a4e9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::<import:221db834>": {
+   "kind": "support",
+   "hash": "221db834c35b79d4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::<import:6e2ce1ab>": {
+   "kind": "support",
+   "hash": "6e2ce1ab2e126a61",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::<import:ad067777>": {
+   "kind": "support",
+   "hash": "ad06777741d5e4c8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::<import:b85bba10>": {
+   "kind": "support",
+   "hash": "b85bba1066d3d6ce",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::<import:d570a496>": {
+   "kind": "support",
+   "hash": "d570a496fcf5717d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::<import:d9c71e2b>": {
+   "kind": "support",
+   "hash": "d9c71e2b4609d509",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::=iap": {
+   "kind": "support",
+   "hash": "a02f514d393d07fc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::=own": {
+   "kind": "support",
+   "hash": "a90a1eaa107d2c6c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::=specOf": {
+   "kind": "support",
+   "hash": "69f0971c4ec4c710",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::③의 숫자는 하나의 계산이다 [REQ-111] > [REQ-111] 화면의 합계와 서버·랙·서버룸이 만들어진 세계와 같다 (내 카드만 있을 때도)": {
+   "kind": "test",
+   "hash": "d7c97fe99bdfb3ac",
+   "asserts": 6,
+   "literals": [
+    "\"[REQ-111] 화면의 합계와 서버·랙·서버룸이 만들어진 세계와 같다 (내 카드만 있을 때도)\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::③의 숫자는 하나의 계산이다 [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::IAP를 빼고 내 카드만 쓰기 [REQ-111] > [REQ-111] IAP를 빼면 내 카드만 남고, 사다리는 그 카드의 이름으로 '서비스 1 / 1'을 묻는다": {
+   "kind": "test",
+   "hash": "9278adf3010ef1f2",
+   "asserts": 4,
+   "literals": [
+    "\"\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"2\"",
+    "\"2\"",
+    "\"IAP\"",
+    "\"IAP\"",
+    "\"[REQ-111] IAP를 빼면 내 카드만 남고, 사다리는 그 카드의 이름으로 '서비스 1 / 1'을 묻는다\"",
+    "\"내 정산 웹\"",
+    "\"내 정산 웹\"",
+    "\"내 정산 웹은 어떻게 돌리나요?\"",
+    "\"내 정산 웹은 어떻게 돌리나요?\"",
+    "\"서비스 1 / 1\"",
+    "\"서비스 1 / 1\"",
+    "\"서비스 1 / 2\"",
+    "\"서비스 1 / 2\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::IAP를 빼고 내 카드만 쓰기 [REQ-111] > [REQ-111] 내 카드만으로 세계가 만들어지고 IAP 서비스는 들어 있지 않다": {
+   "kind": "test",
+   "hash": "e1bce2552b21064b",
+   "asserts": 4,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"[REQ-111] 내 카드만으로 세계가 만들어지고 IAP 서비스는 들어 있지 않다\"",
+    "\"service\"",
+    "\"내 정산 웹\"",
+    "\"내 정산 웹\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::IAP를 빼고 내 카드만 쓰기 [REQ-111] > [REQ-111] 빼면 그 서비스를 부르던 줄도 없어진다": {
+   "kind": "test",
+   "hash": "276583d534cfa022",
+   "asserts": 1,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"[REQ-111] 빼면 그 서비스를 부르던 줄도 없어진다\"",
+    "\"x\"",
+    "\"호출하는 쪽\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::IAP를 빼고 내 카드만 쓰기 [REQ-111] > [REQ-111] 서버 수는 고른 서비스의 숫자로만 센다 (IAP의 숫자는 들어가지 않는다)": {
+   "kind": "test",
+   "hash": "35e815818f5e0632",
+   "asserts": 3,
+   "literals": [
+    "\"[REQ-111] 서버 수는 고른 서비스의 숫자로만 센다 (IAP의 숫자는 들어가지 않는다)\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::IAP를 빼고 내 카드만 쓰기 [REQ-111] > [REQ-111] 서비스가 0개면 다음은 막히고 이유는 한 줄이다": {
+   "kind": "test",
+   "hash": "af73ada1fe2975de",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"[REQ-111] 서비스가 0개면 다음은 막히고 이유는 한 줄이다\"",
+    "\"서비스를 하나는 골라 주세요\"",
+    "\"서비스를 하나는 골라 주세요\"",
+    "\"서비스를 하나는 골라야 다음으로 갈 수 있어요\"",
+    "\"서비스를 하나는 골라야 다음으로 갈 수 있어요\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::IAP를 빼고 내 카드만 쓰기 [REQ-111] > [REQ-111] 이름은 건드리지 않았으면 첫 서비스를 따른다 (IAP가 없는데 'IAP 실험용'이면 거짓이다)": {
+   "kind": "test",
+   "hash": "e63cd281b87059ec",
+   "asserts": 4,
+   "literals": [
+    "\"IAP 실험용\"",
+    "\"IAP 실험용\"",
+    "\"IAP 실험용\"",
+    "\"IAP 실험용\"",
+    "\"IAP 실험용\"",
+    "\"IAP 실험용\"",
+    "\"IAP 실험용\"",
+    "\"IAP 실험용\"",
+    "\"IAP 실험용\"",
+    "\"IAP 실험용\"",
+    "\"[REQ-111] 이름은 건드리지 않았으면 첫 서비스를 따른다 (IAP가 없는데 'IAP 실험용'이면 거짓이다)\"",
+    "\"내 정산 웹 실험용\"",
+    "\"내 정산 웹 실험용\"",
+    "\"내가 정한 이름\"",
+    "\"내가 정한 이름\"",
+    "\"내가 정한 이름\"",
+    "\"내가 정한 이름\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::IAP를 빼고 내 카드만 쓰기 [REQ-111] > [REQ-111] 키는 빠진 자리를 다시 쓰지 않아도 겹치지 않는다": {
+   "kind": "test",
+   "hash": "aaf1ba88cd22df24",
+   "asserts": 2,
+   "literals": [
+    "\"[REQ-111] 키는 빠진 자리를 다시 쓰지 않아도 겹치지 않는다\"",
+    "\"web-api\"",
+    "\"web-api\"",
+    "\"web-api\"",
+    "\"web-api\"",
+    "\"web-api\"",
+    "\"web-api\"",
+    "\"web-api\"",
+    "\"web-api\"",
+    "\"web-api-2\"",
+    "\"web-api-2\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::IAP를 빼고 내 카드만 쓰기 [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::IAP를 뺀 세계의 초안 [REQ-111] > [REQ-111] IAP를 뺀 것도, 다 뺀 것도 이어서 할 만한 세계로 남고 그대로 읽힌다": {
+   "kind": "test",
+   "hash": "9b430264ebae4cec",
+   "asserts": 2,
+   "literals": [
+    "\"[REQ-111] IAP를 뺀 것도, 다 뺀 것도 이어서 할 만한 세계로 남고 그대로 읽힌다\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::IAP를 뺀 세계의 초안 [REQ-111] > <hook:beforeEach>": {
+   "kind": "support",
+   "hash": "1d248c57842a19e4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::IAP를 뺀 세계의 초안 [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/world-shape/own-card-only.test.ts::IAP를 뺀 세계의 초안 [REQ-111] > =draft": {
+   "kind": "support",
+   "hash": "33a3c6b68cf56b63",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -89036,6 +89621,153 @@
    "amended_by": null
   },
   "packages/core/src/sources/worldgen/shaped-sizing.test.ts::서버 수는 세 숫자 [REQ-109] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-totals.test.ts::<import:568e40bf>": {
+   "kind": "support",
+   "hash": "568e40bfa9beea47",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-totals.test.ts::<import:5ade7c8d>": {
+   "kind": "support",
+   "hash": "5ade7c8dd2590ef1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-totals.test.ts::<import:795b6d19>": {
+   "kind": "support",
+   "hash": "795b6d194b0bf919",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-totals.test.ts::<import:983e3f78>": {
+   "kind": "support",
+   "hash": "983e3f784d37b419",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-totals.test.ts::=both": {
+   "kind": "support",
+   "hash": "8e549b1dd5ae558b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-totals.test.ts::=spec": {
+   "kind": "support",
+   "hash": "6b1bf5a25f16f99e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-totals.test.ts::크기 합계는 만들어진 세계와 같다 [REQ-111] > [REQ-111] 기본 세계: 서버 120대, 서버 랙 6 + 기반 랙 1, 스위치 9대가 화면에도 세계에도 같다": {
+   "kind": "test",
+   "hash": "d5bfcc747d666d1c",
+   "asserts": 4,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"120\"",
+    "\"120\"",
+    "\"7\"",
+    "\"7\"",
+    "\"[REQ-111] 기본 세계: 서버 120대, 서버 랙 6 + 기반 랙 1, 스위치 9대가 화면에도 세계에도 같다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-totals.test.ts::크기 합계는 만들어진 세계와 같다 [REQ-111] > [REQ-111] 룸 수·룸당 랙·랙당 서버를 바꿔도 같다 (행에 안 맞는 랙 수, 1U·2U가 섞이는 높은 랙당 서버도)": {
+   "kind": "test",
+   "hash": "1f86838f7361590d",
+   "asserts": 2,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"10\"",
+    "\"13\"",
+    "\"2\"",
+    "\"2\"",
+    "\"20\"",
+    "\"20\"",
+    "\"22\"",
+    "\"25\"",
+    "\"3\"",
+    "\"3\"",
+    "\"4\"",
+    "\"48\"",
+    "\"7\"",
+    "\"[REQ-111] 룸 수·룸당 랙·랙당 서버를 바꿔도 같다 (행에 안 맞는 랙 수, 1U·2U가 섞이는 높은 랙당 서버도)\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-totals.test.ts::크기 합계는 만들어진 세계와 같다 [REQ-111] > [REQ-111] 서버가 부족하게 모자란 서비스가 있어도 랙은 서버를 정확히 랙당 서버 수만큼 채운다": {
+   "kind": "test",
+   "hash": "b81d3c5ddb7c8f28",
+   "asserts": 1,
+   "literals": [
+    "\"1\"",
+    "\"12\"",
+    "\"3\"",
+    "\"4\"",
+    "\"[REQ-111] 서버가 부족하게 모자란 서비스가 있어도 랙은 서버를 정확히 랙당 서버 수만큼 채운다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-totals.test.ts::크기 합계는 만들어진 세계와 같다 [REQ-111] > [REQ-111] 층마다 모델링된 칩을 하나씩 바꿔도 같다 (GPU·액체 냉각·두 번째 사이트 포함)": {
+   "kind": "test",
+   "hash": "d1c107ec2b46d5b8",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"1\"",
+    "\"40\"",
+    "\"40\"",
+    "\"[REQ-111] 층마다 모델링된 칩을 하나씩 바꿔도 같다 (GPU·액체 냉각·두 번째 사이트 포함)\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-totals.test.ts::크기 합계는 만들어진 세계와 같다 [REQ-111] > <suite>": {
    "kind": "support",
    "hash": "edb4bbfe0a867169",
    "asserts": 0,

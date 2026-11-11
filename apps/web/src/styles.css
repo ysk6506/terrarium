@@ -1498,6 +1498,14 @@ button.tag {
   background: var(--surface);
 }
 
+@media (max-width: 640px) {
+  /* on a phone the trial run is a second row of its own, not a button left hanging under the title */
+  .toolbar > [data-moss-action="builder-trial"] {
+    flex: 1 1 55%;
+    justify-content: center;
+  }
+}
+
 .toolbar-title {
   display: flex;
   flex-direction: column;
@@ -2043,28 +2051,57 @@ ol.elevation li:first-child .u-slot {
 }
 
 .run-panel {
+  /* one quiet chip over the builder's "다음" button; the list opens above it (REQ-111) */
   position: absolute;
-  bottom: 12px;
-  right: 12px;
-  width: 260px;
-  max-height: 60%;
-  overflow: auto;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-panel);
-  background: var(--glass-92);
+  bottom: calc(var(--bottom-bar-h, 56px) + 62px);
+  right: 14px;
+  z-index: 2;
   font-size: 13px;
 }
 
+/* the list is open: the moss pill steps aside so the list can be read in full (REQ-111) */
+body:has(.run-panel[open]) .moss-launch.high {
+  visibility: hidden;
+}
+
+.run-panel.low {
+  bottom: 12px;
+  right: 12px;
+}
+
 .run-panel summary {
-  padding: 8px 12px;
+  padding: 8px 14px;
+  min-height: 36px;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--glass-96);
+  box-shadow: var(--card-shadow);
   font-weight: 600;
+  white-space: nowrap;
   cursor: pointer;
 }
 
 .run-panel ul {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  width: 280px;
+  max-width: calc(100vw - 28px);
+  max-height: 40vh;
+  overflow: auto;
   margin: 0;
-  padding: 0 0 6px;
+  padding: 6px 0;
   list-style: none;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--glass-92);
+  box-shadow: var(--shadow);
+}
+
+.run-count {
+  color: var(--ink-2);
+  font-weight: 600;
 }
 
 .run-panel button {
@@ -2746,7 +2783,8 @@ ol.elevation li:first-child .u-slot {
 .next-chip {
   position: absolute;
   right: 14px;
-  bottom: 70px;
+  /* above the bar at the foot, whatever height it has (it wraps to two lines on a phone) */
+  bottom: calc(var(--bottom-bar-h, 56px) + 14px);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -3983,6 +4021,7 @@ ol.elevation li:first-child .u-slot {
   color: var(--ink-2);
 }
 .we-note {
+  display: block;
   color: var(--ink-3);
   font-size: 13px;
   margin: 12px 0 0;
@@ -4152,6 +4191,10 @@ ol.elevation li:first-child .u-slot {
 .step-sum b {
   color: var(--ink);
   font-weight: 600;
+}
+.step-note {
+  color: var(--ink-3);
+  font-size: 12px;
 }
 .kb-help {
   flex: none;
@@ -4672,8 +4715,8 @@ button.title-pill:hover {
 }
 
 .moss-launch.high {
-  /* above the builder's "다음:" chip (70px + 41px), which it used to cover */
-  bottom: max(120px, calc(var(--bottom-bar-h, 0px) + 16px));
+  /* above the builder's "다음:" chip and the agents chip (14px + 40px + 8px + 36px), which it used to cover */
+  bottom: calc(var(--bottom-bar-h, 56px) + var(--below-bar-h, 0px) + 110px);
 }
 
 .moss-btn {

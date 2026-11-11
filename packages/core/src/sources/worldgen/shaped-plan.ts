@@ -120,6 +120,9 @@ export interface ShapePlan {
   readonly spareHosts: number;
   readonly serviceNodes: number;
   readonly computeRacks: number;
+  /** Plain compute racks (the racks of servers, not the dense ones), and the racks at the head of each row that hold the network and the storage (REQ-111). */
+  readonly plainRacks: number;
+  readonly infraRacks: number;
   readonly racks: number;
   readonly rooms: number;
   readonly buildings: number;
@@ -136,6 +139,8 @@ export interface ShapePlan {
   readonly fill: number;
   /** The accelerator layer (REQ-107): GPU servers and GPUs, the racks they stand in, the CDUs and the kW of the GPUs. */
   readonly gpuServers: number;
+  /** Servers the dense racks hold as built (a rack's worth each), GPU or not. */
+  readonly denseServers: number;
   readonly gpus: number;
   readonly denseRacks: number;
   readonly cdus: number;
@@ -248,6 +253,23 @@ function serversFor(
   return Math.max(wanted, build.site ? needed * 2 + 2 : needed);
 }
 
+/** Racks (all, and the head-of-row ones) and servers: a counted world holds exactly the servers a rack is asked for (REQ-111). */
+function racksOf(p: {
+  readonly ask: SizeAsk | undefined;
+  readonly dense: DenseSpec | undefined;
+  readonly plainRacks: number;
+  readonly shape: { readonly rows: number; readonly racksPerRow: number };
+  readonly rooms: number;
+  readonly wanted: number;
+}) {
+  const infraRacks = p.shape.rows * p.rooms;
+  const places = p.shape.rows * p.shape.racksPerRow * p.rooms;
+  const dense = p.dense?.racks ?? 0;
+  const racks = p.dense ? places - dense : p.ask ? infraRacks + p.plainRacks : places;
+  const servers = p.ask ? (racks - infraRacks - dense) * p.ask.perRack : p.wanted;
+  return { racks, infraRacks, servers };
+}
+
 export function planShape(spec: ShapeSpec): ShapePlan {
   const build = buildOf(spec.layers);
   const serviceHosts = spec.services.reduce((n, s) => n + hostsOf(s, buildFor(spec.layers, s)), 0);
@@ -257,17 +279,23 @@ export function planShape(spec: ShapeSpec): ShapePlan {
   );
   const serviceNodes = spec.services.reduce((n, s) => n + s.nodes, 0);
   const ask = askOf(spec);
-  const servers = serversFor(spec, build, serviceHosts + spareHosts, ask);
   const catalog = defaultCatalog();
-  const plainRacks = Math.max(3, Math.ceil(servers / (ask?.perRack ?? SERVERS_PER_RACK)));
+  const wanted = serversFor(spec, build, serviceHosts + spareHosts, ask);
+  const plainRacks = Math.max(3, Math.ceil(wanted / (ask?.perRack ?? SERVERS_PER_RACK)));
   const dense = denseOf(build, plainRacks, catalog);
   // a dense rack is wider and takes two places of a row; one more place for the row that cannot be paired
   const computeRacks = plainRacks + (dense ? 2 * dense.racks + 1 : 0);
   const places = placesFor(build, computeRacks, ask?.rooms ?? 1);
   const perRoom = Math.ceil(computeRacks / places.rooms);
   const shape = rowsFor(perRoom);
-  const racksPerRoom = shape.rows * shape.racksPerRow;
-  const racks = racksPerRoom * places.rooms - (dense?.racks ?? 0);
+  const { racks, infraRacks, servers } = racksOf({
+    ask,
+    dense,
+    plainRacks,
+    shape,
+    rooms: places.rooms,
+    wanted,
+  });
   const spines = (build.spines ?? 2) * places.rooms;
   const feeds = build.feeds ?? 2;
   const gpu = gpuFigures(build, dense, catalog);
@@ -279,6 +307,8 @@ export function planShape(spec: ShapeSpec): ShapePlan {
     spareHosts,
     serviceNodes,
     computeRacks,
+    plainRacks,
+    infraRacks,
     racks,
     rooms: places.rooms,
     buildings: places.buildings,
@@ -293,6 +323,7 @@ export function planShape(spec: ShapeSpec): ShapePlan {
     fill: ask ? fillFor(ask.perRack) : LEGACY_FILL,
     gpuServers: gpu.servers,
     gpus: gpu.gpus,
+    denseServers: dense ? dense.racks * dense.perRack : 0,
     denseRacks: dense?.racks ?? 0,
     cdus,
     gpuKw: gpu.kw,
@@ -317,6 +348,12 @@ export function worldgenSpecOf(spec: ShapeSpec, plan: ShapePlan): WorldgenSpec {
     name: spec.name,
     ...plan.layout,
     fill: plan.fill,
+    ...(askOf(spec)
+      ? {
+          serversPerRack: askOf(spec)?.perRack as number,
+          ...(dense ? {} : { computeRacks: plan.plainRacks }),
+        }
+      : {}),
     gpuShare: 0,
     containment: build.containment ? "cold" : "none",
     coolingRedundancy: build.cooling ?? "N+1",

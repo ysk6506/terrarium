@@ -24,10 +24,12 @@ export {
   LAYER_INFO,
 } from "./ladders";
 export { LOAD_RULE_ROWS, LOAD_RULES, type LoadRule } from "./load-rules";
+export { ladderHead, noServicesReason, removeService, worldNameFor } from "./service-list";
 export { costText, hostsText, type ShapeView, shapeView } from "./shape-view";
 export {
   advance,
   builtFact,
+  type MadeTotals,
   type Place,
   pressesToExperiment,
   QUICK,
@@ -37,4 +39,5 @@ export {
   STEPS,
   type Step,
 } from "./short-flow";
+export { racksText, type SizeView, sizeView } from "./size-view";
 export { guessWorkload, type WorkloadView, workloadView } from "./workload-view";

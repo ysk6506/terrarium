@@ -209,16 +209,23 @@ interface ActivityProps {
   readonly activity: ActivityState;
   readonly now: number;
   readonly onPick: (runId: string) => void;
+  readonly readOnly: boolean | undefined;
 }
 
 /** The runs at work (REQ-050): names over their equipment, and the list of who is doing what. */
-function StageActivity({ view, index, markers, activity, now, onPick }: ActivityProps) {
+function StageActivity({ view, index, markers, activity, now, onPick, readOnly }: ActivityProps) {
   return (
     <>
       {view && markers.length > 0 && (
         <ActivityPins view={view} markers={markers} activity={activity} onPick={onPick} />
       )}
-      <ActivityPanel activity={activity} index={index} now={now} onPick={onPick} />
+      <ActivityPanel
+        activity={activity}
+        index={index}
+        now={now}
+        onPick={onPick}
+        readOnly={readOnly}
+      />
     </>
   );
 }
@@ -337,6 +344,7 @@ export function WorldStage(props: WorldStageProps) {
         activity={activity}
         now={props.now ?? 0}
         onPick={watch}
+        readOnly={props.readOnly}
       />
       <StageOverlays
         view={view}
