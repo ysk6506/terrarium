@@ -14,8 +14,8 @@
 import { Catalog } from "@terrarium/core/catalog";
 import { createFacades } from "@terrarium/core/facades";
 import { ConflictError, InvalidValueError } from "@terrarium/core/kernel";
-import { type EndReason, investigationCalls, ORACLE_VERSION, score } from "@terrarium/core/oracle";
-import { CLUSTER_CAUSE, DEFAULT_PHYSICS, Physics } from "@terrarium/core/physics";
+import { type EndReason, ORACLE_VERSION, score } from "@terrarium/core/oracle";
+import { DEFAULT_PHYSICS, Physics } from "@terrarium/core/physics";
 import {
   type AgentTask,
   type Diagnosis,

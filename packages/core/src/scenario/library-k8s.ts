@@ -53,6 +53,8 @@ interface Plan {
   /** Conditions that must hold at the end besides the services being well. */
   readonly ending?: (c: Case) => ReadonlyArray<{ id: string; label: string; condition: Condition }>;
   readonly timeLimitS?: number;
+  /** Seconds the sheet expects a recovery to take when only the team it is handed to can bring it (ADR-0133). */
+  readonly expectedS?: number;
 }
 
 const BUDGET = 30;
@@ -206,6 +208,7 @@ function template(plan: Plan, domains: readonly Domain[] = ["service_os"]): Scen
         `${c.cluster.name}에서 일어나요. 서비스 ${c.services.length}개가 이 클러스터의 워크로드에 기대요.`,
         flow,
         sheet(plan, c, index),
+        plan.expectedS,
       );
     },
   };
@@ -265,6 +268,8 @@ const etcdQuorum = template({
     { action: "k8s_drain", penalty: 10 },
   ],
   timeLimitS: 5400,
+  // only the control-plane team restores the members: its longest remote job (a day) and the five minutes to hand it over
+  expectedS: 86400 + 300,
 });
 
 const pending = template({

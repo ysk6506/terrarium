@@ -53,6 +53,7 @@ export {
   DB_ROLE_LABELS,
   DB_SHAPE_LABELS,
   type DbStatus,
+  DEFAULT_REBUILD_S,
   dbClusterDef,
   dbClusterProps,
   hostedOn,

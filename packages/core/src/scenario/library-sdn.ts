@@ -54,9 +54,10 @@ interface Plan {
   readonly forbid: (c: Case) => ReadonlyArray<{ action: ActionKind; penalty: number }>;
   readonly timeLimitS: (c: Case) => number;
   readonly budget: number;
+  /** Seconds the sheet expects a recovery to take when only the team it is handed to can bring it (ADR-0133). */
+  readonly expectedS?: number;
 }
 
-const OWN: readonly Domain[] = ["service_os", "virtualization"];
 const byId = (a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id);
 const KIND_ORDER = ["stateful", "batch", "request"];
 const kindRank = (e: Entity) => KIND_ORDER.indexOf(String(e.props.serviceKind));
@@ -256,6 +257,7 @@ function template(plan: Plan): ScenarioTemplate {
         `${c.where}에서 일어나요${plan.id === "sdn-controller-down" ? (c.ha ? " (스탠바이가 있는 컨트롤러 쌍)" : " (컨트롤러가 하나뿐이에요)") : ""}. 서비스 ${c.services.length}개가 느껴요.`,
         flow,
         sheet(plan, c),
+        plan.expectedS,
       );
     },
   };
@@ -318,6 +320,8 @@ const tunnelDown = template({
   forbid: () => [REBOOT],
   timeLimitS: () => DAYS_4,
   budget: 150,
+  // nothing here brings the tunnel back but the network team: its longest visit (4 h) and the five minutes to hand it over
+  expectedS: 4 * HOUR + 300,
 });
 
 const policyWrong = template({

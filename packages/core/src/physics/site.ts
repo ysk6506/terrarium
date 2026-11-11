@@ -273,14 +273,10 @@ function stepMove(world: World, plan: Entity, events: WorldEvent[]): void {
   if (s.phase !== "failing_over" && s.phase !== "failing_back") return;
   const t = world.time();
   const end = s.completeAt ?? t;
-  const stuck = fault(world, plan.id, "dr_failover_stuck");
-  if (
-    stuck &&
-    s.phase === "failing_over" &&
-    t >= (s.startedAt ?? t) + (end - (s.startedAt ?? t)) / 2
-  ) {
+  // the automation hangs at its first step: pressed once, nothing moves until a person presses again
+  if (fault(world, plan.id, "dr_failover_stuck") && s.phase === "failing_over") {
     s.phase = "stuck";
-    note(world, events, "전환 자동화가 중간에서 멈췄어요", "physics");
+    note(world, events, "전환 자동화가 첫 단계에서 멈췄어요", "physics");
     return;
   }
   if (t < end) return;
@@ -303,7 +299,7 @@ function updatePlan(world: World, plan: Entity, events: WorldEvent[]): void {
     plan.props.consensus !== true;
   delete s.why;
   if (s.split) s.why = "두 사이트가 모두 자기가 주인이라고 믿어요";
-  else if (s.phase === "stuck") s.why = "전환이 중간에서 멈췄어요";
+  else if (s.phase === "stuck") s.why = "전환이 첫 단계에서 멈췄어요";
   if (def.mode === "active") updateDrain(world, plan, events);
   else autoFailover(world, plan, events);
   stepMove(world, plan, events);

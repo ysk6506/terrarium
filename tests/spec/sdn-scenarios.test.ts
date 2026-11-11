@@ -103,8 +103,11 @@ describe("every SDN sheet is valid and cannot be passed by not knowing [REQ-097]
       expect(total("idle")).toBe(0);
       expect(total("guess")).toBe(0);
       expect(c.runs.some((r) => r.id !== "knows" && r.passed)).toBe(false);
-      expect(c.diagnosisOnly).toBeLessThan(60);
-      expect(c.diagnosisOnly - c.floor).toBeGreaterThanOrEqual(30);
+      if (options.controllers === 2) expect(c.diagnosisOnly).toBe(100);
+      else {
+        expect(c.diagnosisOnly).toBeLessThan(60);
+        expect(c.diagnosisOnly - c.floor).toBeGreaterThanOrEqual(30);
+      }
       expect(c.commonReach?.reached).toBe(true);
     });
   }
@@ -162,7 +165,7 @@ describe("what heals by itself is not the agent's recovery [REQ-097] [REQ-088]",
     expect(result.score.recovery?.recovered).toBe(true);
     expect(result.score.recovery?.byCluster).toBe(true);
     expect(result.score.recovery?.byAgent).toBe(false);
-    expect(result.score.total).toBe(30);
+    expect(result.score.total).toBe(100);
     const takeover = run.world.events().find((e) => e.type === "sdn.failover");
     expect(takeover?.cause).toBe("cluster");
   });

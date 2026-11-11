@@ -44,6 +44,7 @@ export const SITE_CONDITION_FIELDS: Readonly<
     health: HEALTH,
     status: LEVEL,
     activeAz: num("주인 영역", "번째"),
+    pinned: bool("영역 고정"),
     storageUsedPct: num("저장소 사용", "%"),
   },
 };
