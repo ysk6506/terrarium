@@ -9,6 +9,7 @@ verification_log:
   - "2026-11-11: ADR-0143 링크"
   - "2026-11-11: 현실 데이터와 모델 설계 (ADR-0144)"
   - "2026-11-11: main 합치기: ADR-0143·0144·0145 링크"
+  - "2026-11-11: ADR-0147 링크를 더함"
 ---
 # 문서 색인
 
@@ -211,6 +212,7 @@ verification_log:
 - [0141 UX 검사를 게이트인 여정과 게이트 아닌 측정으로 나누고, 러너에서 안 되던 화면을 고친다](design-docs/adr/0141-ux-journeys-gate-and-measure.md)
 - [0142 커버리지 하한을 새 단위까지 넓히고, 고장 난 날에도 물리 법칙을 검사한다](design-docs/adr/0142-coverage-floors-and-fault-law-checks.md)
 - [0145 보정 시험은 한 번 돌리고 여러 번 묻는다](design-docs/adr/0145-calibration-ask-once.md)
+- [0147 구조 검사는 같은 파일에 같은 질문을 두 번 하지 않는다](design-docs/adr/0147-harness-derived-cache.md)
 - [0143 깊은 OS 흉내를 GNU에 더 가깝게 하고 커버리지 하한을 채운다](design-docs/adr/0143-shell-fidelity-and-coverage-gate.md)
 - [0144 현실 데이터는 네 단으로 들어오고, 세계는 현실과 실험 두 종류이며, 모델은 핵심을 잠그고 넓힌다](design-docs/adr/0144-reality-data-pipeline-ontology-manager-world-kinds.md)
 - [0122 세계 인기 순서·좋아요·칭호, 그리고 계급 모델 — 점수는 서버가 기록에서 세고, 칭호는 한 번 얻으면 안 잃고, 계급은 아직 화면에 없다](design-docs/adr/0122-world-popularity-likes-titles.md)

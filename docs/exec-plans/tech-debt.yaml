@@ -77,3 +77,17 @@ items:
     created: "2026-11-11"
     due: "2026-12-08"
     status: open
+  - id: TD-0011
+    title: "시나리오 카드의 보정(calibrate → withProbes → recoveryPath)이 cdu-pump-fail에서 약 15.9초, 내장 시나리오 69개 합계 약 46.6초 걸린다. 사용자가 카드의 '변별력 점검'에서 기다리는 시간이다 (서버 apps/server/src/runtime/scenarios.ts의 calibrate가 같은 withProbes를 동기로 돌린다). 시나리오별 withProbes 상위 5개(로컬): cdu-pump-fail 15.9초, scheduler-down-job 6.4초, mig-misconfig 2.8초, k8s-disk-pressure 2.0초, db-shared-path-cut 1.9초"
+    severity: medium
+    cost: "가속기 탐침(probes-accel.ts)이 GPU마다 새 세션을 열어 420초씩 돌려 본다. 같은 결과를 내면서 덜 돌리는 길(세션 복제, 안 맞는 길 일찍 버리기)을 찾거나, 서버에서 탐침을 요청 밖에서 돌린다"
+    created: "2026-11-11"
+    due: "2026-12-08"
+    status: open
+  - id: TD-0012
+    title: "tests/spec/calibration.test.ts가 탐침(recoveryPath·commonReach·shellReach·toolPick)을 내장 시나리오 69개 전부에 돌리던 연기 검사가 없어졌다 (ADR-0145). 층별 시험이 일부만 단언한다"
+    severity: low
+    cost: "TD-0011을 고칠 때 '모든 내장 시나리오에서 탐침이 던지지 않는다'를 싸게 되살린다. 이 항목은 그것까지 되살려야 닫는다"
+    created: "2026-11-11"
+    due: "2026-12-08"
+    status: open
