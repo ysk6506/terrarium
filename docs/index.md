@@ -4,11 +4,11 @@ kind: reference
 status: active
 last_verified: 2026-11-11
 verification_log:
-  - "2026-11-11: ADR-0154 링크"
   - "2026-11-11: ADR-0155 링크"
   - "2026-11-11: ADR-0156 링크"
   - "2026-11-11: 표준 모델 대조 문서와 ADR-0157 링크"
   - "2026-11-11: ADR-0159 링크"
+  - "2026-11-11: ADR-0159 제목"
 ---
 # 문서 색인
 
@@ -228,7 +228,7 @@ verification_log:
 - [0155 수집의 관측성 — 지표는 밖으로 내보내고, 데이터가 평소와 다른지 보고, 로그에 내용을 찍지 않는다](design-docs/adr/0155-ingestion-observability.md)
 - [0156 영향 범위는 포트 단위까지 묶음의 뜻으로 계산하고, 메모리의 색인에서 1초·수 초 안에 답한다](design-docs/adr/0156-blast-radius-ports-redundancy-groups-in-memory-index.md)
 - [0157 모델은 층마다 표준에서 뼈대를 빌리고, 종류는 세 층이며, 가상화 플랫폼은 대응 표로 받는다](design-docs/adr/0157-model-standards-three-tiers-platform-mapping.md)
-- [0159 관문의 브라우저 설치는 세 번까지 다시 해 본다](design-docs/adr/0159-retry-browser-install-in-ci.md)
+- [0159 관문의 브라우저 설치는 시스템 꾸러미 없이 하고, 다시 해 본다](design-docs/adr/0159-retry-browser-install-in-ci.md)
 - [0122 세계 인기 순서·좋아요·칭호, 그리고 계급 모델 — 점수는 서버가 기록에서 세고, 칭호는 한 번 얻으면 안 잃고, 계급은 아직 화면에 없다](design-docs/adr/0122-world-popularity-likes-titles.md)
 - [0121 애플리케이션 층을 코어 모델로 올리고 서비스 호출 그래프를 넣는다](design-docs/adr/0121-application-layer-and-calls.md)
 - [0116 진짜 호스트 섞기 (폐기, 0117로 대체)](design-docs/adr/0116-real-hosts-in-the-world.md)
