@@ -2075,11 +2075,6 @@ ol.elevation li:first-child .u-slot {
   font-size: 13px;
 }
 
-/* the list is open: the moss pill steps aside so the list can be read in full (REQ-111) */
-body:has(.run-panel[open]) .moss-launch.high {
-  visibility: hidden;
-}
-
 .run-panel.low {
   bottom: 12px;
   right: 12px;
@@ -4768,6 +4763,11 @@ button.title-pill:hover {
   bottom: calc(var(--bottom-bar-h, 56px) + var(--below-bar-h, 0px) + 110px);
 }
 
+/* the run list (.run-panel) is open: the moss pill steps aside so the list can be read in full (REQ-111) */
+body:has(.run-panel[open]) .moss-launch.high {
+  visibility: hidden;
+}
+
 .moss-btn {
   width: 48px;
   height: 48px;
@@ -5481,9 +5481,6 @@ ol.uu li {
   flex-direction: column;
   gap: 4px;
 }
-.we-ci-box .we-ci {
-  flex: 1;
-}
 .we-ci {
   display: flex;
   flex-direction: column;
@@ -5497,6 +5494,9 @@ ol.uu li {
   padding: 12px 14px;
   min-height: 92px;
   cursor: pointer;
+}
+.we-ci-box .we-ci {
+  flex: 1;
 }
 .we-ci:hover {
   background: var(--fill);
