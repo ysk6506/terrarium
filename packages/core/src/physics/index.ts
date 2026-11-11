@@ -12,6 +12,14 @@ export { updateDbx } from "./dbx";
 export { updateDrs } from "./drs";
 export { DEFAULT_PHYSICS, Physics, type PhysicsOptions } from "./engine";
 export { updateK8s } from "./k8s";
+export {
+  KNOWN_V1_EXCEPTIONS,
+  type KnownException,
+  type LawId,
+  LawMonitor,
+  type LawReport,
+  type Violation,
+} from "./laws";
 export { updateHostOs } from "./os-physics";
 export { ambientDerate } from "./plant";
 export {

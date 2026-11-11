@@ -126,6 +126,7 @@ export {
   DEFAULT_SEEDS,
   MAX_SEEDS,
   normalizeTools,
+  physicsOf,
   type RecipeContext,
   recipeProblems,
   seedsUpTo,

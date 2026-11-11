@@ -16,6 +16,7 @@ import type {
   UpsModel,
 } from "@terrarium/core/catalog";
 import { clamp, NotFoundError } from "@terrarium/core/kernel";
+import { defaultsOf, type SlotValues } from "@terrarium/core/physics/slots";
 import {
   bulkPowerW,
   type Entity,
@@ -24,16 +25,20 @@ import {
   type StateOf,
   type World,
 } from "@terrarium/core/world";
+import { capPerf, copAt, serverDrawW, upsEfficiencyAt } from "./models";
 import { type PowerPlan, powerPlanOf, SLOT, SUPPLIER_KINDS } from "./power-plan";
 import { faultParam, hasFault, isTransferSwitch, SupplyResolver } from "./power-supply";
 import { cutDarkSites } from "./site-power";
 
 export { isTransferSwitch, SupplyResolver };
 
-export const POWER_FACTOR = 0.95;
+/** The power factor of v1 (the number `power.conversion.powerFactor` starts from). */
+export const POWER_FACTOR = defaultsOf("power.conversion").powerFactor;
 
 /** The world as the electrical passes read it. */
 export interface Pass {
+  /** The world, for the numbers and tables of the physics slots (REQ-113) and the outdoor air. */
+  readonly world: World;
   readonly plan: PowerPlan;
   readonly states: readonly EntityState[];
   readonly faults: ReadonlyArray<readonly Fault[]>;
@@ -42,6 +47,7 @@ export interface Pass {
 }
 
 export const passOf = (world: World): Pass => ({
+  world,
   plan: powerPlanOf(world.index, world.catalog),
   states: world.stateList(),
   faults: world.faultList(),
@@ -121,8 +127,10 @@ const updateServer: Updater = (sup, i) => {
   const util = effectiveUtilAt(sup, i);
   state.powered = powered;
   state.psuOk = psuOk;
-  const full = model.idlePowerW + (model.maxPowerW - model.idlePowerW) * util;
-  state.powerW = running ? cappedW(state, model, full) : 0;
+  const full = serverDrawW(sup.world, model, util);
+  state.powerW = running
+    ? cappedW(sup.world, state, { model, fullW: full, id: (plan.ents[i] as Entity).id })
+    : 0;
 };
 
 /**
@@ -130,7 +138,12 @@ const updateServer: Updater = (sup, i) => {
  * throughput left is the share of that part to the 0.4 power (dynamic power follows frequency to about the 2.5th power, so
  * the first watts cut cost little speed). `perf` is 1 when nothing is cut.
  */
-function cappedW(state: StateOf<"server">, model: ServerModel, fullW: number): number {
+function cappedW(
+  world: World,
+  state: StateOf<"server">,
+  draw: { model: ServerModel; fullW: number; id: string },
+): number {
+  const { model, fullW } = draw;
   const cap = state.powerCapW;
   const dyn = fullW - model.idlePowerW;
   if (cap === undefined || dyn <= 0 || fullW <= cap) {
@@ -139,7 +152,7 @@ function cappedW(state: StateOf<"server">, model: ServerModel, fullW: number): n
     return fullW;
   }
   const kept = Math.max(0, cap - model.idlePowerW) / dyn;
-  state.perf = Math.max(0.1, kept) ** 0.4;
+  state.perf = capPerf(world, world.physicsAt("power.device", draw.id), kept);
   return model.idlePowerW + dyn * Math.max(0, kept);
 }
 
@@ -236,8 +249,15 @@ export function updateDevices(world: World, supply: SupplyResolver): void {
 // ---------- loads ----------
 
 /** Power drawn by a cooling unit: its fans plus compressor work (a chilled-water unit has none: the plant pays). */
-function coolingDrawW(model: CoolingModel, state: StateOf<"cooling_unit">): number {
-  const work = model.chilledWater ? 0 : (state.loadKw * 1000) / 3;
+function coolingDrawW(
+  world: World,
+  model: CoolingModel,
+  state: StateOf<"cooling_unit">,
+  id: string,
+): number {
+  const work = model.chilledWater
+    ? 0
+    : (state.loadKw * 1000) / copAt(world, world.physicsAt("cooling.unit", id));
   return state.running ? model.fanPowerW + work : 0;
 }
 
@@ -257,7 +277,12 @@ function drawAt(pass: Pass, i: number): number {
     case "chiller":
       return state.powerW;
     case "cooling_unit":
-      return coolingDrawW(model as CoolingModel, state);
+      return coolingDrawW(
+        pass.world,
+        model as CoolingModel,
+        state,
+        (pass.plan.ents[i] as Entity).id,
+      );
     case "cdu":
       return cduDrawW(model as CduModel, state);
     case "pdu":
@@ -308,7 +333,9 @@ class Loads {
     if (!SUPPLIER_KINDS.has(kind)) return drawAt(this.pass, from);
     const load = this.on(from);
     // A UPS also pays for its losses.
-    return kind === "ups" ? load / (this.supply.plan.models[from] as UpsModel).efficiency : load;
+    return kind === "ups"
+      ? load / upsEfficiencyAt(this.supply.world, this.supply.plan.models[from] as UpsModel, load)
+      : load;
   }
 }
 
@@ -319,7 +346,11 @@ function patchLoad(pass: Pass, i: number, load: number): void {
   else if (state.kind === "power_panel") {
     const model = pass.plan.models[i] as PanelModel;
     state.loadW = load;
-    state.loadA = load / (Math.sqrt(3) * model.voltage * POWER_FACTOR);
+    const P: SlotValues["power.conversion"] = pass.world.physicsAt(
+      "power.conversion",
+      (pass.plan.ents[i] as Entity).id,
+    );
+    state.loadA = load / (Math.sqrt(3) * model.voltage * P.powerFactor);
   }
 }
 
@@ -348,7 +379,10 @@ export function updateBatteries(world: World, dt: number): void {
     const factor =
       faultParam(pass.faults[i] as readonly Fault[], "ups_battery_degraded", "factor") ?? 1;
     const capacityWs = model.batteryKwh * 1000 * 3600 * factor;
-    const delta = state.inputOk ? 0.05 * dt : -((state.loadW * dt) / capacityWs) * 100;
+    const recharge = world.physicsAt("power.storage", (pass.plan.ents[i] as Entity).id);
+    const delta = state.inputOk
+      ? recharge.upsRechargePctPerS * dt
+      : -((state.loadW * dt) / capacityWs) * 100;
     state.onBattery = !state.inputOk;
     state.batteryPct = clamp(state.batteryPct + delta, 0, 100);
   }

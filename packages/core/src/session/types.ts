@@ -115,7 +115,13 @@ export interface RunResult {
   /** The run as an append-only list of events, two clocks each (REQ-083); absent from runs saved before it existed. */
   readonly events?: readonly RunEvent[];
   readonly series: readonly MetricSeries[];
-  readonly digests: { readonly world: string; readonly scenario: string; readonly oracle: string };
+  readonly digests: {
+    readonly world: string;
+    readonly scenario: string;
+    readonly oracle: string;
+    /** The physics fingerprint the run was played on (REQ-113); runs saved before it existed were played on `v1`. */
+    readonly physics?: string;
+  };
   readonly seed: number;
   /** The scope the run had; absent for a run that owned every domain and used the default waits. */
   readonly scope?: {

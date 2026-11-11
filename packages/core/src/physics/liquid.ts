@@ -5,19 +5,11 @@
  */
 import type { RackCooling } from "@terrarium/core/catalog";
 import { approach, clamp } from "@terrarium/core/kernel";
+import type { SlotValues } from "@terrarium/core/physics/slots";
 import { bulkOf, type Entity, type World } from "@terrarium/core/world";
 import { leakIsolated } from "./plant";
 
-/** Share of a rack's heat a working rear door takes out of the exhaust air. */
-export const RDHX_SHARE = 0.75;
-const FLUID_J_PER_L_K = 1600;
-/** Heat capacity of the hardware itself in a tank, J/K per server. */
-const SERVER_J_PER_K = 6000;
-/** Tank bath temperature rise over the coolant at full design load, K. */
-const TANK_DELTA_K = 12;
-/** Passive loss from a tank to the room, W per K above room temperature. */
-export const TANK_SURFACE_W_PER_K = 40;
-const FLUID_MAX_C = 95;
+type Liquid = SlotValues["cooling.liquid"];
 
 export const rackCooling = (world: World, rack: Entity): RackCooling => {
   if (!rack.modelId || !world.catalog.has(rack.modelId)) return "air";
@@ -105,11 +97,10 @@ function directLiquidW(world: World, rack: Entity): number {
 function tankBath(
   world: World,
   rack: Entity,
-  powerW: number,
-  supply: LiquidSupply,
-  ambient: number,
-  dt: number,
+  heat: { powerW: number; supply: LiquidSupply; ambient: number; dt: number },
+  L: Liquid,
 ) {
+  const { powerW, supply, ambient, dt } = heat;
   const state = world.stateAs(rack.id, "rack");
   const model = world.catalog.getOf(rack.modelId ?? "", "rack");
   const servers =
@@ -118,16 +109,16 @@ function tankBath(
   const circulation = world
     .faultsOn(rack.id)
     .some((f) => f.type === "immersion_circulation_failure")
-    ? 0.08
+    ? L.tankCirculationFail
     : 1;
   const ua = supply.ok
-    ? ((model.maxKw * 1000) / TANK_DELTA_K) * circulation * tankLevel(world, rack)
+    ? ((model.maxKw * 1000) / L.tankDeltaK) * circulation * tankLevel(world, rack)
     : 0;
-  const surface = TANK_SURFACE_W_PER_K;
+  const surface = L.tankSurfaceWPerK;
   const sink = supply.ok ? supply.supplyC : ambient;
   const conductance = ua + surface;
-  const eq = Math.min(FLUID_MAX_C, (ua * sink + surface * ambient + powerW) / conductance);
-  const heatCapacity = model.fluidLitres * FLUID_J_PER_L_K + servers * SERVER_J_PER_K;
+  const eq = Math.min(L.fluidMaxC, (ua * sink + surface * ambient + powerW) / conductance);
+  const heatCapacity = model.fluidLitres * L.fluidJPerLK + servers * L.serverJPerK;
   const bathC = approach(state.bathC === 0 ? eq : state.bathC, eq, dt, heatCapacity / conductance);
   const removed = supply.ok ? ua * Math.max(0, bathC - supply.supplyC) : 0;
   return { bathC, liquidW: Math.min(removed, powerW) };
@@ -145,8 +136,9 @@ export function updateRackLiquid(
   if (cooling === "air") return AIR_ONLY;
   const state = world.stateAs(rack.id, "rack");
   const supply = liquidSupply(world, rack, cooling);
+  const L = world.physicsAt("cooling.liquid", rack.id);
   if (cooling === "immersion") {
-    const bath = tankBath(world, rack, powerW, supply, ambient, dt);
+    const bath = tankBath(world, rack, { powerW, supply, ambient, dt }, L);
     return {
       cooling,
       ok: supply.ok,
@@ -158,18 +150,23 @@ export function updateRackLiquid(
   const liquidW = !supply.ok
     ? 0
     : cooling === "rdhx"
-      ? RDHX_SHARE * powerW * valveShare(world, rack)
+      ? L.rdhxShare * powerW * valveShare(world, rack)
       : directLiquidW(world, rack);
   const coolantC = supply.ok
     ? supply.supplyC
-    : approach(state.coolantC || ambient, stagnantTargetC(world, rack, ambient), dt, 300);
+    : approach(
+        state.coolantC || ambient,
+        stagnantTargetC(world, rack, ambient, L),
+        dt,
+        L.stagnantTauS,
+      );
   return { cooling, ok: supply.ok, liquidW, coolantC, bathC: 0 };
 }
 
 /** Where the coolant standing still in the cold plates settles: warm in proportion to the heat it sits next to. */
-function stagnantTargetC(world: World, rack: Entity, ambient: number): number {
-  const designW = world.catalog.getOf(rack.modelId ?? "", "rack").maxKw * 800;
-  return ambient + 33 * clamp(directLiquidW(world, rack) / Math.max(designW, 1), 0, 1);
+function stagnantTargetC(world: World, rack: Entity, ambient: number, L: Liquid): number {
+  const designW = world.catalog.getOf(rack.modelId ?? "", "rack").maxKw * L.stagnantDesignWPerKw;
+  return ambient + L.stagnantRiseC * clamp(directLiquidW(world, rack) / Math.max(designW, 1), 0, 1);
 }
 
 /** CPU temperature target for a server on liquid, °C; undefined for air-cooled servers in air racks. */
@@ -178,8 +175,9 @@ export function liquidCpuTarget(
   model: { liquidShare: number; coolantRiseC: number; thermalRiseC: number },
   util: number,
   inletC: number,
+  chip: Pick<SlotValues["thermal.device"], "chipRiseBase" | "chipRiseLoad">,
 ): number | undefined {
-  const load = 0.35 + 0.65 * clamp(util, 0, 1);
+  const load = chip.chipRiseBase + chip.chipRiseLoad * clamp(util, 0, 1);
   if (rack.cooling === "immersion") return rack.bathC + model.coolantRiseC * load;
   if (rack.cooling !== "dlc" || model.liquidShare === 0) return undefined;
   if (rack.ok) return rack.coolantC + model.coolantRiseC * load;

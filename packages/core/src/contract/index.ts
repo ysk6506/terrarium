@@ -57,6 +57,7 @@ export {
   type MossAskRequest,
   type MossSourceView,
 } from "./moss";
+export { PutPhysicsBody, type PutPhysicsRequest } from "./physics-routes";
 export {
   ImportPresetsBody,
   type ImportPresetsRequest,
@@ -206,5 +207,6 @@ export type {
   ShareView,
   SourceView,
   TelemetryView,
+  WorldPhysicsView,
   WorldSummary,
 } from "./views";

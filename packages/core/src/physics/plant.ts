@@ -6,14 +6,20 @@
  */
 import type { CduModel, ChillerModel, CoolingModel } from "@terrarium/core/catalog";
 import { approach, clamp } from "@terrarium/core/kernel";
+import {
+  defaultsOf,
+  interpolate,
+  type Point,
+  type SlotValues,
+} from "@terrarium/core/physics/slots";
 import type { Entity, StateOf, World } from "@terrarium/core/world";
 import { isTransferSwitch, type SupplyResolver } from "./power";
 import { faultParam, hasFault } from "./power-supply";
 import { faultsAt, type Heat, heatOf } from "./thermal-plan";
 
-/** Specific heat of water, J/(kg·K), for a litre of coolant. */
-const WATER_J_PER_L_K = 4186;
-const MAX_LOOP_C = 60;
+/** The numbers of the plant slot (REQ-113) for the plant or loop at position `i`. */
+const plantValues = (heat: Heat, i: number): SlotValues["cooling.plant"] =>
+  heat.world.physicsAt("cooling.plant", (heat.plan.ents[i] as Entity).id);
 
 const fault = (world: World, id: string, type: string) =>
   world.faultsOn(id).find((f) => f.type === type);
@@ -70,7 +76,12 @@ export function updateGenerators(world: World, supply: SupplyResolver, dt: numbe
     const wanted = state.adminOn && backupWanted(world, gen, supply);
     const broken = fault(world, gen.id, "generator_start_failure") !== undefined;
     const started = nextEngine(state, { wanted, broken, startSeconds: model.startSeconds, dt });
-    const share = clamp(state.loadKw / model.capacityKw, 0.1, 1.2);
+    const S = world.physicsAt("power.storage", gen.id);
+    const share = clamp(
+      state.loadKw / model.capacityKw,
+      S.generatorMinLoadShare,
+      S.generatorMaxLoadShare,
+    );
     const { phase, startedFor, fuelPct } = burnFuel(
       started,
       model.burnLitresPerHour * share,
@@ -97,7 +108,12 @@ export function plantAvailabilityAt(heat: Heat, i: number): number {
     const plant = items[q] as number;
     const s = heat.states[plant] as StateOf<"chiller">;
     const model = heat.plan.models[plant] as ChillerModel;
-    sum += clamp(1 - Math.max(0, s.supplyC - model.supplySetpointC - 1) / 8, 0, 1);
+    const P = plantValues(heat, plant);
+    sum += clamp(
+      1 - Math.max(0, s.supplyC - model.supplySetpointC - P.availOffsetC) / P.availBandC,
+      0,
+      1,
+    );
   }
   return sum / (last - first);
 }
@@ -109,11 +125,32 @@ export function plantAvailabilityAt(heat: Heat, i: number): number {
 export function ambientDerate(
   plant: "chiller" | "dry_cooler" | "cooling_tower",
   outdoorC: number,
+  values: SlotValues["cooling.plant"] = V1,
+  curve?: readonly Point[],
 ): number {
-  if (plant === "dry_cooler") return clamp(1.1 - 0.01 * (outdoorC - 15), 0.3, 1);
-  if (plant === "cooling_tower") return clamp(1.04 - 0.004 * (outdoorC - 15), 0.5, 1);
-  return clamp(1 - (0.15 * (outdoorC - 25)) / 15, 0.85, 1);
+  if (curve) return interpolate(curve, outdoorC);
+  const P = values;
+  if (plant === "dry_cooler")
+    return clamp(
+      P.dryCoolerBase - P.dryCoolerSlopePerC * (outdoorC - P.dryCoolerRefC),
+      P.dryCoolerMin,
+      1,
+    );
+  if (plant === "cooling_tower")
+    return clamp(P.towerBase - P.towerSlopePerC * (outdoorC - P.towerRefC), P.towerMin, 1);
+  return clamp(
+    1 - (P.chillerLossShare * (outdoorC - P.chillerRefC)) / P.chillerSpanC,
+    P.chillerMin,
+    1,
+  );
 }
+
+const V1 = defaultsOf("cooling.plant");
+const DERATE_CURVE = {
+  chiller: "cooling.plant.derateChiller",
+  dry_cooler: "cooling.plant.derateDryCooler",
+  cooling_tower: "cooling.plant.derateCoolingTower",
+} as const;
 
 // ---------- CDUs ----------
 
@@ -162,16 +199,17 @@ function updateCdu(heat: Heat, i: number, loadW: number, dt: number): void {
   const pumpFactor = running ? Math.min(1, working.filter(Boolean).length / duty) : 0;
   const capacityKw = model.capacityKw * pumpFactor * plantAvailabilityAt(heat, i);
   const loadKw = running ? loadW / 1000 : 0;
-  const loopJPerK = model.loopLitres * WATER_J_PER_L_K;
+  const P = plantValues(heat, i);
+  const loopJPerK = model.loopLitres * P.waterJPerLK;
   let supplyC: number;
-  if (!running) supplyC = approach(state.supplyC, 45, dt, 900);
+  if (!running) supplyC = approach(state.supplyC, P.cduIdleSupplyC, dt, P.cduIdleTauS);
   else if (loadKw > capacityKw)
     supplyC = Math.min(
-      MAX_LOOP_C,
+      P.maxLoopC,
       state.supplyC + (((loadKw - capacityKw) * 1000) / loopJPerK) * dt,
     );
-  else supplyC = approach(state.supplyC, state.setpointC, dt, 45);
-  const spread = capacityKw > 0 ? 10 * clamp(loadKw / capacityKw, 0, 1.5) : 0;
+  else supplyC = approach(state.supplyC, state.setpointC, dt, P.cduTauS);
+  const spread = capacityKw > 0 ? P.cduSpreadC * clamp(loadKw / capacityKw, 0, 1.5) : 0;
   Object.assign(state, {
     running,
     pumpsOk,
@@ -216,26 +254,34 @@ function updateChiller(heat: Heat, i: number, loadKw: number, dt: number): void 
   const faults = faultsAt(heat, i);
   const running = state.powered && state.adminOn && !hasFault(faults, "chiller_failure");
   const factor = faultParam(faults, "chiller_degraded", "factor") ?? 1;
-  const capacityKw = running
-    ? model.capacityKw * factor * ambientDerate(model.plant, heat.world.outdoorC())
-    : 0;
-  const bufferJPerK = model.bufferM3 * 1000 * WATER_J_PER_L_K;
+  const P = plantValues(heat, i);
+  const derate = ambientDerate(
+    model.plant,
+    heat.world.outdoorC(),
+    P,
+    heat.world.physics.curve(DERATE_CURVE[model.plant]),
+  );
+  const capacityKw = running ? model.capacityKw * factor * derate : 0;
+  const bufferJPerK = model.bufferM3 * 1000 * P.waterJPerLK;
   let supplyC: number;
   if (running && loadKw <= capacityKw)
-    supplyC = approach(state.supplyC, model.supplySetpointC, dt, 60);
+    supplyC = approach(state.supplyC, model.supplySetpointC, dt, P.chillerTauS);
   else
     supplyC = Math.min(
-      MAX_LOOP_C,
+      P.maxLoopC,
       state.supplyC + ((loadKw * 1000 - capacityKw * 1000) / bufferJPerK) * dt,
     );
-  const spread = capacityKw > 0 ? 6 * clamp(loadKw / capacityKw, 0, 1.5) : 6;
+  const spread =
+    capacityKw > 0 ? P.chillerSpreadC * clamp(loadKw / capacityKw, 0, 1.5) : P.chillerSpreadC;
   Object.assign(state, {
     running,
     loadKw,
     capacityKw,
     supplyC,
     returnC: supplyC + spread,
-    powerW: running ? model.powerPerKw * loadKw * 1000 + 0.01 * model.capacityKw * 1000 : 0,
+    powerW: running
+      ? model.powerPerKw * loadKw * 1000 + P.chillerAuxShare * model.capacityKw * 1000
+      : 0,
   });
 }
 

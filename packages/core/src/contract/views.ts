@@ -22,6 +22,7 @@ import type {
   WorldRecord,
   WorldSummary,
 } from "@terrarium/core/experiments";
+import type { PhysicsProfile } from "@terrarium/core/physics/slots";
 import type { ScenarioIssue } from "@terrarium/core/scenario";
 import type {
   Calibration,
@@ -195,6 +196,17 @@ export interface ShareView {
 }
 
 export type LeaderboardView = Leaderboard;
+
+/** A world's physics profile as the screen shows it (REQ-113). */
+export interface WorldPhysicsView {
+  readonly worldId: string;
+  /** The world version this profile belongs to: send it back when saving. */
+  readonly digest: string;
+  readonly profile: PhysicsProfile;
+  /** `v1` for the default physics, else the version and a hash of what was changed. */
+  readonly fingerprint: string;
+  readonly isDefault: boolean;
+}
 
 /** Server-sent events on /api/experiments/:id/events (live progress, REQ-030). */
 export type ExperimentEvent =

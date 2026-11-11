@@ -2,7 +2,7 @@
 title: HTTP API 계약
 kind: spec
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-11
 covers:
   - packages/core/src/contract/routes.ts
   - packages/core/src/contract/responses.ts
@@ -13,13 +13,13 @@ covers:
   - packages/core/src/contract/model-routes.ts
   - packages/core/src/contract/community.ts
   - packages/core/src/contract/community-routes.ts
-covers_hash: f31e02754f7cae96
+covers_hash: fb9dbeec350e93a4
 verification_log:
-  - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
-  - "2026-11-07: 2026-11-07: REQ-104(ADR-0127) 코드와 대조해 고쳤다"
   - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-07: o15 합치기 (2차 피드백 수정)"
+  - "2026-11-10: 물리 프로필(REQ-113) 반영: 새 라우트·벤치마크 키 지문"
   - "2026-11-07: REQ-112의 경로 넷을 표에 더했다"
+  - "2026-11-11: main 합치기 뒤 다시 읽음: 물리 프로필(REQ-113) 반영 문단과 라우트 행이 main의 새 내용과 함께 맞다"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -74,6 +74,8 @@ verification_log:
 | `POST /api/models/:id/default` | 기본 모델로 정하기(하나만 기본) | |
 | `POST /api/moss/ask` | 이끼에게 묻기(REQ-103, [ADR-0124](adr/0124-moss-assistant.md), [설명](moss.md)) `{screen, question, state?, actions?: [{id, label}]}` → `{answer, answered, sources: [{kind: "doc", id, title, file, path} \| {kind: "state"}], suggestedActions, followUps, model, rough?}`. 서버가 문서 조각(BM25 방식 낱말 점수)과 화면 상태로 프롬프트를 짜 **기본 모델**에 묻는다. 답은 세 문장 안이고, 없는 출처와 `actions`에 없는 동작 id는 버리며, 근거가 없으면 모델을 부르지 않고 "문서에 없어요"로 답한다. **서버는 동작을 실행하지 않는다.** 기본 모델이 없으면 **409** `{ error: { code: "no_model", reason: "no_model" } }`([ADR-0125](adr/0125-moss-requires-model.md): 이끼는 기본 모델이 있어야만 쓸 수 있다)이고, 모델이 답하지 않으면 503 | |
 | `GET /api/worlds?sort=` | 세계 목록(템플릿 제외). `sort`는 `popular`(기본)·`active`·`new`·`mine`, 밖의 값은 400. 카드마다 `stats`(`experiments30d`·`experiments`·`likes`·`startedByOthers`·`score`·`week`), `likes`, `likedByMe`, `ownerTitles`가 실려 온다 (REQ-101, ADR-0122) | |
+| `GET /api/physics/slots` | 물리 자리 열세 개: 이름·계약·허용 범위·숫자(단위·기본값·범위·설명)·곡선 이름 (REQ-113, [ADR-0137](adr/0137-physics-slots-and-profile-core.md), [레퍼런스](physics-profile.md)) | |
+| `GET /api/worlds/:id/physics` · `PUT /api/worlds/:id/physics` | 세계의 물리 프로필과 지문(`v1`이 기본). `PUT { profile, baseDigest }`는 주인만, 잘못된 프로필은 한국어 문제와 함께 400, 낡은 `baseDigest`는 409, `profile`이 비면 기본으로 되돌린다 | |
 | `POST /api/worlds/:id/like` | 좋아요 `{ worldId, likes, likedByMe }`. 사람마다 세계마다 하나라 다시 눌러도 하나. 없는 세계 404, 이름 없는 사람 403 | |
 | `DELETE /api/worlds/:id/like` | 좋아요 취소(없어도 같은 답) | |
 | `GET /api/users/:id/titles` | 한 사람의 칭호 전부 `{ user, titles: [{ key, label, means, earnedAt }] }`, 보여 줄 차례대로. `:id`는 사람 이름 | |

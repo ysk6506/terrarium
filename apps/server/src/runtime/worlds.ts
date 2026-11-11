@@ -10,12 +10,15 @@ import {
   type ImportedWorld,
   type ImportWorldRequest,
   InvalidInputError,
+  type PutPhysicsRequest,
   type SavedWorld,
   UnavailableError,
   type UpdateWorldRequest,
+  type WorldPhysicsView,
 } from "@terrarium/core/contract";
 import type { WorldOrigin, WorldRecord, WorldSummary } from "@terrarium/core/experiments";
 import { ConflictError, TerrariumError } from "@terrarium/core/kernel";
+import { DEFAULT_PROFILE, fingerprintOf, isDefaultProfile } from "@terrarium/core/physics/slots";
 import { importReality } from "@terrarium/core/sources/realimport";
 import {
   generateCampus,
@@ -37,6 +40,17 @@ export function blueprintIssues(issues: readonly Issue[]) {
   return issues
     .filter((i) => i.severity === "error")
     .map((i) => ({ path: i.entityId ?? i.linkId ?? "", message: `${i.message}. ${i.fix}` }));
+}
+
+function physicsViewOf(world: WorldRecord): WorldPhysicsView {
+  const profile = world.blueprint.physics ?? DEFAULT_PROFILE;
+  return {
+    worldId: world.id,
+    digest: world.digest,
+    profile,
+    fingerprint: fingerprintOf(profile),
+    isDefault: isDefaultProfile(profile),
+  };
 }
 
 export class Worlds {
@@ -173,6 +187,26 @@ export class Worlds {
       );
     const { blueprint, digest: _digest, updatedAt: _updatedAt, ...base } = current;
     return this.save({ ...base, name: req.name ?? current.name }, req.blueprint ?? blueprint);
+  }
+
+  /** The physics profile of a world (REQ-113): what was changed from the default physics, and the fingerprint of it. */
+  async physics(id: string): Promise<WorldPhysicsView> {
+    return physicsViewOf(await this.get(id));
+  }
+
+  /** Save a physics profile with the world: a new version of it, so runs on the old physics keep meaning what they ran on. */
+  async setPhysics(viewer: Viewer, id: string, req: PutPhysicsRequest): Promise<WorldPhysicsView> {
+    const current = await this.get(id);
+    ownerOnly(viewer, current.owner, "세계의 물리 고치기");
+    if (current.digest !== req.baseDigest)
+      throw new ConflictError(
+        "그사이 이 세계가 바뀌었어요. 새로고침해서 바뀐 내용을 본 뒤 다시 저장해 주세요",
+      );
+    const { blueprint, digest: _digest, updatedAt: _updatedAt, ...base } = current;
+    const { physics: _old, ...rest } = blueprint;
+    const next = isDefaultProfile(req.profile) ? rest : { ...rest, physics: req.profile };
+    const saved = await this.save(base, next);
+    return physicsViewOf(saved.world);
   }
 
   async delete(viewer: Viewer, id: string): Promise<{ deleted: boolean }> {

@@ -60,7 +60,7 @@ export class SupplyResolver {
   /** Rack id -> position of its battery pack (BBU, REQ-107); undefined for a world without any. */
   private readonly bbuAt: Map<string, number> | undefined;
 
-  constructor(private readonly world: World) {
+  constructor(readonly world: World) {
     this.plan = powerPlanOf(world.index, world.catalog);
     this.states = world.stateList();
     this.faults = world.faultList();

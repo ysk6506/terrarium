@@ -107,6 +107,8 @@ export interface Snapshot {
   readonly scenarioDigest: string;
   readonly scenarioName: string;
   readonly oracle: string;
+  /** The world's physics fingerprint (REQ-113): `v1` for the default physics. Older experiments have none, which means `v1`. */
+  readonly physics?: string;
 }
 
 export interface Experiment {

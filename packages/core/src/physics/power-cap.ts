@@ -5,6 +5,11 @@
  * A cap never goes below a server's idle power, so a limit under the idle sum cannot be kept; `kept` says so.
  */
 
+import { defaultsOf } from "@terrarium/core/physics/slots";
+
+/** The planner's own estimate of the throughput under a cap uses v1's numbers (a plan is made before any run, with no world to ask). */
+const V1 = defaultsOf("power.device");
+
 export type CapMode = "equal" | "proportional";
 
 export interface CapServer {
@@ -28,7 +33,7 @@ export interface CapPlan {
 export function perfUnderCap(capW: number, demandW: number, idleW: number): number {
   const dyn = demandW - idleW;
   if (dyn <= 0 || capW >= demandW) return 1;
-  return Math.max(0.1, Math.max(0, capW - idleW) / dyn) ** 0.4;
+  return Math.max(V1.capPerfFloor, Math.max(0, capW - idleW) / dyn) ** V1.capPerfExponent;
 }
 
 /** Split `limitW` over the servers. Water-filling: a server that needs less than its share frees the rest for the others. */

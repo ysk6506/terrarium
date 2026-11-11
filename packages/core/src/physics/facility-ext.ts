@@ -11,15 +11,8 @@ import type { Entity, StateOf, World, WorldEvent } from "@terrarium/core/world";
 import { CLUSTER_CAUSE } from "./db";
 import { SupplyResolver } from "./power-supply";
 
-/** Seconds the automatic transfer needs to move a substation to the other utility feed. */
-export const AUTO_TRANSFER_S = 10;
-/** Transformer temperature (°C) at which the protection trips it, and the temperature it must cool below to come back. */
-export const TRANSFORMER_TRIP_C = 105;
-const TRANSFORMER_BACK_C = 80;
 /** Seconds a leak sensor needs to power a rack off with the leak policy. */
 export const LEAK_SENSE_S = 5;
-/** Minutes a rack battery needs to charge full again. */
-const RECHARGE_MIN = 30;
 
 const num = (e: Entity, key: string, def: number): number =>
   typeof e.props[key] === "number" ? (e.props[key] as number) : def;
@@ -56,7 +49,8 @@ function updateFeeds(world: World, sub: Entity, events: WorldEvent[]): void {
   s.lostSince ??= t;
   const other = s.activeFeed === 1 ? 2 : 1;
   const manual = lost.some((f) => f.params.manual === 1);
-  if (manual || !s.feeds[other - 1] || t - s.lostSince < AUTO_TRANSFER_S) return;
+  const transferS = world.physicsAt("power.protection", sub.id).autoTransferS;
+  if (manual || !s.feeds[other - 1] || t - s.lostSince < transferS) return;
   s.activeFeed = other;
   delete s.lostSince;
   note(world, events, `${sub.name}: 수전 ${other}번 줄로 자동 전환했어요`, CLUSTER_CAUSE);
@@ -71,17 +65,22 @@ function updateTransformers(world: World, sub: Entity, dt: number, events: World
   const capW = num(sub, "capacityKw", 2000) * 1000;
   const working = s.transformersOk.filter(Boolean).length;
   s.loadPct = working > 0 ? Math.round((load / (capW * working)) * 100) : 100;
+  const P = world.physicsAt("power.conversion", sub.id);
+  const guard = world.physicsAt("power.protection", sub.id);
   const hotFault = faultOn(world, sub.id, "transformer_overtemp");
   const hotOne = hotFault ? (hotFault.params.transformer ?? 1) : 0;
   const ok: [boolean, boolean] = [...s.transformersOk];
   const temps: [number, number] = [...s.transformerC];
   for (const n of [0, 1] as const) {
-    const target = 55 + 40 * (s.loadPct / 100) ** 2 + (hotOne === n + 1 ? 60 : 0);
-    temps[n] = approach(temps[n], ok[n] ? target : 40, dt, 150);
-    if (ok[n] && temps[n] >= TRANSFORMER_TRIP_C) {
+    const target =
+      P.transformerBaseC +
+      P.transformerRiseC * (s.loadPct / 100) ** 2 +
+      (hotOne === n + 1 ? P.transformerHotFaultC : 0);
+    temps[n] = approach(temps[n], ok[n] ? target : P.transformerOffC, dt, P.transformerTauS);
+    if (ok[n] && temps[n] >= guard.transformerTripC) {
       ok[n] = false;
       note(world, events, `${sub.name}: 변압기 ${n + 1}이(가) 과열로 보호 차단됐어요`, "physics");
-    } else if (!ok[n] && temps[n] < TRANSFORMER_BACK_C && hotOne !== n + 1) ok[n] = true;
+    } else if (!ok[n] && temps[n] < guard.transformerResetC && hotOne !== n + 1) ok[n] = true;
   }
   s.transformersOk = ok;
   s.transformerC = temps;
@@ -121,7 +120,8 @@ function updateBbu(world: World, bbu: Entity, supply: SupplyResolver, dt: number
   const rack = rackOf(world, bbu);
   const cells = faultOn(world, bbu.id, "bbu_cell_fault")?.params.cells ?? 0;
   s.cellsFailed = cells;
-  const capKwh = Math.max(0.1, num(bbu, "kwh", 4) * (1 - 0.25 * cells));
+  const S = world.physicsAt("power.storage", bbu.id);
+  const capKwh = Math.max(0.1, num(bbu, "kwh", 4) * (1 - S.bbuCellLossShare * cells));
   const pdus = rack ? world.index.childrenOf(rack.id, "pdu") : [];
   const fed = pdus.some((p) => {
     const at = world.index.positionOf(p.id);
@@ -130,7 +130,8 @@ function updateBbu(world: World, bbu: Entity, supply: SupplyResolver, dt: number
   const loadKw = rack ? world.stateAs(rack.id, "rack").powerW / 1000 : 0;
   s.onBattery = !fed;
   s.chargePct = clamp(
-    s.chargePct + (fed ? (100 * dt) / (RECHARGE_MIN * 60) : -((loadKw * dt) / 3600 / capKwh) * 100),
+    s.chargePct +
+      (fed ? (100 * dt) / (S.bbuRechargeMin * 60) : -((loadKw * dt) / 3600 / capKwh) * 100),
     0,
     100,
   );
@@ -148,11 +149,14 @@ function updateBus(world: World, bus: Entity, events: WorldEvent[]): void {
   const rack = rackOf(world, bus);
   const sag = faultOn(world, bus.id, "dc_bus_sag")?.params.sagV ?? 0;
   const p = rack ? world.stateAs(rack.id, "rack").powerW : 0;
-  s.voltageV = Math.round((48 - sag - 6 * (p / num(bus, "ratedW", 30_000)) ** 2) * 100) / 100;
+  const P = world.physicsAt("power.conversion", bus.id);
+  s.voltageV =
+    Math.round((P.busNominalV - sag - P.busDroopV * (p / num(bus, "ratedW", 30_000)) ** 2) * 100) /
+    100;
   const was = s.status;
   delete s.why;
-  s.status = s.voltageV < 40 ? "down" : s.voltageV < 44 ? "degraded" : "ok";
-  if (s.status !== "ok") s.why = `전압 ${s.voltageV} V(48 V 기준)`;
+  s.status = s.voltageV < P.busDownV ? "down" : s.voltageV < P.busDegradedV ? "degraded" : "ok";
+  if (s.status !== "ok") s.why = `전압 ${s.voltageV} V(${P.busNominalV} V 기준)`;
   if (s.status === "down" && was !== "down" && rack)
     for (const server of world.index.childrenOf(rack.id, "server"))
       if (world.stateAs(server.id, "server").adminOn)

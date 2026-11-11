@@ -121,9 +121,10 @@ function targetTemp(world: World, server: string, util: number): number {
   const rack = world.index.find(server)?.parentId;
   const r = rack ? world.stateAs(rack, "rack") : undefined;
   const s = world.stateAs(server, "server");
-  if (r && r.bathC > 0) return r.bathC + 8 + 14 * util;
-  if (r && r.coolantC > 0) return r.coolantC + 12 + 22 * util;
-  return s.inletC + 26 + 30 * util;
+  const D = world.physicsAt("thermal.device", server);
+  if (r && r.bathC > 0) return r.bathC + D.gpuImmersionBaseC + D.gpuImmersionCPerLoad * util;
+  if (r && r.coolantC > 0) return r.coolantC + D.gpuDlcBaseC + D.gpuDlcCPerLoad * util;
+  return s.inletC + D.gpuAirBaseC + D.gpuAirCPerLoad * util;
 }
 
 const num = (v: unknown, def: number): number => (typeof v === "number" ? v : def);

@@ -2,7 +2,7 @@
 title: 운영 모드 — 끝이 없는 실험, 당겨서 보는 모니터링, 실시간과 빨리 감기
 kind: spec
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-10
 covers:
   - packages/core/src/session/operation/config.ts
   - packages/core/src/session/operation/mtbf.ts
@@ -17,13 +17,13 @@ covers:
   - apps/server/src/runtime/dispatcher.ts
   - apps/server/src/runtime/hosts.ts
   - packages/core/src/session/operation/journal.ts
-covers_hash: 2332f298e79bab7f
+covers_hash: 9ac308da2646777c
 verification_log:
-  - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: o5 합치기 (애플리케이션 층)"
   - "2026-11-07: MTBF 표에 REQ-106의 열네 줄을 mtbf.ts와 대조해 더했다"
   - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장 절을 더하거나 고쳤고 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
+  - "2026-11-10: 물리 상수를 슬롯 표로 옮김(REQ-113). v1 동작은 physics-golden이 비트까지 같음을 확인, 문서 내용 변화 없음"
 ---
 # 운영 모드 (REQ-090, [ADR-0094](adr/0094-operation-mode.md))
 

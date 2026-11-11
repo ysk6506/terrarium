@@ -2,7 +2,7 @@
 title: 사이트·DR 층 — 서버룸 하나에서 멀티 사이트까지, 지역 복제, 합의 DB, 관리형 멀티 AZ
 kind: spec
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-10
 covers:
   - packages/core/src/world/ladder-site.ts
   - packages/core/src/world/site-dr.ts
@@ -22,12 +22,12 @@ covers:
   - packages/core/src/sources/worldgen/shaped-site.ts
   - packages/core/src/topology/impact-site.ts
 verification_log:
-  - "2026-11-07: REQ-106 마무리(툴 인자·설명 문구·고장 설명 다듬기)에 맞춰 다시 대조했다. 서술은 그대로 맞다"
   - "2026-11-07: REQ-106 마무리(전환이 이미 옮긴 서비스를 되돌리지 않게 함)에 맞춰 다시 대조했다. 서술은 그대로 맞다"
   - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-07: REQ-108: 코드와 대조했고 필요한 서술(기대 복구 시간, 서비스 카드 복사, 숫자 보정)을 고쳤다. 나머지는 그대로 맞다"
   - "2026-11-07: 첫 단계에서 멈추는 전환, 창 +5분, 손대지 않는 시트 설명을 ADR-0133에 맞춰 확인"
-covers_hash: 312655ce835e8faf
+  - "2026-11-10: 물리 상수를 슬롯 표로 옮김(REQ-113). v1 동작은 physics-golden이 비트까지 같음을 확인, 문서 내용 변화 없음"
+covers_hash: fc8b5ec570edbe23
 ---
 # 사이트·DR 층 (REQ-106, ADR-0129)
 

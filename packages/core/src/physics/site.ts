@@ -31,8 +31,6 @@ import {
 import { hostGone } from "./app-calls";
 import { CLUSTER_CAUSE } from "./db";
 
-/** A copy that fell behind catches up this many seconds of lag each second. */
-const CATCH_UP = 10;
 /** Seconds a dead site must stay well before an active-active pair takes it back. */
 const REJOIN_S = 60;
 const PROBE = serviceDef({ id: "probe", kind: "service", name: "probe", props: {} });
@@ -151,7 +149,10 @@ function catchUp(
   events: WorldEvent[],
 ): void {
   const { s, def, base, dt } = at;
-  s.lagS = s.lagS > base ? Math.max(base, s.lagS - CATCH_UP * dt) : base;
+  s.lagS =
+    s.lagS > base
+      ? Math.max(base, s.lagS - world.physics.base("network.link").catchUpFactor * dt)
+      : base;
   if (def.mode === "sync" && s.mode === "async" && s.lagS <= base + 0.5) {
     s.mode = "sync";
     note(world, events, "복제가 따라잡아 다시 동기로 올라갔어요", "physics");

@@ -4,6 +4,7 @@
  * which the server runs right after (world/validate, scenario/validate, worldgen specProblems).
  */
 import { MAX_SEEDS } from "@terrarium/core/experiments";
+import { type PhysicsProfile, profileProblems } from "@terrarium/core/physics/slots";
 import {
   ACTION_KINDS,
   COMPARE_OPS,
@@ -95,6 +96,11 @@ const LinkSchema = z
   .object({ id: IdSchema, kind: z.enum(LINK_KINDS), from: IdSchema, to: IdSchema, props: Props })
   .strict();
 
+/** A physics profile (REQ-113): each problem is reported at the profile, in Korean. */
+export const PhysicsProfileSchema = z.custom<PhysicsProfile>().superRefine((v, ctx) => {
+  for (const message of profileProblems(v)) ctx.addIssue({ code: z.ZodIssueCode.custom, message });
+});
+
 export const BlueprintSchema = z
   .object({
     schemaVersion: z.literal(BLUEPRINT_SCHEMA_VERSION),
@@ -103,6 +109,7 @@ export const BlueprintSchema = z
     entities: z.array(EntitySchema).max(MAX_ENTITIES),
     links: z.array(LinkSchema).max(MAX_LINKS),
     meta: Props,
+    physics: PhysicsProfileSchema.optional(),
   })
   .strict() as unknown as z.ZodType<Blueprint>;
 

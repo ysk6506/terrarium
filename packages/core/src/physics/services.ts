@@ -12,8 +12,6 @@ import {
 } from "@terrarium/core/world";
 import type { Draft } from "./alarm-scan";
 
-/** Work is caught up at this many times the rate it piled up. */
-const CATCH_UP = 2;
 const HOUR = 3600;
 
 export function updateServices(world: World, dt: number): void {
@@ -31,7 +29,8 @@ export function updateServices(world: World, dt: number): void {
     state.lostKrw = Math.round(state.lostKrw + ((def.harm.perHourKrw ?? 0) * share * dt) / HOUR);
     if (def.queue) {
       const rate = def.queue.perHour;
-      const change = share > 0 ? rate * share : -rate * CATCH_UP;
+      const change =
+        share > 0 ? rate * share : -rate * world.physics.base("perf.service").backlogCatchUp;
       state.backlog = Math.max(0, Math.round(state.backlog + (change * dt) / HOUR));
     }
   }

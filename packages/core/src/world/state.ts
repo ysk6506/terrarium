@@ -116,6 +116,8 @@ export interface PduState extends Base {
   powered: boolean;
   tripped: boolean;
   loadW: number;
+  /** Heat a trip curve has built up while the load is past the rating, 0..1 (REQ-113); absent unless the profile has a curve and the breaker is overloaded. */
+  overload?: number;
   /** Outlets an operator switched off (`Outlet.PowerControl`), ascending, numbered from 1; absent when none. */
   outletsOff?: number[];
 }
@@ -125,6 +127,8 @@ export interface PanelState extends Base {
   tripped: boolean;
   loadW: number;
   loadA: number;
+  /** As on a PDU. */
+  overload?: number;
 }
 export interface UpsState extends Base {
   kind: "ups";

@@ -7,12 +7,13 @@ covers:
   - package.json
   - harness/config/architecture.yaml
   - harness/config/protected-paths.txt
-covers_hash: 64cb6ab7d6639e82
+covers_hash: 234169c92d842a6b
 verification_log:
   - "2026-11-05: architecture.yaml의 변경은 core.topology 단위 하나를 더한 것뿐이다. 지도와 절대 규칙 표, 명령 목록은 그대로 맞다(ADR-0097)"
   - "2026-11-06: LLM API 등록"
   - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
   - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
+  - "2026-11-10: 단위 표 변화 없음, physics.slots 단위 추가를 확인"
   - "2026-11-10: CI가 합치기 관문이 되었다는 한 줄을 더함 (ADR-0140). 명령 목록과 보호 경로 표는 그대로 맞다"
 ---
 # Terrarium — 코딩 에이전트 안내서

@@ -9,6 +9,7 @@
  * Links point in the *dependency* direction (consumer -> supplier), like the cloud_topology graph:
  * a server is POWERED by a PDU, a rack is COOLED by a cooling unit, a VM RUNS ON a host.
  */
+import type { PhysicsProfile } from "@terrarium/core/physics/slots";
 import type { Rect, Rotation } from "@terrarium/core/spatial";
 import type { LinkKind } from "./blueprint-links";
 
@@ -338,6 +339,8 @@ export interface Blueprint {
   readonly entities: readonly Entity[];
   readonly links: readonly Link[];
   readonly meta: Readonly<Record<string, PropValue>>;
+  /** The physics of this world when it is not the default (REQ-113): numbers, tables and weather changed from v1. */
+  readonly physics?: PhysicsProfile;
 }
 
 export function emptyBlueprint(id: string, name: string): Blueprint {

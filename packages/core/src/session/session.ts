@@ -484,6 +484,7 @@ export class Session {
         world: this.worldDigest(),
         scenario: scenarioDigest(this.config.scenario),
         oracle: ORACLE_VERSION,
+        physics: this.world.physics.fingerprint,
       },
       seed: this.config.seed,
       ...scopeOf(this.config.domains, this.config.leadTimes),

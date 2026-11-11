@@ -2,7 +2,7 @@
 title: 실험과 결과 분석
 kind: spec
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-11
 covers:
   - packages/core/src/experiments/agent-version.ts
   - packages/core/src/experiments/recipe.ts
@@ -18,13 +18,13 @@ covers:
   - packages/core/src/world/incidents.ts
   - apps/server/src/runtime/executor-operation.ts
   - packages/core/src/session/run-events.ts
-covers_hash: 4b7147eac45c7114
+covers_hash: 5315deb6e1ac0abb
 verification_log:
-  - "2026-11-06: 2f 합치기 · 2차 끝"
-  - "2026-11-06: LLM API 등록"
   - "2026-11-06: REQ-101: 저장소 포트·출발점(startedFrom) 반영, ADR-0122"
   - "2026-11-07: 2026-11-07: REQ-104 빠른 실험·서비스 카드 포트 대조"
+  - "2026-11-10: 물리 프로필(REQ-113) 반영: 새 라우트·벤치마크 키 지문"
   - "2026-11-07: 프로세스 비교 문단을 더하고 나머지는 그대로 맞다"
+  - "2026-11-11: main 합치기 뒤 다시 읽음: 물리 프로필(REQ-113) 반영 문단과 라우트 행이 main의 새 내용과 함께 맞다"
 ---
 # 실험과 결과 분석 (REQ-015, REQ-030~033, REQ-037~040)
 
@@ -106,6 +106,8 @@ verification_log:
 **서비스의 복구도 이 나열에서 읽는다** (REQ-088). 서비스가 멈추거나 느려지면 세계 사건 `alarm.raise`(종류 `service`, 코드 `service_down`·`service_degraded`)가, 돌아오면 `alarm.clear`가 이미 남는다. 복구 우선 채점과 결과 첫 줄의 "서비스 k개 멈춤 → 0"은 이 사건과 서비스별 시간당 피해만으로 계산하는 순수 함수(`analyzeRecovery`, `serviceTimeline`)이고, 채점할 때와 끝난 실행을 다시 읽을 때 같은 값이 나온다. 세션은 채점하기 전에 세계가 마지막으로 쉬는 동안의 사건까지 나열에 적는다. 결과의 숫자(복구 시간·사람 없이 복구했나·복구 중 악화·사고 비용)와 규칙은 [측정의 신뢰](measurement.md#3-서비스가-있는-시나리오는-복구-우선으로-채점한다-req-088-adr-0091-adr-0104)에 있다. 점수는 `scoring`으로 어느 채점인지 말하고(`classic`·`recovery`), 채점 버전이 3으로 올라 벤치마크 세트가 옛 점수와 섞이지 않는다.
 
 ## 벤치마크 대시보드 (REQ-039)
+
+세계에 물리 프로필(REQ-113)이 있으면 그 지문이 **벤치마크 키와 순위 묶음**에 들어간다(`v1`이나 없음은 옛 키 그대로). 물리가 다르면 같은 시험지가 아니므로 줄 세우지 않고, 포크 비교는 점수 차이를 내지 않고 물리가 다르다고 알린다. [물리 프로필](physics-profile.md).
 
 같은 **벤치마크 세트**(같은 시험지: 세계·시나리오 digest, 오라클 버전, 시간 정책, 제품 버전)끼리만 줄 세운다. 한 줄은 하네스 × 에이전트 ×
 툴 집합이고, 여러 사람의 실험이 합쳐진다. 완료된 실행이 3번 이상이어야 순위를 받는다. 정렬은 평균 점수 → 합격률 → 진단 시간 → 호출 수.

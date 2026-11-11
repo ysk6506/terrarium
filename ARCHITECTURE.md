@@ -2,16 +2,16 @@
 title: ARCHITECTURE — 단위와 의존 방향
 kind: reference
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-10
 covers:
   - harness/config/architecture.yaml
-covers_hash: 154ca855671ab18e
+covers_hash: a181742e9b8230d5
 verification_log:
-  - "2026-11-04: architecture.yaml 대조: 시험 전용 의존성 ajv와 ajv-formats가 tests.spec 단위에만 허용된 것(ADR-0057)을 외부 라이브러리 줄에, 파사드 단위 설명에 SNMP·BACnet을 반영했다"
   - "2026-11-05: architecture.yaml에 core.topology 단위(kernel, catalog, world, physics)가 늘었다. 단위 표와 그림에 한 줄씩 더했다"
   - "2026-11-06: LLM API 등록"
   - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
   - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
+  - "2026-11-10: physics.slots 단위 추가 (architecture.yaml와 맞춤)"
 ---
 # 아키텍처
 
@@ -45,7 +45,8 @@ contract ─► analysis ─► experiments ─► oracle ─► scenario ─►
 | `catalog` | 장비 **모델**별 사양(데이터) | kernel |
 | `world` | 청사진(부지~장비), 엔티티 상태, 이벤트 로그, 스냅샷 | kernel, spatial, catalog |
 | `profiles` | **제품 버전**별 동작 변형 | kernel, catalog |
-| `physics` | 열·전력·공조 동역학 | kernel, spatial, catalog, world |
+| `physics.slots` | 물리 모델 자리 열세 개의 표(숫자·곡선·계약)와 프로필 검증·지문·보간 (ADR-0137) | kernel |
+| `physics` | 열·전력·공조 동역학 | kernel, spatial, catalog, world, physics.slots |
 | `topology` | 월드를 읽어 전원·냉방·네트워크 층의 보드로 접고(타일 150개 이하), 고장의 영향 범위를 계산한다. 화면과 채점용이고 에이전트 툴이 아니다 (ADR-0084, 0097) | kernel, catalog, world, physics |
 | `facades` | Redfish/SNMP/BACnet/스위치 CLI·eAPI·NX-API/vCenter/vROps ↔ 월드 포트 번역. 웹을 모른다 | kernel, catalog, profiles, world |
 | `tools` | 에이전트용 툴 카탈로그와 디스패처 | kernel, catalog, world, facades |
