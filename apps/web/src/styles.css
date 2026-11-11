@@ -4745,6 +4745,13 @@ button.title-pill:hover {
   gap: 10px;
 }
 
+@media (max-width: 640px) {
+  /* The tab strip is at the bottom on a phone: the pill rests above it instead of over its labels (ADR-0141). */
+  .moss-launch:not(.high) {
+    bottom: max(92px, calc(var(--bottom-bar-h, 0px) + var(--below-bar-h, 0px) + 16px));
+  }
+}
+
 .moss-launch.high {
   /* above the builder's "다음:" chip and the agents chip (14px + 40px + 8px + 36px), which it used to cover */
   bottom: calc(var(--bottom-bar-h, 56px) + var(--below-bar-h, 0px) + 110px);
