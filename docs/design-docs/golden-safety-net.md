@@ -11,6 +11,7 @@ covers:
 verification_log:
   - "2026-11-11: 처음 씀. 골든 시험 열두 파일과 도우미 네 파일을 코드와 대조 (product-design.md 6절의 위험 첫 줄)"
   - "2026-11-11: 처음 씀: 시험 파일과 도우미를 대조"
+  - "2026-11-11: ADR-0172: 정답 풀이 골든의 개수(264)와 세계 밖 여덟 템플릿, 100이 아니던 짝의 표를 코드·시험 파일과 대조해 고쳤다"
 covers_hash: 12f569ec613ee392
 ---
 # 골든 안전망
@@ -37,7 +38,7 @@ covers_hash: 12f569ec613ee392
 |---|---|---|---|
 | 영향 범위 (REQ-078) | `tests/spec/golden-impact-{iap,campus,sdn,train,fabric}.test.ts` | 세계마다, 지원하는 고장 종류를 첫 대상과 마지막 대상(링크 고장은 스위치끼리 업링크도)에 넣고 물리를 120초 돌린 뒤 `impactOf`의 영향 장비·방·랙·서버 수·심각도·서비스 영향·고장/알람 출처 | 447 |
 | 파사드 (REQ-062, REQ-065) | `tests/spec/golden-facade.test.ts` | 스위치마다 인터페이스·이웃(CLI), BGP·ECMP·EVPN·경로·설정 글(CLI), SNMP 인터페이스 걷기. 업링크 하나를 끊은 뒤 그 양 끝 스위치도 | 120 |
-| 정답 풀이 (REQ-110) | `tests/spec/golden-scenario-{iap,campus,sdn,train,fabric,extra}.test.ts` | 세계가 받을 수 있는 내장 템플릿마다 정답 풀이를 걷고 점수 분해와 풀이 뒤 세계 상태 | 268 (풀이 134회) |
+| 정답 풀이 (REQ-110) | `tests/spec/golden-scenario-{iap,campus,sdn,train,fabric,extra}.test.ts` | 세계가 받을 수 있는 내장 템플릿마다 정답 풀이를 걷고 점수 분해와 풀이 뒤 세계 상태 | 264 (풀이 132회) |
 
 도우미는 `tests/spec/test-support/golden-*.ts`예요. 시험 제목은 모두 `[REQ-001]`(같은 입력이면 같은 결과)을 달고, 영향은 `[REQ-078]`, 파사드는 `[REQ-062] [REQ-065]`, 점수는 `[REQ-110]`을 달아요.
 
@@ -53,7 +54,25 @@ covers_hash: 12f569ec613ee392
 | `train` | `accelLab("gpu-training-cluster", { network: "net-leaf-spine" })`, 시드 7 | GPU, IB 패브릭, leaf-spine, 전력 한도 |
 | `fabric` | `gpuLab()` | 클라우드 패브릭: 케이블마다 eBGP, leaf-spine 사이 ECMP (`maximum-paths`) |
 
-같은 템플릿을 받을 수 있는 세계가 여럿이면 세계마다 걸어요. 어느 세계도 못 받는 템플릿 여섯(`sidecar-crash`, `split-brain`, `gpu-memory-leak`, `mig-misconfig`, `utility-feed-loss`, `cdu-pump-fail`)은 정답 풀이 시험이 쓰는 세계(`operatorCases`)에서 한 번씩 걸어요(`extra`). 그래서 내장 템플릿 69개가 모두 한 번 이상 들어 있어요.
+같은 템플릿을 받을 수 있는 세계가 여럿이면 세계마다 걸어요. 어느 세계도 못 받는 템플릿 여덟(`sidecar-crash`, `split-brain`, `gpu-memory-leak`, `mig-misconfig`, `utility-feed-loss`, `cdu-pump-fail`, `site-power-loss`, `dr-failover-stuck`)은 정답 풀이 시험이 쓰는 세계(`operatorCases`)에서 한 번씩 걸어요(`extra`). 그래서 내장 템플릿 69개가 모두 한 번 이상 들어 있어요.
+
+## 정답 풀이가 100점이 아니던 짝 (ADR-0172)
+
+처음 못 박을 때는 제공되는 짝 가운데 21개가 정답 풀이로 100점이 아니거나 오류를 냈고, 그 값 그대로를 못 박았어요. [ADR-0172](adr/0172-offered-scenario-means-reference-solution-reaches-full-score.md)가 그것을 불변식으로 바꿨어요: **제공되는 짝은 정답 풀이가 오류 없이 100점이다.** 시험은 `tests/spec/offered-means-solvable.test.ts`이고 이 문서의 골든 행렬을 그대로 써요. 그래서 이 문서의 골든 점수에서 100이 아닌 값은 없어요.
+
+값이 바뀐 기대 값은 키 52개예요. 나머지 키는 글자까지 그대로예요.
+
+| 짝 | 전 | 후 | 왜 바뀌었나 |
+|---|---|---|---|
+| `wrong-vlan-port`, `port-shut-by-mistake` (`iap`, `train`) | 65 | 100 | 풀이기가 포트 설명에서 서버를 아이디로만 찾았어요. 이름으로도 찾아요 |
+| `firmware-failure` (`iap`, `train`) | 90 | 100 | 풀이가 실패한 서버만이 아니라 서버 넷을 모두 두 번 올려 제한 시간을 넘겼어요. 첫 바퀴 뒤 알람이 가리키는 서버만 다시 올려요 |
+| `firmware-failure` (`campus`, `sdn`, `fabric`) | 100 | 100 | 같은 길 변경 때문에 점수 설명의 시간과 세계 지문이 바뀌었어요 (점수는 그대로) |
+| `firmware-one` (`train`) | 60 | 100 | 비어 있는 서버 다섯을 모두 올렸어요. 시트가 처음 가리키는 한 대만 올려요 |
+| `k8s-pending` (`iap`) | 오류 | 100 | 줄일 워크로드 이름을 `report`로 못 박았어요. 서비스가 기대지 않는 워크로드를 찾아요 |
+| `domain-memory-vendor` (`sdn`) | 오류 | 100 | 대기 쪽이 없는 서비스에서 VM을 옮길 서버가 없었어요. 다른 서버로 옮겨요 |
+| `db-primary-down` (`campus`) | 오류 | 100 | 클러스터가 스스로 넘기는 세계의 길이 없었어요. 읽고, 원인을 말하고, 기다려요 |
+| `db-replication-broken`, `db-shared-path-cut`, `session-store-down`, `mesh-control-stuck`, `k8s-worker-down`, `k8s-etcd-quorum`, `replication-broken` (`campus`) | 30 | 100 | `srv-t1`의 서비스 프로세스 열 개가 메모리 100%를 채워, 서버를 건드리면 월간 리포트가 느려지고 포털이 정상이 되지 못했어요. 프로세스당 몫을 나눠 메모리가 85%를 넘지 않게 했어요. |
+| `k8s-pending`, `k8s-disk-pressure`, `site-power-loss`, `dr-failover-stuck` (`campus`) | 오류 또는 30 | 제공 안 함 | 이 세계로는 정답 풀이도 복구하지 못해요(배치 작업 없음, 파드가 들어갈 자리 없음, 복구 사이트에 서버 없음). `unavailable()`이 이유를 말해요. 뒤의 둘은 정답 풀이 시험의 사이트 세계에서 한 번씩 못 박아요(`extra`, 새 키 넷) |
 
 ## 시간과 결정성
 
@@ -69,7 +88,6 @@ covers_hash: 12f569ec613ee392
 | 블루프린트 자체 | 일부러 안 걸었어요. ADR-0169 4번이 링크 표현을 바꾸니 처음부터 바뀔 것이라, 걸면 바뀌어야 할 것이 막혀요 |
 | 시드를 바꾼 실행, 고장 둘 이상의 조합 | 영향은 고장 하나씩, 점수는 시드 1만. 템플릿이 넣는 조합은 정답 풀이로 걸려요 |
 | 큰 세계, 다방·다건물, 액냉·DR 사이트·지오 스토리지 | 가장 작은 크기만 골랐어요. DR은 `campus`와 `extra`에만 있어요 |
-| 정답 풀이가 100이 아닌 짝 | 템플릿이 그 세계를 위해 만들어지지 않은 짝이라 65, 90, 60, 30점이 나와요(`iap`·`train`의 VLAN·펌웨어 템플릿, `campus`의 DB·쿠버네티스·사이트 템플릿 열 가지). 그 값도 못 박았어요. 풀이가 던지는 짝(`k8s-pending`이 `iap`·`campus`에서, `db-primary-down`이 `campus`에서, `domain-memory-vendor`가 `sdn`에서)은 오류 글의 지문을 못 박았어요 |
 
 ## 실패를 읽는 법
 

@@ -1,8 +1,8 @@
 /**
  * Golden: the reference solution (정답 풀이, REQ-110) played on every built-in scenario template the `fabric` world can host; the score breakdown and the
  * final world state of each run are fingerprinted, seed 1. It protects the scores and the world after a perfect
- * run while the model moves to ports and one propagation engine (ADR-0168, ADR-0169). A total below 100 is as
- * recorded: that template is not made for this world, and the grader's answer there is pinned all the same.
+ * run while the model moves to ports and one propagation engine (ADR-0168, ADR-0169). A template the world offers
+ * scores 100 here (ADR-0172); a template the world cannot host is not offered and has no row.
  * An expectation here may change only through the test-lock amend procedure (ADR-0004), with an ADR that
  * explains why the behaviour of an existing world changed. A red test here means exactly that.
  * Read docs/design-docs/golden-safety-net.md first.
@@ -32,8 +32,8 @@ const EXPECTED: Readonly<Record<string, string>> = {
   "firmware-one@fabric:world": "5072:1aee056f26dd8f10",
   "firmware-rack@fabric:score": "100 1294:0d0b00c86f557404",
   "firmware-rack@fabric:world": "5069:197fa65cc9c14118",
-  "firmware-failure@fabric:score": "100 1273:0e755deb3a476710",
-  "firmware-failure@fabric:world": "5185:1dfb386dcd23a010",
+  "firmware-failure@fabric:score": "100 1272:11987988bb37e817",
+  "firmware-failure@fabric:world": "5185:0543e020c0f2e015",
 };
 
 describe("the reference solution gives the recorded score and world on fabric [REQ-110] [REQ-001]", () => {
