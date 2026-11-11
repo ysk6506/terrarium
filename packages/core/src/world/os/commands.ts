@@ -3,11 +3,14 @@ import { awk } from "./awk";
 import { multipath, pgIsReady, psql } from "./cmd-db";
 import { find } from "./cmd-find";
 import { cp, du, env, ls, rm, stat, touch, truncate } from "./cmd-fs";
-import { grep, sort } from "./cmd-grep";
+import { grep } from "./cmd-grep";
+import { ln, mkdir, readlink } from "./cmd-link";
 import { dmesg, journalctl } from "./cmd-log";
 import { curl, dig, nslookup, ping } from "./cmd-net";
+import { printf } from "./cmd-printf";
 import { kill, nice, pgrep, pidof, pkill, ps, top } from "./cmd-proc";
 import { ip, lsof, netstat, ss } from "./cmd-sock";
+import { sort } from "./cmd-sort";
 import {
   date,
   df,
@@ -22,7 +25,7 @@ import {
   uptime,
   whoami,
 } from "./cmd-sys";
-import { cat, cut, echo, head, printf, tail, tee, testCmd, tr, uniq, wc, xargs } from "./cmd-text";
+import { cat, cut, echo, head, tail, tee, testCmd, tr, uniq, wc, xargs } from "./cmd-text";
 import { chronyc, openssl, timedatectl } from "./cmd-time";
 import { sed } from "./sed";
 import type { Handler } from "./types";
@@ -90,6 +93,9 @@ export const COMMANDS: Readonly<Record<string, Handler>> = {
   touch,
   cp,
   mv: cp,
+  mkdir,
+  ln,
+  readlink,
   test: testCmd,
   "[": testCmd,
   whoami,

@@ -301,12 +301,7 @@ export function ServiceCard({
       <p className="tiny muted">이 피해 값은 어림한 추정이에요. 실제 사업장에 맞게 고쳐 주세요.</p>
       <ServiceHosts entity={entity} b={b} />
       <div className="row">
-        <Button
-          kind={picking ? "primary" : "plain"}
-          size="small"
-          aria-pressed={picking}
-          onClick={() => onPick(!picking)}
-        >
+        <Button chosen={picking} size="small" onClick={() => onPick(!picking)}>
           {picking ? "3D에서 서버를 눌러요" : "서버 찍어서 올리기"}
         </Button>
         <Button

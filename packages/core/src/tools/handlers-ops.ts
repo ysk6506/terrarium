@@ -63,8 +63,6 @@ export interface OpsPort {
 
 type Handler = (ctx: ToolContext, args: Args) => unknown;
 
-const STATUSES: readonly TicketStatus[] = ["mine", "waiting", "done"];
-
 const ops = (ctx: ToolContext): OpsPort => {
   if (!ctx.ops) throw new InvalidValueError("this session cannot hand work over");
   return ctx.ops;
@@ -72,10 +70,7 @@ const ops = (ctx: ToolContext): OpsPort => {
 
 function statusOf(args: Args): TicketStatus | undefined {
   if (args.status === undefined) return undefined;
-  const s = String(args.status);
-  if (!STATUSES.includes(s as TicketStatus))
-    throw new InvalidValueError(`status must be one of ${STATUSES.join(", ")}`);
-  return s as TicketStatus;
+  return String(args.status) as TicketStatus;
 }
 
 function inputOf(args: Args): TicketInput {
@@ -106,8 +101,7 @@ const createTicket: Handler = (ctx, args) => {
   return ops(ctx).createTicket({ ...input, title: input.title });
 };
 
-const updateTicket: Handler = (ctx, args) =>
-  ops(ctx).updateTicket(String(args.id ?? ""), inputOf(args));
+const updateTicket: Handler = (ctx, args) => ops(ctx).updateTicket(String(args.id), inputOf(args));
 
 const listTickets: Handler = (ctx, args) => ops(ctx).listTickets(statusOf(args));
 

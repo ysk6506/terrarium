@@ -36,6 +36,14 @@ export interface FileOptions {
 
 const DIR_SIZE = 4096;
 
+/** What `os.files` keeps of a path an operator wrote (`text`), made (`dir`) or linked (`link`). */
+interface OverlayEntry {
+  readonly t: number;
+  readonly text: string;
+  readonly dir?: true;
+  readonly link?: string;
+}
+
 /** Collects the nodes of a tree; parent directories appear by themselves. */
 export class TreeBuilder {
   readonly nodes = new Map<string, FsNode>();
@@ -77,19 +85,6 @@ export class TreeBuilder {
   text(path: string, text: string, o: Omit<FileOptions, "content"> = {}): void {
     this.file(path, { ...o, content: () => text, size: o.size ?? text.length });
   }
-
-  link(path: string, target: string): void {
-    this.dir(parentOf(path));
-    this.nodes.set(path, {
-      type: "l",
-      mode: 0o777,
-      owner: "root",
-      group: "root",
-      size: () => target.length,
-      mtime: this.h.bootT,
-      target,
-    });
-  }
 }
 
 export function parentOf(path: string): string {
@@ -130,9 +125,16 @@ const REMOVE_ROOTS = ["/var", "/tmp", "/home", "/srv", "/run", "/mnt", "/dev/shm
 const under = (path: string, roots: readonly string[]): boolean =>
   roots.some((r) => path === r || path.startsWith(`${r}/`));
 
+/** How many links one path may pass through before it is "too many levels of symbolic links". */
+const LINK_LIMIT = 16;
+/** Where a loop of symbolic links leads ("Too many levels of symbolic links"): nothing is there. */
+export const LINK_LOOP = "/<too many levels of symbolic links>";
+
 export class VirtualFs {
   private readonly nodes: Map<string, FsNode>;
   private children: Map<string, string[]> | undefined;
+  /** Whether some node is a symbolic link (paths then need resolving): only an operator makes one. */
+  private linked = false;
 
   constructor(
     readonly h: OsHost,
@@ -146,23 +148,51 @@ export class VirtualFs {
     this.overlay();
   }
 
-  /** What an operator wrote or removed lies over the described tree. */
+  /** What an operator wrote, made or removed lies over the described tree. */
   private overlay(): void {
     const { files, removed } = this.h.os;
     for (const [path, f] of Object.entries(files ?? {})) {
       const base = this.nodes.get(path);
-      this.nodes.set(path, {
-        type: "f",
-        mode: base?.mode ?? 0o644,
-        owner: base?.owner ?? "root",
-        group: base?.group ?? "root",
-        size: () => f.text.length,
-        mtime: f.t,
-        content: () => f.text,
-      });
+      this.nodes.set(path, this.overlayNode(f, base));
+      this.linked ||= f.link !== undefined;
       if (!base) this.ensureDir(parentOf(path));
     }
     for (const path of removed ?? []) this.drop(path);
+  }
+
+  private overlayNode(f: OverlayEntry, base: FsNode | undefined): FsNode {
+    const owner = base?.owner ?? "root";
+    const group = base?.group ?? "root";
+    if (f.link !== undefined) {
+      const target = f.link;
+      return {
+        type: "l",
+        mode: 0o777,
+        owner,
+        group,
+        size: () => target.length,
+        mtime: f.t,
+        target,
+      };
+    }
+    if (f.dir)
+      return {
+        type: "d",
+        mode: base?.mode ?? 0o755,
+        owner,
+        group,
+        size: () => DIR_SIZE,
+        mtime: f.t,
+      };
+    return {
+      type: "f",
+      mode: base?.mode ?? 0o644,
+      owner,
+      group,
+      size: () => f.text.length,
+      mtime: f.t,
+      content: () => f.text,
+    };
   }
 
   private ensureDir(path: string): void {
@@ -184,8 +214,41 @@ export class VirtualFs {
     for (const key of [...this.nodes.keys()]) if (key.startsWith(prefix)) this.nodes.delete(key);
   }
 
+  /**
+   * The path with the symbolic links on the way replaced by what they point to; the last part too when
+   * `followLast`. A loop of links (LINK_LIMIT hops without an end) leads to `LINK_LOOP`, a place that is not there.
+   */
+  resolve(path: string, followLast: boolean): string {
+    if (!this.linked) return path;
+    let cur = path;
+    for (let hops = 0; hops < LINK_LIMIT; hops++) {
+      const next = this.hop(cur, followLast);
+      if (next === undefined) return cur;
+      cur = next;
+    }
+    return LINK_LOOP;
+  }
+
+  /** One link of the path replaced by its target, or undefined when the path has none left. */
+  private hop(path: string, followLast: boolean): string | undefined {
+    const parts = path.split("/").filter(Boolean);
+    let prefix = "";
+    for (const [i, part] of parts.entries()) {
+      prefix += `/${part}`;
+      const n = this.nodes.get(prefix);
+      if (n?.type !== "l" || n.target === undefined) continue;
+      if (i === parts.length - 1 && !followLast) return undefined;
+      const rest = parts.slice(i + 1).join("/");
+      const base = normalize(parentOf(prefix), n.target);
+      return rest ? `${base === "/" ? "" : base}/${rest}` : base;
+    }
+    return undefined;
+  }
+
+  /** What `lstat` says: the link itself, not what it points to. */
   stat(path: string): FsStat | undefined {
-    if (path === "/")
+    const at = this.resolve(path, false);
+    if (at === "/")
       return {
         path,
         type: "d",
@@ -195,7 +258,7 @@ export class VirtualFs {
         size: DIR_SIZE,
         mtime: this.h.bootT,
       };
-    const n = this.nodes.get(path);
+    const n = this.nodes.get(at);
     if (!n) return undefined;
     return {
       path,
@@ -210,11 +273,14 @@ export class VirtualFs {
   }
 
   exists(path: string): boolean {
-    return path === "/" || this.nodes.has(path);
+    const at = this.resolve(path, false);
+    return at === "/" || this.nodes.has(at);
   }
 
+  /** Whether the path is a directory, or a link to one. */
   isDir(path: string): boolean {
-    return path === "/" || this.nodes.get(path)?.type === "d";
+    const at = this.resolve(path, true);
+    return at === "/" || this.nodes.get(at)?.type === "d";
   }
 
   /** The names in a directory, sorted; undefined when it is not one. */
@@ -223,28 +289,36 @@ export class VirtualFs {
     if (!this.children) {
       const map = new Map<string, string[]>();
       for (const key of this.nodes.keys()) {
+        if (key === "/") continue; // the root is nobody's child
         const parent = parentOf(key);
         map.set(parent, [...(map.get(parent) ?? []), baseName(key)]);
       }
       for (const list of map.values()) list.sort();
       this.children = map;
     }
-    return this.children.get(path) ?? [];
+    return this.children.get(this.resolve(path, true)) ?? [];
   }
 
-  /** The text of a file; undefined when it is not a readable file. */
+  /** The text of a file, following links; undefined when it is not a readable file. */
   read(path: string): string | undefined {
-    const n = this.nodes.get(path);
-    if (!n) return undefined;
-    if (n.type === "l" && n.target) return this.read(normalize(parentOf(path), n.target));
-    return n.type === "f" ? (n.content ? n.content() : "") : undefined;
+    const n = this.nodes.get(this.resolve(path, true));
+    return n?.type === "f" ? (n.content ? n.content() : "") : undefined;
   }
 
-  /** `path` and everything under it, directories first, in name order. */
+  /**
+   * `path` and everything under it, directories first, in name order. Links are listed but not entered, and
+   * the walk keeps its own stack: the whole tree of a host is far deeper than a call stack allows.
+   */
   walk(path: string): string[] {
-    const out = [path];
-    for (const name of this.list(path) ?? [])
-      out.push(...this.walk(path === "/" ? `/${name}` : `${path}/${name}`));
+    const out: string[] = [];
+    const todo = [path];
+    for (let p = todo.pop(); p !== undefined; p = todo.pop()) {
+      out.push(p);
+      if (this.nodes.get(p)?.type === "l") continue;
+      const names = this.list(p) ?? [];
+      for (let i = names.length - 1; i >= 0; i--)
+        todo.push(p === "/" ? `/${names[i]}` : `${p}/${names[i]}`);
+    }
     return out;
   }
 

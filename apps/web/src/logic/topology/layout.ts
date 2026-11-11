@@ -106,7 +106,7 @@ const columnX = (stage: number, stages: number): number =>
   stages === 1 ? BOARD_W / 2 : MARGIN_X + (stage * (BOARD_W - 2 * MARGIN_X)) / (stages - 1);
 
 /** The room a head has: the space between its column and the next, less the air kept between two heads. */
-const headRoom = (stage: number, stages: number): number =>
+const headRoom = (stages: number): number =>
   stages === 1 ? BOARD_W - 2 * MARGIN_X : (BOARD_W - 2 * MARGIN_X) / (stages - 1) - HEAD_GAP;
 
 const WORST: Record<Tile["state"], number> = { fault: 0, alarm: 1, impact: 3, ok: 4 };
@@ -173,7 +173,7 @@ export function layout(board: Board): Layout {
     width: BOARD_W,
     height: TOP + tallest * ROW + BOTTOM,
     columns: board.stages.map((s, i) => {
-      const room = headRoom(i, board.stages.length);
+      const room = headRoom(board.stages.length);
       return {
         x: columnX(i, board.stages.length),
         label: s.label,

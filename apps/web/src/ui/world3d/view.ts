@@ -343,7 +343,13 @@ export class WorldView {
     return true;
   }
 
+  /** Behind another view: nothing is drawn, and the size the box has now (none) is not taken for a new size. */
+  setPaused(on: boolean): void {
+    this.engine.setPaused(on);
+  }
+
   resize(): void {
+    if (this.host.clientWidth === 0 && this.host.clientHeight === 0) return;
     const w = Math.max(2, this.host.clientWidth);
     const h = Math.max(2, this.host.clientHeight);
     if (w === this.size.w && h === this.size.h) return;

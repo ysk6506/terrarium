@@ -6,6 +6,7 @@ export {
   baselineRun,
   type Calibration,
   calibrate,
+  calibrateBaselines,
   FLOOR_LIMIT,
   GUESS,
   IDLE_ROUNDS,

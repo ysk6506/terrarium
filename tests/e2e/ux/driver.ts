@@ -60,11 +60,17 @@ export async function visitor(browser: Browser, options: VisitorOptions = {}): P
     if (m.type() === "error") problems.push(`console: ${m.text()}`);
   });
   page.on("pageerror", (e) => problems.push(`error: ${e.message}`));
-  page.on("response", (r) => {
+  page.on("response", async (r) => {
     const url = r.url();
     // A 404 the page asked for on purpose (a missing id) is the page being tested, not a problem.
-    if (r.status() >= 500 || (r.status() >= 400 && !url.includes("-404") && !url.includes("nope")))
-      problems.push(`http ${r.status()}: ${url}`);
+    if (
+      r.status() >= 500 ||
+      (r.status() >= 400 && !url.includes("-404") && !url.includes("nope"))
+    ) {
+      // What the server said, so a refusal can be told from a crash.
+      const said = await r.text().catch(() => "");
+      problems.push(`http ${r.status()}: ${url} ${said.replace(/\s+/g, " ").slice(0, 160)}`.trim());
+    }
   });
   return { context, page, problems };
 }

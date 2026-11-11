@@ -42,7 +42,9 @@ export type HostAction =
   | "kill"
   | "remove"
   | "write"
-  | "truncate";
+  | "truncate"
+  | "mkdir"
+  | "symlink";
 
 export const HOST_ACTIONS: readonly HostAction[] = [
   "restart",
@@ -57,6 +59,8 @@ export const HOST_ACTIONS: readonly HostAction[] = [
   "remove",
   "write",
   "truncate",
+  "mkdir",
+  "symlink",
 ];
 
 /** Seconds a process takes to come back after `systemctl restart`. */
@@ -233,7 +237,10 @@ function removeFiles(ctx: HostActContext, paths: string, freed: number): void {
   const { os, t } = ctx;
   const list = paths.split("\n").filter(Boolean);
   os.removed = [...(os.removed ?? []), ...list].slice(-400);
-  for (const path of list) if (os.files?.[path]) delete os.files[path];
+  for (const path of list)
+    for (const kept of Object.keys(os.files ?? {}))
+      if (kept === path || kept.startsWith(`${path}/`))
+        delete (os.files as Record<string, unknown>)[kept];
   freeBytes(ctx, freed);
   logTo(os, line(t, "audit", "info", `removed ${list.length} path${list.length === 1 ? "" : "s"}`));
 }
@@ -250,6 +257,13 @@ function writeFile(ctx: HostActContext, path: string, text: string): void {
     os.dnsOk = true;
     logTo(os, line(t, "systemd-resolved", "info", "Using DNS server 10.20.0.53."));
   }
+}
+
+/** A directory an operator made (`mkdir`), or a symbolic link (`ln -s`, `target` is where it points). */
+function makeNode(ctx: HostActContext, path: string, node: { dir: true } | { link: string }): void {
+  const { os, t } = ctx;
+  os.files = { ...(os.files ?? {}), [path]: { t, text: "", ...node } };
+  os.removed = (os.removed ?? []).filter((r) => r !== path);
 }
 
 /** Remove the oldest dated logs until a clean-up has freed its share (a `logrotate -f`). */
@@ -304,6 +318,14 @@ const ACTIONS: Readonly<Record<HostAction, ActionFn>> = {
   },
   write: (ctx, arg, data) => {
     writeFile(ctx, arg, data ?? "");
+    return true;
+  },
+  mkdir: (ctx, arg) => {
+    makeNode(ctx, arg, { dir: true });
+    return true;
+  },
+  symlink: (ctx, arg, data) => {
+    makeNode(ctx, arg, { link: data ?? "" });
     return true;
   },
   free_disk: (ctx, arg) => {

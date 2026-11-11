@@ -21,7 +21,7 @@ function usePlacement(
   const [at, setAt] = useState<Placement>();
   const x = anchor?.x;
   const y = anchor?.y;
-  // biome-ignore lint/correctness/useExhaustiveDependencies: the anchor is read by its two numbers so a new object of the same place does not measure again
+  // the anchor is read by its two numbers so a new object of the same place does not measure again
   useLayoutEffect(() => {
     const el = ref.current;
     const stage = el?.parentElement;

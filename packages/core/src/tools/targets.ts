@@ -134,7 +134,7 @@ const eapiCommands = (args: Readonly<Record<string, unknown>>): unknown[] => {
 const WRITES: Readonly<Record<string, (args: Readonly<Record<string, unknown>>) => boolean>> = {
   snmp_request: (args) => args.operation === "set",
   bacnet_request: (args) => args.service === "write-property",
-  run_command: (args) => changesWorld(String(args.cmd ?? "")),
+  run_command: (args) => changesWorld(String(args.cmd)),
   network_cli: (args) =>
     args.configure === true ||
     (Array.isArray(args.commands) && args.commands.some((c) => !LOOKING.test(String(c)))),

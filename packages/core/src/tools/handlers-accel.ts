@@ -11,7 +11,7 @@ type Handler = (ctx: ToolContext, args: Args) => unknown;
 
 const opt = (args: Args, key: string): string | undefined =>
   args[key] === undefined || args[key] === "" ? undefined : String(args[key]);
-const need = (args: Args, key: string): string => String(args[key] ?? "");
+const need = (args: Args, key: string): string => String(args[key]);
 const r1 = (n: number): number => Math.round(n * 10) / 10;
 const byId = (a: Entity, b: Entity): number => a.id.localeCompare(b.id);
 
@@ -340,7 +340,7 @@ const setPowerCap: Handler = (ctx, args) => {
 
 function capRow(world: WorldPort, server: Entity) {
   const s = world.stateAs(server.id, "server");
-  const model = world.catalog.getOf(server.modelId ?? "", "server");
+  const model = world.catalog.getOf(server.modelId as string, "server");
   return {
     id: server.id,
     powerW: Math.round(s.powerW),

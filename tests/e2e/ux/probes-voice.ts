@@ -2,7 +2,7 @@
  * The voice of the screens (REQ-058, ADR-0050): do they speak in one friendly tone (해요체), and does each
  * screen ask for one main thing? The browser only counts; harness/src/ux/score.ts scores.
  */
-import { asVisitor, open, pagesOf, type Site, type Tally } from "./site";
+import { eachPage, open, type Site, type Tally } from "./site";
 
 /** Every line of visible text on the page, and how many primary buttons are in view. */
 export const READ_SCREEN = `() => {
@@ -61,28 +61,26 @@ export async function voice(site: Site, notes: string[]): Promise<Voice> {
     oneThing: { tried: 0, ok: 0 },
     buttons: { tried: 0, ok: 0 },
   };
-  await asVisitor(site, {}, async (v) => {
-    for (const p of pagesOf(site.ids)) {
-      if (p.missing) continue;
-      await open(v.page, site.base, p.path);
-      const screen = (await v.page.evaluate(`(${READ_SCREEN})()`)) as Screen;
-      const lines = [...new Set(screen.lines)];
-      const plain = lines.filter(isPlain);
-      out.voice.tried += lines.length;
-      out.voice.ok += lines.length - plain.length;
-      if (plain.length > 0)
-        notes.push(
-          `voice: ${p.key}에서 해요체가 아닌 글 ${plain.length}개: ${plain[0]?.slice(0, 40)}`,
-        );
-      out.oneThing.tried++;
-      if (screen.primary <= 1) out.oneThing.ok++;
-      else notes.push(`one-thing: ${p.key}에 주된 버튼이 ${screen.primary}개`);
-      const labels = [...new Set(screen.labels.filter(Boolean))];
-      const bad = labels.filter((l) => isPlain(l) || l === "취소");
-      out.buttons.tried += labels.length;
-      out.buttons.ok += labels.length - bad.length;
-      if (bad.length > 0) notes.push(`buttons: ${p.key}의 버튼 이름 ${bad.slice(0, 3).join(", ")}`);
-    }
+  await eachPage(site, {}, async (v, p) => {
+    if (p.missing) return;
+    await open(v.page, site.base, p.path);
+    const screen = (await v.page.evaluate(`(${READ_SCREEN})()`)) as Screen;
+    const lines = [...new Set(screen.lines)];
+    const plain = lines.filter(isPlain);
+    out.voice.tried += lines.length;
+    out.voice.ok += lines.length - plain.length;
+    if (plain.length > 0)
+      notes.push(
+        `voice: ${p.key}에서 해요체가 아닌 글 ${plain.length}개: ${plain[0]?.slice(0, 40)}`,
+      );
+    out.oneThing.tried++;
+    if (screen.primary <= 1) out.oneThing.ok++;
+    else notes.push(`one-thing: ${p.key}에 주된 버튼이 ${screen.primary}개`);
+    const labels = [...new Set(screen.labels.filter(Boolean))];
+    const bad = labels.filter((l) => isPlain(l) || l === "취소");
+    out.buttons.tried += labels.length;
+    out.buttons.ok += labels.length - bad.length;
+    if (bad.length > 0) notes.push(`buttons: ${p.key}의 버튼 이름 ${bad.slice(0, 3).join(", ")}`);
   });
   return out;
 }

@@ -10,6 +10,7 @@ import {
   k8sWorkloadDef,
   livePods,
   nodesOfCluster,
+  type PodState,
   type WorldPort,
   workloadOfPod,
   workloadsOfCluster,
@@ -96,8 +97,6 @@ const kubectlGet: Handler = (ctx, args) => {
             desired: world.stateAs(w.id, "k8s_workload").desired,
           })),
         };
-      if (kind !== "pods")
-        throw new InvalidValueError("kind는 nodes, pods, deployments 중 하나예요");
       return {
         ...apiView(world, c),
         output: podsTable(world, c.id, ns),
@@ -108,7 +107,7 @@ const kubectlGet: Handler = (ctx, args) => {
             deployment: w.name,
             ...podWords(world, p),
             restarts: p.restarts,
-            node: p.node ? (world.index.find(p.node)?.name ?? p.node) : null,
+            node: p.node ? world.index.entity(p.node).name : null,
           })),
       };
     }),
@@ -119,8 +118,7 @@ function podNamed(world: WorldPort, name: string) {
   const id = workloadOfPod(world, name);
   if (!id) throw new InvalidValueError(`'${name}' 파드는 없어요`);
   const w = world.index.entity(id);
-  const p = world.stateAs(id, "k8s_workload").pods.find((x) => x.name === name);
-  if (!p) throw new InvalidValueError(`'${name}' 파드는 없어요`);
+  const p = world.stateAs(id, "k8s_workload").pods.find((x) => x.name === name) as PodState;
   return { w, p };
 }
 
@@ -140,8 +138,6 @@ const kubectlDescribe: Handler = (ctx, args) => {
     if (c) needApi(world, world.index.entity(c));
     return { output: describePod(world, w, p, c ?? "") };
   }
-  if (kind !== "deployment")
-    throw new InvalidValueError("kind는 node, pod, deployment 중 하나예요");
   const w = named(world, "k8s_workload", name);
   const s = world.stateAs(w.id, "k8s_workload");
   const def = k8sWorkloadDef(w);

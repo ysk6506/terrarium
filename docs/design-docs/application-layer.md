@@ -2,7 +2,7 @@
 title: 애플리케이션 층 — 로드 밸런서·세션·서킷 브레이커·메시·리전과 서비스 호출 그래프
 kind: spec
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-11
 covers:
   - packages/core/src/world/app.ts
   - packages/core/src/world/app-act.ts
@@ -23,11 +23,11 @@ covers:
   - packages/core/src/world/ladder.ts
 verification_log:
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
-  - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: 점선 다섯의 서술을 REQ-106(사이트·DR 층)으로 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장이 이 문서의 내용을 바꾸지 않는지 대조했다(층 수·툴 수·칩 수를 세는 문장을 찾아 고쳤고, 나머지는 그대로 맞다)"
   - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
-covers_hash: b9738407e12c70ba
+  - "2026-11-11: tools·world/os: 닿지 않는 분기 정리와 시험 추가; 동작은 같음(TD-0002), awk는 이름 바로 뒤 '(' 호출과 srand 반환값"
+covers_hash: d152018a95a2beae
 ---
 # 애플리케이션 층 (REQ-100, [ADR-0121](adr/0121-application-layer-and-calls.md), [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6)
 

@@ -22,13 +22,13 @@ covers:
   - packages/core/src/topology/layer-network.ts
   - packages/core/src/session/probes.ts
   - packages/core/src/session/operation/mtbf.ts
-covers_hash: d5d69e3cbc1726b9
+covers_hash: e9fd5f1bb1854dd5
 verification_log:
-  - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
   - "2026-11-07: ADR-0133에 맞춰 대조: 기대 복구 시간(+5분), 손대지 않는 것이 정답인 시트의 만점, 링크 흔들림 서술"
   - "2026-11-10: 물리 상수를 슬롯 표로 옮김(REQ-113). v1 동작은 physics-golden이 비트까지 같음을 확인, 문서 내용 변화 없음"
   - "2026-11-11: library-sdn.ts에서 안 쓰는 상수 OWN 한 줄만 지웠다. 동작과 서술은 그대로다"
   - "2026-11-11: main 합치기 뒤 다시 읽음: 물리 프로필(REQ-113) 반영 문단과 라우트 행이 main의 새 내용과 함께 맞다"
+  - "2026-11-11: tools·world/os: 닿지 않는 분기 정리와 시험 추가; 동작은 같음(TD-0002), awk는 이름 바로 뒤 '(' 호출과 srand 반환값"
 ---
 # SDN 오버레이와 클라우드 네이티브 네트워크 층 (REQ-097, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0115](adr/0115-sdn-network-layer-amend-tests.md))
 

@@ -58,7 +58,7 @@ CI가 합치기 관문이다 ([ADR-0140](docs/design-docs/adr/0140-ci-shards-and
 - **새 결정** → [ADR 작성 절차](docs/design-docs/adr-process.md). `enforced_by`로 강제 장치에 연결한다.
 - **부채를 남겨야 함** → 장부에 항목 등록 후 `TODO(TD-NNNN)`. 기한과 예산이 있다.
 - **커버리지를 올렸다** → `pnpm ratchet`으로 하한을 고정.
-- **웹 화면을 바꿨다** → `pnpm ux`로 다시 잰다(브라우저가 필요하고 몇 분 걸린다). 안 재면 `UX004`로 실패한다. 점수가 올랐으면 `pnpm ux ratchet`으로 하한을 고정한다. 읽는 법은 [UX 측정](docs/design-docs/ux-honeycomb.md).
+- **웹 화면을 바꿨다** → 여정은 CI의 `ux-journeys`(게이트)가 돌린다. 측정은 CI의 `ux-measure`(게이트 아님)가 돌리니 그 `ux-score.json`(아티팩트 또는 작업 로그)을 마지막 커밋으로 올린다(`pnpm ux`로 로컬에서 재도 된다. 낡으면 `UX004`). 점수가 올랐으면 `pnpm ux ratchet`으로 하한을 고정한다. 읽는 법은 [UX 측정](docs/design-docs/ux-honeycomb.md).
 
 ## 철학
 

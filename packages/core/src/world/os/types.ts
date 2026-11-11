@@ -37,14 +37,34 @@ export const unsupported = (name: string, what: string): R => ({
   outside: `${name} ${what}`,
 });
 
+/** Whether an action on a path goes through a symbolic link in the last part of the path (a write does, a removal does not). */
+const FOLLOWS_LINK: Readonly<Partial<Record<HostAction, boolean>>> = {
+  write: true,
+  truncate: true,
+  mkdir: false,
+  symlink: false,
+  remove: false,
+};
+
+/** The path of an action with the links on the way resolved, so a file written through a link lands where the link leads. */
+function placed(c: Cmd, action: HostAction, arg: string | undefined): string | undefined {
+  const follow = FOLLOWS_LINK[action];
+  if (arg === undefined || follow === undefined) return arg;
+  return arg
+    .split("\n")
+    .map((p) => c.fs.resolve(p, follow))
+    .join("\n");
+}
+
 /** Change the world the way an operator on the host would; the event is the same one the old tool wrote. */
 export function act(c: Cmd, action: HostAction, arg?: string, data?: string): void {
+  const where = placed(c, action, arg);
   c.world.apply(
     {
       type: "host.act",
       target: c.h.id,
       action,
-      ...(arg !== undefined ? { arg } : {}),
+      ...(where !== undefined ? { arg: where } : {}),
       ...(data !== undefined ? { data } : {}),
     },
     "tool:run_command",

@@ -263,7 +263,7 @@ function TableCard({
         <Button
           kind="quiet"
           className="pt-add"
-          data-moss-skip="표 편집"
+          data-moss-action="process-add-step"
           disabled={rows.length >= pc.MAX_ROWS}
           why={W.full}
           onClick={() => setRows((r) => pc.add(r))}
@@ -273,6 +273,44 @@ function TableCard({
       )}
     </div>
   );
+}
+
+/** 이끼가 이 화면을 읽고 하는 일 셋: 단계 한 줄 더하기, 저장, 저장한 표로 실험 만들기 (REQ-103, ADR-0141). */
+function useProcessMoss(
+  view: CurrentProcessView,
+  rows: ReturnType<typeof pc.rowsOf>,
+  setRows: SetRows,
+  draft: Draft,
+  dirty: boolean,
+  saver: ReturnType<typeof useSaver>,
+) {
+  const { navigate } = useApp();
+  useMossScreen("scenarioProcess", {
+    read: () => ({
+      시나리오: view.scenarioName,
+      단계: draft.steps,
+      요약: pc.numbersLine(draft.numbers),
+    }),
+    run: {
+      "process-add-step": () => {
+        if (!view.canEdit) throw new Error(W.readOnly(view.owner ?? "다른 사람"));
+        if (rows.length >= pc.MAX_ROWS) throw new Error(W.full);
+        setRows((r) => pc.add(r));
+        return "빈 단계를 한 줄 더했어요";
+      },
+      "process-experiment": () => {
+        if (!view.written || dirty) throw new Error("먼저 지금 하는 방식을 저장해 주세요");
+        navigate({ name: "newExperiment", scenarioId: view.scenarioId });
+        return "이 시나리오로 실험을 만들러 가요";
+      },
+      "process-save": async () => {
+        if (!view.canEdit) throw new Error(W.readOnly(view.owner ?? "다른 사람"));
+        if (!dirty) throw new Error("고친 곳이 없어요");
+        return saver.save();
+      },
+    },
+    summary: () => pc.numbersLine(draft.numbers),
+  });
 }
 
 function Screen({
@@ -293,15 +331,7 @@ function Screen({
   useLeaveGuard(
     dirty && view.canEdit ? "저장하지 않고 나가면 적은 것이 사라져요. 그래도 나갈까요?" : undefined,
   );
-  useMossScreen("scenarioProcess", {
-    read: () => ({
-      시나리오: view.scenarioName,
-      단계: draft.steps,
-      요약: pc.numbersLine(draft.numbers),
-    }),
-    run: {},
-    summary: () => pc.numbersLine(draft.numbers),
-  });
+  useProcessMoss(view, rows, setRows, draft, dirty, saver);
   const readOnly = !view.canEdit;
   return (
     <div className="page">
@@ -323,7 +353,7 @@ function Screen({
           <Go
             to={{ name: "newExperiment", scenarioId: view.scenarioId }}
             className="btn"
-            data-moss-skip="다음 화면으로"
+            data-moss-action="process-experiment"
           >
             {W.next}
           </Go>
@@ -334,7 +364,7 @@ function Screen({
             busy={saver.busy}
             disabled={!dirty || !draft.canSave}
             why={whyOff(dirty, draft)}
-            data-moss-skip="저장은 직접 눌러요"
+            data-moss-action="process-save"
             onClick={saver.press}
           >
             {W.save}
