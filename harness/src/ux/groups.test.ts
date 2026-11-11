@@ -21,8 +21,8 @@ describe("the CI groups of UX journeys lose none and repeat none [REQ-114]", () 
       (x) => x[1] as string,
     );
 
-  test("there are three groups, named as the workflow names them", () => {
-    expect(Object.keys(groups).sort()).toEqual(["build", "flow", "own"]);
+  test("there are five groups, named as the workflow names them", () => {
+    expect(Object.keys(groups).sort()).toEqual(["build", "flow", "own", "small", "topology"]);
   });
 
   test("every journey the harness scores is in exactly one group", () => {

@@ -70631,6 +70631,16 @@
    "added": "2026-10-29",
    "amended_by": null
   },
+  "harness/src/ux/check.test.ts::<import:bcc46985>": {
+   "kind": "support",
+   "hash": "bcc4698586932f5f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "harness/src/ux/check.test.ts::<import:bf9b5805>": {
    "kind": "support",
    "hash": "bf9b580567a0bf89",
@@ -70654,16 +70664,6 @@
   "harness/src/ux/check.test.ts::<import:e71fddbd>": {
    "kind": "support",
    "hash": "e71fddbddd356cf0",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
-  },
-  "harness/src/ux/check.test.ts::<import:f51f959f>": {
-   "kind": "support",
-   "hash": "f51f959fc7cb13e5",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -71006,24 +71006,22 @@
    "added": "2026-10-29",
    "amended_by": null
   },
-  "harness/src/ux/check.test.ts::the recorded measurement [REQ-041] > goes stale when the web app changes (UX004)": {
+  "harness/src/ux/check.test.ts::the recorded measurement [REQ-041] > goes stale when the web app changes: a note (UX004), not a failure (ADR-0175)": {
    "kind": "test",
-   "hash": "0825d1e22f5dd1f3",
-   "asserts": 2,
+   "hash": "d95c5d9af5ae5bc3",
+   "asserts": 4,
    "literals": [
-    "\"0\"",
-    "\"0\"",
     "\"UX004\"",
     "\"UX004\"",
     "\"apps/web/src/a.tsx\"",
     "\"export const a = 3;\\n\"",
-    "\"goes stale when the web app changes (UX004)\"",
+    "\"goes stale when the web app changes: a note (UX004), not a failure (ADR-0175)\"",
     "\"pnpm ux\"",
     "\"pnpm ux\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "harness/src/ux/check.test.ts::the recorded measurement [REQ-041] > is written, read back, and checked": {
@@ -71213,9 +71211,9 @@
    "added": "2026-11-11",
    "amended_by": null
   },
-  "harness/src/ux/groups.test.ts::the CI groups of UX journeys lose none and repeat none [REQ-114] > there are three groups, named as the workflow names them": {
+  "harness/src/ux/groups.test.ts::the CI groups of UX journeys lose none and repeat none [REQ-114] > there are five groups, named as the workflow names them": {
    "kind": "test",
-   "hash": "e305bc2ff34d268b",
+   "hash": "e791afd91f518d12",
    "asserts": 1,
    "literals": [
     "\"build\"",
@@ -71224,7 +71222,339 @@
     "\"flow\"",
     "\"own\"",
     "\"own\"",
-    "\"there are three groups, named as the workflow names them\""
+    "\"small\"",
+    "\"small\"",
+    "\"there are five groups, named as the workflow names them\"",
+    "\"topology\"",
+    "\"topology\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::<import:0200f84c>": {
+   "kind": "support",
+   "hash": "0200f84c66038f4f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::<import:0458d18f>": {
+   "kind": "support",
+   "hash": "0458d18f1a491d16",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::<import:0aae09e8>": {
+   "kind": "support",
+   "hash": "0aae09e8d5a05fa8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::<import:493dd780>": {
+   "kind": "support",
+   "hash": "493dd78097f838d5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::<import:50321f6c>": {
+   "kind": "support",
+   "hash": "50321f6c860a7a17",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::<import:8c024d82>": {
+   "kind": "support",
+   "hash": "8c024d8230a38dc7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::<import:c9345258>": {
+   "kind": "support",
+   "hash": "c9345258211aa74c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::<import:e4120026>": {
+   "kind": "support",
+   "hash": "e4120026790c84f4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::<import:fc38e4e0>": {
+   "kind": "support",
+   "hash": "fc38e4e01244139f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::=FIELDS": {
+   "kind": "support",
+   "hash": "85775a8f42b94109",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::=groupsOf": {
+   "kind": "support",
+   "hash": "c7253983a27013a7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::=parts": {
+   "kind": "support",
+   "hash": "368c03355d1acc15",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::=read": {
+   "kind": "support",
+   "hash": "f1123e3ad9e51c81",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::=root": {
+   "kind": "support",
+   "hash": "90c8da4ae3d68e28",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::=Slice": {
+   "kind": "support",
+   "hash": "5f5b100bed55e755",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::=slices": {
+   "kind": "support",
+   "hash": "bf436d4c3fbd6138",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::putting the slices together gives what a whole run gives [REQ-114] > `ux merge <dir>` writes the record and the verdict a whole run writes": {
+   "kind": "test",
+   "hash": "37000a9b389c6d9e",
+   "asserts": 5,
+   "literals": [
+    "\"\"",
+    "\"--root\"",
+    "\"--root\"",
+    "\"--root\"",
+    "\"0\"",
+    "\"0\"",
+    "\"2\"",
+    "\"2\"",
+    "\"90\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"`ux merge <dir>` writes the record and the verdict a whole run writes\"",
+    "\"docs/generated/.keep\"",
+    "\"harness/config/ux-floor.json\"",
+    "\"merge\"",
+    "\"merge\"",
+    "\"merge\"",
+    "\"string\"",
+    "\"string\"",
+    "\"terrarium-ux-merge-\"",
+    "\"하한 90\"",
+    "\"하한 90\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::putting the slices together gives what a whole run gives [REQ-114] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::putting the slices together gives what a whole run gives [REQ-114] > a field in two slices, a journey in two slices and a missing field are errors, not guesses": {
+   "kind": "test",
+   "hash": "f6706469365a6fb1",
+   "asserts": 4,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"42\"",
+    "\"42\"",
+    "\"a field in two slices, a journey in two slices and a missing field are errors, not guesses\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::putting the slices together gives what a whole run gives [REQ-114] > the clean-screen tallies of the slices add up": {
+   "kind": "test",
+   "hash": "57657badc7668b9e",
+   "asserts": 1,
+   "literals": [
+    "\"the clean-screen tallies of the slices add up\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::putting the slices together gives what a whole run gives [REQ-114] > the merged measurements and their scores equal the whole run's": {
+   "kind": "test",
+   "hash": "c292d0c5a5dfcbb9",
+   "asserts": 5,
+   "literals": [
+    "\"0\"",
+    "\"1\"",
+    "\"2\"",
+    "\"24\"",
+    "\"3\"",
+    "\"4\"",
+    "\"the merged measurements and their scores equal the whole run's\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::the slices of a measurement lose none and repeat none [REQ-114] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::the slices of a measurement lose none and repeat none [REQ-114] > every journey group is in exactly one slice": {
+   "kind": "test",
+   "hash": "1e5b0c27e4cda231",
+   "asserts": 1,
+   "literals": [
+    "\"every journey group is in exactly one slice\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::the slices of a measurement lose none and repeat none [REQ-114] > every probe of a whole run is in exactly one slice": {
+   "kind": "test",
+   "hash": "2c754591f4d1bd1d",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"1\"",
+    "\"];\"",
+    "\"const ALL_PROBES\"",
+    "\"every probe of a whole run is in exactly one slice\"",
+    "\"tests/e2e/ux/measure.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/merge.test.ts::the slices of a measurement lose none and repeat none [REQ-114] > exactly one slice looks at the empty and error screens": {
+   "kind": "test",
+   "hash": "f39823579390d4f0",
+   "asserts": 1,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"exactly one slice looks at the empty and error screens\""
    ],
    "precision": [],
    "skips": 0,
@@ -165323,6 +165653,9 @@
   "apps/web/src/logic/world-shape/world-shape.test.ts::알아서와 프리셋 [REQ-094] > 싸게·보통·멈추지 않게는 여덟 층을 모두 채우고 실제 선택지만 가리킨다": "0130-gpu-layer-power-cooling-ladders.md",
   "apps/web/src/logic/world-shape/world-shape.test.ts::이 모양이면 [REQ-094] > 점선 칸은 고장도 시나리오도 더하지 않는다": "0129-site-dr-geo-storage-distributed-db.md",
   "apps/web/src/moss/moss.test.ts::<import:db6e1c41>": "0125-moss-requires-model.md",
+  "harness/src/ux/check.test.ts::<import:f51f959f>": "0175-ux-checks-in-smaller-slices-score-file-not-per-change.md",
+  "harness/src/ux/check.test.ts::the recorded measurement [REQ-041] > goes stale when the web app changes (UX004)": "0175-ux-checks-in-smaller-slices-score-file-not-per-change.md",
+  "harness/src/ux/groups.test.ts::the CI groups of UX journeys lose none and repeat none [REQ-114] > there are three groups, named as the workflow names them": "0175-ux-checks-in-smaller-slices-score-file-not-per-change.md",
   "harness/src/ux/run.test.ts::<import:268837c3>": "0141-ux-journeys-gate-and-measure.md",
   "packages/core/src/analysis/analysis.test.ts::<import:cc825183>": "0158-repeats-per-seed-and-seed-level-statistics.md",
   "packages/core/src/sources/worldgen/campus-places.test.ts::<import:540ca3f3>": "0047-site-names-and-places.md",

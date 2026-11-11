@@ -9,11 +9,11 @@ covers:
   - harness/config/protected-paths.txt
 covers_hash: 5bd9f8d3b3a3248d
 verification_log:
-  - "2026-11-10: 단위 표 변화 없음, physics.slots 단위 추가를 확인"
   - "2026-11-10: CI가 합치기 관문이 되었다는 한 줄을 더함 (ADR-0140). 명령 목록과 보호 경로 표는 그대로 맞다"
   - "2026-11-11: 검사 끄기 금지(IGN*)·품질 등급표(QUAL001) 행과 정리 작업 안내를 더했다. package.json은 quality 스크립트와 ratchet만 바뀌었다 (ADR-0148)"
   - "2026-11-11: 정리 작업의 첫 단계를 pnpm quality write로 정하고, 등급표 낡음(QUAL001)과 끄기 감소(IGN006)를 빨강이 아닌 알림으로 고쳐 적었다 (ADR-0148)"
   - "2026-11-11: CI 문장에 문서만 바뀐 변경의 가벼운 경로를 더함 (ADR-0173). 명령 목록과 보호 경로 표는 그대로 맞다"
+  - "2026-11-11: 웹 화면 변경 단락과 정리 작업 단락을 점수 파일 비커밋에 맞게 고침 (ADR-0175)"
 ---
 # Terrarium — 코딩 에이전트 안내서
 
@@ -60,8 +60,8 @@ CI가 합치기 관문이다 ([ADR-0140](docs/design-docs/adr/0140-ci-shards-and
 - **새 결정** → [ADR 작성 절차](docs/design-docs/adr-process.md). `enforced_by`로 강제 장치에 연결한다.
 - **부채를 남겨야 함** → 장부에 항목 등록 후 `TODO(TD-NNNN)`. 기한과 예산이 있다.
 - **커버리지를 올렸다** → `pnpm ratchet`으로 하한을 고정. 끄기를 없앴으면 `IGN006` 알림이 나오고 기준선은 정리 작업이 `pnpm ratchet`으로 내린다.
-- **정리 작업(5시간마다)** → 첫 단계는 `pnpm quality write`로 [품질 등급표](docs/generated/quality.md)를 새로 만들고, 등급이 가장 낮은 단위부터 고른다. 한 줄의 "이유" 칸이 무엇을 고치면 등급이 오르는지 알려 준다. 고친 뒤 `pnpm ratchet`으로 끄기 기준선을 내리고 등급표를 다시 만들어 올린다. 일반 변경은 등급표를 건드리지 않아도 된다(변경마다의 등급은 CI 요약에 나온다).
-- **웹 화면을 바꿨다** → 여정은 CI의 `ux-journeys`(게이트)가 돌린다. 측정은 CI의 `ux-measure`(게이트 아님)가 돌리니 그 `ux-score.json`(아티팩트 또는 작업 로그)을 마지막 커밋으로 올린다(`pnpm ux`로 로컬에서 재도 된다. 낡으면 `UX004`). 점수가 올랐으면 `pnpm ux ratchet`으로 하한을 고정한다. 읽는 법은 [UX 측정](docs/design-docs/ux-honeycomb.md).
+- **정리 작업(5시간마다)** → 첫 단계는 `pnpm quality write`로 [품질 등급표](docs/generated/quality.md)를 새로 만들고, 등급이 가장 낮은 단위부터 고른다. 한 줄의 "이유" 칸이 무엇을 고치면 등급이 오르는지 알려 준다. 고친 뒤 `pnpm ratchet`으로 끄기 기준선을 내리고 등급표를 다시 만들어 올린다. 일반 변경은 등급표를 건드리지 않아도 된다(변경마다의 등급은 CI 요약에 나온다). 웹 화면이 바뀌었으면 `pnpm ux`로 `ux-score.json`을 새로 재서 올리고, 오른 점수는 `pnpm ux ratchet`으로 하한에 반영한다(ADR-0175).
+- **웹 화면을 바꿨다** → 여정은 CI의 `ux-journeys`(게이트)가 돌린다. 측정은 CI의 `ux-measure`(게이트 아님)가 조각으로 나눠 돌리고, 이 변경의 점수는 그 작업 요약에 나온다. `ux-score.json`은 변경마다 커밋하지 않는다: 낡으면 알림 한 줄(`UX004`)만 나오고, 정리 작업이 main에서 새로 재서 올린다(`pnpm ux`로 로컬에서 재도 된다). 읽는 법은 [UX 측정](docs/design-docs/ux-honeycomb.md) ([ADR-0175](docs/design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md)).
 
 ## 철학
 

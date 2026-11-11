@@ -10,6 +10,7 @@ verification_log:
   - "2026-11-11: 골든 안전망 문서 링크"
   - "2026-11-11: 골든 안전망 링크를 더함"
   - "2026-11-11: ADR-0173 링크 (문서만 바뀐 변경의 가벼운 CI 경로)"
+  - "2026-11-11: ADR-0175 링크 (UX 검사를 잘게 나눔, 점수 파일은 변경마다 커밋하지 않음)"
 ---
 # 문서 색인
 
@@ -235,6 +236,7 @@ verification_log:
 - [0156 영향 범위는 포트 단위까지 묶음의 뜻으로 계산하고, 메모리의 색인에서 1초·수 초 안에 답한다](design-docs/adr/0156-blast-radius-ports-redundancy-groups-in-memory-index.md)
 - [0157 모델은 층마다 표준에서 뼈대를 빌리고, 종류는 세 층이며, 가상화 플랫폼은 대응 표로 받는다](design-docs/adr/0157-model-standards-three-tiers-platform-mapping.md)
 - [0161 생김새 견본 시험에서 막힌 열아홉 곳을 메운다 — 손질은 여덟 가지, 딸린 요청, 다듬어 견주기, 묶음의 출처](design-docs/adr/0161-shape-sample-test-fills-the-gaps.md)
+- [0175 UX 검사를 더 잘게 나눠 돌리고, 점수 파일은 변경마다 커밋하지 않는다](design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md)
 - [0173 문서만 바뀐 변경은 가벼운 CI 경로를 탄다](design-docs/adr/0173-docs-only-changes-take-a-light-ci-path.md)
 - [0170 제품의 값과 원칙 여섯을 한 장에 두고, 요구사항은 그 한 장에 대 본 뒤 설계한다](design-docs/adr/0170-product-design-one-page-six-principles.md)
 - [0169 모델은 하나다 — 현실에서 만든 세계와 지어낸 세계는 같은 타입과 같은 링크 표현을 쓰고, 매핑의 목적지는 핵심 모델이다](design-docs/adr/0169-one-model-for-invented-and-real-worlds.md)
