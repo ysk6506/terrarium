@@ -55,13 +55,17 @@ jobs:
   # test about a minute without yielding), and the run-all test (harness/src/common.test.ts) checks the whole
   # repository against its own 20 s limit, which contention pushes past. They run here, the shards exclude
   # them, and test-summary checks that every test ran exactly once.
+  # One calibration test computes for over a minute without a turn of the event loop, so the worker's
+  # progress message to the runner times out ("Timeout calling onTaskUpdate") although the test passes.
+  # That is the only unhandled error seen here; it is ignored in this job alone, and test-summary still
+  # fails on any failed or skipped test.
   test-heavy:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - run: pnpm exec vitest run ${{ env.HEAVY }} --no-file-parallelism --reporter=default --reporter=json --outputFile.json=shard-heavy.json
+      - run: pnpm exec vitest run ${{ env.HEAVY }} --no-file-parallelism --dangerouslyIgnoreUnhandledErrors --reporter=default --reporter=json --outputFile.json=shard-heavy.json
       - if: always()
         uses: actions/upload-artifact@v4
         with:
