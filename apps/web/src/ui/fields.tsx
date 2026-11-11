@@ -97,10 +97,13 @@ export function NumberField(props: {
   readonly error?: string;
 }) {
   const [text, setText] = useState(props.value === undefined ? "" : String(props.value));
-  // biome-ignore lint/correctness/useExhaustiveDependencies: follow the value only, not the text being typed
+  // Follows the value only, not the text being typed: the updater reads the text as it is now.
   useEffect(() => {
-    if (props.value === undefined || Number(text) !== props.value)
-      setText(props.value === undefined ? "" : String(props.value));
+    const value = props.value;
+    setText((typed) => {
+      if (value === undefined) return "";
+      return Number(typed) === value ? typed : String(value);
+    });
   }, [props.value]);
   const commit = (raw: string) => {
     setText(raw);

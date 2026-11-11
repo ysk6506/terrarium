@@ -24,12 +24,11 @@
 
 ## 단위별
 
-단위 수 등급별: D 2, C 12, B 19, A 2. 커버리지 기록: 없음 (모든 단위가 "모름"). 끄기 종류별: biome-ignore 40, eslint-disable 0, ts-ignore 0, ts-expect-error 0, ts-nocheck 0, test-skip 0, continue-on-error 4.
+단위 수 등급별: D 1, C 13, B 19, A 2. 커버리지 기록: 없음 (모든 단위가 "모름"). 끄기 종류별: biome-ignore 39, eslint-disable 0, ts-ignore 0, ts-expect-error 0, ts-nocheck 0, test-skip 0, continue-on-error 4.
 
 | 단위 | 등급 | 커버리지 (값 / 하한) | 끄기 | 한도 90% 넘음 (초과) | 열린 부채 (가장 이른 기한) | 가장 오래된 문서 | 이유 |
 |---|---|---|---|---|---|---|---|
 | core.world | D | 모름 / 98.5 | 0 | 55 (0) | 1 (2026-11-21) | 2026-11-04 (gpu-fabric.md) | 열린 고위험 부채 1 |
-| server.runtime | D | 모름 / 97.0 | 0 | 10 (1) | 0 | 2026-11-11 (capacity.md) | 한도 초과 1 |
 | core.physics | C | 모름 / 97.0 | 0 | 25 (0) | 0 | 2026-11-04 (gpu-fabric.md) | 한도 90% 넘음 25 |
 | core.topology | C | 모름 / 93.0 | 0 | 8 (0) | 0 | 2026-11-11 (application-layer.md) | 한도 90% 넘음 8 |
 | core.facades | C | 모름 / 97.0 | 0 | 5 (0) | 0 | 2026-11-04 (facility-protocols.md) | 한도 90% 넘음 5 |
@@ -38,8 +37,9 @@
 | core.sources.worldgen | C | 모름 / 98.0 | 0 | 8 (0) | 0 | 2026-11-06 (network-fabrics.md) | 한도 90% 넘음 8 |
 | core.session | C | 모름 / 98.0 | 0 | 9 (0) | 0 | 2026-11-10 (operation-agent-guide.md) | 한도 90% 넘음 9 |
 | server.adapters | C | 모름 / 97.0 | 0 | 11 (0) | 0 | 2026-11-10 (operation-agent-guide.md) | 한도 90% 넘음 11 |
+| server.runtime | C | 모름 / 97.0 | 0 | 10 (0) | 0 | 2026-11-11 (capacity.md) | 한도 90% 넘음 10 |
 | web.logic | C | 모름 / 96.5 | 0 | 27 (0) | 0 | 2026-11-06 (config-scenarios.md) | 한도 90% 넘음 27 |
-| web.ui | C | — | 36 | 59 (0) | 2 (2026-12-08) | 2026-11-07 (airflow-map.md) | 열린 부채 2, 한도 90% 넘음 59, 끄기 36 |
+| web.ui | C | — | 35 | 59 (0) | 2 (2026-12-08) | 2026-11-07 (airflow-map.md) | 열린 부채 2, 한도 90% 넘음 59, 끄기 35 |
 | harness | C | 모름 / 97.5 | 0 | 12 (0) | 0 | 2026-11-11 (harness-guide.md) | 한도 90% 넘음 12 |
 | (단위 밖) | C | — | 4 | 0 (0) | 9 (2026-11-24) | 2026-11-10 (ARCHITECTURE.md) | 열린 부채 9 |
 | core.kernel | B | 모름 / 99.5 | 0 | 0 (0) | 0 | — | 커버리지 모름 |
