@@ -3,7 +3,7 @@
  * it. Nothing here is stored besides the hearts: the score is counted again from experiment and world records every time
  * (`worldStats` in core). A heart is one per person per world.
  */
-import { ForbiddenError, type LikeView, type WorldCardView } from "@terrarium/core/contract";
+import type { LikeView, WorldCardView } from "@terrarium/core/contract";
 import {
   type PopularWorld,
   sortWorlds,
@@ -12,6 +12,7 @@ import {
   worldStats,
 } from "@terrarium/core/experiments";
 import { must, type PlatformContext, type Viewer } from "./context";
+import { allow } from "./permissions";
 import type { Titles } from "./titles";
 import type { Worlds } from "./worlds";
 
@@ -38,13 +39,13 @@ export class WorldBoard {
       likes,
       now: this.ctx.stamps.now(),
     });
-    const shown = sortWorlds(listed, stats, sort, viewer.name);
+    const shown = sortWorlds(listed, stats, sort, viewer.id);
     const owners = await this.titles.ofMany(shown.map((w) => w.owner));
     return shown.map((w) => ({
       ...w,
       stats: stats.get(w.id) as WorldStats,
       likes: likes.filter((l) => l.worldId === w.id).length,
-      likedByMe: likes.some((l) => l.worldId === w.id && l.user === viewer.name),
+      likedByMe: likes.some((l) => l.worldId === w.id && l.user === viewer.id),
       ownerTitles: owners.get(w.owner) ?? [],
     }));
   }
@@ -54,25 +55,24 @@ export class WorldBoard {
     return {
       worldId,
       likes: mine.length,
-      likedByMe: mine.some((l) => l.user === viewer.name),
+      likedByMe: mine.some((l) => l.user === viewer.id),
     };
   }
 
   private async target(viewer: Viewer, id: string): Promise<void> {
-    if (viewer.source === "anonymous")
-      throw new ForbiddenError("좋아요는 이름을 정한 뒤에 누를 수 있어요");
+    allow(viewer, "like");
     must(await this.ctx.store.getWorld(id), `세계 ${id}`);
   }
 
   async like(viewer: Viewer, id: string): Promise<LikeView> {
     await this.target(viewer, id);
-    await this.ctx.store.putLike({ worldId: id, user: viewer.name, at: this.ctx.stamps.now() });
+    await this.ctx.store.putLike({ worldId: id, user: viewer.id, at: this.ctx.stamps.now() });
     return this.view(id, viewer);
   }
 
   async unlike(viewer: Viewer, id: string): Promise<LikeView> {
     await this.target(viewer, id);
-    await this.ctx.store.deleteLike(id, viewer.name);
+    await this.ctx.store.deleteLike(id, viewer.id);
     return this.view(id, viewer);
   }
 }

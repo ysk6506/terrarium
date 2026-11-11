@@ -1,7 +1,6 @@
 /** What every service of the platform shares, and small rules they all apply. */
 import type { TelemetryAdapter, TelemetryPort } from "@terrarium/core/analysis";
 import type { Catalog } from "@terrarium/core/catalog";
-import { ForbiddenError } from "@terrarium/core/contract";
 import type { ExperimentStore, HarnessPort } from "@terrarium/core/experiments";
 import { NotFoundError, withJosa } from "@terrarium/core/kernel";
 import type { SourceEntry } from "../adapters";
@@ -9,17 +8,37 @@ import type { EventBus, RunLogs } from "./events";
 import type { SessionHost } from "./hosts";
 import type { Stamps } from "./ids";
 
+export type Role = "user" | "admin";
+
 /**
- * Who is asking (REQ-033, ADR-0044): from the SSO proxy header, a sign-in the server checked itself
- * (`sso`), a name the person typed, or nobody. `name` is what ownership is compared by, so a method that
- * knows a stable login (an employee id, an email) puts that here, not a display name that can change.
+ * Who is asking (REQ-033, ADR-0044, ADR-0174). `id` is the stable login that ownership is compared by (a
+ * method that knows one puts it here, never a display name that can change); `name` is for showing, and is
+ * the id when nobody gave another. `groups` are what the SSO says. Every signed-in person has the role
+ * `user`; `admin` is added from the settings.
  */
 export interface Viewer {
+  readonly id: string;
   readonly name: string;
+  readonly groups: readonly string[];
+  readonly roles: readonly Role[];
   readonly source: "proxy" | "sso" | "self" | "anonymous";
 }
 
-export const ANONYMOUS: Viewer = { name: "anonymous", source: "anonymous" };
+/**
+ * Nobody named themselves, in the self-declared mode that is for one person developing locally: such a
+ * request is let through as one shared "anonymous" user, as it always was. Only that mode makes it; behind
+ * the proxy a request with no login never gets this far.
+ */
+export const ANONYMOUS: Viewer = {
+  id: "anonymous",
+  name: "anonymous",
+  groups: [],
+  roles: ["user"],
+  source: "anonymous",
+};
+
+/** The viewer of a route that is open to everyone with its address (share links): no one, no roles. */
+export const NOBODY: Viewer = { ...ANONYMOUS, roles: [] };
 
 /** The harnesses and agents experiments can run on, now. A plain `Map` of ports fits; so does the registry people add to. */
 export interface HarnessDirectory {
@@ -50,10 +69,4 @@ export interface PlatformContext {
 export function must<T>(value: T | undefined, what: string): T {
   if (value === undefined) throw new NotFoundError(`${withJosa(what, "을")} 찾을 수 없어요`);
   return value;
-}
-
-/** Changing or removing something is for whoever made it; looking and forking are for everyone. */
-export function ownerOnly(viewer: Viewer, owner: string, action: string): void {
-  if (viewer.name !== owner)
-    throw new ForbiddenError(`${withJosa(action, "은")} 만든 사람(${owner})만 할 수 있어요`);
 }

@@ -2,7 +2,7 @@
 title: 용량 — 한 프로세스가 동시에 몇 개를 들고 있나
 kind: guide
 status: active
-last_verified: 2026-11-05
+last_verified: 2026-11-11
 covers:
   - packages/core/src/session/warm.ts
   - packages/core/src/world/bulk.ts
@@ -13,13 +13,13 @@ covers:
   - packages/core/src/world/floor-space.ts
   - packages/core/src/world/site-power.ts
   - packages/core/src/sources/worldgen/campus-floor.ts
-covers_hash: cf136112e64d871e
+covers_hash: a8a8ccccd651d6bd
 verification_log:
-  - "2026-10-29: hall-scale.ts의 출력 방식만 바뀌었다. 표의 수치와 재측정 명령은 그대로이고, 코드와 대조했다"
   - "2026-11-04: 2026-11-04: 새 엔진·메모리 입장·클러스터 부하 시험으로 표와 본문을 다시 쓰고, 실측값을 capacity.ts, cluster-load.ts, hall-scale.ts 출력과 대조했다 (ADR-0056)"
   - "2026-11-04: 다시 확인: 설비 프로토콜 파사드 추가는 세션 메모리와 한 걸음 비용 식에 영향이 없다. 표와 본문은 그대로"
   - "2026-11-05: 2026-11-05: 공기 흐름 지도 비용 문단을 더했다(큰 홀 계산 25~46 ms, 움직임 0.1~0.7 ms). 표와 측정 명령은 그대로"
   - "2026-11-05: REQ-076: HPC센터 실측과 랙 밀도 규칙, 전력 상한 절을 더했다. 수치를 generateCampus와 hpc-centre.test.ts로 재 확인했고 출처 세 곳과 추정·경험값 표시를 적었다. 기존 표와 측정 명령은 그대로"
+  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
 ---
 # 용량 (REQ-032, REQ-042, [ADR-0033](adr/0033-warm-start-and-capacity-defaults.md), [ADR-0056](adr/0056-scale-performance.md))
 

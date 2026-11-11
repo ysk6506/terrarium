@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { testPlatform } from "../runtime/test-support/platform";
+import { person, testPlatform } from "../runtime/test-support/platform";
 import { buildApp } from "./app";
 
 describe("saved instructions, tool sets and runbooks over HTTP [REQ-090] [REQ-080] [REQ-082]", () => {
@@ -136,7 +136,7 @@ describe("saved instructions, tool sets and runbooks over HTTP [REQ-090] [REQ-08
       name: "어제",
       deletedAt: "2026-10-28T12:00:00Z",
     });
-    const listed = await platform.presets.list({ name: "yeonsu", source: "self" });
+    const listed = await platform.presets.list(person("yeonsu"));
     expect(listed.deleted.map((p) => p.name)).toEqual(["어제"]);
     expect(await store.getPreset("p-old")).toBeUndefined();
     await platform.stop();

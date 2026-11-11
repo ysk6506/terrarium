@@ -8,8 +8,9 @@ import type { EscalationAnswerRequest, EscalationCard } from "@terrarium/core/co
 import { NotFoundError, wallClockMs } from "@terrarium/core/kernel";
 import type { CallResult, HumanAct, HumanResolution } from "@terrarium/core/session";
 import { TOOL_SPECS } from "@terrarium/core/tools";
-import { ownerOnly, type Viewer } from "./context";
+import type { Viewer } from "./context";
 import type { HostedSession } from "./hosts";
+import { allow } from "./permissions";
 
 type Card = Omit<EscalationCard, "tools" | "grantable" | "acts">;
 
@@ -88,7 +89,7 @@ export class Escalations {
   ): Promise<EscalationCard | undefined> {
     const p = this.parked.get(runId);
     if (!p) throw new NotFoundError("이 실행은 지금 사람을 기다리고 있지 않아요");
-    ownerOnly(viewer, p.card.owner, "에스컬레이션에 답하기");
+    allow(viewer, "answerEscalation", { owner: p.card.owner }, "에스컬레이션에 답하기");
     if (answer.kind === "act") {
       p.acts.push(await p.session.humanAct(answer.tool, answer.args));
       return this.cardOf(p);

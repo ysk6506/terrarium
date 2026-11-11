@@ -1,7 +1,7 @@
 import type { AddressInfo } from "node:net";
 import { describe, expect, test } from "vitest";
 import { sampleBlueprint } from "../../../../packages/core/src/world/test-support/sample";
-import { testPlatform } from "../runtime/test-support/platform";
+import { person, testPlatform } from "../runtime/test-support/platform";
 import { buildApp } from "./app";
 
 const WHO = {
@@ -16,10 +16,10 @@ describe("the live view of a world as server-sent events [REQ-050]", () => {
   test("runs already working come first, then what they do as it happens; a world that is not there is a 404", async () => {
     const t = testPlatform();
     const app = buildApp({ platform: t.platform, heartbeatSeconds: 0.05 });
-    const world = await t.platform.worlds.create(
-      { name: "연수", source: "self" },
-      { name: "홀", blueprint: sampleBlueprint() },
-    );
+    const world = await t.platform.worlds.create(person("연수"), {
+      name: "홀",
+      blueprint: sampleBlueprint(),
+    });
     const id = world.world.id;
     t.platform.events.emitWorld(id, { type: "start", runId: "r-1", who: WHO });
     await app.listen({ port: 0, host: "127.0.0.1" });

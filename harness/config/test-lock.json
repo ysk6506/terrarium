@@ -7700,16 +7700,6 @@
    "added": "2026-11-11",
    "amended_by": null
   },
-  "apps/server/src/http/activity-stream.test.ts::<import:436dd109>": {
-   "kind": "support",
-   "hash": "436dd10917640453",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
-  },
   "apps/server/src/http/activity-stream.test.ts::<import:886f13ce>": {
    "kind": "support",
    "hash": "886f13ce4c0a8070",
@@ -7718,6 +7708,16 @@
    "precision": [],
    "skips": 0,
    "added": "2026-10-30",
+   "amended_by": null
+  },
+  "apps/server/src/http/activity-stream.test.ts::<import:88b11dba>": {
+   "kind": "support",
+   "hash": "88b11dba5f728e46",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/activity-stream.test.ts::<import:9210ce3f>": {
@@ -7772,7 +7772,7 @@
   },
   "apps/server/src/http/activity-stream.test.ts::the live view of a world as server-sent events [REQ-050] > runs already working come first, then what they do as it happens; a world that is not there is a 404": {
    "kind": "test",
-   "hash": "c195271b34d3f70b",
+   "hash": "af75b199cd7e1cd1",
    "asserts": 4,
    "literals": [
     "\"\"",
@@ -7797,7 +7797,6 @@
     "\"r-1\"",
     "\"r-1\"",
     "\"runs already working come first, then what they do as it happens; a world that is not there is a 404\"",
-    "\"self\"",
     "\"start\"",
     "\"text/event-stream; charset=utf-8\"",
     "\"text/event-stream; charset=utf-8\"",
@@ -7809,8 +7808,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/http/agent-versions-api.test.ts::<import:9428df5f>": {
    "kind": "support",
@@ -7956,16 +7955,6 @@
    "added": "2026-10-29",
    "amended_by": null
   },
-  "apps/server/src/http/app.test.ts::<import:05f9b251>": {
-   "kind": "support",
-   "hash": "05f9b251c2f5d26f",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
-  },
   "apps/server/src/http/app.test.ts::<import:09835585>": {
    "kind": "support",
    "hash": "0983558566dc500f",
@@ -7986,6 +7975,26 @@
    "added": "2026-10-29",
    "amended_by": null
   },
+  "apps/server/src/http/app.test.ts::<import:53bb89d4>": {
+   "kind": "support",
+   "hash": "53bb89d41cb4a8ec",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/app.test.ts::<import:73197d72>": {
+   "kind": "support",
+   "hash": "73197d72c0ce79c3",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "apps/server/src/http/app.test.ts::<import:886f13ce>": {
    "kind": "support",
    "hash": "886f13ce4c0a8070",
@@ -7994,6 +8003,16 @@
    "precision": [],
    "skips": 0,
    "added": "2026-10-29",
+   "amended_by": null
+  },
+  "apps/server/src/http/app.test.ts::<import:8ebc5010>": {
+   "kind": "support",
+   "hash": "8ebc50108d0f2804",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/app.test.ts::<import:917b2dea>": {
@@ -8039,16 +8058,6 @@
   "apps/server/src/http/app.test.ts::<import:ce214579>": {
    "kind": "support",
    "hash": "ce214579b09faf36",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
-  },
-  "apps/server/src/http/app.test.ts::<import:d7b9cf00>": {
-   "kind": "support",
-   "hash": "d7b9cf005689b02d",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -8369,7 +8378,7 @@
   },
   "apps/server/src/http/app.test.ts::live progress as server-sent events [REQ-030] > a summary first, then runs and tool calls as they happen": {
    "kind": "test",
-   "hash": "4c847f155f6690dc",
+   "hash": "aeb42294e24f4a8a",
    "asserts": 3,
    "literals": [
     "\"\"",
@@ -8389,9 +8398,6 @@
     "\"event: experiment\\ndata: \"",
     "\"event: experiment\\ndata: \"",
     "\"idle\"",
-    "\"self\"",
-    "\"self\"",
-    "\"self\"",
     "\"text/event-stream; charset=utf-8\"",
     "\"text/event-stream; charset=utf-8\"",
     "\"실시간\"",
@@ -8404,8 +8410,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/http/app.test.ts::the web app is served from the same place [REQ-006] > <suite>": {
    "kind": "support",
@@ -8469,9 +8475,29 @@
    "added": "2026-10-29",
    "amended_by": null
   },
+  "apps/server/src/http/app.test.ts::who is asking [REQ-033] > =proxy": {
+   "kind": "support",
+   "hash": "4f5e2fa9f8d61028",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/app.test.ts::who is asking [REQ-033] > =sealed": {
+   "kind": "support",
+   "hash": "0f079b5ece84c634",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "apps/server/src/http/app.test.ts::who is asking [REQ-033] > the SSO proxy's header wins and cannot be faked; otherwise the name people typed": {
    "kind": "test",
-   "hash": "f09e655ad99c3014",
+   "hash": "c76da4f863034657",
    "asserts": 8,
    "literals": [
     "\" 김연수 \"",
@@ -8492,29 +8518,15 @@
     "\"anonymous\"",
     "\"anonymous\"",
     "\"anonymous\"",
-    "\"anonymous\"",
-    "\"anonymous\"",
-    "\"anonymous\"",
-    "\"anonymous\"",
-    "\"anonymous\"",
-    "\"anonymous\"",
-    "\"anonymous\"",
-    "\"anonymous\"",
     "\"proxy\"",
     "\"proxy\"",
-    "\"self\"",
-    "\"self\"",
-    "\"self\"",
-    "\"self\"",
     "\"the SSO proxy's header wins and cannot be faked; otherwise the name people typed\"",
+    "\"user\"",
+    "\"user\"",
     "\"x\"",
     "\"x\"",
     "\"x-forwarded-user\"",
     "\"x-forwarded-user\"",
-    "\"x-forwarded-user\"",
-    "\"x-forwarded-user\"",
-    "\"x-forwarded-user\"",
-    "\"x-forwarded-user\"",
     "\"x-terrarium-user\"",
     "\"x-terrarium-user\"",
     "\"x-terrarium-user\"",
@@ -8529,6 +8541,8 @@
     "\"x-terrarium-user\"",
     "\"x-terrarium-user\"",
     "\"x-terrarium-user\"",
+    "\"yeonsu.kim\"",
+    "\"yeonsu.kim\"",
     "\"yeonsu.kim\"",
     "\"yeonsu.kim\"",
     "\"yeonsu.kim\"",
@@ -8544,8 +8558,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/http/calibrate.test.ts::<import:436dd109>": {
    "kind": "support",
@@ -9038,8 +9052,8 @@
   },
   "apps/server/src/http/connection-try-api.test.ts::말 걸어 보기 and the tools for traces over HTTP [REQ-079] > over HTTP: the route runs the turn, and the tools for traces are listed": {
    "kind": "test",
-   "hash": "d4a8d4f8a67fed81",
-   "asserts": 6,
+   "hash": "859514f80ce057c6",
+   "asserts": 7,
    "literals": [
     "\" \"",
     "\"/api/connections\"",
@@ -9050,6 +9064,8 @@
     "\"200\"",
     "\"400\"",
     "\"400\"",
+    "\"403\"",
+    "\"403\"",
     "\"404\"",
     "\"404\"",
     "\"GET\"",
@@ -9058,6 +9074,7 @@
     "\"POST\"",
     "\"POST\"",
     "\"POST\"",
+    "\"POST\"",
     "\"a\"",
     "\"a\"",
     "\"b\"",
@@ -9068,9 +9085,9 @@
     "\"jimin\"",
     "\"jimin\"",
     "\"jimin\"",
-    "\"jimin\"",
     "\"langfuse\"",
     "\"langfuse\"",
+    "\"ops\"",
     "\"ops\"",
     "\"ops\"",
     "\"over HTTP: the route runs the turn, and the tools for traces are listed\"",
@@ -9080,7 +9097,11 @@
     "\"x-terrarium-user\"",
     "\"x-terrarium-user\"",
     "\"x-terrarium-user\"",
+    "\"x-terrarium-user\"",
     "\"yeonsu\"",
+    "\"yeonsu\"",
+    "\"yeonsu\"",
+    "\"안녕\"",
     "\"안녕\"",
     "\"안녕하세요\"",
     "\"안녕하세요\"",
@@ -9089,8 +9110,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/http/connections-api.test.ts::<hook:afterAll>": {
    "kind": "support",
@@ -9122,16 +9143,6 @@
    "added": "2026-10-30",
    "amended_by": null
   },
-  "apps/server/src/http/connections-api.test.ts::<import:436dd109>": {
-   "kind": "support",
-   "hash": "436dd10917640453",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
-  },
   "apps/server/src/http/connections-api.test.ts::<import:5b8092ae>": {
    "kind": "support",
    "hash": "5b8092ae3a54ce17",
@@ -9150,6 +9161,16 @@
    "precision": [],
    "skips": 0,
    "added": "2026-10-30",
+   "amended_by": null
+  },
+  "apps/server/src/http/connections-api.test.ts::<import:88b11dba>": {
+   "kind": "support",
+   "hash": "88b11dba5f728e46",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/connections-api.test.ts::<import:9428df5f>": {
@@ -9234,8 +9255,8 @@
   },
   "apps/server/src/http/connections-api.test.ts::connecting a harness from the screen, over HTTP [REQ-051] > try, save, change, keep, re-check and remove; strangers may not change it": {
    "kind": "test",
-   "hash": "7d8c43a047d55956",
-   "asserts": 18,
+   "hash": "b462027256da5a4d",
+   "asserts": 20,
    "literals": [
     "\"\"",
     "\"/api/connections\"",
@@ -9265,6 +9286,10 @@
     "\"403\"",
     "\"403\"",
     "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
     "\"404\"",
     "\"404\"",
     "\"Bearer typed-secret\"",
@@ -9279,6 +9304,10 @@
     "\"GET\"",
     "\"GET\"",
     "\"GET\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
     "\"POST\"",
     "\"POST\"",
     "\"POST\"",
@@ -9300,6 +9329,8 @@
     "\"https://evil.test\"",
     "\"https://harness.test\"",
     "\"https://harness.test\"",
+    "\"jimin\"",
+    "\"jimin\"",
     "\"jimin\"",
     "\"jimin\"",
     "\"jimin\"",
@@ -9337,6 +9368,8 @@
     "\"yeonsu\"",
     "\"yeonsu\"",
     "\"yeonsu\"",
+    "\"yeonsu\"",
+    "\"yeonsu\"",
     "\"가로채기\"",
     "\"새 이름\"",
     "\"새 이름\"",
@@ -9352,8 +9385,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/http/connections-api.test.ts::what was typed on the screen is still there after a restart [REQ-051] > <suite>": {
    "kind": "support",
@@ -9367,7 +9400,7 @@
   },
   "apps/server/src/http/connections-api.test.ts::what was typed on the screen is still there after a restart [REQ-051] > the SQLite store keeps the sealed secrets, headers, metadata and agent versions": {
    "kind": "test",
-   "hash": "9218251183460e3f",
+   "hash": "d8beaf7f3ec2a215",
    "asserts": 9,
    "literals": [
     "\"0\"",
@@ -9419,22 +9452,1243 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+  },
+  "apps/server/src/http/identity-loopback.test.ts::<import:13263dda>": {
+   "kind": "support",
+   "hash": "13263dda471ce2c7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::<import:2473807b>": {
+   "kind": "support",
+   "hash": "2473807bbc6c9b1f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::<import:436dd109>": {
+   "kind": "support",
+   "hash": "436dd10917640453",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::<import:ccdf6e09>": {
+   "kind": "support",
+   "hash": "ccdf6e096857eddd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::<import:ce214579>": {
+   "kind": "support",
+   "hash": "ce214579b09faf36",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::=App": {
+   "kind": "support",
+   "hash": "07db070b6e2a1e4d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::=asking": {
+   "kind": "support",
+   "hash": "585af2343c9194a7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::=ENV": {
+   "kind": "support",
+   "hash": "29cca8489933a501",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::=SECRET": {
+   "kind": "support",
+   "hash": "072c127161425826",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::=serve": {
+   "kind": "support",
+   "hash": "5e37e6372c44b5d9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::=TOKEN": {
+   "kind": "support",
+   "hash": "bae3a54af21860da",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::=typed": {
+   "kind": "support",
+   "hash": "4fe906e693bbf252",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::alone on one's own machine, the loopback address is the administrator [REQ-054] > [REQ-054] a forwarded header cannot make a stranger look like loopback": {
+   "kind": "test",
+   "hash": "1854f563d34b4f08",
+   "asserts": 1,
+   "literals": [
+    "\"10.1.2.3\"",
+    "\"10.1.2.3\"",
+    "\"127.0.0.1\"",
+    "\"[REQ-054] a forwarded header cannot make a stranger look like loopback\"",
+    "\"for=127.0.0.1\"",
+    "\"user\"",
+    "\"user\"",
+    "\"x-forwarded-for\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::alone on one's own machine, the loopback address is the administrator [REQ-054] > [REQ-054] a loopback request with no typed name is an admin too, so the first screen works": {
+   "kind": "test",
+   "hash": "285461feb331df13",
+   "asserts": 1,
+   "literals": [
+    "\"127.0.0.1\"",
+    "\"127.0.0.1\"",
+    "\"[REQ-054] a loopback request with no typed name is an admin too, so the first screen works\"",
+    "\"admin\"",
+    "\"admin\"",
+    "\"user\"",
+    "\"user\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::alone on one's own machine, the loopback address is the administrator [REQ-054] > [REQ-054] in proxy mode loopback means nothing: only the list and the group make an admin": {
+   "kind": "test",
+   "hash": "d2fa1ccd5f12058c",
+   "asserts": 3,
+   "literals": [
+    "\"/api/meta\"",
+    "\"127.0.0.1\"",
+    "\"127.0.0.1\"",
+    "\"127.0.0.1\"",
+    "\"127.0.0.1\"",
+    "\"127.0.0.1\"",
+    "\"401\"",
+    "\"401\"",
+    "\"GET\"",
+    "\"TERRARIUM_TEST_PROXY_SECRET\"",
+    "\"[REQ-054] in proxy mode loopback means nothing: only the list and the group make an admin\"",
+    "\"admin\"",
+    "\"admin\"",
+    "\"boss\"",
+    "\"boss\"",
+    "\"boss\"",
+    "\"kim\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"x-forwarded-groups\"",
+    "\"x-forwarded-user\"",
+    "\"x-forwarded-user\"",
+    "\"x-forwarded-user\"",
+    "\"x-forwarded-user\"",
+    "\"x-terrarium-proxy-secret\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::alone on one's own machine, the loopback address is the administrator [REQ-054] > [REQ-054] the admin routes open for loopback and stay shut for others": {
+   "kind": "test",
+   "hash": "45b976fb38609ef3",
+   "asserts": 2,
+   "literals": [
+    "\"/api/worlds/import\"",
+    "\"10.1.2.3\"",
+    "\"10.1.2.3\"",
+    "\"127.0.0.1\"",
+    "\"127.0.0.1\"",
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"POST\"",
+    "\"[REQ-054] the admin routes open for loopback and stay shut for others\"",
+    "\"sample\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::alone on one's own machine, the loopback address is the administrator [REQ-054] > [REQ-054] the same request from another address is not an admin": {
+   "kind": "test",
+   "hash": "1263ca6fb568f71c",
+   "asserts": 1,
+   "literals": [
+    "\"10.1.2.3\"",
+    "\"192.168.0.7\"",
+    "\"2001:db8::1\"",
+    "\"::ffff:10.1.2.3\"",
+    "\"[REQ-054] the same request from another address is not an admin\"",
+    "\"user\"",
+    "\"user\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::alone on one's own machine, the loopback address is the administrator [REQ-054] > [REQ-054] what counts as loopback": {
+   "kind": "test",
+   "hash": "65b435f9f5abe9ff",
+   "asserts": 2,
+   "literals": [
+    "\"\"",
+    "\"10.0.0.1\"",
+    "\"1127.0.0.1\"",
+    "\"127.0.0.1\"",
+    "\"127.0.0.1.evil\"",
+    "\"127.1.2.3\"",
+    "\"::1\"",
+    "\"::2\"",
+    "\"::ffff:127.0.0.1\"",
+    "\"[REQ-054] what counts as loopback\"",
+    "\"localhost\"",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::alone on one's own machine, the loopback address is the administrator [REQ-054] > [REQ-054] with a token configured, loopback alone is not enough": {
+   "kind": "test",
+   "hash": "bed295d79c6b20d6",
+   "asserts": 3,
+   "literals": [
+    "\"10.1.2.3\"",
+    "\"10.1.2.3\"",
+    "\"127.0.0.1\"",
+    "\"127.0.0.1\"",
+    "\"127.0.0.1\"",
+    "\"127.0.0.1\"",
+    "\"TERRARIUM_TEST_ADMIN_TOKEN\"",
+    "\"[REQ-054] with a token configured, loopback alone is not enough\"",
+    "\"admin\"",
+    "\"admin\"",
+    "\"admin\"",
+    "\"admin\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"x-terrarium-admin-token\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::alone on one's own machine, the loopback address is the administrator [REQ-054] > [REQ-054] with no token configured, a loopback request is an admin and meta says so": {
+   "kind": "test",
+   "hash": "bb2e2aa45d15075e",
+   "asserts": 1,
+   "literals": [
+    "\"127.0.0.1\"",
+    "\"::1\"",
+    "\"::ffff:127.0.0.1\"",
+    "\"[REQ-054] with no token configured, a loopback request is an admin and meta says so\"",
+    "\"admin\"",
+    "\"admin\"",
+    "\"user\"",
+    "\"user\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-loopback.test.ts::alone on one's own machine, the loopback address is the administrator [REQ-054] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::<import:2473807b>": {
+   "kind": "support",
+   "hash": "2473807bbc6c9b1f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::<import:2d861d59>": {
+   "kind": "support",
+   "hash": "2d861d5908501e5d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::<import:612999aa>": {
+   "kind": "support",
+   "hash": "612999aa4f1be0a7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::<import:b48f5914>": {
+   "kind": "support",
+   "hash": "b48f5914282ca7bd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::<import:ce214579>": {
+   "kind": "support",
+   "hash": "ce214579b09faf36",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::=ADMIN_TOKEN": {
+   "kind": "support",
+   "hash": "caa0312ab499d94d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::=ENV": {
+   "kind": "support",
+   "hash": "08f382fa52c2e9db",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::=identityOf": {
+   "kind": "support",
+   "hash": "368fba1f8489d672",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::=NFC": {
+   "kind": "support",
+   "hash": "c46508c590d828cc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::=NFD": {
+   "kind": "support",
+   "hash": "642dbdb3d0d2bdd7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::=PROXY": {
+   "kind": "support",
+   "hash": "4236d074eae598b2",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::=SECRET": {
+   "kind": "support",
+   "hash": "9da56fabde3b0b10",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::=serve": {
+   "kind": "support",
+   "hash": "54d02832823b3f00",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::=signedIn": {
+   "kind": "support",
+   "hash": "bcb7260ec41524a9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::=urlOf": {
+   "kind": "support",
+   "hash": "497ef8289943ae66",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::a server that would believe anyone does not start [REQ-054] > [REQ-054] a typed-name server whose admin token variable is empty refuses too, rather than run with no admin by accident": {
+   "kind": "test",
+   "hash": "e9e33e20a1c16c2d",
+   "asserts": 1,
+   "literals": [
+    "\"TERRARIUM_TEST_ADMIN_TOKEN\"",
+    "\"TERRARIUM_TEST_ADMIN_TOKEN\"",
+    "\"[REQ-054] a typed-name server whose admin token variable is empty refuses too, rather than run with no admin by accident\"",
+    "\"fix:\"",
+    "\"fix:\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::a server that would believe anyone does not start [REQ-054] > [REQ-054] proxy mode needs its secret: unset, empty or unnamed all refuse, and say how to fix it": {
+   "kind": "test",
+   "hash": "fb28d05a256ec30f",
+   "asserts": 2,
+   "literals": [
+    "\"\"",
+    "\"[REQ-054] proxy mode needs its secret: unset, empty or unnamed all refuse, and say how to fix it\"",
+    "\"x-forwarded-user\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::a server that would believe anyone does not start [REQ-054] > [REQ-054] the secret itself is never in the settings file: the settings only name the variable": {
+   "kind": "test",
+   "hash": "2baacfde7e4c1899",
+   "asserts": 3,
+   "literals": [
+    "\"TERRARIUM_TEST_PROXY_SECRET\"",
+    "\"TERRARIUM_TEST_PROXY_SECRET\"",
+    "\"[REQ-054] the secret itself is never in the settings file: the settings only name the variable\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::a server that would believe anyone does not start [REQ-054] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::a share link lives thirty days unless its maker says otherwise [REQ-054] > [REQ-054] no number given: thirty days; a number given: that many": {
+   "kind": "test",
+   "hash": "5705262412598c87",
+   "asserts": 4,
+   "literals": [
+    "\"../../../../packages/core/src/world/test-support/sample\"",
+    "\"/api/experiments\"",
+    "\"/api/scenarios\"",
+    "\"/api/worlds\"",
+    "\"1\"",
+    "\"1\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"30\"",
+    "\"30\"",
+    "\"7\"",
+    "\"7\"",
+    "\"7\"",
+    "\"86400000\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] no number given: thirty days; a number given: that many\"",
+    "\"cooling-failure\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"공유\"",
+    "\"홀\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::a share link lives thirty days unless its maker says otherwise [REQ-054] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::administrators come from the settings [REQ-054] > [REQ-054] a listed login is an admin in either Unicode spelling": {
+   "kind": "test",
+   "hash": "8c3ba68b6891ac87",
+   "asserts": 1,
+   "literals": [
+    "\"[REQ-054] a listed login is an admin in either Unicode spelling\"",
+    "\"admin\"",
+    "\"admin\"",
+    "\"user\"",
+    "\"user\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::administrators come from the settings [REQ-054] > [REQ-054] a login on the admin list is an admin, anyone else is a user": {
+   "kind": "test",
+   "hash": "2eeb2df6e01938f1",
+   "asserts": 3,
+   "literals": [
+    "\"[REQ-054] a login on the admin list is an admin, anyone else is a user\"",
+    "\"admin\"",
+    "\"admin\"",
+    "\"boss\"",
+    "\"boss\"",
+    "\"boss\"",
+    "\"boss\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"x-forwarded-name\"",
+    "\"x-forwarded-name\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::administrators come from the settings [REQ-054] > [REQ-054] a member of the admin group is an admin": {
+   "kind": "test",
+   "hash": "63b655de2d2cca60",
+   "asserts": 2,
+   "literals": [
+    "\"[REQ-054] a member of the admin group is an admin\"",
+    "\"admin\"",
+    "\"admin\"",
+    "\"infra, terrarium-admins\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"terrarium-admins-not\"",
+    "\"terrarium-admins-not\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"x-forwarded-groups\"",
+    "\"x-forwarded-groups\"",
+    "\"x-forwarded-groups\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::administrators come from the settings [REQ-054] > [REQ-054] an admin changes what another person made; a user does not": {
+   "kind": "test",
+   "hash": "96750f3d5ac243e5",
+   "asserts": 2,
+   "literals": [
+    "\"../../../../packages/core/src/world/test-support/sample\"",
+    "\"/api/worlds\"",
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"DELETE\"",
+    "\"DELETE\"",
+    "\"POST\"",
+    "\"[REQ-054] an admin changes what another person made; a user does not\"",
+    "\"boss\"",
+    "\"jimin\"",
+    "\"kim\"",
+    "\"세계\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::administrators come from the settings [REQ-054] > [REQ-054] with neither a list nor a group nobody is an admin": {
+   "kind": "test",
+   "hash": "753678ee2dfdcb46",
+   "asserts": 1,
+   "literals": [
+    "\"[REQ-054] with neither a list nor a group nobody is an admin\"",
+    "\"boss\"",
+    "\"boss\"",
+    "\"terrarium-admins\"",
+    "\"terrarium-admins\"",
+    "\"user\"",
+    "\"user\"",
+    "\"x-forwarded-groups\"",
+    "\"x-forwarded-groups\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::administrators come from the settings [REQ-054] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::administrators come from the settings [REQ-054] > =rolesOf": {
+   "kind": "support",
+   "hash": "b5f35f820f698c54",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::behind the proxy, only the proxy is believed [REQ-054] > [REQ-054] a missing login header is 401 even with the right secret; it is never let through as anonymous": {
+   "kind": "test",
+   "hash": "dcecd3afe1465af2",
+   "asserts": 4,
+   "literals": [
+    "\"   \"",
+    "\"/api/meta\"",
+    "\"/api/meta\"",
+    "\"/api/meta\"",
+    "\"/api/meta\"",
+    "\"/api/meta\"",
+    "\"/api/meta\"",
+    "\"/api/worlds\"",
+    "\"/api/worlds\"",
+    "\"401\"",
+    "\"401\"",
+    "\"401\"",
+    "\"401\"",
+    "\"401\"",
+    "\"401\"",
+    "\"401\"",
+    "\"401\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"[REQ-054] a missing login header is 401 even with the right secret; it is never let through as anonymous\"",
+    "\"boss\"",
+    "\"x-forwarded-user\"",
+    "\"x-terrarium-proxy-secret\"",
+    "\"x-terrarium-user\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::behind the proxy, only the proxy is believed [REQ-054] > [REQ-054] a share link carries its own secret in the address and needs no sign-in": {
+   "kind": "test",
+   "hash": "761c996c2a17e8f7",
+   "asserts": 1,
+   "literals": [
+    "\"/r/nope\"",
+    "\"404\"",
+    "\"404\"",
+    "\"GET\"",
+    "\"[REQ-054] a share link carries its own secret in the address and needs no sign-in\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::behind the proxy, only the proxy is believed [REQ-054] > [REQ-054] an empty groups header means no groups; a missing name header means the login is the name": {
+   "kind": "test",
+   "hash": "ed567008f975902d",
+   "asserts": 1,
+   "literals": [
+    "\"\"",
+    "\"/api/meta\"",
+    "\"GET\"",
+    "\"[REQ-054] an empty groups header means no groups; a missing name header means the login is the name\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"x-forwarded-groups\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::behind the proxy, only the proxy is believed [REQ-054] > [REQ-054] the two live streams are behind the same door: no secret is a 401, not an open stream": {
+   "kind": "test",
+   "hash": "68265f8fd7b1c576",
+   "asserts": 3,
+   "literals": [
+    "\"/api/experiments/x/events\"",
+    "\"/api/worlds/x/activity\"",
+    "\"401\"",
+    "\"401\"",
+    "\"401\"",
+    "\"401\"",
+    "\"404\"",
+    "\"404\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"[REQ-054] the two live streams are behind the same door: no secret is a 401, not an open stream\"",
+    "\"boss\"",
+    "\"boss\"",
+    "\"nope\"",
+    "\"x-forwarded-user\"",
+    "\"x-terrarium-proxy-secret\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::behind the proxy, only the proxy is believed [REQ-054] > [REQ-054] the word anonymous, in any case, is nobody's login": {
+   "kind": "test",
+   "hash": "b0bd3b023d3b480e",
+   "asserts": 2,
+   "literals": [
+    "\" anonymous \"",
+    "\"/api/meta\"",
+    "\"/api/meta\"",
+    "\"401\"",
+    "\"401\"",
+    "\"ANONYMOUS\"",
+    "\"Anonymous\"",
+    "\"Anonymous\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"[REQ-054] the word anonymous, in any case, is nobody's login\"",
+    "\"anonymous\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"x-forwarded-name\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::behind the proxy, only the proxy is believed [REQ-054] > [REQ-054] UTF-8 sent raw by the proxy (read as Latin-1 by Node) is put back together": {
+   "kind": "test",
+   "hash": "cf2413f66471abb6",
+   "asserts": 1,
+   "literals": [
+    "\"/api/meta\"",
+    "\"GET\"",
+    "\"[REQ-054] UTF-8 sent raw by the proxy (read as Latin-1 by Node) is put back together\"",
+    "\"kim\"",
+    "\"latin1\"",
+    "\"utf8\"",
+    "\"x-forwarded-name\"",
+    "\"김연수\"",
+    "\"김연수\"",
+    "\"김연수\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::behind the proxy, only the proxy is believed [REQ-054] > [REQ-054] who the proxy says is who is asked: login id, display name, groups and roles": {
+   "kind": "test",
+   "hash": "42f7f3211a80bcd8",
+   "asserts": 4,
+   "literals": [
+    "\" ai-platform , infra,, ai-platform \"",
+    "\"/api/meta\"",
+    "\"200\"",
+    "\"200\"",
+    "\"GET\"",
+    "\"[REQ-054] who the proxy says is who is asked: login id, display name, groups and roles\"",
+    "\"ai-platform\"",
+    "\"ai-platform\"",
+    "\"infra\"",
+    "\"infra\"",
+    "\"proxy\"",
+    "\"proxy\"",
+    "\"proxy\"",
+    "\"proxy\"",
+    "\"user\"",
+    "\"user\"",
+    "\"x-forwarded-groups\"",
+    "\"x-forwarded-name\"",
+    "\"yeonsu.kim\"",
+    "\"yeonsu.kim\"",
+    "\"yeonsu.kim\"",
+    "\"김연수\"",
+    "\"김연수\"",
+    "\"김연수\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::behind the proxy, only the proxy is believed [REQ-054] > [REQ-054] without the right secret every route that is not public answers 401, whatever the other headers say": {
+   "kind": "test",
+   "hash": "cf445a7a42f0910a",
+   "asserts": 3,
+   "literals": [
+    "\"\"",
+    "\"401\"",
+    "\"401\"",
+    "\"70\"",
+    "\"70\"",
+    "\"[REQ-054] without the right secret every route that is not public answers 401, whatever the other headers say\"",
+    "\"boss\"",
+    "\"boss\"",
+    "\"terrarium-admins\"",
+    "\"x-forwarded-groups\"",
+    "\"x-forwarded-user\"",
+    "\"x-terrarium-admin-token\"",
+    "\"x-terrarium-proxy-secret\"",
+    "\"x-terrarium-proxy-secret\"",
+    "\"x-terrarium-user\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::behind the proxy, only the proxy is believed [REQ-054] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::one person is one login, however it is spelled [REQ-054] > [REQ-054] a name typed in decomposed Unicode is the same person as the composed one": {
+   "kind": "test",
+   "hash": "a93575984236452e",
+   "asserts": 4,
+   "literals": [
+    "\"/api/meta\"",
+    "\"/api/meta\"",
+    "\"/api/worlds/generate\"",
+    "\"401\"",
+    "\"401\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"POST\"",
+    "\"[REQ-054] a name typed in decomposed Unicode is the same person as the composed one\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::one person is one login, however it is spelled [REQ-054] > [REQ-054] ownership follows the login: the same person under either spelling changes their own world, another person cannot": {
+   "kind": "test",
+   "hash": "0106fde3bbf751fe",
+   "asserts": 4,
+   "literals": [
+    "\"../../../../packages/core/src/world/test-support/sample\"",
+    "\"/api/worlds\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"POST\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"[REQ-054] ownership follows the login: the same person under either spelling changes their own world, another person cannot\"",
+    "\"jimin\"",
+    "\"내 세계\"",
+    "\"새 이름\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::one person is one login, however it is spelled [REQ-054] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > [REQ-054] meta says which mode is on, so the screen can say there is no protection": {
+   "kind": "test",
+   "hash": "c56d287c0e885c87",
+   "asserts": 2,
+   "literals": [
+    "\"[REQ-054] meta says which mode is on, so the screen can say there is no protection\"",
+    "\"kim\"",
+    "\"kim\"",
+    "\"proxy\"",
+    "\"proxy\"",
+    "\"self-declared\"",
+    "\"self-declared\"",
+    "\"연수\"",
+    "\"연수\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > [REQ-054] nobody is an admin without the token, and a name on the list does not make one": {
+   "kind": "test",
+   "hash": "c8e3bf9afa37daef",
+   "asserts": 3,
+   "literals": [
+    "\"TERRARIUM_TEST_ADMIN_TOKEN\"",
+    "\"[REQ-054] nobody is an admin without the token, and a name on the list does not make one\"",
+    "\"admin\"",
+    "\"admin\"",
+    "\"g\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"wrong\"",
+    "\"wrong\"",
+    "\"x-terrarium-admin-token\"",
+    "\"x-terrarium-admin-token\"",
+    "\"x-terrarium-admin-token\"",
+    "\"x-terrarium-admin-token\"",
+    "\"연수\"",
+    "\"연수\"",
+    "\"연수\"",
+    "\"연수\"",
+    "\"연수\"",
+    "\"연수\"",
+    "\"연수\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > [REQ-054] the admin token gates the admin routes in this mode": {
+   "kind": "test",
+   "hash": "7a0825e9890dd41f",
+   "asserts": 3,
+   "literals": [
+    "\"/api/worlds/import\"",
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"POST\"",
+    "\"[REQ-054] the admin token gates the admin routes in this mode\"",
+    "\"sample\"",
+    "\"wrong\"",
+    "\"wrong\"",
+    "\"x-terrarium-admin-token\"",
+    "\"x-terrarium-admin-token\"",
+    "\"x-terrarium-admin-token\"",
+    "\"x-terrarium-admin-token\"",
+    "\"연수\"",
+    "\"연수\"",
+    "\"연수\"",
+    "\"연수\"",
+    "\"연수\"",
+    "\"연수\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > [REQ-054] the old behaviour for one developer stays: a typed name works, no name is the shared anonymous user": {
+   "kind": "test",
+   "hash": "f7e791bdbb498c5b",
+   "asserts": 2,
+   "literals": [
+    "\"[REQ-054] the old behaviour for one developer stays: a typed name works, no name is the shared anonymous user\"",
+    "\"anonymous\"",
+    "\"anonymous\"",
+    "\"anonymous\"",
+    "\"anonymous\"",
+    "\"self\"",
+    "\"self\"",
+    "\"user\"",
+    "\"user\"",
+    "\"연수\"",
+    "\"연수\"",
+    "\"연수\"",
+    "\"연수\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > [REQ-054] the word anonymous, typed in any case, is not a name: such a request is nobody's, as if no name was typed": {
+   "kind": "test",
+   "hash": "1e39259f27af9ef9",
+   "asserts": 1,
+   "literals": [
+    "\"ANONYMOUS\"",
+    "\"Anonymous\"",
+    "\"[REQ-054] the word anonymous, typed in any case, is not a name: such a request is nobody's, as if no name was typed\"",
+    "\"anonymous\"",
+    "\"anonymous\"",
+    "\"anonymous\"",
+    "\"anonymous\"",
+    "\"anonymous\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > [REQ-054] typed names are one Unicode form too: decomposed and composed are the same person": {
+   "kind": "test",
+   "hash": "ec46306ffb3d368f",
+   "asserts": 1,
+   "literals": [
+    "\"[REQ-054] typed names are one Unicode form too: decomposed and composed are the same person\"",
+    "\"self\"",
+    "\"self\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > [REQ-054] with no token configured, a request from another address is no admin, whatever is sent": {
+   "kind": "test",
+   "hash": "875c18c26a9c1927",
+   "asserts": 2,
+   "literals": [
+    "\"\"",
+    "\"/api/meta\"",
+    "\"10.1.2.3\"",
+    "\"GET\"",
+    "\"[REQ-054] with no token configured, a request from another address is no admin, whatever is sent\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"user\"",
+    "\"x-terrarium-admin-token\"",
+    "\"x-terrarium-admin-token\"",
+    "\"연수\"",
+    "\"연수\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > =meta": {
+   "kind": "support",
+   "hash": "e3a2c5808fd5c65f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > =self": {
+   "kind": "support",
+   "hash": "81b53008ef87e8e2",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > =typed": {
+   "kind": "support",
+   "hash": "260642b6d9e8289a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/identity.test.ts::<import:31b6a949>": {
    "kind": "support",
    "hash": "31b6a9495ca43a60",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
-  },
-  "apps/server/src/http/identity.test.ts::<import:436dd109>": {
-   "kind": "support",
-   "hash": "436dd10917640453",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -9452,6 +10706,26 @@
    "added": "2026-10-30",
    "amended_by": null
   },
+  "apps/server/src/http/identity.test.ts::<import:88b11dba>": {
+   "kind": "support",
+   "hash": "88b11dba5f728e46",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/identity.test.ts::<import:ccdf6e09>": {
+   "kind": "support",
+   "hash": "ccdf6e096857eddd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "apps/server/src/http/identity.test.ts::<import:ce214579>": {
    "kind": "support",
    "hash": "ce214579b09faf36",
@@ -9462,19 +10736,19 @@
    "added": "2026-10-30",
    "amended_by": null
   },
-  "apps/server/src/http/identity.test.ts::<import:e71fddbd>": {
+  "apps/server/src/http/identity.test.ts::<import:dd457922>": {
    "kind": "support",
-   "hash": "e71fddbddd356cf0",
+   "hash": "dd45792219a8b97a",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
+   "added": "2026-11-11",
    "amended_by": null
   },
-  "apps/server/src/http/identity.test.ts::<import:ead56c57>": {
+  "apps/server/src/http/identity.test.ts::<import:e71fddbd>": {
    "kind": "support",
-   "hash": "ead56c57b738e6f7",
+   "hash": "e71fddbddd356cf0",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -9504,13 +10778,13 @@
   },
   "apps/server/src/http/identity.test.ts::=sso": {
    "kind": "support",
-   "hash": "c935c3768b850b5d",
+   "hash": "b8c36b3127628d93",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/http/identity.test.ts::who is asking is one slot an SSO can fill [REQ-054] > <suite>": {
    "kind": "support",
@@ -9560,7 +10834,7 @@
   },
   "apps/server/src/http/identity.test.ts::who is asking is one slot an SSO can fill [REQ-054] > a sign-in the server checks itself decides the viewer, and a typed name cannot pretend otherwise": {
    "kind": "test",
-   "hash": "15f927ec4c800e58",
+   "hash": "d656399f7096bfaa",
    "asserts": 2,
    "literals": [
     "\"/api/meta\"",
@@ -9575,6 +10849,8 @@
     "\"s.yeonsu\"",
     "\"s.yeonsu\"",
     "\"s.yeonsu\"",
+    "\"s.yeonsu\"",
+    "\"s.yeonsu\"",
     "\"sso\"",
     "\"sso\"",
     "\"tok-1\"",
@@ -9586,8 +10862,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/http/identity.test.ts::who is asking is one slot an SSO can fill [REQ-054] > the method may add the routes of its own sign-in flow": {
    "kind": "test",
@@ -9609,9 +10885,10 @@
   },
   "apps/server/src/http/identity.test.ts::who is asking is one slot an SSO can fill [REQ-054] > without an SSO the settings give the proxy header, else a typed name": {
    "kind": "test",
-   "hash": "8ea4899ff8d77af8",
+   "hash": "a38bfe5b328c2d11",
    "asserts": 4,
    "literals": [
+    "\"PROXY_SECRET\"",
     "\"kim\"",
     "\"kim\"",
     "\"kim\"",
@@ -9620,16 +10897,17 @@
     "\"proxy\"",
     "\"proxy-header\"",
     "\"proxy-header\"",
-    "\"self\"",
-    "\"self\"",
     "\"self-declared\"",
     "\"self-declared\"",
+    "\"test-secret-0002\"",
+    "\"test-secret-0002\"",
+    "\"test-secret-0002\"",
     "\"without an SSO the settings give the proxy header, else a typed name\"",
     "\"x-forwarded-user\"",
     "\"x-forwarded-user\"",
     "\"x-forwarded-user\"",
-    "\"x-forwarded-user\"",
-    "\"x-forwarded-user\"",
+    "\"x-terrarium-proxy-secret\"",
+    "\"x-terrarium-proxy-secret\"",
     "\"x-terrarium-user\"",
     "\"x-terrarium-user\"",
     "\"연수\"",
@@ -9639,8 +10917,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/http/mcp-slots.test.ts::<hook:afterAll>": {
    "kind": "support",
@@ -9806,14 +11084,14 @@
    "added": "2026-11-06",
    "amended_by": null
   },
-  "apps/server/src/http/models-api.test.ts::<import:436dd109>": {
+  "apps/server/src/http/models-api.test.ts::<import:6438a311>": {
    "kind": "support",
-   "hash": "436dd10917640453",
+   "hash": "6438a3119693f408",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/models-api.test.ts::<import:84d91b40>": {
@@ -9824,6 +11102,26 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/server/src/http/models-api.test.ts::<import:88b11dba>": {
+   "kind": "support",
+   "hash": "88b11dba5f728e46",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/models-api.test.ts::<import:9cc3854b>": {
+   "kind": "support",
+   "hash": "9cc3854b62604e57",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/models-api.test.ts::<import:ce214579>": {
@@ -9908,13 +11206,13 @@
   },
   "apps/server/src/http/models-api.test.ts::=setup": {
    "kind": "support",
-   "hash": "9f670424843bbf10",
+   "hash": "080ebaacc308c62c",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/http/models-api.test.ts::=upstream": {
    "kind": "support",
@@ -10141,7 +11439,7 @@
   },
   "apps/server/src/http/models-api.test.ts::registering model APIs: add, list, change, delete [REQ-099] > only one is the default; deleting the default hands it to the one registered first": {
    "kind": "test",
-   "hash": "a9bd906f31e86ef2",
+   "hash": "5a28bfa5b3a1224d",
    "asserts": 4,
    "literals": [
     "\"/api/models\"",
@@ -10170,19 +11468,20 @@
     "\"POST\"",
     "\"POST\"",
     "\"POST\"",
+    "\"admin-kim\"",
     "\"only one is the default; deleting the default hands it to the one registered first\"",
     "true",
     "true"
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
-  "apps/server/src/http/models-api.test.ts::registering model APIs: add, list, change, delete [REQ-099] > only whoever registered it changes or deletes it; anyone else can still check and choose the default": {
+  "apps/server/src/http/models-api.test.ts::registering model APIs: add, list, change, delete [REQ-099] > only whoever registered it changes, deletes or checks it; only an admin chooses the default": {
    "kind": "test",
-   "hash": "1af8f2fc92f681c7",
-   "asserts": 5,
+   "hash": "cfd2f06237d913f6",
+   "asserts": 9,
    "literals": [
     "\"/api/models\"",
     "\"/api/models\"",
@@ -10194,6 +11493,14 @@
     "\"200\"",
     "\"200\"",
     "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
     "\"403\"",
     "\"403\"",
     "\"403\"",
@@ -10204,12 +11511,24 @@
     "\"GET\"",
     "\"PATCH\"",
     "\"PATCH\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
     "\"POST\"",
     "\"POST\"",
     "\"POST\"",
     "\"POST\"",
     "\"POST\"",
     "\"a\"",
+    "\"admin-kim\"",
+    "\"admin-kim\"",
+    "\"admin-kim\"",
+    "\"admin-kim\"",
     "\"jimin\"",
     "\"jimin\"",
     "\"jimin\"",
@@ -10220,14 +11539,18 @@
     "\"jimin\"",
     "\"jimin\"",
     "\"jimin\"",
-    "\"only whoever registered it changes or deletes it; anyone else can still check and choose the default\"",
+    "\"only whoever registered it changes, deletes or checks it; only an admin chooses the default\"",
     "\"x\"",
     "\"x\"",
+    "\"yeonsu\"",
+    "\"yeonsu\"",
+    "\"yeonsu\"",
+    "\"yeonsu\"",
     "\"yeonsu\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/models-api.test.ts::registering model APIs: add, list, change, delete [REQ-099] > the same name twice is a conflict": {
@@ -10282,7 +11605,7 @@
   },
   "apps/server/src/http/models-api.test.ts::registrations survive a restart, sealed [REQ-099] > the SQLite file keeps them, the key is not readable in it, and the same secret box opens it again": {
    "kind": "test",
-   "hash": "902388eec5207959",
+   "hash": "3399325a9a810a49",
    "asserts": 4,
    "literals": [
     "\"/v1/models\"",
@@ -10295,9 +11618,11 @@
     "\"https://llm.corp.test\"",
     "\"openai\"",
     "\"proxy\"",
+    "\"proxy\"",
     "\"terrarium-llm-\"",
     "\"terrarium.db\"",
     "\"the SQLite file keeps them, the key is not readable in it, and the same secret box opens it again\"",
+    "\"yeonsu\"",
     "\"yeonsu\"",
     "\"…ab12\"",
     "\"…ab12\"",
@@ -10311,8 +11636,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/http/models-api.test.ts::the key stays out of the logs [REQ-099] > <hook:afterEach>": {
    "kind": "support",
@@ -10700,6 +12025,571 @@
    "added": "2026-11-07",
    "amended_by": null
   },
+  "apps/server/src/http/permissions-api.test.ts::<hook:afterEach>": {
+   "kind": "support",
+   "hash": "cca7286e83e2d8dd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::<import:007beb93>": {
+   "kind": "support",
+   "hash": "007beb93cef3e58d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::<import:612999aa>": {
+   "kind": "support",
+   "hash": "612999aa4f1be0a7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::<import:6438a311>": {
+   "kind": "support",
+   "hash": "6438a3119693f408",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::<import:886f13ce>": {
+   "kind": "support",
+   "hash": "886f13ce4c0a8070",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::<import:9428df5f>": {
+   "kind": "support",
+   "hash": "9428df5f77306cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::<import:9b21e073>": {
+   "kind": "support",
+   "hash": "9b21e07370b2aaf5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::<import:9cc3854b>": {
+   "kind": "support",
+   "hash": "9cc3854b62604e57",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::<import:ce214579>": {
+   "kind": "support",
+   "hash": "ce214579b09faf36",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::=alices": {
+   "kind": "support",
+   "hash": "f27697ccd761bb33",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::=Send": {
+   "kind": "support",
+   "hash": "6c6a99acef15ee2f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::=setup": {
+   "kind": "support",
+   "hash": "de076bd86b82277d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::=stoppers": {
+   "kind": "support",
+   "hash": "f5d1bafff4bb2efc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::=TOKEN": {
+   "kind": "support",
+   "hash": "bae3a54af21860da",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] a config-file connection's agent versions are managed by admins; a screen-made one's by its maker": {
+   "kind": "test",
+   "hash": "5ef8e62ddbd9a0f4",
+   "asserts": 8,
+   "literals": [
+    "\"/api/connections/builtin/agents/triage/versions\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"DELETE\"",
+    "\"DELETE\"",
+    "\"DELETE\"",
+    "\"DELETE\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"[REQ-054] a config-file connection's agent versions are managed by admins; a screen-made one's by its maker\"",
+    "\"admin-kim\"",
+    "\"admin-kim\"",
+    "\"admin-kim\"",
+    "\"alice\"",
+    "\"alice\"",
+    "\"alice\"",
+    "\"alice\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"v\"",
+    "\"v\"",
+    "\"v\"",
+    "\"v\"",
+    "\"v\"",
+    "\"v\"",
+    "\"v\"",
+    "\"v\"",
+    "\"x\"",
+    "\"x\"",
+    "\"관리자\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] a connection of the config file may be used by every signed-in person": {
+   "kind": "test",
+   "hash": "259ab739cd7cf8bb",
+   "asserts": 2,
+   "literals": [
+    "\"/api/connections/builtin/check\"",
+    "\"/api/connections/builtin/check\"",
+    "\"/api/connections/builtin/try\"",
+    "\"/api/connections/builtin/try\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] a connection of the config file may be used by every signed-in person\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"triage\"",
+    "\"triage\"",
+    "\"안녕\"",
+    "\"안녕\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] a like is any signed-in person's; a request with no name cannot like": {
+   "kind": "test",
+   "hash": "41a5e84226d1e2ab",
+   "asserts": 2,
+   "literals": [
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] a like is any signed-in person's; a request with no name cannot like\"",
+    "\"bob\"",
+    "\"bob\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] a share link is made by the experiment's maker or an admin, and taken back by its maker, the experiment's maker or an admin": {
+   "kind": "test",
+   "hash": "97f8861e6d43b7bf",
+   "asserts": 6,
+   "literals": [
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"DELETE\"",
+    "\"DELETE\"",
+    "\"DELETE\"",
+    "\"DELETE\"",
+    "\"DELETE\"",
+    "\"DELETE\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] a share link is made by the experiment's maker or an admin, and taken back by its maker, the experiment's maker or an admin\"",
+    "\"admin-kim\"",
+    "\"admin-kim\"",
+    "\"admin-kim\"",
+    "\"alice\"",
+    "\"alice\"",
+    "\"alice\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] an experiment on someone's screen-made connection, created or forked, is for that person and admins; the config file's is open": {
+   "kind": "test",
+   "hash": "9b031ca065515d0b",
+   "asserts": 4,
+   "literals": [
+    "\"/api/experiments\"",
+    "\"/api/experiments\"",
+    "\"1\"",
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] an experiment on someone's screen-made connection, created or forked, is for that person and admins; the config file's is open\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"builtin\"",
+    "\"builtin\"",
+    "\"guess\"",
+    "\"guess\"",
+    "\"triage\"",
+    "\"triage\"",
+    "\"빌려 쓰기\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] checking a model opens its sealed key, so it is for whoever registered it; choosing the default is for admins": {
+   "kind": "test",
+   "hash": "668f1439521c3737",
+   "asserts": 5,
+   "literals": [
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] checking a model opens its sealed key, so it is for whoever registered it; choosing the default is for admins\"",
+    "\"admin-kim\"",
+    "\"admin-kim\"",
+    "\"alice\"",
+    "\"alice\"",
+    "\"alice\"",
+    "\"alice\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] importing a world from a source is for admins": {
+   "kind": "test",
+   "hash": "6343c10766922cf2",
+   "asserts": 2,
+   "literals": [
+    "\"/api/worlds/import\"",
+    "\"/api/worlds/import\"",
+    "\"/api/worlds/import\"",
+    "\"/api/worlds/import\"",
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] importing a world from a source is for admins\"",
+    "\"admin-kim\"",
+    "\"admin-kim\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"sample\"",
+    "\"sample\"",
+    "\"sample\"",
+    "\"sample\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] marking a scenario's calibration is for the scenario's maker and admins": {
+   "kind": "test",
+   "hash": "70197283d96ef49b",
+   "asserts": 2,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] marking a scenario's calibration is for the scenario's maker and admins\"",
+    "\"alice\"",
+    "\"alice\"",
+    "\"bob\"",
+    "\"bob\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] stopping an experiment and adding runs stay with its maker and admins": {
+   "kind": "test",
+   "hash": "bd51fa6bfd1f07d1",
+   "asserts": 3,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] stopping an experiment and adding runs stay with its maker and admins\"",
+    "\"admin-kim\"",
+    "\"admin-kim\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] talking through, keeping, re-checking a connection a person made on the screen is for that person": {
+   "kind": "test",
+   "hash": "5cce00c03c2aa815",
+   "asserts": 3,
+   "literals": [
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] talking through, keeping, re-checking a connection a person made on the screen is for that person\"",
+    "\"admin-kim\"",
+    "\"admin-kim\"",
+    "\"alice\"",
+    "\"alice\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"triage\"",
+    "\"안녕\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] the current-process table is written by the scenario's maker, not by whoever came first": {
+   "kind": "test",
+   "hash": "261e52bb2a4826c4",
+   "asserts": 4,
+   "literals": [
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"5\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"[REQ-054] the current-process table is written by the scenario's maker, not by whoever came first\"",
+    "\"admin-kim\"",
+    "\"admin-kim\"",
+    "\"alice\"",
+    "\"alice\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"check\"",
+    "\"담당\"",
+    "\"확인\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "apps/server/src/http/physics-api.test.ts::<import:4eea0d07>": {
    "kind": "support",
    "hash": "4eea0d07ab4c98af",
@@ -10924,14 +12814,14 @@
    "added": "2026-11-11",
    "amended_by": null
   },
-  "apps/server/src/http/presets-api.test.ts::<import:436dd109>": {
+  "apps/server/src/http/presets-api.test.ts::<import:88b11dba>": {
    "kind": "support",
-   "hash": "436dd10917640453",
+   "hash": "88b11dba5f728e46",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/presets-api.test.ts::<import:ce214579>": {
@@ -10966,7 +12856,7 @@
   },
   "apps/server/src/http/presets-api.test.ts::saved instructions, tool sets and runbooks over HTTP [REQ-090] [REQ-080] [REQ-082] > a deleted one is kept for seven days and then forgotten": {
    "kind": "test",
-   "hash": "305c704ee7344c2a",
+   "hash": "acecce85bf639298",
    "asserts": 2,
    "literals": [
     "\"2026-09-01T00:00:00Z\"",
@@ -10978,7 +12868,6 @@
     "\"p-old\"",
     "\"p-old\"",
     "\"p-old\"",
-    "\"self\"",
     "\"x\"",
     "\"yeonsu\"",
     "\"yeonsu\"",
@@ -10989,8 +12878,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/http/presets-api.test.ts::saved instructions, tool sets and runbooks over HTTP [REQ-090] [REQ-080] [REQ-082] > save, list, rename, delete and bring back; the same name changes the one it names": {
    "kind": "test",
@@ -11338,10 +13227,10 @@
    "added": "2026-11-07",
    "amended_by": null
   },
-  "apps/server/src/http/process-api.test.ts::지금 하는 방식 표 [REQ-112] > [REQ-112] 비거나 틀린 표는 받지 않고, 처음 적은 사람만 고친다": {
+  "apps/server/src/http/process-api.test.ts::지금 하는 방식 표 [REQ-112] > [REQ-112] 비거나 틀린 표는 받지 않고, 시나리오를 만든 사람만 고친다 (먼저 적은 사람이 아니다)": {
    "kind": "test",
-   "hash": "45856ec464c7154d",
-   "asserts": 9,
+   "hash": "bd84a1e75ba17039",
+   "asserts": 11,
    "literals": [
     "\"  \"",
     "\"  \"",
@@ -11375,12 +13264,16 @@
     "\"400\"",
     "\"403\"",
     "\"403\"",
+    "\"403\"",
+    "\"403\"",
     "\"404\"",
     "\"404\"",
     "\"GET\"",
     "\"GET\"",
     "\"GET\"",
     "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
     "\"PUT\"",
     "\"PUT\"",
     "\"PUT\"",
@@ -11394,18 +13287,26 @@
     "\"PUT\"",
     "\"PUT\"",
     "\"PUT\"",
-    "\"[REQ-112] 비거나 틀린 표는 받지 않고, 처음 적은 사람만 고친다\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"[REQ-112] 비거나 틀린 표는 받지 않고, 시나리오를 만든 사람만 고친다 (먼저 적은 사람이 아니다)\"",
+    "\"jimin\"",
+    "\"jimin\"",
+    "\"jimin\"",
+    "\"jimin\"",
     "\"jimin\"",
     "\"jimin\"",
     "\"jimin\"",
     "\"몰라\"",
     "\"몰라\"",
     "false",
+    "false",
+    "false",
     "false"
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/process-api.test.ts::지금 하는 방식 표 [REQ-112] > [REQ-112] 안 적은 시나리오는 비어 있고, 적으면 단계·사람·시간이 더해져 돌아온다": {
@@ -11618,6 +13519,153 @@
    "precision": [],
    "skips": 0,
    "added": "2026-10-29",
+   "amended_by": null
+  },
+  "apps/server/src/http/scoring-unchanged.test.ts::<import:2473807b>": {
+   "kind": "support",
+   "hash": "2473807bbc6c9b1f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/scoring-unchanged.test.ts::<import:612999aa>": {
+   "kind": "support",
+   "hash": "612999aa4f1be0a7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/scoring-unchanged.test.ts::<import:733ac331>": {
+   "kind": "support",
+   "hash": "733ac3313f865e03",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/scoring-unchanged.test.ts::<import:886f13ce>": {
+   "kind": "support",
+   "hash": "886f13ce4c0a8070",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/scoring-unchanged.test.ts::<import:ccdf6e09>": {
+   "kind": "support",
+   "hash": "ccdf6e096857eddd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/scoring-unchanged.test.ts::<import:ce214579>": {
+   "kind": "support",
+   "hash": "ce214579b09faf36",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/scoring-unchanged.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/scoring-unchanged.test.ts::=fingerprint": {
+   "kind": "support",
+   "hash": "7f48310e80eba2ee",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/scoring-unchanged.test.ts::=SCORE_FINGERPRINTS": {
+   "kind": "support",
+   "hash": "5d4bf65a8eadc97b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/scoring-unchanged.test.ts::=SECRET": {
+   "kind": "support",
+   "hash": "0302848bb998d121",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/scoring-unchanged.test.ts::scoring is unchanged with permissions on [REQ-054] [REQ-039] > [REQ-054] [REQ-039] an experiment run behind the proxy has the score breakdown it had before permissions": {
+   "kind": "test",
+   "hash": "3b529de72bac7d0e",
+   "asserts": 3,
+   "literals": [
+    "\"/api/experiments\"",
+    "\"/api/scenarios\"",
+    "\"/api/worlds\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"200\"",
+    "\"200\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"PROXY_SECRET_FOR_TESTS\"",
+    "\"[REQ-054] [REQ-039] an experiment run behind the proxy has the score breakdown it had before permissions\"",
+    "\"cooling-failure\"",
+    "\"guess\"",
+    "\"triage\"",
+    "\"x-forwarded-user\"",
+    "\"x-forwarded-user\"",
+    "\"x-terrarium-proxy-secret\"",
+    "\"yeonsu.kim\"",
+    "\"홀\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/http/scoring-unchanged.test.ts::scoring is unchanged with permissions on [REQ-054] [REQ-039] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/service-cards-api.test.ts::<import:0feac266>": {
@@ -12781,7 +14829,7 @@
   },
   "apps/server/src/http/world-community-api.test.ts::칭호 [REQ-101] > [REQ-101] 변별력 점검: 점검하면 기록이 남고, 고칠 곳이 없던 시나리오 5개가 꼼꼼한 출제자다": {
    "kind": "test",
-   "hash": "830ad3c4b07ea0b8",
+   "hash": "61aa3f608af3a55c",
    "asserts": 4,
    "literals": [
     "\"0\"",
@@ -12816,8 +14864,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/http/world-community-api.test.ts::칭호 [REQ-101] > [REQ-101] 세계를 만들면 첫 세계, 아무것도 안 한 사람은 칭호가 없다": {
    "kind": "test",
@@ -12978,6 +15026,126 @@
    "added": "2026-11-07",
    "amended_by": null
   },
+  "apps/server/src/main-identity.test.ts::<hook:afterAll>": {
+   "kind": "support",
+   "hash": "f160015a0e4bf149",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/main-identity.test.ts::<import:09835585>": {
+   "kind": "support",
+   "hash": "0983558566dc500f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/main-identity.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/main-identity.test.ts::<import:30fbbefa>": {
+   "kind": "support",
+   "hash": "30fbbefa6572b492",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/main-identity.test.ts::<import:440c8b42>": {
+   "kind": "support",
+   "hash": "440c8b421c52f4b4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/main-identity.test.ts::<import:fc38e4e0>": {
+   "kind": "support",
+   "hash": "fc38e4e01244139f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/main-identity.test.ts::=configWith": {
+   "kind": "support",
+   "hash": "d2a4296d133f7ac4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/main-identity.test.ts::=dir": {
+   "kind": "support",
+   "hash": "a9ea358b7416a0e0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/main-identity.test.ts::=proxy": {
+   "kind": "support",
+   "hash": "c51fa7930b1bd7ab",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/main-identity.test.ts::a server that would believe anyone does not start [REQ-054] > [REQ-054] the whole server refuses to start in proxy mode without the secret, before it opens anything": {
+   "kind": "test",
+   "hash": "f55786e2f3685c04",
+   "asserts": 2,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"TERRARIUM_TEST_MAIN_PROXY_SECRET\"",
+    "\"TERRARIUM_TEST_MAIN_PROXY_SECRET\"",
+    "\"[REQ-054] the whole server refuses to start in proxy mode without the secret, before it opens anything\"",
+    "false",
+    "false",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/main-identity.test.ts::a server that would believe anyone does not start [REQ-054] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "apps/server/src/main.test.ts::<hook:afterAll>": {
    "kind": "support",
    "hash": "f160015a0e4bf149",
@@ -13098,7 +15266,7 @@
   },
   "apps/server/src/main.test.ts::starting and stopping the server [REQ-030] > a config file is all it takes; data lives next to it and survives a restart": {
    "kind": "test",
-   "hash": "c84adf2ec9e3fef1",
+   "hash": "2647437e8169574e",
    "asserts": 4,
    "literals": [
     "\"./state\"",
@@ -13108,13 +15276,17 @@
     "\"200\"",
     "\"60000\"",
     "\"POST\"",
+    "\"TERRARIUM_TEST_ADMIN\"",
     "\"a config file is all it takes; data lives next to it and survives a restart\"",
     "\"application/json\"",
     "\"builtin\"",
     "\"builtin\"",
     "\"content-type\"",
+    "\"invented-admin-token\"",
+    "\"invented-admin-token\"",
     "\"sample\"",
     "\"terrarium.json\"",
+    "\"x-terrarium-admin-token\"",
     "\"x-terrarium-user\"",
     "\"yeonsu\"",
     "\"남는 세계\"",
@@ -13125,8 +15297,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/mcp/gateway-slot.test.ts::<hook:afterAll>": {
    "kind": "support",
@@ -13917,16 +16089,6 @@
    "added": "2026-11-04",
    "amended_by": null
   },
-  "apps/server/src/runtime/agent-versions.test.ts::<import:11dddb1f>": {
-   "kind": "support",
-   "hash": "11dddb1f1860651e",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
-  },
   "apps/server/src/runtime/agent-versions.test.ts::<import:1bf08ac9>": {
    "kind": "support",
    "hash": "1bf08ac9bbeed1f6",
@@ -13965,6 +16127,16 @@
    "precision": [],
    "skips": 0,
    "added": "2026-10-30",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/agent-versions.test.ts::<import:b0dd44bd>": {
+   "kind": "support",
+   "hash": "b0dd44bd514ca318",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/runtime/agent-versions.test.ts::<import:e71fddbd>": {
@@ -14133,7 +16305,7 @@
   },
   "apps/server/src/runtime/agent-versions.test.ts::an agent that changed gets a new version when an experiment is made [REQ-053] > the same agent keeps its version; a changed one gets the next, with the date and what differs": {
    "kind": "test",
-   "hash": "12e6a15a00e4d22e",
+   "hash": "a459f2ead9648ea7",
    "asserts": 9,
    "literals": [
     "\"0\"",
@@ -14167,6 +16339,8 @@
     "\"5\"",
     "\"5\"",
     "\"5\"",
+    "\"admin-kim\"",
+    "\"admin-kim\"",
     "\"auto\"",
     "\"auto\"",
     "\"fact.mode\"",
@@ -14178,8 +16352,6 @@
     "\"fixer\"",
     "\"fixer\"",
     "\"fixer\"",
-    "\"jimin\"",
-    "\"jimin\"",
     "\"m-1\"",
     "\"m-1\"",
     "\"m-2\"",
@@ -14201,8 +16373,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > <suite>": {
    "kind": "support",
@@ -14302,10 +16474,10 @@
    "added": "2026-10-30",
    "amended_by": null
   },
-  "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > only whoever connected it may change its versions; the config file's connection is open to everyone": {
+  "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > only whoever connected it may change its versions; the config file's connection is for admins": {
    "kind": "test",
-   "hash": "b57a254df3b734b4",
-   "asserts": 4,
+   "hash": "cad9597748756f1c",
+   "asserts": 5,
    "literals": [
     "\"0\"",
     "\"0\"",
@@ -14315,10 +16487,14 @@
     "\"1\"",
     "\"1\"",
     "\"1\"",
+    "\"admin-kim\"",
+    "\"admin-kim\"",
     "\"builtin\"",
-    "\"jimin\"",
-    "\"jimin\"",
-    "\"only whoever connected it may change its versions; the config file's connection is open to everyone\"",
+    "\"builtin\"",
+    "\"builtin\"",
+    "\"only whoever connected it may change its versions; the config file's connection is for admins\"",
+    "\"triage\"",
+    "\"triage\"",
     "\"triage\"",
     "\"triage\"",
     "\"triage\"",
@@ -14327,13 +16503,15 @@
     "\"triage\"",
     "\"가로채기\"",
     "\"가로채기\"",
-    "\"누구나\"",
+    "\"관리자\"",
+    "\"관리자\"",
+    "\"관리자\"",
     "\"누구나\"",
     "\"누구나\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > the first version may be a person's, then it is the agent as it is now": {
@@ -14363,7 +16541,7 @@
   },
   "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > the versions go away with the connection; a different agent's stay": {
    "kind": "test",
-   "hash": "7dd09a40ee762fc5",
+   "hash": "88baf63afc4ef74b",
    "asserts": 2,
    "literals": [
     "\"1\"",
@@ -14376,8 +16554,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/alarm-wake.test.ts::<import:50862f67>": {
    "kind": "support",
@@ -14658,7 +16836,7 @@
   },
   "apps/server/src/runtime/connection-secrets.test.ts::a connection nobody uses for a month is removed, after a warning [REQ-051] > its owner is told a week before, and keeping it starts the month again": {
    "kind": "test",
-   "hash": "6da29e8222e71d55",
+   "hash": "6cba9bf37a4efc15",
    "asserts": 9,
    "literals": [
     "\"10\"",
@@ -14680,8 +16858,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::a connection nobody uses for a month is removed, after a warning [REQ-051] > runs still going keep a connection from being removed, and removal can be switched off": {
    "kind": "test",
@@ -15321,7 +17499,7 @@
   },
   "apps/server/src/runtime/connection-traces.test.ts::strangers may talk but not choose [REQ-079] > anyone can talk to a connection; only its owner changes where its traces go": {
    "kind": "test",
-   "hash": "a26c7d61e09b49d8",
+   "hash": "08cbdbafd0a7217a",
    "asserts": 2,
    "literals": [
     "\"anyone can talk to a connection; only its owner changes where its traces go\"",
@@ -15339,8 +17517,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::where a connection's traces pile up is chosen per connection [REQ-079] > <suite>": {
    "kind": "support",
@@ -15392,7 +17570,7 @@
   },
   "apps/server/src/runtime/connection-traces.test.ts::where a connection's traces pile up is chosen per connection [REQ-079] > changing a connection keeps the key unless a new one is typed; leaving traces out keeps the choice": {
    "kind": "test",
-   "hash": "d66e8791599a615e",
+   "hash": "7b59032ce98e6e34",
    "asserts": 3,
    "literals": [
     "\"\"",
@@ -15416,8 +17594,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::where a connection's traces pile up is chosen per connection [REQ-079] > checking a connection also says when the tool for its traces does not answer": {
    "kind": "test",
@@ -15448,7 +17626,7 @@
   },
   "apps/server/src/runtime/connection-traces.test.ts::where a connection's traces pile up is chosen per connection [REQ-079] > the choice is saved with its key sealed, shown without it, and used to read": {
    "kind": "test",
-   "hash": "bc28ee00ccc8f7ad",
+   "hash": "6418e6a82c3715f8",
    "asserts": 4,
    "literals": [
     "\"/api/public/v2/observations\"",
@@ -15481,8 +17659,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::말 걸어 보기: one question, no tools, and whether the traces came along [REQ-079] > <suite>": {
    "kind": "support",
@@ -15496,7 +17674,7 @@
   },
   "apps/server/src/runtime/connection-traces.test.ts::말 걸어 보기: one question, no tools, and whether the traces came along [REQ-079] > a connection that cannot talk says so instead of failing": {
    "kind": "test",
-   "hash": "706d4852cff28d73",
+   "hash": "2a55aaf40714ad80",
    "asserts": 2,
    "literals": [
     "\"a connection that cannot talk says so instead of failing\"",
@@ -15512,12 +17690,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::말 걸어 보기: one question, no tools, and whether the traces came along [REQ-079] > a connection with no place for traces has nothing to check": {
    "kind": "test",
-   "hash": "dfda554a10649702",
+   "hash": "cfb0293238e8a589",
    "asserts": 1,
    "literals": [
     "\"0\"",
@@ -15529,12 +17707,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::말 걸어 보기: one question, no tools, and whether the traces came along [REQ-079] > a refusal is told with its status and what to do, not as a bare failure": {
    "kind": "test",
-   "hash": "36218be36c6b8598",
+   "hash": "ba7bc16c3dc45b8f",
    "asserts": 2,
    "literals": [
     "\"401 — 토큰이 거절됐어요. 받은 말: 채팅 요청에 401로 답했어요: invalid token\"",
@@ -15549,12 +17727,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::말 걸어 보기: one question, no tools, and whether the traces came along [REQ-079] > the answer, how long it took, no tool calls, and traces that arrived": {
    "kind": "test",
-   "hash": "8f419805543f5aeb",
+   "hash": "47d6307b52e1ef9b",
    "asserts": 6,
    "literals": [
     "\"/observations\"",
@@ -15591,12 +17769,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::말 걸어 보기: one question, no tools, and whether the traces came along [REQ-079] > traces that do not come say so, and what to look at": {
    "kind": "test",
-   "hash": "e001040bb5dfa23e",
+   "hash": "8764c55bca358378",
    "asserts": 3,
    "literals": [
     "\"0\"",
@@ -15616,8 +17794,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/connections.test.ts::<import:2d409afc>": {
    "kind": "support",
@@ -15987,7 +18165,7 @@
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > asking again sees a harness's new agents without waiting for the cache": {
    "kind": "test",
-   "hash": "f2ca232eb5fdb295",
+   "hash": "71ff6fe6fc222e72",
    "asserts": 3,
    "literals": [
     "\"0\"",
@@ -16002,8 +18180,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > connecting a harness finds its agents, and they can be chosen in an experiment": {
    "kind": "test",
@@ -16155,7 +18333,7 @@
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > what people connected is still there after a restart; one that no longer builds is shown, not lost": {
    "kind": "test",
-   "hash": "eafe78b8544df680",
+   "hash": "898e2c22b683e7a4",
    "asserts": 6,
    "literals": [
     "\"2\"",
@@ -16177,8 +18355,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/escalation.test.ts::<import:552de795>": {
    "kind": "support",
@@ -17696,7 +19874,7 @@
   },
   "apps/server/src/runtime/models-sealed.test.ts::a registered model whose sealed key cannot be opened says so instead of failing [REQ-099] > the check answers not ok with a reason in words, and keeps that on the record": {
    "kind": "test",
-   "hash": "4fa54ed4c7a1914d",
+   "hash": "4696762cd8eedd73",
    "asserts": 2,
    "literals": [
     "\"200\"",
@@ -17719,7 +19897,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-11",
-   "amended_by": null
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/moss.test.ts::<import:007beb93>": {
    "kind": "support",
@@ -19342,6 +21520,292 @@
    "added": "2026-11-06",
    "amended_by": null
   },
+  "apps/server/src/runtime/permissions.test.ts::<import:06cc7d3d>": {
+   "kind": "support",
+   "hash": "06cc7d3d200343ff",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions.test.ts::<import:1bf08ac9>": {
+   "kind": "support",
+   "hash": "1bf08ac9bbeed1f6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions.test.ts::<import:22c39e6b>": {
+   "kind": "support",
+   "hash": "22c39e6bebc761e8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions.test.ts::<import:34702734>": {
+   "kind": "support",
+   "hash": "34702734ac04764e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions.test.ts::=MAKER_OR_ADMIN": {
+   "kind": "support",
+   "hash": "db3d19e1d5fbe27d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions.test.ts::=mine": {
+   "kind": "support",
+   "hash": "a9a79d1414a57b17",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > [REQ-054] %s is for the maker and an admin, not another signed-in person": {
+   "kind": "test",
+   "hash": "fe8f56602df5c522",
+   "asserts": 4,
+   "literals": [
+    "\"[REQ-054] %s is for the maker and an admin, not another signed-in person\"",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > [REQ-054] a caller with no role is refused everything, and an admin of one thing is not an owner of another": {
+   "kind": "test",
+   "hash": "f8cc6db9b9d999ff",
+   "asserts": 2,
+   "literals": [
+    "\"[REQ-054] a caller with no role is refused everything, and an admin of one thing is not an owner of another\"",
+    "\"administer\"",
+    "\"change\"",
+    "\"change\"",
+    "\"like\"",
+    "\"proxy\"",
+    "\"proxy\"",
+    "\"sam\"",
+    "\"sam\"",
+    "\"samuel\"",
+    "\"samuel\"",
+    "\"use\"",
+    "\"user\"",
+    "\"user\"",
+    "false",
+    "false",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > [REQ-054] a refusal reaches the caller as a 403 that names the thing": {
+   "kind": "test",
+   "hash": "e77d6aa46e6713c7",
+   "asserts": 3,
+   "literals": [
+    "\"[REQ-054] a refusal reaches the caller as a 403 that names the thing\"",
+    "\"remove\"",
+    "\"remove\"",
+    "\"remove\"",
+    "\"remove\"",
+    "\"remove\"",
+    "\"remove\"",
+    "\"세계 지우기\"",
+    "\"세계 지우기\"",
+    "\"세계 지우기\"",
+    "\"세계 지우기\"",
+    "\"세계 지우기\"",
+    "\"세계 지우기\"",
+    "\"세계 지우기는 만든 사람\"",
+    "\"세계 지우기는 만든 사람\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > [REQ-054] a share link may be taken back by its maker, the experiment's maker or an admin": {
+   "kind": "test",
+   "hash": "981c40bc10d9f34f",
+   "asserts": 4,
+   "literals": [
+    "\"[REQ-054] a share link may be taken back by its maker, the experiment's maker or an admin\"",
+    "\"deleteShare\"",
+    "\"deleteShare\"",
+    "\"deleteShare\"",
+    "\"deleteShare\"",
+    "\"deleteShare\"",
+    "\"deleteShare\"",
+    "\"deleteShare\"",
+    "\"deleteShare\"",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > [REQ-054] a thing nobody made (the config file's) is changed by admins only": {
+   "kind": "test",
+   "hash": "b9e0dd17d119b2ad",
+   "asserts": 4,
+   "literals": [
+    "\"[REQ-054] a thing nobody made (the config file's) is changed by admins only\"",
+    "\"change\"",
+    "\"change\"",
+    "\"change\"",
+    "\"change\"",
+    "\"editAgentVersions\"",
+    "\"editAgentVersions\"",
+    "\"editAgentVersions\"",
+    "\"editAgentVersions\"",
+    "false",
+    "false",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > [REQ-054] administering is for admins; liking is for anyone who has said who they are": {
+   "kind": "test",
+   "hash": "b8d5eef17d47a271",
+   "asserts": 4,
+   "literals": [
+    "\"[REQ-054] administering is for admins; liking is for anyone who has said who they are\"",
+    "\"administer\"",
+    "\"administer\"",
+    "\"administer\"",
+    "\"administer\"",
+    "\"like\"",
+    "\"like\"",
+    "\"like\"",
+    "\"like\"",
+    "false",
+    "false",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > [REQ-054] the same person under another display name is the same owner: ownership is the login id": {
+   "kind": "test",
+   "hash": "4fe914fecc6b9bdb",
+   "asserts": 2,
+   "literals": [
+    "\"[REQ-054] the same person under another display name is the same owner: ownership is the login id\"",
+    "\"change\"",
+    "\"change\"",
+    "\"change\"",
+    "\"change\"",
+    "\"김연수\"",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > [REQ-054] using a connection: anyone signed in for the config file's, the maker and admins for one made on the screen": {
+   "kind": "test",
+   "hash": "0867692516110ca1",
+   "asserts": 4,
+   "literals": [
+    "\"[REQ-054] using a connection: anyone signed in for the config file's, the maker and admins for one made on the screen\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\"",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "apps/server/src/runtime/platform.test.ts::<import:073482f9>": {
    "kind": "support",
    "hash": "073482f9c993ed3d",
@@ -19355,16 +21819,6 @@
   "apps/server/src/runtime/platform.test.ts::<import:156f0c30>": {
    "kind": "support",
    "hash": "156f0c301611831d",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
-  },
-  "apps/server/src/runtime/platform.test.ts::<import:1e94ff58>": {
-   "kind": "support",
-   "hash": "1e94ff58318d559e",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -19410,6 +21864,16 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-04",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/platform.test.ts::<import:9b1d0a69>": {
+   "kind": "support",
+   "hash": "9b1d0a691576a8ce",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/runtime/platform.test.ts::<import:e71fddbd>": {
@@ -19760,7 +22224,7 @@
   },
   "apps/server/src/runtime/platform.test.ts::what the server says about itself [REQ-031] [REQ-033] > who is asking, the harnesses with their agents, sources and limits": {
    "kind": "test",
-   "hash": "c598312abcdb3f3c",
+   "hash": "5099fbbb248cde8d",
    "asserts": 4,
    "literals": [
     "\"0\"",
@@ -19790,6 +22254,8 @@
     "\"down\"",
     "\"jimin\"",
     "\"jimin\"",
+    "\"jimin\"",
+    "\"jimin\"",
     "\"ok\"",
     "\"ok\"",
     "\"sample\"",
@@ -19807,8 +22273,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": "0106-domains-escalate-amend-tests.md"
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/platform.test.ts::worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034] > <suite>": {
    "kind": "support",
@@ -19944,8 +22410,8 @@
   },
   "apps/server/src/runtime/platform.test.ts::worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034] > worlds come from presets and from reality, with what was assumed": {
    "kind": "test",
-   "hash": "de4ced1e31a3bc21",
-   "asserts": 6,
+   "hash": "92cf710a8cd93db2",
+   "asserts": 7,
    "literals": [
     "\"0\"",
     "\"0\"",
@@ -19973,9 +22439,13 @@
     "\"sample\"",
     "\"sample\"",
     "\"sample\"",
+    "\"sample\"",
+    "\"sample\"",
     "\"worldgen\"",
     "\"worldgen\"",
     "\"worlds come from presets and from reality, with what was assumed\"",
+    "\"관리자만\"",
+    "\"관리자만\"",
     "\"너무 많아요\"",
     "\"너무 많아요\"",
     "\"샘플 그래프 (가상)에서 가져온 세계\"",
@@ -19987,8 +22457,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/repeats.test.ts::<import:b30b4a92>": {
    "kind": "support",
@@ -20345,16 +22815,6 @@
    "added": "2026-10-29",
    "amended_by": null
   },
-  "apps/server/src/runtime/results.test.ts::<import:68f3a5c2>": {
-   "kind": "support",
-   "hash": "68f3a5c210b14962",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
-  },
   "apps/server/src/runtime/results.test.ts::<import:7e4eec54>": {
    "kind": "support",
    "hash": "7e4eec54ef79a7de",
@@ -20383,6 +22843,16 @@
    "precision": [],
    "skips": 0,
    "added": "2026-10-29",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/results.test.ts::<import:b2f7d3c1>": {
+   "kind": "support",
+   "hash": "b2f7d3c195b15b70",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/runtime/results.test.ts::<import:c65ba5f8>": {
@@ -20437,7 +22907,7 @@
   },
   "apps/server/src/runtime/results.test.ts::benchmarks and the digital twin [REQ-039] [REQ-015] > diagnosis records export as JSON Lines; the brief names what imported worlds lack": {
    "kind": "test",
-   "hash": "807f71a467e2a6d0",
+   "hash": "259c4255212f20e1",
    "asserts": 8,
    "literals": [
     "\"# 시뮬레이터 모델링 브리프\"",
@@ -20473,8 +22943,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/results.test.ts::benchmarks and the digital twin [REQ-039] [REQ-015] > leaderboards rank configurations within one benchmark set": {
    "kind": "test",
@@ -20605,11 +23075,15 @@
   },
   "apps/server/src/runtime/results.test.ts::sharing results [REQ-038] > reports in three formats, and links that open without the app until taken back or expired": {
    "kind": "test",
-   "hash": "fc0b31cf3fb6145a",
-   "asserts": 13,
+   "hash": "70705a9446886804",
+   "asserts": 15,
    "literals": [
     "\"1\"",
     "\"2\"",
+    "\"30\"",
+    "\"30\"",
+    "\"86400000\"",
+    "\"86400000\"",
     "\"86400000\"",
     "\"86400000\"",
     "\"<svg class=\\\"spark\\\"\"",
@@ -20626,11 +23100,11 @@
     "\"https://t\"",
     "\"https://t/e/1\"",
     "\"https://terrarium.internal/\"",
+    "\"https://terrarium.internal/\"",
+    "\"https://terrarium.internal/\"",
     "\"other\"",
     "\"other\"",
     "\"reports in three formats, and links that open without the app until taken back or expired\"",
-    "\"self\"",
-    "\"self\"",
     "\"text\"",
     "\"text\"",
     "\"text\"",
@@ -20651,8 +23125,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/run-events.test.ts::<import:1b1baf5b>": {
    "kind": "support",
@@ -21173,14 +23647,34 @@
    "added": "2026-10-29",
    "amended_by": null
   },
-  "apps/server/src/runtime/test-support/platform.ts::=JIMIN": {
+  "apps/server/src/runtime/test-support/platform.ts::=ADMIN": {
    "kind": "support",
-   "hash": "83dd110f59add546",
+   "hash": "072e405380a30f81",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/test-support/platform.ts::=JIMIN": {
+   "kind": "support",
+   "hash": "6d13b80bcb8a1244",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+  },
+  "apps/server/src/runtime/test-support/platform.ts::=person": {
+   "kind": "support",
+   "hash": "83ccbf615b902cff",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/runtime/test-support/platform.ts::=recipe": {
@@ -21275,13 +23769,13 @@
   },
   "apps/server/src/runtime/test-support/platform.ts::=YEONSU": {
    "kind": "support",
-   "hash": "39825ed8b8015c45",
+   "hash": "08c61be2277987b9",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/test-support/stamps.ts::<import:4f697ee0>": {
    "kind": "support",
@@ -76629,6 +79123,193 @@
    "skips": 0,
    "added": "2026-11-03",
    "amended_by": "0050-toss-ux-principles.md"
+  },
+  "packages/core/src/contract/policies.test.ts::<import:0eeff842>": {
+   "kind": "support",
+   "hash": "0eeff842b30f63d7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/contract/policies.test.ts::<import:e1116e32>": {
+   "kind": "support",
+   "hash": "e1116e32bce736a7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/contract/policies.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/contract/policies.test.ts::=routes": {
+   "kind": "support",
+   "hash": "a1095a907528479d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/contract/policies.test.ts::every route says who may call it [REQ-054] > [REQ-054] a policy is open, signedIn, admin or one named action the server knows": {
+   "kind": "test",
+   "hash": "b5c7112c30f029df",
+   "asserts": 2,
+   "literals": [
+    "\"[REQ-054] a policy is open, signedIn, admin or one named action the server knows\"",
+    "\"admin\"",
+    "\"admin\"",
+    "\"open\"",
+    "\"open\"",
+    "\"signedIn\"",
+    "\"signedIn\"",
+    "\"string\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/contract/policies.test.ts::every route says who may call it [REQ-054] > [REQ-054] a route is public or has a policy, never both": {
+   "kind": "test",
+   "hash": "27f57d4831c939b3",
+   "asserts": 1,
+   "literals": [
+    "\"[REQ-054] a route is public or has a policy, never both\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/contract/policies.test.ts::every route says who may call it [REQ-054] > [REQ-054] a route with no declared policy fails here, so a new route cannot be left open by forgetting": {
+   "kind": "test",
+   "hash": "e90366361dea158d",
+   "asserts": 1,
+   "literals": [
+    "\"[REQ-054] a route with no declared policy fails here, so a new route cannot be left open by forgetting\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/contract/policies.test.ts::every route says who may call it [REQ-054] > [REQ-054] every action in the closed list is used by some route or by the server's own checks, and none is spelled twice": {
+   "kind": "test",
+   "hash": "2fbfe0500c8e2abe",
+   "asserts": 2,
+   "literals": [
+    "\"[REQ-054] every action in the closed list is used by some route or by the server's own checks, and none is spelled twice\"",
+    "\"administer\"",
+    "\"object\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/contract/policies.test.ts::every route says who may call it [REQ-054] > [REQ-054] only the share link is public, and only meta is open to a caller who has not said who they are": {
+   "kind": "test",
+   "hash": "3fc76e3806322b32",
+   "asserts": 2,
+   "literals": [
+    "\"[REQ-054] only the share link is public, and only meta is open to a caller who has not said who they are\"",
+    "\"meta\"",
+    "\"meta\"",
+    "\"open\"",
+    "\"open\"",
+    "\"sharedReport\"",
+    "\"sharedReport\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/contract/policies.test.ts::every route says who may call it [REQ-054] > [REQ-054] what the survey found open before is now guarded by a named policy": {
+   "kind": "test",
+   "hash": "b0fc28d4a4e30bb3",
+   "asserts": 11,
+   "literals": [
+    "\"[REQ-054] what the survey found open before is now guarded by a named policy\"",
+    "\"admin\"",
+    "\"admin\"",
+    "\"admin\"",
+    "\"admin\"",
+    "\"calibrate\"",
+    "\"calibrate\"",
+    "\"calibrateScenario\"",
+    "\"calibrateScenario\"",
+    "\"checkModel\"",
+    "\"checkModel\"",
+    "\"createExperiment\"",
+    "\"createExperiment\"",
+    "\"createShare\"",
+    "\"createShare\"",
+    "\"createShare\"",
+    "\"createShare\"",
+    "\"editProcess\"",
+    "\"editProcess\"",
+    "\"forkExperiment\"",
+    "\"forkExperiment\"",
+    "\"importWorld\"",
+    "\"importWorld\"",
+    "\"keepConnection\"",
+    "\"keepConnection\"",
+    "\"putCurrentProcess\"",
+    "\"putCurrentProcess\"",
+    "\"recheckConnection\"",
+    "\"recheckConnection\"",
+    "\"setDefaultModel\"",
+    "\"setDefaultModel\"",
+    "\"tryConnection\"",
+    "\"tryConnection\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/contract/policies.test.ts::every route says who may call it [REQ-054] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
   },
   "packages/core/src/contract/saves.test.ts::<import:76060cce>": {
    "kind": "support",
@@ -165293,11 +167974,26 @@
   "apps/server/src/adapters/harness.test.ts::an OpenAI-compatible model as a harness [REQ-031] > the model calls tools as functions until it submits; tokens are counted": "0042-connectors.md",
   "apps/server/src/adapters/harness.test.ts::an OpenAI-compatible model as a harness [REQ-031] > tool replies are JSON the model can read, cut when huge": "0042-connectors.md",
   "apps/server/src/adapters/test-support/fake-fetch.ts::<import:28b66704>": "0042-connectors.md",
+  "apps/server/src/http/activity-stream.test.ts::<import:436dd109>": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/http/app.test.ts::<import:05f9b251>": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/http/app.test.ts::<import:d7b9cf00>": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/http/connections-api.test.ts::<import:436dd109>": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > [REQ-054] with no token configured nobody is an admin, whatever is sent": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/http/identity.test.ts::<import:436dd109>": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/http/identity.test.ts::<import:ead56c57>": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/http/models-api.test.ts::<import:436dd109>": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/http/models-api.test.ts::registering model APIs: add, list, change, delete [REQ-099] > only whoever registered it changes or deletes it; anyone else can still check and choose the default": "0174-permissions-proxy-identity-three-scopes-audit.md",
   "apps/server/src/http/moss-api.test.ts::POST /api/moss/ask answers from the docs and the screen state [REQ-103] > without a default model it is 503 with the way out, and nothing is guessed": "0125-moss-requires-model.md",
+  "apps/server/src/http/presets-api.test.ts::<import:436dd109>": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/http/process-api.test.ts::지금 하는 방식 표 [REQ-112] > [REQ-112] 비거나 틀린 표는 받지 않고, 처음 적은 사람만 고친다": "0174-permissions-proxy-identity-three-scopes-audit.md",
   "apps/server/src/http/service-cards-api.test.ts::서비스 카드 [REQ-104] > [REQ-104] 잠긴 카드는 만든 사람만 고치고 지운다. 잠금을 풀면 이름만 남도 고친다": "0131-baseline-dr-and-expected-recovery-window.md",
+  "apps/server/src/runtime/agent-versions.test.ts::<import:11dddb1f>": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > only whoever connected it may change its versions; the config file's connection is open to everyone": "0174-permissions-proxy-identity-three-scopes-audit.md",
   "apps/server/src/runtime/moss.test.ts::<import:c34bd671>": "0125-moss-requires-model.md",
   "apps/server/src/runtime/moss.test.ts::<import:d2d0b133>": "0125-moss-requires-model.md",
   "apps/server/src/runtime/moss.test.ts::이끼 asks the default model and never acts [REQ-103] > with no default model it says so (503) instead of guessing": "0125-moss-requires-model.md",
+  "apps/server/src/runtime/platform.test.ts::<import:1e94ff58>": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/runtime/results.test.ts::<import:68f3a5c2>": "0174-permissions-proxy-identity-three-scopes-audit.md",
   "apps/web/src/logic/app-words.test.ts::<import:3c3e2cad>": "0077-airflow-words-amend-tests.md",
   "apps/web/src/logic/connections.test.ts::<import:69983d44>": "0048-connections-screens.md",
   "apps/web/src/logic/crew-words.test.ts::the lines of the people in the server room [REQ-074] > there are 3 to 5 for each of the six situations": "0106-domains-escalate-amend-tests.md",

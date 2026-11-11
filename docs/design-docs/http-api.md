@@ -13,13 +13,13 @@ covers:
   - packages/core/src/contract/model-routes.ts
   - packages/core/src/contract/community.ts
   - packages/core/src/contract/community-routes.ts
-covers_hash: ca05114dc8ff41ab
+covers_hash: cd562149b0e6a238
 verification_log:
-  - "2026-11-07: o15 합치기 (2차 피드백 수정)"
   - "2026-11-10: 물리 프로필(REQ-113) 반영: 새 라우트·벤치마크 키 지문"
   - "2026-11-07: REQ-112의 경로 넷을 표에 더했다"
   - "2026-11-11: main 합치기 뒤 다시 읽음: 물리 프로필(REQ-113) 반영 문단과 라우트 행이 main의 새 내용과 함께 맞다"
   - "2026-11-11: REQ-118 시드당 반복: 실행 키(시드·반복), 시드 단위 통계, 순위 조건(시드 3개), 한도 60, 화면 반영을 코드와 대조해 고쳤다. 이 문서의 나머지는 그대로 맞다"
+  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -45,17 +45,17 @@ verification_log:
 
 | 경로 | 하는 일 | |
 |---|---|---|
-| `GET /api/meta` | 누구인지, 하네스·소스·대기열 상태, 곧 지워질 내 연결(`expiring`) | |
+| `GET /api/meta` | 누구인지(`user`: 로그인 `id`·보이는 `name`·`groups`·`roles`·`source`), 신원을 어떻게 믿는지(`identity.mode`: `proxy`·`self-declared`), 하네스·소스·대기열 상태, 곧 지워질 내 연결(`expiring`) | 열림 |
 | `GET /api/connectors` | 연결할 수 있는 방식(커넥터)과 입력 칸·툴 안내 | |
 | `GET /api/connections` | 연결된 하네스·에이전트, 발견된 에이전트, 남은 날 | |
 | `GET /api/telemetry-adapters` | 트레이스를 쌓아 두는 곳(ClickStack, Langfuse)과 입력 칸, 서버의 기본값 | |
 | `POST /api/connections/check` | 저장하지 않고 연결해 보기 | |
 | `POST /api/connections` | 하네스를 연결하거나 에이전트를 직접 등록 | |
-| `PUT /api/connections/:id` | 연결 고치기 (만든 사람만. 비밀은 비워 두면 그대로) | |
+| `PUT /api/connections/:id` | 연결 고치기 (만든 사람과 관리자. 비밀은 비워 두면 그대로) | |
 | `POST /api/connections/:id/try` | 말 걸어 보기: 에이전트에게 한 문장을 보내 답을 받는다(한 턴, 툴 없음, 60초, 세계 영향 없음) | |
-| `POST /api/connections/:id/keep` | 계속 쓰기: 자동 삭제 기간을 다시 센다 | |
+| `POST /api/connections/:id/keep` | 계속 쓰기: 자동 삭제 기간을 다시 센다 (그 연결을 쓸 수 있는 사람) | |
 | `POST /api/connections/:id/check` | 다시 확인해 에이전트 목록 새로 받기 | |
-| `DELETE /api/connections/:id` | 연결 끊기 (만든 사람만) | |
+| `DELETE /api/connections/:id` | 연결 끊기 (만든 사람과 관리자) | |
 | `GET /api/connections/:id/agents/:agentId/versions` | 에이전트 버전 목록, 지금 실험하면 달라질 점 | |
 | `POST /api/connections/:id/agents/:agentId/versions` | 사람이 버전 더하기 | |
 | `PUT /api/connections/:id/agents/:agentId/versions/:n` | 버전의 이름표·메모·속성 바꾸기 | |
@@ -68,10 +68,10 @@ verification_log:
 | `POST /api/presets/:id/restore` | 지운 것 되돌리기 | |
 | `GET /api/models` | 워크스페이스에 등록한 LLM API 목록(모두에게 같다). 키는 `hasKey`와 `keyHint`(`…ab12`)뿐이고 헤더는 이름만 나온다. `lastCheck`에 마지막 확인 결과가 있다 | |
 | `POST /api/models` | 등록 `{kind: litellm\|openai\|anthropic, name, baseUrl, apiKey?, defaultModel?, headers?: [{name, value}]}`. 첫 번째는 기본이 된다. 같은 이름은 409, 주소가 안 맞으면(메타데이터 주소 등) 400 | |
-| `PATCH /api/models/:id` | 고치기(만든 사람만). 안 보낸 칸은 그대로, `apiKey`를 비우면 기존 키, `clearKey: true`면 키 삭제, 헤더는 `value` 없는 줄이 기존 값을 유지. 주소·키·헤더가 바뀌면 `lastCheck`가 지워진다 | |
-| `DELETE /api/models/:id` | 지우기(만든 사람만). 저장한 키도 지워진다. 기본이었으면 가장 먼저 등록한 것이 기본이 된다 | |
-| `POST /api/models/:id/check` | 연결 확인: 모델 목록을 읽고(`GET /v1/models`, LiteLLM은 `/model/info`도), 안 되면 기본 모델 이름이 있을 때 `max_tokens: 1` 완성 한 번. 결과(`ok`·`ms`·`via`·`modelCount`·`models`·`reason`·`error`)와 시각을 기록해 모델을 돌려준다. 이 호출은 **서버에서 바깥으로** 나가므로, 나가지 못하는 환경이면 `reason: network`로 그렇게 말한다 | |
-| `POST /api/models/:id/default` | 기본 모델로 정하기(하나만 기본) | |
+| `PATCH /api/models/:id` | 고치기(만든 사람과 관리자). 안 보낸 칸은 그대로, `apiKey`를 비우면 기존 키, `clearKey: true`면 키 삭제, 헤더는 `value` 없는 줄이 기존 값을 유지. 주소·키·헤더가 바뀌면 `lastCheck`가 지워진다 | |
+| `DELETE /api/models/:id` | 지우기(만든 사람과 관리자). 저장한 키도 지워진다. 기본이었으면 가장 먼저 등록한 것이 기본이 된다 | |
+| `POST /api/models/:id/check` | 연결 확인: 모델 목록을 읽고(`GET /v1/models`, LiteLLM은 `/model/info`도), 안 되면 기본 모델 이름이 있을 때 `max_tokens: 1` 완성 한 번. 결과(`ok`·`ms`·`via`·`modelCount`·`models`·`reason`·`error`)와 시각을 기록해 모델을 돌려준다. 이 호출은 **서버에서 바깥으로** 나가므로, 나가지 못하는 환경이면 `reason: network`로 그렇게 말한다. 봉인된 키를 열어 쓰므로 등록한 사람과 관리자만 부른다 | |
+| `POST /api/models/:id/default` | 기본 모델로 정하기(하나만 기본). 모든 사용자의 이끼 질문이 이 모델로 가므로 관리자만 | |
 | `POST /api/moss/ask` | 이끼에게 묻기(REQ-103, [ADR-0124](adr/0124-moss-assistant.md), [설명](moss.md)) `{screen, question, state?, actions?: [{id, label}]}` → `{answer, answered, sources: [{kind: "doc", id, title, file, path} \| {kind: "state"}], suggestedActions, followUps, model, rough?}`. 서버가 문서 조각(BM25 방식 낱말 점수)과 화면 상태로 프롬프트를 짜 **기본 모델**에 묻는다. 답은 세 문장 안이고, 없는 출처와 `actions`에 없는 동작 id는 버리며, 근거가 없으면 모델을 부르지 않고 "문서에 없어요"로 답한다. **서버는 동작을 실행하지 않는다.** 기본 모델이 없으면 **409** `{ error: { code: "no_model", reason: "no_model" } }`([ADR-0125](adr/0125-moss-requires-model.md): 이끼는 기본 모델이 있어야만 쓸 수 있다)이고, 모델이 답하지 않으면 503 | |
 | `GET /api/worlds?sort=` | 세계 목록(템플릿 제외). `sort`는 `popular`(기본)·`active`·`new`·`mine`, 밖의 값은 400. 카드마다 `stats`(`experiments30d`·`experiments`·`likes`·`startedByOthers`·`score`·`week`), `likes`, `likedByMe`, `ownerTitles`가 실려 온다 (REQ-101, ADR-0122) | |
 | `GET /api/physics/slots` | 물리 자리 열세 개: 이름·계약·허용 범위·숫자(단위·기본값·범위·설명)·곡선 이름 (REQ-113, [ADR-0137](adr/0137-physics-slots-and-profile-core.md), [레퍼런스](physics-profile.md)) | |
@@ -89,7 +89,7 @@ verification_log:
 | `POST /api/worlds` | 빌더에서 지은 세계 저장 | |
 | `POST /api/worlds/generate` | 사업장 프리셋으로 세계 생성. 본문이 `{ shape }`이면 서비스부터(REQ-094; 크기는 `rooms`·`racksPerRoom`·`perRack`(REQ-109)이고 옛 `servers`만 있어도 같은 세계를 짓는다, 서비스마다 `load`(초당 요청·데이터 GB·동시 사용자·허용 중단 초·GPU 시간)를 받는다), `template: true`를 더하면 템플릿으로 저장, `startedFrom`(템플릿·세계 id)을 더하면 출처를 세계 기록에 남긴다(REQ-101) | |
 | `GET /api/world-templates` | 저장해 둔 세계 템플릿 목록(구성은 `provenance.shape`). `GET /api/worlds`에는 나오지 않는다 | |
-| `POST /api/worlds/import` | 현실(KG 등)에서 읽기 전용으로 가져오기 | |
+| `POST /api/worlds/import` | 현실(KG 등)에서 읽기 전용으로 가져오기 (관리자만) | |
 | `PUT /api/worlds/:id` | 세계 고쳐 저장 (버전 확인) | |
 | `DELETE /api/worlds/:id` | 세계 숨기기 (실험이 쓴 버전은 남는다) | |
 | `GET /api/scenarios` | 시나리오 목록 | |
@@ -97,12 +97,12 @@ verification_log:
 | `POST /api/scenarios` | 새 시나리오 (빈 것, 템플릿, 문서) | |
 | `PUT /api/scenarios/:id` | 시나리오 고쳐 저장 (버전 확인) | |
 | `GET /api/scenarios/:id/current-process` | 시나리오의 "지금 하는 방식" 표(적은 값, 안 적었으면 빈 표) (REQ-112) | |
-| `PUT /api/scenarios/:id/current-process` | 표 저장 (처음 적은 사람만 고친다. 줄 1~30, 시간은 분) | |
+| `PUT /api/scenarios/:id/current-process` | 표 저장 (시나리오를 만든 사람과 관리자만. 먼저 적은 사람이 아니다. 줄 1~30, 시간은 분) | |
 | `GET /api/experiments/:id/process` | 전후 비교: 코드가 실행 기록에서 센 단계·사람·시간(평균), 적은 표와의 차이, 대표 실행의 단계 장부 | |
 | `GET /api/worlds/:id/ontology` | 이 세계를 E2E로 가려면: Object·Link·Action 요구와 `?experimentId=`로 고른 실험에서 쓴 것 | |
 | `DELETE /api/scenarios/:id` | 시나리오 숨기기 | |
 | `POST /api/scenarios/:id/dry-run` | 에이전트 없이 미리 보기 | |
-| `POST /api/scenarios/:id/calibrate` | 시험지 점검: 아무것도 안 하는·찍는·정답만 아는 에이전트로 점수 재 보기. 서비스를 옮겨 복구하는 길(`recoveryPath`)과 흔한 툴만으로 원인에 닿는 길(`commonReach`)도 함께 답한다. 또 툴 설명만 읽는 기준 에이전트가 상황마다 고른 툴과 모호한 쌍(`toolPick`)도 답한다 | |
+| `POST /api/scenarios/:id/calibrate` | 시험지 점검(시나리오를 만든 사람과 관리자만): 아무것도 안 하는·찍는·정답만 아는 에이전트로 점수 재 보기. 서비스를 옮겨 복구하는 길(`recoveryPath`)과 흔한 툴만으로 원인에 닿는 길(`commonReach`)도 함께 답한다. 또 툴 설명만 읽는 기준 에이전트가 상황마다 고른 툴과 모호한 쌍(`toolPick`)도 답한다 | |
 | `GET /api/scenarios/:id/runbook-draft` | 이 시나리오로 끝난 실행 가운데 점수가 가장 높은 것의 툴 호출 순서로 만든 절차서 초안과 어느 실행에서 나왔는지 (끝난 실행이 없으면 빈 답) | |
 | `GET /api/experiments` | 실험 목록 (최신순). 만든 사람에게 칭호가 있으면 `ownerTitles`가 같이 온다 (REQ-101) | |
 | `GET /api/experiments/:id` | 실험 하나: 실행, 분석, 계보 | |
@@ -112,12 +112,12 @@ verification_log:
 | `POST /api/experiments/:id/runs` | 같은 조건으로 실행 추가: `{count}`(새 시드 n개), `{seeds}`(이 시드들) 또는 `{repeats}`(모든 시드에 n번씩 더)(REQ-118). 이미 있는 시드는 거절하고, 시드 × 반복이 60번을 넘어도 거절한다 | |
 | `GET /api/experiments/:id/events` | 진행 상황 실시간 (SSE) | |
 | `GET /api/escalations` | 사람을 기다리는 실행들: 요청문, 최근 툴 호출 5개, 지금 가진 툴, 줄 수 있는 툴, 이미 한 조치 | |
-| `POST /api/runs/:id/escalation` | 기다리는 실행에 답하기: `{kind: reply, text}` 글로 답, `{kind: act, tool, args}` 대신 조치(계속 기다림), `{kind: acted}` 조치를 마치고 돌려주기, `{kind: more_tools, tools}` 툴 더 주기, `{kind: end}` 끝내기. 실험을 돌린 사람만 | |
+| `POST /api/runs/:id/escalation` | 기다리는 실행에 답하기: `{kind: reply, text}` 글로 답, `{kind: act, tool, args}` 대신 조치(계속 기다림), `{kind: acted}` 조치를 마치고 돌려주기, `{kind: more_tools, tools}` 툴 더 주기, `{kind: end}` 끝내기. 실험을 돌린 사람과 관리자만 | |
 | `GET /api/worlds/:id/activity` | 이 세계에서 지금 일하는 에이전트들 (SSE) | |
 | `GET /api/experiments/:id/report` | 보고서 (HTML·Markdown·텍스트) | |
 | `GET /api/experiments/:id/diagnoses` | 진단 기록 (JSON Lines) | |
-| `POST /api/experiments/:id/shares` | 공유 링크 만들기 | |
-| `DELETE /api/shares/:token` | 공유 링크 끊기 | |
+| `POST /api/experiments/:id/shares` | 공유 링크 만들기 `{ expiresInDays? }` (실험을 만든 사람과 관리자만). 기간을 안 적으면 30일, 응답의 `expiresAt`은 늘 있다 | |
+| `DELETE /api/shares/:token` | 공유 링크 끊기 (링크를 만든 사람, 실험을 만든 사람, 관리자) | |
 | `GET /api/runs/:id` | 실행 하나: 결과, 분석, 타임라인. 서비스를 다루는 시나리오의 결과 점수에는 `scoring: "recovery"`와 복구 보고(`recovery`)가 있고, 흔한 툴이 원인에 닿는지(`commonReach`)도 실려 온다 | |
 | `GET /api/runs/:id/events` | 실행의 불변 사건 기록(세계 시간·실제 시간). `from`·`to`(세계 초)로 구간만. 실행 중이면 지금까지, `live: true` | |
 | `GET /api/runs/:id/world` | 실행이 돌았던 때의 세계(그 버전 그대로) | |
@@ -127,16 +127,30 @@ verification_log:
 | `GET /api/twin/brief` | 시뮬레이터 모델링 브리프 (Markdown) | |
 | `GET /r/:token` | 공유된 보고서 (앱 없이 열림) | 공개 |
 
+## 누가 부를 수 있나 (ADR-0174, [권한](permissions.md))
+
+길마다 `ROUTES`의 `policy`가 한 줄로 말한다. 정책이 없는 길(공개 길 제외)이 생기면 `packages/core/src/contract/policies.test.ts`가 실패한다. 프록시 모드에서는 **정책과 상관없이** 프록시의 비밀 값이 없거나 틀리거나 로그인 헤더가 없는 요청은 공개가 아닌 모든 길과 두 실시간 스트림(`…/events`, `…/activity`)에서 401이다.
+
+| 정책 | 뜻 | 길 수 |
+|---|---|---|
+| `public` | 주소 안의 토큰이 비밀. 로그인 밖 (`GET /r/:token`) | 1 |
+| `open` | 신원 방식이 들여보낸 누구나. 누구인지 알려 주는 `meta` 하나 | 1 |
+| `signedIn` | 로그인한 누구나. 읽기, 만들기, 내 것만 보이는 저장해 둔 것 | 47 |
+| `admin` | 관리자만, 앱이 핸들러 앞에서 막는다 (기본 모델 정하기, 소스에서 세계 가져오기) | 2 |
+| `{ action }` | 무엇에 하는 일인지 안 뒤 핸들러가 `may(viewer, action, resource)`로 정한다 | 31 |
+
+`{ action }`의 열두 가지 말(열세째 `administer`는 `admin` 정책이 쓴다): `change`·`remove`·`cancel`·`addRuns`·`answerEscalation`·`calibrate`·`editProcess`·`createShare`는 만든 사람과 관리자, `editAgentVersions`는 만든 사람과 관리자(설정 파일의 연결은 관리자), `use`(연결·모델 쓰기, 그 연결로 실험 만들기·복제)는 설정 파일의 연결이면 로그인한 누구나·화면에서 만든 것이면 만든 사람과 관리자, `deleteShare`는 링크를 만든 사람·실험을 만든 사람·관리자, `like`는 이름이 있는 사람. 소유는 로그인 ID로 견준다. 판정은 `apps/server/src/runtime/permissions.ts`의 `may` 한 곳이다.
+
 ### 연결 (REQ-051, REQ-053)
 
 - **입력은 커넥터가 설명한다.** `GET /api/connectors`의 `fields`로 화면이 폼을 그린다. 칸 종류 `secret`은 토큰·비밀번호를 직접 입력하는 칸이고, `env`는 서버의 환경 변수 이름이다. `toolGuide`는 그 방식에서 테라리움의 도구가 에이전트에게 가는 길이다.
 - **비밀은 돌아오지 않는다.** 응답의 `secrets`는 값이 있는 칸의 이름이고, `headers`의 비밀 헤더는 이름과 `secret: true`만 있다. 고칠 때(`PUT`) 비밀 칸을 비워 두면 그대로, 값을 쓰면 교체, `null`이면 지운다. 비밀 헤더도 값 없이 보내면 같은 이름의 것을 유지한다.
 - **연결 확인**(`POST …/check`)은 저장하지 않는다. 본문에 `id`를 주면 그 연결을 고쳐 본다(만든 사람만, 비워 둔 비밀은 기존 값). 응답에는 걸린 시간과, 테라리움 주소가 localhost일 때의 안내 같은 `notes`가 있다.
 - **숨긴 에이전트**(REQ-079): 확인 응답과 목록에는 `census`(`shown`, `total`, `hidden: [{reason, count}]`, `includesHidden`, `empty`, `notes`)와 `hiddenAgents`가 있다. 하네스가 목록에서 뺀 에이전트를 몇 개 왜 뺐는지 데이터로 말하고, 문장은 화면이 만든다.
-- **말 걸어 보기**(`POST …/try`, 본문 `{agentId, text}`): 응답 `TryResult`는 `ok`, 답 `text`, 실패면 `error`(상태와 상대의 말), `ms`, `model`, `tokens`, `toolCalls`, `trace`(`name`, `linked`, `spans`, `note`)다. 누구나 걸 수 있다. 연결 방식이 못 하면 `ok:false`로 이유를 준다.
+- **말 걸어 보기**(`POST …/try`, 본문 `{agentId, text}`): 응답 `TryResult`는 `ok`, 답 `text`, 실패면 `error`(상태와 상대의 말), `ms`, `model`, `tokens`, `toolCalls`, `trace`(`name`, `linked`, `spans`, `note`)다. 그 연결을 쓸 수 있는 사람이 건다: 설정 파일의 연결은 로그인한 누구나, 화면에서 만든 연결은 만든 사람과 관리자(봉인된 토큰이 대신 쓰이므로). 연결 방식이 못 하면 `ok:false`로 이유를 준다.
 - **트레이스 쌓는 곳**: 만들기·고치기·확인 본문에 `traces: {kind, config}`(`none`·`default`·`clickstack`·`langfuse`)를 줄 수 있다. 비밀은 비워 두면 그대로, `null`이면 지운다. 응답의 `traces`에는 비밀 값 없이 이름과 설정만 있다.
-- **자동 삭제**: 화면에서 만든 연결은 30일 안 쓰면 지워지고, `daysLeft`·`expiresAt`·`lastUsedAt`이 목록에 있다. `meta.expiring`은 7일 안에 지워질 내 연결이다. `keep`은 누구나 호출할 수 있다.
-- **에이전트 버전**: 응답 `AgentHistoryView`는 `versions`(최신이 먼저. 번호, 날짜, `source`(auto/manual), 만든 사람, 이름표·메모·속성, 스냅샷, 앞 버전과 견준 `changes`, 이 버전으로 만든 실험 수)와, 지금 실험을 만들면 무엇이 쓰일지(`pending`: 첫 버전이거나 `changes`)를 준다. 하네스에 닿지 않으면 `pendingError`. 더하기·고치기·지우기는 연결을 만든 사람만(설정 파일의 연결은 누구나). 번호가 숫자가 아니면 404, 이름표가 빈 글자면 400이다.
+- **자동 삭제**: 화면에서 만든 연결은 30일 안 쓰면 지워지고, `daysLeft`·`expiresAt`·`lastUsedAt`이 목록에 있다. `meta.expiring`은 7일 안에 지워질 내 연결이다. `keep`은 그 연결을 쓸 수 있는 사람이 부른다.
+- **에이전트 버전**: 응답 `AgentHistoryView`는 `versions`(최신이 먼저. 번호, 날짜, `source`(auto/manual), 만든 사람, 이름표·메모·속성, 스냅샷, 앞 버전과 견준 `changes`, 이 버전으로 만든 실험 수)와, 지금 실험을 만들면 무엇이 쓰일지(`pending`: 첫 버전이거나 `changes`)를 준다. 하네스에 닿지 않으면 `pendingError`. 더하기·고치기·지우기는 연결을 만든 사람과 관리자만(설정 파일의 연결은 관리자만). 번호가 숫자가 아니면 404, 이름표가 빈 글자면 400이다.
 - 에이전트 id에 `/`가 있으면 주소에서 `%2F`로 쓴다.
 
 ### 실시간 스트림 (SSE)
