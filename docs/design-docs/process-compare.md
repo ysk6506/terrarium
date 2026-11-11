@@ -18,13 +18,13 @@ covers:
   - apps/web/src/ui/pages/process-table.tsx
   - apps/web/src/ui/pages/process-compare.tsx
   - apps/web/src/ui/pages/process-ontology.tsx
-covers_hash: c22a10d4c4df457f
+covers_hash: 1f58dcd8183b87da
 verification_log:
-  - "2026-11-07: 이끼 동작을 없앤 것과 화면 구성을 코드와 다시 대조했다"
   - "2026-11-10: 내려받는 파일 이름 규칙(exportName)을 코드와 대조해 더했다"
   - "2026-11-10: 파일 이름 규칙을 fileName 그대로(한글 유지)로 되돌려 대조했다"
   - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
   - "2026-11-11: 2026-11-11: 이끼 동작 셋을 코드와 대조해 맞음 (ADR-0141)"
+  - "2026-11-11: result page split into tabs (ADR-0171); checked against covered code"
 ---
 # 프로세스 비교 (REQ-112, [ADR-0135](adr/0135-process-compare.md))
 
