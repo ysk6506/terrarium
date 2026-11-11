@@ -355,13 +355,19 @@ async function buildSmall(c: Context): Promise<void> {
     .waitFor({ timeout: 20 * SECOND });
   await c.d.click(page.getByRole("button", { name: /^시운전/ }).first());
   await page.getByTestId("trial-result").waitFor({ timeout: 90 * SECOND });
+  // the board of this small world and the bar above it, at both widths (ADR-0146)
+  await page.getByRole("button", { name: "토폴로지", exact: true }).click();
+  await page.locator(".topo-board svg").waitFor({ timeout: 60 * SECOND });
+  await page.waitForTimeout(1_000);
+  const problem = await layoutAtWidths(page, "작은 세계 토폴로지");
+  if (problem) throw new Error(problem);
 }
 
 /** Most tiles the topology view may draw (ADR-0084), and the longest a person waits for the first picture. */
 const MAX_TILES = 150;
 const FIRST_PICTURE_MS = 3 * SECOND;
 
-const HWASEONG = "화성 실제 그대로";
+const HWASEONG = "화성 사업장 실제 그대로 연습";
 
 const asViewer = { "content-type": "application/json", "x-terrarium-user": "%EC%97%B0%EC%88%98" };
 
@@ -425,6 +431,8 @@ async function openTopology(c: Context): Promise<void> {
     before,
     { timeout: 10 * SECOND },
   );
+  const power = await layoutAtWidths(page, "토폴로지 전원");
+  if (power) throw new Error(power);
   const group = page.locator(".topo-hits button[aria-label*='누르면']").first();
   await group.waitFor({ timeout: 10 * SECOND });
   // A group of one kind opens in place (more tiles), a container adds a crumb; either way the board goes one level down.
@@ -438,6 +446,9 @@ async function openTopology(c: Context): Promise<void> {
     [crumbs, tilesBefore],
     { timeout: 10 * SECOND },
   );
+  await page.waitForTimeout(1_000);
+  const deeper = await layoutAtWidths(page, "토폴로지 한 층 아래");
+  if (deeper) throw new Error(deeper);
   const after = await page.locator(".topo-hits li").count();
   if (after > MAX_TILES) throw new Error(`펼치고 나서 타일이 ${after}개다`);
 }
