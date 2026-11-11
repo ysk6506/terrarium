@@ -23,6 +23,7 @@ import {
   managedOf,
   ownerOf,
   ringOf,
+  serversOfSite,
   siteLinks,
   streamDef,
   streams,
@@ -78,6 +79,7 @@ const services = (index: BlueprintIndex, ids: readonly string[]): Entity[] =>
 
 const NEED = {
   plan: "복구 사이트가 이 세계에 없어요 (사이트 칩 'DR 콜드' 이상이 필요해요)",
+  empty: "복구 사이트에 서버가 하나도 없어서, 전환해도 서비스가 돌아갈 곳이 없어요",
   manual: "사람이 전환하는 복구 사이트(콜드·웜)가 이 세계에 없어요 (사이트 칩 'DR 웜'이 필요해요)",
   active:
     "액티브-액티브 사이트가 이 세계에 없어요 (사이트 칩 '멀티 사이트 액티브-액티브'가 필요해요)",
@@ -110,6 +112,7 @@ function planCase(manualOnly: boolean, modes?: readonly string[]) {
     const def = drPlanDef(plan);
     const list = copied(index, plan.id);
     if (list.length === 0) return NEED.stream;
+    if (serversOfSite(index, def.dr).length === 0) return NEED.empty;
     return {
       target: index.entity(def.primary),
       roots: [def.primary, plan.id],

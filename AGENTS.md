@@ -9,15 +9,15 @@ covers:
   - harness/config/protected-paths.txt
 covers_hash: 5bd9f8d3b3a3248d
 verification_log:
-  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
   - "2026-11-10: 단위 표 변화 없음, physics.slots 단위 추가를 확인"
   - "2026-11-10: CI가 합치기 관문이 되었다는 한 줄을 더함 (ADR-0140). 명령 목록과 보호 경로 표는 그대로 맞다"
   - "2026-11-11: 검사 끄기 금지(IGN*)·품질 등급표(QUAL001) 행과 정리 작업 안내를 더했다. package.json은 quality 스크립트와 ratchet만 바뀌었다 (ADR-0148)"
   - "2026-11-11: 정리 작업의 첫 단계를 pnpm quality write로 정하고, 등급표 낡음(QUAL001)과 끄기 감소(IGN006)를 빨강이 아닌 알림으로 고쳐 적었다 (ADR-0148)"
+  - "2026-11-11: CI 문장에 문서만 바뀐 변경의 가벼운 경로를 더함 (ADR-0173). 명령 목록과 보호 경로 표는 그대로 맞다"
 ---
 # Terrarium — 코딩 에이전트 안내서
 
-사내 Agent/Harness 평가용 스테이트풀 IT 인프라 시뮬레이터이자 실험 플랫폼. TypeScript 하나로 만든다. 이 파일은 **지도**다.
+IT 인프라를 운영하는 AI 에이전트와 하네스를, 현실 장비를 건드리지 않고 정확하고 일관되게 평가하는 사내 실험장. TypeScript 하나로 만든다. 이 파일은 **지도**다.
 
 ## 시작하기 (3분)
 
@@ -33,7 +33,7 @@ pnpm dev          # 서버(:8787) + 웹(:5173)
 pnpm check        # lint + 타입 + 테스트 + 모든 구조 검사. 이게 통과해야 끝난 것.
 ```
 
-CI가 합치기 관문이다 ([ADR-0140](docs/design-docs/adr/0140-ci-shards-and-merge-gate.md)): 전체 테스트는 CI가 조각 12개로 나눠 병렬로 돌리고(커버리지 없이), 게이트 작업이 모두 초록일 때만 main에 합친다. 로컬에서는 바뀐 코드의 관련 테스트만 돌린다.
+CI가 합치기 관문이다 ([ADR-0140](docs/design-docs/adr/0140-ci-shards-and-merge-gate.md)): 전체 테스트는 CI가 조각 12개로 나눠 병렬로 돌리고(커버리지 없이), 게이트 작업이 모두 초록일 때만 main에 합친다. 문서(`*.md`)만 바꾼 풀 리퀘스트는 가벼운 경로를 타서 구조 검사와 문서를 읽는 시험만 돌린다. 다른 파일이 하나라도 있거나 main의 push면 전체 경로다([ADR-0173](docs/design-docs/adr/0173-docs-only-changes-take-a-light-ci-path.md)). 로컬에서는 바뀐 코드의 관련 테스트만 돌린다.
 
 실패 메시지는 `problem`과 `fix`를 알려준다. 메시지를 믿고 그대로 고친다.
 
