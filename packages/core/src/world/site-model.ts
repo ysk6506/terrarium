@@ -7,7 +7,6 @@ import type { Fault } from "./faults";
 import {
   asyncLagS,
   drPlanDef,
-  drSites,
   drTargets,
   HOT_SWITCH_S,
   ringOf,
@@ -85,9 +84,3 @@ export function ringDown(world: WorldReader, fault: Fault): string[] {
   const n = Math.min(ring.length, Math.round(fault.params.down ?? 2));
   return Array.from({ length: n }, (_, k) => (ring[(at + k) % ring.length] as Entity).id);
 }
-
-/** The ids of the sites, primary first. */
-export const siteIds = (world: WorldReader): string[] =>
-  drSites(world.index)
-    .sort((a, b) => (a.props.role === "primary" ? -1 : b.props.role === "primary" ? 1 : 0))
-    .map((s) => s.id);

@@ -25,7 +25,8 @@ import {
   type Subject,
   snapshotOf,
 } from "@terrarium/core/experiments";
-import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
+import { must, type PlatformContext, type Viewer } from "./context";
+import { allow } from "./permissions";
 import { subjectOf } from "./subject";
 
 export class AgentVersions {
@@ -53,7 +54,7 @@ export class AgentVersions {
     const key = { harnessId: subject.harness.id, agentId: subject.agent.id };
     return this.serially(key, async () => {
       const history = await this.ctx.store.getAgentHistory(key.harnessId, key.agentId);
-      const seen = observe(history, key, snapshotOf(subject), this.ctx.stamps.now(), viewer.name);
+      const seen = observe(history, key, snapshotOf(subject), this.ctx.stamps.now(), viewer.id);
       if (seen.created) await this.ctx.store.putAgentHistory(seen.history);
       return seen.version.n;
     });
@@ -109,10 +110,14 @@ export class AgentVersions {
     return this.view(await this.ctx.store.getAgentHistory(harnessId, agentId), key);
   }
 
-  /** Whoever made a connection decides what its versions say; the config file's connections have no owner. */
+  /** Whoever made a connection decides what its versions say; the config file's connections have no owner, so admins do. */
   private mayEdit(viewer: Viewer, harnessId: string): void {
-    const owner = this.ctx.harnesses.ownerOf?.(harnessId);
-    if (owner !== undefined) ownerOnly(viewer, owner, "버전 바꾸기");
+    allow(
+      viewer,
+      "editAgentVersions",
+      { owner: this.ctx.harnesses.ownerOf?.(harnessId) },
+      "버전 바꾸기",
+    );
   }
 
   async add(
@@ -136,7 +141,7 @@ export class AgentVersions {
               );
             }),
           );
-      const added = addManual(before, key, snapshot, this.ctx.stamps.now(), viewer.name, req);
+      const added = addManual(before, key, snapshot, this.ctx.stamps.now(), viewer.id, req);
       await this.ctx.store.putAgentHistory(added.history);
       return added.history;
     });

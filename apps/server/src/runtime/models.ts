@@ -24,7 +24,8 @@ import {
 } from "@terrarium/core/llm";
 import type { SecretBox } from "../adapters";
 import { addressProblem, problem } from "./connection-form";
-import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
+import { must, type PlatformContext, type Viewer } from "./context";
+import { allow } from "./permissions";
 
 export interface ModelsOptions {
   readonly box: Pick<SecretBox, "seal" | "open">;
@@ -111,7 +112,7 @@ export class Models {
     const tail = tailOf(key);
     const record: LlmModelRecord = {
       id: this.ctx.stamps.id("llm"),
-      owner: viewer.name,
+      owner: viewer.id,
       name: input.name,
       kind: input.kind,
       baseUrl: input.baseUrl,
@@ -162,7 +163,7 @@ export class Models {
 
   async update(viewer: Viewer, id: string, input: UpdateModelRequest): Promise<LlmModelView> {
     const old = await this.find(id);
-    ownerOnly(viewer, old.owner, "고치기");
+    allow(viewer, "change", { owner: old.owner }, "고치기");
     if (input.baseUrl !== undefined) addressIssue(input.baseUrl, this.options.allowedHosts);
     if (input.name !== undefined && (await this.nameTaken(input.name, id)))
       throw new ConflictError(NAME_TAKEN);
@@ -186,7 +187,7 @@ export class Models {
 
   async remove(viewer: Viewer, id: string): Promise<{ readonly deleted: boolean }> {
     const old = await this.find(id);
-    ownerOnly(viewer, old.owner, "지우기");
+    allow(viewer, "remove", { owner: old.owner }, "지우기");
     await this.ctx.store.deleteModel(id);
     if (old.isDefault) {
       const [next] = await this.ctx.store.listModels();
@@ -195,7 +196,9 @@ export class Models {
     return { deleted: true };
   }
 
-  async setDefault(id: string): Promise<LlmModelView> {
+  async setDefault(viewer: Viewer, id: string): Promise<LlmModelView> {
+    // Every user's helper questions go to this model, so choosing it is for administrators.
+    allow(viewer, "administer", {}, "기본 모델 정하기");
     const chosen = await this.find(id);
     for (const m of await this.ctx.store.listModels())
       if (m.isDefault && m.id !== id) await this.ctx.store.putModel({ ...m, isDefault: false });
@@ -205,8 +208,10 @@ export class Models {
   }
 
   /** Read the list, else one short completion; keep what came back on the record. */
-  async check(id: string): Promise<LlmModelView> {
+  async check(viewer: Viewer, id: string): Promise<LlmModelView> {
     const model = await this.find(id);
+    // A check opens the sealed key and calls out with it, so it is for the one who registered it.
+    allow(viewer, "use", { owner: model.owner }, "연결 확인");
     const result = await this.run(model);
     const lastCheck: LlmCheckRecord = {
       at: this.ctx.stamps.now(),

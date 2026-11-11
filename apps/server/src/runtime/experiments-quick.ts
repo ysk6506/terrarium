@@ -53,7 +53,7 @@ async function agentFor(
   ctx: PlatformContext,
   viewer: Viewer,
 ): Promise<{ harnessId: string; agentId: string; agentName: string; from: "recent" | "builtin" }> {
-  for (const e of await ctx.store.listExperiments({ owner: viewer.name, limit: 20 })) {
+  for (const e of await ctx.store.listExperiments({ owner: viewer.id, limit: 20 })) {
     const harness = ctx.harnesses.get(e.recipe.harnessId);
     const agents = await harness?.agents().catch(() => undefined);
     const found = agents?.find((a) => a.id === e.recipe.agentId);

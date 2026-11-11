@@ -52,7 +52,7 @@ describe("지금 하는 방식 표 [REQ-112]", () => {
     ).toHaveLength(3);
   });
 
-  test("[REQ-112] 비거나 틀린 표는 받지 않고, 처음 적은 사람만 고친다", async () => {
+  test("[REQ-112] 비거나 틀린 표는 받지 않고, 시나리오를 만든 사람만 고친다 (먼저 적은 사람이 아니다)", async () => {
     const { send } = setup();
     const { scenarioId } = await seed(send);
     const url = `/api/scenarios/${scenarioId}/current-process`;
@@ -60,6 +60,9 @@ describe("지금 하는 방식 표 [REQ-112]", () => {
     expect((await send("PUT", url, { steps: [{ ...STEPS[0], kind: "몰라" }] })).status).toBe(400);
     expect((await send("PUT", url, { steps: [{ ...STEPS[0], minutes: -1 }] })).status).toBe(400);
     expect((await send("PUT", url, { steps: [{ ...STEPS[0], who: "  " }] })).status).toBe(400);
+    // nobody has written it yet, and still only the scenario's maker may: being first is not a claim
+    expect((await send("PUT", url, { steps: STEPS }, "jimin")).status).toBe(403);
+    expect((await send("GET", url, undefined, "jimin")).body.canEdit).toBe(false);
     expect((await send("PUT", url, { steps: STEPS })).status).toBe(200);
     const other = await send("PUT", url, { steps: STEPS.slice(0, 1) }, "jimin");
     expect(other.status).toBe(403);

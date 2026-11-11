@@ -52,10 +52,18 @@ describe("말 걸어 보기 and the tools for traces over HTTP [REQ-079]", () =>
       payload: { ...goclaw, traces },
     });
     const id = made.json().id as string;
-    const tried = await a.inject({
+    // the connection carries yeonsu's secrets: another signed-in person may not talk through it
+    const stranger = await a.inject({
       method: "POST",
       url: `/api/connections/${id}/try`,
       headers: { "x-terrarium-user": "jimin" },
+      payload: { agentId: "ops", text: "안녕" },
+    });
+    expect(stranger.statusCode).toBe(403);
+    const tried = await a.inject({
+      method: "POST",
+      url: `/api/connections/${id}/try`,
+      headers: { "x-terrarium-user": "yeonsu" },
       payload: { agentId: "ops", text: "안녕" },
     });
     expect(tried.statusCode).toBe(200);
@@ -63,7 +71,7 @@ describe("말 걸어 보기 and the tools for traces over HTTP [REQ-079]", () =>
     const empty = await a.inject({
       method: "POST",
       url: `/api/connections/${id}/try`,
-      headers: { "x-terrarium-user": "jimin" },
+      headers: { "x-terrarium-user": "yeonsu" },
       payload: { agentId: "ops", text: " " },
     });
     expect(empty.statusCode).toBe(400);

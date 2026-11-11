@@ -57,6 +57,7 @@ export {
   type MossAskRequest,
   type MossSourceView,
 } from "./moss";
+export { ACTIONS, type Action, type RoutePolicy } from "./permissions";
 export { PutPhysicsBody, type PutPhysicsRequest } from "./physics-routes";
 export {
   ImportPresetsBody,

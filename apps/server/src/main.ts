@@ -88,6 +88,8 @@ async function runControl(
   token: string | undefined,
   logger: boolean,
 ): Promise<Running> {
+  // Before anything is opened: a proxy mode with no secret must not start (ADR-0174).
+  const authenticator = authenticatorOf(config.identity, env);
   const adapters = buildAdapters(config, { env });
   const c = config.cluster;
   const placement = placementOf(config, token);
@@ -109,7 +111,7 @@ async function runControl(
   const app = buildApp({
     platform,
     gateway,
-    authenticator: authenticatorOf(config.identity),
+    authenticator,
     ...(config.publicUrl ? { publicUrl: config.publicUrl } : {}),
     webDist: WEB_DIST,
     logger,
