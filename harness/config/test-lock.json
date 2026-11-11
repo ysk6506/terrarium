@@ -128492,6 +128492,96 @@
    "added": "2026-11-11",
    "amended_by": null
   },
+  "tests/spec/deep-os-text-oracle.test.ts::<import:4765130b>": {
+   "kind": "support",
+   "hash": "4765130b40c20bee",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-text-oracle.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-text-oracle.test.ts::=CASES": {
+   "kind": "support",
+   "hash": "51d4b475d6724c2e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-text-oracle.test.ts::=SETUP": {
+   "kind": "support",
+   "hash": "584aec29e53896ca",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-text-oracle.test.ts::the fake text commands print what GNU coreutils print [REQ-098] > %s": {
+   "kind": "test",
+   "hash": "69f2f12dbf6791b1",
+   "asserts": 1,
+   "literals": [
+    "\"%s\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-text-oracle.test.ts::the fake text commands print what GNU coreutils print [REQ-098] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-text-oracle.test.ts::the fake text commands print what GNU coreutils print [REQ-098] > tee names a directory that is not there, and printf without a format is a usage error [REQ-098]": {
+   "kind": "test",
+   "hash": "1165d934684401e3",
+   "asserts": 2,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"echo hi | tee /tmp/nodir/x\"",
+    "\"echo hi | tee /tmp/nodir/x\"",
+    "\"hi\"",
+    "\"hi\"",
+    "\"printf\"",
+    "\"printf\"",
+    "\"srv-a2\"",
+    "\"srv-a2\"",
+    "\"srv-a2\"",
+    "\"srv-a2\"",
+    "\"tee names a directory that is not there, and printf without a format is a usage error [REQ-098]\"",
+    "\"tee: /tmp/nodir/x: No such file or directory\"",
+    "\"tee: /tmp/nodir/x: No such file or directory\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "tests/spec/deep-os-time-log.test.ts::<import:4765130b>": {
    "kind": "support",
    "hash": "4765130b40c20bee",

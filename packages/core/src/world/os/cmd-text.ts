@@ -1,5 +1,5 @@
 /** Text commands of the fake shell: echo, printf, cat, head, tail, wc, tee, tr, cut, uniq, xargs, test (ADR-0117). */
-import { intOf, parseArgs } from "./args";
+import { has, hasAny, intOf, parseArgs } from "./args";
 import { normalize } from "./fs";
 import { errText, readInputs } from "./io";
 import {
@@ -42,37 +42,41 @@ export function echo(c: Cmd): R {
   return ok(`${escapes ? unescapeText(text) : text}${newline ? "\n" : ""}`);
 }
 
-export function printf(c: Cmd): R {
-  const [fmt = "", ...values] = c.args;
-  let i = 0;
-  const out = unescapeText(fmt).replace(
-    /%(-?\d*)(?:\.(\d+))?([sdif%])/g,
-    (_m, width: string, prec: string | undefined, kind: string) => {
-      if (kind === "%") return "%";
-      const v = values[i++] ?? "";
-      const text =
-        kind === "s"
-          ? v
-          : kind === "f"
-            ? Number(v || 0).toFixed(prec === undefined ? 6 : Number(prec))
-            : String(Math.trunc(Number(v || 0)));
-      const n = Math.abs(Number(width || 0));
-      return width.startsWith("-") ? text.padEnd(n) : text.padStart(n);
-    },
-  );
-  return ok(out);
-}
+/** `cat -v`: control characters as `^X`, delete as `^?`, tabs and line ends left to `-T` and `-E`. */
+const visible = (line: string): string =>
+  [...line]
+    .map((ch) => {
+      const code = ch.charCodeAt(0);
+      if (code === 127) return "^?";
+      return code < 32 && code !== 9 ? `^${String.fromCharCode(code + 64)}` : ch;
+    })
+    .join("");
 
 export function cat(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "nAvEsbT" });
   if (p.bad) return unsupported("cat", p.bad);
   const { inputs, errors } = readInputs(c, p.rest);
-  let text = inputs.map((i) => i.text).join("");
-  if (p.flags.has("n") || p.flags.has("b")) {
-    const rows = linesOf(text);
-    text = joinLines(rows.map((l, k) => `${String(k + 1).padStart(6)}\t${l}`));
-  }
-  return { out: text, err: errText(errors), code: errors.length ? 1 : 0 };
+  const every = has(p, "A");
+  const ends = every || has(p, "E");
+  const tabs = every || has(p, "T");
+  const nonprinting = every || has(p, "v");
+  let rows = linesOf(inputs.map((i) => i.text).join(""));
+  if (has(p, "s")) rows = rows.filter((l, k) => l !== "" || rows[k - 1] !== "");
+  let n = 0;
+  const lines = rows.map((l) => {
+    let t = nonprinting ? visible(l) : l;
+    if (tabs) t = t.replaceAll("\t", "^I");
+    if (ends) t += "$";
+    const numbered = has(p, "b") ? l !== "" : has(p, "n");
+    return numbered ? `${String(++n).padStart(6)}\t${t}` : t;
+  });
+  const keepsEnd = inputs.length > 0 && !(inputs.at(-1)?.text ?? "").endsWith("\n") && !ends;
+  const text = joinLines(lines);
+  return {
+    out: keepsEnd && text.endsWith("\n") ? text.slice(0, -1) : text,
+    err: errText(errors),
+    code: errors.length ? 1 : 0,
+  };
 }
 
 function pick(c: Cmd, from: "head" | "tail"): R {
@@ -99,7 +103,11 @@ function pick(c: Cmd, from: "head" | "tail"): R {
     return inputs.length > 1 && !p.flags.has("q") ? `==> ${i.name} <==\n${body}` : body;
   });
   const following = p.flags.has("f") || p.flags.has("--follow");
-  const base: R = { out: parts.join("\n"), err: errText(errors), code: errors.length ? 1 : 0 };
+  const base: R = {
+    out: parts.join(has(p, "q") ? "" : "\n"),
+    err: errText(errors),
+    code: errors.length ? 1 : 0,
+  };
   return following
     ? {
         ...base,
@@ -127,28 +135,43 @@ export const tail = (c: Cmd): R => {
   return pick(withF, "tail");
 };
 
+/** The column width of `wc`: 7 for input that is not a file, else the digits of the files' sizes together; none for one number. */
+/** The columns a line takes when printed, a tab running to the next multiple of 8. */
+function displayWidth(line: string): number {
+  let w = 0;
+  for (const ch of line) w = ch === "\t" ? w + 8 - (w % 8) : w + 1;
+  return w;
+}
+
+function wcWidth(rows: ReadonlyArray<{ cols: number[]; bytes: number }>, files: number): number {
+  if (files === 0) return rows[0]?.cols.length === 1 ? 1 : 7;
+  if (rows.length === 1 && rows[0]?.cols.length === 1) return 1;
+  return String(rows.reduce((sum, r) => sum + r.bytes, 0)).length;
+}
+
 export function wc(c: Cmd): R {
-  const p = parseArgs(c.args, { bool: "lwcm" });
+  const p = parseArgs(c.args, { bool: "lwcmL" });
   if (p.bad) return unsupported("wc", p.bad);
   const { inputs, errors } = readInputs(c, p.rest);
-  const all = !p.flags.has("l") && !p.flags.has("w") && !p.flags.has("c") && !p.flags.has("m");
+  const all = !hasAny(p, "l", "w", "c", "m", "L");
   const rows = inputs.map((i) => {
     const cols: number[] = [];
-    if (all || p.flags.has("l")) cols.push(i.text.split("\n").length - 1);
-    if (all || p.flags.has("w")) cols.push(i.text.split(/\s+/).filter(Boolean).length);
-    if (all || p.flags.has("c") || p.flags.has("m")) cols.push(byteLength(i.text));
-    return { cols, name: i.name };
+    if (all || has(p, "l")) cols.push(i.text.split("\n").length - 1);
+    if (all || has(p, "w")) cols.push(i.text.split(/\s+/).filter(Boolean).length);
+    if (all || hasAny(p, "c", "m")) cols.push(byteLength(i.text));
+    if (has(p, "L")) cols.push(Math.max(0, ...i.text.split("\n").map(displayWidth)));
+    return { cols, name: i.name, bytes: byteLength(i.text) };
   });
-  const lone = rows.length === 1 && rows[0]?.cols.length === 1;
+  const width = wcWidth(rows, p.rest.length);
   const fmt = (r: { cols: number[]; name: string }): string =>
-    lone && p.rest.length === 0
-      ? String(r.cols[0])
-      : `${r.cols.map((n) => String(n).padStart(7)).join("")}${r.name === "-" ? "" : ` ${r.name}`}`;
+    `${r.cols.map((n) => String(n).padStart(width)).join(" ")}${r.name === "-" ? "" : ` ${r.name}`}`;
   const lines = rows.map(fmt);
-  if (rows.length > 1)
-    lines.push(
-      `${(rows[0]?.cols ?? []).map((_, k) => String(rows.reduce((s, r) => s + (r.cols[k] ?? 0), 0)).padStart(7)).join("")} total`,
+  if (rows.length > 1) {
+    const sums = (rows[0]?.cols ?? []).map((_, k) =>
+      rows.reduce((s, r) => s + (r.cols[k] ?? 0), 0),
     );
+    lines.push(fmt({ cols: sums, name: "total" }));
+  }
   return { out: joinLines(lines), err: errText(errors), code: errors.length ? 1 : 0 };
 }
 
@@ -160,6 +183,8 @@ export function tee(c: Cmd): R {
     const denied = c.fs.denyWrite(path);
     if (denied)
       err += `tee: ${f}: ${denied === "ro" ? "Read-only file system" : "Permission denied"}\n`;
+    else if (!c.fs.isDir(path.slice(0, path.lastIndexOf("/")) || "/"))
+      err += `tee: ${f}: No such file or directory\n`;
     else act(c, "write", path, p.flags.has("a") ? (c.fs.read(path) ?? "") + c.stdin : c.stdin);
   }
   return { out: c.stdin, err, code: err ? 1 : 0 };
@@ -239,11 +264,16 @@ export function rangeTest(spec: string): ((n: number) => boolean) | undefined {
 }
 
 export function cut(c: Cmd): R {
-  const p = parseArgs(c.args, { bool: "s", val: "dfcb", long: { "output-delimiter": "val" } });
+  const p = parseArgs(c.args, {
+    bool: "s",
+    val: "dfcb",
+    long: { "output-delimiter": "val", complement: "bool" },
+  });
   if (p.bad) return unsupported("cut", p.bad);
   const delim = p.flags.get("d") ?? "\t";
   const spec = p.flags.get("f") ?? p.flags.get("c") ?? p.flags.get("b");
-  const test = spec === undefined ? undefined : rangeTest(spec);
+  const inRange = spec === undefined ? undefined : rangeTest(spec);
+  const test = inRange && (has(p, "--complement") ? (n: number) => !inRange(n) : inRange);
   if (!test) return fail("cut: you must specify a list of bytes, characters, or fields", 1);
   const byField = p.flags.has("f");
   const joiner = p.flags.get("--output-delimiter") ?? delim;
@@ -263,23 +293,28 @@ export function cut(c: Cmd): R {
   return { out: joinLines(out), err: errText(errors), code: errors.length ? 1 : 0 };
 }
 
+/** The part of a line `uniq` compares: after the first `skip` fields, the first `chars` characters. */
+function comparable(line: string, skip: number, chars: number | undefined, fold: boolean): string {
+  let rest = line;
+  for (let k = 0; k < skip; k++) rest = rest.replace(/^\s*\S*/, "");
+  const cut = chars === undefined ? rest : rest.slice(0, chars);
+  return fold ? cut.toLowerCase() : cut;
+}
+
 export function uniq(c: Cmd): R {
-  const p = parseArgs(c.args, { bool: "cduiD" });
+  const p = parseArgs(c.args, { bool: "cduiD", val: "fws" });
   if (p.bad) return unsupported("uniq", p.bad);
   const { inputs, errors } = readInputs(c, p.rest.slice(0, 1));
   const groups: Array<{ line: string; n: number }> = [];
-  const norm = (s: string): string => (p.flags.has("i") ? s.toLowerCase() : s);
+  const [skip, chars] = [intOf(p, "f", 0), p.flags.has("w") ? intOf(p, "w", 0) : undefined];
+  const norm = (s: string): string => comparable(s, skip, chars, has(p, "i"));
   for (const line of linesOf(inputs.map((i) => i.text).join(""))) {
     const last = groups[groups.length - 1];
     if (last && norm(last.line) === norm(line)) last.n++;
     else groups.push({ line, n: 1 });
   }
-  const shown = groups.filter((g) =>
-    p.flags.has("d") ? g.n > 1 : p.flags.has("u") ? g.n === 1 : true,
-  );
-  const rows = shown.map((g) =>
-    p.flags.has("c") ? `${String(g.n).padStart(7)} ${g.line}` : g.line,
-  );
+  const shown = groups.filter((g) => (has(p, "d") ? g.n > 1 : has(p, "u") ? g.n === 1 : true));
+  const rows = shown.map((g) => (has(p, "c") ? `${String(g.n).padStart(7)} ${g.line}` : g.line));
   return { out: joinLines(rows), err: errText(errors), code: errors.length ? 1 : 0 };
 }
 
@@ -314,14 +349,48 @@ const chunks = <T>(list: readonly T[], size: number): T[][] =>
     list.slice(i * size, i * size + size),
   );
 
-/** `test` and `[`: file tests, string tests and numeric comparisons. */
+/** `test` and `[`: file tests, string tests, numeric comparisons, `!`, `-a` and `-o`. */
 export function testCmd(c: Cmd): R {
   const args = c.name === "[" ? c.args.slice(0, -1) : [...c.args];
-  const negate = args[0] === "!";
-  const a = negate ? args.slice(1) : args;
-  const result = evaluateTest(c, a);
-  if (result === undefined) return unsupported(c.name, a.join(" "));
-  return { out: "", code: result !== negate ? 0 : 1 };
+  const result = evaluateAll(c, args);
+  if (result === undefined) return unsupported(c.name, args.join(" "));
+  return { out: "", code: result ? 0 : 1 };
+}
+
+/** `a -o b -a c`: `-a` binds tighter than `-o`, as in `test`. */
+function evaluateAll(c: Cmd, args: readonly string[]): boolean | undefined {
+  if (args.length === 0) return false;
+  const ors = splitOn(args, "-o");
+  if (ors.length > 1)
+    return combine(
+      ors.map((part) => evaluateAll(c, part)),
+      (a, b) => a || b,
+    );
+  const ands = splitOn(args, "-a");
+  if (ands.length > 1)
+    return combine(
+      ands.map((part) => evaluateAll(c, part)),
+      (a, b) => a && b,
+    );
+  const negate = args[0] === "!" && args.length > 1;
+  const result = evaluateTest(c, negate ? args.slice(1) : args);
+  return result === undefined ? undefined : result !== negate;
+}
+
+/** The pieces of an argument list between the words `sep`; a list of three or fewer is left whole (`-a` can be a file test). */
+function splitOn(args: readonly string[], sep: string): string[][] {
+  if (args.length <= 3) return [[...args]];
+  const parts: string[][] = [[]];
+  for (const a of args) a === sep ? parts.push([]) : parts[parts.length - 1]?.push(a);
+  return parts;
+}
+
+function combine(
+  values: ReadonlyArray<boolean | undefined>,
+  join: (a: boolean, b: boolean) => boolean,
+): boolean | undefined {
+  if (values.some((v) => v === undefined)) return undefined;
+  return (values as boolean[]).reduce(join);
 }
 
 function evaluateTest(c: Cmd, a: readonly string[]): boolean | undefined {
