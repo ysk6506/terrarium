@@ -76,7 +76,8 @@ const LABELS: Readonly<Record<keyof Recipe, string>> = {
   harnessId: "하네스",
   agentId: "에이전트",
   tools: "툴",
-  seeds: "시드",
+  seeds: "상황",
+  repeats: "상황당 반복",
   time: "시간 정책",
   profiles: "제품 버전",
   escalation: "에스컬레이션 처리",
@@ -102,6 +103,7 @@ function timeText(t: Recipe["time"]): string {
 const TEXTS: Partial<Record<keyof Recipe, (r: Recipe) => string>> = {
   tools: (r) => r.tools.join(", "),
   seeds: (r) => r.seeds.join(", "),
+  repeats: (r) => `${r.repeats ?? 1}번`,
   time: (r) => timeText(r.time),
   profiles: (r) => `vCenter ${r.profiles.vcenter ?? "기본"} · vROps ${r.profiles.vrops ?? "기본"}`,
   escalation: (r) => ESCALATION_TEXT[r.escalation?.mode ?? "auto"],

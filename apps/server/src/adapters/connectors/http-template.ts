@@ -31,6 +31,7 @@ const NAMES = [
   "runId",
   "agentId",
   "seed",
+  "repeat",
   "prompt",
   "mcpUrl",
   "traceparent",
@@ -306,7 +307,7 @@ function safeJson(text: string): unknown {
 }
 
 const HOLES =
-  "{{prompt}} {{runId}} {{agentId}} {{seed}} {{mcpUrl}} {{traceparent}} {{maxToolCalls}} {{timeLimitSeconds}}";
+  "{{prompt}} {{runId}} {{agentId}} {{seed}} {{repeat}} {{mcpUrl}} {{traceparent}} {{maxToolCalls}} {{timeLimitSeconds}}";
 
 export const httpTemplateConnector = defineConnector({
   spec: {

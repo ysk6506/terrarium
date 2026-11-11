@@ -5,7 +5,7 @@ import {
   analyzeRun,
   buildLeaderboards,
   clearlyDifferent,
-  MIN_RUNS_TO_RANK,
+  MIN_SEEDS_TO_RANK,
   NO_TELEMETRY,
   ratio,
   type Span,
@@ -227,13 +227,18 @@ describe("benchmark leaderboards [REQ-039]", () => {
     analyzeExperiment(experimentOf(spec, snap));
 
   test("configurations are pooled across people and ranked; small samples wait unranked", () => {
+    // jimin's run is on seed 3: seeds 1 and 2 are yeonsu's, and a seed both of them ran would count once (ADR-0158)
+    const jimin = experimentOf({
+      id: "a2",
+      owner: "jimin",
+      createdAt: "2026-10-30T00:00:00.000Z",
+      runs: [SCRIPTS.good],
+    });
     const boards = buildLeaderboards([
       analysed({ id: "a1", owner: "yeonsu", runs: [SCRIPTS.good, SCRIPTS.good] }),
-      analysed({
-        id: "a2",
-        owner: "jimin",
-        createdAt: "2026-10-30T00:00:00.000Z",
-        runs: [SCRIPTS.good],
+      analyzeExperiment({
+        experiment: { ...jimin.experiment, recipe: { ...jimin.experiment.recipe, seeds: [3] } },
+        runs: jimin.runs.map((r) => ({ ...r, seed: 3 })),
       }),
       analysed({
         id: "b1",
@@ -253,7 +258,8 @@ describe("benchmark leaderboards [REQ-039]", () => {
     const top = board.rows[0] as (typeof board.rows)[number];
     expect(top).toMatchObject({ runs: 3, passRate: 1, owners: ["jimin", "yeonsu"], latest: "a2" });
     expect(top.experimentIds).toEqual(["a1", "a2"]);
-    expect(MIN_RUNS_TO_RANK).toBe(3);
+    expect(top).toMatchObject({ seeds: 3 });
+    expect(MIN_SEEDS_TO_RANK).toBe(3);
   });
 
   test("only like is ranked with like: another time policy is another board", () => {

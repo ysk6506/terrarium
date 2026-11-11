@@ -203,6 +203,7 @@ export function configurable(req: AgentRunRequest): Record<string, unknown> {
     terrarium_mcp_url: req.tools.mcpUrl ?? "",
     terrarium_run_id: req.runId,
     terrarium_seed: req.seed,
+    ...(req.repeat ? { terrarium_repeat: req.repeat } : {}),
     terrarium_max_tool_calls: req.limits.maxToolCalls,
     terrarium_time_limit_seconds: req.limits.timeLimitSeconds,
     ...(req.traceparent ? { terrarium_traceparent: req.traceparent } : {}),
@@ -234,7 +235,7 @@ export const langGraphConnector = defineConnector({
     toolTransport: "mcp",
     toolGuide: [
       "테라리움은 이 실행 전용 툴 주소를 요청의 config.configurable.terrarium_mcp_url 로 넘겨요. 그래프가 그 주소의 MCP 서버를 툴로 붙이도록 만들어 두어야 해요.",
-      "같은 곳으로 terrarium_run_id, terrarium_seed, terrarium_max_tool_calls, terrarium_time_limit_seconds, terrarium_traceparent 도 가요.",
+      "같은 곳으로 terrarium_run_id, terrarium_seed, terrarium_repeat, terrarium_max_tool_calls, terrarium_time_limit_seconds, terrarium_traceparent 도 가요.",
       "Agent Server가 테라리움 서버 주소에 연결할 수 있어야 해요. 테라리움 주소가 localhost이면 서버 설정의 publicUrl 을 바꿔 주세요.",
     ],
     fromScreen: true,

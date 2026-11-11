@@ -207,6 +207,7 @@ export class A2aAgent implements HarnessPort {
         tools: req.tools.specs.map((s) => s.name),
         limits: req.limits,
         seed: req.seed,
+        ...(req.repeat ? { repeat: req.repeat } : {}),
         ...(req.traceparent ? { traceparent: req.traceparent } : {}),
       },
     };

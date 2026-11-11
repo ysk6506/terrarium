@@ -13,13 +13,13 @@ covers:
   - packages/core/src/contract/model-routes.ts
   - packages/core/src/contract/community.ts
   - packages/core/src/contract/community-routes.ts
-covers_hash: fb9dbeec350e93a4
+covers_hash: ca05114dc8ff41ab
 verification_log:
-  - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-07: o15 합치기 (2차 피드백 수정)"
   - "2026-11-10: 물리 프로필(REQ-113) 반영: 새 라우트·벤치마크 키 지문"
   - "2026-11-07: REQ-112의 경로 넷을 표에 더했다"
   - "2026-11-11: main 합치기 뒤 다시 읽음: 물리 프로필(REQ-113) 반영 문단과 라우트 행이 main의 새 내용과 함께 맞다"
+  - "2026-11-11: REQ-118 시드당 반복: 실행 키(시드·반복), 시드 단위 통계, 순위 조건(시드 3개), 한도 60, 화면 반영을 코드와 대조해 고쳤다. 이 문서의 나머지는 그대로 맞다"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -109,7 +109,7 @@ verification_log:
 | `POST /api/experiments` | 실험 만들고 대기열에 넣기. 레시피의 선택 칸: `escalation`(`{mode: wait/auto/fail, reply?}`), `faultScope`(`inside`나 `all`), `sop`(`none`, `given`, `search`). `faultScope: inside`인데 준 툴로 풀 수 없는 시나리오는 이유와 함께 거절 | |
 | `POST /api/experiments/:id/cancel` | 남은 실행 취소 | |
 | `POST /api/experiments/:id/fork` | 조건만 바꿔 다시 실행 | |
-| `POST /api/experiments/:id/runs` | 같은 조건으로 실행 추가 | |
+| `POST /api/experiments/:id/runs` | 같은 조건으로 실행 추가: `{count}`(새 시드 n개), `{seeds}`(이 시드들) 또는 `{repeats}`(모든 시드에 n번씩 더)(REQ-118). 이미 있는 시드는 거절하고, 시드 × 반복이 60번을 넘어도 거절한다 | |
 | `GET /api/experiments/:id/events` | 진행 상황 실시간 (SSE) | |
 | `GET /api/escalations` | 사람을 기다리는 실행들: 요청문, 최근 툴 호출 5개, 지금 가진 툴, 줄 수 있는 툴, 이미 한 조치 | |
 | `POST /api/runs/:id/escalation` | 기다리는 실행에 답하기: `{kind: reply, text}` 글로 답, `{kind: act, tool, args}` 대신 조치(계속 기다림), `{kind: acted}` 조치를 마치고 돌려주기, `{kind: more_tools, tools}` 툴 더 주기, `{kind: end}` 끝내기. 실험을 돌린 사람만 | |
@@ -142,6 +142,7 @@ verification_log:
 ### 실시간 스트림 (SSE)
 
 - `GET /api/experiments/:id/events`: 실험 하나. 먼저 `experiment`(요약), 이후 `run`(실행 상태)과 `call`(툴 호출 하나: 시각 `t`, `tool`, `ok`, 그리고 `effect`와 `targets`).
+- 실험 만들기의 `recipe`와 포크의 `change`에 선택 필드 `repeats`(시드당 반복, 1~10, 기본 1)가 있고 실행은 시드 × 반복으로 60번까지다. 실행 요약(`RunSummary`)에는 `repeat`(1부터)가 있고 분석에는 `seeds`·`repeats`·`withinSeed`·`splitSeeds`가, 순위표 줄에는 `seeds`가 있다(REQ-118, [ADR-0158](adr/0158-repeats-per-seed-and-seed-level-statistics.md)).
 - 실험 만들기의 `recipe`에 선택 필드 `domains`(내 도메인 목록, 여섯 중에서)와 `leadTimes`(`vendorSla` 4h·nbd·3d, `spares` default·yes·no, `afterHours`, `start` weekday_day·weekday_night·weekend)가 있다(REQ-093). 포크의 `change`에도 있다. 실행 결과(`RunView`)의 `run.result`에는 `scope`(도메인과 설정 문구)와 `score.handoff`(넘긴 일)가 있다.
 - `GET /api/worlds/:id/activity` (REQ-050): 이 세계에서 도는 **모든 실험의 실행**. 늦게 연 화면이 알도록 지금 일하는 실행마다 `start`(누구인지: 실험 이름, 소유자,
   하네스, 에이전트, 모델)를 먼저 보내고, 이후 `call`(`runId`, `t`, `tool`, `ok`, `effect`, `targets`), `partner`(넘긴 일을 다른 팀이 시작하거나 끝냄: `runId`, `t`, `handoff`, `device`, `what` started·done, `team`, `who`, `replacing`, `onSite`; REQ-093)와 `end`를 보낸다. 세계가 없으면 404.

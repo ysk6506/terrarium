@@ -33,9 +33,10 @@ import {
   type WorldSummary,
 } from "@terrarium/core/experiments";
 import type { Blueprint, EntityKind } from "@terrarium/core/world";
+import { addRepeatColumn, runOf } from "./sqlite-migrate";
 import { RecordTable } from "./sqlite-records";
 
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS worlds (
@@ -56,7 +57,7 @@ CREATE INDEX IF NOT EXISTS experiments_benchmark ON experiments (benchmark_key);
 CREATE INDEX IF NOT EXISTS experiments_parent ON experiments (parent_id);
 CREATE TABLE IF NOT EXISTS runs (
   id TEXT PRIMARY KEY, experiment_id TEXT NOT NULL, idx INTEGER NOT NULL, status TEXT NOT NULL,
-  queued_at TEXT NOT NULL, record TEXT NOT NULL);
+  queued_at TEXT NOT NULL, record TEXT NOT NULL, repeat_no INTEGER NOT NULL DEFAULT 1);
 CREATE INDEX IF NOT EXISTS runs_experiment ON runs (experiment_id, idx);
 CREATE INDEX IF NOT EXISTS runs_status ON runs (status);
 CREATE TABLE IF NOT EXISTS shares (token TEXT PRIMARY KEY, experiment_id TEXT NOT NULL, record TEXT NOT NULL);
@@ -119,6 +120,8 @@ export class SqliteStore implements ExperimentStore {
     const version = Number((this.db.prepare("PRAGMA user_version").get() as Row).user_version);
     if (version > SCHEMA_VERSION)
       throw new Error(`데이터 파일이 더 새 버전(${version})이에요. 서버를 업데이트해 주세요`);
+    // Version 2 (ADR-0158) gave runs a repeat number; the runs of a version-1 file are the first run of their seed.
+    if (version === 1) addRepeatColumn(this.db);
     this.db.exec(SCHEMA);
     this.db.exec(`PRAGMA user_version = ${SCHEMA_VERSION}`);
   }
@@ -271,27 +274,37 @@ export class SqliteStore implements ExperimentStore {
 
   async putRun(run: RunRecord): Promise<void> {
     this.sql(
-      "INSERT OR REPLACE INTO runs (id, experiment_id, idx, status, queued_at, record) VALUES (?, ?, ?, ?, ?, ?)",
-    ).run(run.id, run.experimentId, run.index, run.status, run.queuedAt, JSON.stringify(run));
+      "INSERT OR REPLACE INTO runs (id, experiment_id, idx, status, queued_at, record, repeat_no) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    ).run(
+      run.id,
+      run.experimentId,
+      run.index,
+      run.status,
+      run.queuedAt,
+      JSON.stringify(run),
+      run.repeat,
+    );
   }
 
   async getRun(id: string): Promise<RunRecord | undefined> {
-    const row = this.sql("SELECT record FROM runs WHERE id = ?").get(id) as Row | undefined;
-    return row && parse<RunRecord>(row.record);
+    const row = this.sql("SELECT record, repeat_no FROM runs WHERE id = ?").get(id) as
+      | Row
+      | undefined;
+    return row && runOf(row);
   }
 
   async listRuns(experimentId: string): Promise<RunRecord[]> {
-    const rows = this.sql("SELECT record FROM runs WHERE experiment_id = ? ORDER BY idx").all(
-      experimentId,
-    ) as Row[];
-    return rows.map((r) => parse<RunRecord>(r.record));
+    const rows = this.sql(
+      "SELECT record, repeat_no FROM runs WHERE experiment_id = ? ORDER BY idx",
+    ).all(experimentId) as Row[];
+    return rows.map(runOf);
   }
 
   async listActiveRuns(): Promise<RunRecord[]> {
     const rows = this.sql(
-      "SELECT record FROM runs WHERE status IN ('queued', 'running') ORDER BY queued_at, idx",
+      "SELECT record, repeat_no FROM runs WHERE status IN ('queued', 'running') ORDER BY queued_at, idx",
     ).all() as Row[];
-    return rows.map((r) => parse<RunRecord>(r.record));
+    return rows.map(runOf);
   }
 
   async putShare(share: ShareRecord): Promise<void> {

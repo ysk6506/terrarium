@@ -32,6 +32,7 @@ export function varsOf(req: AgentRunRequest, extra: Vars = {}): Vars {
     runId: req.runId,
     agentId: req.agentId,
     seed: req.seed,
+    repeat: req.repeat ?? 1,
     prompt: req.prompt,
     mcpUrl: req.tools.mcpUrl ?? "",
     traceparent: req.traceparent ?? "",

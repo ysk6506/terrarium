@@ -90,7 +90,7 @@ describe("recipes [REQ-030] [REQ-031]", () => {
       "시드를 하나 이상 정해야 해요",
     ]);
     expect(recipeProblems(recipe({ seeds: seedsUpTo(21), agentId: "" }), ctx)).toEqual([
-      "실행은 한 실험에 20번까지예요 (지금 21번)",
+      "상황은 한 실험에 20개까지예요 (지금 21개)",
       "에이전트를 골라야 해요",
     ]);
     expect(recipeProblems(recipe({ time: { kind: "realtime", speed: 0 } }), ctx)).toEqual([
@@ -131,6 +131,7 @@ describe("run lifecycle [REQ-030]", () => {
       experimentId: "e1",
       index: 0,
       seed: 1,
+      repeat: 1,
       status: "queued",
       queuedAt: "t0",
     });
@@ -262,7 +263,7 @@ describe("forks and lineage [REQ-040]", () => {
         before: DEFAULT_TOOLSET.join(", "),
         after: `list_alarms, redfish_request (+redfish_request −${DEFAULT_TOOLSET.filter((t) => t !== "list_alarms").join(", −")})`,
       },
-      { field: "seeds", label: "시드", before: "1, 2, 3", after: "1, 2" },
+      { field: "seeds", label: "상황", before: "1, 2, 3", after: "1, 2" },
       { field: "time", label: "시간 정책", before: "호출당 30초", after: "실시간 ×2" },
       {
         field: "profiles",

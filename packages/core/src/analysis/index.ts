@@ -11,7 +11,7 @@ export {
   buildLeaderboards,
   type Leaderboard,
   type LeaderboardRow,
-  MIN_RUNS_TO_RANK,
+  MIN_SEEDS_TO_RANK,
 } from "./leaderboard";
 export {
   actionLabel,
@@ -62,6 +62,16 @@ export {
   sparkline,
 } from "./render";
 export { analyzeRun, type RunAnalysis } from "./run";
+export {
+  groupBySeed,
+  meanOf,
+  type SeedGroup,
+  seedMeans,
+  seedRate,
+  seedSummary,
+  splitSeeds,
+  withinSeedSpread,
+} from "./seeds";
 export { clearlyDifferent, ratio, type Summary, summarize, tCritical } from "./stats";
 export {
   type AttributeValue,

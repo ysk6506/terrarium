@@ -10,18 +10,43 @@ import {
 import type { ExperimentView, RunSummary } from "@terrarium/core/contract";
 import { END_REASON_LABELS } from "@terrarium/core/oracle";
 import { describeLeadSettings, domainInfo } from "@terrarium/core/world";
+import type { ReactNode } from "react";
 import {
+  DOT_LABELS,
+  DOT_MARKS,
   formatDuration,
   type LiveState,
   meanText,
   PASS_SHARE_TEXT,
   percent,
+  rangeText,
   scoreText,
+  seedRows,
 } from "../../logic";
 import { Go } from "../context";
 import { Figures, Note, Section, Status } from "../kit";
 import { RateBar, ScoreBar } from "../results";
 import { ExperimentTable } from "./experiments";
+
+/** What the numbers are over: "상황 5개 × 3번씩", or "상황 5개" when each situation ran once. */
+export const designText = (a: Pick<ExperimentAnalysis, "seeds" | "repeats">): string | undefined =>
+  a.seeds === 0
+    ? undefined
+    : a.repeats > 1
+      ? `상황 ${a.seeds}개 × ${a.repeats}번씩`
+      : `상황 ${a.seeds}개`;
+
+/** "71.5점 ± 19.5" whose spread does not split from its sign: when it does not fit, it moves to the next line whole. */
+function withSpread(text: string): ReactNode {
+  const [mean, spread] = text.split(" ± ");
+  return spread === undefined ? (
+    text
+  ) : (
+    <>
+      {mean} <span style={{ whiteSpace: "nowrap" }}>± {spread}</span>
+    </>
+  );
+}
 
 export function ResultFigures({ a }: { readonly a: ExperimentAnalysis }) {
   const done = a.progress.completed;
@@ -35,8 +60,9 @@ export function ResultFigures({ a }: { readonly a: ExperimentAnalysis }) {
         },
         {
           label: "평균 점수",
-          value: meanText(a.score, "점"),
-          hint: "오차는 95% 신뢰구간. 실행이 적으면 넓어요",
+          value: withSpread(meanText(a.score, "점")),
+          note: designText(a),
+          hint: "오차는 95% 신뢰구간. 상황이 적으면 넓어요",
         },
         {
           label: "정확한 진단",
@@ -56,6 +82,51 @@ export function ResultFigures({ a }: { readonly a: ExperimentAnalysis }) {
         },
       ]}
     />
+  );
+}
+
+/** One line per situation, under two lines on how much the same situation shakes: a dot for each time it ran (shape and mark as well as colour), and the range of its scores. */
+export function SeedRows({
+  runs,
+  analysis: a,
+}: {
+  readonly runs: readonly RunSummary[];
+  readonly analysis: ExperimentAnalysis;
+}) {
+  const rows = seedRows(runs);
+  if (a.repeats < 2 || rows.length === 0) return null;
+  return (
+    <Section title="상황별로" aside={<span className="tiny muted">점 하나가 한 번이에요</span>}>
+      <ul className="list-plain steadiness" aria-label="같은 상황의 흔들림">
+        {a.withinSeed && <li>같은 상황에서 ±{a.withinSeed.spread.toFixed(1)}점 흔들려요</li>}
+        <li>
+          상황 {a.seeds}개 중 {a.splitSeeds}개에서 결과가 갈렸어요
+        </li>
+      </ul>
+      <ul className="seed-rows">
+        {rows.map((row) => (
+          <li key={row.seed} className="seed-row" data-split={row.split ? "yes" : undefined}>
+            <span className="seed-name">상황 {row.seed}</span>
+            <span className="seed-dots">
+              {row.dots.map((d) => (
+                <span
+                  key={d.runId}
+                  className="seed-dot"
+                  data-state={d.state}
+                  role="img"
+                  aria-label={`${d.repeat}번째 ${DOT_LABELS[d.state]}`}
+                  title={`${d.repeat}번째 ${DOT_LABELS[d.state]}`}
+                >
+                  {DOT_MARKS[d.state]}
+                </span>
+              ))}
+            </span>
+            {row.split && <span className="seed-split tag">갈렸어요</span>}
+            <span className="seed-range num">{rangeText(row.range)}</span>
+          </li>
+        ))}
+      </ul>
+    </Section>
   );
 }
 
@@ -161,6 +232,16 @@ function runNote(run: RunSummary, analysis: ExperimentAnalysis, calls: LiveState
   return <span className="small">{`${why}${answerText(a.diagnosis)}`}</span>;
 }
 
+function ScoreCell({ run }: { readonly run: RunSummary }) {
+  const done = run.status === "completed";
+  return (
+    <td className="num">
+      {done ? scoreText(run.score) : "—"}
+      {done && <span className="sr-only">{run.passed ? ", 합격" : ", 불합격"}</span>}
+    </td>
+  );
+}
+
 export function RunsTable({
   runs,
   live,
@@ -175,6 +256,7 @@ export function RunsTable({
   readonly picked: readonly string[];
   readonly onPick: (id: string) => void;
 }) {
+  const repeated = analysis.repeats > 1;
   return (
     <div className="table-wrap">
       <table className="table">
@@ -187,7 +269,8 @@ export function RunsTable({
               #
             </th>
             <th>상태</th>
-            <th className="num">시드</th>
+            <th className="num">상황</th>
+            {repeated && <th className="num">반복</th>}
             <th className="num">점수</th>
             <th>결과</th>
             <th>
@@ -218,12 +301,8 @@ export function RunsTable({
                 />
               </td>
               <td className="num">{r.seed}</td>
-              <td className="num">
-                {r.status === "completed" ? scoreText(r.score) : "—"}
-                {r.status === "completed" && (
-                  <span className="sr-only">{r.passed ? ", 합격" : ", 불합격"}</span>
-                )}
-              </td>
+              {repeated && <td className="num">{r.repeat}번째</td>}
+              <ScoreCell run={r} />
               <td>{runNote(r, analysis, live?.calls ?? {})}</td>
               <td>
                 {r.status !== "queued" && (

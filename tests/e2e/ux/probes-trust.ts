@@ -96,7 +96,7 @@ export async function invalid(site: Site, notes: string[]): Promise<Tally> {
     note("세계 만들기에 말이 안 되는 크기", await rejects(page, "작은 사업장 만들기"));
     await page.keyboard.press("Escape");
     await open(page, site.base, "/experiments/new");
-    await page.getByLabel("몇 번 돌릴까요").fill("99");
+    await page.getByLabel("몇 개 돌릴까요").fill("99");
     note("실행 횟수가 너무 많을 때", await rejects(page, "실험 시작"));
   });
   await asVisitor(site, { name: null }, async (v) => {
@@ -142,7 +142,7 @@ export async function progress(site: Site, notes: string[]): Promise<Tally> {
     await page.unroute("**/api/scenarios/*/dry-run");
 
     await open(page, site.base, `/experiments/new?scenario=${site.ids.scenario}`);
-    await page.getByLabel("몇 번 돌릴까요").fill("20");
+    await page.getByLabel("몇 개 돌릴까요").fill("20");
     await page.getByRole("button", { name: "실험 시작" }).click();
     await page.waitForURL(/\/experiments\/e-/, { timeout: 15_000 });
     // A small experiment can finish in a second or two, so look for the progress while it runs, not after.

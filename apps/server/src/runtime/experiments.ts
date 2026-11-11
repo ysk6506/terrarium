@@ -6,6 +6,9 @@
 import {
   analyzeExperiment,
   type ExperimentAnalysis,
+  groupBySeed,
+  meanOf,
+  seedMeans,
   type Telemetry,
 } from "@terrarium/core/analysis";
 import {
@@ -37,9 +40,11 @@ import {
   type Recipe,
   type RunRecord,
   recipeProblems,
+  repeatsOf,
   type Snapshot,
   type Subject,
   seedsUpTo,
+  sizeProblems,
 } from "@terrarium/core/experiments";
 import { hashValue, InvalidValueError } from "@terrarium/core/kernel";
 import { ORACLE_VERSION } from "@terrarium/core/oracle";
@@ -81,20 +86,17 @@ function filterOf(query: ExperimentQueryParams): ExperimentFilter {
   return filter;
 }
 
+/** Pass rate and mean score over seeds, not runs (ADR-0158): a seed's runs are folded into one value first. */
 export function summarize(experiment: Experiment, runs: readonly RunRecord[]): ExperimentSummary {
-  const done = runs.filter((r) => r.status === "completed" && r.result);
-  const scores = done
-    .map((r) => r.result?.score.total)
-    .filter((s): s is number => typeof s === "number");
+  const groups = groupBySeed(runs.filter((r) => r.status === "completed" && r.result));
+  const scores = seedMeans(groups, (r) => r.result?.score.total);
+  const rates = seedMeans(groups, (r) => (r.result?.score.passed ? 1 : 0));
   return {
     experiment,
     status: experimentStatus(runs),
     progress: progressOf(runs),
-    passRate:
-      done.length === 0 ? 0 : done.filter((r) => r.result?.score.passed).length / done.length,
-    ...(scores.length > 0
-      ? { meanScore: Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10 }
-      : {}),
+    passRate: rates.length === 0 ? 0 : meanOf(rates),
+    ...(scores.length > 0 ? { meanScore: Math.round(meanOf(scores) * 10) / 10 } : {}),
   };
 }
 
@@ -123,6 +125,23 @@ function optionsOf(req: RecipeRequest): Partial<Recipe> {
 }
 
 const FINDER = "search_runbooks";
+
+/** One run to make: which seed, and which time that seed is run (from 1). */
+interface RunPlan {
+  readonly seed: number;
+  readonly repeat: number;
+}
+
+/**
+ * The runs of the given rounds over the given seeds, a round at a time: when an experiment is stopped halfway,
+ * every seed it got to has the same number of runs, give or take one round.
+ */
+function planOf(seeds: readonly number[], firstRepeat: number, lastRepeat: number): RunPlan[] {
+  const out: RunPlan[] = [];
+  for (let repeat = firstRepeat; repeat <= lastRepeat; repeat++)
+    for (const seed of seeds) out.push({ seed, repeat });
+  return out;
+}
 
 /** An operation follows the clock driver; the session is synced to the wall clock at real speed (ADR-0094). */
 const REAL_TIME = { kind: "realtime", speed: 1 } as const;
@@ -254,6 +273,8 @@ export class Experiments {
       agentId: req.agentId,
       tools,
       seeds: req.seeds ?? (req.runs ? seedsUpTo(req.runs) : [...DEFAULT_SEEDS]),
+      // left out when once, so a recipe that does not repeat reads as it always did
+      ...(req.repeats && req.repeats > 1 ? { repeats: req.repeats } : {}),
       time: req.operation ? REAL_TIME : (req.time ?? DEFAULT_TIME),
       profiles: req.profiles ?? {},
       ...optionsOf(req),
@@ -263,20 +284,20 @@ export class Experiments {
   /** Store the experiment and its runs, and queue them. */
   private async launch(
     experiment: Experiment,
-    seeds: readonly number[],
+    plan: readonly RunPlan[],
     firstIndex = 0,
   ): Promise<void> {
     await this.ctx.store.putExperiment(experiment);
     // A connection with experiments on it is in use: its removal clock starts over (REQ-051).
     await this.ctx.harnesses.touch?.(experiment.recipe.harnessId);
-    for (const [i, seed] of seeds.entries()) {
-      const index = firstIndex + i;
+    for (const [i, { seed, repeat }] of plan.entries()) {
       const run = newRun(
         this.ctx.stamps.id("r"),
         experiment.id,
-        index,
+        firstIndex + i,
         seed,
         this.ctx.stamps.now(),
+        repeat,
       );
       await this.ctx.store.putRun(run);
       this.dispatcher.enqueue(run, experiment);
@@ -299,7 +320,7 @@ export class Experiments {
       subject,
       agentVersion: await this.versions.observe(viewer, subject),
     };
-    await this.launch(experiment, recipe.seeds);
+    await this.launch(experiment, planOf(recipe.seeds, 1, repeatsOf(recipe)));
     return this.view(viewer, experiment.id);
   }
 
@@ -344,14 +365,38 @@ export class Experiments {
     );
     // Looked at only now: a fork that is refused for changing nothing leaves the agent's versions alone.
     const child = { ...forked, agentVersion: await this.versions.observe(viewer, subject) };
-    await this.launch(child, child.recipe.seeds);
+    await this.launch(child, planOf(child.recipe.seeds, 1, repeatsOf(child.recipe)));
     return this.view(viewer, child.id);
   }
 
+  /**
+   * More runs (ADR-0158 item 5). New seeds are run as many times as the experiment repeats each seed now; more repeats
+   * add rounds to every seed it has. Either way the recipe says what the experiment is now, and stays within the limits.
+   */
   async addRuns(viewer: Viewer, id: string, req: AddRunsRequest): Promise<ExperimentView> {
     const experiment = await this.get(id);
     ownerOnly(viewer, experiment.owner, "실행 더하기");
     const runs = await this.ctx.store.listRuns(id);
+    const { recipe } = experiment;
+    const repeats = repeatsOf(recipe);
+    const more = req.repeats === undefined ? undefined : repeats + req.repeats;
+    const seeds = more === undefined ? this.newSeeds(runs, req) : [];
+    const next: Recipe = {
+      ...recipe,
+      seeds: [...recipe.seeds, ...seeds],
+      ...(more === undefined ? {} : { repeats: more }),
+    };
+    const problems = sizeProblems(next);
+    if (problems.length > 0)
+      throw new InvalidInputError("실행을 더할 수 없어요", asIssues(problems, "recipe"));
+    const plan =
+      more === undefined ? planOf(seeds, 1, repeats) : planOf(recipe.seeds, repeats + 1, more);
+    await this.launch({ ...experiment, recipe: next }, plan, runs.length);
+    return this.view(viewer, id);
+  }
+
+  /** The seeds a request adds: the ones it names, or the next ones after the largest; a seed already run is refused. */
+  private newSeeds(runs: readonly RunRecord[], req: AddRunsRequest): number[] {
     const used = new Set(runs.map((r) => r.seed));
     const top = Math.max(0, ...used);
     const seeds = req.seeds ?? Array.from({ length: req.count ?? 1 }, (_, i) => top + i + 1);
@@ -360,12 +405,7 @@ export class Experiments {
       throw new InvalidInputError("이미 돌린 시드예요", [
         { path: "seeds", message: `시드 ${again.join(", ")}는 이미 있어요` },
       ]);
-    const updated = {
-      ...experiment,
-      recipe: { ...experiment.recipe, seeds: [...experiment.recipe.seeds, ...seeds] },
-    };
-    await this.launch(updated, seeds, runs.length);
-    return this.view(viewer, id);
+    return seeds;
   }
 
   async cancel(viewer: Viewer, id: string): Promise<ExperimentView> {

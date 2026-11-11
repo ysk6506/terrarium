@@ -116,6 +116,7 @@ export class HttpHarness implements HarnessPort {
       runId: req.runId,
       agentId: req.agentId,
       seed: req.seed,
+      ...(req.repeat ? { repeat: req.repeat } : {}),
       prompt: req.prompt,
       limits: req.limits,
       // an operation is open for hours; the harness may need to know it will not be asked to answer once and stop

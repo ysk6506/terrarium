@@ -196,9 +196,9 @@ describe("experiments: create, fork, add runs [REQ-030] [REQ-040]", () => {
       "change: 모르는 항목이 있어요: 'owner'",
     ]);
     expect(parseWith(AddRunsBody, { count: 2 }).ok).toBe(true);
-    expect(messages(AddRunsBody, {})).toEqual(["더할 실행 횟수나 시드 중 하나를 정해요"]);
+    expect(messages(AddRunsBody, {})).toEqual(["더할 실행 횟수, 시드, 반복 중 하나를 정해요"]);
     expect(messages(AddRunsBody, { count: 2, seeds: [4] })).toEqual([
-      "더할 실행 횟수나 시드 중 하나를 정해요",
+      "더할 실행 횟수, 시드, 반복 중 하나를 정해요",
     ]);
   });
 

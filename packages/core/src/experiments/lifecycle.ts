@@ -38,8 +38,9 @@ export function newRun(
   index: number,
   seed: number,
   at: string,
+  repeat = 1,
 ): RunRecord {
-  return { id, experimentId, index, seed, status: "queued", queuedAt: at };
+  return { id, experimentId, index, seed, repeat, status: "queued", queuedAt: at };
 }
 
 export function applyRunEvent(run: RunRecord, event: RunEvent): RunRecord {
