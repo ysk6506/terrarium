@@ -43,8 +43,18 @@ export function isTestFile(file: string): boolean {
   return /\.test\.tsx?$/.test(file) || file.includes("/test-support/");
 }
 
-/** Convert a simple glob (`*`, `**`, `?`) into a RegExp over posix paths. */
+const compiled = new Map<string, RegExp>();
+
+/** Convert a simple glob (`*`, `**`, `?`) into a RegExp over posix paths (compiled once per glob). */
 export function globToRegExp(glob: string): RegExp {
+  const hit = compiled.get(glob);
+  if (hit) return hit;
+  const regexp = compileGlob(glob);
+  compiled.set(glob, regexp);
+  return regexp;
+}
+
+function compileGlob(glob: string): RegExp {
   let pattern = "";
   for (let index = 0; index < glob.length; index++) {
     const ch = glob[index] as string;

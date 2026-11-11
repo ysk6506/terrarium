@@ -12,6 +12,9 @@ vitest_include: ["packages/**/src/**/*.test.ts", "apps/**/src/**/*.test.{ts,tsx}
 coverage_include: ["packages/*/src/**", "apps/server/src/**", "apps/web/src/logic/**", "harness/src/**"]
 coverage_exclude_allowed: ["**/*.test.ts", "**/*.test.tsx", "**/test-support/**"]
 forbidden_test_options: [exclude, passWithNoTests, allowOnly, retry, bail, testNamePattern, setupFiles, globalSetup, onConsoleLog, dangerouslyIgnoreUnhandledErrors]
+# setupFiles is forbidden except for exactly this list: a file that only gives the worker an event-loop turn
+# between tests so long spec files can report progress (ADR-0140).
+allowed_setup_files: [tests/setup/yield-between-tests.ts]
 
 # Coverage ratchet.
 coverage_summary: coverage/coverage-summary.json

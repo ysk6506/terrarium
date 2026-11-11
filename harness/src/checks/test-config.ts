@@ -17,6 +17,8 @@ export interface TestConfigRules {
   readonly coverage_include: readonly string[];
   readonly coverage_exclude_allowed: readonly string[];
   readonly forbidden_test_options: readonly string[];
+  /** `setupFiles` is forbidden unless it lists exactly these files (ADR-0140). */
+  readonly allowed_setup_files?: readonly string[];
 }
 
 /** The object literal assigned to property `name` anywhere in the file. */
@@ -43,6 +45,14 @@ function property(
   return prop && ts.isPropertyAssignment(prop) ? prop.initializer : undefined;
 }
 
+/** Every assignment of `name` in the object literal (a repeated key counts each time). */
+function properties(obj: ts.ObjectLiteralExpression | undefined, name: string): ts.Expression[] {
+  const found: ts.Expression[] = [];
+  for (const p of obj?.properties ?? [])
+    if (ts.isPropertyAssignment(p) && p.name.getText() === name) found.push(p.initializer);
+  return found;
+}
+
 function stringArray(node: ts.Expression | undefined): string[] | undefined {
   if (!node || !ts.isArrayLiteralExpression(node)) return undefined;
   const values = node.elements.map((e) => (ts.isStringLiteralLike(e) ? e.text : undefined));
@@ -61,7 +71,13 @@ function checkVitestConfig(root: string, rules: TestConfigRules): Violation[] {
   const coverageObj = findObject(sf, "coverage");
   const out: Violation[] = [];
   for (const option of rules.forbidden_test_options) {
-    if (property(testObj, option) !== undefined) {
+    const found = properties(testObj, option);
+    const allowed = option === "setupFiles" ? (rules.allowed_setup_files ?? []) : undefined;
+    const permitted = (node: ts.Expression): boolean => {
+      const list = stringArray(node);
+      return !!allowed && !!list && sameSet(list, allowed);
+    };
+    if (found.some((node) => !permitted(node))) {
       out.push(
         violation(
           "TCFG001",
