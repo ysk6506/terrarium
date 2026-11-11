@@ -229,7 +229,7 @@ p {
   *::after {
     /* biome-ignore lint/complexity/noImportantStyles: reduced motion must win over every component's own timing */
     animation-duration: 0.01ms !important;
-    /* biome-ignore lint/complexity/noImportantStyles: as above */
+    /* biome-ignore lint/complexity/noImportantStyles: same reason as above, reduced motion must win */
     transition-duration: 0.01ms !important;
   }
 }

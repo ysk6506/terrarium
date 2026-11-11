@@ -120,7 +120,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
       - run: pnpm exec vitest run --coverage --shard=${{ matrix.shard }}/${{ env.SHARDS }} --reporter=blob --testTimeout=300000
-        continue-on-error: true
+        continue-on-error: true # ADR-0140: an instrumented shard can hit a time limit; the gating test shards decide pass or fail
       - uses: actions/upload-artifact@v4
         with:
           name: blob-${{ matrix.shard }}
@@ -133,7 +133,7 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    continue-on-error: true # TD-0002, due 2026-11-21
+    continue-on-error: true # TD-0002: coverage floors are not gating until every unit meets its floor (due 2026-11-21)
     steps:
       - uses: actions/checkout@v4
         with:
@@ -148,12 +148,20 @@ jobs:
       # carry that one failure. Whether tests pass is decided by the gating jobs; this step only needs the
       # coverage numbers.
       - run: pnpm exec vitest --merge-reports --coverage
-        continue-on-error: true
+        continue-on-error: true # ADR-0140: the merged report can carry one instrumented timeout; only the coverage numbers are needed
       - name: Coverage per unit against the floors
         run: |
           base=""
           if [ "${{ github.event_name }}" = "pull_request" ]; then base="--base origin/${{ github.base_ref }}"; fi
           pnpm tsx harness/src/checks/coverage.ts $base | tee coverage-floors.txt
+      # The per-unit numbers the quality table reads (ADR-0148). Copy the printed JSON into
+      # docs/generated/coverage-record.json and run `pnpm quality write`; nothing else records coverage.
+      - name: Record per-unit coverage
+        if: always()
+        run: |
+          echo "::group::coverage-record.json"
+          pnpm tsx harness/src/checks/quality.ts record
+          echo "::endgroup::"
       - name: Where the uncovered code is (units under their floor)
         if: always()
         run: pnpm tsx scripts/coverage-gaps.ts | tee coverage-gaps.txt
@@ -164,6 +172,7 @@ jobs:
           path: |
             coverage-floors.txt
             coverage-gaps.txt
+            docs/generated/coverage-record.json
             coverage/coverage-summary.json
 
   structure:
@@ -180,6 +189,11 @@ jobs:
         run: pnpm tsx harness/src/run-all.ts --base origin/${{ github.base_ref }}
       - if: github.event_name != 'pull_request'
         run: pnpm tsx harness/src/run-all.ts
+      # This change's quality table in the job summary, so every change sees its own grades (ADR-0148). The
+      # committed docs/generated/quality.md is refreshed by the cleanup job, not by each change.
+      - name: Quality table of this change
+        if: always()
+        run: pnpm tsx harness/src/checks/quality.ts print >> "$GITHUB_STEP_SUMMARY"
 
   # Can a person finish each journey in tests/e2e/ux/journeys.ts? Gating (ADR-0141). Only that: no timing, size or
   # accessibility probe runs here. The journeys drive the real screens in a real browser; they are split into
@@ -212,7 +226,7 @@ jobs:
   ux-measure:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    continue-on-error: true # TD-0004
+    continue-on-error: true # TD-0004: the UX score misses its floor on the runner, so it is a record until that is closed
     steps:
       - uses: actions/checkout@v4
         with:
