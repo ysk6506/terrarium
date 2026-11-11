@@ -23,6 +23,7 @@ export type Stmt =
   | { t: "expr"; e: Expr }
   | { t: "if"; c: Expr; a: Stmt; b?: Stmt }
   | { t: "while"; c: Expr; body: Stmt }
+  | { t: "do"; c: Expr; body: Stmt }
   | { t: "for"; init?: Stmt; cond?: Expr; step?: Stmt; body: Stmt }
   | { t: "forin"; v: string; arr: string; body: Stmt }
   | { t: "block"; body: Stmt[] }
@@ -210,6 +211,17 @@ class Parser {
     const c = this.expr();
     this.need(")");
     return { t: "while", c, body: this.simpleOrBlock() };
+  }
+
+  kwDo(): Stmt {
+    const body = this.simpleOrBlock();
+    this.skipTerms();
+    if (!this.isName("while")) throw new AwkSyntax("syntax error: do without while");
+    this.i++;
+    this.need("(");
+    const c = this.expr();
+    this.need(")");
+    return { t: "do", c, body };
   }
 
   kwFor(): Stmt {
@@ -421,6 +433,9 @@ class Parser {
       return { t: "call", name, args };
     }
     if (name === "length") return { t: "call", name, args: [] };
+    const written = this.toks[this.i - 1];
+    if (written?.k === "name" && written.call && name !== "in")
+      throw new AwkSyntax(`function ${name} never defined`);
     if (this.isP("[")) return { t: "idx", name, sub: this.subscript() };
     return { t: "var", name };
   }
@@ -453,6 +468,7 @@ const KEYWORDS: Readonly<Record<string, (p: Parser) => Stmt>> = {
   printf: (p) => p.kwPrint(true),
   if: (p) => p.kwIf(),
   while: (p) => p.kwWhile(),
+  do: (p) => p.kwDo(),
   for: (p) => p.kwFor(),
   delete: (p) => p.kwDelete(),
   exit: (p) => p.kwExit(),

@@ -269,32 +269,33 @@ function sendSignal(c: Cmd, pid: number, sig: number): string | undefined {
   return undefined;
 }
 
+/** `-s TERM`, `-n 15`, `-TERM`, `-9`: the signal word and the arguments that remain. */
+function signalSpec(args: readonly string[]): { spec?: string; rest: string[] } {
+  const first = args[0] ?? "";
+  if (first === "-s" || first === "-n") return { spec: args[1] ?? "", rest: args.slice(2) };
+  if (/^-(\d+|[A-Za-z])/.test(first)) return { spec: first.slice(1), rest: args.slice(1) };
+  return { rest: [...args] };
+}
+
 export function kill(c: Cmd): R {
-  let args = [...c.args];
-  let sig = 15;
-  if (args[0] === "-l")
+  if (c.args[0] === "-l")
     return ok(
       `${Object.keys(SIGNALS)
         .map((k) => `${SIGNALS[k]}) SIG${k}`)
         .join("\n")}\n`,
     );
-  if (args[0] === "-s" || args[0] === "-n") {
-    sig = signalOf(args[1] ?? "") ?? Number.NaN;
-    args = args.slice(2);
-  } else if (args[0]?.startsWith("-") && signalOf(args[0]) !== undefined) {
-    sig = signalOf(args[0]) as number;
-    args = args.slice(1);
-  }
-  if (Number.isNaN(sig)) return fail("bash: kill: invalid signal specification", 1);
-  if (args.length === 0)
+  const { spec, rest } = signalSpec(c.args);
+  const given = spec === undefined ? 15 : signalOf(spec);
+  if (given === undefined) return fail(`bash: kill: ${spec}: invalid signal specification`, 1);
+  if (rest.length === 0)
     return fail(
       "kill: usage: kill [-s sigspec | -n signum | -sigspec] pid | jobspec ... or kill -l [sigspec]",
       2,
     );
-  const errs = args
+  const errs = rest
     .map((a) =>
       /^\d+$/.test(a)
-        ? sendSignal(c, Number(a), sig)
+        ? sendSignal(c, Number(a), given)
         : `bash: kill: ${a}: arguments must be process or job IDs`,
     )
     .filter((e): e is string => e !== undefined);
@@ -310,7 +311,14 @@ function matching(c: Cmd, args: readonly string[], full: boolean): Proc[] {
   );
 }
 
+const noCriteria = (tool: string): R => ({
+  out: "",
+  err: `${tool}: no matching criteria specified\nTry \`${tool} --help' for more information.\n`,
+  code: 2,
+});
+
 export function pkill(c: Cmd): R {
+  if (!c.args.some((a) => !a.startsWith("-"))) return noCriteria("pkill");
   const sigArg = c.args.find(
     (a) => /^-[0-9A-Za-z]+$/.test(a) && a !== "-f" && signalOf(a) !== undefined,
   );
@@ -325,6 +333,7 @@ export function pkill(c: Cmd): R {
 }
 
 export function pgrep(c: Cmd): R {
+  if (!c.args.some((a) => !a.startsWith("-"))) return noCriteria("pgrep");
   const found = matching(c, c.args, c.args.includes("-f"));
   if (c.args.includes("-c")) return { out: `${found.length}\n`, code: found.length ? 0 : 1 };
   const rows = found.map((r) =>

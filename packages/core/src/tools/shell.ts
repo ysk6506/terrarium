@@ -35,9 +35,7 @@ function reachable(world: WorldPort, id: string): boolean {
   const s = world.stateOf(id);
   return s.kind === "server"
     ? s.powered && s.adminOn && !s.rebooting
-    : s.kind === "vm"
-      ? s.running
-      : false;
+    : s.kind === "vm" && s.running;
 }
 
 const trimEnd = (s: string): string => s.replace(/\n$/, "");

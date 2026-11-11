@@ -80,6 +80,8 @@ class ScriptParser {
     if (/\d/.test(ch)) {
       const m = /^\d+/.exec(this.src.slice(this.i)) as RegExpExecArray;
       this.i += m[0].length;
+      if (this.src[this.i] === "~")
+        throw new SedSyntax("first~step 주소는 이 흉내에서 안 돼요", "sed first~step 주소");
       return { kind: "line", n: Number(m[0]) };
     }
     if (ch === "$") {
@@ -99,6 +101,8 @@ class ScriptParser {
 
   private command(): SedCmd {
     const a1 = this.address();
+    if (a1?.kind === "line" && a1.n === 0)
+      throw new SedSyntax("invalid usage of line address 0", "sed 0,/정규식/ 주소");
     let a2: Address | undefined;
     if (a1 && this.src[this.i] === ",") {
       this.i++;

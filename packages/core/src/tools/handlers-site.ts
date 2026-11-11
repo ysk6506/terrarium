@@ -30,7 +30,7 @@ type Handler = (ctx: ToolContext, args: Args) => unknown;
 
 const opt = (args: Args, key: string): string | undefined =>
   args[key] === undefined || args[key] === "" ? undefined : String(args[key]);
-const need = (args: Args, key: string): string => String(args[key] ?? "");
+const need = (args: Args, key: string): string => String(args[key]);
 const name = (world: WorldPort, id: string): string => world.index.find(id)?.name ?? id;
 
 function planOf(world: WorldPort, id?: string): Entity {

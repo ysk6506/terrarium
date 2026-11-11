@@ -94,6 +94,8 @@ function serviceAction(c: WorldCommand): AgentAction | undefined {
     remove: "disk_cleanup",
     truncate: "disk_cleanup",
     write: "disk_cleanup",
+    mkdir: "disk_cleanup",
+    symlink: "disk_cleanup",
   } as const;
   return { action: kind[c.action], target: c.target };
 }

@@ -11,6 +11,17 @@ export const shown = (c: Cmd, given: string): string => normalize(c.cwd, given);
 
 type Flags = ReturnType<typeof parseArgs>;
 
+/** Whether `ls` lists what is in the path: a directory, or a link to one that `-l` and `-d` do not ask about. */
+function listable(
+  c: Cmd,
+  st: NonNullable<ReturnType<Cmd["fs"]["stat"]>>,
+  path: string,
+  p: Flags,
+): boolean {
+  if (has(p, "d")) return false;
+  return st.type === "d" || (st.type === "l" && !has(p, "l") && c.fs.isDir(path));
+}
+
 export function ls(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "lahA1RdtSrFhi" });
   if (p.bad) return unsupported("ls", p.bad);
@@ -22,8 +33,7 @@ export function ls(c: Cmd): R {
     const path = shown(c, t);
     const st = c.fs.stat(path);
     if (!st) errs.push(`ls: cannot access '${t}': No such file or directory`);
-    else if (st.type !== "d" || has(p, "d"))
-      out.push(has(p, "l") ? longLine(t, st, has(p, "h")) : t);
+    else if (!listable(c, st, path, p)) out.push(has(p, "l") ? longLine(t, st, has(p, "h")) : t);
     else listDir(c, p, path, t, multi, out);
   }
   return {
@@ -325,8 +335,7 @@ function writeOne(c: Cmd, name: string, text: string): string | undefined {
   const denied = c.fs.denyWrite(path);
   if (denied)
     return `${c.name}: cannot create regular file '${name}': ${denied === "ro" ? "Read-only file system" : "Permission denied"}`;
-  const parent = c.fs.stat(path.slice(0, path.lastIndexOf("/")) || "/");
-  if (!parent || parent.type !== "d")
+  if (!c.fs.isDir(path.slice(0, path.lastIndexOf("/")) || "/"))
     return `${c.name}: cannot create regular file '${name}': No such file or directory`;
   act(c, "write", path, text);
   return undefined;

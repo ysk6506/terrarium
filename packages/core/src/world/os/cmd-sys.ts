@@ -20,8 +20,12 @@ export function free(c: Cmd): R {
   const scale = has(p, "g") ? 1 / 1024 : has(p, "b") ? 1024 * 1024 : has(p, "k") ? 1024 : 1;
   const hum = has(p, "h") || has(p, "--human");
   const show = (mb: number): string =>
-    hum ? `${human(mb * 1024 * 1024, "round")}i` : String(Math.round(mb * scale));
-  const row = (...v: number[]): string => v.map((x) => show(x).padStart(11)).join("");
+    hum
+      ? mb === 0
+        ? "0B"
+        : `${human(mb * 1024 * 1024, "round")}i`
+      : String(Math.round(mb * scale));
+  const row = (...v: number[]): string => v.map((x) => ` ${show(x)}`.padStart(11)).join("");
   return ok(
     joinLines([
       "               total        used        free      shared  buff/cache   available",
@@ -67,6 +71,13 @@ function dfSize(n: number, hum: boolean, block: number): string {
       : `${Math.round(n / 1024 / 1024)}M`;
 }
 
+function dfHead(typeCol: boolean, human: boolean, block: number): string {
+  const sizes = human
+    ? " Size  Used Avail Use%"
+    : `${block === 1024 ? "1K" : "1M"}-blocks      Used Available Use%`;
+  return `Filesystem     ${typeCol ? "Type     " : ""}${sizes} Mounted on`;
+}
+
 export function df(c: Cmd): R {
   const p = parseArgs(c.args, {
     bool: "hHTiPkmax",
@@ -85,7 +96,7 @@ export function df(c: Cmd): R {
     rows = rows.filter((r) => mounts.includes(r.mount));
   } else if (!has(p, "a")) rows = rows.filter((r) => r.mount !== "/dev");
   const typeCol = has(p, "T") || has(p, "--print-type");
-  const head = `Filesystem     ${typeCol ? "Type     " : ""}${hum ? " Size  Used Avail Use%" : "1K-blocks      Used Available Use%"} Mounted on`;
+  const head = dfHead(typeCol, hum, block);
   const body = rows.map((r) => {
     const pct = r.size === 0 ? 0 : Math.ceil((r.used / r.size) * 100);
     const cols = [

@@ -1,5 +1,5 @@
 /** `sed` of the fake shell (ADR-0117 decision 4): the stream editor, run for real over the file text. */
-import { has, parseArgs } from "./args";
+import { allValues, hasAny, parseArgs } from "./args";
 import { normalize } from "./fs";
 import { errText, readInputs } from "./io";
 import { posixRegExp } from "./regex";
@@ -17,6 +17,8 @@ interface State {
   pendingAppend?: string;
   readonly ranges: Map<SedCmd, boolean>;
   readonly quiet: boolean;
+  /** What ends a record: a newline, or nothing / NUL for `-z`. */
+  readonly eol: string;
 }
 
 function hits(a: Address, s: State): boolean {
@@ -44,13 +46,53 @@ function selected(cmd: SedCmd, s: State): boolean {
   return on !== cmd.negate;
 }
 
+/** The text a replacement builds from one match: `&`, `\1`…, `\n`, `\t` and the case changes `\U \L \E \u \l`. */
+class Replacement {
+  out = "";
+  private mode: "" | "U" | "L" = "";
+  private once: "" | "u" | "l" = "";
+
+  put(text: string): void {
+    if (text === "") return;
+    let x = this.mode === "U" ? text.toUpperCase() : this.mode === "L" ? text.toLowerCase() : text;
+    if (this.once !== "") {
+      x = (this.once === "u" ? x.charAt(0).toUpperCase() : x.charAt(0).toLowerCase()) + x.slice(1);
+      this.once = "";
+    }
+    this.out += x;
+  }
+
+  /** What follows a backslash. */
+  escape(ch: string, m: RegExpMatchArray): void {
+    if (ch === "U" || ch === "L") this.mode = ch;
+    else if (ch === "E") this.mode = "";
+    else if (ch === "u" || ch === "l") this.once = ch;
+    else if (/\d/.test(ch)) this.put(m[Number(ch)] ?? "");
+    else this.put(ch === "n" ? "\n" : ch === "t" ? "\t" : ch);
+  }
+}
+
 function expandReplacement(repl: string, m: RegExpMatchArray): string {
-  return repl.replace(/\\(.)|&/g, (x, ch: string | undefined) => {
-    if (x === "&") return m[0];
-    if (ch === undefined) return x;
-    if (/\d/.test(ch)) return m[Number(ch)] ?? "";
-    return ch === "n" ? "\n" : ch === "t" ? "\t" : ch;
-  });
+  const r = new Replacement();
+  for (let i = 0; i < repl.length; i++) {
+    const ch = repl.charAt(i);
+    if (ch === "&") r.put(m[0]);
+    else if (ch === "\\" && i + 1 < repl.length) r.escape(repl.charAt(++i), m);
+    else r.put(ch);
+  }
+  return r.out;
+}
+
+/** The matches of a substitution; an empty one right after the previous match does not count (the text b under a b-star pattern is one match). */
+function matchesOf(text: string, re: RegExp): RegExpMatchArray[] {
+  const found: RegExpMatchArray[] = [];
+  let previousEnd = -1;
+  for (const m of text.matchAll(re)) {
+    const at = m.index ?? 0;
+    if (!(m[0] === "" && at === previousEnd)) found.push(m);
+    previousEnd = at + m[0].length;
+  }
+  return found;
 }
 
 function substitute(cmd: SedCmd, s: State): void {
@@ -61,7 +103,7 @@ function substitute(cmd: SedCmd, s: State): void {
   let last = 0;
   let out = "";
   let changed = false;
-  for (const m of s.pattern.matchAll(re)) {
+  for (const m of matchesOf(s.pattern, re)) {
     count++;
     if (cmd.global ? count < from : count !== from) continue;
     out += s.pattern.slice(last, m.index) + expandReplacement(cmd.repl ?? "", m);
@@ -71,11 +113,11 @@ function substitute(cmd: SedCmd, s: State): void {
   }
   if (!changed) return;
   s.pattern = out + s.pattern.slice(last);
-  if (cmd.print) s.out += `${s.pattern}\n`;
+  if (cmd.print) s.out += `${s.pattern}${s.eol}`;
 }
 
 const emit = (s: State, text: string): void => {
-  s.out += `${text}\n`;
+  s.out += `${text}${s.eol}`;
 };
 
 type OpFn = (cmd: SedCmd, s: State) => void;
@@ -127,8 +169,16 @@ function runCommands(cmds: readonly SedCmd[], s: State): void {
   }
 }
 
-function edit(text: string, cmds: readonly SedCmd[], quiet: boolean): string {
-  const lines = linesOf(text);
+/** The records of a text: its lines, or with `-z` what lies between NULs (a text without one is a single record). */
+function recordsOf(text: string, nul: boolean): string[] {
+  if (!nul) return linesOf(text);
+  const parts = text.split("\0");
+  if (parts.at(-1) === "") parts.pop();
+  return parts;
+}
+
+function edit(text: string, cmds: readonly SedCmd[], quiet: boolean, nul = false): string {
+  const lines = recordsOf(text, nul);
   const s: State = {
     pattern: "",
     hold: "",
@@ -139,6 +189,7 @@ function edit(text: string, cmds: readonly SedCmd[], quiet: boolean): string {
     deleted: false,
     ranges: new Map(),
     quiet,
+    eol: nul ? (text.includes("\0") ? "\0" : "") : "\n",
   };
   for (const line of lines) {
     s.n++;
@@ -155,21 +206,24 @@ function edit(text: string, cmds: readonly SedCmd[], quiet: boolean): string {
   return s.out;
 }
 
-/** The scripts of a call: every `-e`, a `-f` file, or the first word. */
-function scriptsOf(c: Cmd, p: ReturnType<typeof parseArgs>, rest: string[]): string[] | R {
-  const scripts = c.args.flatMap((a, i) =>
-    a === "-e" || a === "--expression" ? [c.args[i + 1] ?? ""] : [],
-  );
-  const file = p.flags.get("f");
-  const fileScript = file === undefined ? undefined : c.fs.read(normalize(c.cwd, file));
-  if (scripts.length === 0 && fileScript === undefined) {
+/** The scripts of a call: every `-e`, every `-f` file, or the first word. */
+function scriptsOf(c: Cmd, rest: string[]): string[] | R {
+  const scripts = allValues(c.args, SED_FLAGS, "e", "expression");
+  const files = allValues(c.args, SED_FLAGS, "f");
+  const fileScripts: string[] = [];
+  for (const file of files) {
+    const text = c.fs.read(normalize(c.cwd, file));
+    if (text === undefined)
+      return fail(`sed: couldn't open file ${file}: No such file or directory`, 1);
+    fileScripts.push(text);
+  }
+  if (scripts.length === 0 && files.length === 0) {
     const first = rest.shift();
     if (first === undefined)
       return fail("Usage: sed [OPTION]... {script-only-if-no-other-script} [input-file]...", 1);
     scripts.push(first);
   }
-  if (fileScript !== undefined) scripts.push(fileScript);
-  return scripts;
+  return [...scripts, ...fileScripts];
 }
 
 function compileScript(scripts: readonly string[], extended: boolean): SedCmd[] | R {
@@ -189,29 +243,69 @@ function compileScript(scripts: readonly string[], extended: boolean): SedCmd[] 
   }
 }
 
-export function sed(c: Cmd): R {
-  const p = parseArgs(c.args, {
-    bool: "nErsiz",
-    val: "ef",
-    long: {
-      "in-place": "bool",
-      expression: "val",
-      quiet: "bool",
-      silent: "bool",
-      "regexp-extended": "bool",
-    },
+const SED_FLAGS = {
+  bool: "nErsiz",
+  val: "ef",
+  long: {
+    "in-place": "bool",
+    expression: "val",
+    quiet: "bool",
+    silent: "bool",
+    "regexp-extended": "bool",
+    separate: "bool",
+    "null-data": "bool",
+  },
+} as const;
+
+/** `-i.bak` and `--in-place=.bak`: the suffix of the backup, and the arguments without it. */
+function inPlaceSuffix(args: readonly string[]): { suffix: string; args: string[] } {
+  let suffix = "";
+  const clean = args.map((a) => {
+    const long = /^--in-place=(.*)$/.exec(a);
+    if (long) {
+      suffix = long[1] as string;
+      return "--in-place";
+    }
+    const short = /^-([nErs]*)i(.+)$/.exec(a);
+    if (!short) return a;
+    suffix = short[2] as string;
+    return `-${short[1]}i`;
   });
+  return { suffix, args: clean };
+}
+
+/** The files as one stream, the way sed reads several (line numbers go on, `$` is the end of the last). */
+function oneStream(texts: readonly string[]): string {
+  return texts
+    .map((t, i) => (i < texts.length - 1 && t !== "" && !t.endsWith("\n") ? `${t}\n` : t))
+    .join("");
+}
+
+export function sed(c: Cmd): R {
+  const { suffix, args } = inPlaceSuffix(c.args);
+  const p = parseArgs(args, SED_FLAGS);
   if (p.bad) return unsupported("sed", p.bad);
+  if (/[*/]/.test(suffix)) return unsupported("sed", `-i 접미사 ${suffix}`);
   const rest = [...p.rest];
-  const scripts = scriptsOf(c, p, rest);
+  const scripts = scriptsOf(c, rest);
   if ("code" in scripts) return scripts;
-  const cmds = compileScript(scripts, has(p, "E") || has(p, "r") || has(p, "--regexp-extended"));
+  const cmds = compileScript(scripts, hasAny(p, "E", "r", "--regexp-extended"));
   if ("code" in cmds) return cmds;
-  const quiet = has(p, "n") || has(p, "--quiet") || has(p, "--silent");
+  const quiet = hasAny(p, "n", "--quiet", "--silent");
   const { inputs, errors } = readInputs(c, rest);
-  if (has(p, "i") || has(p, "--in-place")) return inPlaceEdit(c, inputs, cmds, quiet, errors);
+  if (hasAny(p, "i", "--in-place"))
+    return inPlaceEdit(
+      c,
+      inputs,
+      cmds,
+      { quiet, suffix, nul: hasAny(p, "z", "--null-data") },
+      errors,
+    );
+  const nul = hasAny(p, "z", "--null-data");
+  const separate = hasAny(p, "s", "--separate");
+  const streams = separate ? inputs.map((i) => i.text) : [oneStream(inputs.map((i) => i.text))];
   return {
-    out: inputs.map((i) => edit(i.text, cmds, quiet)).join(""),
+    out: streams.map((text) => edit(text, cmds, quiet, nul)).join(""),
     err: errText(errors),
     code: errors.length ? 2 : 0,
   };
@@ -221,7 +315,7 @@ function inPlaceEdit(
   c: Cmd,
   inputs: ReadonlyArray<{ name: string; text: string }>,
   cmds: readonly SedCmd[],
-  quiet: boolean,
+  how: { quiet: boolean; suffix: string; nul: boolean },
   errors: readonly string[],
 ): R {
   let err = errText(errors);
@@ -230,7 +324,10 @@ function inPlaceEdit(
     const denied = c.fs.denyWrite(path);
     if (denied)
       err += `sed: couldn't open temporary file ${path}: ${denied === "ro" ? "Read-only file system" : "Permission denied"}\n`;
-    else act(c, "write", path, edit(i.text, cmds, quiet));
+    else {
+      if (how.suffix !== "") act(c, "write", `${path}${how.suffix}`, i.text);
+      act(c, "write", path, edit(i.text, cmds, how.quiet, how.nul));
+    }
   }
   return { out: "", err, code: err ? 4 : 0 };
 }

@@ -2,7 +2,7 @@
 title: 가속기(GPU) 층 — GPU·NVLink·IB 패브릭·스케줄러·학습 잡·추론 풀, 고장 여덟과 시스템이 스스로 하는 일
 kind: spec
 status: active
-last_verified: 2026-11-10
+last_verified: 2026-11-11
 covers:
   - packages/core/src/world/accel.ts
   - packages/core/src/world/accel-act.ts
@@ -17,12 +17,13 @@ covers:
   - packages/core/src/scenario/library-accel.ts
   - packages/core/src/sources/worldgen/shaped-gpu.ts
   - packages/core/src/session/probes-accel.ts
-covers_hash: 071ed82a2a7ba85f
+covers_hash: e3491efa371e7705
 verification_log:
   - "2026-11-07: 새 문서. 코드와 대조해 칩 표·고장 표·시스템이 하는 일의 시간(30·20·300초 등)·툴·셸 명령·시나리오를 맞춰 썼다"
   - "2026-11-07: REQ-108: 코드와 대조했고 필요한 서술(기대 복구 시간, 서비스 카드 복사, 숫자 보정)을 고쳤다. 나머지는 그대로 맞다"
   - "2026-11-07: ADR-0133에 맞춰 대조: 기대 복구 시간(+5분), 손대지 않는 것이 정답인 시트의 만점, 링크 흔들림 서술"
   - "2026-11-10: 물리 상수를 슬롯 표로 옮김(REQ-113). v1 동작은 physics-golden이 비트까지 같음을 확인, 문서 내용 변화 없음"
+  - "2026-11-11: tools·world/os: 닿지 않는 분기 정리와 시험 추가; 동작은 같음(TD-0002), awk는 이름 바로 뒤 '(' 호출과 srand 반환값"
 ---
 # 가속기(GPU) 층 (REQ-107, ADR-0130)
 
