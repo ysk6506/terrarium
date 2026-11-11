@@ -75,13 +75,13 @@ covers:
   - apps/web/src/ui/replay/FramesBar.tsx
   - apps/web/src/ui/replay/useClock.ts
   - apps/web/src/logic/topology/words.ts
-covers_hash: 0479cd9ca6ee78cc
+covers_hash: 2867870b74ab9559
 verification_log:
-  - "2026-11-07: /scenarios/:id/process 라우트와 결과 화면 비교 카드를 적었다"
   - "2026-11-07: 프로세스 비교 라우트와 결과 화면 카드를 코드와 대조했다"
   - "2026-11-11: main(process-compare 9cf2ce8) 합친 뒤 코드와 대조; own-card-only·process-compare 여정과 ADR-0134 내용 모두 유지"
   - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
   - "2026-11-11: 2026-11-11: 폰에서 이끼 알약이 탭 줄 위에 서게 한 것을 반영 (ADR-0141)"
+  - "2026-11-11: 2026-11-11: 고르기 버튼의 호버 그림자를 코드와 대조해 맞음 (ADR-0141)"
 ---
 # 웹 화면 (REQ-006, REQ-030~041)
 
