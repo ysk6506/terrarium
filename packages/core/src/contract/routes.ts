@@ -6,22 +6,20 @@
 
 import type { z } from "zod";
 import { COMMUNITY_ROUTES } from "./community-routes";
+import { CONNECTION_ROUTES } from "./connection-routes";
 import { MODEL_ROUTES } from "./model-routes";
 import { MOSS_ROUTES } from "./moss-routes";
+import type { RoutePolicy } from "./permissions";
 import { PHYSICS_ROUTES } from "./physics-routes";
 import { ImportPresetsBody, PresetQuery, RenamePresetBody, SavePresetBody } from "./presets";
 import { PROCESS_ROUTES } from "./process-routes";
 import {
-  AddAgentVersionBody,
   AddRunsBody,
-  CheckConnectionBody,
-  CreateConnectionBody,
   CreateExperimentBody,
   CreateScenarioBody,
   CreateShareBody,
   CreateWorldBody,
   DryRunBody,
-  EditAgentVersionBody,
   EscalationAnswerBody,
   ExperimentQuery,
   ForkBody,
@@ -31,9 +29,7 @@ import {
   ReportQuery,
   RunEventsQuery,
   ScenarioQuery,
-  TryConnectionBody,
   TwinQuery,
-  UpdateConnectionBody,
   UpdateScenarioBody,
   UpdateWorldBody,
 } from "./requests";
@@ -52,8 +48,15 @@ export interface RouteSpec {
   readonly body?: z.ZodTypeAny;
   readonly query?: z.ZodTypeAny;
   readonly produces: Produces;
-  /** Reachable without the app (share links). Everything else is for signed-in people. */
+  /** Reachable without the app (share links): the address itself is the secret. */
   readonly public?: boolean;
+  /**
+   * Who may call it, said once here (ADR-0174). Every route that is not `public` declares one, and a test
+   * fails for a route that does not. `open` answers whoever the identity method lets through (it says who
+   * they are); `signedIn` and `admin` are enforced for every request before the handler runs; `{ action }`
+   * names the one thing the handler decides with `may` once it has found what the request is about.
+   */
+  readonly policy?: RoutePolicy;
 }
 
 const json = "json" as const;
@@ -64,99 +67,10 @@ export const ROUTES = {
     path: "/api/meta",
     summary: "누구인지, 하네스·소스·대기열 상태",
     produces: json,
+    policy: "open",
   },
 
-  listConnectors: {
-    method: "GET",
-    path: "/api/connectors",
-    summary: "연결할 수 있는 프로토콜(커넥터)과 그 입력 칸",
-    produces: json,
-  },
-  listTelemetryAdapters: {
-    method: "GET",
-    path: "/api/telemetry-adapters",
-    summary: "트레이스를 쌓아 두는 곳(ClickStack, Langfuse)과 그 입력 칸, 서버의 기본값",
-    produces: json,
-  },
-  listConnections: {
-    method: "GET",
-    path: "/api/connections",
-    summary: "연결된 하네스·에이전트와 발견된 에이전트",
-    produces: json,
-  },
-  checkConnection: {
-    method: "POST",
-    path: "/api/connections/check",
-    summary: "저장하지 않고 연결해 보기 (발견된 에이전트, 걸린 시간, 실패 이유)",
-    body: CheckConnectionBody,
-    produces: json,
-  },
-  createConnection: {
-    method: "POST",
-    path: "/api/connections",
-    summary: "하네스를 연결하거나 에이전트를 직접 등록",
-    body: CreateConnectionBody,
-    produces: json,
-  },
-  updateConnection: {
-    method: "PUT",
-    path: "/api/connections/:id",
-    summary: "연결 설정 바꾸기 (토큰은 비워 두면 그대로. 만든 사람만)",
-    body: UpdateConnectionBody,
-    produces: json,
-  },
-  tryConnection: {
-    method: "POST",
-    path: "/api/connections/:id/try",
-    summary:
-      "말 걸어 보기 — 에이전트에게 한 문장을 보내 답을 받는다 (한 턴, 툴 없음, 60초, 세계에 영향 없음)",
-    body: TryConnectionBody,
-    produces: json,
-  },
-  keepConnection: {
-    method: "POST",
-    path: "/api/connections/:id/keep",
-    summary: "계속 쓰기 — 자동으로 지워질 때까지의 기간을 처음부터 다시 세어요 (쓰는 사람 누구나)",
-    produces: json,
-  },
-  recheckConnection: {
-    method: "POST",
-    path: "/api/connections/:id/check",
-    summary: "연결된 것을 다시 확인해 에이전트 목록 새로 받기",
-    produces: json,
-  },
-  deleteConnection: {
-    method: "DELETE",
-    path: "/api/connections/:id",
-    summary: "연결 끊기 (만든 사람만. 설정 파일의 연결은 못 지워요)",
-    produces: json,
-  },
-  listAgentVersions: {
-    method: "GET",
-    path: "/api/connections/:id/agents/:agentId/versions",
-    summary: "에이전트의 버전 목록 (바뀐 점·날짜)과, 지금 실험을 만들면 무엇이 달라질지",
-    produces: json,
-  },
-  addAgentVersion: {
-    method: "POST",
-    path: "/api/connections/:id/agents/:agentId/versions",
-    summary: "사람이 버전을 직접 더하기 (이름표·메모·보이지 않는 차이를 속성으로)",
-    body: AddAgentVersionBody,
-    produces: json,
-  },
-  editAgentVersion: {
-    method: "PUT",
-    path: "/api/connections/:id/agents/:agentId/versions/:n",
-    summary: "버전의 이름표·메모·속성 바꾸기",
-    body: EditAgentVersionBody,
-    produces: json,
-  },
-  deleteAgentVersion: {
-    method: "DELETE",
-    path: "/api/connections/:id/agents/:agentId/versions/:n",
-    summary: "버전 지우기 (번호는 다시 쓰이지 않아요)",
-    produces: json,
-  },
+  ...CONNECTION_ROUTES,
 
   listPresets: {
     method: "GET",
@@ -164,6 +78,7 @@ export const ROUTES = {
     summary: "저장해 둔 지시문·툴 묶음·절차서와, 7일 안에 되돌릴 수 있게 지운 것 (내 것만)",
     query: PresetQuery,
     produces: json,
+    policy: "signedIn",
   },
   savePreset: {
     method: "POST",
@@ -171,6 +86,7 @@ export const ROUTES = {
     summary: "이름 붙여 저장 (같은 종류에서 같은 이름이면 내용을 바꿔요)",
     body: SavePresetBody,
     produces: json,
+    policy: "signedIn",
   },
   importPresets: {
     method: "POST",
@@ -178,6 +94,7 @@ export const ROUTES = {
     summary: "이 브라우저에 있던 것을 서버로 한 번 옮기기 (이미 있는 이름은 건너뛰어요)",
     body: ImportPresetsBody,
     produces: json,
+    policy: "signedIn",
   },
   renamePreset: {
     method: "PUT",
@@ -185,18 +102,21 @@ export const ROUTES = {
     summary: "저장해 둔 것의 이름 바꾸기",
     body: RenamePresetBody,
     produces: json,
+    policy: "signedIn",
   },
   deletePreset: {
     method: "DELETE",
     path: "/api/presets/:id",
     summary: "저장해 둔 것 지우기 (7일 안에는 되돌릴 수 있어요)",
     produces: json,
+    policy: "signedIn",
   },
   restorePreset: {
     method: "POST",
     path: "/api/presets/:id/restore",
     summary: "지운 것 되돌리기",
     produces: json,
+    policy: "signedIn",
   },
 
   ...MODEL_ROUTES,
@@ -211,12 +131,14 @@ export const ROUTES = {
     path: "/api/world-templates",
     summary: "저장해 둔 세계 템플릿 목록",
     produces: json,
+    policy: "signedIn",
   },
   getWorld: {
     method: "GET",
     path: "/api/worlds/:id",
     summary: "세계 하나 (blueprint 포함)",
     produces: json,
+    policy: "signedIn",
   },
   createWorld: {
     method: "POST",
@@ -224,6 +146,7 @@ export const ROUTES = {
     summary: "빌더에서 지은 세계 저장",
     body: CreateWorldBody,
     produces: json,
+    policy: "signedIn",
   },
   generateWorld: {
     method: "POST",
@@ -231,13 +154,15 @@ export const ROUTES = {
     summary: "사업장 프리셋으로 세계 생성",
     body: GenerateWorldBody,
     produces: json,
+    policy: "signedIn",
   },
   importWorld: {
     method: "POST",
     path: "/api/worlds/import",
-    summary: "현실(KG 등)에서 읽기 전용으로 가져오기",
+    summary: "현실(KG 등)에서 읽기 전용으로 가져오기 (관리자만)",
     body: ImportWorldBody,
     produces: json,
+    policy: "admin",
   },
   updateWorld: {
     method: "PUT",
@@ -245,12 +170,14 @@ export const ROUTES = {
     summary: "세계 고쳐 저장 (버전 확인)",
     body: UpdateWorldBody,
     produces: json,
+    policy: { action: "change" },
   },
   deleteWorld: {
     method: "DELETE",
     path: "/api/worlds/:id",
     summary: "세계 숨기기 (실험이 쓴 버전은 남아요)",
     produces: json,
+    policy: { action: "remove" },
   },
 
   listScenarios: {
@@ -259,12 +186,14 @@ export const ROUTES = {
     summary: "시나리오 목록",
     query: ScenarioQuery,
     produces: json,
+    policy: "signedIn",
   },
   getScenario: {
     method: "GET",
     path: "/api/scenarios/:id",
     summary: "시나리오 하나",
     produces: json,
+    policy: "signedIn",
   },
   createScenario: {
     method: "POST",
@@ -272,6 +201,7 @@ export const ROUTES = {
     summary: "새 시나리오 (빈 것, 템플릿, 문서)",
     body: CreateScenarioBody,
     produces: json,
+    policy: "signedIn",
   },
   updateScenario: {
     method: "PUT",
@@ -279,12 +209,14 @@ export const ROUTES = {
     summary: "시나리오 고쳐 저장 (버전 확인)",
     body: UpdateScenarioBody,
     produces: json,
+    policy: { action: "change" },
   },
   deleteScenario: {
     method: "DELETE",
     path: "/api/scenarios/:id",
     summary: "시나리오 숨기기",
     produces: json,
+    policy: { action: "remove" },
   },
   dryRunScenario: {
     method: "POST",
@@ -292,13 +224,16 @@ export const ROUTES = {
     summary: "에이전트 없이 미리 보기",
     body: DryRunBody,
     produces: json,
+    policy: "signedIn",
   },
   calibrateScenario: {
     method: "POST",
     path: "/api/scenarios/:id/calibrate",
-    summary: "시험지 점검: 아무것도 안 하는·찍는·정답만 아는 에이전트로 점수 재 보기",
+    summary:
+      "시험지 점검: 아무것도 안 하는·찍는·정답만 아는 에이전트로 점수 재 보기 (시나리오를 만든 사람과 관리자)",
     body: DryRunBody,
     produces: json,
+    policy: { action: "calibrate" },
   },
 
   listExperiments: {
@@ -307,12 +242,14 @@ export const ROUTES = {
     summary: "실험 목록 (최신순)",
     query: ExperimentQuery,
     produces: json,
+    policy: "signedIn",
   },
   getExperiment: {
     method: "GET",
     path: "/api/experiments/:id",
     summary: "실험 하나: 실행, 분석, 계보",
     produces: json,
+    policy: "signedIn",
   },
   createExperiment: {
     method: "POST",
@@ -320,12 +257,14 @@ export const ROUTES = {
     summary: "실험 만들고 대기열에 더하기",
     body: CreateExperimentBody,
     produces: json,
+    policy: { action: "use" },
   },
   cancelExperiment: {
     method: "POST",
     path: "/api/experiments/:id/cancel",
     summary: "남은 실행 멈추기",
     produces: json,
+    policy: { action: "cancel" },
   },
   forkExperiment: {
     method: "POST",
@@ -333,6 +272,7 @@ export const ROUTES = {
     summary: "조건만 바꿔 다시 실행",
     body: ForkBody,
     produces: json,
+    policy: { action: "use" },
   },
   addRuns: {
     method: "POST",
@@ -340,18 +280,21 @@ export const ROUTES = {
     summary: "같은 조건으로 실행 더하기",
     body: AddRunsBody,
     produces: json,
+    policy: { action: "addRuns" },
   },
   experimentEvents: {
     method: "GET",
     path: "/api/experiments/:id/events",
     summary: "진행 상황 실시간 (SSE)",
     produces: "sse",
+    policy: "signedIn",
   },
   worldActivity: {
     method: "GET",
     path: "/api/worlds/:id/activity",
     summary: "이 세계에서 지금 일하는 에이전트들 (SSE)",
     produces: "sse",
+    policy: "signedIn",
   },
   experimentReport: {
     method: "GET",
@@ -359,25 +302,29 @@ export const ROUTES = {
     summary: "보고서 (HTML·Markdown·텍스트)",
     query: ReportQuery,
     produces: "html",
+    policy: "signedIn",
   },
   experimentDiagnoses: {
     method: "GET",
     path: "/api/experiments/:id/diagnoses",
     summary: "진단 기록 (JSON Lines)",
     produces: "jsonl",
+    policy: "signedIn",
   },
   createShare: {
     method: "POST",
     path: "/api/experiments/:id/shares",
-    summary: "공유 링크 만들기",
+    summary: "공유 링크 만들기 (실험을 만든 사람과 관리자. 기간을 안 적으면 30일)",
     body: CreateShareBody,
     produces: json,
+    policy: { action: "createShare" },
   },
   deleteShare: {
     method: "DELETE",
     path: "/api/shares/:token",
     summary: "공유 링크 끊기",
     produces: json,
+    policy: { action: "deleteShare" },
   },
 
   getRun: {
@@ -385,18 +332,21 @@ export const ROUTES = {
     path: "/api/runs/:id",
     summary: "실행 하나: 결과, 분석, 타임라인",
     produces: json,
+    policy: "signedIn",
   },
   runbookDraft: {
     method: "GET",
     path: "/api/scenarios/:id/runbook-draft",
     summary: "최고 점수 실행의 툴 호출 순서로 만든 절차서 초안",
     produces: json,
+    policy: "signedIn",
   },
   listEscalations: {
     method: "GET",
     path: "/api/escalations",
     summary: "사람을 기다리는 실행들 (에이전트가 ask_human으로 물은 것)",
     produces: json,
+    policy: "signedIn",
   },
   answerEscalation: {
     method: "POST",
@@ -404,6 +354,7 @@ export const ROUTES = {
     summary: "기다리는 실행에 답하기: 글로 답, 대신 조치, 툴 더 주기, 끝내기",
     body: EscalationAnswerBody,
     produces: json,
+    policy: { action: "answerEscalation" },
   },
   runEvents: {
     method: "GET",
@@ -411,18 +362,21 @@ export const ROUTES = {
     summary: "실행의 불변 사건 기록 (세계 시간·실제 시간), 구간은 from·to",
     query: RunEventsQuery,
     produces: json,
+    policy: "signedIn",
   },
   runWorld: {
     method: "GET",
     path: "/api/runs/:id/world",
     summary: "실행이 돌았던 때의 세계 (그 버전 그대로)",
     produces: json,
+    policy: "signedIn",
   },
   runTelemetry: {
     method: "GET",
     path: "/api/runs/:id/telemetry",
     summary: "하네스 트레이스·로그·메트릭 (ClickStack)",
     produces: json,
+    policy: "signedIn",
   },
 
   leaderboards: {
@@ -431,6 +385,7 @@ export const ROUTES = {
     summary: "벤치마크 세트별 순위",
     query: LeaderboardQuery,
     produces: json,
+    policy: "signedIn",
   },
 
   twinDiagnoses: {
@@ -439,6 +394,7 @@ export const ROUTES = {
     summary: "모든 진단 기록 (JSON Lines)",
     query: TwinQuery,
     produces: "jsonl",
+    policy: "signedIn",
   },
   twinBrief: {
     method: "GET",
@@ -446,6 +402,7 @@ export const ROUTES = {
     summary: "시뮬레이터 모델링 브리프 (Markdown)",
     query: TwinQuery,
     produces: "markdown",
+    policy: "signedIn",
   },
 
   sharedReport: {

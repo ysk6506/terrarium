@@ -18,7 +18,7 @@ describe("a registered model whose sealed key cannot be opened says so instead o
       ...(record as NonNullable<typeof record>),
       sealedKey: "garbage-not-sealed",
     });
-    const checked = await platform.models.check(made.id);
+    const checked = await platform.models.check(YEONSU, made.id);
     expect(checked.lastCheck).toMatchObject({
       ok: false,
       reason: "other",

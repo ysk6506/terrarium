@@ -214,7 +214,3 @@ export function transferFeed(ctx: AccelActContext, target: string, feed: 1 | 2):
 export function switchPump(ctx: AccelActContext, target: string): void {
   ctx.world.stateAs(target, "cdu").standbyOn = true;
 }
-
-/** The nodes a training job still has: its own that are not drained, and the number it needs. */
-export const jobNeeds = (world: WorldReader, jobId: string): number =>
-  jobDef(world.index.entity(jobId)).nodes.length;

@@ -11,13 +11,15 @@ export const PROCESS_ROUTES = {
     path: "/api/scenarios/:id/current-process",
     summary: '시나리오의 "지금 하는 방식" 표 (적은 값. 아직 안 적었으면 비어 있어요)',
     produces: json,
+    policy: "signedIn",
   },
   putCurrentProcess: {
     method: "PUT",
     path: "/api/scenarios/:id/current-process",
-    summary: '"지금 하는 방식" 표 저장 (처음 적은 사람만 고쳐요)',
+    summary: '"지금 하는 방식" 표 저장 (시나리오를 만든 사람과 관리자만)',
     body: PutCurrentProcessBody,
     produces: json,
+    policy: { action: "editProcess" },
   },
   experimentProcess: {
     method: "GET",
@@ -25,6 +27,7 @@ export const PROCESS_ROUTES = {
     summary:
       "실험의 전후 비교: 실행의 기록에서 코드가 센 단계·사람·시간(평균), 적은 표와의 차이, 대표 실행의 단계 장부",
     produces: json,
+    policy: "signedIn",
   },
   worldOntology: {
     method: "GET",
@@ -33,5 +36,6 @@ export const PROCESS_ROUTES = {
       "이 세계를 E2E로 가려면: 시나리오 정의에서 뽑은 Object·Link·Action 요구, 고른 실험에서 실제로 쓴 것",
     query: WorldOntologyQuery,
     produces: json,
+    policy: "signedIn",
   },
 } as const satisfies Record<string, RouteSpec>;

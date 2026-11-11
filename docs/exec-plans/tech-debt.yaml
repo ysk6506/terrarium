@@ -17,10 +17,10 @@ items:
     status: done
     resolution: "CI를 병렬 조각(테스트 12 + 느린 파일 둘 따로)과 게이트 작업으로 나누고 커버리지는 따로 잰다 (ADR-0140). 시간 초과 11건은 계측 없는 조각에서, 성능 단언은 계측 없이 통과한다. 모든 게이트 작업이 초록인 실행을 PR에서 확인했다"
   - id: TD-0002
-    title: "커버리지 하한 미달 단위가 하나 남았다: core.world 97.41/98.5 (290개 모자람; 나머지 단위는 모두 하한 이상). 다 채우면 coverage-floors를 게이트로 올린다 (ADR-0142, ADR-0143)"
+    title: "커버리지 하한 미달 단위가 하나 남았다: core.session 97.93/98 (4개 모자람). core.world는 98.53으로 하한 98.5를 넘었다. 다 채우면 coverage-floors를 게이트로 올린다 (ADR-0142, ADR-0143)"
     severity: high
     cost: "CI가 초록이 되면 커버리지를 재고, 하한 아래인 단위에 테스트를 더한다"
-    units: [core.world]
+    units: [core.session]
     created: "2026-11-10"
     due: "2026-11-21"
     status: open
@@ -104,9 +104,9 @@ items:
     due: "2026-12-22"
     status: open
   - id: TD-0014
-    title: "웹 화면의 useExhaustiveDependencies 끄기 6곳(context, fields, moss/Panel 둘, process-ontology, useWorldView)이 낡은 값을 읽는 버그인지 판정되지 않았다 (처음 7곳 중 useGestures는 버그가 아니라고 판정하고 의존성을 다 적어 끄기를 없앴다). 줄에는 번호 없이 harness/config/ignores.yaml의 basis_by_rule이 이 항목을 근거로 삼는다 (ADR-0148)"
+    title: "웹 화면의 useExhaustiveDependencies 끄기 5곳(context, moss/Panel 둘, process-ontology, useWorldView)이 낡은 값을 읽는 버그인지 판정되지 않았다 (처음 7곳 중 useGestures는 버그가 아니라고 판정하고 의존성을 다 적어 끄기를 없앴고, fields의 NumberField는 버그가 아니라고 판정하고 적던 글을 갱신 함수로 읽게 해 끄기를 없앴다). 줄에는 번호 없이 harness/config/ignores.yaml의 basis_by_rule이 이 항목을 근거로 삼는다 (ADR-0148)"
     severity: medium
-    cost: "한 곳씩 읽어 의존성 누락이 낡은 값을 읽는 진짜 버그인지 판정한다. 버그면 고치고, 일부러 그런 것이면 이유와 ADR 번호를 줄에 적는다. 남은 6곳이 모두 정리되면 basis_by_rule의 항목을 지우고 닫는다"
+    cost: "한 곳씩 읽어 의존성 누락이 낡은 값을 읽는 진짜 버그인지 판정한다. 버그면 고치고, 일부러 그런 것이면 이유와 ADR 번호를 줄에 적는다. 남은 5곳이 모두 정리되면 basis_by_rule의 항목을 지우고 닫는다"
     units: [web.ui]
     created: "2026-11-11"
     due: "2026-12-08"

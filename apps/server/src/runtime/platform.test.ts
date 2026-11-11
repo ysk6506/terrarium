@@ -6,6 +6,7 @@ import { DEFAULT_TOOLSET } from "@terrarium/core/tools";
 import { describe, expect, test } from "vitest";
 import { sampleBlueprint } from "../../../../packages/core/src/world/test-support/sample";
 import {
+  ADMIN,
   JIMIN,
   recipe,
   ScriptHarness,
@@ -289,16 +290,18 @@ describe("worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034]", 
     });
     expect(generated.world).toMatchObject({ name: "온양사업장 생성 세계", origin: "worldgen" });
     expect(generated.stats.rack).toBe(8);
-    const imported = await p.worlds.import(YEONSU, { source: "sample" });
+    // reading the company's systems with the server's account is for admins
+    await expect(p.worlds.import(YEONSU, { source: "sample" })).rejects.toThrow("관리자만");
+    const imported = await p.worlds.import(ADMIN, { source: "sample" });
     expect(imported.world).toMatchObject({
       name: "샘플 그래프 (가상)에서 가져온 세계",
       origin: "import",
     });
     expect(imported.report.assumptions.length).toBeGreaterThan(0);
-    await expect(p.worlds.import(YEONSU, { source: "prod-kg" })).rejects.toThrow(
+    await expect(p.worlds.import(ADMIN, { source: "prod-kg" })).rejects.toThrow(
       "현실 소스 'prod-kg'를 찾을 수 없어요",
     );
-    await expect(p.worlds.import(YEONSU, { source: "sample", maxEntities: 100 })).rejects.toThrow(
+    await expect(p.worlds.import(ADMIN, { source: "sample", maxEntities: 100 })).rejects.toThrow(
       "너무 많아요",
     );
   });
@@ -371,7 +374,7 @@ describe("what the server says about itself [REQ-031] [REQ-033]", () => {
     const meta = await p.meta(JIMIN);
     expect(meta).toMatchObject({
       version: "1.2.3",
-      user: { name: "jimin", source: "self" },
+      user: { id: "jimin", name: "jimin", source: "self" },
       sources: [{ id: "sample", readOnly: true }],
       telemetry: { configured: false },
       limits: { maxRunning: 32, maxSeeds: 20 },

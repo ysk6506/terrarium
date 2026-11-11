@@ -87,7 +87,10 @@ async function main() {
   await platform.start();
   const lag = monitorEventLoopDelay({ resolution: 10 });
   lag.enable();
-  const viewerOf = (i: number) => ({ name: `user${i % users}`, source: "proxy" as const });
+  const viewerOf = (i: number) => {
+    const name = `user${i % users}`;
+    return { id: name, name, groups: [], roles: ["user" as const], source: "proxy" as const };
+  };
   const first = viewerOf(0);
   const side = Math.ceil(Math.sqrt(racks / 2));
   const targets: Array<{ worldId: string; scenarioId: string }> = [];

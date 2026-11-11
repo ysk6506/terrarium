@@ -2,7 +2,7 @@
 title: 툴 범위, 에스컬레이션, 절차서 — 실험 설계자가 정하는 세 가지 변수
 kind: spec
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-11
 covers:
   - packages/core/src/tools/docs.ts
   - packages/core/src/tools/runbook.ts
@@ -13,12 +13,12 @@ covers:
   - packages/core/src/session/tool-pick.ts
   - apps/server/src/runtime/escalations.ts
 verification_log:
-  - "2026-11-07: REQ-106 고장 열다섯의 필요한 툴과 툴 80개로 고쳤다"
   - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장 절을 더하거나 고쳤고 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
   - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-07: REQ-108: 코드와 대조했고 필요한 서술(기대 복구 시간, 서비스 카드 복사, 숫자 보정)을 고쳤다. 나머지는 그대로 맞다"
-covers_hash: 8c3fea695e886b30
+  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
+covers_hash: ed63abd8f6a69c76
 ---
 # 툴 범위, 에스컬레이션, 절차서 (REQ-080~082, ADR-0087, ADR-0105)
 

@@ -16,8 +16,17 @@ import { InProcessHost } from "../hosts";
 import { Platform, type PlatformOptions } from "../platform";
 import { sequentialStamps } from "./stamps";
 
-export const YEONSU: Viewer = { name: "yeonsu", source: "proxy" };
-export const JIMIN: Viewer = { name: "jimin", source: "self" };
+/** A signed-in person, as the identity method would hand them over (the login is the name). */
+export const person = (
+  name: string,
+  source: Viewer["source"] = "self",
+  roles: Viewer["roles"] = ["user"],
+): Viewer => ({ id: name, name, groups: [], roles, source });
+
+export const YEONSU: Viewer = person("yeonsu", "proxy");
+export const JIMIN: Viewer = person("jimin");
+/** An administrator (a login on the settings' list). */
+export const ADMIN: Viewer = person("admin-kim", "proxy", ["user", "admin"]);
 
 /** A harness whose agent does whatever the test says. */
 export class ScriptHarness implements HarnessPort {
