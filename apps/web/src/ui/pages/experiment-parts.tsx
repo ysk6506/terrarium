@@ -200,12 +200,14 @@ export function RunsTable({
             <tr key={r.id}>
               <td>
                 {r.status === "completed" && (
-                  <input
-                    type="checkbox"
-                    checked={picked.includes(r.id)}
-                    onChange={() => onPick(r.id)}
-                    aria-label={`${r.index + 1}번째 실행을 나란히 보기에 넣기`}
-                  />
+                  <label className="hit-box">
+                    <input
+                      type="checkbox"
+                      checked={picked.includes(r.id)}
+                      onChange={() => onPick(r.id)}
+                      aria-label={`${r.index + 1}번째 실행을 나란히 보기에 넣기`}
+                    />
+                  </label>
                 )}
               </td>
               <td className="num">{r.index + 1}</td>

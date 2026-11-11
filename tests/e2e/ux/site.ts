@@ -115,6 +115,19 @@ export async function open(page: Page, base: string, path: string): Promise<void
     await page.waitForTimeout(1200);
 }
 
+/**
+ * Run `work` on every page, each in a browser profile of its own. Letting go of a 3D world's graphics context takes seconds
+ * on a machine that draws with its processor, and a page that is opened after it in the same tab waits for it: the probe
+ * would then measure how long the world took to leave, not the page it is looking at.
+ */
+export async function eachPage(
+  site: Site,
+  options: VisitorOptions,
+  work: (v: Visitor, page: PageSpec) => Promise<void>,
+): Promise<void> {
+  for (const p of pagesOf(site.ids)) await asVisitor(site, options, (v) => work(v, p));
+}
+
 /** Run `work` as a fresh visitor and always close the browser context. */
 export async function asVisitor<T>(
   site: Site,

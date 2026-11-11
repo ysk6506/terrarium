@@ -115,6 +115,8 @@ function Stage3D(
     readonly worldId: string;
     readonly anchor: builder.AnchorStore;
     readonly setMapRoom: (id: string | undefined) => void;
+    /** The topology eye is in front: the 3D one keeps its place and its context, and draws nothing. */
+    readonly paused: boolean;
   },
 ) {
   const { b, map, at, setAt } = props;
@@ -133,6 +135,7 @@ function Stage3D(
     <WorldStage
       index={index}
       catalog={catalog}
+      paused={props.paused}
       level={level}
       wide={needsWholeLand(b)}
       scene={scene}
@@ -228,18 +231,20 @@ function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
       />
       <div className="builder">
         <div className="stage">
-          {topology ? (
-            <TopologyStage b={b} {...moment} />
-          ) : (
+          {/* The 3D eye stays mounted behind the topology one: letting go of its graphics context costs seconds on a machine
+              that draws with its processor, and a click made at that moment waits for it (ADR-0141). */}
+          <div className="stage-hold" hidden={topology}>
             <Stage3D
               b={b}
               map={map}
               worldId={initial.id}
               anchor={anchor}
               setMapRoom={setMapRoom}
+              paused={topology}
               {...moment}
             />
-          )}
+          </div>
+          {topology && <TopologyStage b={b} {...moment} />}
           {!map && !topology && <PlaceSheet b={b} />}
           {!map && <NextChip b={b} worldId={initial.id} />}
           {!map && <StageCards b={b} anchor={anchor} />}

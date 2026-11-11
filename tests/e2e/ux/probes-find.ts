@@ -1,7 +1,7 @@
 /** Finding and liking: can people get to things, does the page tell where they are, does it look and load as designed. */
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { asVisitor, open, pagesOf, record, type Site, settle, type Tally, tally } from "./site";
+import { asVisitor, eachPage, open, record, type Site, settle, type Tally, tally } from "./site";
 
 // ----------------------------------------------------------------------------- colours
 
@@ -94,15 +94,15 @@ const LINKS = `() => [...document.querySelectorAll("a[href]")]
 export async function reach(site: Site, notes: string[]): Promise<Tally> {
   const t = tally();
   const seen = new Set<string>(["/"]);
-  await asVisitor(site, {}, async (v) => {
-    const linksOf = async (p: string): Promise<string[]> => {
+  // each page in a profile of its own: see `eachPage`
+  const linksOf = (p: string): Promise<string[]> =>
+    asVisitor(site, {}, async (v) => {
       await open(v.page, site.base, p);
       return (await v.page.evaluate(`(${LINKS})()`)) as string[];
-    };
-    const first = [...new Set(await linksOf("/"))];
-    for (const p of first) seen.add(p);
-    for (const p of first) for (const q of await linksOf(p)) seen.add(q);
-  });
+    });
+  const first = [...new Set(await linksOf("/"))];
+  for (const p of first) seen.add(p);
+  for (const p of first) for (const q of await linksOf(p)) seen.add(q);
   for (const [name, pattern] of EXPECTED) {
     const ok = [...seen].some((p) => pattern.test(p));
     record(t, ok);
@@ -124,15 +124,13 @@ export async function orientation(site: Site, notes: string[]): Promise<Tally> {
     marked: boolean;
     missing: boolean;
   }> = [];
-  await asVisitor(site, {}, async (v) => {
-    for (const p of pagesOf(site.ids)) {
-      await open(v.page, site.base, p.path);
-      const title = await v.page.title();
-      titles.set(title, [...(titles.get(title) ?? []), p.key]);
-      const heading = (await v.page.locator("main h1").count()) > 0;
-      const marked = (await v.page.locator("nav [aria-current=page]").count()) > 0;
-      results.push({ key: p.key, title, heading, marked, missing: Boolean(p.missing) });
-    }
+  await eachPage(site, {}, async (v, p) => {
+    await open(v.page, site.base, p.path);
+    const title = await v.page.title();
+    titles.set(title, [...(titles.get(title) ?? []), p.key]);
+    const heading = (await v.page.locator("main h1").count()) > 0;
+    const marked = (await v.page.locator("nav [aria-current=page]").count()) > 0;
+    results.push({ key: p.key, title, heading, marked, missing: Boolean(p.missing) });
   });
   for (const r of results) {
     const own = (titles.get(r.title) ?? []).length === 1;

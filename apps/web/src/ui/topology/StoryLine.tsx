@@ -54,7 +54,12 @@ const STORY_CSS = `
 }
 
 .story-part {
-  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0 6px;
+  border-radius: 8px;
   border: 0;
   background: none;
   color: inherit;
@@ -65,6 +70,7 @@ const STORY_CSS = `
 
 .story-part:hover,
 .story-part:focus-visible {
+  background: var(--surface);
   text-decoration-color: currentColor;
 }
 `;

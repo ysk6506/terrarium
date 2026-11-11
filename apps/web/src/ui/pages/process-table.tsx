@@ -263,7 +263,7 @@ function TableCard({
         <Button
           kind="quiet"
           className="pt-add"
-          data-moss-skip="표 편집"
+          data-moss-action="process-add-step"
           disabled={rows.length >= pc.MAX_ROWS}
           why={W.full}
           onClick={() => setRows((r) => pc.add(r))}
@@ -283,6 +283,7 @@ function Screen({
   readonly onSaved: (v: CurrentProcessView) => void;
 }) {
   const [rows, setRows] = useState(() => pc.rowsOf(view.steps));
+  const { navigate } = useApp();
   const draft = pc.draftOf(rows);
   const dirty = JSON.stringify(draft.steps) !== JSON.stringify(view.steps) || draft.incomplete > 0;
   const saver = useSaver(view, draft, (saved) => {
@@ -299,7 +300,24 @@ function Screen({
       단계: draft.steps,
       요약: pc.numbersLine(draft.numbers),
     }),
-    run: {},
+    run: {
+      "process-add-step": () => {
+        if (!view.canEdit) throw new Error(W.readOnly(view.owner ?? "다른 사람"));
+        if (rows.length >= pc.MAX_ROWS) throw new Error(W.full);
+        setRows((r) => pc.add(r));
+        return "빈 단계를 한 줄 더했어요";
+      },
+      "process-experiment": () => {
+        if (!view.written || dirty) throw new Error("먼저 지금 하는 방식을 저장해 주세요");
+        navigate({ name: "newExperiment", scenarioId: view.scenarioId });
+        return "이 시나리오로 실험을 만들러 가요";
+      },
+      "process-save": async () => {
+        if (!view.canEdit) throw new Error(W.readOnly(view.owner ?? "다른 사람"));
+        if (!dirty) throw new Error("고친 곳이 없어요");
+        return saver.save();
+      },
+    },
     summary: () => pc.numbersLine(draft.numbers),
   });
   const readOnly = !view.canEdit;
@@ -323,7 +341,7 @@ function Screen({
           <Go
             to={{ name: "newExperiment", scenarioId: view.scenarioId }}
             className="btn"
-            data-moss-skip="다음 화면으로"
+            data-moss-action="process-experiment"
           >
             {W.next}
           </Go>
@@ -334,7 +352,7 @@ function Screen({
             busy={saver.busy}
             disabled={!dirty || !draft.canSave}
             why={whyOff(dirty, draft)}
-            data-moss-skip="저장은 직접 눌러요"
+            data-moss-action="process-save"
             onClick={saver.press}
           >
             {W.save}
