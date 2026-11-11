@@ -32,6 +32,7 @@ import { Icon, Mark } from "./icons";
 import { Button, Dialog, Loading, Note, TextField } from "./kit";
 import { MossHost, usePanelState } from "./moss";
 import { HomePage } from "./pages/home";
+import { ScreenBoundary } from "./ScreenBoundary";
 import { MyTitles } from "./titles";
 
 // The 3D builder and the flow editor bring three.js and React Flow; they load when opened (REQ-036).
@@ -395,16 +396,18 @@ export function App({ api, identity }: { readonly api: Api; readonly identity: I
           onName={() => !proxied && setAsking(true)}
         />
         <main className="main" id={mainId} tabIndex={-1}>
-          <Suspense
-            fallback={
-              <div className="page">
-                <Loading />
-              </div>
-            }
-          >
-            <ExpiryBanner />
-            {pageView(page)}
-          </Suspense>
+          <ScreenBoundary resetKey={JSON.stringify(page)}>
+            <Suspense
+              fallback={
+                <div className="page">
+                  <Loading />
+                </div>
+              }
+            >
+              <ExpiryBanner />
+              {pageView(page)}
+            </Suspense>
+          </ScreenBoundary>
         </main>
       </div>
       <Toasts toasts={toasts} />

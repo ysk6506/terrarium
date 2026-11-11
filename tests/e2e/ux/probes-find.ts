@@ -1,6 +1,7 @@
 /** Finding and liking: can people get to things, does the page tell where they are, does it look and load as designed. */
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { launch } from "./driver";
 import { asVisitor, eachPage, open, record, type Site, settle, type Tally, tally } from "./site";
 
 // ----------------------------------------------------------------------------- colours
@@ -37,37 +38,48 @@ export function colors(root: string): { literals: number; offToken: number } {
 // ----------------------------------------------------------------------------- load
 
 export async function load(site: Site): Promise<{ kb: number; ms: number; sceneDrawn: boolean }> {
-  return asVisitor(site, {}, async (v) => {
-    let bytes = 0;
-    const pending: Array<Promise<void>> = [];
-    v.page.on("response", (r) => {
-      if (["script", "stylesheet", "font", "image"].includes(r.request().resourceType()))
-        pending.push(
-          // What went over the wire (compressed), not what the browser unpacked.
-          r
-            .request()
-            .sizes()
-            .then(
-              (s) => {
-                bytes += s.responseBodySize;
-              },
-              () => undefined,
-            ),
-        );
+  // A browser of its own: the graphics process of the browser the earlier probes used may still be busy tearing down
+  // WebGL contexts, and that wait would be counted as the home page's time.
+  const own = await launch();
+  try {
+    return await asVisitor({ ...site, browser: own }, {}, async (v) => {
+      let bytes = 0;
+      const pending: Array<Promise<void>> = [];
+      v.page.on("response", (r) => {
+        if (["script", "stylesheet", "font", "image"].includes(r.request().resourceType()))
+          pending.push(
+            // What went over the wire (compressed), not what the browser unpacked.
+            r
+              .request()
+              .sizes()
+              .then(
+                (s) => {
+                  bytes += s.responseBodySize;
+                },
+                () => undefined,
+              ),
+          );
+      });
+      const started = Date.now();
+      await v.page.goto(site.base, { waitUntil: "domcontentloaded" });
+      await v.page.locator("h1").first().waitFor({ timeout: 15_000 });
+      const ms = Date.now() - started;
+      await settle(v.page);
+      await Promise.all(pending);
+      // Counted before the world screen opens: the budget is for what home itself downloads.
+      const kb = bytes / 1024;
+      await open(v.page, site.base, `/worlds/${site.ids.world}`);
+      await v.page.waitForTimeout(1500);
+      const shot = await v.page
+        .locator("canvas")
+        .first()
+        .screenshot({ timeout: 120_000 })
+        .catch(() => undefined);
+      return { kb, ms, sceneDrawn: shot !== undefined && shot.length > 12_000 };
     });
-    const started = Date.now();
-    await v.page.goto(site.base, { waitUntil: "domcontentloaded" });
-    await v.page.locator("h1").first().waitFor({ timeout: 15_000 });
-    const ms = Date.now() - started;
-    await settle(v.page);
-    await Promise.all(pending);
-    // Counted before the world screen opens: the budget is for what home itself downloads.
-    const kb = bytes / 1024;
-    await open(v.page, site.base, `/worlds/${site.ids.world}`);
-    await v.page.waitForTimeout(1500);
-    const shot = await v.page.locator("canvas").first().screenshot();
-    return { kb, ms, sceneDrawn: shot.length > 12_000 };
-  });
+  } finally {
+    await own.close();
+  }
 }
 
 // ----------------------------------------------------------------------------- reach

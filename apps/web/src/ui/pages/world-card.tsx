@@ -55,7 +55,9 @@ export function LikeButton({
       onClick={() => onToggle(card)}
     >
       <Heart filled={card.likedByMe} />
-      <span className="num">{count(card.likes)}</span>
+      <span className="num" title={likeLabel(card)}>
+        {count(card.likes)}
+      </span>
     </button>
   );
 }

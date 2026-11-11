@@ -20,12 +20,12 @@ covers:
   - apps/web/src/ui/pages/world-board.tsx
   - apps/web/src/ui/pages/world-card.tsx
 verification_log:
-  - "2026-11-06: REQ-101 최종 대조"
   - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
   - "2026-11-07: REQ-109: 코드와 대조했다. 해당 문장을 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: REQ-109: 코드와 대조했다"
   - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
-covers_hash: bdfce266d70d99ec
+  - "2026-11-11: 2026-11-11: 좋아요 수의 title을 더한 것을 코드와 대조해 맞음 (ADR-0141)"
+covers_hash: 9d7e3e5868a4d86c
 ---
 # 세계 인기·좋아요·칭호와 계급 모델 (REQ-101, [ADR-0122](adr/0122-world-popularity-likes-titles.md))
 

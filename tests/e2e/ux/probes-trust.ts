@@ -214,6 +214,12 @@ export async function value(site: Site, notes: string[]): Promise<Tally> {
   await asVisitor(site, {}, async (v) => {
     const { page } = v;
     await open(page, site.base, `/experiments/${site.ids.experiment}`);
+    // Where things are on the page, not how fast they arrive: wait for the figures to be drawn.
+    await page
+      .locator(".figure-value", { hasText: /\d/ })
+      .first()
+      .waitFor({ timeout: 60_000 })
+      .catch(() => undefined);
     check("합격률이 첫 화면에 없다", await inFirstScreen(page, ".figure"));
     check(
       "조건을 바꿔 다시 돌리는 길이 첫 화면에 없다",
