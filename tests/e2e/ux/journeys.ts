@@ -10,6 +10,7 @@ import type { Browser, Page } from "playwright";
 import { Driver, nav, visitor } from "./driver";
 import { type Context, expectPath, home, SECOND } from "./journey-kit";
 import { ownCardOnly } from "./journey-own-card";
+import { layoutAtWidths } from "./layout";
 import { settle } from "./site";
 
 export type JourneyId =
@@ -411,6 +412,9 @@ async function openTopology(c: Context): Promise<void> {
   const waited = Date.now() - started;
   if (waited > FIRST_PICTURE_MS)
     throw new Error(`첫 그림까지 ${Math.round(waited / 100) / 10}초 걸렸다`);
+  await page.waitForTimeout(1_000);
+  const layout = await layoutAtWidths(page, "토폴로지");
+  if (layout) throw new Error(layout);
   const tiles = await page.locator(".topo-hits li").count();
   if (tiles === 0 || tiles > MAX_TILES)
     throw new Error(`타일이 ${tiles}개다 (1~${MAX_TILES}개여야 한다)`);
