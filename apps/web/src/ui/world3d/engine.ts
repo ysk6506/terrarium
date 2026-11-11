@@ -101,13 +101,18 @@ function tiltPass(dir: THREE.Vector2): ShaderPass {
   });
 }
 
+/**
+ * The sky is a backdrop: drawn first and never tested against the depth of what is in front of it. A dome that takes part in
+ * the depth test hides a whole site seen from farther than its radius, as a narrow screen needs (ADR-0146).
+ */
 function skyDome(): THREE.Mesh {
   const [top, mid, bottom] = THEME.sky;
-  return new THREE.Mesh(
+  const dome = new THREE.Mesh(
     new THREE.SphereGeometry(4000, 32, 16),
     new THREE.ShaderMaterial({
       side: THREE.BackSide,
       depthWrite: false,
+      depthTest: false,
       fog: false,
       uniforms: {
         top: { value: new THREE.Color(top) },
@@ -120,6 +125,8 @@ function skyDome(): THREE.Mesh {
         "uniform vec3 top; uniform vec3 mid; uniform vec3 bot; varying vec3 vP; void main(){ float h = normalize(vP).y; vec3 c = h>0.0 ? mix(mid, top, pow(h,0.55)) : mix(mid, bot, pow(-h,0.5)); gl_FragColor = vec4(c,1.0); }",
     }),
   );
+  dome.renderOrder = -1000;
+  return dome;
 }
 
 function makeRenderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
