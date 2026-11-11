@@ -27,14 +27,72 @@ export type { LawId, Violation };
 
 /** A violation the default physics (v1) is known to have: the law, which part of the world, and why it is allowed until v2. */
 export interface KnownException {
+  /** The fault kind the exception belongs to (the law checks on a day with that fault); left out, it is a fault-free case. */
+  readonly fault?: string;
   readonly law: LawId;
   /** Matches the entity id of the violation when it contains this text; empty matches any. */
   readonly where: string;
+  /** What was measured, with its numbers (kept so a finding can be reproduced and a fix can be judged against it). */
+  readonly measured?: string;
   readonly reason: string;
 }
 
 /** What v1 is known to break. Each entry is a finding of REQ-113 (see docs/design-docs/physics-laws.md), to be fixed in the v2 physics. */
-export const KNOWN_V1_EXCEPTIONS: readonly KnownException[] = [];
+export const KNOWN_V1_EXCEPTIONS: readonly KnownException[] = [
+  {
+    fault: "cooling_unit_failure",
+    law: "power.chain",
+    where: "panel-1",
+    measured:
+      "sample room, after the cooling units are repaired: panel-1 carries 17219 W while its consumers draw 17069 W (+0.9 %) at t=11400 s; step by step right after the restart 14906 W against 81573 W",
+    reason:
+      "A cooling unit's draw follows the heat it removed, which is computed after the electrical pass, so while the compressors ramp the panel's load is one step (10 s) behind its consumers",
+  },
+  {
+    fault: "cooling_unit_failure",
+    law: "power.chain",
+    where: "-sw-",
+    measured:
+      "campus with plant, after repair: four switchboards carry 163483/147606/253775/236836 W against 158436/143021/251490/234782 W (+3.2 %, +3.2 %, +0.9 %, +0.9 %) at t=11400 s",
+    reason:
+      "Same cause: the cooling units' draw changes in the thermal part of the step, after the load of every supplier above them was added up",
+  },
+  {
+    fault: "grid_outage",
+    law: "power.chain",
+    where: "mats1",
+    measured:
+      "campus with plant, every UPS on battery: the main switchboard carries 99409 W against 98837 W (+0.6 %) at t=2700 s while the chillers' draw drifts from 29705 to 29418 W",
+    reason:
+      "The chillers' draw is updated by the plant after the supplier loads were summed, so a supplier is one step behind a draw that moves",
+  },
+  {
+    fault: "ups_battery_degraded",
+    law: "power.chain",
+    where: "panel-1",
+    measured:
+      "sample room, battery at 5 % capacity, after the grid is back: panel-1 carries 18540 W against 18344 W (+1.1 %) at t=18600 s while the cooling units' draw falls from 7817 to 7719 W",
+    reason:
+      "Same cause: cooling draw changes after the electrical pass, so the panel lags by one step while the units settle",
+  },
+  {
+    fault: "chiller_failure",
+    law: "power.chain",
+    where: "mats1",
+    measured:
+      "campus with plant, after the chillers are repaired: the main switchboard carries 176043 W against 174532 W (+0.9 %) at t=11700 s while the chillers' draw falls from 55130 to 54375 W",
+    reason: "Same cause: the plant's draw changes after the supplier loads were summed",
+  },
+  {
+    fault: "coolant_leak",
+    law: "power.chain",
+    where: "pnl-a1",
+    measured:
+      "liquid hall, shut-off after 900 s: at t=1200 s the CDU stops (12000 W to 0 W) and its panel still carries 88507 W against 76507 W (+15.7 %)",
+    reason:
+      "The shut-off of the leak stops the CDU after the electrical pass and raises no event, so the panel is not summed again until the next step",
+  },
+];
 
 export interface LawReport {
   readonly steps: number;
@@ -44,8 +102,10 @@ export interface LawReport {
   readonly failures: readonly Violation[];
 }
 
-const isKnown = (v: Violation): boolean =>
-  KNOWN_V1_EXCEPTIONS.some((k) => k.law === v.law && v.where.includes(k.where));
+const isKnown = (v: Violation, fault: string | undefined): boolean =>
+  KNOWN_V1_EXCEPTIONS.some(
+    (k) => k.fault === fault && k.law === v.law && v.where.includes(k.where),
+  );
 
 /** How often (in steps) the checks that read the whole world run; the room balance runs on every step. */
 const WIDE_EVERY = 30;
@@ -60,7 +120,11 @@ export class LawMonitor {
   private readonly bbu = new Map<string, BatteryWas>();
   private count = 0;
 
-  constructor(private readonly world: World) {
+  /** `fault`: the kind of fault the world is run with; only exceptions listed for it (or none) are known cases. */
+  constructor(
+    private readonly world: World,
+    private readonly fault?: string,
+  ) {
     collectRoomSteps(world, this.rooms);
     this.remember();
     this.keep(directionViolations(world));
@@ -90,12 +154,12 @@ export class LawMonitor {
   }
 
   report(): LawReport {
-    const known = this.found.filter(isKnown);
+    const known = this.found.filter((v) => isKnown(v, this.fault));
     return {
       steps: this.count,
       violations: this.found,
       known,
-      failures: this.found.filter((v) => !isKnown(v)),
+      failures: this.found.filter((v) => !isKnown(v, this.fault)),
     };
   }
 

@@ -3,7 +3,9 @@
  * uncovered statements and branches and the line numbers of the gaps. Reads coverage/coverage-final.json (the `json`
  * reporter of `vitest --coverage`). Used by the coverage-floors CI job so the log says what to test.
  *
- *   pnpm tsx scripts/coverage-gaps.ts [--all] [--unit core.world]
+ *   pnpm tsx scripts/coverage-gaps.ts [--all] [--unit core.world] [--files <substring>]
+ *
+ * `--files` lists every file whose path contains the text, whatever its unit's floor (to see the gaps of one directory).
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -23,11 +25,26 @@ interface FileCov {
   b: Record<string, number[]>;
 }
 
+const say = (line: string): void => void process.stdout.write(`${line}\n`);
 const root = process.cwd();
 const argv = process.argv.slice(2);
 const all = argv.includes("--all");
 const only = argv.includes("--unit") ? argv[argv.indexOf("--unit") + 1] : undefined;
-const cov = JSON.parse(readFileSync(path.join(root, "coverage/coverage-final.json"), "utf8")) as Record<string, FileCov>;
+const files = argv.includes("--files") ? argv[argv.indexOf("--files") + 1] : undefined;
+/** 3,4,5,9 -> "3-5,9" */
+const ranges = (xs: readonly number[]): string => {
+  const out: string[] = [];
+  for (let i = 0; i < xs.length; i++) {
+    let j = i;
+    while (xs[j + 1] === (xs[j] as number) + 1) j++;
+    out.push(j === i ? `${xs[i]}` : `${xs[i]}-${xs[j]}`);
+    i = j;
+  }
+  return out.join(",");
+};
+const cov = JSON.parse(
+  readFileSync(path.join(root, "coverage/coverage-final.json"), "utf8"),
+) as Record<string, FileCov>;
 const arch = loadArchConfig(root);
 const floors = loadFloors(root, loadTestsConfig(root));
 
@@ -60,7 +77,13 @@ for (const [abs, f] of Object.entries(cov)) {
     });
   }
   const list = units.get(unit.name) ?? [];
-  list.push({ file: rel, total, hit, lines: [...lines].sort((a, b) => a - b), branchLines: [...branchLines].sort((a, b) => a - b) });
+  list.push({
+    file: rel,
+    total,
+    hit,
+    lines: [...lines].sort((a, b) => a - b),
+    branchLines: [...branchLines].sort((a, b) => a - b),
+  });
   units.set(unit.name, list);
 }
 
@@ -69,11 +92,16 @@ for (const [name, rows] of [...units].sort(([a], [b]) => a.localeCompare(b))) {
   const hit = rows.reduce((s, r) => s + r.hit, 0);
   const pct = total === 0 ? 100 : (100 * hit) / total;
   const floor = floors[name];
-  if (only ? name !== only : !all && floor !== undefined && pct >= floor) continue;
-  console.log(`\n## ${name}: ${pct.toFixed(2)}% (${hit}/${total}) floor ${floor ?? "none"}; need +${Math.max(0, Math.ceil(((floor ?? 0) / 100) * total - hit))} items`);
-  for (const r of rows.filter((x) => x.total - x.hit > 0).sort((a, b) => b.total - b.hit - (a.total - a.hit)).slice(0, 25)) {
-    console.log(`  ${r.file}: missing ${r.total - r.hit} of ${r.total}`);
-    console.log(`    stmt lines: ${r.lines.slice(0, 60).join(",")}`);
-    console.log(`    branch lines: ${r.branchLines.slice(0, 60).join(",")}`);
+  if (!files && (only ? name !== only : !all && floor !== undefined && pct >= floor)) continue;
+  say(
+    `\n## ${name}: ${pct.toFixed(2)}% (${hit}/${total}) floor ${floor ?? "none"}; need +${Math.max(0, Math.ceil(((floor ?? 0) / 100) * total - hit))} items`,
+  );
+  for (const r of rows
+    .filter((x) => x.total - x.hit > 0)
+    .sort((a, b) => b.total - b.hit - (a.total - a.hit))
+    .slice(0, files ? 500 : 25)) {
+    say(`  ${r.file}: missing ${r.total - r.hit} of ${r.total}`);
+    say(`    stmt lines: ${ranges(r.lines)}`);
+    say(`    branch lines: ${ranges(r.branchLines)}`);
   }
 }
