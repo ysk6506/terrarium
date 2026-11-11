@@ -154,12 +154,16 @@ jobs:
           base=""
           if [ "${{ github.event_name }}" = "pull_request" ]; then base="--base origin/${{ github.base_ref }}"; fi
           pnpm tsx harness/src/checks/coverage.ts $base | tee coverage-floors.txt
+      - name: Where the uncovered code is (units under their floor)
+        if: always()
+        run: pnpm tsx scripts/coverage-gaps.ts | tee coverage-gaps.txt
       - if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: |
             coverage-floors.txt
+            coverage-gaps.txt
             coverage/coverage-summary.json
 
   structure:
