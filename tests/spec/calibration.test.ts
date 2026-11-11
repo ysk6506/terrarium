@@ -6,7 +6,12 @@
  * "this one measures diagnosis, not operation" is a fact written down and not a surprise.
  */
 import { ALL_SCENARIO_TEMPLATES, emptyScenario, type ScenarioDoc } from "@terrarium/core/scenario";
-import { calibrate, FLOOR_LIMIT, Session } from "@terrarium/core/session";
+import {
+  type Calibration,
+  calibrateBaselines,
+  FLOOR_LIMIT,
+  Session,
+} from "@terrarium/core/session";
 import { TOOL_NAMES } from "@terrarium/core/tools";
 import { type Blueprint, BlueprintIndex } from "@terrarium/core/world";
 import { describe, expect, test } from "vitest";
@@ -49,12 +54,23 @@ const WORLDS: ReadonlyArray<{ name: string; blueprint: () => Blueprint }> = [
 
 const KNOWN_FLOOR: Readonly<Record<string, number>> = { "cooling-failure": 20 };
 
+/** Each world is built once, with its index, the first time a scenario asks for it (blueprints are read only). */
+const worldCache = new Map<string, { blueprint: Blueprint; index: BlueprintIndex }>();
+function worldOf(world: (typeof WORLDS)[number]) {
+  let entry = worldCache.get(world.name);
+  if (!entry) {
+    const blueprint = world.blueprint();
+    entry = { blueprint, index: new BlueprintIndex(blueprint) };
+    worldCache.set(world.name, entry);
+  }
+  return entry;
+}
+
 /** Each built-in scenario in the first test world it can be built for. */
 function built() {
   return ALL_SCENARIO_TEMPLATES.map((template) => {
     for (const world of WORLDS) {
-      const blueprint = world.blueprint();
-      const index = new BlueprintIndex(blueprint);
+      const { blueprint, index } = worldOf(world);
       if (template.unavailable(index)) continue;
       return { id: template.id, blueprint, scenario: template.build(index, "lab") };
     }
@@ -62,11 +78,28 @@ function built() {
   });
 }
 
-describe("every built-in scenario tells an agent that knows from one that does not [REQ-070] [REQ-007]", () => {
-  const cases = built();
+type Case = ReturnType<typeof built>[number];
 
+/**
+ * The three reference agents run once per scenario; every assertion about that scenario reads the same result.
+ * The probes calibrate() adds after them (services and tools) are not asserted here and cost most of the time
+ * (cdu-pump-fail: 15 s of 16 s), so the baselines alone are asked (ADR-0145).
+ */
+const calibrations = new Map<string, Calibration>();
+function calibrationOf(c: Case): Calibration {
+  let calibration = calibrations.get(c.id);
+  if (!calibration) {
+    calibration = calibrateBaselines({ blueprint: c.blueprint, scenario: c.scenario });
+    calibrations.set(c.id, calibration);
+  }
+  return calibration;
+}
+
+const cases = built();
+
+describe("every built-in scenario tells an agent that knows from one that does not [REQ-070] [REQ-007]", () => {
   test.each(cases.map((c) => [c.id, c] as const))("%s", (_id, c) => {
-    const calibration = calibrate({ blueprint: c.blueprint, scenario: c.scenario });
+    const calibration = calibrationOf(c);
     const total = (id: string) => calibration.runs.find((r) => r.id === id)?.total ?? -1;
     // cooling-failure keeps 20 points for "the servers are still alive", which doing nothing also satisfies in the
     // sample campus (a second cooling unit carries the room). The check warns about it; the scenario is not hidden.
@@ -79,9 +112,7 @@ describe("every built-in scenario tells an agent that knows from one that does n
 
   test("the scenarios that give full marks for the answer alone are exactly these (they measure diagnosis, not operation)", () => {
     const diagnosisOnly = cases
-      .filter(
-        (c) => calibrate({ blueprint: c.blueprint, scenario: c.scenario }).diagnosisOnly >= 100,
-      )
+      .filter((c) => calibrationOf(c).diagnosisOnly >= 100)
       .map((c) => c.id)
       .sort();
     // the last four are sheets where the right move is to look, name the cause and leave it alone (ADR-0133): the cluster
@@ -100,7 +131,7 @@ describe("every built-in scenario tells an agent that knows from one that does n
 
 describe("a quick wrong answer earns nothing for being quick [REQ-070]", () => {
   test("time and tool budget count as much as the diagnosis was right", () => {
-    const c = built().find((s) => s.id === "sensor-drift") as ReturnType<typeof built>[number];
+    const c = cases.find((s) => s.id === "sensor-drift") as Case;
     const run = (rootCause: string, faultType: string) => {
       const session = Session.create({
         blueprint: c.blueprint,

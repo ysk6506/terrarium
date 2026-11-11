@@ -103,8 +103,8 @@ function answer(config: Config, said: { rootCause: string; faultType: string }):
   return session;
 }
 
-/** Run the three reference agents on one scenario in one world, and say what the scores mean. */
-export function calibrate(config: Config): Calibration {
+/** Run the three reference agents on one scenario in one world, and say what the scores mean (no probes). */
+export function calibrateBaselines(config: Config): Calibration {
   const right = knownAnswer(config.scenario);
   const sessions: Array<[BaselineId, Session | undefined]> = [
     ["idle", idle(config)],
@@ -116,7 +116,12 @@ export function calibrate(config: Config): Calibration {
     const { score } = session.finish();
     return [baselineRun(id, score.total, score.passed)];
   });
-  return withProbes(judge(runs, right !== undefined), config);
+  return judge(runs, right !== undefined);
+}
+
+/** The three reference agents and then the probes: what a scenario card shows. */
+export function calibrate(config: Config): Calibration {
+  return withProbes(calibrateBaselines(config), config);
 }
 
 /** The two questions about services and tools (probes.ts), answered and added to the warnings where they are bad. */
