@@ -4,11 +4,11 @@ kind: reference
 status: active
 last_verified: 2026-11-11
 verification_log:
-  - "2026-11-10: CCTV 자리 설계 (ADR-0139)"
   - "2026-11-10: CI 조각과 합치기 관문 (ADR-0140)"
   - "2026-11-10: ADR-0140 링크를 더함"
   - "2026-11-11: ADR-0142 링크를 더함"
   - "2026-11-11: ADR-0142 링크를 더함"
+  - "2026-11-11: 현실 데이터와 모델 설계 (ADR-0144)"
 ---
 # 문서 색인
 
@@ -41,6 +41,7 @@ verification_log:
 - [애플리케이션 층 — 서비스 호출 그래프, 로드 밸런서·세션·브레이커·메시·리전, 고장 여덟](design-docs/application-layer.md)
 - [가속기(GPU) 층 — GPU·NVLink·IB 패브릭·스케줄러·학습 잡·추론 풀, 고장 여덟](design-docs/gpu-layer.md)
 - [물리 법칙이 닿는 자리와 모델 자리 — 열네 자리, 세 깊이, 법칙 검사](design-docs/physics-laws.md)
+- [현실 데이터와 모델 — 연결·수집·대응의 분리, 모델 관리, 현실 세계와 실험 세계](design-docs/reality-data-and-ontology.md)
 - [물리 프로필 레퍼런스 — 자리별 숫자·곡선, 지문, 자리 뒤로 간 것과 남은 것](design-docs/physics-profile.md)
 - [CCTV 자리 — 카메라 개체, 보는 자리, 배경 자리](design-docs/camera-and-backdrop.md)
 - [전원·냉방 사다리 확장 — N+1 UPS·랙 배터리·변전소, 리어도어·침지, 파워 캐핑(모델만)](design-docs/power-cooling-ladders.md)
@@ -208,6 +209,7 @@ verification_log:
 - [0139 CCTV는 카메라 개체·보는 자리·배경 자리의 세 자리로 두고, 실험의 그림은 서버가 결정적으로 그린다](design-docs/adr/0139-camera-view-and-backdrop-slots.md)
 - [0140 CI가 합치기 관문이다 — 테스트는 조각으로 나눠 병렬로, 커버리지는 따로 잰다](design-docs/adr/0140-ci-shards-and-merge-gate.md)
 - [0142 커버리지 하한을 새 단위까지 넓히고, 고장 난 날에도 물리 법칙을 검사한다](design-docs/adr/0142-coverage-floors-and-fault-law-checks.md)
+- [0144 현실 데이터는 네 단으로 들어오고, 세계는 현실과 실험 두 종류이며, 모델은 핵심을 잠그고 넓힌다](design-docs/adr/0144-reality-data-pipeline-ontology-manager-world-kinds.md)
 - [0122 세계 인기 순서·좋아요·칭호, 그리고 계급 모델 — 점수는 서버가 기록에서 세고, 칭호는 한 번 얻으면 안 잃고, 계급은 아직 화면에 없다](design-docs/adr/0122-world-popularity-likes-titles.md)
 - [0121 애플리케이션 층을 코어 모델로 올리고 서비스 호출 그래프를 넣는다](design-docs/adr/0121-application-layer-and-calls.md)
 - [0116 진짜 호스트 섞기 (폐기, 0117로 대체)](design-docs/adr/0116-real-hosts-in-the-world.md)
