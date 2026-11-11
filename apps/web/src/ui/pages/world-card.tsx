@@ -49,11 +49,15 @@ export function LikeButton({
       type="button"
       className="like"
       aria-pressed={card.likedByMe}
-      aria-label={likeLabel(card)}
+      // the name holds the visible number as a word of its own (a screen reader's "label in name" rule); the tooltip says it in full
+      aria-label={`${card.name} 좋아요${card.likedByMe ? " 취소" : ""} ${count(card.likes)}`}
+      title={likeLabel(card)}
       onClick={() => onToggle(card)}
     >
       <Heart filled={card.likedByMe} />
-      <span className="num">{count(card.likes)}</span>
+      <span className="num" title={likeLabel(card)}>
+        {count(card.likes)}
+      </span>
     </button>
   );
 }

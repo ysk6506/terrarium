@@ -1,7 +1,8 @@
 /** Finding and liking: can people get to things, does the page tell where they are, does it look and load as designed. */
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { asVisitor, open, pagesOf, record, type Site, settle, type Tally, tally } from "./site";
+import { launch } from "./driver";
+import { asVisitor, eachPage, open, record, type Site, settle, type Tally, tally } from "./site";
 
 // ----------------------------------------------------------------------------- colours
 
@@ -37,37 +38,48 @@ export function colors(root: string): { literals: number; offToken: number } {
 // ----------------------------------------------------------------------------- load
 
 export async function load(site: Site): Promise<{ kb: number; ms: number; sceneDrawn: boolean }> {
-  return asVisitor(site, {}, async (v) => {
-    let bytes = 0;
-    const pending: Array<Promise<void>> = [];
-    v.page.on("response", (r) => {
-      if (["script", "stylesheet", "font", "image"].includes(r.request().resourceType()))
-        pending.push(
-          // What went over the wire (compressed), not what the browser unpacked.
-          r
-            .request()
-            .sizes()
-            .then(
-              (s) => {
-                bytes += s.responseBodySize;
-              },
-              () => undefined,
-            ),
-        );
+  // A browser of its own: the graphics process of the browser the earlier probes used may still be busy tearing down
+  // WebGL contexts, and that wait would be counted as the home page's time.
+  const own = await launch();
+  try {
+    return await asVisitor({ ...site, browser: own }, {}, async (v) => {
+      let bytes = 0;
+      const pending: Array<Promise<void>> = [];
+      v.page.on("response", (r) => {
+        if (["script", "stylesheet", "font", "image"].includes(r.request().resourceType()))
+          pending.push(
+            // What went over the wire (compressed), not what the browser unpacked.
+            r
+              .request()
+              .sizes()
+              .then(
+                (s) => {
+                  bytes += s.responseBodySize;
+                },
+                () => undefined,
+              ),
+          );
+      });
+      const started = Date.now();
+      await v.page.goto(site.base, { waitUntil: "domcontentloaded" });
+      await v.page.locator("h1").first().waitFor({ timeout: 15_000 });
+      const ms = Date.now() - started;
+      await settle(v.page);
+      await Promise.all(pending);
+      // Counted before the world screen opens: the budget is for what home itself downloads.
+      const kb = bytes / 1024;
+      await open(v.page, site.base, `/worlds/${site.ids.world}`);
+      await v.page.waitForTimeout(1500);
+      const shot = await v.page
+        .locator("canvas")
+        .first()
+        .screenshot({ timeout: 120_000 })
+        .catch(() => undefined);
+      return { kb, ms, sceneDrawn: shot !== undefined && shot.length > 12_000 };
     });
-    const started = Date.now();
-    await v.page.goto(site.base, { waitUntil: "domcontentloaded" });
-    await v.page.locator("h1").first().waitFor({ timeout: 15_000 });
-    const ms = Date.now() - started;
-    await settle(v.page);
-    await Promise.all(pending);
-    // Counted before the world screen opens: the budget is for what home itself downloads.
-    const kb = bytes / 1024;
-    await open(v.page, site.base, `/worlds/${site.ids.world}`);
-    await v.page.waitForTimeout(1500);
-    const shot = await v.page.locator("canvas").first().screenshot();
-    return { kb, ms, sceneDrawn: shot.length > 12_000 };
-  });
+  } finally {
+    await own.close();
+  }
 }
 
 // ----------------------------------------------------------------------------- reach
@@ -94,15 +106,15 @@ const LINKS = `() => [...document.querySelectorAll("a[href]")]
 export async function reach(site: Site, notes: string[]): Promise<Tally> {
   const t = tally();
   const seen = new Set<string>(["/"]);
-  await asVisitor(site, {}, async (v) => {
-    const linksOf = async (p: string): Promise<string[]> => {
+  // each page in a profile of its own: see `eachPage`
+  const linksOf = (p: string): Promise<string[]> =>
+    asVisitor(site, {}, async (v) => {
       await open(v.page, site.base, p);
       return (await v.page.evaluate(`(${LINKS})()`)) as string[];
-    };
-    const first = [...new Set(await linksOf("/"))];
-    for (const p of first) seen.add(p);
-    for (const p of first) for (const q of await linksOf(p)) seen.add(q);
-  });
+    });
+  const first = [...new Set(await linksOf("/"))];
+  for (const p of first) seen.add(p);
+  for (const p of first) for (const q of await linksOf(p)) seen.add(q);
   for (const [name, pattern] of EXPECTED) {
     const ok = [...seen].some((p) => pattern.test(p));
     record(t, ok);
@@ -124,15 +136,13 @@ export async function orientation(site: Site, notes: string[]): Promise<Tally> {
     marked: boolean;
     missing: boolean;
   }> = [];
-  await asVisitor(site, {}, async (v) => {
-    for (const p of pagesOf(site.ids)) {
-      await open(v.page, site.base, p.path);
-      const title = await v.page.title();
-      titles.set(title, [...(titles.get(title) ?? []), p.key]);
-      const heading = (await v.page.locator("main h1").count()) > 0;
-      const marked = (await v.page.locator("nav [aria-current=page]").count()) > 0;
-      results.push({ key: p.key, title, heading, marked, missing: Boolean(p.missing) });
-    }
+  await eachPage(site, {}, async (v, p) => {
+    await open(v.page, site.base, p.path);
+    const title = await v.page.title();
+    titles.set(title, [...(titles.get(title) ?? []), p.key]);
+    const heading = (await v.page.locator("main h1").count()) > 0;
+    const marked = (await v.page.locator("nav [aria-current=page]").count()) > 0;
+    results.push({ key: p.key, title, heading, marked, missing: Boolean(p.missing) });
   });
   for (const r of results) {
     const own = (titles.get(r.title) ?? []).length === 1;

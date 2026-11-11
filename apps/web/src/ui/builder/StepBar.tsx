@@ -82,7 +82,7 @@ export function StepBar({ b }: { readonly b: Builder }) {
         </Button>
       )}
       <KeysHint />
-      <Go to={{ name: "scenarios", worldId: world.id }} className="btn btn-primary btn-small">
+      <Go to={{ name: "scenarios", worldId: world.id }} className="btn btn-small">
         다 지었어요
       </Go>
     </nav>

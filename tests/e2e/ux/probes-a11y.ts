@@ -1,7 +1,7 @@
 /** Accessibility: axe, the keyboard alone, a visible focus, and less motion when asked. */
 import AxeBuilder from "@axe-core/playwright";
 import type { Page } from "playwright";
-import { asVisitor, type Ids, open, pagesOf, record, type Site, type Tally, tally } from "./site";
+import { asVisitor, eachPage, type Ids, open, record, type Site, type Tally, tally } from "./site";
 
 export interface AxeCounts {
   pages: number;
@@ -13,19 +13,17 @@ export interface AxeCounts {
 export async function axe(site: Site, notes: string[]): Promise<AxeCounts> {
   const counts: AxeCounts = { pages: 0, critical: 0, serious: 0, moderate: 0 };
   for (const dark of [false, true]) {
-    await asVisitor(site, { dark }, async (v) => {
-      for (const p of pagesOf(site.ids)) {
-        await open(v.page, site.base, p.path);
-        const result = await new AxeBuilder({ page: v.page }).analyze();
-        counts.pages++;
-        for (const violation of result.violations) {
-          const impact = violation.impact ?? "minor";
-          if (impact === "critical" || impact === "serious" || impact === "moderate")
-            counts[impact]++;
-          notes.push(
-            `axe ${dark ? "dark" : "light"} ${p.key} ${impact} ${violation.id} (${violation.nodes.length}): ${violation.nodes[0]?.target.join(" ")}`,
-          );
-        }
+    await eachPage(site, { dark }, async (v, p) => {
+      await open(v.page, site.base, p.path);
+      const result = await new AxeBuilder({ page: v.page }).analyze();
+      counts.pages++;
+      for (const violation of result.violations) {
+        const impact = violation.impact ?? "minor";
+        if (impact === "critical" || impact === "serious" || impact === "moderate")
+          counts[impact]++;
+        notes.push(
+          `axe ${dark ? "dark" : "light"} ${p.key} ${impact} ${violation.id} (${violation.nodes.length}): ${violation.nodes[0]?.target.join(" ")}`,
+        );
       }
     });
   }
@@ -182,13 +180,11 @@ const ANIMATED = `() => {
 
 export async function motion(site: Site, notes: string[]): Promise<number> {
   let animated = 0;
-  await asVisitor(site, { reducedMotion: true }, async (v) => {
-    for (const p of pagesOf(site.ids)) {
-      await open(v.page, site.base, p.path);
-      const n = (await v.page.evaluate(`(${ANIMATED})()`)) as number;
-      if (n > 0) notes.push(`motion: ${p.key}에서 ${n}개가 줄이기를 켜도 움직인다`);
-      animated += n;
-    }
+  await eachPage(site, { reducedMotion: true }, async (v, p) => {
+    await open(v.page, site.base, p.path);
+    const n = (await v.page.evaluate(`(${ANIMATED})()`)) as number;
+    if (n > 0) notes.push(`motion: ${p.key}에서 ${n}개가 줄이기를 켜도 움직인다`);
+    animated += n;
   });
   return animated;
 }

@@ -2,19 +2,19 @@
 title: GPU 카탈로그 — H100부터 B300까지, 베라 루빈은 도입 예정
 kind: spec
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-11
 covers:
   - packages/core/src/catalog/gpus.ts
   - packages/core/src/catalog/builtin/gpu-servers.ts
   - packages/core/src/facades/redfish-processors.ts
   - apps/web/src/ui/builder/ServerCards.tsx
 verification_log:
-  - "2026-11-04: 처음 쓴 문서를 gpus.ts, gpu-servers.ts, redfish-processors.ts, RackPanel.tsx와 대조"
   - "2026-11-06: REQ-094 세계 만들기 입구·서비스부터·패널 없는 직접 짓기(ADR-0107~0109)를 코드와 대조해 해당 절을 더하거나 고쳤다"
   - "2026-11-06: REQ-094: CSS와 키보드 도움말(Toolbox의 조작법을 ? 도움말로 합침), 카드들을 코드와 다시 대조해 맞음"
   - "2026-11-06: REQ-094 최종 확인: 카드·사다리·생성 규칙·CSS·키보드 도움말을 코드와 대조해 맞음"
   - "2026-11-07: REQ-102: 빌더 카드 묶음이 바뀌었지만 서버 넣기 카드의 GPU 줄은 그대로 맞다"
-covers_hash: 0c4ed86d3f3273bc
+  - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
+covers_hash: 44d0b295ce046b77
 ---
 # GPU 카탈로그 (REQ-066, ADR-0063)
 

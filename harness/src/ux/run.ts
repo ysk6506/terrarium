@@ -1,8 +1,11 @@
 /**
  * `pnpm ux`: measure the Honeycomb in a real browser, record it, and say what to fix (REQ-041).
- *   pnpm ux            measure now (starts a server and a browser), write docs/generated/ux-score.json
- *   pnpm ux ratchet    raise the floors to what the last measurement reached
- *   pnpm ux check      only the structural check that `pnpm check` runs (no browser)
+ *   pnpm ux                     both: the journeys and every probe (starts a server and a browser), writes docs/generated/ux-score.json
+ *   pnpm ux measure             the same as `pnpm ux`
+ *   pnpm ux journeys [--group flow|build|own] [--only id,id]
+ *                               only "can a person finish each journey" (the merge gate's `ux-journeys`, ADR-0141)
+ *   pnpm ux ratchet             raise the floors to what the last measurement reached
+ *   pnpm ux check               only the structural check that `pnpm check` runs (no browser)
  * The browser half lives in tests/e2e/ux/measure.ts; it prints raw counts and this file scores them.
  */
 import { spawn } from "node:child_process";
@@ -45,8 +48,11 @@ export const runChild: Child = (command, args, { cwd, timeoutMs }) =>
   new Promise((resolve) => {
     const child = spawn(command, [...args], { cwd, env: process.env });
     let output = "";
+    // A long browser run in CI shows what it does while it does it: TERRARIUM_UX_ECHO=1.
+    const echo = process.env.TERRARIUM_UX_ECHO === "1";
     const collect = (chunk: Buffer) => {
       output += chunk.toString("utf8");
+      if (echo) process.stdout.write(chunk);
     };
     child.stdout.on("data", collect);
     child.stderr.on("data", collect);
@@ -63,6 +69,28 @@ export const runChild: Child = (command, args, { cwd, timeoutMs }) =>
 
 export const MEASURE_SCRIPT = "tests/e2e/ux/measure.ts";
 export const MEASURE_TIMEOUT_MS = 8 * 60_000;
+/** A group of journeys has to finish in this long; longer is a hang, not a slow machine (ADR-0141). */
+export const JOURNEYS_TIMEOUT_MS = 15 * 60_000;
+
+/** Only the journeys: can a person finish each one? Prints a line per journey; the code is 0 when all were finished. */
+export async function journeys(
+  root: string,
+  selection: { readonly group?: string; readonly only?: string },
+  out: (line: string) => void,
+  child: Child = runChild,
+): Promise<number> {
+  const args = ["tsx", MEASURE_SCRIPT, "--mode", "journeys"];
+  if (selection.group) args.push("--group", selection.group);
+  if (selection.only) args.push("--only", selection.only);
+  const result = await child("npx", args, { cwd: root, timeoutMs: JOURNEYS_TIMEOUT_MS });
+  for (const line of result.output.split("\n")) {
+    if (line.startsWith("note: ") || line.startsWith("journeys: ") || line.startsWith("step: "))
+      out(line);
+  }
+  if (result.code !== 0 && !result.output.includes("journeys: "))
+    out(`브라우저 실행이 끝나지 않았다 (종료 코드 ${result.code})\n${result.output.slice(-2000)}`);
+  return result.code === 0 ? 0 : 1;
+}
 
 /** Run the browser half and read the counts it wrote. */
 export async function measure(
@@ -129,9 +157,14 @@ export async function main(
     for (const [facet, floor] of Object.entries(ratchet(root))) out(`${facet}: ${floor}`);
     return 0;
   }
+  if (action === "journeys") {
+    const group = flag(flags, "group");
+    const only = flag(flags, "only");
+    return journeys(root, { ...(group ? { group } : {}), ...(only ? { only } : {}) }, out, child);
+  }
   if (action === "check") return finish("ux", structure(root, flag(flags, "base")), out);
   if (action !== "measure") {
-    out(`알 수 없는 명령: ${action} (measure, ratchet, check)`);
+    out(`알 수 없는 명령: ${action} (measure, journeys, ratchet, check)`);
     return 2;
   }
   const { report, notes } = await measure(root, child);

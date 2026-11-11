@@ -47,8 +47,12 @@ export async function findIds(base: string): Promise<Ids> {
     "/api/scenarios",
   );
   const experiments = await json<ExperimentItem[]>(base, "/api/experiments");
-  const root = experiments.find((e) => !e.experiment.parentId && e.status === "completed");
   const forked = experiments.find((e) => e.experiment.parentId && e.status === "completed");
+  // The experiment the fork came from is the ordinary one (the `run` journey's); another journey may have left a root
+  // experiment of a different kind (a web API one), whose page is not the page a person reads results on.
+  const root =
+    experiments.find((e) => e.experiment.id === forked?.experiment.parentId) ??
+    experiments.find((e) => !e.experiment.parentId && e.status === "completed");
   if (!worlds[0] || !scenarios[0] || !root || !forked)
     throw new Error("여정이 남겨야 할 세계, 시나리오, 실험이 없다");
   const view = await json<{ runs: Array<{ id: string }> }>(
@@ -113,6 +117,19 @@ export async function open(page: Page, base: string, path: string): Promise<void
     .catch(() => undefined);
   if (path.startsWith("/worlds/") || path.startsWith("/scenarios/"))
     await page.waitForTimeout(1200);
+}
+
+/**
+ * Run `work` on every page, each in a browser profile of its own. Letting go of a 3D world's graphics context takes seconds
+ * on a machine that draws with its processor, and a page that is opened after it in the same tab waits for it: the probe
+ * would then measure how long the world took to leave, not the page it is looking at.
+ */
+export async function eachPage(
+  site: Site,
+  options: VisitorOptions,
+  work: (v: Visitor, page: PageSpec) => Promise<void>,
+): Promise<void> {
+  for (const p of pagesOf(site.ids)) await asVisitor(site, options, (v) => work(v, p));
 }
 
 /** Run `work` as a fresh visitor and always close the browser context. */

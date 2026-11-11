@@ -2,7 +2,7 @@
 title: 세계 만들기 검토 — 설명 없이도 되는가, 토스의 원칙으로
 kind: spec
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-11
 covers:
   - apps/web/src/ui/pages/worlds.tsx
   - apps/web/src/ui/pages/world-forms.tsx
@@ -10,13 +10,13 @@ covers:
   - apps/web/src/ui/builder/Toolbox.tsx
   - apps/web/src/ui/builder/WorldBuilderPage.tsx
   - apps/web/src/ui/pages/new-world.tsx
-covers_hash: 7465d2e7b2338db3
+covers_hash: 028867aa84f411f8
 verification_log:
-  - "2026-11-07: REQ-102 뒤의 모습을 가리키는 말을 덧붙였다"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: REQ-109: 코드와 대조했다. 해당 문장을 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: REQ-109: 코드와 대조했다"
+  - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
 ---
 # 세계 만들기 검토 (베타 피드백 4·12, ADR-0083 예정)
 

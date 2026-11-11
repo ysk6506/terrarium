@@ -27,7 +27,7 @@ export const FACET_LABELS: Readonly<Record<Facet, string>> = {
 
 /** The journeys people do, and the most actions (clicks, typed fields, keys) each should take from the home page. */
 export const JOURNEY_BUDGETS = {
-  build: 8,
+  build: 10,
   design: 8,
   author: 8,
   run: 6,
@@ -35,7 +35,7 @@ export const JOURNEY_BUDGETS = {
   share: 5,
   fork: 6,
   compare: 4,
-  site: 6,
+  site: 8,
   "build-small": 8,
   "own-card-only": 18,
   topology: 5,

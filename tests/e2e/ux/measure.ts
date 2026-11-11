@@ -1,11 +1,15 @@
 /**
  * The browser half of the UX measurement (REQ-041, ADR-0031): builds the web app, starts a fresh server,
  * does what people do, and writes raw counts. It decides nothing; harness/src/ux/score.ts scores them.
- *   tsx tests/e2e/ux/measure.ts --out measurements.json
+ *   tsx tests/e2e/ux/measure.ts --out measurements.json                      journeys and probes (mode all)
+ *   tsx tests/e2e/ux/measure.ts --mode journeys [--group flow|build|own] [--only id,id] [--out file]
+ * `journeys` only asks whether each journey can be finished (ADR-0141): it runs no timing or accessibility probe,
+ * prints one line per journey and exits 1 when one failed. A group is a run of journeys that use what the
+ * earlier ones of the group made, so each group can run on its own fresh server.
  */
 import { writeFileSync } from "node:fs";
 import { launch } from "./driver";
-import { JOURNEYS, perform } from "./journeys";
+import { JOURNEY_GROUPS, JOURNEYS, perform, seedWorld } from "./journeys";
 import { axe, keyboard, motion } from "./probes-a11y";
 import { detail } from "./probes-detail";
 import { colors, load, orientation, reach } from "./probes-find";
@@ -14,9 +18,23 @@ import { voice } from "./probes-voice";
 import { buildWeb, startServer } from "./server";
 import { findIds, type Site } from "./site";
 
-const outIndex = process.argv.indexOf("--out");
-const out = outIndex > 0 ? process.argv[outIndex + 1] : undefined;
-if (!out) throw new Error("--out <file>이 필요하다");
+const argOf = (name: string): string | undefined => {
+  const at = process.argv.indexOf(name);
+  return at > 0 ? process.argv[at + 1] : undefined;
+};
+const out = argOf("--out");
+const mode = argOf("--mode") ?? "all";
+if (mode !== "all" && mode !== "journeys") throw new Error(`--mode는 all이나 journeys다 (${mode})`);
+if (!out && mode === "all") throw new Error("--out <file>이 필요하다");
+const group = argOf("--group");
+const only = argOf("--only")?.split(",");
+if (group && !(group in JOURNEY_GROUPS)) throw new Error(`없는 묶음이다: ${group}`);
+const wanted = group ? JOURNEY_GROUPS[group] : only;
+const chosen = JOURNEYS.filter(([id]) => !wanted || wanted.includes(id));
+if (chosen.length === 0) throw new Error("돌릴 여정이 없다");
+
+/** Thrown to leave the run early (journeys mode) while still closing the browser and the server. */
+class Done extends Error {}
 
 const root = process.cwd();
 const notes: string[] = [];
@@ -43,23 +61,52 @@ const server = await startServer(root);
 const browser = await launch();
 try {
   const first = { browser, base: server.url } as Site;
-  log("note: 빈 서버에서 빈 화면과 오류 화면을 본다");
-  const emptyScreens = await step("빈 화면", () => empties(first, notes), none);
-  const failureScreens = await step("오류 화면", () => failures(first, notes), none);
+  const measuring = mode === "all";
+  if (measuring) log("note: 빈 서버에서 빈 화면과 오류 화면을 본다");
+  const emptyScreens = measuring ? await step("빈 화면", () => empties(first, notes), none) : none;
+  const failureScreens = measuring
+    ? await step("오류 화면", () => failures(first, notes), none)
+    : none;
 
-  const journeys: Record<string, { ok: boolean; actions: number; note?: string }> = {};
+  await seedWorld(
+    server.url,
+    chosen.map(([id]) => id),
+  );
+  const journeys: Record<
+    string,
+    { ok: boolean; actions: number; note?: string; seconds?: number }
+  > = {};
   const clean = { tried: 0, ok: 0 };
-  for (const [id, work] of JOURNEYS) {
-    const outcome = await perform(browser, server.url, work);
+  for (const [id, work] of chosen) {
+    const began = Date.now();
+    // A browser for each journey: the graphics process of one that drew a 3D world can still be busy tearing it down,
+    // and the next journey would pay for that wait (software rendering on the runner).
+    const own = await launch();
+    const outcome = await perform(own, server.url, work).finally(() => own.close());
     journeys[id] = {
       ok: outcome.ok,
       actions: outcome.actions,
+      seconds: Math.round((Date.now() - began) / 100) / 10,
       ...(outcome.note ? { note: outcome.note } : {}),
     };
     clean.tried += outcome.screens;
     if (outcome.problems.length === 0) clean.ok += outcome.screens;
-    log(`note: 여정 ${id} ${outcome.ok ? "ok" : `실패 ${outcome.note}`} (${outcome.actions}번)`);
+    log(
+      `note: 여정 ${id} ${outcome.ok ? "ok" : `실패 ${outcome.note}`} (${outcome.actions}번, ${journeys[id]?.seconds}초)`,
+    );
     for (const p of outcome.problems) notes.push(`journey ${id}: ${p}`);
+  }
+  if (!measuring) {
+    if (out) writeFileSync(out, JSON.stringify({ journeys }, null, 2));
+    for (const n of notes) log(`note: ${n}`);
+    const failed = Object.entries(journeys).filter(([, j]) => !j.ok);
+    log(
+      failed.length === 0
+        ? "journeys: 모두 끝냈다"
+        : `journeys: 못 끝낸 여정 ${failed.map(([id]) => id).join(", ")}`,
+    );
+    process.exitCode = failed.length === 0 ? 0 : 1;
+    throw new Done();
   }
 
   const site: Site = { browser, base: server.url, ids: await findIds(server.url) };
@@ -98,8 +145,10 @@ try {
       hover: none,
     })),
   };
-  writeFileSync(out, JSON.stringify(result, null, 2));
+  writeFileSync(out as string, JSON.stringify(result, null, 2));
   for (const n of notes) log(`note: ${n}`);
+} catch (err) {
+  if (!(err instanceof Done)) throw err;
 } finally {
   await browser.close();
   await server.stop();

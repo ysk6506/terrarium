@@ -4,7 +4,7 @@ import { describe, expect, test } from "vitest";
 import { miniRepo } from "../test-support/mini-repo";
 import { perfect, withChange } from "../test-support/ux-measurements";
 import { FLOOR_FILE, loadReport, REPORT_FILE } from "./check";
-import { type Child, describe as describeScores, main, measure, runChild } from "./run";
+import { type Child, describe as describeScores, journeys, main, measure, runChild } from "./run";
 import { FACETS, type Measurements, scoreAll } from "./score";
 
 const NO_LOG = () => undefined;
@@ -76,6 +76,71 @@ describe("measuring [REQ-041]", () => {
       return { code: 0, output: "" };
     };
     await expect(measure(repo(), child)).rejects.toThrow("load");
+  });
+});
+
+describe("only the journeys [REQ-114]", () => {
+  const says =
+    (code: number, output: string): Child =>
+    async () => ({ code, output });
+
+  test("prints a line per journey and exits 0 when every journey was finished", async () => {
+    const { out, log } = lines();
+    const code = await journeys(
+      repo(),
+      {},
+      log,
+      says(0, "step: x 1초\nnote: 여정 run ok (2번, 11.3초)\nbuilt 123\njourneys: 모두 끝냈다"),
+    );
+    expect(code).toBe(0);
+    expect(out).toEqual([
+      "step: x 1초",
+      "note: 여정 run ok (2번, 11.3초)",
+      "journeys: 모두 끝냈다",
+    ]);
+  });
+
+  test("a journey that was not finished fails the run and says which", async () => {
+    const { out, log } = lines();
+    const code = await journeys(
+      repo(),
+      {},
+      log,
+      says(1, "note: 여정 cancel 실패 시간 초과\njourneys: 못 끝낸 여정 cancel"),
+    );
+    expect(code).toBe(1);
+    expect(out.join("\n")).toContain("못 끝낸 여정 cancel");
+  });
+
+  test("a browser run that died before it could say is a failure with its last words", async () => {
+    const { out, log } = lines();
+    expect(await journeys(repo(), {}, log, says(1, "chromium missing"))).toBe(1);
+    expect(out.join("\n")).toContain("chromium missing");
+  });
+
+  test("the group and the choice go to the browser half, and no measurement file is written", async () => {
+    const seen: string[][] = [];
+    const root = repo();
+    const code = await main(
+      ["journeys", "--group", "flow", "--only", "run,share", "--root", root],
+      NO_LOG,
+      async (_c, args) => {
+        seen.push([...args]);
+        return { code: 0, output: "journeys: 모두 끝냈다" };
+      },
+    );
+    expect(code).toBe(0);
+    expect(seen[0]).toEqual([
+      "tsx",
+      "tests/e2e/ux/measure.ts",
+      "--mode",
+      "journeys",
+      "--group",
+      "flow",
+      "--only",
+      "run,share",
+    ]);
+    expect(typeof loadReport(root)).toBe("string");
   });
 });
 

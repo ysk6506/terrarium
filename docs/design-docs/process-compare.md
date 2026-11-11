@@ -2,7 +2,7 @@
 title: 프로세스 비교 — 지금 하는 방식과 에이전트가 하는 방식을 단계·사람·시간으로 견주기 (REQ-112)
 kind: spec
 status: active
-last_verified: 2026-11-10
+last_verified: 2026-11-11
 covers:
   - packages/core/src/contract/process.ts
   - packages/core/src/contract/process-routes.ts
@@ -18,12 +18,13 @@ covers:
   - apps/web/src/ui/pages/process-table.tsx
   - apps/web/src/ui/pages/process-compare.tsx
   - apps/web/src/ui/pages/process-ontology.tsx
-covers_hash: 727e778b2fa467be
+covers_hash: c22a10d4c4df457f
 verification_log:
-  - "2026-11-07: 코드(계약·접기·온톨로지·서버·웹 화면)와 대조해 단계 접기 표, 내보내기, 화면 위치를 고쳤다"
   - "2026-11-07: 이끼 동작을 없앤 것과 화면 구성을 코드와 다시 대조했다"
   - "2026-11-10: 내려받는 파일 이름 규칙(exportName)을 코드와 대조해 더했다"
   - "2026-11-10: 파일 이름 규칙을 fileName 그대로(한글 유지)로 되돌려 대조했다"
+  - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
+  - "2026-11-11: 2026-11-11: 이끼 동작 셋을 코드와 대조해 맞음 (ADR-0141)"
 ---
 # 프로세스 비교 (REQ-112, [ADR-0135](adr/0135-process-compare.md))
 
@@ -112,9 +113,9 @@ verification_log:
 |---|---|
 | 숫자 타일 (단계·사람·시간·툴) | `MossAsk`: "이 숫자는 뭐예요?" 눌러 물음 |
 | "이끼의 설명" | 기본 모델이 있을 때만 그려요. 없으면 블록 자체가 없어요 |
-| 화면 등록 | `scenarioProcess` 라우트 한 칸 (`apps/web/src/moss/registry.ts`). 읽기(`read`)로 적은 단계와 요약을 이끼에게 알려요 |
+| 화면 등록 | `scenarioProcess` 라우트 한 칸 (`apps/web/src/moss/registry-scenario.ts`). 읽기(`read`)로 적은 단계와 요약을 이끼에게 알려요 |
 
-이끼의 동작은 따로 두지 않았어요. 저장·내려받기는 사람이 직접 누르고, 그래서 이 화면의 버튼은 모두 `data-moss-skip`이에요 (`moss.md`의 규칙).
+이끼의 동작은 셋이에요(ADR-0141): `process-add-step`("단계 한 줄 더하기"), `process-save`(저장, 카드로 확인), `process-experiment`(저장한 표로 새 실험). 이 화면의 큰 버튼은 `data-moss-action`이고, 행 안의 위·아래·지우기 같은 편집 버튼만 `data-moss-skip`이에요 (`moss.md`의 규칙).
 
 ## 저장과 경계
 

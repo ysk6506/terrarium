@@ -155,3 +155,26 @@ describe("moss scanners read the sources the way the check says [REQ-103]", () =
     ).toEqual({ usesAsk: false, hits: [{ id: "score-tile", line: 1 }] });
   });
 });
+
+describe("the registry may be split into per-area files [REQ-114]", () => {
+  const SPLIT_GLOBAL = `export const GLOBAL_ACTIONS = [{ id: "go-home", label: "홈", kind: "navigate", go: { name: "home" } }];`;
+  const SPLIT_HOME = `export const HOME = { home: { route: "home", title: "홈", oneLine: "홈이에요.", actions: [{ id: "do-it", label: "하기", kind: "change" }, { id: "peek", label: "보기", kind: "navigate", go: { name: "home" } }] } };`;
+  const SPLIT_SETTINGS = `export const OTHER = { settings: { route: "settings", title: "설정", oneLine: "설정이에요.", actions: [] } };`;
+  const split = (over: Record<string, string> = {}) =>
+    repo({
+      "apps/web/src/moss/registry.ts": "export const SCREENS = { ...HOME, ...OTHER };",
+      "apps/web/src/moss/registry-global.ts": SPLIT_GLOBAL,
+      "apps/web/src/moss/registry-world.ts": SPLIT_HOME,
+      "apps/web/src/moss/registry-other.ts": SPLIT_SETTINGS,
+      ...over,
+    });
+
+  test("routes and actions spread over registry-*.ts count as one registry", () => {
+    expect(codes(split())).toEqual([]);
+  });
+
+  test("a route missing from every part is still MOSS001", () => {
+    const root = split({ "apps/web/src/moss/registry-other.ts": "export const OTHER = {};" });
+    expect(codes(root).join("\n")).toContain('route "settings" has no entry');
+  });
+});

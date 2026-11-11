@@ -62,6 +62,8 @@ export interface Engine {
   readonly frames: () => number;
   /** Nothing is waiting to be drawn and nothing is moving. */
   idle(): boolean;
+  /** While paused nothing is drawn and nothing moves: the stage is behind another view (the topology eye) and keeps its place. */
+  setPaused(on: boolean): void;
   dispose(): void;
 }
 
@@ -209,6 +211,7 @@ class StageEngine implements Engine {
   private width = 0;
   private height = 0;
   private dirty = true;
+  private paused = false;
   private tiltAmount = 2.2;
   private running = 0;
   private count = 0;
@@ -286,6 +289,14 @@ class StageEngine implements Engine {
   }
 
   invalidate(): void {
+    this.dirty = true;
+  }
+
+  setPaused(on: boolean): void {
+    if (on === this.paused) return;
+    this.paused = on;
+    // Back on: the time spent away is not one long step, and the picture is drawn at once.
+    this.last = performance.now();
     this.dirty = true;
   }
 
@@ -426,6 +437,7 @@ class StageEngine implements Engine {
   private readonly tick = (now: number): void => {
     if (this.disposed) return;
     this.raf = requestAnimationFrame(this.tick);
+    if (this.paused) return;
     const dt = Math.min(0.1, (now - this.last) / 1000);
     this.last = now;
     const was = this.strain.level;

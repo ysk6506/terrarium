@@ -193,6 +193,7 @@ export const REPLAY_CSS = `
 }
 
 .rb-speed select {
+  min-height: 32px;
   padding: 2px 6px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -204,13 +205,14 @@ export const REPLAY_CSS = `
 .rb-ticks {
   position: relative;
   grid-column: 2;
-  height: 34px;
+  height: 66px;
   font-size: 11px;
 }
 
 .rb-tick {
   position: absolute;
-  padding: 0 2px;
+  min-height: 32px;
+  padding: 0 4px;
   border: 0;
   background: none;
   color: var(--mark, var(--ink-3));
@@ -222,7 +224,7 @@ export const REPLAY_CSS = `
 }
 
 .rb-tick.row-1 {
-  top: 16px;
+  top: 34px;
 }
 
 .replay-stage {
