@@ -1,14 +1,14 @@
 ---
-title: ADR-0160 생김새 견본 시험에서 막힌 열아홉 곳을 메운다 — 손질은 여덟 가지, 딸린 요청, 다듬어 견주기, 묶음의 출처
+title: ADR-0161 생김새 견본 시험에서 막힌 열아홉 곳을 메운다 — 손질은 여덟 가지, 딸린 요청, 다듬어 견주기, 묶음의 출처
 kind: decision
 status: active
 last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-115 예정). 만들 때 enforced_by를 견본·합·다듬기·양쪽·묶음의 출처 시험으로 바꾼다.
-decision_hash: dea7d8a0f37a4a68
+decision_hash: fe39d964039dd0a5
 ---
-# ADR-0160 생김새 견본 시험에서 막힌 열아홉 곳을 메운다 — 손질은 여덟 가지, 딸린 요청, 다듬어 견주기, 묶음의 출처
+# ADR-0161 생김새 견본 시험에서 막힌 열아홉 곳을 메운다 — 손질은 여덟 가지, 딸린 요청, 다듬어 견주기, 묶음의 출처
 
 ## 맥락
 ADR-0144 14번은 단계 B의 첫 일을 커넥터가 아니라 생김새 견본 시험으로 정했다. 여덟 가지 생김새(엑셀 랙 위치·전원·냉방, Splunk의 SPL 결과, vROps, vCenter 목록 API, OpenStack, 스위치의 포트·묶음·이웃·세션)를 지어낸 데이터로 본떠 설계에 넣어 봤다. 기록은 `docs/design-docs/reality-shape-samples.md`다.

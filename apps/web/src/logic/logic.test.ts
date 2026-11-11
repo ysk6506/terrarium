@@ -265,6 +265,7 @@ const run = (id: string, index: number, status: RunSummary["status"] = "queued")
   id,
   index,
   seed: index + 1,
+  repeat: 1,
   status,
   queuedAt: "2026-10-29T00:00:00Z",
   score: null,

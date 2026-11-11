@@ -57,6 +57,7 @@ export function summaryOf(run: RunRecord) {
     id: run.id,
     index: run.index,
     seed: run.seed,
+    repeat: run.repeat,
     status: run.status,
     queuedAt: run.queuedAt,
     ...(run.startedAt ? { startedAt: run.startedAt } : {}),
@@ -327,6 +328,7 @@ function wire(
   const request: AgentRunRequest = {
     runId: run.id,
     seed: run.seed,
+    repeat: run.repeat,
     agentId: experiment.recipe.agentId,
     prompt: resume ? `${session.task.prompt}\n\n${RESUME_NOTE}` : session.task.prompt,
     limits: {

@@ -102,6 +102,7 @@ export class CommandAgent implements HarnessPort {
       TERRARIUM_PROMPT: req.prompt,
       TERRARIUM_MCP_URL: req.tools.mcpUrl ?? "",
       TERRARIUM_SEED: String(req.seed),
+      TERRARIUM_REPEAT: String(req.repeat ?? 1),
       TERRARIUM_MAX_TOOL_CALLS: String(req.limits.maxToolCalls),
       TERRARIUM_TIME_LIMIT_SECONDS: String(req.limits.timeLimitSeconds),
       ...(req.traceparent ? { TRACEPARENT: req.traceparent } : {}),
@@ -172,7 +173,7 @@ export const commandConnector = defineConnector({
         label: "명령과 인자",
         type: "lines",
         required: true,
-        help: "한 줄에 하나(첫 줄이 프로그램). 쓸 수 있는 변수: {{prompt}} {{mcpUrl}} {{runId}} {{seed}}",
+        help: "한 줄에 하나(첫 줄이 프로그램). 쓸 수 있는 변수: {{prompt}} {{mcpUrl}} {{runId}} {{seed}} {{repeat}}",
       },
       { key: "cwd", label: "작업 폴더", type: "text" },
       {

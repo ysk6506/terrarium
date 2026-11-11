@@ -25,6 +25,8 @@ export interface RunAnalysis {
   readonly runId: string;
   readonly index: number;
   readonly seed: number;
+  /** From 1: which run of this seed (ADR-0158). */
+  readonly repeat: number;
   readonly status: RunStatus;
   readonly score: number | null;
   readonly passed: boolean;
@@ -175,6 +177,7 @@ export function analyzeRun(run: RunRecord, telemetry: Telemetry = NO_TELEMETRY):
     runId: run.id,
     index: run.index,
     seed: run.seed,
+    repeat: run.repeat,
     status: run.status,
     score: result?.score.total ?? null,
     passed: result?.score.passed ?? false,

@@ -8,7 +8,7 @@ verification_log:
   - "2026-11-11: 복사는 범위를 골라서 (ADR-0154). contract/schemas.ts 한도와 capacity.md 잰 값과 대조"
   - "2026-11-11: 실시간 상태는 액션과 함께 미룸 (제품 책임자와 정함)"
   - "2026-11-11: 11절 관측성. cluster/control-routes.ts의 metricsText, runtime/executor.ts의 traceparent와 대조"
-  - "2026-11-11: 9·10절: 엑셀 읽기 설정과 못 읽는 모양, SPL의 기대하는 열 (ADR-0160)"
+  - "2026-11-11: 9·10절: 엑셀 읽기 설정과 못 읽는 모양, SPL의 기대하는 열 (ADR-0161)"
 ---
 # 소스 관리 (REQ-115 예정, ADR-0151)
 
@@ -108,7 +108,7 @@ verification_log:
   2. 테라리움은 SPL의 명령을 허용 목록으로 봐요. 읽는 명령만 통과해요. Splunk가 위험하다고 정한 명령(`collect`, `delete`, `dump`, `map`, `mcollect`, `meventcollect`, `outputcsv`, `outputlookup`, `run`, `runshellscript`, `script`, `sendalert`, `sendemail`, `tscollect`)과 모르는 명령은 거절해요.
   3. Splunk의 위험 명령 검사를 끄지 않아요.
 - 검색마다 시간 범위와 받는 줄 수에 한도가 있어요. 한도에 닿으면 잘린 채 적용하지 않고 멈춰요.
-- 검색을 저장할 때 **기대하는 열**을 적어 둬요. Splunk는 값이 없는 열을 결과에서 빼기 때문에, 빠진 열은 "모두 빈 값"으로 보고 멈출지는 필수 속성과 사라짐 안전장치가 정해요(ADR-0160 5번).
+- 검색을 저장할 때 **기대하는 열**을 적어 둬요. Splunk는 값이 없는 열을 결과에서 빼기 때문에, 빠진 열은 "모두 빈 값"으로 보고 멈출지는 필수 속성과 사라짐 안전장치가 정해요(ADR-0161 5번).
 - 사건에서 구성을 뽑는 검색은 그 시간 범위에 말한 것만 보여요. 화면은 시간 범위를 동기화 주기의 세 배보다 길게 잡으라고 권해요.
 
 ## 11. 관측성: 수집이 잘 도는지 밖에서도 보여요

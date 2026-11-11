@@ -3,7 +3,9 @@
  * what was learned, each run, and the ways onward: share it, change a condition and run it again,
  * add more runs, or stop it.
  */
+
 import type { ExperimentView, RunSummary } from "@terrarium/core/contract";
+import { repeatsOf, sizeProblemsOf } from "@terrarium/core/experiments";
 import { withJosa } from "@terrarium/core/kernel";
 import { useState } from "react";
 import { dateText, hallTopology, statusLabel } from "../../logic";
@@ -32,6 +34,7 @@ import {
   ParentCard,
   ResultFigures,
   RunsTable,
+  SeedRows,
 } from "./experiment-parts";
 import { SubjectPanel } from "./experiment-subject";
 import { OperationCards } from "./operation-card";
@@ -168,13 +171,20 @@ function AddRuns({
   const { api } = useApp();
   const { busy, run } = useAction();
   const [count, setCount] = useState(3);
-  const add = async () => {
+  const { seeds, repeats } = {
+    seeds: view.experiment.recipe.seeds.length,
+    repeats: repeatsOf(view.experiment.recipe),
+  };
+  const more = async (body: { count: number } | { repeats: number }, done: string) => {
     const next = await run(
-      () => api.call("addRuns", { params: { id: view.experiment.id }, body: { count } }),
-      `${count}회를 더했어요`,
+      () => api.call("addRuns", { params: { id: view.experiment.id }, body }),
+      done,
     );
     if (next) onDone(next);
   };
+  // each way of adding is held to the size limit before it is tried, and says why when it cannot be
+  const seedsWhy = sizeProblemsOf(seeds + count, repeats)[0];
+  const repeatsWhy = sizeProblemsOf(seeds, repeats + 1)[0];
   return (
     <div className="row" style={{ alignItems: "flex-end" }}>
       <div style={{ width: 140 }}>
@@ -188,8 +198,24 @@ function AddRuns({
           onChange={(v) => v !== undefined && setCount(Math.round(v))}
         />
       </div>
-      <Button data-moss-skip="세부 조절" busy={busy} onClick={() => void add()}>
+      <Button
+        data-moss-skip="세부 조절"
+        busy={busy}
+        disabled={seedsWhy !== undefined}
+        why={seedsWhy}
+        onClick={() => void more({ count }, `${count}회를 더했어요`)}
+      >
         같은 조건으로 더 돌리기
+        {repeats > 1 ? ` (실행 ${count * repeats}번)` : ""}
+      </Button>
+      <Button
+        data-moss-skip="세부 조절"
+        busy={busy}
+        disabled={repeatsWhy !== undefined}
+        why={repeatsWhy}
+        onClick={() => void more({ repeats: 1 }, `상황마다 한 번씩 더했어요`)}
+      >
+        {`상황마다 한 번씩 더 돌리기 (실행 ${seeds}번)`}
       </Button>
     </div>
   );
@@ -313,6 +339,21 @@ function useExperimentMoss(view: ExperimentView | undefined) {
   });
 }
 
+function Figures({ view }: { readonly view: ExperimentView }) {
+  if (view.experiment.recipe.operation)
+    return (
+      <p className="small muted">
+        운영 실험은 실행마다 결과 화면에서 서비스 가용률, 놓친 알람, 탐지 지연을 봐요. 합격이나
+        점수는 없어요.
+      </p>
+    );
+  return (
+    <>
+      <ResultFigures a={view.analysis} />
+    </>
+  );
+}
+
 export function ExperimentPage({ id }: { readonly id: string }) {
   const { api } = useApp();
   const [picked, setPicked] = useState<readonly string[]>([]);
@@ -348,16 +389,10 @@ export function ExperimentPage({ id }: { readonly id: string }) {
           hours={view.experiment.recipe.operation.hours}
         />
       )}
-      {view.experiment.recipe.operation ? (
-        <p className="small muted">
-          운영 실험은 실행마다 결과 화면에서 서비스 가용률, 놓친 알람, 탐지 지연을 봐요. 합격이나
-          점수는 없어요.
-        </p>
-      ) : (
-        <ResultFigures a={view.analysis} />
-      )}
+      <Figures view={view} />
       <LiveStatus view={view} status={status} />
       <Findings items={view.analysis.findings} />
+      <SeedRows runs={runs} analysis={view.analysis} />
       <ProcessSections view={view} />
       {view.analysis.parent && (
         <ParentCard parent={view.analysis.parent} ready={view.analysis.progress.completed > 0} />

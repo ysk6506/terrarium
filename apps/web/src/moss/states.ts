@@ -26,6 +26,7 @@ export function runState(view: RunView) {
     실행: {
       번호: run.index + 1,
       시드: run.seed,
+      반복: run.repeat,
       상태: run.status,
       끝난_이유: analysis.endLabel ?? analysis.endReason ?? null,
       오류: run.error ?? null,
@@ -81,15 +82,19 @@ export function experimentState(view: ExperimentView) {
       에이전트: view.experiment.recipe.agentId,
       툴: `${view.experiment.recipe.tools.length}개`,
       횟수: `${view.experiment.recipe.seeds.length}번`,
+      시드당_반복: `${a.repeats}번`,
     },
     평균_점수: a.score
-      ? `${a.score.mean.toFixed(1)}점 (오차 ±${a.score.ci95.toFixed(1)}, ${a.score.n}번)`
+      ? `${a.score.mean.toFixed(1)}점 (오차 ±${a.score.ci95.toFixed(1)}, 시드 ${a.score.n}개)`
       : null,
+    같은_조건의_흔들림: a.withinSeed ? `±${a.withinSeed.spread.toFixed(1)}점` : null,
+    결과가_갈린_시드: `${a.seeds}개 중 ${a.splitSeeds}개`,
     알아낸_것: a.findings,
     실행: view.runs.map((r) => ({
       번호: r.index + 1,
       id: r.id,
       시드: r.seed,
+      반복: r.repeat,
       상태: r.status,
       점수: scoreText(r.score),
       합격: r.passed ? "합격" : "불합격",

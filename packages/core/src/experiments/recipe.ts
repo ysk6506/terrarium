@@ -11,7 +11,15 @@ import { TOOL_NAMES } from "@terrarium/core/tools";
 import { isDefaultLeadSettings, resolveLeadSettings } from "@terrarium/core/world";
 import type { Recipe, Snapshot } from "./model";
 
+/** Seeds in one experiment: the situations compared. */
 export const MAX_SEEDS = 20;
+/** Times one seed is run (ADR-0158). */
+export const MAX_REPEATS = 10;
+/**
+ * Runs in one experiment, seeds × repeats (ADR-0158): three times the 20 it was when a run was a seed, so the largest
+ * experiment of before can still be repeated three times, and a run costs the same as ever.
+ */
+export const MAX_RUNS = 60;
 export const MAX_REPLY = 1000;
 export const DEFAULT_SEEDS: readonly number[] = [1, 2, 3];
 
@@ -21,6 +29,13 @@ export interface RecipeContext {
   /** Agents the chosen harness offers, when known. */
   readonly agents?: readonly string[];
 }
+
+/** How many times each seed runs; a recipe from before repeats existed runs each once. */
+export const repeatsOf = (recipe: Pick<Recipe, "repeats">): number => recipe.repeats ?? 1;
+
+/** The runs an experiment is made of: seeds × repeats. */
+export const runCountOf = (recipe: Pick<Recipe, "seeds" | "repeats">): number =>
+  recipe.seeds.length * repeatsOf(recipe);
 
 /** Seeds 1..n, the default so that experiments in one benchmark set face the same scenario draws. */
 export const seedsUpTo = (n: number): number[] => Array.from({ length: n }, (_, i) => i + 1);
@@ -34,11 +49,28 @@ function toolProblems(tools: readonly string[]): string[] {
   return out;
 }
 
-function seedProblems(seeds: readonly number[]): string[] {
-  if (seeds.length === 0) return ["시드를 하나 이상 정해야 해요"];
+/** The size of an experiment against the limits: seeds, repeats and the runs they make. Empty when it fits. */
+export function sizeProblems(recipe: Pick<Recipe, "seeds" | "repeats">): string[] {
+  return sizeProblemsOf(recipe.seeds.length, repeatsOf(recipe));
+}
+
+/** The same, for a number of seeds and of repeats (a form that has not made seeds yet). */
+export function sizeProblemsOf(seeds: number, repeats: number): string[] {
   const out: string[] = [];
-  if (seeds.length > MAX_SEEDS)
-    out.push(`실행은 한 실험에 ${MAX_SEEDS}번까지예요 (지금 ${seeds.length}번)`);
+  if (seeds > MAX_SEEDS) out.push(`상황은 한 실험에 ${MAX_SEEDS}개까지예요 (지금 ${seeds}개)`);
+  if (!Number.isInteger(repeats) || repeats < 1 || repeats > MAX_REPEATS)
+    out.push(`같은 상황은 1~${MAX_REPEATS}번씩 돌릴 수 있어요`);
+  else if (seeds * repeats > MAX_RUNS)
+    out.push(
+      `실행은 한 실험에 ${MAX_RUNS}번까지예요 (상황 ${seeds}개 × ${repeats}번씩 = ${seeds * repeats}번)`,
+    );
+  return out;
+}
+
+function seedProblems(recipe: Pick<Recipe, "seeds" | "repeats">): string[] {
+  const { seeds } = recipe;
+  if (seeds.length === 0) return ["시드를 하나 이상 정해야 해요"];
+  const out = sizeProblems(recipe);
   if (seeds.some((s) => !Number.isInteger(s) || s < 0)) out.push("시드는 0 이상의 정수여야 해요");
   if (new Set(seeds).size !== seeds.length) out.push("같은 시드가 두 번 들어 있어요");
   return out;
@@ -96,7 +128,7 @@ function operationProblems(recipe: Recipe): string[] {
 export function recipeProblems(recipe: Recipe, ctx: RecipeContext): string[] {
   const out = [
     ...toolProblems(recipe.tools),
-    ...seedProblems(recipe.seeds),
+    ...seedProblems(recipe),
     ...timeProblems(recipe.time),
     ...humanProblems(recipe),
     ...profileProblems(recipe, ctx),

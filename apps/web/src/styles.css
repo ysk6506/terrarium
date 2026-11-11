@@ -6088,3 +6088,83 @@ ol.uu li {
     justify-self: start;
   }
 }
+
+/* ── seeds and repeats (ADR-0158) ──────────────────────────────────────────── */
+
+.steadiness {
+  margin: 0 0 12px;
+  font-size: 15px;
+}
+
+.seed-rows {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+}
+
+.seed-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 12px 16px;
+  box-shadow: inset 0 -1px var(--fill);
+}
+
+.seed-name {
+  min-width: 64px;
+  font-weight: 600;
+}
+
+.seed-dots {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* A passed run is a round dot with a tick, a failed one a square with a cross: the shape and the mark say it, the colour agrees. */
+.seed-dot {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--ink-2);
+  border-radius: 50%;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.seed-dot[data-state="pass"] {
+  border-color: var(--good);
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+.seed-dot[data-state="fail"] {
+  border-color: var(--bad);
+  border-radius: 4px;
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+
+.seed-dot[data-state="broken"],
+.seed-dot[data-state="stopped"] {
+  border-style: dashed;
+  border-radius: 4px;
+}
+
+.seed-range {
+  margin-inline-start: auto;
+  color: var(--ink-2);
+}
+
+.seed-split {
+  font-size: 13px;
+  color: var(--ink-2);
+}
