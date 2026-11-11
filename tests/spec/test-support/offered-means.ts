@@ -15,6 +15,7 @@ import {
   generateWorld,
   type ShapeSpec,
   SITE_PRESETS,
+  type SiteId,
   shapeProblem,
   sizeFields,
 } from "@terrarium/core/sources/worldgen";
@@ -77,15 +78,15 @@ export const LADDER_SHAPES: readonly GoldenWorld[] = LAYER_IDS.flatMap((layer) =
 );
 
 /** Every site the world generator and the campus generator have a preset for. */
-export const SITES: readonly string[] = SITE_PRESETS.map((p) => p.id);
+export const SITES: readonly SiteId[] = SITE_PRESETS.map((p) => p.id);
 
-export const worldShape = (site: string): GoldenWorld => ({
+export const worldShape = (site: SiteId): GoldenWorld => ({
   id: `world-${site}`,
   shape: `generateWorld(DEFAULT_WORLDGEN, site ${site}, seed 1)`,
   make: () => generateWorld({ ...DEFAULT_WORLDGEN, seed: 1, site }, catalog).blueprint,
 });
 
-export const campusShape = (site: string): GoldenWorld => ({
+export const campusShape = (site: SiteId): GoldenWorld => ({
   id: `campus-${site}`,
   shape: `generateCampus(DEFAULT_CAMPUS, site ${site}, seed 1)`,
   make: () => generateCampus({ ...DEFAULT_CAMPUS, seed: 1, site }, catalog).blueprint,
