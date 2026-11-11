@@ -1,7 +1,7 @@
 /**
  * How numbers, times and states read on screen. One place, so "67%" and "3분 전" look the same everywhere.
  */
-import type { ExperimentStatus, RunStatus } from "@terrarium/core/experiments";
+import type { ExperimentStatus, Progress, RunStatus } from "@terrarium/core/experiments";
 import { RUN_STATUS_LABELS } from "@terrarium/core/experiments";
 import { formatDuration } from "@terrarium/core/kernel";
 import { PASS_MARK } from "@terrarium/core/oracle";
@@ -22,6 +22,18 @@ export const STATUS_TONES: Readonly<Record<RunStatus, Tone>> = {
 /** "멈춤" is "멈춤(사람)" for an operation: it only ends by its hours, its call limit, or a person (ADR-0094 item 3). */
 export function statusLabel(status: RunStatus | ExperimentStatus, operation = false): string {
   return operation && status === "cancelled" ? "멈춤(사람)" : RUN_STATUS_LABELS[status];
+}
+
+/**
+ * How far an experiment got. One a person stopped says what it planned beside what ended, "20회 중 1회 끝", so it is
+ * not read as a whole one (ADR-0163); the others say the runs that ended, as "3/20회" while they go.
+ */
+export const stoppedWords = (p: Progress): string => `${p.total}회 중 ${p.completed}회 끝`;
+
+export function progressWords(status: ExperimentStatus, p: Progress): string {
+  if (status === "cancelled") return stoppedWords(p);
+  if (p.finished === p.total) return `${p.total}회 끝`;
+  return `${p.finished}/${p.total}회${p.running > 0 ? `, ${p.running}회 실행 중` : ""}`;
 }
 
 export const percent = (ratio: number, digits = 0) => `${(ratio * 100).toFixed(digits)}%`;

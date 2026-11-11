@@ -1,17 +1,13 @@
 /** Experiments (REQ-030): everyone's, newest first, or only mine; status and results at a glance. */
 import type { ExperimentSummary } from "@terrarium/core/contract";
 import { useState } from "react";
-import { percent, relativeTime, scoreText } from "../../logic";
+import { percent, progressWords, relativeTime, scoreText } from "../../logic";
 import { experimentsState, useMossRead } from "../../moss";
 import { Go, useApp, useAsync, useNow } from "../context";
 import { Button, Empty, Failure, Loading, PageHead, Segmented, Status } from "../kit";
 import { TitlePills } from "../titles";
 
-export function progressText(s: ExperimentSummary): string {
-  const p = s.progress;
-  if (p.finished === p.total) return `${p.total}회 끝`;
-  return `${p.finished}/${p.total}회${p.running > 0 ? `, ${p.running}회 실행 중` : ""}`;
-}
+export const progressText = (s: ExperimentSummary): string => progressWords(s.status, s.progress);
 
 /** The `name=value` pairs an experiment carries, small, under its name. */
 export function MetaTags({ metadata }: { readonly metadata?: Readonly<Record<string, string>> }) {
@@ -133,6 +129,7 @@ const STATUS_FILTERS = [
   { value: "running", label: "실행 중" },
   { value: "queued", label: "대기" },
   { value: "completed", label: "완료" },
+  { value: "cancelled", label: "멈춤" },
   { value: "failed", label: "실패" },
 ] as const;
 type StatusFilter = (typeof STATUS_FILTERS)[number]["value"];

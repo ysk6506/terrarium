@@ -8,7 +8,7 @@ import type { ExperimentView, RunSummary } from "@terrarium/core/contract";
 import { repeatsOf, sizeProblemsOf } from "@terrarium/core/experiments";
 import { withJosa } from "@terrarium/core/kernel";
 import { useState } from "react";
-import { dateText, hallTopology, statusLabel } from "../../logic";
+import { dateText, hallTopology, statusLabel, stoppedWords } from "../../logic";
 import { experimentState, useMossActions, useMossScreen } from "../../moss";
 import { Go, useAction, useApp, useAsync, usePageTitle } from "../context";
 import {
@@ -238,7 +238,10 @@ function Head({
         <>
           <Status status={view.status} operation={e.recipe.operation !== undefined} />{" "}
           {withJosa(e.owner, "이")} {dateText(e.createdAt, Date.now())}에 만들었어요.{" "}
-          {view.progress.finished}/{view.progress.total}회 끝.
+          {view.status === "cancelled"
+            ? stoppedWords(view.progress)
+            : `${view.progress.finished}/${view.progress.total}회 끝`}
+          .
         </>
       }
       actions={
@@ -311,8 +314,10 @@ function LiveStatus({
 }) {
   return (
     <p className="sr-only" aria-live="polite">
-      {statusLabel(status, Boolean(view.experiment.recipe.operation))}, {view.progress.finished}/
-      {view.progress.total}회 끝
+      {statusLabel(status, Boolean(view.experiment.recipe.operation))},{" "}
+      {status === "cancelled"
+        ? stoppedWords(view.progress)
+        : `${view.progress.finished}/${view.progress.total}회 끝`}
     </p>
   );
 }
