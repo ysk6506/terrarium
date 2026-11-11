@@ -6,6 +6,7 @@ last_verified: 2026-11-11
 verification_log:
   - "2026-11-11: 처음 씀 (ADR-0174). http/identity.ts, http/viewer.ts, runtime/context.ts의 ownerOnly, contract/routes.ts와 대조한 현황 조사를 바탕으로"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
+  - "2026-11-11: self-declared admin: token, else loopback socket address only; proxy mode unchanged"
 ---
 # 권한 (클로즈 베타 1차, ADR-0174)
 
@@ -38,7 +39,7 @@ verification_log:
 - 테라리움은 **프록시의 비밀 값**이 맞는 요청만 믿어요. 비밀 값이 없거나 틀리면 401이에요. 헤더가 없다고 "anonymous"로 통과시키지 않아요.
 - 보는 사람은 넷을 가져요: **로그인 ID**(바뀌지 않는 값. 소유를 여기에 적어요), 보이는 이름, 그룹들, 역할.
 - 이름 "anonymous"는 아무도 못 써요. 한글 이름은 한 가지 유니코드 꼴로 맞춰 견줘요.
-- **직접 적는 이름 방식은 혼자 쓰는 개발용으로만 남아요.** 화면에 "권한이 없는 방식"이라고 보이고, 관리자 기능은 관리자 토큰이 있어야 해요(ADR-0152).
+- **직접 적는 이름 방식은 혼자 쓰는 개발용으로만 남아요.** 화면에 "권한이 없는 방식"이라고 보이고, 관리자는 이렇게 가려요(ADR-0152). (가) 설정에 `adminTokenEnv`가 있으면 그 토큰을 보낸 요청만 관리자예요. 루프백이어도 토큰이 없으면 관리자가 아니에요. (나) 없으면 **이 기계 자신(루프백 주소 127.0.0.1·::1)에서 온 요청만** 관리자예요. 주소는 소켓에서 읽고 `X-Forwarded-For` 같은 헤더는 믿지 않아요(`trustProxy`는 꺼져 있어요). 다른 주소에서 온 요청은 관리자가 될 수 없어요. 그래서 `pnpm dev`로 혼자 쓰는 사람은 화면에서 기본 모델 정하기와 세계 가져오기를 그대로 해요. 같은 기계의 역방향 프록시 뒤에 두면 모든 요청이 루프백으로 보이니, 그렇게 둘 때는 프록시 모드나 토큰을 쓰세요. 프록시 모드에서는 루프백이 아무 뜻이 없고 관리자는 목록과 그룹에서만 나와요. `GET /api/meta`의 `user.roles`에 `admin`이 들어 있는지로 화면이 관리자 버튼을 보이거나 숨길 수 있어요.
 - 실험받는 에이전트가 부르는 주소(`/mcp/runs/...`)와 공유 링크(`/r/...`)는 로그인 밖이에요. 추측할 수 없는 토큰이 지켜요(ADR-0044 그대로).
 
 ## 2. 역할은 둘
@@ -157,6 +158,7 @@ verification_log:
 | `packages/core/src/contract/policies.test.ts` | 길 전부가 정책을 가진다, 일의 이름은 닫힌 목록 |
 | `apps/server/src/runtime/permissions.test.ts` | `may`의 규칙 전부(만든 사람·관리자·설정 파일의 것·링크) |
 | `apps/server/src/http/identity-proxy.test.ts` | 프록시만 믿기(비밀 값·401·스트림), `anonymous`, NFC, 관리자(목록·그룹·토큰), 모드 표시, 공유 만료 기본 30일 |
+| `apps/server/src/http/identity-loopback.test.ts` | 직접 적는 이름 방식의 관리자: 토큰이 없으면 루프백만, 있으면 토큰만, 프록시 모드에서는 루프백이 무의미 |
 | `apps/server/src/main-identity.test.ts` | 비밀 값 없이는 서버가 시작하지 않는다 |
 | `apps/server/src/http/permissions-api.test.ts` | 설문에서 열려 있던 길마다, 다른 로그인한 사람은 403 |
 | `apps/server/src/http/scoring-unchanged.test.ts` | 권한을 켜도 점수 분해가 같다(바뀌기 전 코드에서 잰 지문과 견줘요) |

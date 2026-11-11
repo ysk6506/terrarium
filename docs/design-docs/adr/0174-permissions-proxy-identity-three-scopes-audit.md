@@ -10,7 +10,9 @@ enforced_by:
   - apps/server/src/main-identity.test.ts
   - apps/server/src/http/permissions-api.test.ts
   - apps/server/src/http/scoring-unchanged.test.ts
+  - apps/server/src/http/identity-loopback.test.ts
 amends_tests:
+  - "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > [REQ-054] with no token configured nobody is an admin, whatever is sent"
   - "apps/server/src/main.test.ts::starting and stopping the server [REQ-030] > a config file is all it takes; data lives next to it and survives a restart"
   - "apps/server/src/http/activity-stream.test.ts::<import:436dd109>"
   - "apps/server/src/http/activity-stream.test.ts::the live view of a world as server-sent events [REQ-050] > runs already working come first, then what they do as it happens; a world that is not there is a 404"

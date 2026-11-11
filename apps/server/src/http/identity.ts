@@ -21,6 +21,8 @@ import { type IdentitySettings, proxyViewer, selfViewer } from "./viewer";
 /** What an authenticator may look at. Headers carry cookies and bearer tokens alike. */
 export interface AuthRequest {
   readonly headers: IncomingHttpHeaders;
+  /** The connection's own address, from the socket. Never taken from a forwarded header. */
+  readonly socket?: { readonly remoteAddress?: string | undefined };
 }
 
 export type IdentityMode = "proxy" | "self-declared";
@@ -50,7 +52,7 @@ export function headerAuthenticator(settings: IdentitySettings): Authenticator {
     return {
       kind: "self-declared",
       mode: "self-declared",
-      authenticate: (req) => selfViewer(req.headers, settings),
+      authenticate: (req) => selfViewer(req.headers, settings, req.socket?.remoteAddress),
     };
   return {
     kind: "proxy-header",
@@ -102,6 +104,8 @@ export function settingsOf(identity: IdentityConfig, env: NodeJS.ProcessEnv): Id
     admins: identity.header ? identity.admins : [],
     ...(secret ? { secret } : {}),
     ...(adminToken && !identity.header ? { adminToken } : {}),
+    // no token configured in the typed-name mode: this machine's own requests are the administrator's
+    loopbackAdmin: !identity.header && !identity.adminTokenEnv,
   };
 }
 

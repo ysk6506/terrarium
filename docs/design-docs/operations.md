@@ -9,13 +9,13 @@ covers:
   - apps/server/src/http/identity.ts
   - apps/server/src/http/viewer.ts
   - apps/server/src/main.ts
-covers_hash: ec2d46881e16016e
+covers_hash: 1a1eaa19042e97e1
 verification_log:
-  - "2026-11-04: main.ts에서 항상 참인 secretBox 확인(죽은 가지)만 지웠다. 고정 도구 주소가 서버 열쇠에서 나온다는 본문과 같다"
   - "2026-11-05: config.ts의 하네스 traces 항목(none·default·clickstack·langfuse)과 전역 telemetry가 기본값이라는 것을 설정 표와 확인 목록에 맞췄다 (ADR-0085)"
   - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
   - "2026-11-11: main.ts의 시작 실패 보고를 console.error에서 process.stderr.write로 바꿨다(ADR-0148). 본문 서술과 어긋난 곳 없음"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
+  - "2026-11-11: self-declared admin: token, else loopback socket address only; proxy mode unchanged"
 ---
 # 서버 운영
 
@@ -78,7 +78,7 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 | `identity.secretHeader` | 그 비밀 값을 싣는 헤더 | `x-terrarium-proxy-secret` |
 | `identity.nameHeader` / `groupsHeader` | 보여 줄 이름 / SSO 그룹(쉼표로 구분) 헤더. 이름이 없으면 로그인 ID를 보여 준다. 그룹이 없으면 그룹 없음 | 없음 |
 | `identity.admins` / `adminGroup` | 프록시 모드의 관리자: 로그인 ID 목록, 또는 이 SSO 그룹에 든 사람 | 관리자 없음 |
-| `identity.adminTokenEnv` / `adminTokenHeader` | **이름을 직접 적는 방식**의 관리자 토큰이 든 환경 변수 이름 / 토큰을 싣는 헤더. 이 방식에서는 토큰을 보낸 요청만 관리자다([ADR-0152](adr/0152-reality-worlds-admin-fork-excel-spl.md)) | 관리자 없음 / `x-terrarium-admin-token` |
+| `identity.adminTokenEnv` / `adminTokenHeader` | **이름을 직접 적는 방식**의 관리자 토큰이 든 환경 변수 이름 / 토큰을 싣는 헤더. 이 방식에서는 토큰을 보낸 요청만 관리자다. 적지 않으면 이 기계의 루프백 주소에서 온 요청만 관리자다([ADR-0152](adr/0152-reality-worlds-admin-fork-excel-spl.md)) | 토큰 없음: 루프백에서 온 요청만 관리자 / `x-terrarium-admin-token` |
 | `harnesses` | 파일로 붙일 하네스·에이전트(연결 방식은 [ADR-0042](adr/0042-connectors.md)). `builtin`(내장 기준 에이전트)은 항상 있다. 사람은 화면에서도 연결할 수 있다 | 내장만 |
 | `connections.allowedHosts` | 화면에서 연결할 수 있는 호스트(`*.internal`처럼). 클라우드 메타데이터 주소는 항상 막는다 | 메타데이터 주소만 막음 |
 | `connections.retentionDays` | 화면에서 만든 연결이 실험에 안 쓰이면 지우는 날 수. 0이면 지우지 않는다 | 30 |
@@ -112,7 +112,7 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 **이름을 직접 적는 방식 (`identity.header`가 없을 때. 혼자 쓰는 개발용)**
 
 - 웹이 묻는 이름을 헤더(`x-terrarium-user`)로 보낸다. **누구나 남의 이름을 적을 수 있으니 보호가 아니다.** `GET /api/meta`의 `identity.mode`가 `self-declared`라고 말해, 화면이 그렇게 알릴 수 있다. 이름이 없는 요청은 하나의 "anonymous" 사용자로 지나간다(예전과 같다). 이 말을 이름으로 적으면 이름이 없는 것으로 친다.
-- 관리자는 **관리자 토큰**이 있어야 한다: `adminTokenEnv`가 가리키는 환경 변수의 값을 `adminTokenHeader`에 실은 요청만 관리자다. 토큰을 정하지 않으면 관리자는 없다. 토큰 환경 변수를 적었는데 비어 있으면 서버가 시작하지 않는다. `admins`와 `adminGroup`은 이 방식에서 쓰이지 않는다(이름으로는 누구인지 증명할 수 없으므로).
+- 관리자는 **관리자 토큰**이 있어야 한다: `adminTokenEnv`가 가리키는 환경 변수의 값을 `adminTokenHeader`에 실은 요청만 관리자다. 토큰을 정하지 않으면 **이 기계 자신(127.0.0.1·::1)에서 온 요청만** 관리자다. 주소는 소켓에서 읽고 `X-Forwarded-For` 같은 헤더는 보지 않는다(`trustProxy`는 꺼져 있다). 다른 주소에서 온 요청은 관리자가 못 된다. 그래서 `pnpm dev`(웹 :5173이 서버로 넘겨 줌)로 혼자 쓰면 화면에서 기본 모델 정하기와 세계 가져오기가 된다. 같은 기계의 역방향 프록시 뒤에서는 모든 요청이 루프백으로 보이니 프록시 모드나 토큰을 쓴다. 토큰을 정했으면 루프백만으로는 관리자가 아니다. 토큰 환경 변수를 적었는데 비어 있으면 서버가 시작하지 않는다. `admins`와 `adminGroup`은 이 방식에서 쓰이지 않는다(이름으로는 누구인지 증명할 수 없으므로).
 
 ## 사내 시스템을 붙일 때 확인할 것
 

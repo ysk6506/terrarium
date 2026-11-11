@@ -299,12 +299,14 @@ describe("typed names are for one person on their own machine [REQ-054]", () => 
     ).toEqual(["user", "admin"]);
   });
 
-  test("[REQ-054] with no token configured nobody is an admin, whatever is sent", async () => {
+  test("[REQ-054] with no token configured, a request from another address is no admin, whatever is sent", async () => {
     const { app } = self({});
+    const from = (headers: Record<string, string>) =>
+      app.inject({ method: "GET", url: "/api/meta", headers, remoteAddress: "10.1.2.3" });
     const sent = typed("연수", { "x-terrarium-admin-token": ADMIN_TOKEN });
-    expect((await meta(app, sent)).user.roles).toEqual(["user"]);
+    expect((await from(sent)).json().user.roles).toEqual(["user"]);
     const blank = typed("연수", { "x-terrarium-admin-token": "" });
-    expect((await meta(app, blank)).user.roles).toEqual(["user"]);
+    expect((await from(blank)).json().user.roles).toEqual(["user"]);
   });
 
   test("[REQ-054] the admin token gates the admin routes in this mode", async () => {

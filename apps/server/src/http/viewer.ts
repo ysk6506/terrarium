@@ -5,7 +5,8 @@
  *   secret only it knows. A request without the secret or without a login is nobody; it is never let through as
  *   "anonymous". The login is the id ownership is compared by.
  * - Typed names (`selfViewer`): people say who they are, which only suits one person on their own machine. Admin
- *   needs a token from the environment; without it nobody is.
+ *   needs the token from the environment; with no token configured, only a request from this machine's loopback
+ *   address is an administrator's, so one person alone can still do everything.
  *
  * Both turn names into one Unicode form (NFC), so a name typed on one keyboard is the same person on another, and
  * neither accepts "anonymous" in any case: that word is the server's own for "nobody said".
@@ -31,6 +32,15 @@ export interface IdentitySettings {
   readonly secret?: string | undefined;
   /** The value that makes a typed-name request an administrator's. */
   readonly adminToken?: string | undefined;
+  /** Typed-name mode with no token configured: a request from this machine's own loopback address is an administrator's. */
+  readonly loopbackAdmin?: boolean | undefined;
+}
+
+/** Is this socket address the machine's own (127.0.0.0/8, ::1, or either as an IPv4-mapped IPv6 address)? */
+export function isLoopback(address: string | undefined): boolean {
+  if (!address) return false;
+  const a = address.toLowerCase().replace(/^::ffff:/, "");
+  return a === "::1" || /^127(\.\d{1,3}){3}$/.test(a);
 }
 
 /** Settings with no proxy and no admin token: typed names, nobody an administrator. */
@@ -113,9 +123,17 @@ export function proxyViewer(headers: IncomingHttpHeaders, s: IdentitySettings): 
 }
 
 /** A typed name (nobody when there is none), and an administrator only with the right token. */
-export function selfViewer(headers: IncomingHttpHeaders, s: IdentitySettings): Viewer {
+export function selfViewer(
+  headers: IncomingHttpHeaders,
+  s: IdentitySettings,
+  address?: string,
+): Viewer {
   const name = typedName(headers[SELF_HEADER]);
-  const admin = sameSecret(firstOf(headers[s.adminTokenHeader]), s.adminToken);
+  // The address is the socket's, never a forwarded header. A configured token always decides; loopback counts only without one.
+  const admin =
+    s.adminToken !== undefined
+      ? sameSecret(firstOf(headers[s.adminTokenHeader]), s.adminToken)
+      : s.loopbackAdmin === true && isLoopback(address);
   if (!name) return admin ? { ...ANONYMOUS, roles: rolesOf(true) } : ANONYMOUS;
   return { id: name, name, groups: [], roles: rolesOf(admin), source: "self" };
 }
