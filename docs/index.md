@@ -4,11 +4,11 @@ kind: reference
 status: active
 last_verified: 2026-11-11
 verification_log:
-  - "2026-11-11: ADR-0165 링크"
-  - "2026-11-11: 버전과 브랜치 문서, 데이터 용어집, ADR-0166·0167 링크"
   - "2026-11-11: ADR-0168 링크"
   - "2026-11-11: ADR-0169 링크"
   - "2026-11-11: 제품 설계 한 장과 ADR-0170 링크"
+  - "2026-11-11: 골든 안전망 문서 링크"
+  - "2026-11-11: 골든 안전망 링크를 더함"
 ---
 # 문서 색인
 
@@ -24,6 +24,7 @@ verification_log:
 ## 설계와 결정
 
 - [제품 설계 한 장 — 테라리움의 값, 원칙 여섯, 지금 유효한 결정, 순서](design-docs/product-design.md)
+- [골든 안전망 — 모델을 옮기기 전에 못 박아 둔 영향 범위·파사드·점수](design-docs/golden-safety-net.md)
 - [핵심 신념](design-docs/core-beliefs.md)
 - [ADR 작성 절차](design-docs/adr-process.md)
 - [품질 하네스 사용법](design-docs/harness-guide.md)

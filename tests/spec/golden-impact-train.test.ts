@@ -1,0 +1,108 @@
+/**
+ * Golden: the impact range (REQ-078, ADR-0084) of every failure origin on the `train` world of the golden matrix. Each fault
+ * type the world can host is put on its first and last target (and on an uplink for link faults), the physics runs 120 s,
+ * and the equipment in the range, the rooms, racks and servers it reaches, the severity and the service impact are
+ * fingerprinted. It protects the blast-radius engine while it moves to one propagation engine (ADR-0168).
+ * An expectation here may change only through the test-lock amend procedure (ADR-0004), with an ADR that
+ * explains why the behaviour of an existing world changed. A red test here means exactly that.
+ * Read docs/design-docs/golden-safety-net.md first.
+ */
+import { describe, expect, test } from "vitest";
+import { impactFingerprints } from "./test-support/golden-impact";
+import { goldenWorld } from "./test-support/golden-matrix";
+
+const EXPECTED: Readonly<Record<string, string>> = {
+  "(healthy)": "1 345:12fb18101d95d61e",
+  "cooling_unit_failure@hs-dc1-f1-a-crah1": "1/2/6 384:182d5972995cbb1b",
+  "cooling_unit_failure@hs-dc1-f1-a-crah3": "1/2/6 384:1dabdbb586be5b02",
+  "cooling_unit_degraded@hs-dc1-f1-a-crah1": "1/2/6 364:0cd8538ec9920f0b",
+  "cooling_unit_degraded@hs-dc1-f1-a-crah3": "1/2/6 364:0aff85b89a846a11",
+  "setpoint_drift@hs-dc1-f1-a-crah1": "1/2/6 384:182d5972995cbb1b",
+  "setpoint_drift@hs-dc1-f1-a-crah3": "1/2/6 384:1dabdbb586be5b02",
+  "breaker_trip@hs-dc1-f1-a-pnl-a1": "115/7/96 3307:051d187642d10410",
+  "breaker_trip@hs-dc1-f1-a-r0108-pdu-b": "6/2/10 554:1342b649677b0806",
+  "grid_outage@hs-dc1-f1-ups-a": "1/2/6 380:0ed89bb3bbf76d00",
+  "grid_outage@hs-dc1-f1-ups-b": "1/2/6 380:01a3d4ef8a5c2e0b",
+  "ups_battery_degraded@hs-dc1-f1-ups-a": "1/2/6 362:06d7924f6703471a",
+  "ups_battery_degraded@hs-dc1-f1-ups-b": "1/2/6 362:02a04cc66b6b3801",
+  "utility_outage@hs-dc1-f1-a-pnl-a1": "117/7/96 3260:0556c19eb8664917",
+  "utility_outage@hs-dc1-f1-a-pnl-b1": "109/6/96 3080:0d3d171d22e0511f",
+  "coolant_leak@hs-dc1-f1-a-r0101": "1/3/6 404:1f0b78af40c1da13",
+  "coolant_leak@hs-dc1-f1-a-r0108": "1/2/10 385:189977aa5a47f21a",
+  "immersion_circulation_failure@hs-dc1-f1-a-r0101": "1/3/6 384:02f2f4310e650e05",
+  "immersion_circulation_failure@hs-dc1-f1-a-r0108": "1/2/10 365:051961fd49b5e616",
+  "ats_stuck@hs-dc1-f1-a-pnl-a1": "1/2/6 365:02fd76c4b20cff1a",
+  "ats_stuck@hs-dc1-f1-a-pnl-b1": "1/2/6 365:14b92105e49b7111",
+  "fan_failure@hs-dc1-f1-a-r0102-s01": "1/3/7 412:02a89413e52c5613",
+  "fan_failure@hs-dc1-f1-a-r0108-s05": "1/2/7 392:0fabddbed1f17f0d",
+  "psu_failure@hs-dc1-f1-a-r0102-s01": "1/3/7 412:02a89413e52c5613",
+  "psu_failure@hs-dc1-f1-a-r0108-s05": "1/2/7 392:0fabddbed1f17f0d",
+  "sensor_drift@hs-dc1-f1-a-r0102-s01": "1/3/7 412:02a89413e52c5613",
+  "sensor_drift@hs-dc1-f1-a-r0108-s05": "1/2/7 392:0fabddbed1f17f0d",
+  "cpu_runaway@hs-dc1-f1-a-r0102-s01": "1/3/7 412:02a89413e52c5613",
+  "cpu_runaway@hs-dc1-f1-a-r0108-s05": "1/2/7 392:0fabddbed1f17f0d",
+  "bmc_unresponsive@hs-dc1-f1-a-r0102-s01": "1/3/7 388:1de39e006cf53910",
+  "bmc_unresponsive@hs-dc1-f1-a-r0108-s05": "1/2/7 368:1ebf49e34f48c20b",
+  "memory_failure@hs-dc1-f1-a-r0102-s01": "1/3/7 412:0ac0a7f6504fa014",
+  "memory_failure@hs-dc1-f1-a-r0108-s05": "1/2/7 368:1ebf49e34f48c20b",
+  "firmware_update_failure@hs-dc1-f1-a-r0102-s01": "1/3/7 388:1de39e006cf53910",
+  "firmware_update_failure@hs-dc1-f1-a-r0108-s05": "1/2/7 368:1ebf49e34f48c20b",
+  "link_down@l-network-hs-dc1-f1-a-r0101-stor-hs-dc1-f1-a-r0101-tor": "1/2/6 442:149d1939cbc5e71a",
+  "link_down@l-network-hs-dc1-f1-a-r0108-tor-hs-dc1-f1-a-spine2": "1/2/6 413:17aa9d5a6ba19803",
+  "link_down@l-network-hs-dc1-f1-a-r0101-tor-hs-dc1-f1-a-spine1": "1/2/6 413:194edab8cd0d6504",
+  "switch_failure@hs-dc1-f1-a-r0101-tor": "1/2/6 441:0c82e26228ef1f13",
+  "switch_failure@hs-dc1-f1-a-spine2": "1/2/6 554:087d6d880d113218",
+  "disk_failure@hs-dc1-f1-a-r0101-stor": "1/2/6 418:1d6b76f751952708",
+  "vm_cpu_spike@hs-dc1-f1-a-r0102-s01-training-pipeline-vm4": "1/2/6 460:18e83cb9041c351f",
+  "vm_cpu_spike@hs-dc1-f1-a-r0105-s23-vm01": "1/2/6 402:0cd6caea54bedc14",
+  "disk_full@hs-dc1-f1-a-r0102-s01": "1/3/7 412:02a89413e52c5613",
+  "disk_full@hs-dc1-f1-a-r0108-s05": "1/2/7 392:0fabddbed1f17f0d",
+  "log_flood@hs-dc1-f1-a-r0102-s01": "1/3/7 412:02a89413e52c5613",
+  "log_flood@hs-dc1-f1-a-r0108-s05": "1/2/7 392:0fabddbed1f17f0d",
+  "memory_leak@hs-dc1-f1-a-r0102-s01": "1/3/7 388:1de39e006cf53910",
+  "memory_leak@hs-dc1-f1-a-r0108-s05": "1/2/7 368:1ebf49e34f48c20b",
+  "process_crashloop@hs-dc1-f1-a-r0102-s01": "1/3/7 412:02a89413e52c5613",
+  "process_crashloop@hs-dc1-f1-a-r0108-s05": "1/2/7 392:0fabddbed1f17f0d",
+  "zombie_pileup@hs-dc1-f1-a-r0102-s01": "1/3/7 388:1de39e006cf53910",
+  "zombie_pileup@hs-dc1-f1-a-r0108-s05": "1/2/7 368:1ebf49e34f48c20b",
+  "fs_readonly@hs-dc1-f1-a-r0102-s01": "1/3/7 412:02a89413e52c5613",
+  "fs_readonly@hs-dc1-f1-a-r0108-s05": "1/2/7 392:0fabddbed1f17f0d",
+  "ntp_drift@hs-dc1-f1-a-r0102-s01": "1/3/7 412:02a89413e52c5613",
+  "ntp_drift@hs-dc1-f1-a-r0108-s05": "1/2/7 392:0fabddbed1f17f0d",
+  "dns_failure@hs-dc1-f1-a-r0102-s01": "1/3/7 412:02a89413e52c5613",
+  "dns_failure@hs-dc1-f1-a-r0108-s05": "1/2/7 392:0fabddbed1f17f0d",
+  "kernel_panic@hs-dc1-f1-a-r0102-s01": "1/3/7 436:0f8305505bfe8119",
+  "kernel_panic@hs-dc1-f1-a-r0108-s05": "1/2/7 392:0fabddbed1f17f0d",
+  "cert_expired@hs-dc1-f1-a-r0102-s01": "1/3/7 412:02a89413e52c5613",
+  "cert_expired@hs-dc1-f1-a-r0108-s05": "1/2/7 392:0fabddbed1f17f0d",
+  "db_primary_down@svc-training-pipeline-db1": "1/2/6 500:1583e14049c8531d",
+  "db_secondary_down@svc-training-pipeline-db1": "1/2/6 500:1583e14049c8531d",
+  "db_replication_broken@svc-training-pipeline-db1": "1/2/6 372:086bb2766efcc119",
+  "db_split_brain@svc-training-pipeline-db": "1/2/6 422:096c6e0c84bcaa04",
+  "db_backup_corrupt@svc-training-pipeline-db": "1/2/6 371:14e7f4ea8c4b5512",
+  "storage_path_cut@pool-main-ctl-a": "1/2/6 520:082ccc644e0bb618",
+  "storage_path_cut@pool-main-ctl-b": "2/2/6 392:0d9332af83598112",
+  "storage_controller_failure@pool-main-ctl-a": "1/2/6 520:082ccc644e0bb618",
+  "storage_controller_failure@pool-main-ctl-b": "2/2/6 392:0d9332af83598112",
+  "storage_node_lost@hs-dc1-f1-a-r0101-stor": "4/2/6 442:0495e7617d71ad1d",
+  "gpu_xid_error@hs-dc1-f1-a-r0106-s01-gpu0": "0/0/0 229:1467ea1bb6619817",
+  "gpu_xid_error@hs-dc1-f1-a-r0108-s03-gpu7": "1/2/6 402:1d0a145f81ccd90e",
+  "nvlink_down@hs-dc1-f1-a-r0106-s01-nvl": "0/0/0 227:0ab27ec4d1d32a03",
+  "nvlink_down@hs-dc1-f1-a-r0108-s03-nvl": "1/2/6 400:199677a228a7ce10",
+  "ib_link_flap@hs-dc1-f1-a-r0106-s01-ib": "1/2/6 422:0e37e03a223af013",
+  "ib_link_flap@hs-dc1-f1-a-r0108-s03-ib": "1/2/6 398:07a6d147624a8804",
+  "gpu_thermal_throttle@hs-dc1-f1-a-r0106-s01-gpu0": "1/2/6 426:151fe609b52bf21d",
+  "gpu_thermal_throttle@hs-dc1-f1-a-r0108-s03-gpu7": "1/2/6 373:0339ca59c9c64011",
+  "gpu_memory_leak_inference@hs-dc1-f1-a-r0106-s01-gpu0": "1/2/6 373:08436743ec6b8703",
+  "gpu_memory_leak_inference@hs-dc1-f1-a-r0108-s03-gpu7": "1/2/6 373:0339ca59c9c64011",
+  "job_stuck_checkpoint@train-job": "0/0/0 183:1bb4bcfef80f6d07",
+  "scheduler_down@job-scheduler": "1/2/6 376:127afe1508f1e708",
+  "ups_module_fail@hs-dc1-f1-ups-a": "115/7/96 3283:086d2e40522ff41b",
+  "ups_module_fail@hs-dc1-f1-ups-b": "108/6/96 3103:01a69c9e09499416",
+};
+
+describe("the impact range of the train world is the recorded one [REQ-078] [REQ-001]", () => {
+  test("train: every failure origin makes the recorded range", () => {
+    expect(impactFingerprints(goldenWorld("train"))).toEqual(EXPECTED);
+  }, 120_000);
+});
