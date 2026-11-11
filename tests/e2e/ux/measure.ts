@@ -140,7 +140,7 @@ const ALL_PROBES = [
 ];
 try {
   const first = { browser, base: server.url } as Site;
-  const measuring = mode === "all";
+  const measuring = mode === "all" && !part;
   const looksAtEmpties = measuring || part?.fresh === true;
   if (looksAtEmpties) log("note: 빈 서버에서 빈 화면과 오류 화면을 본다");
   const emptyScreens = looksAtEmpties
@@ -164,10 +164,16 @@ try {
     const began = Date.now();
     // A browser for each journey: the graphics process of one that drew a 3D world can still be busy tearing it down,
     // and the next journey would pay for that wait (software rendering on the runner).
-    const own = await launch();
-    const outcome = await perform(own, server.url, work).finally(() => own.close());
+    const once = async () => {
+      const own = await launch();
+      return perform(own, server.url, work).finally(() => own.close());
+    };
     // A slice's prelude journeys only make what the probes look at; their results belong to the slice that records them.
     const kept = recorded.some(([r]) => r === id);
+    let outcome = await once();
+    // A prelude journey that failed once on a busy runner is tried again: the probes need what it makes. A recorded
+    // journey is never tried twice, its failure is the score.
+    if (!kept && !outcome.ok) outcome = await once();
     const seconds = Math.round((Date.now() - began) / 100) / 10;
     if (kept) {
       journeys[id] = {
