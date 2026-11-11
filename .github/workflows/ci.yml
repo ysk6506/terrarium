@@ -407,7 +407,7 @@ jobs:
           TERRARIUM_UX_ECHO: "1"
         run: |
           set -o pipefail
-          pnpm ux 2>&1 | tee ux-whole.log
+          node_modules/.bin/tsx -e "import {main,runChild} from './harness/src/ux/run.ts'; main(['measure'],console.log,(c,a,o)=>runChild(c,a,{...o,timeoutMs:40*60_000})).then(c=>process.exit(c))" 2>&1 | tee ux-whole.log
         shell: bash
       - if: always()
         run: |
