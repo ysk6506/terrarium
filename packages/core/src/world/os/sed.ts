@@ -83,6 +83,18 @@ function expandReplacement(repl: string, m: RegExpMatchArray): string {
   return r.out;
 }
 
+/** The matches of a substitution; an empty one right after the previous match does not count (the text b under a b-star pattern is one match). */
+function matchesOf(text: string, re: RegExp): RegExpMatchArray[] {
+  const found: RegExpMatchArray[] = [];
+  let previousEnd = -1;
+  for (const m of text.matchAll(re)) {
+    const at = m.index ?? 0;
+    if (!(m[0] === "" && at === previousEnd)) found.push(m);
+    previousEnd = at + m[0].length;
+  }
+  return found;
+}
+
 function substitute(cmd: SedCmd, s: State): void {
   const base = cmd.re as RegExp;
   const re = new RegExp(base.source, `${base.flags.replace("g", "")}g`);
@@ -91,12 +103,7 @@ function substitute(cmd: SedCmd, s: State): void {
   let last = 0;
   let out = "";
   let changed = false;
-  let previousEnd = -1;
-  for (const m of s.pattern.matchAll(re)) {
-    const at = m.index ?? 0;
-    const emptyAfterMatch = m[0] === "" && at === previousEnd;
-    previousEnd = at + m[0].length;
-    if (emptyAfterMatch) continue; // `echo b | sed 's/b*/-/g'` is `-`, not `--`
+  for (const m of matchesOf(s.pattern, re)) {
     count++;
     if (cmd.global ? count < from : count !== from) continue;
     out += s.pattern.slice(last, m.index) + expandReplacement(cmd.repl ?? "", m);
