@@ -392,11 +392,11 @@ export function ExperimentPage({ id }: { readonly id: string }) {
       <Figures view={view} />
       <LiveStatus view={view} status={status} />
       <Findings items={view.analysis.findings} />
-      <SeedRows runs={runs} analysis={view.analysis} />
-      <ProcessSections view={view} />
       {view.analysis.parent && (
         <ParentCard parent={view.analysis.parent} ready={view.analysis.progress.completed > 0} />
       )}
+      <SeedRows runs={runs} analysis={view.analysis} />
+      <ProcessSections view={view} />
       <Section title="실행" aside=<EndReasons analysis={view.analysis} />>
         {runs.length === 0 ? (
           <Empty title="아직 실행이 없어요" />

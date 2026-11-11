@@ -19,6 +19,7 @@ export type JourneyId =
   | "design"
   | "author"
   | "run"
+  | "repeat"
   | "cancel"
   | "share"
   | "fork"
@@ -180,10 +181,22 @@ async function run(c: Context): Promise<void> {
   const { page } = c.v;
   await home(c);
   await c.d.click(page.getByRole("link", { name: "새 실험" }).first());
-  await repeatsInTheForm(c);
   await c.d.click(page.getByRole("button", { name: "실험 시작" }));
   await expectPath(c, /^\/experiments\/e-/);
   await waitForResult(page);
+}
+
+/** The same form as `run`, asked for three repeats of each situation: the form says what that costs, the result how much it shook. */
+async function repeat(c: Context): Promise<void> {
+  const { page } = c.v;
+  await home(c);
+  await c.d.click(page.getByRole("link", { name: "새 실험" }).first());
+  await repeatsInTheForm(c);
+  await c.d.click(page.getByRole("button", { name: "3번", exact: true }));
+  await c.d.click(page.getByRole("button", { name: "실험 시작" }));
+  await expectPath(c, /^\/experiments\/e-/);
+  await waitForResult(page);
+  await shakingInTheResult(c);
 }
 
 /**
@@ -283,14 +296,15 @@ async function fork(c: Context): Promise<void> {
   await c.d.click(page.getByRole("link", { name: "조건 바꿔 다시 돌리기" }));
   await expectPath(c, /^\/experiments\/new$/);
   await c.d.choose(page.getByLabel("에이전트"), "무작위 추측");
-  // however many situations the original had, this one has five
-  await c.d.fill(page.getByLabel("몇 개 돌릴까요"), "5");
-  // each of the five seeds three times: the fork says what it changes, and the result says how much it shook
-  await c.d.click(page.getByRole("button", { name: "3번", exact: true }));
-  await page
-    .getByText("상황당 반복")
-    .first()
-    .waitFor({ timeout: 5 * SECOND });
+  // the form starts from the original's counts (once each, as the original ran): the card lists only the agent as changed
+  const changes = await page.getByLabel("실행할 것").innerText();
+  if (/상황|반복|번씩/.test(changes) || !/에이전트/.test(changes))
+    throw new Error(
+      `포크 만들기가 에이전트 말고 다른 것을 바꾼다고 말한다: ${changes.replace(/\s+/g, " ")}`,
+    );
+  const once = page.getByRole("button", { name: "1번", exact: true });
+  if ((await once.getAttribute("aria-pressed")) !== "true")
+    throw new Error("포크 만들기가 원본의 반복 횟수(1번)로 시작하지 않는다");
   await c.d.click(page.getByRole("button", { name: /조건 바꿔 다시 돌리기|실험 시작/ }));
   await expectPath(c, /^\/experiments\/e-/);
   await waitForResult(page);
@@ -298,7 +312,6 @@ async function fork(c: Context): Promise<void> {
     .getByText("원본과 견주면")
     .first()
     .waitFor({ timeout: 10 * SECOND });
-  await shakingInTheResult(c);
 }
 
 async function compare(c: Context): Promise<void> {
@@ -512,6 +525,7 @@ export const JOURNEYS: ReadonlyArray<readonly [JourneyId, (c: Context) => Promis
   ["build", build],
   ["design", design],
   ["run", run],
+  ["repeat", repeat],
   ["process-compare", processCompare],
   ["cancel", cancel],
   ["share", share],
@@ -530,6 +544,7 @@ export const JOURNEYS: ReadonlyArray<readonly [JourneyId, (c: Context) => Promis
 const NEEDS_WORLD: readonly JourneyId[] = [
   "design",
   "run",
+  "repeat",
   "process-compare",
   "cancel",
   "share",
@@ -564,7 +579,17 @@ export async function seedWorld(base: string, ids: readonly JourneyId[]): Promis
  * a fresh server, so CI can run the groups side by side (ADR-0141). Every journey is in exactly one group.
  */
 export const JOURNEY_GROUPS: Readonly<Record<string, readonly JourneyId[]>> = {
-  flow: ["design", "run", "process-compare", "cancel", "share", "fork", "compare", "author"],
+  flow: [
+    "design",
+    "run",
+    "repeat",
+    "process-compare",
+    "cancel",
+    "share",
+    "fork",
+    "compare",
+    "author",
+  ],
   build: ["build", "site", "build-small"],
   own: ["own-card-only", "topology"],
 };

@@ -85,4 +85,37 @@ export async function shakingInTheResult(c: Context): Promise<void> {
     throw new Error(`점이 모양이나 글자로 구분되지 않는다: ${label} / ${mark}`);
   const layout = await layoutAtWidths(page, "반복 결과");
   if (layout) throw new Error(layout);
+  await runsFitOnAPhone(page);
+}
+
+/**
+ * On a phone the 실행 table is a few lines per run, not eight squeezed columns: it does not scroll sideways, the way
+ * into the first run is inside the screen, and a run is not a tall slab (REQ-078, REQ-118).
+ */
+async function runsFitOnAPhone(page: Page): Promise<void> {
+  const before = page.viewportSize() ?? { width: 1440, height: 900 };
+  await page.setViewportSize({ width: 390, height: 844 });
+  try {
+    await page.waitForTimeout(600);
+    const table = page.locator("table.runs-table");
+    const seen = await table.evaluate((t) => {
+      const wrap = t.closest(".table-wrap");
+      const link = t.querySelector("tbody a")?.getBoundingClientRect();
+      const row = t.querySelector("tbody tr")?.getBoundingClientRect();
+      return {
+        sideways: (wrap?.scrollWidth ?? 0) - (wrap?.clientWidth ?? 0),
+        linkRight: link?.right ?? Number.POSITIVE_INFINITY,
+        rowHeight: row?.height ?? Number.POSITIVE_INFINITY,
+        width: window.innerWidth,
+      };
+    });
+    if (seen.sideways > 1) throw new Error(`390px 실행 표가 옆으로 ${seen.sideways}px 밀려나 있다`);
+    if (seen.linkRight > seen.width)
+      throw new Error("390px 첫 실행의 들여다보기 링크가 화면 밖에 있다");
+    if (seen.rowHeight > 110)
+      throw new Error(`390px 실행 한 줄이 ${Math.round(seen.rowHeight)}px로 너무 높다`);
+  } finally {
+    await page.setViewportSize(before);
+    await page.waitForTimeout(300);
+  }
 }
