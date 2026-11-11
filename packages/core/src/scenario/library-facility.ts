@@ -364,8 +364,7 @@ const generatorFailure: ScenarioTemplate = {
   summary: "수전이 끊기고 발전기가 기동하지 못해요. UPS 배터리가 바닥나기 전에 원인을 찾아야 해요.",
   difficulty: "어려움",
   faultTypes: ["utility_outage", "generator_start_failure"],
-  unavailable: (index) =>
-    needs(index, ["generator", "ups", "server"]) ?? tooManyBehind(index),
+  unavailable: (index) => needs(index, ["generator", "ups", "server"]) ?? tooManyBehind(index),
   build(index, worldId, catalog) {
     const gen = byLinks(index, "generator", (g) => index.incoming(g.id, "power").length) as Entity;
     const switches = index

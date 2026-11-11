@@ -308,7 +308,11 @@ function expand(
 
 function runSteps(run: Play, steps: Array<[ReferenceStep, Bind]>, t: Truth, strict: boolean): void {
   for (const [s, bind] of steps) {
-    if (s.when !== undefined && fillString(s.when, t, { ...bind, config: run.config, last: run.last }) === "") continue;
+    if (
+      s.when !== undefined &&
+      fillString(s.when, t, { ...bind, config: run.config, last: run.last }) === ""
+    )
+      continue;
     if (s.later) {
       // the entities are the ones that have the alarm now, after the steps before this one
       const { later: _, ...now } = s;

@@ -43,7 +43,9 @@ describe("a host starts below its memory limit in every world the product builds
   });
 
   test("a generated world and a generated campus", () => {
-    expect(crowded(generateWorld({ ...DEFAULT_WORLDGEN, seed: 1, site: "giheung" }, catalog).blueprint)).toEqual([]);
+    expect(
+      crowded(generateWorld({ ...DEFAULT_WORLDGEN, seed: 1, site: "giheung" }, catalog).blueprint),
+    ).toEqual([]);
     expect(
       crowded(generateCampus({ ...DEFAULT_CAMPUS, seed: 1, site: "giheung" }, catalog).blueprint),
     ).toEqual([]);

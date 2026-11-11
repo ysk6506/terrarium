@@ -13,8 +13,8 @@ import {
   generateCampus,
   generateShaped,
   generateWorld,
-  SITE_PRESETS,
   type ShapeSpec,
+  SITE_PRESETS,
   shapeProblem,
   sizeFields,
 } from "@terrarium/core/sources/worldgen";
@@ -25,15 +25,16 @@ import { solve } from "./reference-solver";
 
 const catalog = new Catalog();
 
-/** What the reference run of every offered template (those of one `part` of `parts`, taken in turn) left short of full, or what stopped it. Empty when all give 100. */
+/** What the reference run of every offered template (all, only the `domain` ones, or all but those: the domain sheets wait four days of run time on a world and take the most time) left short of full, or what stopped it. Empty when all give 100. */
 export function shortOf(
   shape: GoldenWorld,
-  part = 0,
-  parts = 1,
+  group: "all" | "domain" | "rest" = "all",
 ): { offered: number; short: string[] } {
   const cases = casesOf(shape);
   const short: string[] = [];
-  for (const c of cases.filter((_, i) => i % parts === part)) {
+  for (const c of cases.filter(
+    (c) => group === "all" || c.key.startsWith("domain-") === (group === "domain"),
+  )) {
     try {
       const { result } = solve(c.blueprint, c.doc());
       const items = result.score.items

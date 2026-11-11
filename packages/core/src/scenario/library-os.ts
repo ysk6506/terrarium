@@ -56,7 +56,9 @@ function candidates(index: BlueprintIndex, prefer: readonly string[]): Pick[] {
       .filter((l) => roleOf(l.props) === "active")
       .map((l) => index.find(l.to))
       .find((e): e is Entity => e !== undefined && PLACES.includes(e.kind));
-    const hasStandby = links.some((l) => roleOf(l.props) === "standby" && standbyReady(index, l.to));
+    const hasStandby = links.some(
+      (l) => roleOf(l.props) === "standby" && standbyReady(index, l.to),
+    );
     return host ? [{ service, host, hasStandby }] : [];
   });
   return picks.sort(

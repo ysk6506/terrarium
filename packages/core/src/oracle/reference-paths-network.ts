@@ -27,8 +27,14 @@ export const NETWORK_PATHS = {
     [read("list_alarms"), config("{target}")],
     [
       // EOS and IOS XE reopen a neighbor in the BGP section; NX-OS has a section of its own for each neighbor
-      { ...cli(["router bgp {asn}", "no neighbor {shutNeighbor} shutdown"]), when: "{shutNeighbor}" },
-      { ...cli(["router bgp {asn}", "neighbor {nxShutNeighbor}", "no shutdown"]), when: "{nxShutNeighbor}" },
+      {
+        ...cli(["router bgp {asn}", "no neighbor {shutNeighbor} shutdown"]),
+        when: "{shutNeighbor}",
+      },
+      {
+        ...cli(["router bgp {asn}", "neighbor {nxShutNeighbor}", "no shutdown"]),
+        when: "{nxShutNeighbor}",
+      },
     ],
   ),
   outlet_off: path(
