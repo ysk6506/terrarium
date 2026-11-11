@@ -28,6 +28,10 @@ export interface ReferenceStep {
   readonly refused?: boolean;
   /** Steps that run together for each of the `forEach` entities, one entity after another. */
   readonly group?: readonly ReferenceStep[];
+  /** The step runs only when this text, with its `{...}` filled, is not empty (a failover is pressed only for a service that has a standby). */
+  readonly when?: string;
+  /** A `forEach` of alarms is worked out when the step is reached, with the alarms the steps before it raised (a failed update shows only after it ran). */
+  readonly later?: true;
 }
 
 export interface ReferencePath {
@@ -84,6 +88,14 @@ export const path = (
   verify: readonly ReferenceStep[] = [],
   more: Pick<ReferencePath, "settleS" | "handsOff" | "choose"> = {},
 ): ReferencePath => ({ diagnose, fix, verify, ...more });
+
+/** Steps done once for every entity that has the alarm `code` by the time the step is reached. */
+export const eachAlarm = (code: string, ...group: readonly ReferenceStep[]): ReferenceStep => ({
+  tool: "group",
+  forEach: `alarm:${code}`,
+  later: true,
+  group,
+});
 
 /** Steps done for one server after another: the next starts when the one before is done. */
 export const eachServer = (...group: readonly ReferenceStep[]): ReferenceStep => ({
