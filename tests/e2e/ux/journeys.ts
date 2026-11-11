@@ -186,11 +186,11 @@ async function run(c: Context): Promise<void> {
 /**
  * A world that takes a while to run, with a scenario on it: 20 runs on a tiny world finish before a hand can reach
  * 멈추기, so the journey asks for this one by name. It is made through the API (like Hwaseong in `topology`), carries a
- * copy of the scenario `design` saved, and is removed when the journey ends.
+ * 냉방기 정지 made from the template, and is removed when the journey ends.
  */
 const SLOW_WORLD = "느린 연습 세계";
 
-async function makeSlowWorld(base: string): Promise<string> {
+async function makeSlowWorld(base: string): Promise<{ world: string; scenario: string }> {
   const blueprint = generateCampus(
     { ...DEFAULT_CAMPUS, site: "hwaseong", seed: 1, name: SLOW_WORLD },
     new Catalog(),
@@ -202,21 +202,21 @@ async function makeSlowWorld(base: string): Promise<string> {
   });
   if (!made.ok) throw new Error(`느린 연습 세계를 올리지 못했다 (${made.status})`);
   const id = ((await made.json()) as { world: { id: string } }).world.id;
-  const listed = await fetch(`${base}/api/scenarios`, { headers: asViewer });
-  const scenarios = (await listed.json()) as Array<{ doc?: { template?: string } }>;
-  const model = scenarios.find((s) => s.doc?.template) ?? scenarios[0];
+  // from the template, which picks its targets in this world (a copy of another world's scenario names equipment
+  // that is not here)
   const copy = await fetch(`${base}/api/scenarios`, {
     method: "POST",
     headers: asViewer,
-    body: JSON.stringify({ worldId: id, doc: model?.doc, name: "냉방기 정지 (느린 세계)" }),
+    body: JSON.stringify({ worldId: id, templateId: "cooling-failure" }),
   });
   if (!copy.ok) throw new Error(`느린 세계의 시나리오를 올리지 못했다 (${copy.status})`);
-  return id;
+  const saved = (await copy.json()) as { scenario: { id: string } };
+  return { world: id, scenario: saved.scenario.id };
 }
 
 async function cancel(c: Context): Promise<void> {
   const { page } = c.v;
-  const id = await makeSlowWorld(c.base);
+  const slow = await makeSlowWorld(c.base);
   try {
     await home(c);
     await c.d.click(page.getByRole("link", { name: "새 실험" }).first());
@@ -233,9 +233,11 @@ async function cancel(c: Context): Promise<void> {
       .first()
       .waitFor({ timeout: 20 * SECOND });
   } finally {
-    await fetch(`${c.base}/api/worlds/${id}`, { method: "DELETE", headers: asViewer }).catch(
-      () => undefined,
-    );
+    // The probes that follow take the first scenario and world they find: neither may be this one.
+    for (const path of [`scenarios/${slow.scenario}`, `worlds/${slow.world}`])
+      await fetch(`${c.base}/api/${path}`, { method: "DELETE", headers: asViewer }).catch(
+        () => undefined,
+      );
   }
 }
 
