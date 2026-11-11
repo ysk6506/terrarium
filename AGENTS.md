@@ -2,18 +2,18 @@
 title: AGENTS.md — 에이전트 진입점
 kind: guide
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-10
 covers:
   - package.json
   - harness/config/architecture.yaml
   - harness/config/protected-paths.txt
 covers_hash: 64cb6ab7d6639e82
 verification_log:
-  - "2026-11-05: package.json의 dev 스크립트가 pnpm --parallel로 바뀐 것만 달라졌다. 명령 목록(dev, check, lock-tests, ratchet, ux)과 보호 경로 표는 그대로 맞다"
   - "2026-11-05: architecture.yaml의 변경은 core.topology 단위 하나를 더한 것뿐이다. 지도와 절대 규칙 표, 명령 목록은 그대로 맞다(ADR-0097)"
   - "2026-11-06: LLM API 등록"
   - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
   - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
+  - "2026-11-10: CI가 합치기 관문이 되었다는 한 줄을 더함 (ADR-0140). 명령 목록과 보호 경로 표는 그대로 맞다"
 ---
 # Terrarium — 코딩 에이전트 안내서
 
@@ -31,6 +31,8 @@ pnpm install
 pnpm dev          # 서버(:8787) + 웹(:5173)
 pnpm check        # lint + 타입 + 테스트 + 모든 구조 검사. 이게 통과해야 끝난 것.
 ```
+
+CI가 합치기 관문이다 ([ADR-0140](docs/design-docs/adr/0140-ci-shards-and-merge-gate.md)): 전체 테스트는 CI가 조각 12개로 나눠 병렬로 돌리고(커버리지 없이), 게이트 작업이 모두 초록일 때만 main에 합친다. 로컬에서는 바뀐 코드의 관련 테스트만 돌린다.
 
 실패 메시지는 `problem`과 `fix`를 알려준다. 메시지를 믿고 그대로 고친다.
 

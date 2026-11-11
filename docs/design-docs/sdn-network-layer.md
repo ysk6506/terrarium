@@ -22,13 +22,13 @@ covers:
   - packages/core/src/topology/layer-network.ts
   - packages/core/src/session/probes.ts
   - packages/core/src/session/operation/mtbf.ts
-covers_hash: 741b5bfd16d31d12
+covers_hash: da6c583ad2433f83
 verification_log:
-  - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: REQ-106이 layer-network 단계 번호를 밀었다. SDN 서술은 그대로 맞다"
   - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장이 이 문서의 내용을 바꾸지 않는지 대조했다(층 수·툴 수·칩 수를 세는 문장을 찾아 고쳤고, 나머지는 그대로 맞다)"
   - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
+  - "2026-11-07: ADR-0133에 맞춰 대조: 기대 복구 시간(+5분), 손대지 않는 것이 정답인 시트의 만점, 링크 흔들림 서술"
 ---
 # SDN 오버레이와 클라우드 네이티브 네트워크 층 (REQ-097, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0115](adr/0115-sdn-network-layer-amend-tests.md))
 

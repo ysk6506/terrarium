@@ -61,7 +61,7 @@ export const SITE_FAULT_SPECS: readonly FaultSpec[] = [
     type: "dr_failover_stuck",
     label: "DR 전환이 중간에 멈춤",
     description:
-      "전환 자동화가 중간에서 멈춰요. 서비스는 어느 쪽에서도 안 돌아요. 전환을 사람이 다시 눌러 마저 끝내요",
+      "전환 자동화가 첫 단계에서 멈춰요. 서비스는 어느 쪽에서도 안 돌아요. 전환을 사람이 다시 눌러 마저 끝내요",
     targets: ["dr_plan"],
     params: [],
     status: "supported",

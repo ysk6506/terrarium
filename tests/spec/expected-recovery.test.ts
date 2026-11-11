@@ -75,9 +75,9 @@ describe("a sheet carries the recovery its world allows [REQ-108]", () => {
     sheetOf(template, blueprint).expectedRecoveryS;
 
   test("site chips: cold four hours, warm fifteen minutes, hot and active the usual five", () => {
-    expect(expected("site-power-loss", siteBlueprint("cold"))).toBe(14_400);
-    expect(expected("site-power-loss", siteBlueprint("warm"))).toBe(900);
-    expect(expected("dr-failover-stuck", siteBlueprint("warm"))).toBe(900);
+    expect(expected("site-power-loss", siteBlueprint("cold"))).toBe(14_700);
+    expect(expected("site-power-loss", siteBlueprint("warm"))).toBe(1_200);
+    expect(expected("dr-failover-stuck", siteBlueprint("warm"))).toBe(1_200);
     expect(expected("site-power-loss", siteBlueprint("hot"))).toBeUndefined();
     expect(expected("site-power-loss", siteBlueprint("active"))).toBeUndefined();
     expect(expected("split-brain", siteBlueprint("split"))).toBeUndefined();
@@ -89,7 +89,7 @@ describe("a sheet carries the recovery its world allows [REQ-108]", () => {
     const restore = of("db-restore-corrupt-backup");
     const full = of("db-managed-storage-full");
     if (!restore || !full) throw new Error("rows");
-    expect(expected(restore.template, restore.make())).toBe(1_200);
+    expect(expected(restore.template, restore.make())).toBe(1_500);
     expect(expected(full.template, full.make())).toBe(600);
   });
 
@@ -99,6 +99,9 @@ describe("a sheet carries the recovery its world allows [REQ-108]", () => {
       "dr-failover-stuck",
       "db-restore-corrupt-backup",
       "db-managed-storage-full",
+      "storage-node-lost",
+      "sdn-tunnel-down",
+      "k8s-etcd-quorum",
     ]);
     for (const r of [...LAYER_ROWS, ...OTHER_ROWS].filter((x) => !withOne.has(x.template)))
       expect(expected(r.template, r.make()), `${r.template} in ${r.world}`).toBeUndefined();

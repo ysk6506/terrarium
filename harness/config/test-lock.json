@@ -61738,6 +61738,140 @@
    "added": "2026-10-28",
    "amended_by": null
   },
+  "harness/src/checks/test-config.test.ts::<import:0458d18f>": {
+   "kind": "support",
+   "hash": "0458d18f1a491d16",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::<import:1415b001>": {
+   "kind": "support",
+   "hash": "1415b001cc67fcc6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::<import:46dc40aa>": {
+   "kind": "support",
+   "hash": "46dc40aa82ca0ed6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::<import:50321f6c>": {
+   "kind": "support",
+   "hash": "50321f6c860a7a17",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::=configCodes": {
+   "kind": "support",
+   "hash": "b274d8cd0803203e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::=read": {
+   "kind": "support",
+   "hash": "a02ca9415c6b60bb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::=REAL": {
+   "kind": "support",
+   "hash": "63811c58bfe4d972",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::the one allowed vitest setup file [REQ-023] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::the one allowed vitest setup file [REQ-023] > any other setup file is still a violation": {
+   "kind": "test",
+   "hash": "28c9d54f17d48810",
+   "asserts": 2,
+   "literals": [
+    "\"TCFG001\"",
+    "\"TCFG001\"",
+    "\"TCFG001\"",
+    "\"TCFG001\"",
+    "\"\\\"tests/setup/other.ts\\\"\"",
+    "\"\\\"tests/setup/other.ts\\\"\"",
+    "\"\\\"tests/setup/yield-between-tests.ts\\\", \\\"tests/setup/other.ts\\\"\"",
+    "\"\\\"tests/setup/yield-between-tests.ts\\\", \\\"tests/setup/other.ts\\\"\"",
+    "\"any other setup file is still a violation\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::the one allowed vitest setup file [REQ-023] > the listed setup file is accepted": {
+   "kind": "test",
+   "hash": "38cd2631f695e8c5",
+   "asserts": 1,
+   "literals": [
+    "\"\\\"tests/setup/yield-between-tests.ts\\\"\"",
+    "\"\\\"tests/setup/yield-between-tests.ts\\\"\"",
+    "\"the listed setup file is accepted\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
   "harness/src/checks/testguard.test.ts::<import:30102eeb>": {
    "kind": "support",
    "hash": "30102eeb700389a0",
@@ -62667,6 +62801,327 @@
    "precision": [],
    "skips": 0,
    "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::<import:0458d18f>": {
+   "kind": "support",
+   "hash": "0458d18f1a491d16",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::<import:46dc40aa>": {
+   "kind": "support",
+   "hash": "46dc40aa82ca0ed6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::<import:50321f6c>": {
+   "kind": "support",
+   "hash": "50321f6c860a7a17",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::<import:fe0bf8b2>": {
+   "kind": "support",
+   "hash": "fe0bf8b271ddef94",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::=ADR": {
+   "kind": "support",
+   "hash": "785386e3485e9ad5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::=PLANNED": {
+   "kind": "support",
+   "hash": "beb3677ceb01ab33",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::=read": {
+   "kind": "support",
+   "hash": "a02ca9415c6b60bb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::=REAL": {
+   "kind": "support",
+   "hash": "63811c58bfe4d972",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::=repo": {
+   "kind": "support",
+   "hash": "f072f7e647f6a4f9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::=REQS": {
+   "kind": "support",
+   "hash": "ce737b9b9e146b01",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::=SPEC": {
+   "kind": "support",
+   "hash": "38d40d34c0f42e02",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::planned requirements in the traceability check [REQ-023] [REQ-025] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::planned requirements in the traceability check [REQ-023] [REQ-025] > a planned requirement must cite an ADR that exists": {
+   "kind": "test",
+   "hash": "72c284f41058f248",
+   "asserts": 1,
+   "literals": [
+    "\"TRACE005\"",
+    "\"TRACE005\"",
+    "\"a planned requirement must cite an ADR that exists\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::planned requirements in the traceability check [REQ-023] [REQ-025] > a planned requirement that a test already cites must drop the marker": {
+   "kind": "test",
+   "hash": "2736c058261637a1",
+   "asserts": 2,
+   "literals": [
+    "\"TRACE006\"",
+    "\"TRACE006\"",
+    "\"a planned requirement that a test already cites must drop the marker\"",
+    "\"b [REQ-002]\"",
+    "\"tests/spec/b.test.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::planned requirements in the traceability check [REQ-023] [REQ-025] > a planned requirement without a test is listed, not failed": {
+   "kind": "test",
+   "hash": "04d9c694eea85953",
+   "asserts": 3,
+   "literals": [
+    "\"ADR-0007\"",
+    "\"ADR-0007\"",
+    "\"REQ-002 (ADR-0007)\"",
+    "\"REQ-002 (ADR-0007)\"",
+    "\"REQ-002\"",
+    "\"REQ-002\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"a planned requirement without a test is listed, not failed\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::planned requirements in the traceability check [REQ-023] [REQ-025] > the same requirement without the marker still fails": {
+   "kind": "test",
+   "hash": "45a9458825d23d7d",
+   "asserts": 1,
+   "literals": [
+    "\"TRACE001\"",
+    "\"TRACE001\"",
+    "\"later\"",
+    "\"later\"",
+    "\"the same requirement without the marker still fails\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum.test.ts::<import:db1084c0>": {
+   "kind": "support",
+   "hash": "db1084c09c3ab8b8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum.test.ts::=list": {
+   "kind": "support",
+   "hash": "0891ab930c60f373",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum.test.ts::=report": {
+   "kind": "support",
+   "hash": "e7f5a8ce060f34f1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum.test.ts::shard sum: every test runs exactly once per CI run > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum.test.ts::shard sum: every test runs exactly once per CI run > a file in two shards or in none is reported": {
+   "kind": "test",
+   "hash": "83eba07c43b28450",
+   "asserts": 2,
+   "literals": [
+    "\"/r/packages/a/src/x.test.ts\"",
+    "\"/r/packages/a/src/x.test.ts\"",
+    "\"/r/packages/a/src/x.test.ts\"",
+    "\"/r/tests/spec/y.test.ts\"",
+    "\"a file in two shards or in none is reported\"",
+    "\"packages/a/src/x.test.ts: listed 2, shards ran 4\"",
+    "\"packages/a/src/x.test.ts: listed 2, shards ran 4\"",
+    "\"passed\"",
+    "\"passed\"",
+    "\"passed\"",
+    "\"passed\"",
+    "\"passed\"",
+    "\"passed\"",
+    "\"passed\"",
+    "\"tests/spec/y.test.ts: listed 1, shards ran 0\"",
+    "\"tests/spec/y.test.ts: listed 1, shards ran 0\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum.test.ts::shard sum: every test runs exactly once per CI run > failed and skipped tests are reported": {
+   "kind": "test",
+   "hash": "e689ac65ab88ff4f",
+   "asserts": 1,
+   "literals": [
+    "\"/r/packages/a/src/x.test.ts\"",
+    "\"/r/tests/spec/y.test.ts\"",
+    "\"1 test(s) failed\"",
+    "\"1 test(s) failed\"",
+    "\"1 test(s) were skipped, todo or not run\"",
+    "\"1 test(s) were skipped, todo or not run\"",
+    "\"failed and skipped tests are reported\"",
+    "\"failed\"",
+    "\"passed\"",
+    "\"skipped\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "harness/src/ci/shard-sum.test.ts::shard sum: every test runs exactly once per CI run > shards that cover the list once pass": {
+   "kind": "test",
+   "hash": "5d6f200d8f203104",
+   "asserts": 1,
+   "literals": [
+    "\"/runner/packages/a/src/x.test.ts\"",
+    "\"/runner/tests/spec/y.test.ts\"",
+    "\"passed\"",
+    "\"passed\"",
+    "\"passed\"",
+    "\"shards that cover the list once pass\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
    "amended_by": null
   },
   "harness/src/common.test.ts::<import:007beb93>": {
@@ -108366,11 +108821,11 @@
   },
   "tests/spec/baseline-agents.test.ts::nobody touches a cluster that is bringing the service back by itself [REQ-108] > hot site: the agents wait for the switch-over, change nothing, and still earn the report": {
    "kind": "test",
-   "hash": "db5bd9b8fe63cf14",
+   "hash": "0faaafa43b27c148",
    "asserts": 5,
    "literals": [
-    "\"30\"",
-    "\"30\"",
+    "\"100\"",
+    "\"100\"",
     "\"active\"",
     "\"hot site: the agents wait for the switch-over, change nothing, and still earn the report\"",
     "\"hot\"",
@@ -108390,7 +108845,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-07",
-   "amended_by": null
+   "amended_by": "0133-grading-correctness-reference-solver.md"
   },
   "tests/spec/baseline-agents.test.ts::nobody touches a cluster that is bringing the service back by itself [REQ-108] > hot site: the session says in events_since that the system moved the services by itself": {
    "kind": "test",
@@ -108499,11 +108954,11 @@
   },
   "tests/spec/baseline-agents.test.ts::operator and triage know the site and DR layer [REQ-108] > a cut line is handed to the network team and nothing is failed over; a broken volume copy to storage": {
    "kind": "test",
-   "hash": "a533f18843ea618b",
+   "hash": "f9f8530fc57d8ee3",
    "asserts": 3,
    "literals": [
-    "\"30\"",
-    "\"30\"",
+    "\"100\"",
+    "\"100\"",
     "\"a cut line is handed to the network team and nothing is failed over; a broken volume copy to storage\"",
     "\"dr_failover\"",
     "\"dr_failover\"",
@@ -108524,7 +108979,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-07",
-   "amended_by": null
+   "amended_by": "0133-grading-correctness-reference-solver.md"
   },
   "tests/spec/baseline-agents.test.ts::operator and triage know the site and DR layer [REQ-108] > a failover that stops halfway is pressed once more and named for what it was": {
    "kind": "test",
@@ -108551,11 +109006,11 @@
   },
   "tests/spec/baseline-agents.test.ts::operator and triage know the site and DR layer [REQ-108] > a stopped replicator is restarted on its host, and a lost quorum gets its nodes restarted": {
    "kind": "test",
-   "hash": "90e3d5ca168bc1ed",
+   "hash": "cb2610fee5ddc3d7",
    "asserts": 4,
    "literals": [
-    "\"30\"",
-    "\"30\"",
+    "\"100\"",
+    "\"100\"",
     "\"95\"",
     "\"95\"",
     "\"a stopped replicator is restarted on its host, and a lost quorum gets its nodes restarted\"",
@@ -108577,7 +109032,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-07",
-   "amended_by": null
+   "amended_by": "0133-grading-correctness-reference-solver.md"
   },
   "tests/spec/baseline-agents.test.ts::operator and triage know the site and DR layer [REQ-108] > a warm site is failed over by hand and a cold one is handed to the facility team and failed over too": {
    "kind": "test",
@@ -108929,23 +109384,31 @@
   },
   "tests/spec/calibration.test.ts::every built-in scenario tells an agent that knows from one that does not [REQ-070] [REQ-007] > the scenarios that give full marks for the answer alone are exactly these (they measure diagnosis, not operation)": {
    "kind": "test",
-   "hash": "accab2cc7f3aaaf5",
+   "hash": "7e734c9ba6c0e860",
    "asserts": 1,
    "literals": [
     "\"100\"",
     "\"180000\"",
+    "\"db-primary-down\"",
+    "\"db-primary-down\"",
     "\"fan-failure-throttle\"",
     "\"fan-failure-throttle\"",
+    "\"geo-replica-broken\"",
+    "\"geo-replica-broken\"",
     "\"plant-loop-down\"",
     "\"plant-loop-down\"",
+    "\"sdn-controller-down\"",
+    "\"sdn-controller-down\"",
     "\"sensor-drift\"",
     "\"sensor-drift\"",
-    "\"the scenarios that give full marks for the answer alone are exactly these (they measure diagnosis, not operation)\""
+    "\"the scenarios that give full marks for the answer alone are exactly these (they measure diagnosis, not operation)\"",
+    "\"wan-link-cut\"",
+    "\"wan-link-cut\""
    ],
    "precision": [],
    "skips": 0,
    "added": "2026-11-07",
-   "amended_by": "0121-application-layer-and-calls.md"
+   "amended_by": "0133-grading-correctness-reference-solver.md"
   },
   "tests/spec/campus-light.test.ts::<import:0f465da4>": {
    "kind": "support",
@@ -112509,17 +112972,17 @@
   },
   "tests/spec/db-scenarios.test.ts::what heals by itself is not the agent's recovery [REQ-095] [REQ-088] > a distributed node lost: the pool heals by itself and the report is what the agent earns": {
    "kind": "test",
-   "hash": "3a277e447d1a476e",
+   "hash": "a699189d23af3a59",
    "asserts": 4,
    "literals": [
     "\"0\"",
     "\"0\"",
+    "\"100\"",
+    "\"100\"",
+    "\"100\"",
+    "\"100\"",
     "\"1200\"",
     "\"1200\"",
-    "\"30\"",
-    "\"30\"",
-    "\"30\"",
-    "\"30\"",
     "\"a distributed node lost: the pool heals by itself and the report is what the agent earns\"",
     "\"db-main\"",
     "\"db_failover\"",
@@ -112537,8 +113000,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-07",
+   "amended_by": "0133-grading-correctness-reference-solver.md"
   },
   "tests/spec/db-scenarios.test.ts::what heals by itself is not the agent's recovery [REQ-095] [REQ-088] > auto failover: by the time the agent is told the cluster has promoted, so there is nothing left to fix": {
    "kind": "test",
@@ -112571,12 +113034,12 @@
   },
   "tests/spec/db-scenarios.test.ts::what heals by itself is not the agent's recovery [REQ-095] [REQ-088] > auto failover: watching and reporting earns the report, and the result says the cluster did it": {
    "kind": "test",
-   "hash": "f7bca3bc7cebac9f",
+   "hash": "0b49bc70a9b7163b",
    "asserts": 5,
    "literals": [
+    "\"100\"",
+    "\"100\"",
     "\"120\"",
-    "\"30\"",
-    "\"30\"",
     "\"auto failover: watching and reporting earns the report, and the result says the cluster did it\"",
     "\"auto_failover\"",
     "\"db-primary-down\"",
@@ -112595,8 +113058,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-07",
+   "amended_by": "0133-grading-correctness-reference-solver.md"
   },
   "tests/spec/db-scenarios.test.ts::what heals by itself is not the agent's recovery [REQ-095] [REQ-088] > the cluster's promotion is a world event of the cluster, not an action of the agent": {
    "kind": "test",
@@ -115190,11 +115653,11 @@
   },
   "tests/spec/expected-recovery.test.ts::a sheet carries the recovery its world allows [REQ-108] > a restore takes twenty minutes, a grown managed storage ten, whatever the agent does": {
    "kind": "test",
-   "hash": "ef180178badf6e39",
+   "hash": "faeee033d633b109",
    "asserts": 2,
    "literals": [
-    "\"1200\"",
-    "\"1200\"",
+    "\"1500\"",
+    "\"1500\"",
     "\"600\"",
     "\"600\"",
     "\"a restore takes twenty minutes, a grown managed storage ten, whatever the agent does\"",
@@ -115205,11 +115668,11 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-07",
-   "amended_by": null
+   "amended_by": "0133-grading-correctness-reference-solver.md"
   },
   "tests/spec/expected-recovery.test.ts::a sheet carries the recovery its world allows [REQ-108] > every other sheet has none, so its score and its digest are what they were": {
    "kind": "test",
-   "hash": "101b5c1d537a05f2",
+   "hash": "daa7735b5a914fef",
    "asserts": 3,
    "literals": [
     "\"0\"",
@@ -115219,26 +115682,29 @@
     "\"db-restore-corrupt-backup\"",
     "\"dr-failover-stuck\"",
     "\"every other sheet has none, so its score and its digest are what they were\"",
+    "\"k8s-etcd-quorum\"",
     "\"lab\"",
     "\"lab\"",
-    "\"site-power-loss\""
+    "\"sdn-tunnel-down\"",
+    "\"site-power-loss\"",
+    "\"storage-node-lost\""
    ],
    "precision": [],
    "skips": 0,
    "added": "2026-11-07",
-   "amended_by": null
+   "amended_by": "0133-grading-correctness-reference-solver.md"
   },
   "tests/spec/expected-recovery.test.ts::a sheet carries the recovery its world allows [REQ-108] > site chips: cold four hours, warm fifteen minutes, hot and active the usual five": {
    "kind": "test",
-   "hash": "c2c77e08ed9f941e",
+   "hash": "bad38ad9d8f8d22f",
    "asserts": 6,
    "literals": [
-    "\"14400\"",
-    "\"14400\"",
-    "\"900\"",
-    "\"900\"",
-    "\"900\"",
-    "\"900\"",
+    "\"1200\"",
+    "\"1200\"",
+    "\"1200\"",
+    "\"1200\"",
+    "\"14700\"",
+    "\"14700\"",
     "\"active\"",
     "\"active\"",
     "\"cold\"",
@@ -115268,7 +115734,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-07",
-   "amended_by": null
+   "amended_by": "0133-grading-correctness-reference-solver.md"
   },
   "tests/spec/expected-recovery.test.ts::the cold and warm sites can now score high, and the discriminability check reads the same window [REQ-108] > <suite>": {
    "kind": "support",
@@ -125786,6 +126252,159 @@
    "added": "2026-11-04",
    "amended_by": null
   },
+  "tests/spec/operator-isolation.test.ts::<import:14ed1db2>": {
+   "kind": "support",
+   "hash": "14ed1db219dabfce",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/operator-isolation.test.ts::<import:44e2cf0f>": {
+   "kind": "support",
+   "hash": "44e2cf0f84d0bf84",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/operator-isolation.test.ts::<import:46dc40aa>": {
+   "kind": "support",
+   "hash": "46dc40aa82ca0ed6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/operator-isolation.test.ts::<import:b03648f4>": {
+   "kind": "support",
+   "hash": "b03648f4535c4129",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/operator-isolation.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/operator-isolation.test.ts::=DIR": {
+   "kind": "support",
+   "hash": "f782f59a254901e2",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/operator-isolation.test.ts::=FILES": {
+   "kind": "support",
+   "hash": "56bf79997f005929",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/operator-isolation.test.ts::=importsOf": {
+   "kind": "support",
+   "hash": "51f4d665ed697b34",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/operator-isolation.test.ts::operator sees only the tools [REQ-110] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/operator-isolation.test.ts::operator sees only the tools [REQ-110] > it asks the endpoint and nothing else: any other reach into the request fails the test": {
+   "kind": "test",
+   "hash": "ce70ef63e9e1f73d",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"20\"",
+    "\"3600\"",
+    "\"builtin\"",
+    "\"call\"",
+    "\"it asks the endpoint and nothing else: any other reach into the request fails the test\"",
+    "\"list_alarms\"",
+    "\"list_alarms\"",
+    "\"list_alarms\"",
+    "\"list_services\"",
+    "\"not in this test\"",
+    "\"operator\"",
+    "\"r\"",
+    "\"specs\"",
+    "\"submit_diagnosis\"",
+    "\"wait\"",
+    "\"내장\"",
+    "\"조사하라\"",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": "0133-grading-correctness-reference-solver.md"
+  },
+  "tests/spec/operator-isolation.test.ts::operator sees only the tools [REQ-110] > it imports the endpoint's types and its own helpers, nothing that knows the truth": {
+   "kind": "test",
+   "hash": "d673e196b1c15506",
+   "asserts": 1,
+   "literals": [
+    "\"./\"",
+    "\"@terrarium/core/experiments\"",
+    "\"it imports the endpoint's types and its own helpers, nothing that knows the truth\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/operator-isolation.test.ts::operator sees only the tools [REQ-110] > what it takes from the experiments package is types only": {
+   "kind": "test",
+   "hash": "02108437ee2b912a",
+   "asserts": 2,
+   "literals": [
+    "\"@terrarium/core/experiments\"",
+    "\"\\n\"",
+    "\"utf8\"",
+    "\"what it takes from the experiments package is types only\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
   "tests/spec/orv3-racks.test.ts::<import:0f465da4>": {
    "kind": "support",
    "hash": "0f465da4070b74ff",
@@ -129977,6 +130596,588 @@
    "added": "2026-11-04",
    "amended_by": null
   },
+  "tests/spec/reference-coverage.test.ts::<import:3612c1aa>": {
+   "kind": "support",
+   "hash": "3612c1aafeada828",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-coverage.test.ts::<import:642b5cdf>": {
+   "kind": "support",
+   "hash": "642b5cdf899eadaa",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-coverage.test.ts::<import:adaef8b9>": {
+   "kind": "support",
+   "hash": "adaef8b9bca3bf85",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-coverage.test.ts::<import:cda8e525>": {
+   "kind": "support",
+   "hash": "cda8e5254ddd04c5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-coverage.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-coverage.test.ts::=KEYS": {
+   "kind": "support",
+   "hash": "947a08f4c5887a2d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-coverage.test.ts::=PSEUDO": {
+   "kind": "support",
+   "hash": "e2a4865f964b4665",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-coverage.test.ts::every fault kind has a reference solution [REQ-110] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-coverage.test.ts::every fault kind has a reference solution [REQ-110] > a fault, a mistake and the firmware task each have a path": {
+   "kind": "test",
+   "hash": "3414a99358220609",
+   "asserts": 1,
+   "literals": [
+    "\"a fault, a mistake and the firmware task each have a path\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-coverage.test.ts::every fault kind has a reference solution [REQ-110] > a variant belongs to a template of the library": {
+   "kind": "test",
+   "hash": "9105f219a199432c",
+   "asserts": 1,
+   "literals": [
+    "\"a variant belongs to a template of the library\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-coverage.test.ts::every fault kind has a reference solution [REQ-110] > every path acts through tools that exist": {
+   "kind": "test",
+   "hash": "5881aaa8267411bb",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"every path acts through tools that exist\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-coverage.test.ts::every fault kind has a reference solution [REQ-110] > every template's fault kinds are covered": {
+   "kind": "test",
+   "hash": "94b6c95016948a12",
+   "asserts": 1,
+   "literals": [
+    "\"every template's fault kinds are covered\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-coverage.test.ts::every fault kind has a reference solution [REQ-110] > no path is left over for a kind that no longer exists": {
+   "kind": "test",
+   "hash": "0471b64fe3de67e8",
+   "asserts": 1,
+   "literals": [
+    "\"no path is left over for a kind that no longer exists\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-determinism.test.ts::<import:4eb3d6bb>": {
+   "kind": "support",
+   "hash": "4eb3d6bb692369be",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-determinism.test.ts::<import:8db63a14>": {
+   "kind": "support",
+   "hash": "8db63a14ce50b2bf",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-determinism.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-determinism.test.ts::=SAMPLE": {
+   "kind": "support",
+   "hash": "276ef7f504fec5f4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-determinism.test.ts::=wallDelay": {
+   "kind": "support",
+   "hash": "455f939b138c675e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-determinism.test.ts::a score is a function of the scenario, the seed and the actions [REQ-110] > <stmt:9189fbea>": {
+   "kind": "support",
+   "hash": "9189fbea5fc7c099",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-determinism.test.ts::a score is a function of the scenario, the seed and the actions [REQ-110] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-determinism.test.ts::a score is a function of the scenario, the seed and the actions [REQ-110] > the same actions on a different seed on a sheet with no chance in it give the same score": {
+   "kind": "test",
+   "hash": "cb5189b7f3135b7c",
+   "asserts": 1,
+   "literals": [
+    "\"1\"",
+    "\"7\"",
+    "\"no sheet\"",
+    "\"os-disk-full\"",
+    "\"the same actions on a different seed on a sheet with no chance in it give the same score\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::<import:3c2dab61>": {
+   "kind": "support",
+   "hash": "3c2dab61f8e27f54",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::<import:52b0846b>": {
+   "kind": "support",
+   "hash": "52b0846b4c1f3e17",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::<import:d5d2b26b>": {
+   "kind": "support",
+   "hash": "d5d2b26b1279151a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::=byLabel": {
+   "kind": "support",
+   "hash": "cec0a5fb61b1b9bd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::=cases": {
+   "kind": "support",
+   "hash": "ff907188e7ac0bc3",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::=DIAGNOSIS": {
+   "kind": "support",
+   "hash": "a526ced911e47143",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::=ids": {
+   "kind": "support",
+   "hash": "f9f3a6fcfe8fe45b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::=NOTHING_TO_MEND": {
+   "kind": "support",
+   "hash": "6ea6ab7f3bc0ddc9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::=played": {
+   "kind": "support",
+   "hash": "b684ddebaca75551",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::=POWER_OFF_IS_FINE": {
+   "kind": "support",
+   "hash": "e78f2bdc6d9eb14d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::=SELF_HEALING": {
+   "kind": "support",
+   "hash": "9553cd3fd2934d14",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::a fix on the wrong thing is not credited [REQ-110] > <stmt:23829da0>": {
+   "kind": "support",
+   "hash": "23829da09c85439e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::a fix on the wrong thing is not credited [REQ-110] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::a fix on the wrong thing is not credited [REQ-110] > =SAMPLE": {
+   "kind": "support",
+   "hash": "561ece1bd2e4b314",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::a wrong cause or a wrong kind in the report loses the report [REQ-110] > <stmt:b22cdc7b>": {
+   "kind": "support",
+   "hash": "b22cdc7b006b7c8d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::a wrong cause or a wrong kind in the report loses the report [REQ-110] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::idle < report only < the reference [REQ-110] > <stmt:c80235d5>": {
+   "kind": "support",
+   "hash": "c80235d512af7b42",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::idle < report only < the reference [REQ-110] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::steps in the wrong order are not credited [REQ-110] > <stmt:f0420843>": {
+   "kind": "support",
+   "hash": "f0420843bb137900",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::steps in the wrong order are not credited [REQ-110] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::steps in the wrong order are not credited [REQ-110] > =ORDERED": {
+   "kind": "support",
+   "hash": "ddbdc791c68d6a62",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::the right fix, started late, is paid less [REQ-110] > <stmt:b4cba317>": {
+   "kind": "support",
+   "hash": "b4cba317edc28787",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::the right fix, started late, is paid less [REQ-110] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::turning off the server that carries the service is a worsening [REQ-110] > <stmt:232f1bf9>": {
+   "kind": "support",
+   "hash": "232f1bf9460c6481",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::turning off the server that carries the service is a worsening [REQ-110] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::turning off the server that carries the service is a worsening [REQ-110] > =small": {
+   "kind": "support",
+   "hash": "7d2a99795b57f289",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-mutations.test.ts::turning off the server that carries the service is a worsening [REQ-110] > the small worlds are most of the layers": {
+   "kind": "test",
+   "hash": "d0e8de606f2aba82",
+   "asserts": 1,
+   "literals": [
+    "\"60\"",
+    "\"60\"",
+    "\"the small worlds are most of the layers\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-solutions.test.ts::<import:4eb3d6bb>": {
+   "kind": "support",
+   "hash": "4eb3d6bb692369be",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-solutions.test.ts::<import:8db63a14>": {
+   "kind": "support",
+   "hash": "8db63a14ce50b2bf",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-solutions.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-solutions.test.ts::the reference solution scores exactly 100 on every sheet [REQ-110] > <stmt:62f56292>": {
+   "kind": "support",
+   "hash": "62f5629276ab11eb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-solutions.test.ts::the reference solution scores exactly 100 on every sheet [REQ-110] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "tests/spec/reference-solutions.test.ts::the reference solution scores exactly 100 on every sheet [REQ-110] > there are as many sheets as templates, site modes and template-less fault kinds": {
+   "kind": "test",
+   "hash": "3d379c4cf14bdc0d",
+   "asserts": 1,
+   "literals": [
+    "\"100\"",
+    "\"100\"",
+    "\"there are as many sheets as templates, site modes and template-less fault kinds\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
   "tests/spec/remote-harness.test.ts::<hook:afterAll>": {
    "kind": "support",
    "hash": "0943d9cd35c5b5be",
@@ -132243,14 +133444,14 @@
    "added": "2026-11-06",
    "amended_by": null
   },
-  "tests/spec/sdn-scenarios.test.ts::every SDN sheet is valid and cannot be passed by not knowing [REQ-097] > <stmt:8f3edb9d>": {
+  "tests/spec/sdn-scenarios.test.ts::every SDN sheet is valid and cannot be passed by not knowing [REQ-097] > <stmt:512e0787>": {
    "kind": "support",
-   "hash": "8f3edb9d6fa03af6",
+   "hash": "512e07875282e86e",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
+   "added": "2026-11-07",
    "amended_by": null
   },
   "tests/spec/sdn-scenarios.test.ts::every SDN sheet is valid and cannot be passed by not knowing [REQ-097] > <suite>": {
@@ -132312,13 +133513,13 @@
   },
   "tests/spec/sdn-scenarios.test.ts::what heals by itself is not the agent's recovery [REQ-097] [REQ-088] > a controller pair: watching and reporting earns the report, and the result says the system did it": {
    "kind": "test",
-   "hash": "229593d34b6c8477",
+   "hash": "dac5bdeb4d47211b",
    "asserts": 5,
    "literals": [
+    "\"100\"",
+    "\"100\"",
     "\"120\"",
     "\"2\"",
-    "\"30\"",
-    "\"30\"",
     "\"a controller pair: watching and reporting earns the report, and the result says the system did it\"",
     "\"cluster\"",
     "\"cluster\"",
@@ -132334,8 +133535,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-07",
+   "amended_by": "0133-grading-correctness-reference-solver.md"
   },
   "tests/spec/sdn-scenarios.test.ts::what heals by itself is not the agent's recovery [REQ-097] [REQ-088] > a single controller never heals: the services stay in trouble until the network team is told": {
    "kind": "test",
@@ -134304,6 +135505,16 @@
    "added": "2026-11-07",
    "amended_by": null
   },
+  "tests/spec/site-scenarios.test.ts::=MENDS_ITSELF": {
+   "kind": "support",
+   "hash": "9d900560f90de6af",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
   "tests/spec/site-scenarios.test.ts::=open": {
    "kind": "support",
    "hash": "89679da560cadefa",
@@ -134404,9 +135615,9 @@
    "added": "2026-11-07",
    "amended_by": null
   },
-  "tests/spec/site-scenarios.test.ts::every sheet is valid and cannot be passed by not knowing [REQ-106] > <stmt:b6ed7022>": {
+  "tests/spec/site-scenarios.test.ts::every sheet is valid and cannot be passed by not knowing [REQ-106] > <stmt:4d2dbeef>": {
    "kind": "support",
-   "hash": "b6ed7022be0aad7b",
+   "hash": "4d2dbeefc4a7b6d8",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -134461,9 +135672,9 @@
    "added": "2026-11-07",
    "amended_by": null
   },
-  "tests/spec/site-scenarios.test.ts::recovery first beats cause first beats doing nothing [REQ-106] [REQ-088] > <stmt:944dd9d2>": {
+  "tests/spec/site-scenarios.test.ts::recovery first beats cause first beats doing nothing [REQ-106] [REQ-088] > <stmt:808219a2>": {
    "kind": "support",
-   "hash": "944dd9d236e98629",
+   "hash": "808219a2ff2a8f05",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -138711,6 +139922,10 @@
   "tests/spec/db-worldgen.test.ts::데이터베이스 칩이 세계에 클러스터를 깐다 [REQ-095] > 점선 칩은 가장 가까운 칩 모양으로 짓는다": "0129-site-dr-geo-storage-distributed-db.md",
   "tests/spec/facades.test.ts::vCenter facade [REQ-003] [REQ-004] > lists VMs with filters and shows details with placement": "0058-vmware-api-conformance.md",
   "tests/spec/facility-protocols.test.ts::<import:f6c50b5a>": "0057-facility-standard-interfaces.md",
-  "tests/spec/moss-questions.test.ts::<import:83f289b7>": "0125-moss-requires-model.md"
+  "tests/spec/moss-questions.test.ts::<import:83f289b7>": "0125-moss-requires-model.md",
+  "tests/spec/operator-isolation.test.ts::<import:e1047519>": "0133-grading-correctness-reference-solver.md",
+  "tests/spec/sdn-scenarios.test.ts::every SDN sheet is valid and cannot be passed by not knowing [REQ-097] > <stmt:8f3edb9d>": "0133-grading-correctness-reference-solver.md",
+  "tests/spec/site-scenarios.test.ts::every sheet is valid and cannot be passed by not knowing [REQ-106] > <stmt:b6ed7022>": "0133-grading-correctness-reference-solver.md",
+  "tests/spec/site-scenarios.test.ts::recovery first beats cause first beats doing nothing [REQ-106] [REQ-088] > <stmt:944dd9d2>": "0133-grading-correctness-reference-solver.md"
  }
 }
