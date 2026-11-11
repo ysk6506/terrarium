@@ -26,6 +26,16 @@ import { solve } from "./reference-solver";
 
 const catalog = new Catalog();
 
+/**
+ * The sheet that waits four days of run time for a vendor, one synchronous call of a minute or more on a campus: it blocks the
+ * test worker for longer than vitest's reporting channel waits, so it is left out on the campus generator's presets (the golden campus, the ladder shapes and the world generator keep it) (ADR-0178).
+ */
+const TOO_LONG = "domain-memory-vendor";
+
+const inGroup = (shape: string, key: string, group: "all" | "domain" | "rest"): boolean =>
+  !(shape.startsWith("campus-") && key.startsWith(`${TOO_LONG}@`)) &&
+  (group === "all" || key.startsWith("domain-") === (group === "domain"));
+
 /** What the reference run of every offered template (all, only the `domain` ones, or all but those: the domain sheets wait four days of run time on a world and take the most time) left short of full, or what stopped it. Empty when all give 100. */
 export function shortOf(
   shape: GoldenWorld,
@@ -33,9 +43,7 @@ export function shortOf(
 ): { offered: number; short: string[] } {
   const cases = casesOf(shape);
   const short: string[] = [];
-  for (const c of cases.filter(
-    (c) => group === "all" || c.key.startsWith("domain-") === (group === "domain"),
-  )) {
+  for (const c of cases.filter((c) => inGroup(shape.id, c.key, group))) {
     try {
       const { result } = solve(c.blueprint, c.doc());
       const items = result.score.items

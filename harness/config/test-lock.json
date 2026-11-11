@@ -125482,8 +125482,8 @@
   },
   "tests/spec/campus-light.test.ts::tools and scenarios on a light-rack campus [REQ-049] [REQ-033] > %s: builds on servers that exist": {
    "kind": "test",
-   "hash": "c9cc353c75ddf844",
-   "asserts": 3,
+   "hash": "be3d798450927f54",
+   "asserts": 4,
    "literals": [
     "\"%s: builds on servers that exist\"",
     "\"0\"",
@@ -125494,13 +125494,14 @@
     "\"600\"",
     "\"ai-liquid\"",
     "\"generated\"",
+    "\"outage-generator-fails\"",
     "false",
     "false"
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0178-offered-scenario-solved-on-every-world-shape.md"
   },
   "tests/spec/campus-light.test.ts::tools and scenarios on a light-rack campus [REQ-049] [REQ-033] > <suite>": {
    "kind": "support",
@@ -125641,8 +125642,8 @@
   },
   "tests/spec/campus.test.ts::facility scenarios on a generated campus [REQ-033] [REQ-044] [REQ-046] > %s: builds, validates, and the root cause alarms": {
    "kind": "test",
-   "hash": "9215cedd8eb76d45",
-   "asserts": 4,
+   "hash": "9deb16225b0bb424",
+   "asserts": 5,
    "literals": [
     "\"%s: builds, validates, and the root cause alarms\"",
     "\"0\"",
@@ -125655,6 +125656,7 @@
     "\"diagnosis\"",
     "\"generated\"",
     "\"list_alarms\"",
+    "\"outage-generator-fails\"",
     "false",
     "false",
     "true",
@@ -125662,8 +125664,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0178-offered-scenario-solved-on-every-world-shape.md"
   },
   "tests/spec/campus.test.ts::facility scenarios on a generated campus [REQ-033] [REQ-044] [REQ-046] > <suite>": {
    "kind": "support",
