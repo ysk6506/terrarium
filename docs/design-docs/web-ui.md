@@ -75,13 +75,13 @@ covers:
   - apps/web/src/ui/replay/FramesBar.tsx
   - apps/web/src/ui/replay/useClock.ts
   - apps/web/src/logic/topology/words.ts
-covers_hash: 0dbe7a2dcd924254
+covers_hash: 098a5e4558d6b0f2
 verification_log:
-  - "2026-11-07: REQ-109: 코드와 대조했다"
   - "2026-11-07: REQ-109: 이끼 버튼을 빌더 다음 칩 위로 올린 것까지 대조했다"
   - "2026-11-07: o15 합치기 (2차 피드백 수정)"
   - "2026-11-07: 2026-11-07: REQ-111(ADR-0134): 기반 랙·서버 수 합계·빌더 오른쪽 아래 칩을 코드와 대조해 고쳤고 나머지는 그대로 맞다"
   - "2026-11-11: 빌더 오른쪽 아래 칩 배치와 styles.css 변경 재확인; 본문은 그대로 맞음(ADR-0134)"
+  - "2026-11-11: main 합친 뒤 재확인; 키 안내 카드는 900px 아래에서 숨김을 적음(REQ-111)"
 ---
 # 웹 화면 (REQ-006, REQ-030~041)
 
@@ -126,7 +126,7 @@ verification_log:
 7. **말투는 해요체 하나, 한 화면에 한 가지 ([ADR-0050](adr/0050-toss-ux-principles.md)).** 문장은 "~해요"로 끝나고, 버튼은 "~하기", "확인", "다음", "닫기", "멈추기"로 말한다("취소"는 쓰지 않는다).
    버튼 `Button`의 `why`는 꺼진 이유를 `title`과 `aria-describedby`로 알린다. 누르는 곳은 높이 32 px, 너비 24 px 이상이다(문장 속 링크는 예외). 화면마다 주된 버튼은 하나다.
 8. **보조 기기로도.** 3D 캔버스는 `role="application"`에 이름("…의 3D 보기")이 있고 `aria-description`이 키(Q·E 돌리기, +/- 확대, Esc 나오기)를 읽어 준다. 안내는 화면의 글이 아니라 속성에 둔다. 첫 화면에 새 글자를 그리면 그 글자의 글꼴 파일(약 25 kB)을 더 받아 예산을 넘긴다. 시나리오 캔버스의 안내, 블록, 이음선, 조절 버튼 이름도 한국어다. 같은 이름의 링크가 표의 줄마다 있으면 줄의 이름을 `sr-only`로 붙인다("실험하기 (냉방기 정지)").
-9. **키보드로도.** 모든 조작에 포커스가 보이고, 빌더는 R(회전)·Delete·Esc·Ctrl+Z를 쓴다. 움직임은 사람의 동작에 답할 때만, `prefers-reduced-motion`을 따른다.
+9. **키보드로도.** 모든 조작에 포커스가 보이고, 빌더는 R(회전)·Delete·Esc·Ctrl+Z를 쓴다. 그 키 안내 카드와 "?" 단추는 900px 아래(바닥 시트 폭, 폰)에서는 나오지 않는다(REQ-111). 움직임은 사람의 동작에 답할 때만, `prefers-reduced-motion`을 따른다.
 
 ## 3D 세계 (REQ-006, REQ-036, [ADR-0040](adr/0040-site-layout-and-world-stage.md))
 
