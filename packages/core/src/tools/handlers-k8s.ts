@@ -30,7 +30,7 @@ import {
 
 type Handler = (ctx: ToolContext, args: Args) => unknown;
 
-const str = (args: Args, key: string): string => String(args[key] ?? "");
+const str = (args: Args, key: string): string => String(args[key]);
 
 const REFUSED =
   "The connection to the server was refused - did you specify the right host or port? (컨트롤 플레인이 멈춰 있어요)";

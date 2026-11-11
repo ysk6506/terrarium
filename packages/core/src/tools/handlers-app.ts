@@ -28,7 +28,7 @@ type Handler = (ctx: ToolContext, args: Args) => unknown;
 
 const opt = (args: Args, key: string): string | undefined =>
   args[key] === undefined || args[key] === "" ? undefined : String(args[key]);
-const need = (args: Args, key: string): string => String(args[key] ?? "");
+const need = (args: Args, key: string): string => String(args[key]);
 
 function backendRow(world: WorldPort, e: Entity, intervalS: number) {
   const s = world.stateAs(e.id, "app_instance");

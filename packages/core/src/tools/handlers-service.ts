@@ -6,7 +6,7 @@ import { runShell } from "./shell";
 
 type Handler = (ctx: ToolContext, args: Args) => unknown;
 
-const str = (args: Args, key: string): string => String(args[key] ?? "");
+const str = (args: Args, key: string): string => String(args[key]);
 
 function summary(world: WorldPort, id: string) {
   const e = world.index.entity(id);
