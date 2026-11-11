@@ -42122,6 +42122,24 @@
    "added": "2026-11-11",
    "amended_by": null
   },
+  "apps/web/src/logic/result-error.test.ts::what the result page says when the error is unknown > [REQ-118] when every situation scored the same the page says there is no error": {
+   "kind": "test",
+   "hash": "b9eec0e5cf3aad44",
+   "asserts": 1,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"5\"",
+    "\"5\"",
+    "\"[REQ-118] when every situation scored the same the page says there is no error\"",
+    "\"오차가 없어요\"",
+    "\"오차가 없어요\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "apps/web/src/logic/result-error.test.ts::what the result page says when the error is unknown > [REQ-118] with one situation the page says the error is not known yet": {
    "kind": "test",
    "hash": "aac7d64ecb4c88e5",

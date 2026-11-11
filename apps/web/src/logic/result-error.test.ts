@@ -17,4 +17,8 @@ describe("what the result page says when the error is unknown", () => {
     expect(errorNote(score(5, 12))).toBeUndefined();
     expect(errorNote(undefined)).toBeUndefined();
   });
+
+  test("[REQ-118] when every situation scored the same the page says there is no error", () => {
+    expect(errorNote(score(5, 0))).toContain("오차가 없어요");
+  });
 });
