@@ -3,8 +3,10 @@ import { run as architecture } from "./checks/architecture";
 import { run as coverage } from "./checks/coverage";
 import { run as debt } from "./checks/debt";
 import { run as docs } from "./checks/docs";
+import { report as ignores } from "./checks/ignores";
 import { run as moss } from "./checks/moss";
 import { run as protectedPaths } from "./checks/protected";
+import { report as quality } from "./checks/quality";
 import { run as testguard } from "./checks/testguard";
 import { report as traceability } from "./checks/traceability";
 import { findRoot, finish, flag, isMain, parseArgs, today, type Violation } from "./common";
@@ -21,6 +23,14 @@ export function checks(
     ["architecture", () => architecture(root)],
     ["docs", () => docs(root)],
     ["debt", () => debt(root, today(), base)],
+    [
+      "ignores",
+      () => {
+        const { violations, notes: lowered } = ignores(root, base);
+        notes.push(...lowered);
+        return violations;
+      },
+    ],
     ["test-integrity", () => testguard(root, base)],
     [
       "traceability",
@@ -31,6 +41,14 @@ export function checks(
       },
     ],
     ["moss", () => moss(root)],
+    [
+      "quality",
+      () => {
+        const { violations, notes: stale } = quality(root);
+        notes.push(...stale);
+        return violations;
+      },
+    ],
     ["protected-paths", () => protectedPaths(root, base)],
   ];
   if (withCoverage) plan.push(["coverage", () => coverage(root, base)]);

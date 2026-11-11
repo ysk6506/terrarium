@@ -3,7 +3,7 @@
  * pressed. In the 둘러보기 it points at five places in turn instead; the first small site of a browser asks once
  * whether to do the tour. What the chip says is a function of the world (logic.nextStep); this only follows it.
  */
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import {
   type Aim,
   advanceTour,
@@ -57,7 +57,11 @@ function AskTour({ onAnswer }: { readonly onAnswer: (yes: boolean) => void }) {
   );
 }
 
-export function NextChip({ b, worldId }: { readonly b: Builder; readonly worldId: string }) {
+/** The chip and the tour question apart, so a narrow screen can put the chip in the bar at the foot (ADR-0146). */
+export function useNextChip(
+  b: Builder,
+  worldId: string,
+): { readonly ask: ReactNode; readonly chip: ReactNode } {
   const { navigate } = useApp();
   const [tour, setTour] = useState(() => readTour(browserStore()));
   const { index, ran } = b.state;
@@ -72,11 +76,12 @@ export function NextChip({ b, worldId }: { readonly b: Builder; readonly worldId
       setTour(advanceTour(browserStore(), tour));
     } else follow(b, step.aim, toScenarios);
   };
-  return (
-    <>
-      {mode === "ask" && (
+  return {
+    ask:
+      mode === "ask" ? (
         <AskTour onAnswer={(yes) => setTour(answerTour(browserStore(), worldId, yes))} />
-      )}
+      ) : null,
+    chip: (
       <button
         type="button"
         className="next-chip"
@@ -86,6 +91,6 @@ export function NextChip({ b, worldId }: { readonly b: Builder; readonly worldId
         <span>{label}</span>
         <Icon name="forward" size={16} />
       </button>
-    </>
-  );
+    ),
+  };
 }

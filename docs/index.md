@@ -4,12 +4,11 @@ kind: reference
 status: active
 last_verified: 2026-11-11
 verification_log:
-  - "2026-11-11: ADR-0142 링크를 더함"
-  - "2026-11-11: ADR-0145 링크를 더함"
   - "2026-11-11: ADR-0143 링크"
   - "2026-11-11: 현실 데이터와 모델 설계 (ADR-0144)"
   - "2026-11-11: main 합치기: ADR-0143·0144·0145 링크"
   - "2026-11-11: ADR-0147 링크를 더함"
+  - "2026-11-11: 품질 등급표와 ADR-0148 링크를 더함"
 ---
 # 문서 색인
 
@@ -20,6 +19,7 @@ verification_log:
 - [AGENTS.md](../AGENTS.md) — 에이전트 진입점, 절대 규칙
 - [ARCHITECTURE.md](../ARCHITECTURE.md) — 단위와 의존 방향
 - [요구사항](product-specs/requirements.md) — `REQ-NNN`의 단일 출처
+- [품질 등급표](generated/quality.md) — 단위별 등급 A~D (하네스가 만든 생성물, 정리 작업은 가장 낮은 단위부터)
 
 ## 설계와 결정
 
@@ -214,6 +214,7 @@ verification_log:
 - [0142 커버리지 하한을 새 단위까지 넓히고, 고장 난 날에도 물리 법칙을 검사한다](design-docs/adr/0142-coverage-floors-and-fault-law-checks.md)
 - [0145 보정 시험은 한 번 돌리고 여러 번 묻는다](design-docs/adr/0145-calibration-ask-once.md)
 - [0147 구조 검사는 같은 파일에 같은 질문을 두 번 하지 않는다](design-docs/adr/0147-harness-derived-cache.md)
+- [0148 끄기는 이유와 근거 번호가 있어야 하고 수가 늘지 않는다, 품질 등급표는 하네스가 만든다](design-docs/adr/0148-no-silent-ignores-and-quality-grades.md)
 - [0143 깊은 OS 흉내를 GNU에 더 가깝게 하고 커버리지 하한을 채운다](design-docs/adr/0143-shell-fidelity-and-coverage-gate.md)
 - [0144 현실 데이터는 네 단으로 들어오고, 세계는 현실과 실험 두 종류이며, 모델은 핵심을 잠그고 넓힌다](design-docs/adr/0144-reality-data-pipeline-ontology-manager-world-kinds.md)
 - [0122 세계 인기 순서·좋아요·칭호, 그리고 계급 모델 — 점수는 서버가 기록에서 세고, 칭호는 한 번 얻으면 안 잃고, 계급은 아직 화면에 없다](design-docs/adr/0122-world-popularity-likes-titles.md)

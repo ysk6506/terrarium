@@ -26,11 +26,6 @@ function Hero() {
       <div className="stack" style={{ gap: 18 }}>
         <h1 className="home-title">{headline.title}</h1>
         <p className="lede">{headline.lede}</p>
-        {!awake && (
-          <p className="moss-sleep-line">
-            <SleepPill />
-          </p>
-        )}
         <div className="row">
           <Go
             data-moss-action="go-new-experiment"
@@ -43,6 +38,11 @@ function Hero() {
             세계 보기
           </Go>
         </div>
+        {!awake && (
+          <p className="moss-sleep-line">
+            <SleepPill />
+          </p>
+        )}
       </div>
       {newest && (
         <Suspense fallback={<Loading lines={4} />}>

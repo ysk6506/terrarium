@@ -229,7 +229,7 @@ p {
   *::after {
     /* biome-ignore lint/complexity/noImportantStyles: reduced motion must win over every component's own timing */
     animation-duration: 0.01ms !important;
-    /* biome-ignore lint/complexity/noImportantStyles: as above */
+    /* biome-ignore lint/complexity/noImportantStyles: same reason as above, reduced motion must win */
     transition-duration: 0.01ms !important;
   }
 }
@@ -5231,6 +5231,14 @@ button.title-pill:hover {
   }
   .stage-steps .step-spacer {
     display: none;
+  }
+  /* the 다음 chip rides in the bar on a phone, not over the board */
+  .stage-steps .next-chip {
+    position: static;
+    min-height: 32px;
+    padding: 4px 12px;
+    font-size: 14px;
+    box-shadow: none;
   }
   .stage-steps .step-sum {
     flex: 1 1 100%;

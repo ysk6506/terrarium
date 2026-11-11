@@ -12,7 +12,7 @@ const out = (text: string): void => {
   process.stdout.write(`${text}\n`);
 };
 
-// biome-ignore lint/suspicious/noExplicitAny: the API's JSON is read loosely by a throwaway driver
+// biome-ignore lint/suspicious/noExplicitAny: ADR-0148, a throwaway driver reads the API's JSON loosely
 type Json = any;
 
 async function call(method: string, url: string, payload?: object): Promise<Json> {

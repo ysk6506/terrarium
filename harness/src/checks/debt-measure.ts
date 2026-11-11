@@ -1,5 +1,5 @@
 /** Size and complexity measurements for the debt check (DEBT020-DEBT023). */
-import { complexity, functions, parse } from "../ts-ast";
+import { complexity, functions, parse, type ts } from "../ts-ast";
 
 export interface Limits {
   readonly max_file_lines: number;
@@ -19,10 +19,41 @@ export interface Measure {
   readonly what: string;
 }
 
+export interface FunctionStat {
+  readonly qualname: string;
+  readonly line: number;
+  readonly lines: number;
+  readonly complexity: number;
+  readonly params: number;
+}
+
+const statsCache = new WeakMap<ts.SourceFile, readonly FunctionStat[]>();
+
+/** Size and complexity of every function in a file, computed once per parsed tree (the quality table reuses it). */
+export function functionStats(file: string, text: string): readonly FunctionStat[] {
+  const sf = parse(file, text);
+  let stats = statsCache.get(sf);
+  if (!stats) {
+    stats = functions(sf).map((fn) => ({
+      qualname: fn.qualname,
+      line: fn.line,
+      lines: fn.lines,
+      complexity: complexity(fn.node),
+      params: fn.params,
+    }));
+    statsCache.set(sf, stats);
+  }
+  return stats;
+}
+
+/** Lines in a file the way the limits count them. */
+export const lineCount = (text: string): number =>
+  text.split("\n").length - (text.endsWith("\n") ? 1 : 0);
+
 /** Every limit a file exceeds. */
 export function measureFile(file: string, text: string, limits: Limits): Measure[] {
   const out: Measure[] = [];
-  const lines = text.split("\n").length - (text.endsWith("\n") ? 1 : 0);
+  const lines = lineCount(text);
   if (lines > limits.max_file_lines) {
     out.push({
       key: `${file}::<file>::lines`,
@@ -34,16 +65,10 @@ export function measureFile(file: string, text: string, limits: Limits): Measure
       what: "file length (lines)",
     });
   }
-  for (const fn of functions(parse(file, text))) {
+  for (const fn of functionStats(file, text)) {
     const checks: Array<[string, string, number, number, string]> = [
       ["DEBT021", "lines", fn.lines, limits.max_function_lines, "function length (lines)"],
-      [
-        "DEBT022",
-        "complexity",
-        complexity(fn.node),
-        limits.max_complexity,
-        "cyclomatic complexity",
-      ],
+      ["DEBT022", "complexity", fn.complexity, limits.max_complexity, "cyclomatic complexity"],
       ["DEBT023", "params", fn.params, limits.max_params, "parameter count"],
     ];
     for (const [code, kind, value, limit, label] of checks) {

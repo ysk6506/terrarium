@@ -10,8 +10,8 @@ import type { Page } from "playwright";
 /** The bars that may float over content: the screen's one primary action bar, and what is modal or short-lived. */
 const MAY_FLOAT =
   ".we-bar, .stage-steps, .pt-foot, .dialog-actions, .scrim, .toasts, .summary-card";
-/** Besides fixed and sticky: the help cards laid over the 3D stage. */
-const ALSO_FLOATS = ".kb-overlay";
+/** Besides fixed and sticky: what is laid over the 3D stage and floats there (the help card, the 다음 chip); in a bar it is not floating. */
+const ALSO_FLOATS = ".kb-overlay, .next-chip";
 const TITLES = "h1, h2, h3, .toolbar-title b, .page-title, [class*='title']";
 
 const SCRIPT = `(() => {
@@ -39,7 +39,7 @@ const SCRIPT = `(() => {
   const floats = [...document.querySelectorAll("body *")].filter((el) => {
     if (el.matches(${JSON.stringify(MAY_FLOAT)}) || el.closest(${JSON.stringify(MAY_FLOAT)})) return false;
     const pos = getComputedStyle(el).position;
-    return (pos === "fixed" || pos === "sticky" || el.matches(${JSON.stringify(ALSO_FLOATS)})) && shown(el);
+    return (pos === "fixed" || pos === "sticky" || (pos !== "static" && el.matches(${JSON.stringify(ALSO_FLOATS)}))) && shown(el);
   });
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   for (let node = walker.nextNode(); node; node = walker.nextNode()) {
