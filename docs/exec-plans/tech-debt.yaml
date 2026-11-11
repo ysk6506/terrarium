@@ -14,7 +14,7 @@ items:
     status: done
     resolution: "CI를 병렬 조각(테스트 12 + 느린 파일 둘 따로)과 게이트 작업으로 나누고 커버리지는 따로 잰다 (ADR-0140). 시간 초과 11건은 계측 없는 조각에서, 성능 단언은 계측 없이 통과한다. 모든 게이트 작업이 초록인 실행을 PR에서 확인했다"
   - id: TD-0002
-    title: "커버리지 하한을 최근에 재지 못했다 (테스트가 먼저 실패해 구조 검사·커버리지 단계가 CI에서 돌지 않았다)"
+    title: "커버리지 하한 미달 단위가 여섯 남았다: core.world 96.40/98.5 (528개), core.tools 96.35/98 (114), core.physics 96.50/97 (44), server.runtime 96.73/97 (21), core.sources.worldgen 97.80/98 (13), web.logic 96.47/96.5 (7). 다 채우면 coverage-floors를 게이트로 올린다 (ADR-0142)"
     severity: high
     cost: "CI가 초록이 되면 커버리지를 재고, 하한 아래인 단위에 테스트를 더한다"
     created: "2026-11-10"
