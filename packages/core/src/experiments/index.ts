@@ -124,12 +124,17 @@ export {
 export {
   benchmarkKey,
   DEFAULT_SEEDS,
+  MAX_REPEATS,
+  MAX_RUNS,
   MAX_SEEDS,
   normalizeTools,
   physicsOf,
   type RecipeContext,
   recipeProblems,
+  repeatsOf,
+  runCountOf,
   seedsUpTo,
+  sizeProblems,
 } from "./recipe";
 export { DEFAULT_LIMITS, FairScheduler, type QueuedRun, type SchedulerLimits } from "./scheduler";
 export type { ServiceCardRecord } from "./service-cards";

@@ -90,7 +90,7 @@ describe("recipes [REQ-030] [REQ-031]", () => {
       "시드를 하나 이상 정해야 해요",
     ]);
     expect(recipeProblems(recipe({ seeds: seedsUpTo(21), agentId: "" }), ctx)).toEqual([
-      "실행은 한 실험에 20번까지예요 (지금 21번)",
+      "시드는 한 실험에 20개까지예요 (지금 21개)",
       "에이전트를 골라야 해요",
     ]);
     expect(recipeProblems(recipe({ time: { kind: "realtime", speed: 0 } }), ctx)).toEqual([
@@ -131,6 +131,7 @@ describe("run lifecycle [REQ-030]", () => {
       experimentId: "e1",
       index: 0,
       seed: 1,
+      repeat: 1,
       status: "queued",
       queuedAt: "t0",
     });

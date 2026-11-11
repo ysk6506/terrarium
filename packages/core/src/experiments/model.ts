@@ -49,8 +49,13 @@ export interface Recipe {
   readonly harnessId: string;
   readonly agentId: string;
   readonly tools: readonly string[];
-  /** One run per seed. Benchmarks compare like with like, so seeds default to 1..n. */
+  /** The seeds an experiment runs. Benchmarks compare like with like, so seeds default to 1..n. */
   readonly seeds: readonly number[];
+  /**
+   * How many times every seed is run (ADR-0158); absent means once. The world's chance follows the seed only,
+   * so the runs of one seed start from the same world flow, and the seed (not the run) is the unit of statistics.
+   */
+  readonly repeats?: number;
   readonly time: TimePolicy;
   /** Product versions of the protocol endpoints (BMCs follow each server's own profile). */
   readonly profiles: { readonly vcenter?: string; readonly vrops?: string };
@@ -161,6 +166,8 @@ export interface RunRecord {
   /** 0-based position among the experiment's runs. */
   readonly index: number;
   readonly seed: number;
+  /** 1-based number among the runs of the same seed (ADR-0158); runs saved before repeats existed are all 1. */
+  readonly repeat: number;
   readonly status: RunStatus;
   readonly queuedAt: string;
   readonly startedAt?: string;

@@ -120,6 +120,8 @@ export interface RunSummary {
   readonly id: string;
   readonly index: number;
   readonly seed: number;
+  /** From 1: which run of this seed (ADR-0158). */
+  readonly repeat: number;
   readonly status: RunStatus;
   readonly queuedAt: string;
   readonly startedAt?: string;

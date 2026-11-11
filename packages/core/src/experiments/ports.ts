@@ -126,6 +126,11 @@ export interface AgentRunRequest {
   readonly runId: string;
   /** The run's seed, so scripted agents are as repeatable as the world. */
   readonly seed: number;
+  /**
+   * Which run of this seed this is, from 1 (ADR-0158): the world flow is the seed's, so repeats of a seed start alike.
+   * Optional so that a caller that does not know repeats (a test, an old integration) still works; absent means 1.
+   */
+  readonly repeat?: number;
   readonly agentId: string;
   readonly prompt: string;
   readonly limits: { readonly maxToolCalls: number; readonly timeLimitSeconds: number };

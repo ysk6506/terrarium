@@ -4,7 +4,7 @@
  * forked to try one condition changed. The twin exports (diagnosis records, modelling brief) live here too.
  */
 import type { Leaderboard, LeaderboardRow } from "@terrarium/core/analysis";
-import { MIN_RUNS_TO_RANK } from "@terrarium/core/analysis";
+import { MIN_SEEDS_TO_RANK } from "@terrarium/core/analysis";
 import { formatDuration, meanText, percent } from "../../logic";
 import { benchmarksState, useMossRead } from "../../moss";
 import { Go, useApp, useAsync } from "../context";
@@ -42,7 +42,10 @@ function Row({
         </div>
       </td>
       <td className="num">
-        {row.runs}회{!row.rank && <div className="tiny muted">{MIN_RUNS_TO_RANK}회부터 순위</div>}
+        {row.runs}번
+        <div className="tiny muted">
+          {row.rank ? `시드 ${row.seeds}개` : `시드 ${MIN_SEEDS_TO_RANK}개부터 순위에 올라요`}
+        </div>
       </td>
       <td className="num">{percent(row.passRate)}</td>
       <td>
@@ -81,7 +84,7 @@ function Board({ board, highlight }: { readonly board: Leaderboard; readonly hig
       <div className="section-head">
         <h2 id={`b-${board.benchmarkKey}`}>{setTitle(board)}</h2>
         <span className="tiny muted">
-          {timeText(board)}, 실행 {board.runs}회{highlight ? ", 골라 본 세트" : ""}
+          {timeText(board)}, 실행 {board.runs}번{highlight ? ", 골라 본 세트" : ""}
         </span>
       </div>
       <div className="table-wrap">
@@ -185,8 +188,8 @@ export function BenchmarksPage() {
             </Go>
           }
         >
-          실험이 끝나면 여기에 세트별로 모여요. 같은 조건을 {MIN_RUNS_TO_RANK}회 이상 돌려야 순위에
-          올라요.
+          실험이 끝나면 여기에 세트별로 모여요. 같은 조건을 서로 다른 시드 {MIN_SEEDS_TO_RANK}개
+          이상으로 돌려야 순위에 올라요.
         </Empty>
       )}
       {shown.map((b) => (

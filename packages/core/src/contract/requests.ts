@@ -11,6 +11,7 @@ import {
   NoteSchema,
   OperationSchema,
   ProfilesSchema,
+  RepeatsSchema,
   ScenarioDocSchema,
   SeedsSchema,
   TimePolicySchema,
@@ -128,6 +129,8 @@ export const RecipeBody = z
     /** Either explicit seeds or a number of runs (seeds 1..n, comparable across people). */
     seeds: SeedsSchema.optional(),
     runs: z.number().int().min(1).max(20).optional(),
+    /** How many times each seed runs (ADR-0158); left out, once. */
+    repeats: RepeatsSchema.optional(),
     time: TimePolicySchema.optional(),
     profiles: ProfilesSchema.optional(),
     escalation: EscalationSchema.optional(),
@@ -166,6 +169,7 @@ export const ForkBody = z
         agentId: IdSchema.optional(),
         tools: ToolsSchema.optional(),
         seeds: SeedsSchema.optional(),
+        repeats: RepeatsSchema.optional(),
         time: TimePolicySchema.optional(),
         profiles: ProfilesSchema.optional(),
         escalation: EscalationSchema.optional(),
@@ -204,10 +208,15 @@ export const EscalationAnswerBody = z.discriminatedUnion("kind", [
 ]);
 
 export const AddRunsBody = z
-  .object({ count: z.number().int().min(1).max(20).optional(), seeds: SeedsSchema.optional() })
+  .object({
+    count: z.number().int().min(1).max(20).optional(),
+    seeds: SeedsSchema.optional(),
+    /** Rounds to add to every seed (ADR-0158 item 5). */
+    repeats: RepeatsSchema.optional(),
+  })
   .strict()
-  .refine((b) => (b.count === undefined) !== (b.seeds === undefined), {
-    message: "더할 실행 횟수나 시드 중 하나를 정해요",
+  .refine((b) => [b.count, b.seeds, b.repeats].filter((x) => x !== undefined).length === 1, {
+    message: "더할 실행 횟수, 시드, 반복 중 하나를 정해요",
   });
 
 export const EXPERIMENT_STATUSES = [

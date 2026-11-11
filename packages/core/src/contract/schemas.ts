@@ -3,7 +3,7 @@
  * parent exist, can this scenario reach its agent task — is checked by the owning unit's validator,
  * which the server runs right after (world/validate, scenario/validate, worldgen specProblems).
  */
-import { MAX_SEEDS } from "@terrarium/core/experiments";
+import { MAX_REPEATS, MAX_SEEDS } from "@terrarium/core/experiments";
 import { type PhysicsProfile, profileProblems } from "@terrarium/core/physics/slots";
 import {
   ACTION_KINDS,
@@ -370,6 +370,9 @@ export const SeedsSchema = z
   .min(1)
   .max(MAX_SEEDS)
   .refine((xs) => new Set(xs).size === xs.length, { message: "같은 시드가 두 번 있어요" });
+
+/** Times each seed is run (ADR-0158). */
+export const RepeatsSchema = z.number().int().min(1).max(MAX_REPEATS);
 
 export const ToolsSchema = z.array(z.string().min(1).max(64)).min(1).max(64);
 
