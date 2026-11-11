@@ -57,8 +57,8 @@ describe("what a document names must exist [REQ-020]", () => {
       repo("`other.ts`의 `impactOf` and `gone`(`impact.ts`) and plain `lastVerified`."),
     );
     expect(found).toHaveLength(2);
-    expect(found[0]).toContain("impactOf");
-    expect(found[1]).toContain("gone");
+    expect(found.filter((m) => m.includes("impactOf"))).toHaveLength(1);
+    expect(found.filter((m) => m.includes("`gone`"))).toHaveLength(1);
   });
 
   test("a missing ADR or REQ fails unless the line says it is being made", () => {

@@ -28,6 +28,7 @@ updates_docs:
   - docs/design-docs/adr-process.md
   - docs/design-docs/harness-guide.md
   - docs/design-docs/core-beliefs.md
+  - docs/design-docs/moss.md
 amends:
   - 0170-product-design-one-page-six-principles.md
 touches_protected:
@@ -61,7 +62,7 @@ amends_tests:
   - harness/src/checks/docs.test.ts::docs check [REQ-020] > docs expire by kind, decisions never do
   - harness/src/checks/docs.test.ts::docs check [REQ-020] > broken links and dead path references fail; fenced code and external links are ignored
 test_change_reason: 문서 검사에 follows 필수(DOC092)와 수명 단축(안내 30일)이 들어와, 시험의 가짜 문서에 follows가 필요하고 앞부분 줄이 세 줄 늘고 만료 날짜 경계가 옮겨졌다. 검사하는 규칙은 그대로다.
-decision_hash: 6ff839b701c73a54
+decision_hash: 5a89817b918a3415
 ---
 # ADR-0180 문서는 코드뿐 아니라 결정도 따라간다 — 결정이 바꾸는 문서를 적고, 고쳐진 결정에 표시를 남기고, 목록은 만들어 낸다
 
@@ -76,7 +77,7 @@ decision_hash: 6ff839b701c73a54
 
 더 깊은 원인은 같다. 문서가 "확인했다"고 말할 수만 있고, 기계가 확인할 수 있는 주장을 하지 않았다. `reverify`는 날짜와 한 줄을 남길 뿐이라, 도장이 되기 쉽다.
 
-## 결정
+## 정한 것 일곱
 1. **결정 기록은 자기가 바꾸는 문서를 적는다.** 앞부분에 `updates_docs: [경로]`. 바꾸는 문서가 없으면 빈 목록과 `updates_docs_reason`. 새로 더해지는 ADR마다 이것이 있어야 하고, 적힌 문서는 같은 변경(기준 브랜치와의 차이)에서 실제로 바뀌어 있어야 한다 (`DOC090`). 이미 있는 ADR에는 소급하지 않는다. 새로 더해진 ADR만 본다.
 2. **앞선 결정의 일부를 바꾸면 양쪽에 남긴다.** 새 ADR의 `amends: [ADR 파일 이름]`. 명령 `docs.ts link-amends <새 ADR>`가 대상 ADR의 앞부분에 `amended_by`를 더한다(앞부분은 봉인 대상이 아니다). `amends`가 가리키는 ADR마다 `amended_by`에 이 ADR이 있어야 하고 그 반대도 맞아야 한다 (`DOC091`). 전체를 대체하면 지금처럼 `superseded`.
 3. **목록은 손으로 쓰지 않고 만들어 낸다.** (a) `docs/index.md`에서 ADR 목록을 없앤다. 색인은 결정 기록 폴더를 가리키고, 도달 가능 검사(`DOC040`)는 폴더의 ADR을 색인에서 닿는 것으로 친다. (b) "지금 유효한 결정" 표는 ADR의 앞부분(`title`, `status`, `amends`, `amended_by`, `superseded_by`)에서 만들어 낸다. `docs.ts decisions`가 `docs/generated/decisions.md`를 쓴다(번호 순, 결정마다 한 줄). 이 파일은 품질 등급표처럼 5시간마다 도는 정리 작업이 main에서 새로 만들고, 변경마다 커밋하지 않는다. 낡았으면 알림 한 줄(`DOC098`)이고 실패가 아니다. 제품 설계 한 장 4절은 그 파일로 가는 링크와, 사람이 쓴 짧은 설명만 남긴다.

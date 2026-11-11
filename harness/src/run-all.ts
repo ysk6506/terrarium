@@ -22,13 +22,12 @@ export function checks(
 ): Check[] {
   const plan: Check[] = [
     ["architecture", () => architecture(root)],
-    ["docs", () => docs(root)],
     [
-      "docs-follow",
+      "docs",
       () => {
         const { violations, notes: docNotes } = docsDiff(root, base);
         notes.push(...docNotes);
-        return violations;
+        return [...docs(root), ...violations];
       },
     ],
     ["debt", () => debt(root, today(), base)],

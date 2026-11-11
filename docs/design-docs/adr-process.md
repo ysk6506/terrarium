@@ -11,11 +11,12 @@ covers:
   - harness/src/checks/doc-decisions.ts
   - harness/src/checks/doc-claims.ts
   - harness/src/checks/doc-facts.ts
-covers_hash: 0ae5830665f771a1
+covers_hash: 2842e1ef6a6eb66a
 verified_body: 164fdb5349a60b16
-unchanged_reverifies: 0
+unchanged_reverifies: 1
 verification_log:
   - "2026-11-11: 새 앞부분 키(updates_docs, amends)와 명령(link-amends, decisions, audit)을 적음 (ADR-0180)"
+  - "2026-11-11: 새 검사 모듈(doc-follow, doc-claims, doc-facts, doc-diff, doc-decisions)의 최종 동작과 맞는지 대조: 키·명령·코드 목록이 그대로 맞다 (ADR-0180)"
 ---
 # ADR (Architecture Decision Record)
 

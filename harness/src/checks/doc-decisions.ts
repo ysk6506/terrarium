@@ -2,7 +2,7 @@
  * The decisions table is made, not written (ADR-0180): one line per ADR from its front matter
  * (title, status, amends, amended_by, superseded_by). `link-amends` writes the `amended_by` side.
  */
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { joinFrontMatter, splitFrontMatter } from "../common";
 import { listFiles } from "../files";
@@ -67,7 +67,9 @@ export function decisionsTable(root: string, config: DocsConfig): string {
 }
 
 export function writeDecisions(root: string, config: DocsConfig): void {
-  writeFileSync(path.join(root, decisionsPath(config)), decisionsTable(root, config), "utf8");
+  const file = path.join(root, decisionsPath(config));
+  mkdirSync(path.dirname(file), { recursive: true });
+  writeFileSync(file, decisionsTable(root, config), "utf8");
 }
 
 /** Notice text when the committed decisions file is missing or differs from a fresh one; else null. */

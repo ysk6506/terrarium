@@ -69,6 +69,12 @@ function checkAddedAdr(root: string, file: string, changed: ReadonlySet<string>)
   });
 }
 
+/** What a re-verification changes in the front matter: the date and the log (other key edits are not a re-check). */
+const verifiedStamp = (data: Record<string, unknown> | null): unknown[] => [
+  data?.last_verified,
+  data?.verification_log,
+];
+
 /** Non-ADR docs whose body is the same as at the base but whose front matter changed (a bare re-verify). */
 function reverifiedOnly(
   root: string,
@@ -85,7 +91,7 @@ function reverifiedOnly(
       const now = splitFrontMatter(readFileSync(path.join(root, file), "utf8"));
       return (
         bodyFingerprint(old.body) === bodyFingerprint(now.body) &&
-        JSON.stringify(old.data) !== JSON.stringify(now.data)
+        JSON.stringify(verifiedStamp(old.data)) !== JSON.stringify(verifiedStamp(now.data))
       );
     });
 }
