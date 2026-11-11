@@ -1,6 +1,7 @@
 /**
- * The sections of an experiment's page (REQ-037, REQ-040): the numbers, what was fixed and what was
- * learned, the runs (live while they run), the scoring sheet's hit rates, and the family tree.
+ * The sections of an experiment's page that stay as they were (REQ-037, REQ-040): the comparison with the original,
+ * why runs ended, the runs (live while they run), the conditions and the family tree. What the result first says
+ * lives in the experiment-verdict, -loss, -situations and -next files (ADR-0171).
  */
 import {
   type ExperimentAnalysis,
@@ -10,138 +11,11 @@ import {
 import type { ExperimentView, RunSummary } from "@terrarium/core/contract";
 import { END_REASON_LABELS } from "@terrarium/core/oracle";
 import { describeLeadSettings, domainInfo } from "@terrarium/core/world";
-import type { ReactNode } from "react";
-import {
-  DOT_LABELS,
-  DOT_MARKS,
-  formatDuration,
-  type LiveState,
-  meanText,
-  PASS_SHARE_TEXT,
-  percent,
-  rangeText,
-  scoreText,
-  seedRows,
-} from "../../logic";
+import { formatDuration, type LiveState, scoreText } from "../../logic";
 import { Go } from "../context";
-import { Figures, Note, Section, Status } from "../kit";
-import { RateBar, ScoreBar } from "../results";
+import { Note, Section, Status } from "../kit";
+import { ScoreBar } from "../results";
 import { ExperimentTable } from "./experiments";
-
-/** What the numbers are over: "상황 5개 × 3번씩", or "상황 5개" when each situation ran once. */
-export const designText = (a: Pick<ExperimentAnalysis, "seeds" | "repeats">): string | undefined =>
-  a.seeds === 0
-    ? undefined
-    : a.repeats > 1
-      ? `상황 ${a.seeds}개 × ${a.repeats}번씩`
-      : `상황 ${a.seeds}개`;
-
-/** "71.5점 ± 19.5" whose spread does not split from its sign: when it does not fit, it moves to the next line whole. */
-function withSpread(text: string): ReactNode {
-  const [mean, spread] = text.split(" ± ");
-  return spread === undefined ? (
-    text
-  ) : (
-    <>
-      {mean} <span style={{ whiteSpace: "nowrap" }}>± {spread}</span>
-    </>
-  );
-}
-
-export function ResultFigures({ a }: { readonly a: ExperimentAnalysis }) {
-  const done = a.progress.completed;
-  return (
-    <Figures
-      items={[
-        {
-          label: "합격률",
-          value: done > 0 ? percent(a.passRate) : "—",
-          hint: PASS_SHARE_TEXT,
-        },
-        {
-          label: "평균 점수",
-          value: withSpread(meanText(a.score, "점")),
-          note: designText(a),
-          hint: "오차는 95% 신뢰구간. 상황이 적으면 넓어요",
-        },
-        {
-          label: "정확한 진단",
-          value: done > 0 ? percent(a.diagnosisRate) : "—",
-          hint: "원인 장비와 고장 종류를 모두 맞힌 실행의 비율",
-        },
-        { label: "툴 호출", value: meanText(a.calls, "회", 0), hint: "실행마다 부른 횟수" },
-        {
-          label: "진단까지",
-          value: a.timeToDiagnosis ? formatDuration(a.timeToDiagnosis.mean) : "—",
-          hint: "시뮬레이션 시간으로 과제를 받고 진단을 낼 때까지",
-        },
-        {
-          label: "토큰",
-          value: a.tokens ? Math.round(a.tokens.mean).toLocaleString("ko-KR") : "—",
-          hint: "하네스가 알려 준 입력과 출력 토큰의 합",
-        },
-      ]}
-    />
-  );
-}
-
-/** One line per situation, under two lines on how much the same situation shakes: a dot for each time it ran (shape and mark as well as colour), and the range of its scores. */
-export function SeedRows({
-  runs,
-  analysis: a,
-}: {
-  readonly runs: readonly RunSummary[];
-  readonly analysis: ExperimentAnalysis;
-}) {
-  const rows = seedRows(runs);
-  if (a.repeats < 2 || rows.length === 0) return null;
-  return (
-    <Section title="상황별로" aside={<span className="tiny muted">점 하나가 한 번이에요</span>}>
-      <ul className="list-plain steadiness" aria-label="같은 상황의 흔들림">
-        {a.withinSeed && <li>같은 상황에서 ±{a.withinSeed.spread.toFixed(1)}점 흔들려요</li>}
-        <li>
-          상황 {a.seeds}개 중 {a.splitSeeds}개에서 결과가 갈렸어요
-        </li>
-      </ul>
-      <ul className="seed-rows">
-        {rows.map((row) => (
-          <li key={row.seed} className="seed-row" data-split={row.split ? "yes" : undefined}>
-            <span className="seed-name">상황 {row.seed}</span>
-            <span className="seed-dots">
-              {row.dots.map((d) => (
-                <span
-                  key={d.runId}
-                  className="seed-dot"
-                  data-state={d.state}
-                  role="img"
-                  aria-label={`${d.repeat}번째 ${DOT_LABELS[d.state]}`}
-                  title={`${d.repeat}번째 ${DOT_LABELS[d.state]}`}
-                >
-                  {DOT_MARKS[d.state]}
-                </span>
-              ))}
-            </span>
-            {row.split && <span className="seed-split tag">갈렸어요</span>}
-            <span className="seed-range num">{rangeText(row.range)}</span>
-          </li>
-        ))}
-      </ul>
-    </Section>
-  );
-}
-
-export function Findings({ items }: { readonly items: readonly string[] }) {
-  if (items.length === 0) return null;
-  return (
-    <Section title="알아낸 것">
-      <ul className="list-plain">
-        {items.map((f) => (
-          <li key={f}>{f}</li>
-        ))}
-      </ul>
-    </Section>
-  );
-}
 
 export function ParentCard({
   parent,
@@ -191,7 +65,7 @@ export function EndReasons({ analysis }: { readonly analysis: ExperimentAnalysis
   if (entries.length === 0) return null;
   return (
     <p className="small muted">
-      끝난 이유: {entries.map(([reason, n]) => `${endLabelOf(analysis, reason)} ${n}회`).join(", ")}
+      끝난 이유: {entries.map(([reason, n]) => `${endLabelOf(analysis, reason)} ${n}번`).join(", ")}
     </p>
   );
 }
@@ -316,41 +190,6 @@ export function RunsTable({
         </tbody>
       </table>
     </div>
-  );
-}
-
-export function CriteriaTable({ criteria }: { readonly criteria: ExperimentAnalysis["criteria"] }) {
-  if (criteria.length === 0) return null;
-  return (
-    <Section
-      title="채점 항목별로"
-      aside={<span className="tiny muted">감점 항목은 피한 비율이에요</span>}
-    >
-      <div className="table-wrap">
-        <table className="table criteria-table">
-          <thead>
-            <tr>
-              <th>항목</th>
-              <th>해낸 비율</th>
-              <th className="num">평균 점수</th>
-            </tr>
-          </thead>
-          <tbody>
-            {criteria.map((c) => (
-              <tr key={c.id}>
-                <td className="criteria-label">{c.label}</td>
-                <td className="criteria-rate">
-                  <RateBar rate={c.rate} />
-                </td>
-                <td className="num">
-                  {c.meanPoints} / {c.max || "감점"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </Section>
   );
 }
 

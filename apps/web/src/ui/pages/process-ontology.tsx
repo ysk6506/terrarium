@@ -13,6 +13,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { processCompare as pc } from "../../logic";
 import { isAwake, MossAsk, subscribe } from "../../moss";
 import { useApp, useAsync } from "../context";
+import { download } from "../download";
 import { Button, Empty, MenuButton, Section, SelectField } from "../kit";
 
 const { ONTOLOGY_WORDS: W } = pc;
@@ -33,18 +34,6 @@ const DOER_WORDS = {
   handoff: "넘기기",
   none: "안 씀",
 } as const;
-
-function download(name: string, text: string, type: string): void {
-  const url = URL.createObjectURL(new Blob([text], { type }));
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = name;
-  document.body.append(a);
-  a.click();
-  a.remove();
-  // the browser reads the blob after the click, so let go of it a little later
-  setTimeout(() => URL.revokeObjectURL(url), 10_000);
-}
 
 function targetText(a: OntologyAction): string {
   return a.targets.map((t) => `${t.label} ${t.count}`).join(" · ") || "—";
