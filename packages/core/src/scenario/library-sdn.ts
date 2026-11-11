@@ -58,7 +58,6 @@ interface Plan {
   readonly expectedS?: number;
 }
 
-const OWN: readonly Domain[] = ["service_os", "virtualization"];
 const byId = (a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id);
 const KIND_ORDER = ["stateful", "batch", "request"];
 const kindRank = (e: Entity) => KIND_ORDER.indexOf(String(e.props.serviceKind));

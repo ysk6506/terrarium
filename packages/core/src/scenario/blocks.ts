@@ -7,7 +7,6 @@ import type { EntityKind } from "@terrarium/core/world";
 import { RACK_CAP_FIELDS, SERVER_CAP_FIELDS } from "./blocks-accel";
 import { LAYER_CONDITION_FIELDS } from "./blocks-app";
 import { NET_BLOCK_SPECS } from "./blocks-net";
-import { SDN_CONDITION_FIELDS } from "./blocks-sdn";
 import { SERVICE_FIELDS } from "./blocks-service";
 import { bool, type FieldSpec, HEALTH, num, version } from "./field-spec";
 

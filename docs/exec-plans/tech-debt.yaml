@@ -34,7 +34,7 @@ items:
     due: "2026-11-24"
     status: open
   - id: TD-0005
-    title: "lint 경고 13건이 쌓여 있다 (안 쓰는 import·변수, CSS 특이도)"
+    title: "lint 경고 7건이 웹 앱에 남아 있다 (안 쓰는 변수·매개변수, 효과 없는 억제 주석, CSS 특이도). 13건 중 core 6건은 치웠다"
     severity: low
     cost: "경고를 지우고 경고도 실패로 만든다"
     created: "2026-11-10"
