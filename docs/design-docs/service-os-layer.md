@@ -20,12 +20,12 @@ covers:
   - packages/core/src/session/shell-reach.ts
   - packages/core/src/scenario/library-os.ts
 verification_log:
-  - "2026-11-10: 물리 상수를 슬롯 표로 옮김(REQ-113). v1 동작은 physics-golden이 비트까지 같음을 확인, 문서 내용 변화 없음"
   - "2026-11-11: 2026-11-11: 깊은 OS 흉내 — mkdir·ln -s·readlink, 디렉터리·링크 항목, find /·du / 순회, 빈 명령 문법 오류, grep·sed·awk·sort의 GNU와 다른 점을 고치고 남은 것을 '흉내 내지 않는 것'에 적음 (REQ-098)"
   - "2026-11-11: awk: do-while, %E %G %*d, substr, length(배열), 미설정 변수, \\x, BEGIN의 exit 뒤 END"
   - "2026-11-11: tools·world/os: 닿지 않는 분기 정리와 시험 추가; 동작은 같음(TD-0002), awk는 이름 바로 뒤 '(' 호출과 srand 반환값"
   - "2026-11-11: cat, printf, wc, test, find 연산자, uniq, cut 옵션을 실제 coreutils 출력과 맞춤"
-covers_hash: 02aa6fabb272cbc8
+  - "2026-11-11: free -b/-h, df -m 머리글, find -empty, kill 신호 이름, pgrep 인자 없음, sed 빈 일치를 실제와 맞춤"
+covers_hash: 91598f8007f451ff
 ---
 # 서비스와 OS 층 (REQ-086, REQ-087, [ADR-0091](adr/0091-service-os-layer-recovery-first.md))
 

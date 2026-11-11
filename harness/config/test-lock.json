@@ -121934,6 +121934,60 @@
    "added": "2026-11-11",
    "amended_by": null
   },
+  "tests/spec/deep-os-corners.test.ts::<import:4765130b>": {
+   "kind": "support",
+   "hash": "4765130b40c20bee",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-corners.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-corners.test.ts::=ROWS": {
+   "kind": "support",
+   "hash": "45a6ef797825762d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-corners.test.ts::the fake commands answer the odd cases the way the real ones do [REQ-098] > %s": {
+   "kind": "test",
+   "hash": "972ea17d33f07767",
+   "asserts": 1,
+   "literals": [
+    "\"%s\"",
+    "\"srv-a2\"",
+    "\"srv-a2\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-corners.test.ts::the fake commands answer the odd cases the way the real ones do [REQ-098] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "tests/spec/deep-os-curl-state.test.ts::<import:4765130b>": {
    "kind": "support",
    "hash": "4765130b40c20bee",
@@ -125003,6 +125057,87 @@
     "\"srv-a2\"",
     "\"srv-a2\""
    ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-option-sweep.test.ts::<import:4765130b>": {
+   "kind": "support",
+   "hash": "4765130b40c20bee",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-option-sweep.test.ts::<import:cf479f8d>": {
+   "kind": "support",
+   "hash": "cf479f8d5375da94",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-option-sweep.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-option-sweep.test.ts::=TAKES_ANY": {
+   "kind": "support",
+   "hash": "bd50bb329ba5fa7f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-option-sweep.test.ts::an option the fake does not have is named and sent outside the simulation [REQ-098] > %s refuses -Z and --no-such-option": {
+   "kind": "test",
+   "hash": "8ff688dc5c6bc312",
+   "asserts": 3,
+   "literals": [
+    "\"%s refuses -Z and --no-such-option\"",
+    "\"--no-such-option\"",
+    "\"-Z\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"srv-a2\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-option-sweep.test.ts::an option the fake does not have is named and sent outside the simulation [REQ-098] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-option-sweep.test.ts::an option the fake does not have is named and sent outside the simulation [REQ-098] > =names": {
+   "kind": "support",
+   "hash": "eb993541761c33b3",
+   "asserts": 0,
+   "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-11",

@@ -141,13 +141,16 @@ function parseExpression(c: Cmd, words: readonly string[]): Parsed {
     }
     const made = makeTest(c, w, words[at] ?? "", c.h.t);
     if (!made) return fail(w);
-    at++;
+    if (!NO_VALUE_TESTS.has(w)) at++;
     return made;
   };
   const test = words.length === 0 ? () => true : or();
   if (bad === undefined && at < words.length) bad = words[at];
   return bad === undefined ? { test } : { bad };
 }
+
+/** Tests that stand alone, with no value after them. */
+const NO_VALUE_TESTS: ReadonlySet<string> = new Set(["-empty"]);
 
 function makeTest(c: Cmd, flag: string, v: string, now: number): FindTest | undefined {
   switch (flag) {

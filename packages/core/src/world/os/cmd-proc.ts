@@ -278,14 +278,22 @@ export function kill(c: Cmd): R {
         .map((k) => `${SIGNALS[k]}) SIG${k}`)
         .join("\n")}\n`,
     );
+  let spec: string | undefined;
   if (args[0] === "-s" || args[0] === "-n") {
-    sig = signalOf(args[1] ?? "") ?? Number.NaN;
+    spec = args[1] ?? "";
     args = args.slice(2);
-  } else if (args[0]?.startsWith("-") && signalOf(args[0]) !== undefined) {
-    sig = signalOf(args[0]) as number;
+  } else if (/^-[A-Za-z]/.test(args[0] ?? "")) {
+    spec = (args[0] as string).slice(1);
+    args = args.slice(1);
+  } else if (/^-\d+$/.test(args[0] ?? "")) {
+    spec = (args[0] as string).slice(1);
     args = args.slice(1);
   }
-  if (Number.isNaN(sig)) return fail("bash: kill: invalid signal specification", 1);
+  if (spec !== undefined) {
+    const given = signalOf(spec);
+    if (given === undefined) return fail(`bash: kill: ${spec}: invalid signal specification`, 1);
+    sig = given;
+  }
   if (args.length === 0)
     return fail(
       "kill: usage: kill [-s sigspec | -n signum | -sigspec] pid | jobspec ... or kill -l [sigspec]",
@@ -310,7 +318,14 @@ function matching(c: Cmd, args: readonly string[], full: boolean): Proc[] {
   );
 }
 
+const noCriteria = (tool: string): R => ({
+  out: "",
+  err: `${tool}: no matching criteria specified\nTry \`${tool} --help' for more information.\n`,
+  code: 2,
+});
+
 export function pkill(c: Cmd): R {
+  if (!c.args.some((a) => !a.startsWith("-"))) return noCriteria("pkill");
   const sigArg = c.args.find(
     (a) => /^-[0-9A-Za-z]+$/.test(a) && a !== "-f" && signalOf(a) !== undefined,
   );
@@ -325,6 +340,7 @@ export function pkill(c: Cmd): R {
 }
 
 export function pgrep(c: Cmd): R {
+  if (!c.args.some((a) => !a.startsWith("-"))) return noCriteria("pgrep");
   const found = matching(c, c.args, c.args.includes("-f"));
   if (c.args.includes("-c")) return { out: `${found.length}\n`, code: found.length ? 0 : 1 };
   const rows = found.map((r) =>

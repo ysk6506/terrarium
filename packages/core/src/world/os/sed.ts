@@ -91,7 +91,12 @@ function substitute(cmd: SedCmd, s: State): void {
   let last = 0;
   let out = "";
   let changed = false;
+  let previousEnd = -1;
   for (const m of s.pattern.matchAll(re)) {
+    const at = m.index ?? 0;
+    const emptyAfterMatch = m[0] === "" && at === previousEnd;
+    previousEnd = at + m[0].length;
+    if (emptyAfterMatch) continue; // `echo b | sed 's/b*/-/g'` is `-`, not `--`
     count++;
     if (cmd.global ? count < from : count !== from) continue;
     out += s.pattern.slice(last, m.index) + expandReplacement(cmd.repl ?? "", m);
