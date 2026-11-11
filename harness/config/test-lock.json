@@ -17471,6 +17471,63 @@
    "added": "2026-10-30",
    "amended_by": null
   },
+  "apps/server/src/runtime/models-sealed.test.ts::<import:88d2955a>": {
+   "kind": "support",
+   "hash": "88d2955ae7b62fc3",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/models-sealed.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/models-sealed.test.ts::a registered model whose sealed key cannot be opened says so instead of failing [REQ-099] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/models-sealed.test.ts::a registered model whose sealed key cannot be opened says so instead of failing [REQ-099] > the check answers not ok with a reason in words, and keeps that on the record": {
+   "kind": "test",
+   "hash": "4fa54ed4c7a1914d",
+   "asserts": 2,
+   "literals": [
+    "\"200\"",
+    "\"garbage-not-sealed\"",
+    "\"https://llm.example.com/v1\"",
+    "\"openai\"",
+    "\"other\"",
+    "\"other\"",
+    "\"sk-live-abcdef-1234\"",
+    "\"the check answers not ok with a reason in words, and keeps that on the record\"",
+    "\"{}\"",
+    "\"게이트웨이\"",
+    "\"저장한 키를 열 수 없어요. 키를 다시 넣어 주세요\"",
+    "\"저장한 키를 열 수 없어요. 키를 다시 넣어 주세요\"",
+    "false",
+    "false",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "apps/server/src/runtime/moss.test.ts::<import:007beb93>": {
    "kind": "support",
    "hash": "007beb93cef3e58d",
@@ -19739,6 +19796,65 @@
    "skips": 0,
    "added": "2026-11-03",
    "amended_by": "0050-toss-ux-principles.md"
+  },
+  "apps/server/src/runtime/results-world.test.ts::<import:8f931061>": {
+   "kind": "support",
+   "hash": "8f93106141746ac1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/results-world.test.ts::<import:d06fb2a2>": {
+   "kind": "support",
+   "hash": "d06fb2a2b1d9e141",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/results-world.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/results-world.test.ts::a run shows the world as it was when the experiment was made [REQ-037] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/results-world.test.ts::a run shows the world as it was when the experiment was made [REQ-037] > the world view carries the version the experiment recorded, with the name and digest, and a run that is not there is not found": {
+   "kind": "test",
+   "hash": "612d2e6399bf4ff4",
+   "asserts": 5,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"r-404\"",
+    "\"r-404\"",
+    "\"the world view carries the version the experiment recorded, with the name and digest, and a run that is not there is not found\"",
+    "\"세계\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
   },
   "apps/server/src/runtime/results.test.ts::<import:57bd3980>": {
    "kind": "support",
@@ -95792,6 +95908,209 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-problem.test.ts::<import:abef7624>": {
+   "kind": "support",
+   "hash": "abef7624a0000ec1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-problem.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-problem.test.ts::=draft": {
+   "kind": "support",
+   "hash": "385e7b8d16f47470",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-problem.test.ts::=spec": {
+   "kind": "support",
+   "hash": "5a52708a3c014897",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-problem.test.ts::a service card's counts are added up from its parts [REQ-094] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-problem.test.ts::a service card's counts are added up from its parts [REQ-094] > nodes, hosts and switches are the sums of the parts of that role, and a role with no part keeps the card's number": {
+   "kind": "test",
+   "hash": "395af4c76adf66fe",
+   "asserts": 1,
+   "literals": [
+    "\"2\"",
+    "\"3\"",
+    "\"4\"",
+    "\"4\"",
+    "\"4\"",
+    "\"4\"",
+    "\"4\"",
+    "\"5\"",
+    "\"7\"",
+    "\"7\"",
+    "\"7\"",
+    "\"host\"",
+    "\"node\"",
+    "\"node\"",
+    "\"nodes, hosts and switches are the sums of the parts of that role, and a role with no part keeps the card's number\"",
+    "\"앱 둘\"",
+    "\"앱\"",
+    "\"호스트\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-problem.test.ts::a service card's counts are added up from its parts [REQ-094] > the nodes never fall below one, and the other fields of the card are kept": {
+   "kind": "test",
+   "hash": "90e88e317f2f2c6c",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"node\"",
+    "\"the nodes never fall below one, and the other fields of the card are kept\"",
+    "\"빈 것\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-problem.test.ts::shapeProblem says in words what is wrong with a spec, or nothing [REQ-094] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-problem.test.ts::shapeProblem says in words what is wrong with a spec, or nothing [REQ-094] > a server count out of range is refused unless the site is built as it really is": {
+   "kind": "test",
+   "hash": "f7963a5a4a670d65",
+   "asserts": 3,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"10000000\"",
+    "\"10000000\"",
+    "\"a server count out of range is refused unless the site is built as it really is\"",
+    "\"서버는\"",
+    "\"서버는\"",
+    "\"서버는\"",
+    "\"서버는\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-problem.test.ts::shapeProblem says in words what is wrong with a spec, or nothing [REQ-094] > a site that does not exist is named": {
+   "kind": "test",
+   "hash": "6d3cc45170792467",
+   "asserts": 1,
+   "literals": [
+    "\"a site that does not exist is named\"",
+    "\"nowhere\"",
+    "\"nowhere\"",
+    "\"site\"",
+    "\"site\"",
+    "\"알 수 없는 사업장 'nowhere'\"",
+    "\"알 수 없는 사업장 'nowhere'\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-problem.test.ts::shapeProblem says in words what is wrong with a spec, or nothing [REQ-094] > no services, too many services, a name that is empty and a node count out of range are each named": {
+   "kind": "test",
+   "hash": "fe4b93edd83a6a4e",
+   "asserts": 4,
+   "literals": [
+    "\"  \"",
+    "\"  \"",
+    "\"40\"",
+    "\"40\"",
+    "\"61\"",
+    "\"61\"",
+    "\"no services, too many services, a name that is empty and a node count out of range are each named\"",
+    "\"노드는 1~60개 사이여야 해요\"",
+    "\"노드는 1~60개 사이여야 해요\"",
+    "\"서비스 이름이 비어 있어요\"",
+    "\"서비스 이름이 비어 있어요\"",
+    "\"서비스는\"",
+    "\"서비스는\"",
+    "\"서비스를 하나는 골라 주세요\"",
+    "\"서비스를 하나는 골라 주세요\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-problem.test.ts::shapeProblem says in words what is wrong with a spec, or nothing [REQ-094] > the default spec has no problem": {
+   "kind": "test",
+   "hash": "564386668032497a",
+   "asserts": 1,
+   "literals": [
+    "\"the default spec has no problem\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/sources/worldgen/shaped-problem.test.ts::shapeProblem says in words what is wrong with a spec, or nothing [REQ-094] > the three size numbers come all together or not at all": {
+   "kind": "test",
+   "hash": "6bf56d0bc9f3b09a",
+   "asserts": 1,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"the three size numbers come all together or not at all\"",
+    "\"서버룸·룸당 랙·랙당 서버는 셋 다 함께 정해요\"",
+    "\"서버룸·룸당 랙·랙당 서버는 셋 다 함께 정해요\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/sources/worldgen/shaped-sizing.test.ts::<import:285f6d60>": {
