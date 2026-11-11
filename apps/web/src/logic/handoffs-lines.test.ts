@@ -14,7 +14,7 @@ const fault = (needless = false) => ({
 
 const row = (over: Partial<HandoffRow> = {}): HandoffRow => ({
   id: "h1",
-  domain: "facility_power",
+  domain: "service_os",
   team: "시설팀",
   at: 0,
   doneAt: 3600,

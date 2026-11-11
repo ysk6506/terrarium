@@ -84,8 +84,8 @@ describe("a worker node answers for sessions it does not hold and for calls that
     await s.resolveHuman({ kind: "reply", text: "x" }).catch((e) => errors.push(e));
     await s.humanAct("no_such_tool", {}).catch((e) => errors.push(e));
     expect(errors.map((e) => (e as { code: string }).code)).toEqual(["conflict", "conflict"]);
-    const result = await s.finish("gave_up");
-    expect(result.endReason).toBe("gave_up");
+    const result = await s.finish("agent_finished");
+    expect(result.endReason).toBe("agent_finished");
     s.dispose();
   }, 30_000);
 

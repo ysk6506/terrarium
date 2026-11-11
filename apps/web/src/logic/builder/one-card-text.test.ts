@@ -89,7 +89,7 @@ describe("the one card and the bar at the foot say how the picked thing stands [
     const line = trialLine(
       preview({
         hottest: { id: rack.id, name: "r", inletC: 27.4 },
-        alarms: [{}, {}] as Preview["alarms"],
+        alarms: [{}, {}] as unknown as Preview["alarms"],
       }),
       index,
       catalog,
