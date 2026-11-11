@@ -124288,6 +124288,118 @@
    "added": "2026-11-11",
    "amended_by": null
   },
+  "tests/spec/deep-os-host-fixes.test.ts::<import:4765130b>": {
+   "kind": "support",
+   "hash": "4765130b40c20bee",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-host-fixes.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-host-fixes.test.ts::=MINUTE": {
+   "kind": "support",
+   "hash": "07a3d29c8b1ec668",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-host-fixes.test.ts::starting a stopped unit and rewriting a file end the fault under it [REQ-098] [REQ-100] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-host-fixes.test.ts::starting a stopped unit and rewriting a file end the fault under it [REQ-098] [REQ-100] > a chronyd that was stopped and started again ends a clock drift": {
+   "kind": "test",
+   "hash": "d5781ed6abf1aa10",
+   "asserts": 2,
+   "literals": [
+    "\"120\"",
+    "\"6\"",
+    "\"Normal\"",
+    "\"Normal\"",
+    "\"Not synchronised\"",
+    "\"Not synchronised\"",
+    "\"a chronyd that was stopped and started again ends a clock drift\"",
+    "\"chronyc tracking | grep Leap\"",
+    "\"chronyc tracking | grep Leap\"",
+    "\"chronyc tracking | grep Leap\"",
+    "\"chronyc tracking | grep Leap\"",
+    "\"ntp_drift\"",
+    "\"srv-a2\"",
+    "\"systemctl start chronyd\"",
+    "\"systemctl stop chronyd\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-host-fixes.test.ts::starting a stopped unit and rewriting a file end the fault under it [REQ-098] [REQ-100] > a resolver file with a dead name server changes nothing": {
+   "kind": "test",
+   "hash": "7b3aaf49cff7cad2",
+   "asserts": 1,
+   "literals": [
+    "\"Using DNS server\"",
+    "\"Using DNS server\"",
+    "\"a resolver file with a dead name server changes nothing\"",
+    "\"dns_failure\"",
+    "\"echo 'nameserver 10.20.99.53' > /etc/resolv.conf\"",
+    "\"journalctl -u systemd-resolved -n 1\"",
+    "\"journalctl -u systemd-resolved -n 1\"",
+    "\"srv-a2\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-host-fixes.test.ts::starting a stopped unit and rewriting a file end the fault under it [REQ-098] [REQ-100] > a resolver file with a good name server ends a DNS failure and the resolver says which one it uses": {
+   "kind": "test",
+   "hash": "c11fd8fb234bd723",
+   "asserts": 3,
+   "literals": [
+    "\"Using DNS server 10.20.0.53.\"",
+    "\"Using DNS server 10.20.0.53.\"",
+    "\"a resolver file with a good name server ends a DNS failure and the resolver says which one it uses\"",
+    "\"cat /etc/resolv.conf | grep nameserver\"",
+    "\"cat /etc/resolv.conf | grep nameserver\"",
+    "\"cat /etc/resolv.conf\"",
+    "\"cat /etc/resolv.conf\"",
+    "\"dns_failure\"",
+    "\"echo 'nameserver 10.20.0.53' > /etc/resolv.conf\"",
+    "\"journalctl -u systemd-resolved -n 1\"",
+    "\"journalctl -u systemd-resolved -n 1\"",
+    "\"nameserver 10.20.0.53\"",
+    "\"nameserver 10.20.0.53\"",
+    "\"nameserver 10.20.99.53\"",
+    "\"nameserver 10.20.99.53\"",
+    "\"srv-a2\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "tests/spec/deep-os-links.test.ts::<import:4765130b>": {
    "kind": "support",
    "hash": "4765130b40c20bee",

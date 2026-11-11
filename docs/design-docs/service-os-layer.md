@@ -20,11 +20,11 @@ covers:
   - packages/core/src/session/shell-reach.ts
   - packages/core/src/scenario/library-os.ts
 verification_log:
-  - "2026-11-11: awk: do-while, %E %G %*d, substr, length(배열), 미설정 변수, \\x, BEGIN의 exit 뒤 END"
   - "2026-11-11: tools·world/os: 닿지 않는 분기 정리와 시험 추가; 동작은 같음(TD-0002), awk는 이름 바로 뒤 '(' 호출과 srand 반환값"
   - "2026-11-11: cat, printf, wc, test, find 연산자, uniq, cut 옵션을 실제 coreutils 출력과 맞춤"
   - "2026-11-11: free -b/-h, df -m 머리글, find -empty, kill 신호 이름, pgrep 인자 없음, sed 빈 일치를 실제와 맞춤"
   - "2026-11-11: curl 시험 추가, kill/df/sed 함수 분리"
+  - "2026-11-11: systemctl start·resolv.conf 쓰기로 시계·DNS 고장을 끝내는 시험 추가"
 covers_hash: 7b9f5b29f834ad7c
 ---
 # 서비스와 OS 층 (REQ-086, REQ-087, [ADR-0091](adr/0091-service-os-layer-recovery-first.md))
