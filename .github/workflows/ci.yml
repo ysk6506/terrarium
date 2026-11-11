@@ -208,7 +208,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - run: pnpm exec playwright install --with-deps chromium
+      - name: Install the browser without system packages when it can start without them (ADR-0159)
+        run: |
+          # The browser comes from the Playwright download host. The runner image already has the libraries, and the
+          # app ships its own font, so the system packages (apt) are only a fallback when the browser cannot start.
+          for i in 1 2 3; do
+            pnpm exec playwright install chromium && break
+            echo "browser download attempt $i failed"; sleep $((i * 20))
+          done
+          if node -e "require('playwright').chromium.launch().then((b) => b.close())"; then exit 0; fi
+          echo "the browser did not start without system packages; installing them"
+          for i in 1 2 3; do
+            pnpm exec playwright install-deps chromium && exit 0
+            echo "system package attempt $i failed"; sleep $((i * 20))
+          done
+          exit 1
+        shell: bash
       - name: Journeys of the group (15 minute limit inside)
         run: pnpm ux journeys --group ${{ matrix.group }} 2>&1 | tee ux-journeys-${{ matrix.group }}.log
         env:
@@ -242,7 +257,21 @@ jobs:
       - if: steps.scope.outputs.run == 'true'
         uses: ./.github/actions/setup
       - if: steps.scope.outputs.run == 'true'
-        run: pnpm exec playwright install --with-deps chromium
+        run: |
+          # The browser comes from the Playwright download host. The runner image already has the libraries, and the
+          # app ships its own font, so the system packages (apt) are only a fallback when the browser cannot start.
+          for i in 1 2 3; do
+            pnpm exec playwright install chromium && break
+            echo "browser download attempt $i failed"; sleep $((i * 20))
+          done
+          if node -e "require('playwright').chromium.launch().then((b) => b.close())"; then exit 0; fi
+          echo "the browser did not start without system packages; installing them"
+          for i in 1 2 3; do
+            pnpm exec playwright install-deps chromium && exit 0
+            echo "system package attempt $i failed"; sleep $((i * 20))
+          done
+          exit 1
+        shell: bash
       - name: Is the recorded score file in the repository still fresh? (reports only, ADR-0141)
         if: steps.scope.outputs.run == 'true'
         run: |
