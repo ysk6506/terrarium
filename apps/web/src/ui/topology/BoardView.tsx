@@ -21,6 +21,12 @@ function squeeze(text: string): number | undefined {
   return width > TEXT_W ? TEXT_W : undefined;
 }
 
+/** The width a line of text takes at 12 px, but no more than the column has: what its backing has to cover. */
+function textWidth(text: string): number {
+  const width = [...text].reduce((n, c) => n + (/[가-힣]/.test(c) ? 12 : 6.6), 0);
+  return Math.min(width, TEXT_W);
+}
+
 function Slab({ tile, state }: { readonly tile: Tile; readonly state: string }) {
   const w = TILE_HALF * 2;
   const top = `0,${-TILE_D} ${w / 2},0 0,${TILE_D} ${-w / 2},0`;
@@ -99,6 +105,15 @@ function TileView({ at, pulse }: { readonly at: hallTopology.Placed; readonly pu
       <g transform="translate(0,-6)">
         <Glyph kind={tile.kind} group={tile.group} state={tile.state} />
       </g>
+      {/* 이름과 상태 줄은 읽히는 바탕 위에 그려서 어떤 선도 글자를 지나지 않아요 (ADR-0146) */}
+      <rect
+        className="lbl-bg"
+        x={-(Math.max(textWidth(tile.name), tile.line ? textWidth(tile.line) : 0) / 2) - 5}
+        y={label - 13}
+        width={Math.max(textWidth(tile.name), tile.line ? textWidth(tile.line) : 0) + 10}
+        height={tile.line ? 32 : 18}
+        rx={6}
+      />
       <text
         className="lbl"
         y={label}

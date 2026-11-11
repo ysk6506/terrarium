@@ -9,6 +9,11 @@ export const BOARD_CSS = `
   letter-spacing: 0.03em;
 }
 
+.topo-board .lbl-bg {
+  fill: var(--glass-92);
+  stroke: none;
+}
+
 .topo-board .lbl {
   fill: var(--ink);
   font-size: 12px;

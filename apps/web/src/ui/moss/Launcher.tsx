@@ -92,7 +92,8 @@ function showModels(): void {
   look();
 }
 
-function SleepPill() {
+/** 모델이 없어 이끼가 잠든 때의 길. 화면 위에 떠 있지 않고, 홈의 첫 화면 설명 아래 흐름 안에 한 줄로 놓여요 (ADR-0146). */
+export function SleepPill() {
   const { navigate } = useApp();
   return (
     <a
@@ -132,27 +133,23 @@ export function MossHost() {
   // 아래 막대가 있는 화면에서는 버튼이 막대 위로 올라가요 (REQ-104)
   useEffect(() => watchBottomBars(), []);
   const high = page.name === "world" || page.name === "scenario";
+  // 잠든 이끼는 떠 있지 않아요: 내용 위에 늘 떠 있는 것은 그 화면의 주 행동 막대 하나뿐이에요
+  if (!awake) return null;
   return (
     <>
       {awake && panel.open && <MossPanel focusSeq={panel.focusSeq} />}
-      {!(awake && panel.open) && (
+      {!panel.open && (
         <aside className={`moss-launch${high ? " high" : ""}`} aria-label="이끼">
-          {!awake ? (
-            <SleepPill />
-          ) : (
-            <>
-              {hint && <span className="moss-hint">처음이세요? 같이 만들어요</span>}
-              <button
-                type="button"
-                className="moss-btn"
-                onClick={() => openMoss()}
-                aria-label="이끼 열기"
-                title="이끼 (/ 또는 Cmd+K)"
-              >
-                이끼
-              </button>
-            </>
-          )}
+          {hint && <span className="moss-hint">처음이세요? 같이 만들어요</span>}
+          <button
+            type="button"
+            className="moss-btn"
+            onClick={() => openMoss()}
+            aria-label="이끼 열기"
+            title="이끼 (/ 또는 Cmd+K)"
+          >
+            이끼
+          </button>
         </aside>
       )}
     </>

@@ -248,7 +248,7 @@ function BuilderScreen({ initial }: { readonly initial: WorldRecord }) {
           {!map && !topology && <PlaceSheet b={b} />}
           {!map && <NextChip b={b} worldId={initial.id} />}
           {!map && <StageCards b={b} anchor={anchor} />}
-          {!map && <StepBar b={b} />}
+          {!map && <StepBar b={b} topology={topology} />}
         </div>
       </div>
     </div>

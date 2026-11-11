@@ -31,7 +31,7 @@ function depth(b: Builder, rack: Entity | undefined): number {
   return level.kind === "floor" ? 1 : 0;
 }
 
-export function StepBar({ b }: { readonly b: Builder }) {
+export function StepBar({ b, topology }: { readonly b: Builder; readonly topology: boolean }) {
   const { index, level, world } = b.state;
   const rack = rackOfPick(b);
   const at = depth(b, rack);
@@ -81,7 +81,8 @@ export function StepBar({ b }: { readonly b: Builder }) {
           서버룸으로
         </Button>
       )}
-      <KeysHint />
+      {/* R·Delete·두 번 누르기는 3D 편집 키라 토폴로지에서는 뜻이 없어요 (ADR-0146) */}
+      {!topology && <KeysHint picked={b.state.selected.length > 0} />}
       <Go to={{ name: "scenarios", worldId: world.id }} className="btn btn-small">
         다 지었어요
       </Go>

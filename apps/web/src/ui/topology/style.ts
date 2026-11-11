@@ -113,6 +113,25 @@ export const TOPOLOGY_CSS = `
   min-height: 0;
   overflow: auto;
   padding: 20px 16px 120px;
+  /* A shadow on the edge that has more to see: the board is wider than a phone, and it slides sideways. */
+  background:
+    linear-gradient(to right, var(--topo-ground-a) 30%, transparent) left center / 24px 100% no-repeat local,
+    linear-gradient(to left, var(--topo-ground-a) 30%, transparent) right center / 24px 100% no-repeat local,
+    linear-gradient(to right, rgb(0 0 0 / 0.18), transparent) left center / 12px 100% no-repeat scroll,
+    linear-gradient(to left, rgb(0 0 0 / 0.18), transparent) right center / 12px 100% no-repeat scroll;
+}
+
+.topo-slide-hint {
+  display: none;
+  margin: 0 0 8px;
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .topo-slide-hint {
+    display: block;
+  }
 }
 
 .topo-empty {

@@ -4225,7 +4225,8 @@ body:has(.run-panel[open]) .moss-launch.high {
 }
 .kb-overlay {
   position: absolute;
-  inset: auto auto 64px 22px;
+  /* 위 오른쪽: 놓기(왼쪽 위), 고른 것 카드, 아래 막대, 다음 칩을 가리지 않는 빈 곳 */
+  inset: 72px 22px auto auto;
   z-index: 4;
   width: 340px;
   margin: 0;
@@ -4791,6 +4792,16 @@ button.title-pill:hover {
   text-decoration: none;
 }
 
+/* 홈에서만, 설명 아래 흐름 안에 한 줄로 */
+.moss-sleep-line {
+  margin: 0;
+}
+
+.moss-sleep-line .moss-sleep {
+  display: inline-block;
+  box-shadow: none;
+}
+
 .moss-sleep:hover {
   color: var(--ink);
   text-decoration: none;
@@ -5232,8 +5243,9 @@ button.title-pill:hover {
     gap: 6px;
     padding: 8px 12px;
   }
+  /* 제목은 뒤로 가기 옆에서 한 줄을 다 쓰고, 3D/토폴로지 전환과 되돌리기는 그 아래 줄로 내려가요 (ADR-0146) */
   .toolbar-title {
-    flex: 1 1 0;
+    flex: 1 1 calc(100% - 48px);
     min-width: 0;
   }
   .toolbar .save-state {
@@ -5781,8 +5793,10 @@ ol.uu li {
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
-  margin: 28px -32px -72px;
-  padding: 14px 32px;
+  /* 위 카드와 같은 폭: 좌우로 삐져나가지 않아요 (ADR-0146) */
+  margin: 28px 0 -72px;
+  padding: 14px 20px;
+  border-radius: 14px 14px 0 0;
   background: var(--surface);
   border-top: 1px solid var(--line);
   box-shadow: var(--bar-shadow);
@@ -6029,7 +6043,7 @@ ol.uu li {
   }
 
   .pt-foot {
-    margin: 24px -16px -48px;
+    margin: 24px 0 -48px;
     padding: 12px 16px;
   }
 
