@@ -9,10 +9,10 @@ covers:
 covers_hash: 6cfa164a32e562c5
 verification_log:
   - "2026-11-11: 목표의 글과 맨 위 문서를 맞춤 (ADR-0177)"
-  - "2026-11-11: 목표의 글과 맨 위 문서를 맞춤 (ADR-0177)"
   - "2026-11-11: 제품의 값·기능·철학·한계를 요구사항 전체(REQ-001~119)와 physics-laws·measurement·ADR-0117의 한계에 대조해 다시 씀"
   - "2026-11-11: 제품의 값·기능·철학·한계를 요구사항 전체(REQ-001~119)와 physics-laws·measurement·ADR-0117·product-design의 원칙 여섯에 대조해 다시 씀"
   - "2026-11-11: 라이선스 절(Apache-2.0)을 더함. package.json에 license 표기가 들어감 (ADR-0181)"
+  - "2026-11-11: NOTICE 링크를 더함 (ADR-0181)"
 ---
 # Terrarium
 
@@ -146,7 +146,7 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 
 ## 라이선스
 
-[Apache License 2.0](LICENSE)이에요.
+[Apache License 2.0](LICENSE)이에요. 저작권 표기는 [NOTICE](NOTICE)에 있어요.
 
 ## 코드를 고치는 사람에게
 
