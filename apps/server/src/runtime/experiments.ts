@@ -60,10 +60,11 @@ import {
 } from "@terrarium/core/session";
 import type { Blueprint } from "@terrarium/core/world";
 import type { AgentVersions } from "./agent-versions";
-import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
+import { must, type PlatformContext, type Viewer } from "./context";
 import type { Dispatcher } from "./dispatcher";
 import { summaryOf } from "./executor";
 import { quickPlan } from "./experiments-quick";
+import { allow, allowRunOn, mayCancel } from "./permissions";
 import type { Scenarios } from "./scenarios";
 import { present, subjectOf } from "./subject";
 import type { Titles } from "./titles";
@@ -305,12 +306,13 @@ export class Experiments {
   }
 
   async create(viewer: Viewer, req: CreateExperimentRequest): Promise<ExperimentView> {
+    allowRunOn(viewer, this.ctx.harnesses, req.recipe.harnessId);
     const recipe = this.recipeOf(req.recipe);
     const { snapshot, subject } = await this.resolve(recipe);
     const experiment: Experiment = {
       id: this.ctx.stamps.id("e"),
       name: req.name,
-      owner: viewer.name,
+      owner: viewer.id,
       createdAt: this.ctx.stamps.now(),
       recipe,
       snapshot,
@@ -339,6 +341,7 @@ export class Experiments {
     const parent = await this.get(id);
     const change = forkChange(parent.recipe, req.change);
     const target = { ...parent.recipe, ...change };
+    allowRunOn(viewer, this.ctx.harnesses, target.harnessId);
     // Same world and scenario: the same versions the parent ran. Another one: its current version.
     const sameTask =
       target.worldId === parent.recipe.worldId &&
@@ -354,7 +357,7 @@ export class Experiments {
       change,
       {
         id: this.ctx.stamps.id("e"),
-        owner: viewer.name,
+        owner: viewer.id,
         createdAt: this.ctx.stamps.now(),
         ...(req.name ? { name: req.name } : {}),
         ...(req.note ? { note: req.note } : {}),
@@ -375,7 +378,7 @@ export class Experiments {
    */
   async addRuns(viewer: Viewer, id: string, req: AddRunsRequest): Promise<ExperimentView> {
     const experiment = await this.get(id);
-    ownerOnly(viewer, experiment.owner, "실행 더하기");
+    allow(viewer, "addRuns", { owner: experiment.owner }, "실행 더하기");
     const runs = await this.ctx.store.listRuns(id);
     const { recipe } = experiment;
     const repeats = repeatsOf(recipe);
@@ -410,7 +413,7 @@ export class Experiments {
 
   async cancel(viewer: Viewer, id: string): Promise<ExperimentView> {
     const experiment = await this.get(id);
-    ownerOnly(viewer, experiment.owner, "실험 멈추기");
+    allow(viewer, "cancel", { owner: experiment.owner }, "실험 멈추기");
     const runs = await this.ctx.store.listRuns(id);
     await Promise.all(
       runs.filter((r) => !isTerminal(r.status)).map((r) => this.dispatcher.cancel(r.id)),
@@ -491,7 +494,7 @@ export class Experiments {
       analysis: await this.analysis(experiment, runs),
       ancestors: await this.ancestors(experiment),
       forks: await Promise.all(forks.reverse().map((f) => this.summaryOf(f))),
-      canCancel: viewer.name === experiment.owner && !isTerminal(summary.status),
+      canCancel: !isTerminal(summary.status) && mayCancel(viewer, experiment.owner),
     };
   }
 }

@@ -289,7 +289,7 @@ describe("the connections people register, and the ones the config file names [R
 
     // Set it right, ask again.
     env.HARNESS_TOKEN = "t";
-    const healed = await second.platform.connections.recheck(kept.id);
+    const healed = await second.platform.connections.recheck(YEONSU, kept.id);
     expect(healed.status).toBe("ok");
     expect(healed.agents).toHaveLength(2);
     expect(second.platform.connections.get(kept.id)).toBeDefined();
@@ -303,7 +303,7 @@ describe("the connections people register, and the ones the config file names [R
     expect((await platform.connections.views()).find((v) => v.id === view.id)?.agents).toHaveLength(
       2,
     );
-    expect((await platform.connections.recheck(view.id)).agents).toHaveLength(2);
+    expect((await platform.connections.recheck(YEONSU, view.id)).agents).toHaveLength(2);
   });
 
   test("a harness from the config file keeps its settings for display, and ports of any kind are listed", async () => {

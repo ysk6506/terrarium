@@ -3,7 +3,7 @@ import { NotFoundError } from "@terrarium/core/kernel";
 import { describe, expect, test } from "vitest";
 import { FakeFetch, json } from "../adapters/test-support/fake-fetch";
 import type { Stamps } from "./ids";
-import { JIMIN, recipe, seed, testPlatform, YEONSU } from "./test-support/platform";
+import { ADMIN, JIMIN, recipe, seed, testPlatform, YEONSU } from "./test-support/platform";
 
 const DAY = 86_400_000;
 const T0 = Date.UTC(2026, 9, 1);
@@ -58,7 +58,8 @@ describe("an agent that changed gets a new version when an experiment is made [R
       model: "m-2",
       facts: { graph: "v1", mode: "fast" },
     };
-    const changed = await s.experiment(JIMIN);
+    // another person may use the connection only when they are an admin: it is yeonsu's, with yeonsu's secrets
+    const changed = await s.experiment(ADMIN);
     expect(changed.experiment.agentVersion).toBe(2);
 
     const history = await s.platform.agentVersions.history(s.connection.id, "triage");
@@ -68,7 +69,7 @@ describe("an agent that changed gets a new version when an experiment is made [R
       n: 2,
       at: new Date(T0 + 5 * DAY).toISOString(),
       source: "auto",
-      by: "jimin",
+      by: "admin-kim",
       experiments: 1,
       changes: [
         { field: "model", label: "모델", before: "m-1", after: "m-2" },
@@ -214,7 +215,7 @@ describe("people add, change and delete versions [REQ-053]", () => {
     ).rejects.toBeInstanceOf(NotFoundError);
   });
 
-  test("only whoever connected it may change its versions; the config file's connection is open to everyone", async () => {
+  test("only whoever connected it may change its versions; the config file's connection is for admins", async () => {
     const s = await setup();
     await s.experiment();
     await expect(
@@ -223,10 +224,13 @@ describe("people add, change and delete versions [REQ-053]", () => {
     await expect(
       s.platform.agentVersions.remove(JIMIN, s.connection.id, "triage", 1),
     ).rejects.toBeInstanceOf(ForbiddenError);
-    const open = await s.platform.agentVersions.add(JIMIN, "builtin", "triage", {
-      label: "누구나",
+    await expect(
+      s.platform.agentVersions.add(JIMIN, "builtin", "triage", { label: "누구나" }),
+    ).rejects.toBeInstanceOf(ForbiddenError);
+    const admin = await s.platform.agentVersions.add(ADMIN, "builtin", "triage", {
+      label: "관리자",
     });
-    expect(open.versions[0]).toMatchObject({ n: 1, by: "jimin", label: "누구나" });
+    expect(admin.versions[0]).toMatchObject({ n: 1, by: "admin-kim", label: "관리자" });
     const looked = await s.platform.agentVersions.history(s.connection.id, "triage");
     expect(looked.versions).toHaveLength(1);
   });
@@ -234,7 +238,7 @@ describe("people add, change and delete versions [REQ-053]", () => {
   test("the versions go away with the connection; a different agent's stay", async () => {
     const s = await setup();
     await s.experiment();
-    await s.platform.agentVersions.add(JIMIN, "builtin", "triage", {});
+    await s.platform.agentVersions.add(ADMIN, "builtin", "triage", {});
     const made = await s.experiment();
     await s.platform.experiments.cancel(YEONSU, made.experiment.id);
     for (const e of await s.platform.experiments.list({}))

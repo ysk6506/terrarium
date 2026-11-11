@@ -10,5 +10,6 @@ export const MOSS_ROUTES = {
       "이끼에게 묻기: 질문·화면 이름·화면 상태로 문서 조각을 찾고 기본 모델에 물어 {answer, sources, suggestedActions, followUps}를 받아요. 동작은 서버가 하지 않아요",
     body: MossAskBody,
     produces: "json",
+    policy: "signedIn",
   },
 } as const satisfies Record<string, RouteSpec>;

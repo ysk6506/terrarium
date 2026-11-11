@@ -18,13 +18,14 @@ covers:
   - apps/web/src/ui/pages/process-table.tsx
   - apps/web/src/ui/pages/process-compare.tsx
   - apps/web/src/ui/pages/process-ontology.tsx
-covers_hash: 1f58dcd8183b87da
+covers_hash: 726f7fe8a5db8a3c
 verification_log:
   - "2026-11-10: 내려받는 파일 이름 규칙(exportName)을 코드와 대조해 더했다"
   - "2026-11-10: 파일 이름 규칙을 fileName 그대로(한글 유지)로 되돌려 대조했다"
   - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
   - "2026-11-11: 2026-11-11: 이끼 동작 셋을 코드와 대조해 맞음 (ADR-0141)"
   - "2026-11-11: result page split into tabs (ADR-0171); checked against covered code"
+  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
 ---
 # 프로세스 비교 (REQ-112, [ADR-0135](adr/0135-process-compare.md))
 
@@ -36,7 +37,7 @@ verification_log:
 
 1. **잰 값은 코드가 세요.** 모델도 사람도 숫자를 만들지 않아요. 실행 기록(`RunResult.events`)을 `foldRun`이 접어서 단계·사람·시간을 세요.
 2. **적은 값을 지어내지 않아요.** 표를 안 적은 시나리오는 잰 값 열만 보이고, 옆에 "지금 하는 방식 적기" 링크가 있어요. 기본값도 어림값도 없어요.
-3. **표는 시나리오마다 하나, 만든 사람의 것이에요.** 처음 적은 사람이 주인이고 다른 사람은 읽기만 해요.
+3. **표는 시나리오마다 하나, 시나리오를 만든 사람의 것이에요.** 적는 사람은 시나리오를 만든 사람과 관리자이고(먼저 적은 사람이 아니에요, [권한](permissions.md)), 다른 사람은 읽기만 해요. 아직 아무도 안 적었어도 만든 사람이 아니면 적을 수 없어요.
 4. **이끼의 설명은 덤이에요.** 기본 모델이 등록돼 있을 때만 보이고, 숫자는 이미 코드가 센 것을 이끼가 풀어 말할 뿐이에요.
 
 ## 1. 지금 하는 방식 표 (#7)
@@ -129,7 +130,7 @@ verification_log:
 |---|---|
 | `packages/core/src/analysis/process.test.ts` | 접기 규칙(툴 묶음·승인·물리·넘기기), 평균·차이, 옛 실행, 표 없는 비교 |
 | `packages/core/src/analysis/ontology.test.ts` | 필요한 Object·Link·Action, 모든 고장 종류가 조치에 닿음, 쓴 것 세기 |
-| `apps/server/src/http/process-api.test.ts` | 표 저장·조회, 주인만 고침, 검증 거절, 비교·온톨로지 응답 |
+| `apps/server/src/http/process-api.test.ts` | 표 저장·조회, 시나리오를 만든 사람만 고침, 검증 거절, 비교·온톨로지 응답 |
 | `apps/web/src/logic/process-compare/process-compare.test.ts` | 줄·발 숫자, 말, 세계 요구의 CSV·JSON |
 | 여정 `process-compare` | 표 적기 → 실험 → 전후 비교 → 내보내기 (`ux-honeycomb.md`) |
 

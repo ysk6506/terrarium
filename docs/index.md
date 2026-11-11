@@ -4,11 +4,11 @@ kind: reference
 status: active
 last_verified: 2026-11-11
 verification_log:
-  - "2026-11-11: ADR-0165 링크"
-  - "2026-11-11: 버전과 브랜치 문서, 데이터 용어집, ADR-0166·0167 링크"
-  - "2026-11-11: ADR-0168 링크"
   - "2026-11-11: ADR-0169 링크"
   - "2026-11-11: 제품 설계 한 장과 ADR-0170 링크"
+  - "2026-11-11: 골든 안전망 문서 링크"
+  - "2026-11-11: 골든 안전망 링크를 더함"
+  - "2026-11-11: 권한 문서와 ADR-0174 링크"
 ---
 # 문서 색인
 
@@ -24,6 +24,8 @@ verification_log:
 ## 설계와 결정
 
 - [제품 설계 한 장 — 테라리움의 값, 원칙 여섯, 지금 유효한 결정, 순서](design-docs/product-design.md)
+- [권한 — 누구인지, 무엇을 보고 바꾸는지, 누가 무엇을 했는지](design-docs/permissions.md)
+- [골든 안전망 — 모델을 옮기기 전에 못 박아 둔 영향 범위·파사드·점수](design-docs/golden-safety-net.md)
 - [핵심 신념](design-docs/core-beliefs.md)
 - [ADR 작성 절차](design-docs/adr-process.md)
 - [품질 하네스 사용법](design-docs/harness-guide.md)
@@ -234,6 +236,7 @@ verification_log:
 - [0157 모델은 층마다 표준에서 뼈대를 빌리고, 종류는 세 층이며, 가상화 플랫폼은 대응 표로 받는다](design-docs/adr/0157-model-standards-three-tiers-platform-mapping.md)
 - [0161 생김새 견본 시험에서 막힌 열아홉 곳을 메운다 — 손질은 여덟 가지, 딸린 요청, 다듬어 견주기, 묶음의 출처](design-docs/adr/0161-shape-sample-test-fills-the-gaps.md)
 - [0171 실험 결과의 첫 화면은 세 물음에 답하고, 나머지는 탭 뒤로 간다](design-docs/adr/0171-result-page-answers-three-questions.md)
+- [0174 권한은 프록시가 넘겨준 신원, 역할 둘, 공개 범위 셋, 감사 기록으로 한다](design-docs/adr/0174-permissions-proxy-identity-three-scopes-audit.md)
 - [0170 제품의 값과 원칙 여섯을 한 장에 두고, 요구사항은 그 한 장에 대 본 뒤 설계한다](design-docs/adr/0170-product-design-one-page-six-principles.md)
 - [0169 모델은 하나다 — 현실에서 만든 세계와 지어낸 세계는 같은 타입과 같은 링크 표현을 쓰고, 매핑의 목적지는 핵심 모델이다](design-docs/adr/0169-one-model-for-invented-and-real-worlds.md)
 - [0168 실험용 복사본은 운영 세계와 같은 의미로 움직인다 — 전파 엔진은 하나이고, 모든 타입이 실험에 들어간다](design-docs/adr/0168-experiment-copy-behaves-like-the-operation-world.md)

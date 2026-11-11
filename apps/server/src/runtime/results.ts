@@ -42,13 +42,16 @@ import {
 } from "@terrarium/core/session";
 import type { ImportReport } from "@terrarium/core/sources/realimport";
 import { spanOf } from "@terrarium/core/topology";
-import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
+import { must, type PlatformContext, type Viewer } from "./context";
 import { whoIs } from "./executor";
 import type { Experiments } from "./experiments";
+import { allow } from "./permissions";
 
 export type ReportFormat = "html" | "md" | "text";
 
 const DAY_MS = 86_400_000;
+/** How long a share link lives when its maker gives no number (ADR-0174). */
+export const DEFAULT_SHARE_DAYS = 30;
 
 /** Whether the common tools reach the answer, per world version and scenario version: it is the same every time (REQ-088). */
 const REACH = new Map<string, CommonReach | null>();
@@ -209,32 +212,37 @@ export class Results {
     req: CreateShareRequest,
     baseUrl: string,
   ): Promise<ShareView> {
-    await this.experiments.get(id);
+    const experiment = await this.experiments.get(id);
+    allow(viewer, "createShare", { owner: experiment.owner }, "공유 링크 만들기");
     const createdAt = this.ctx.stamps.now();
-    const expiresAt = req.expiresInDays
-      ? new Date(Date.parse(createdAt) + req.expiresInDays * DAY_MS).toISOString()
-      : undefined;
+    // A link without an end is a door nobody remembers to close: no answer means the usual thirty days.
+    const days = req.expiresInDays ?? DEFAULT_SHARE_DAYS;
+    const expiresAt = new Date(Date.parse(createdAt) + days * DAY_MS).toISOString();
     const share = {
       token: randomToken(18),
       experimentId: id,
-      createdBy: viewer.name,
+      createdBy: viewer.id,
       createdAt,
-      ...(expiresAt ? { expiresAt } : {}),
+      expiresAt,
     };
     await this.ctx.store.putShare(share);
     return {
       token: share.token,
       url: `${baseUrl.replace(/\/$/, "")}/r/${share.token}`,
       createdAt,
-      ...(expiresAt ? { expiresAt } : {}),
+      expiresAt,
     };
   }
 
   async deleteShare(viewer: Viewer, token: string): Promise<{ deleted: boolean }> {
     const share = must(await this.ctx.store.getShare(token), "공유 링크");
     const experiment = await this.ctx.store.getExperiment(share.experimentId);
-    if (viewer.name !== share.createdBy)
-      ownerOnly(viewer, experiment?.owner ?? share.createdBy, "공유 링크 끊기");
+    allow(
+      viewer,
+      "deleteShare",
+      { owner: experiment?.owner, creator: share.createdBy },
+      "공유 링크 끊기",
+    );
     return { deleted: await this.ctx.store.deleteShare(token) };
   }
 

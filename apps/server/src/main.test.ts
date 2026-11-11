@@ -23,9 +23,15 @@ describe("starting and stopping the server [REQ-030]", () => {
     const file = path.join(dir, "terrarium.json");
     writeFileSync(
       file,
-      JSON.stringify({ port, host: "127.0.0.1", workers: 1, dataDir: "./state" }),
+      JSON.stringify({
+        port,
+        host: "127.0.0.1",
+        workers: 1,
+        dataDir: "./state",
+        identity: { adminTokenEnv: "TERRARIUM_TEST_ADMIN" },
+      }),
     );
-    const env = { TERRARIUM_CONFIG: file };
+    const env = { TERRARIUM_CONFIG: file, TERRARIUM_TEST_ADMIN: "invented-admin-token" };
     const first = await run({ env, logger: false });
     expect(first.url).toBe(`http://127.0.0.1:${port}`);
     const meta = (await (await fetch(`${first.url}/api/meta`)).json()) as {
@@ -34,7 +40,11 @@ describe("starting and stopping the server [REQ-030]", () => {
     expect(meta.harnesses.map((h) => h.id)).toEqual(["builtin"]);
     const made = await fetch(`${first.url}/api/worlds/import`, {
       method: "POST",
-      headers: { "content-type": "application/json", "x-terrarium-user": "yeonsu" },
+      headers: {
+        "content-type": "application/json",
+        "x-terrarium-user": "yeonsu",
+        "x-terrarium-admin-token": "invented-admin-token",
+      },
       body: JSON.stringify({ source: "sample", name: "남는 세계" }),
     });
     expect(made.status).toBe(200);
