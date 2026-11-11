@@ -14,7 +14,7 @@ items:
     status: done
     resolution: "CI를 병렬 조각(테스트 12 + 느린 파일 둘 따로)과 게이트 작업으로 나누고 커버리지는 따로 잰다 (ADR-0140). 시간 초과 11건은 계측 없는 조각에서, 성능 단언은 계측 없이 통과한다. 모든 게이트 작업이 초록인 실행을 PR에서 확인했다"
   - id: TD-0002
-    title: "커버리지 하한 미달 단위가 여섯 남았다: core.world 96.40/98.5 (528개), core.tools 96.35/98 (114), core.physics 96.50/97 (44), server.runtime 96.73/97 (21), core.sources.worldgen 97.80/98 (13), web.logic 96.47/96.5 (7). 다 채우면 coverage-floors를 게이트로 올린다 (ADR-0142)"
+    title: "커버리지 하한 미달 단위가 하나 남았다: core.world 97.41/98.5 (290개 모자람; 나머지 단위는 모두 하한 이상). 다 채우면 coverage-floors를 게이트로 올린다 (ADR-0142, ADR-0143)"
     severity: high
     cost: "CI가 초록이 되면 커버리지를 재고, 하한 아래인 단위에 테스트를 더한다"
     created: "2026-11-10"
@@ -61,5 +61,19 @@ items:
     severity: low
     cost: "요구사항을 파일로 쪼개고 색인을 생성물로 바꾸고 잠금 파일을 폴더별로 나눈다"
     created: "2026-11-10"
+    due: "2026-12-08"
+    status: open
+  - id: TD-0009
+    title: "기본 물리 v1의 알려진 예외 여섯 건(전력 사슬이 한 걸음 늦음, 냉각수 누출 때 +15.7 %) — KNOWN_V1_EXCEPTIONS에 적혀 있다"
+    severity: medium
+    cost: "기본 물리 v2에서 전기 패스를 냉각·플랜트 뒤에 한 번 더 돌린다"
+    created: "2026-11-11"
+    due: "2026-12-15"
+    status: open
+  - id: TD-0010
+    title: "깊은 OS 흉내가 GNU와 아직 다른 곳: sed의 n·N·w·addr,+N, awk의 getline·함수 정의·파이프 출력, sort -M/-z/-g, cp·mv 여러 원본·-r, ls -a·-p, stat 형식, rm -d, truncate 상대 크기, df/free 열 너비"
+    severity: low
+    cost: "빠진 동작을 진짜 도구 출력과 맞춰 구현하거나 outside로 거절한다 (service-os-layer.md '흉내 밖')"
+    created: "2026-11-11"
     due: "2026-12-08"
     status: open

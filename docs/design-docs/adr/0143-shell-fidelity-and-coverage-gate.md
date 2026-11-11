@@ -13,7 +13,7 @@ amends_tests:
 test_change_reason: awk의 RS를 거절하던 시험은 RS를 실제로 구현하면서 반대 동작을 확인하는 시험으로 바뀐다. 거절은 GNU와 다른 점이었고, 같은 시험 파일의 새 시험이 문자·문단·정규식 RS를 진짜 awk 출력과 맞춰 본다. 옵션 쓸어보기 시험은 명령 표를 코어 안쪽에서 끌어오던 것을 명령 이름 목록으로 바꿔 구조 검사(ARCH011)를 지키고, 확인하는 동작은 같다.
 touches_protected:
   - harness/config/test-lock.json
-decision_hash: cf9b5d0af7da9ba6
+decision_hash: 9d20bbdc8b358c86
 ---
 # ADR-0143 깊은 OS 흉내를 GNU에 더 가깝게 하고 커버리지 하한을 채운다
 
@@ -31,3 +31,5 @@ ADR-0117 결정 4는 GNU와 다른 동작을 거절하거나 문서에 적도록
 
 ## 결과
 - 새 시험은 모두 REQ-098·REQ-111 등 제목을 달고 잠금에 올린다.
+- 죽은 코드로 `db-health.ts`의 `clusterSummary`(호출처 없음)를 지웠다. 동작은 같다.
+- **게이트는 올리지 않았다.** 단위 여섯 중 다섯이 하한을 넘었고 `core.world`만 97.41/98.5(290개 모자람)이다. 거짓으로 채우지 않고 `coverage-floors`는 게이트 밖에 둔다. TD-0002 제목을 남은 몫으로 고쳤고 기한(2026-11-21)은 그대로다. 나머지는 `world/os`의 분기와 `host-os`·`site-dr`·`site-act`의 오류 길이다.
