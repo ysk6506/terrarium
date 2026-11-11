@@ -188,6 +188,7 @@ export {
 } from "./next-step";
 export * as operationWords from "./operation";
 export * as presets from "./presets";
+export * as processCompare from "./process-compare";
 export { quickDraft, quickOperation } from "./quick-draft";
 export { type HarmRow, harmRows, withHarm } from "./quick-harm";
 export {

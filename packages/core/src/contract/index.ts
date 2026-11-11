@@ -69,6 +69,17 @@ export {
   SavePresetBody,
   type SavePresetRequest,
 } from "./presets";
+export {
+  type CurrentProcessView,
+  type OntologyExperimentOption,
+  PROCESS_WHAT_MAX,
+  PROCESS_WHO_MAX,
+  type ProcessCompareView,
+  PutCurrentProcessBody,
+  type PutCurrentProcessRequest,
+  type WorldOntologyQueryParams,
+  type WorldOntologyView,
+} from "./process";
 export type { EscalationAnswerRequest } from "./requests";
 export {
   AddAgentVersionBody,

@@ -1,7 +1,6 @@
 /**
- * 이끼의 화면 등록부 (REQ-103, ADR-0124): 라우트마다 한 칸. 이름·한 줄 설명·처음 질문 셋·할 수 있는 동작이 여기 있고,
- * 화면 컴포넌트는 `useMossScreen`으로 읽기와 핸들러를 붙인다. 순수한 데이터라 검사기(`moss` 검사)가 그대로 읽는다.
- * 라우트를 더하면 여기에 칸이 없을 때 MOSS001이 막는다.
+ * 이끼의 화면 등록부 (REQ-103, ADR-0124): 라우트마다 한 칸. 이름·한 줄 설명·처음 질문 셋·동작이 여기 있고 화면 컴포넌트는
+ * `useMossScreen`으로 읽기와 핸들러를 붙인다. 순수한 데이터라 `moss` 검사가 읽고, 칸이 없는 라우트는 MOSS001이 막는다.
  */
 import type { PageName } from "../logic";
 import type { ActionSpec, ScreenSpec } from "./types";
@@ -33,10 +32,7 @@ export const GLOBAL_ACTIONS: readonly ActionSpec[] = [
   ]),
   nav("go-benchmarks", "벤치마크 열기", { name: "benchmarks" }, ["벤치마크", "순위표"]),
   nav("go-connections", "연결 열기", { name: "connections" }, ["연결 목록", "하네스 연결"]),
-  nav("go-operation-guide", "운영 모드 안내 열기", { name: "operationGuide" }, [
-    "운영 모드",
-    "운영 모드 안내",
-  ]),
+  nav("go-operation-guide", "운영 모드 안내 열기", { name: "operationGuide" }, ["운영 모드"]),
   nav("go-settings", "설정 열기", { name: "settings" }, ["설정", "환경설정"]),
   nav("go-new-world", "새 세계 만들기", { name: "newWorld" }, ["새 세계", "세계 만들"]),
   nav("go-new-experiment", "새 실험 화면 열기", { name: "newExperiment" }, ["새 실험"]),
@@ -212,6 +208,14 @@ export const SCREENS: Readonly<Record<PageName, ScreenSpec>> = {
         aliases: ["이 시나리오로 실험"],
       },
     ],
+  },
+  scenarioProcess: {
+    route: "scenarioProcess",
+    title: "지금 하는 방식",
+    oneLine: "사람이 지금 누가 뭘 하는지 단계로 적어요. 결과에서 에이전트와 나란히 놓여요.",
+    stateLabel: "적고 있는 표",
+    questions: trio("적은 값은 어디에 쓰여요?", "사람 수는 어떻게 세요?", "종류는 뭐가 있어요?"),
+    actions: [],
   },
   experiments: {
     route: "experiments",
@@ -480,6 +484,8 @@ export function findAction(route: PageName, id: string): ActionSpec | undefined 
 }
 
 /** 검사기가 JSON으로 읽어 가는 모양 (`harness/src/checks/moss.ts`). */
+const dumped = (a: ActionSpec) => ({ id: a.id, kind: a.kind, static: Boolean(a.go || a.steps) });
+
 export function registryDump() {
   return {
     screens: SCREEN_LIST.map((s) => ({
@@ -487,12 +493,8 @@ export function registryDump() {
       title: s.title,
       oneLine: s.oneLine,
       questions: s.questions,
-      actions: s.actions.map((a) => ({ id: a.id, kind: a.kind, static: Boolean(a.go || a.steps) })),
+      actions: s.actions.map(dumped),
     })),
-    global: GLOBAL_ACTIONS.map((a) => ({
-      id: a.id,
-      kind: a.kind,
-      static: Boolean(a.go || a.steps),
-    })),
+    global: GLOBAL_ACTIONS.map(dumped),
   };
 }

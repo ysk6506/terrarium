@@ -3,7 +3,7 @@
   "webHash": "a9a31f6d91ac505f",
   "scores": {
     "useful": 100,
-    "usable": 97,
+    "usable": 97.1,
     "desirable": 91.9,
     "findable": 100,
     "accessible": 77,
@@ -59,6 +59,10 @@
       "topology": {
         "ok": true,
         "actions": 5
+      },
+      "process-compare": {
+        "ok": true,
+        "actions": 10
       }
     },
     "clean": {

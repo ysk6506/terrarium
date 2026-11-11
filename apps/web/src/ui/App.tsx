@@ -57,6 +57,9 @@ const ConnectionsPage = lazy(() =>
 const ExperimentPage = lazy(() =>
   import("./pages/experiment").then((m) => ({ default: m.ExperimentPage })),
 );
+const ScenarioProcessPage = lazy(() =>
+  import("./pages/process-table").then((m) => ({ default: m.ScenarioProcessPage })),
+);
 const NewExperimentPage = lazy(() =>
   import("./pages/new-experiment").then((m) => ({ default: m.NewExperimentPage })),
 );
@@ -92,6 +95,8 @@ function pageView(page: Page): ReactNode {
       return <ScenariosPage />;
     case "scenario":
       return <ScenarioEditorPage id={page.id} />;
+    case "scenarioProcess":
+      return <ScenarioProcessPage id={page.id} />;
     case "experiments":
       return <ExperimentsPage />;
     case "newExperiment":
