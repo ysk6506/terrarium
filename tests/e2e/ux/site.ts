@@ -47,8 +47,12 @@ export async function findIds(base: string): Promise<Ids> {
     "/api/scenarios",
   );
   const experiments = await json<ExperimentItem[]>(base, "/api/experiments");
-  const root = experiments.find((e) => !e.experiment.parentId && e.status === "completed");
   const forked = experiments.find((e) => e.experiment.parentId && e.status === "completed");
+  // The experiment the fork came from is the ordinary one (the `run` journey's); another journey may have left a root
+  // experiment of a different kind (a web API one), whose page is not the page a person reads results on.
+  const root =
+    experiments.find((e) => e.experiment.id === forked?.experiment.parentId) ??
+    experiments.find((e) => !e.experiment.parentId && e.status === "completed");
   if (!worlds[0] || !scenarios[0] || !root || !forked)
     throw new Error("여정이 남겨야 할 세계, 시나리오, 실험이 없다");
   const view = await json<{ runs: Array<{ id: string }> }>(

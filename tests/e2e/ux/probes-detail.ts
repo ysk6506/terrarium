@@ -150,7 +150,9 @@ async function hoverSome(
     await page.mouse.move(0, 0);
     await page.waitForTimeout(220);
     const before = await b.evaluate(look);
-    await b.hover({ timeout: 2000 }).catch(() => undefined);
+    // The pointer goes to the middle of the button directly: `hover()` waits for animation frames to settle, which a
+    // software-rendered 3D screen cannot give in time, and the wait is not what is being measured.
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await page.waitForTimeout(260);
     const after = await b.evaluate(look);
     tried++;
