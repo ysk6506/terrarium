@@ -4,11 +4,11 @@ kind: reference
 status: active
 last_verified: 2026-11-11
 verification_log:
-  - "2026-11-11: ADR-0150 링크"
   - "2026-11-11: ADR-0150 제목"
   - "2026-11-11: 소스 관리 문서와 ADR-0151 링크"
   - "2026-11-11: ADR-0152 링크"
   - "2026-11-11: ADR-0153 링크"
+  - "2026-11-11: ADR-0154 링크"
 ---
 # 문서 색인
 
@@ -223,6 +223,7 @@ verification_log:
 - [0151 소스는 주기로 동기화하고, 적용은 안전장치를 거치며, 실험은 세계의 판에 묶인다](design-docs/adr/0151-source-sync-schedule-safeguards-pinned-versions.md)
 - [0152 현실에서 만든 세계는 관리자가 다루고 복사해서 실험하며, 엑셀과 SPL이 첫 길이다](design-docs/adr/0152-reality-worlds-admin-fork-excel-spl.md)
 - [0153 운영 모드의 세계는 고가용으로 설계하고, 오픈 베타에 넣는다](design-docs/adr/0153-operation-mode-worlds-are-highly-available-open-beta.md)
+- [0154 현실 데이터는 수천만 개체까지 본다 — 줄로 저장하고, 범위로 보고 복사하며, 재서 정한다](design-docs/adr/0154-reality-scale-tens-of-millions-rows-scopes-measure.md)
 - [0122 세계 인기 순서·좋아요·칭호, 그리고 계급 모델 — 점수는 서버가 기록에서 세고, 칭호는 한 번 얻으면 안 잃고, 계급은 아직 화면에 없다](design-docs/adr/0122-world-popularity-likes-titles.md)
 - [0121 애플리케이션 층을 코어 모델로 올리고 서비스 호출 그래프를 넣는다](design-docs/adr/0121-application-layer-and-calls.md)
 - [0116 진짜 호스트 섞기 (폐기, 0117로 대체)](design-docs/adr/0116-real-hosts-in-the-world.md)
