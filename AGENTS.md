@@ -21,6 +21,7 @@ verification_log:
 
 ## 시작하기 (3분)
 
+0. 제품 설계 한 장: [product-design.md](docs/design-docs/product-design.md) — 제품의 값, 원칙 여섯, 지금 유효한 결정, 순서. 설계와 구현 전에 먼저 읽는다.
 1. 요구사항: [requirements.md](docs/product-specs/requirements.md) — 모든 요구사항은 `REQ-NNN`.
 2. 구조: [ARCHITECTURE.md](ARCHITECTURE.md) — 단위와 의존 방향.
 3. 문서 색인: [docs/index.md](docs/index.md)
