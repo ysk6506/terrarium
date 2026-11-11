@@ -433,6 +433,9 @@ class Parser {
       return { t: "call", name, args };
     }
     if (name === "length") return { t: "call", name, args: [] };
+    const written = this.toks[this.i - 1];
+    if (written?.k === "name" && written.call && name !== "in")
+      throw new AwkSyntax(`function ${name} never defined`);
     if (this.isP("[")) return { t: "idx", name, sub: this.subscript() };
     return { t: "var", name };
   }

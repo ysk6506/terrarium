@@ -4,7 +4,7 @@ export type Tok =
   | { readonly k: "num"; readonly v: number }
   | { readonly k: "str"; readonly v: string }
   | { readonly k: "re"; readonly v: string }
-  | { readonly k: "name"; readonly v: string }
+  | { readonly k: "name"; readonly v: string; readonly call?: true }
   | { readonly k: "p"; readonly v: string }
   | { readonly k: "nl" };
 
@@ -134,7 +134,14 @@ function readWordOrPunct(src: string, i: number): { end: number; tok: Tok } {
   const num = NUMBER.exec(rest);
   if (num) return { end: i + num[0].length, tok: { k: "num", v: Number(num[0]) } };
   const name = NAME.exec(rest);
-  if (name) return { end: i + name[0].length, tok: { k: "name", v: name[0] } };
+  if (name) {
+    const end = i + name[0].length;
+    // a name written against its "(" is a call: `f(1)`, where `f (1)` would be a concatenation
+    return {
+      end,
+      tok: { k: "name", v: name[0], ...(src.charAt(end) === "(" ? { call: true as const } : {}) },
+    };
+  }
   const p = PUNCT.find((q) => src.startsWith(q, i));
   if (!p)
     throw new AwkSyntax(`syntax error at source line 1: unexpected character '${src.charAt(i)}'`);

@@ -72,6 +72,7 @@ export class Rt {
   steps = 0;
   exitCode: number | undefined;
   private seed = 1;
+  private given = 0;
   private readonly regexes = new Map<string, RegExp>();
   readonly ranges = new Map<number, boolean>();
 
@@ -117,8 +118,12 @@ export class Rt {
     return this.seed / 2_147_483_648;
   }
 
-  reseed(n: number): void {
+  /** Start the sequence again from `n`; the answer is the seed before (0 at the start), as `srand` returns it. */
+  reseed(n: number): number {
+    const before = this.given;
+    this.given = n;
     this.seed = Math.trunc(n) || 1;
+    return before;
   }
 
   setRecord(line: string): void {
@@ -346,10 +351,7 @@ const BUILTINS: Readonly<Record<string, Builtin>> = {
   cos: num1(Math.cos),
   atan2: (rt, a) => Math.atan2(toNum(a[0] ? ev(rt, a[0]) : 0), toNum(a[1] ? ev(rt, a[1]) : 0)),
   rand: (rt) => rt.random(),
-  srand: (rt, a) => {
-    rt.reseed(toNum(a[0] ? ev(rt, a[0]) : 0));
-    return 0;
-  },
+  srand: (rt, a) => rt.reseed(toNum(a[0] ? ev(rt, a[0]) : 0)),
 };
 
 function callBuiltin(rt: Rt, name: string, args: Expr[]): Val {
