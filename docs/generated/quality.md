@@ -24,7 +24,7 @@
 
 ## 단위별
 
-단위 수 등급별: D 1, C 13, B 19, A 2. 커버리지 기록: 없음 (모든 단위가 "모름"). 끄기 종류별: biome-ignore 41, eslint-disable 0, ts-ignore 0, ts-expect-error 0, ts-nocheck 0, test-skip 0, continue-on-error 4.
+단위 수 등급별: D 1, C 13, B 19, A 2. 커버리지 기록: 없음 (모든 단위가 "모름"). 끄기 종류별: biome-ignore 40, eslint-disable 0, ts-ignore 0, ts-expect-error 0, ts-nocheck 0, test-skip 0, continue-on-error 4.
 
 | 단위 | 등급 | 커버리지 (값 / 하한) | 끄기 | 한도 90% 넘음 (초과) | 열린 부채 (가장 이른 기한) | 가장 오래된 문서 | 이유 |
 |---|---|---|---|---|---|---|---|
@@ -39,7 +39,7 @@
 | server.adapters | C | 모름 / 97.0 | 0 | 11 (0) | 0 | 2026-11-05 (harness-e2e.md) | 한도 90% 넘음 11 |
 | server.runtime | C | 모름 / 97.0 | 0 | 10 (0) | 0 | 2026-11-05 (capacity.md) | 한도 90% 넘음 10 |
 | web.logic | C | 모름 / 96.5 | 0 | 27 (0) | 0 | 2026-11-06 (config-scenarios.md) | 한도 90% 넘음 27 |
-| web.ui | C | — | 37 | 58 (0) | 2 (2026-12-08) | 2026-11-07 (airflow-map.md) | 열린 부채 2, 한도 90% 넘음 58, 끄기 37 |
+| web.ui | C | — | 36 | 60 (0) | 2 (2026-12-08) | 2026-11-07 (airflow-map.md) | 열린 부채 2, 한도 90% 넘음 60, 끄기 36 |
 | harness | C | 모름 / 97.5 | 0 | 12 (0) | 0 | 2026-11-11 (harness-guide.md) | 한도 90% 넘음 12 |
 | (단위 밖) | C | — | 4 | 0 (0) | 9 (2026-11-24) | 2026-11-10 (ARCHITECTURE.md) | 열린 부채 9 |
 | core.kernel | B | 모름 / 99.5 | 0 | 0 (0) | 0 | — | 커버리지 모름 |
