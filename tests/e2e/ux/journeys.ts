@@ -257,12 +257,17 @@ async function cancel(c: Context): Promise<void> {
   }
 }
 
+/**
+ * Opens the oldest finished "알람 추적" experiment, which is the one `run` made: the list is newest first, and a
+ * stopped experiment is no longer among the finished (ADR-0163), so the newest finished one is `repeat`'s, whose
+ * three repeats a fork would inherit.
+ */
 async function openFinishedExperiment(c: Context): Promise<void> {
   const { page } = c.v;
   await home(c);
   await c.d.click(nav(page, "실험"));
   await c.d.click(page.getByRole("button", { name: "완료", exact: true }));
-  const row = page.getByRole("link", { name: /알람 추적/ }).first();
+  const row = page.getByRole("link", { name: /알람 추적/ }).last();
   await c.d.click(row);
   await expectPath(c, /^\/experiments\/e-/);
   await waitForResult(page);

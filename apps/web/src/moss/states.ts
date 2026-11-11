@@ -13,7 +13,7 @@ import type {
 } from "@terrarium/core/contract";
 import type { ScenarioRecord } from "@terrarium/core/experiments";
 import type { ShapeSpec } from "@terrarium/core/sources/worldgen";
-import { type experiment, percent, scoreText, simTime } from "../logic";
+import { type experiment, percent, scoreText, simTime, stoppedWords } from "../logic";
 
 const EVENTS = 30;
 
@@ -56,7 +56,10 @@ const runLine = (r: ExperimentSummary) => ({
   id: r.experiment.id,
   이름: r.experiment.name,
   상태: r.status,
-  진행: `${r.progress.finished}/${r.progress.total}회`,
+  진행:
+    r.status === "cancelled"
+      ? stoppedWords(r.progress)
+      : `${r.progress.finished}/${r.progress.total}회`,
   합격률: r.progress.completed > 0 ? percent(r.passRate) : null,
   평균_점수: r.meanScore === undefined ? null : `${r.meanScore.toFixed(1)}점`,
 });

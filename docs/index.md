@@ -4,11 +4,11 @@ kind: reference
 status: active
 last_verified: 2026-11-11
 verification_log:
-  - "2026-11-11: ADR-0159 제목"
   - "2026-11-11: ADR-0160 링크"
   - "2026-11-11: 생김새 견본 시험 문서와 ADR-0161 링크"
   - "2026-11-11: ADR-0162 링크"
   - "2026-11-11: ADR-0164 링크"
+  - "2026-11-11: ADR-0163 링크"
 ---
 # 문서 색인
 
@@ -231,6 +231,7 @@ verification_log:
 - [0157 모델은 층마다 표준에서 뼈대를 빌리고, 종류는 세 층이며, 가상화 플랫폼은 대응 표로 받는다](design-docs/adr/0157-model-standards-three-tiers-platform-mapping.md)
 - [0161 생김새 견본 시험에서 막힌 열아홉 곳을 메운다 — 손질은 여덟 가지, 딸린 요청, 다듬어 견주기, 묶음의 출처](design-docs/adr/0161-shape-sample-test-fills-the-gaps.md)
 - [0164 ECMP는 장비 설정에서 읽고, 위치 엑셀은 목록으로 받고, VMware의 쿠버네티스와 VDI 둘을 대응 표에 넣는다](design-docs/adr/0164-ecmp-from-device-config-list-excel-k8s-vdi.md)
+- [0163 멈춘 실행이 하나라도 있는 실험은 "완료"가 아니라 "멈춤"으로 읽힌다](design-docs/adr/0163-a-stopped-experiment-reads-stopped.md)
 - [0162 포크 여정은 포크만 재고, 반복은 자기 여정을 가진다](design-docs/adr/0162-fork-journey-measures-the-fork-repeats-have-their-own.md)
 - [0160 시드당 반복을 지을 때 정한 말과 짜임, 그리고 ADR-0158의 시험 수정 목록](design-docs/adr/0160-repeats-per-seed-built-words-and-wiring.md)
 - [0159 관문의 브라우저 설치는 시스템 꾸러미 없이 하고, 다시 해 본다](design-docs/adr/0159-retry-browser-install-in-ci.md)

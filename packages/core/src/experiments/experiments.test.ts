@@ -186,7 +186,9 @@ describe("run lifecycle [REQ-030]", () => {
     expect(experimentStatus([run("running"), run("queued")])).toBe("running");
     expect(experimentStatus([run("completed"), run("queued")])).toBe("running");
     expect(experimentStatus([run("completed"), run("failed")])).toBe("completed");
-    expect(experimentStatus([run("failed"), run("cancelled")])).toBe("failed");
+    expect(experimentStatus([run("failed"), run("cancelled")])).toBe("cancelled");
+    expect(experimentStatus([run("completed"), run("cancelled")])).toBe("cancelled");
+    expect(experimentStatus([run("failed"), run("failed")])).toBe("failed");
     expect(experimentStatus([run("cancelled"), run("cancelled")])).toBe("cancelled");
     expect(
       progressOf([

@@ -1,6 +1,6 @@
 {
   "measuredOn": "2026-11-11",
-  "webHash": "0e0d5c575f0f5a7e",
+  "webHash": "fe12f3ca7ce2052c",
   "scores": {
     "useful": 100,
     "usable": 100,
@@ -86,8 +86,8 @@
       "ok": 3
     },
     "load": {
-      "kb": 824.7998046875,
-      "ms": 423,
+      "kb": 824.7919921875,
+      "ms": 382,
       "sceneDrawn": true
     },
     "reach": {
@@ -132,20 +132,20 @@
       "ok": 7
     },
     "voice": {
-      "tried": 1026,
-      "ok": 1026
+      "tried": 1022,
+      "ok": 1022
     },
     "oneThing": {
       "tried": 13,
       "ok": 13
     },
     "buttons": {
-      "tried": 175,
-      "ok": 175
+      "tried": 176,
+      "ok": 176
     },
     "targets": {
-      "tried": 538,
-      "ok": 538
+      "tried": 539,
+      "ok": 539
     },
     "disabledWhy": {
       "tried": 12,

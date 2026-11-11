@@ -93,11 +93,15 @@ export function progressOf(runs: readonly RunRecord[]): Progress {
   };
 }
 
-/** Queued until something starts; running while anything is left; then what most describes the outcome. */
+/**
+ * Queued until something starts; running while anything is left. Once every run is over a stopped run decides: the
+ * experiment reads "cancelled" (멈춤) if a person stopped any of it, since it did not run what it planned (ADR-0163);
+ * otherwise "completed" if any run completed, and "failed" if none did.
+ */
 export function experimentStatus(runs: readonly RunRecord[]): ExperimentStatus {
   const p = progressOf(runs);
   if (p.total === 0 || (p.finished === 0 && p.running === 0)) return "queued";
   if (p.finished < p.total) return "running";
-  if (p.completed > 0) return "completed";
-  return p.cancelled === p.total ? "cancelled" : "failed";
+  if (p.cancelled > 0) return "cancelled";
+  return p.completed > 0 ? "completed" : "failed";
 }
