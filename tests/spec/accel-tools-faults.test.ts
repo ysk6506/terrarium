@@ -6,7 +6,13 @@ import { Catalog } from "@terrarium/core/catalog";
 import type { Facades } from "@terrarium/core/facades";
 import { Physics } from "@terrarium/core/physics";
 import { TOOL_NAMES, Toolbox } from "@terrarium/core/tools";
-import { type Blueprint, type EntityKind, type FaultType, World } from "@terrarium/core/world";
+import {
+  Accel,
+  type Blueprint,
+  type EntityKind,
+  type FaultType,
+  World,
+} from "@terrarium/core/world";
 import { describe, expect, test } from "vitest";
 import { accelLab, coolingLab, powerLab } from "./test-support/ladder-labs";
 
@@ -319,5 +325,55 @@ describe("a serving pool in trouble [REQ-107]", () => {
     const pool = data("job_status").pools[0];
     expect(pool.status).not.toBe("ok");
     expect(pool.why).toBeTypeOf("string");
+  });
+});
+
+describe("nvidia-smi, ibstat and dcgmi on a node in trouble, and on a host without the hardware [REQ-107]", () => {
+  function shellOn() {
+    const t = train();
+    const sh = (host: string, cmd: string) =>
+      new Toolbox(TOOL_NAMES).call(
+        "run_command",
+        { host, cmd },
+        { world: t.world, facades: {} as Facades },
+      ).data as { output: string; exitCode: number };
+    const gpu = t.world.index.ofKind("gpu")[0]?.id as string;
+    const server = String(t.world.index.entity(gpu).props.server);
+    return { ...t, sh, gpu, server };
+  }
+
+  test("a lost GPU is ERR! in the table, FAIL in dcgmi and the link counters show in ibstat", () => {
+    const { sh, inject, physics, gpu, server, world } = shellOn();
+    inject("gpu_xid_error", gpu);
+    const link = world.index.ofKind("ib_link").find((l) => String(l.props.server) === server);
+    inject("ib_link_flap", link?.id as string);
+    physics.run(40);
+    expect(sh(server, "nvidia-smi").output).toContain("ERR!");
+    expect(sh(server, "nvidia-smi").output).toContain("GPU is lost");
+    expect(sh(server, "dcgmi diag -r 1").output).toContain("Fail (Xid errors detected)");
+    expect(sh(server, "ibstat").output).toMatch(/State: (Active|Down)/);
+  });
+
+  test("a throttled GPU is Warn with a thermal note and P2 in the table; -q shows the slowdown", () => {
+    const { sh, inject, physics, server, world } = shellOn();
+    const g = world.index.ofKind("gpu").find((x) => String(x.props.server) === server);
+    inject("gpu_thermal_throttle", g?.id as string);
+    physics.run(900);
+    expect(sh(server, "dcgmi diag -r 1").output).toMatch(/Warn \(thermal throttling\)|Pass/);
+    expect(sh(server, "nvidia-smi -q -d TEMPERATURE,POWER").output).toContain("Max Power Limit");
+    expect(sh(server, "nvidia-smi").output).toContain("P");
+  });
+
+  test("a host without GPUs has no driver, no DCGM engine and no IB devices; other dcgmi commands are listed as missing", () => {
+    const { sh, server, world } = shellOn();
+    const plain = world.index
+      .ofKind("server")
+      .find((x) => x.id !== server && Accel.gpusOf(world.index, x.id).length === 0)?.id as string;
+    expect(sh(plain, "nvidia-smi")).toMatchObject({ exitCode: 9 });
+    expect(sh(plain, "dcgmi diag -r 1").output).toContain(
+      "Unable to connect to the DCGM host engine",
+    );
+    expect(sh(server, "dcgmi discovery -l").output).toContain("아직 못 해요");
+    expect(sh(plain, "ibstat")).toMatchObject({ exitCode: 1 });
   });
 });

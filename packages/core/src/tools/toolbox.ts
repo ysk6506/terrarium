@@ -72,12 +72,13 @@ export class Toolbox {
         error: `tool '${name}' is not available in this experiment (available: ${[...this.enabled].join(", ")})`,
       };
     }
-    const problems = validateArgs(spec.inputSchema, args ?? {});
+    const given = args ?? {};
+    const problems = validateArgs(spec.inputSchema, given);
     if (problems.length > 0) return { ok: false, error: problems.join("; ") };
     try {
       return {
         ok: true,
-        data: (HANDLERS[name] as (c: ToolContext, a: Args) => unknown)(ctx, args),
+        data: (HANDLERS[name] as (c: ToolContext, a: Args) => unknown)(ctx, given),
       };
     } catch (error) {
       return { ok: false, error: asTerrariumError(error).message };
