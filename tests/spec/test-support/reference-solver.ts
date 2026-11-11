@@ -4,6 +4,7 @@
  * answer); it is not an agent, is registered nowhere, and exists so that the grader can be held to "the right solution
  * scores 100 and every wrong variant scores less". `operator` never sees any of this.
  */
+import { Catalog } from "@terrarium/core/catalog";
 import {
   REFERENCE_PATHS,
   REFERENCE_VARIANTS,
@@ -151,6 +152,17 @@ function portIn(config: string, peer: readonly string[]): string {
   return /^interface (\S+)/.exec(mine ?? "")?.[1] ?? "";
 }
 
+/** The neighbor whose own section says `shutdown` (NX-OS), or "". */
+function nxShutNeighbor(config: string): string {
+  let neighbor = "";
+  for (const line of config.split("\n")) {
+    const found = /^\s+neighbor (\S+)\s*$/.exec(line);
+    if (found) neighbor = found[1] as string;
+    else if (neighbor && /^\s+shutdown\s*$/.test(line)) return neighbor;
+  }
+  return "";
+}
+
 function routeCmd(route: string | undefined): string {
   const m = /^(\S+\/\d+) via (\S+)$/.exec(route ?? "");
   return m ? `${m[1]} ${m[2]}` : "";
@@ -171,12 +183,20 @@ function rackShare(b: Bind): number {
   return rack ? Math.floor((rack.limitW - 350) / rack.servers.length) : 0;
 }
 
-/** A cap a third of the way from idle to maximum: the heat falls, the server stays up. */
+/** A cap a tenth of the way from idle to maximum: the heat falls far enough that a room with no cooling keeps its servers up. */
 function lowCap(b: Bind): number {
   const row = capRacks(b)
     .flatMap((r) => r.servers)
     .find((s) => s.id === nodeOf(b));
-  return row ? Math.floor(row.idleW + (row.maxW - row.idleW) / 3) : 0;
+  return row ? Math.floor(row.idleW + (row.maxW - row.idleW) / 10) : 0;
+}
+
+const CATALOG = new Catalog();
+
+/** The lowest setpoint the cooling unit the sheet wants turned down allows: its model says where it stops. */
+function minSetpoint(t: Truth, b: Bind): number {
+  const model = CATALOG.getOf(b.index.find(t.required)?.modelId ?? "", "cooling_unit");
+  return model.minSetpointC;
 }
 
 /** The replicas a pool can run, as the job status says. */
@@ -213,17 +233,19 @@ const fillString = (s: string, t: Truth, b: Bind): string =>
     .replaceAll("{vlan}", /^vlan (\d+)/m.exec(b.config)?.[1] ?? "")
     .replaceAll("{asn}", /^router bgp (\d+)/m.exec(b.config)?.[1] ?? "")
     .replaceAll("{shutNeighbor}", /neighbor (\S+) shutdown/.exec(b.config)?.[1] ?? "")
+    .replaceAll("{nxShutNeighbor}", () => nxShutNeighbor(b.config))
     .replaceAll("{routeCmd}", routeCmd(b.params.route))
     .replaceAll(/\{p\.(\w+)\}/g, (_, k: string) => b.params[k] ?? "")
     .replaceAll("{node}", nodeOf(b))
     .replaceAll("{rackShare}", () => String(rackShare(b)))
     .replaceAll("{lowCap}", () => String(lowCap(b)))
     .replaceAll("{poolReplicas}", () => String(poolReplicas(b)))
+    .replaceAll("{minSetpoint}", () => String(minSetpoint(t, b)))
     .replaceAll("{service}", t.service)
     .replaceAll("{required}", t.required)
     .replaceAll("{answer}", t.answerRoot);
 
-const NUMERIC = /^\{(rackShare|lowCap|poolReplicas)\}$/;
+const NUMERIC = /^\{(rackShare|lowCap|poolReplicas|minSetpoint)\}$/;
 
 function fillValue(v: unknown, t: Truth, b: Bind): unknown {
   if (typeof v === "string")
@@ -272,6 +294,7 @@ function expand(
     if (s.later) return [[s, base]];
     if (s.forEach === "targets") return t.nodes.map((n) => [s, { ...base, ...n }]);
     if (s.forEach === "critical") return t.critical.map((x) => [s, { ...base, target: x }]);
+    if (s.forEach === "required") return t.requiredAll.map((x) => [s, { ...base, target: x }]);
     if (s.forEach === "servers") return t.servers.map((x) => [s, { ...base, target: x }]);
     if (s.forEach?.startsWith("alarm:")) {
       const code = s.forEach.slice(6);
@@ -285,7 +308,7 @@ function expand(
 
 function runSteps(run: Play, steps: Array<[ReferenceStep, Bind]>, t: Truth, strict: boolean): void {
   for (const [s, bind] of steps) {
-    if (s.when !== undefined && fillString(s.when, t, { ...bind, last: run.last }) === "") continue;
+    if (s.when !== undefined && fillString(s.when, t, { ...bind, config: run.config, last: run.last }) === "") continue;
     if (s.later) {
       // the entities are the ones that have the alarm now, after the steps before this one
       const { later: _, ...now } = s;
@@ -329,7 +352,7 @@ function runSteps(run: Play, steps: Array<[ReferenceStep, Bind]>, t: Truth, stri
       continue;
     }
     if (s.tool === "shed") {
-      for (const id of run.servers ?? [])
+      for (const id of shedable(run, t))
         if (!t.critical.includes(id)) run.call("power_server", { id, action: "off" });
       continue;
     }
@@ -342,6 +365,28 @@ function runSteps(run: Play, steps: Array<[ReferenceStep, Bind]>, t: Truth, stri
     if (s.tool === "list_alarms" && r.ok) run.alarms = r.data as typeof run.alarms;
     if (!r.ok && strict && !s.refused) throw new Error(`${t.key}: ${s.tool} failed: ${r.error}`);
   }
+}
+
+/**
+ * The servers an operator switches off to bring a UPS under its limit: the ones its power runs through, not every server
+ * of the world. A sheet that names no UPS leaves the choice to the whole world.
+ */
+function shedable(run: Play, t: Truth): string[] {
+  if (!t.loadedUps) return [...(run.servers ?? [])];
+  const out: string[] = [];
+  const seen = new Set<string>([t.loadedUps]);
+  for (let queue = [t.loadedUps]; queue.length > 0; ) {
+    const next: string[] = [];
+    for (const to of queue)
+      for (const l of run.index.incoming(to, "power")) {
+        if (seen.has(l.from)) continue;
+        seen.add(l.from);
+        (run.index.entity(l.from).kind === "server" ? out : next).push(l.from);
+      }
+    queue = next;
+  }
+  // the sheet asks for one shed at least: when only the kept servers stand behind the UPS, any other server will do
+  return out.some((id) => !t.critical.includes(id)) ? out.sort() : [...(run.servers ?? [])];
 }
 
 /** The text a switch command printed. */

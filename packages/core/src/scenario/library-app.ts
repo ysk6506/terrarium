@@ -73,6 +73,8 @@ const NEED = {
     "서비스 메시와 서비스끼리의 호출이 이 세계에 있어야 해요 (애플리케이션 칩 '서비스 메시'가 필요해요)",
   sidecar: "사이드카가 이 세계에 없어요 (애플리케이션 칩 '서비스 메시'가 필요해요)",
   region: "리전이 이 세계에 없어요 (애플리케이션 칩 '멀티 리전'이 필요해요)",
+  oneRegion:
+    "사이드카가 있는 서비스가 한 리전에만 서 있어야 해요. 여러 리전에 걸친 서비스는 리전이 로테이션에서 빠졌다 돌아오는 시간이 있어 사이드카를 다시 시작해도 2분 안에 살릴 수 없어요",
 };
 
 function flapCase(index: BlueprintIndex): Case | string {
@@ -135,8 +137,15 @@ function meshCase(need: string, withCalls: boolean) {
 }
 
 function sidecarCase(index: BlueprintIndex): Case | string {
+  let spread = false;
   for (const service of sorted(index.ofKind("service"))) {
     const backends = appInstancesOf(index, service.id);
+    // a service across regions comes back only after its regions leave and re-enter the global balancer
+    const regions = new Set(backends.map((b) => regionOf(index, b.id)?.id));
+    if (regions.size >= 2) {
+      spread = true;
+      continue;
+    }
     const sidecars = backends
       .map((i) => index.incoming(i.id, "hosted_on").map((l) => index.find(l.from)))
       .map((list) => list.find((e) => e?.kind === "mesh_sidecar"))
@@ -151,7 +160,7 @@ function sidecarCase(index: BlueprintIndex): Case | string {
         where: `${service.name}의 사이드카 ${sidecars.length}개`,
       };
   }
-  return NEED.sidecar;
+  return spread ? NEED.oneRegion : NEED.sidecar;
 }
 
 function regionCase(index: BlueprintIndex): Case | string {
