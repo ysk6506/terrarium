@@ -103,13 +103,13 @@ const TASKS: ReadonlyArray<readonly [string, (ids: Ids) => string, Work]> = [
     "menu",
     (ids) => `/experiments/${ids.experiment}`,
     async (page, stops) => {
-      if (!(await tabTo(page, "공유", 60, stops))) return false;
+      if (!(await tabTo(page, "내보내기", 60, stops))) return false;
       await page.keyboard.press("Enter");
-      await page.getByRole("menuitem").first().waitFor({ timeout: 3000 });
+      await page.getByRole("dialog").waitFor({ timeout: 3000 });
       await page.keyboard.press("Escape");
-      await page.getByRole("menuitem").first().waitFor({ state: "detached", timeout: 3000 });
+      await page.getByRole("dialog").waitFor({ state: "detached", timeout: 3000 });
       return (
-        ((await page.evaluate(`(${FOCUS_VISIBLE})()`)) as Stop | null)?.name.includes("공유") ??
+        ((await page.evaluate(`(${FOCUS_VISIBLE})()`)) as Stop | null)?.name.includes("내보내기") ??
         false
       );
     },

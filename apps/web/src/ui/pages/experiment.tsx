@@ -1,252 +1,68 @@
 /**
- * One experiment (REQ-030, REQ-037, REQ-038, REQ-040): live progress while it runs, then the numbers,
- * what was learned, each run, and the ways onward: share it, change a condition and run it again,
- * add more runs, or stop it.
+ * One experiment (REQ-030, REQ-037, REQ-038, REQ-040, ADR-0171): live progress while it runs, then a result whose
+ * first screen answers three questions (did it do well, where were points lost, can the score be trusted) and whose
+ * other views are tabs in the address: 실행 (each run, and more of them), 업무 비교 and 세계 범위.
  */
 
-import type { ExperimentView, RunSummary } from "@terrarium/core/contract";
-import { repeatsOf, sizeProblemsOf } from "@terrarium/core/experiments";
+import type { ExperimentView } from "@terrarium/core/contract";
 import { withJosa } from "@terrarium/core/kernel";
 import { useState } from "react";
-import { dateText, hallTopology, statusLabel, stoppedWords } from "../../logic";
-import { experimentState, useMossActions, useMossScreen } from "../../moss";
-import { Go, useAction, useApp, useAsync, usePageTitle } from "../context";
-import {
-  Button,
-  Dialog,
-  Empty,
-  Failure,
-  Loading,
-  MenuButton,
-  NumberField,
-  PageHead,
-  Section,
-  Status,
-} from "../kit";
-import { CompareRuns } from "../topology/RunReplay";
+import { dateText, type ResultTab, resultWords, statusLabel } from "../../logic";
+import { experimentState, useMossScreen } from "../../moss";
+import { Go, useApp, useAsync, useNow, usePageTitle } from "../context";
+import { Button, Failure, Loading, PageHead, Status } from "../kit";
 import { EscalationCards } from "./escalation";
-import {
-  ConditionsPanel,
-  CriteriaTable,
-  EndReasons,
-  Findings,
-  Lineage,
-  ParentCard,
-  ResultFigures,
-  RunsTable,
-  SeedRows,
-} from "./experiment-parts";
-import { SubjectPanel } from "./experiment-subject";
+import { CancelButton, ShareButton } from "./experiment-actions";
+import { ExportDialog } from "./experiment-export";
+import { RunsTab } from "./experiment-runs";
+import { SummaryTab } from "./experiment-summary";
 import { OperationCards } from "./operation-card";
-import { ProcessSections } from "./process-compare";
+import { ProcessCompare } from "./process-compare";
+import { WorldOntology } from "./process-ontology";
 import { useLive } from "./useLive";
 
 const ACTIVE = new Set(["queued", "running"]);
 
-function ShareMenu({ view }: { readonly view: ExperimentView }) {
-  const { api, toast } = useApp();
-  const id = view.experiment.id;
-  const copy = async (text: string, done: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast(done);
-    } catch {
-      toast("복사하지 못했어요. 브라우저가 클립보드를 막고 있어요", "bad");
-    }
-  };
-  const shareLink = async () => {
-    try {
-      const share = await api.call("createShare", { params: { id }, body: {} });
-      await copy(share.url, "링크를 복사했어요. 받은 사람은 로그인 없이 보고서를 볼 수 있어요");
-    } catch (err) {
-      toast(err instanceof Error ? err.message : String(err), "bad");
-    }
-  };
-  const copyText = async () => {
-    try {
-      await copy(
-        await api.call("experimentReport", { params: { id }, query: { format: "text" } }),
-        "보고서 글을 복사했어요",
-      );
-    } catch (err) {
-      toast(err instanceof Error ? err.message : String(err), "bad");
-    }
-  };
-  return (
-    <MenuButton
-      label="공유"
-      icon="share"
-      items={[
-        {
-          label: "링크 복사",
-          hint: "로그인 없이 보고서가 열려요",
-          onSelect: () => void shareLink(),
-        },
-        {
-          label: "HTML 보고서 열기",
-          hint: "한 파일로 저장해 메일에 붙일 수 있어요",
-          onSelect: () =>
-            window.open(
-              api.url("experimentReport", { id }, { format: "html" }),
-              "_blank",
-              "noopener",
-            ),
-        },
-        { label: "글로 복사", hint: "메신저에 붙여 넣기 좋아요", onSelect: () => void copyText() },
-      ]}
-    />
-  );
-}
-
-function CancelButton({
+/** One sentence under the title: what was tested, who ran it and when, and how far it got. */
+function Meta({
   view,
-  onDone,
+  status,
 }: {
   readonly view: ExperimentView;
-  readonly onDone: (v: ExperimentView) => void;
+  readonly status: ExperimentView["status"];
 }) {
-  const { api } = useApp();
-  const { busy, run } = useAction();
-  const [asking, setAsking] = useState(false);
-  const remaining = view.progress.total - view.progress.finished;
-  // 이끼의 "실험 멈추기": 같은 호출이고, 확인은 이끼의 "이렇게 할게요" 카드가 해요 (REQ-103)
-  useMossActions("experiment", {
-    "exp-cancel": async () => {
-      const next = await run(
-        () => api.call("cancelExperiment", { params: { id: view.experiment.id } }),
-        "남은 실행을 멈췄어요",
-      );
-      if (next) onDone(next);
-    },
-  });
-  const cancel = async () => {
-    const next = await run(
-      () => api.call("cancelExperiment", { params: { id: view.experiment.id } }),
-      "남은 실행을 멈췄어요",
-    );
-    setAsking(false);
-    if (next) onDone(next);
-  };
+  const e = view.experiment;
+  const now = useNow();
+  const what = e.recipe.operation ? "운영 실험" : `${e.snapshot.scenarioName} 시나리오`;
   return (
     <>
-      <Button
-        kind="danger"
-        icon="stop"
-        data-moss-action="exp-cancel"
-        onClick={() => setAsking(true)}
-      >
-        멈추기
-      </Button>
-      {asking && (
-        <Dialog
-          title="남은 실행을 멈출까요?"
-          onClose={() => setAsking(false)}
-          actions={
-            <Button
-              data-moss-action="exp-cancel"
-              kind="danger"
-              busy={busy}
-              onClick={() => void cancel()}
-            >
-              {remaining}회 멈추기
-            </Button>
-          }
-        >
-          <p className="small">
-            끝난 실행의 결과는 그대로 남아요. 돌고 있는 실행은 바로 멈추고, 기다리는 실행은 빠져요.
-          </p>
-        </Dialog>
-      )}
+      <Status status={status} operation={e.recipe.operation !== undefined} /> {what},{" "}
+      {e.snapshot.worldName}에서. {withJosa(e.owner, "이")} {dateText(e.createdAt, now)}에 돌렸어요.{" "}
+      {resultWords.progressLine(status, view.progress)}.
     </>
-  );
-}
-
-function AddRuns({
-  view,
-  onDone,
-}: {
-  readonly view: ExperimentView;
-  readonly onDone: (v: ExperimentView) => void;
-}) {
-  const { api } = useApp();
-  const { busy, run } = useAction();
-  const [count, setCount] = useState(3);
-  const { seeds, repeats } = {
-    seeds: view.experiment.recipe.seeds.length,
-    repeats: repeatsOf(view.experiment.recipe),
-  };
-  const more = async (body: { count: number } | { repeats: number }, done: string) => {
-    const next = await run(
-      () => api.call("addRuns", { params: { id: view.experiment.id }, body }),
-      done,
-    );
-    if (next) onDone(next);
-  };
-  // each way of adding is held to the size limit before it is tried, and says why when it cannot be
-  const seedsWhy = sizeProblemsOf(seeds + count, repeats)[0];
-  const repeatsWhy = sizeProblemsOf(seeds, repeats + 1)[0];
-  return (
-    <div className="row" style={{ alignItems: "flex-end" }}>
-      <div style={{ width: 140 }}>
-        <NumberField
-          label="더 돌릴 횟수"
-          value={count}
-          min={1}
-          max={20}
-          step={1}
-          unit="회"
-          onChange={(v) => v !== undefined && setCount(Math.round(v))}
-        />
-      </div>
-      <Button
-        data-moss-skip="세부 조절"
-        busy={busy}
-        disabled={seedsWhy !== undefined}
-        why={seedsWhy}
-        onClick={() => void more({ count }, `${count}회를 더했어요`)}
-      >
-        같은 조건으로 더 돌리기
-        {repeats > 1 ? ` (실행 ${count * repeats}번)` : ""}
-      </Button>
-      <Button
-        data-moss-skip="세부 조절"
-        busy={busy}
-        disabled={repeatsWhy !== undefined}
-        why={repeatsWhy}
-        onClick={() => void more({ repeats: 1 }, `상황마다 한 번씩 더했어요`)}
-      >
-        {`상황마다 한 번씩 더 돌리기 (실행 ${seeds}번)`}
-      </Button>
-    </div>
   );
 }
 
 function Head({
   view,
+  status,
   onChange,
+  onExport,
 }: {
   readonly view: ExperimentView;
+  readonly status: ExperimentView["status"];
   readonly onChange: (v: ExperimentView) => void;
+  readonly onExport: () => void;
 }) {
   const e = view.experiment;
-  const active = ACTIVE.has(view.status);
   return (
     <PageHead
       crumbs={<Go to={{ name: "experiments" }}>실험</Go>}
       title={e.name}
-      lede={
-        <>
-          <Status status={view.status} operation={e.recipe.operation !== undefined} />{" "}
-          {withJosa(e.owner, "이")} {dateText(e.createdAt, Date.now())}에 만들었어요.{" "}
-          {view.status === "cancelled"
-            ? stoppedWords(view.progress)
-            : `${view.progress.finished}/${view.progress.total}회 끝`}
-          .
-        </>
-      }
+      lede={<Meta view={view} status={status} />}
       actions={
         <>
-          {view.canCancel && active && <CancelButton view={view} onDone={onChange} />}
+          {view.canCancel && ACTIVE.has(status) && <CancelButton view={view} onDone={onChange} />}
           <Go
             to={{ name: "newExperiment", forkOf: e.id }}
             className="btn btn-primary"
@@ -254,53 +70,47 @@ function Head({
           >
             조건 바꿔 다시 돌리기
           </Go>
-          <ShareMenu view={view} />
+          <Button data-moss-action="exp-export" onClick={onExport}>
+            내보내기
+          </Button>
+          <ShareButton view={view} />
         </>
       }
     />
   );
 }
 
-/** Two ticked runs and the button that lays them side by side. */
-function SideBySide({
+const TAB_LABELS: Readonly<Record<ResultTab, string>> = {
+  summary: "요약",
+  runs: "실행",
+  process: "업무 비교",
+  world: "세계 범위",
+};
+
+/** The four views as links, so each has an address and the back button goes back to the one before. */
+function Tabs({
+  id,
+  tab,
   runs,
-  worldId,
-  picked,
-  onPicked,
 }: {
-  readonly runs: readonly RunSummary[];
-  readonly worldId: string;
-  readonly picked: readonly string[];
-  readonly onPicked: (ids: readonly string[]) => void;
+  readonly id: string;
+  readonly tab: ResultTab;
+  readonly runs: number;
 }) {
-  const [open, setOpen] = useState(false);
-  const chosen = picked.flatMap((id) => runs.find((r) => r.id === id) ?? []);
-  const [a, b] = chosen;
   return (
-    <div style={{ marginTop: 16 }}>
-      <Button
-        data-moss-skip="세부 조절"
-        size="small"
-        disabled={!(a && b)}
-        why={hallTopology.TOPO_WORDS.pickTwo}
-        onClick={() => setOpen(true)}
-      >
-        {hallTopology.TOPO_WORDS.sideBySide}
-      </Button>
-      {open && a && b && (
-        <CompareRuns
-          worldId={worldId}
-          runs={[
-            { id: a.id, index: a.index },
-            { id: b.id, index: b.index },
-          ]}
-          onClose={() => {
-            setOpen(false);
-            onPicked([]);
-          }}
-        />
-      )}
-    </div>
+    <nav className="res-tabs" aria-label="결과 보기">
+      {(Object.keys(TAB_LABELS) as ResultTab[]).map((t) => (
+        <Go
+          key={t}
+          to={{ name: "experiment", id, tab: t }}
+          className="res-tab"
+          aria-current={t === tab ? "page" : undefined}
+          data-moss-skip="탭은 이끼가 '탭 열기'로 열어요"
+        >
+          {t === "runs" ? `${TAB_LABELS.runs} ${runs}번` : TAB_LABELS[t]}
+        </Go>
+      ))}
+    </nav>
   );
 }
 
@@ -315,21 +125,19 @@ function LiveStatus({
   return (
     <p className="sr-only" aria-live="polite">
       {statusLabel(status, Boolean(view.experiment.recipe.operation))},{" "}
-      {status === "cancelled"
-        ? stoppedWords(view.progress)
-        : `${view.progress.finished}/${view.progress.total}회 끝`}
+      {resultWords.progressLine(status, view.progress)}
     </p>
   );
 }
 
-/** 이끼가 이 실험을 읽고 "실행 열기"를 하는 길: 실행 표의 링크와 같은 `navigate` (REQ-103) */
-function useExperimentMoss(view: ExperimentView | undefined) {
+/** 이끼가 이 실험을 읽고 "실행 열기", "탭 열기", "내보내기"를 하는 길: 화면의 링크·단추와 같은 동작 (REQ-103) */
+function useExperimentMoss(view: ExperimentView | undefined, openExport: () => void) {
   const { navigate } = useApp();
   useMossScreen("experiment", {
     read: () => (view ? experimentState(view) : {}),
     summary: () =>
       view
-        ? `${view.experiment.name} · 남은 ${view.progress.total - view.progress.finished}회`
+        ? `${view.experiment.name} · 남은 ${view.progress.total - view.progress.finished}번`
         : undefined,
     run: {
       "exp-open-run": (a) => {
@@ -340,35 +148,38 @@ function useExperimentMoss(view: ExperimentView | undefined) {
         navigate({ name: "run", id: hit.id });
         return `${hit.index + 1}번째 실행을 열었어요`;
       },
+      "exp-tab": (a) => {
+        // the words the person used pick the tab: 업무 비교, 세계 범위, 실행, else the summary
+        const said = String(a.text ?? "");
+        const tab =
+          (Object.keys(TAB_LABELS) as ResultTab[]).find(
+            (t) => t !== "summary" && said.includes(TAB_LABELS[t]),
+          ) ?? "summary";
+        if (view) navigate({ name: "experiment", id: view.experiment.id, tab });
+        return `${TAB_LABELS[tab]} 탭을 열었어요`;
+      },
+      "exp-export": () => {
+        openExport();
+        return "내보내기를 열었어요";
+      },
     },
   });
 }
 
-function Figures({ view }: { readonly view: ExperimentView }) {
-  if (view.experiment.recipe.operation)
-    return (
-      <p className="small muted">
-        운영 실험은 실행마다 결과 화면에서 서비스 가용률, 놓친 알람, 탐지 지연을 봐요. 합격이나
-        점수는 없어요.
-      </p>
-    );
-  return (
-    <>
-      <ResultFigures a={view.analysis} />
-    </>
-  );
-}
-
-export function ExperimentPage({ id }: { readonly id: string }) {
+export function ExperimentPage({
+  id,
+  tab = "summary",
+}: {
+  readonly id: string;
+  readonly tab?: ResultTab | undefined;
+}) {
   const { api } = useApp();
-  const [picked, setPicked] = useState<readonly string[]>([]);
-  const pick = (runId: string) =>
-    setPicked((p) => (p.includes(runId) ? p.filter((x) => x !== runId) : [...p, runId].slice(-2)));
+  const [exporting, setExporting] = useState(false);
   const state = useAsync((signal) => api.call("getExperiment", { params: { id }, signal }), [id]);
   const view = state.data;
   usePageTitle(view?.experiment.name);
   const live = useLive(view, state.reload);
-  useExperimentMoss(view);
+  useExperimentMoss(view, () => setExporting(true));
   if (state.error && !view)
     return (
       <div className="page">
@@ -384,8 +195,8 @@ export function ExperimentPage({ id }: { readonly id: string }) {
   const runs = live?.runs.length ? live.runs : view.runs;
   const status = live?.summary?.status ?? view.status;
   return (
-    <div className="page page-full" data-status={status}>
-      <Head view={{ ...view, status }} onChange={state.set} />
+    <div className="page" data-status={status}>
+      <Head view={view} status={status} onChange={state.set} onExport={() => setExporting(true)} />
       <EscalationCards experimentId={id} />
       {view.experiment.recipe.operation && (
         <OperationCards
@@ -394,42 +205,15 @@ export function ExperimentPage({ id }: { readonly id: string }) {
           hours={view.experiment.recipe.operation.hours}
         />
       )}
-      <Figures view={view} />
       <LiveStatus view={view} status={status} />
-      <Findings items={view.analysis.findings} />
-      {view.analysis.parent && (
-        <ParentCard parent={view.analysis.parent} ready={view.analysis.progress.completed > 0} />
+      <Tabs id={id} tab={tab} runs={runs.length} />
+      {tab === "summary" && <SummaryTab view={view} runs={runs} status={status} />}
+      {tab === "runs" && <RunsTab view={view} runs={runs} live={live} onChange={state.set} />}
+      {tab === "process" && <ProcessCompare experimentId={id} finished={view.progress.finished} />}
+      {tab === "world" && (
+        <WorldOntology worldId={view.experiment.recipe.worldId} experimentId={id} />
       )}
-      <SeedRows runs={runs} analysis={view.analysis} />
-      <ProcessSections view={view} />
-      <Section title="실행" aside=<EndReasons analysis={view.analysis} />>
-        {runs.length === 0 ? (
-          <Empty title="아직 실행이 없어요" />
-        ) : (
-          <RunsTable
-            runs={runs}
-            live={live}
-            analysis={view.analysis}
-            picked={picked}
-            onPick={pick}
-          />
-        )}
-        {runs.length > 1 && (
-          <SideBySide
-            runs={runs}
-            worldId={view.experiment.recipe.worldId}
-            picked={picked}
-            onPicked={setPicked}
-          />
-        )}
-        <div style={{ marginTop: 16 }}>
-          <AddRuns view={view} onDone={state.set} />
-        </div>
-      </Section>
-      <CriteriaTable criteria={view.analysis.criteria} />
-      <SubjectPanel experiment={view.experiment} />
-      <ConditionsPanel view={view} />
-      <Lineage view={view} />
+      {exporting && <ExportDialog view={view} onClose={() => setExporting(false)} />}
     </div>
   );
 }
