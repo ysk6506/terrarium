@@ -13,13 +13,16 @@ covers:
   - packages/core/src/physics/facility-ext.ts
   - packages/core/src/session/operation/mtbf.ts
   - packages/core/src/world/site-dr.ts
-covers_hash: ad39c045ca2ca943
+  - packages/core/src/physics/laws.ts
+  - packages/core/src/physics/slots/registry.ts
+covers_hash: a5a7ad720edb7b48
 verification_log:
   - "2026-11-10: 물리 전수 조사와 모델 자리 설계 (ADR-0136)"
+  - "2026-11-10: 단계 0·1 코어 구현 상태 반영, 구현 여부 문장과 만드는 순서 갱신, covers 추가"
 ---
 # 물리 법칙이 닿는 자리와 모델 자리
 
-이 문서는 설계예요. 아직 구현하지 않았어요. 결정은 [ADR-0136](adr/0136-physics-inventory-and-model-slots.md), 앞선 결정은 [ADR-0095](adr/0095-digital-twin-and-model-plugins.md)(모델 플러그인, REQ-091)예요.
+이 문서는 설계예요. 단계 0(이음매)과 단계 1 코어는 구현했고, 지금 모습은 [physics-profile.md](physics-profile.md)에 있어요. 결정은 [ADR-0136](adr/0136-physics-inventory-and-model-slots.md), 앞선 결정은 [ADR-0095](adr/0095-digital-twin-and-model-plugins.md)(모델 플러그인, REQ-091)예요.
 
 ## 한 줄로
 
@@ -163,8 +166,8 @@ verification_log:
 
 | 단계 | 내용 | 세계가 달라지나 |
 |---|---|---|
-| 0 | 이음매: 지금 물리를 모델 자리 뒤로 옮기고 상수를 프로필 기본값으로 뽑음. 법칙 검사를 기본 모델에 걸음 | 아니요. `physics-golden` 시험이 비트까지 같아야 함 |
-| 1 | ① 숫자, ② 곡선, 날씨 표, 프로필 지문, "이 세계의 물리" 화면 | 고친 세계만 |
+| 0 (구현함) | 이음매: 지금 물리를 모델 자리 뒤로 옮기고 상수를 프로필 기본값으로 뽑음. 법칙 검사를 기본 모델에 걸음 | 아니요. `physics-golden` 시험이 비트까지 같아야 함 |
+| 1 (코어 구현함, 화면 아직) | ① 숫자, ② 곡선, 날씨 표, 프로필 지문, "이 세계의 물리" 화면 | 고친 세계만 |
 | 2 | 기본 물리 v2: 굵게 표시한 차이 여덟 가지 | 새 세계만 (옛 것은 v1) |
 | 3 | ③ 사이드카, 파이썬 도구, 답 기록, 모델 대 모델 | 끼운 세계만 |
 | 4 | 실제 센서 이력으로 숫자 자동 맞춤 (쌍둥이 ②) | 보정한 세계만 |

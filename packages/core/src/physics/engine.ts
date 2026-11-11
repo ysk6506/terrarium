@@ -22,6 +22,7 @@ import { updateDrs } from "./drs";
 import { updateFacility, updateSubstations } from "./facility-ext";
 import { advanceFirmware } from "./firmware";
 import { updateK8s } from "./k8s";
+import { breakerStep, tripSeconds } from "./models";
 import { updateHostOs } from "./os-physics";
 import { updateGenerators, updatePlant } from "./plant";
 import {
@@ -40,11 +41,11 @@ import { updateThermal } from "./thermal";
 export interface PhysicsOptions {
   /** Size of one simulation step in seconds. */
   readonly stepSeconds: number;
-  /** A breaker trips when its load exceeds capacity by this factor. */
-  readonly tripFactor: number;
+  /** A breaker trips when its load exceeds capacity by this factor; left out, the world's physics profile says (default 1.05). */
+  readonly tripFactor?: number;
 }
 
-export const DEFAULT_PHYSICS: PhysicsOptions = { stepSeconds: 10, tripFactor: 1.05 };
+export const DEFAULT_PHYSICS: PhysicsOptions = { stepSeconds: 10 };
 
 const CAUSE = "physics";
 const RANK: Record<Health, number> = { ok: 0, warning: 1, critical: 2 };
@@ -89,7 +90,7 @@ export class Physics {
     updateThermal(this.world, dt);
     updatePlant(this.world, dt);
     events.push(...updateFacility(this.world, dt));
-    events.push(...this.protect());
+    events.push(...this.protect(dt));
     if (events.length > 0) this.updateElectrical();
     events.push(...updateHostOs(this.world, dt));
     events.push(...updateDb(this.world, dt));
@@ -112,10 +113,10 @@ export class Physics {
     aggregateLoads(this.world, supply);
   }
 
-  private protect(): WorldEvent[] {
+  private protect(dt: number): WorldEvent[] {
     const events: WorldEvent[] = [];
     const pass = passOf(this.world);
-    this.tripBreakers(pass, events);
+    this.tripBreakers(pass, dt, events);
     for (const i of pass.plan.servers) {
       const state = pass.states[i] as StateOf<"server">;
       const model = pass.plan.models[i] as ServerModel;
@@ -127,15 +128,27 @@ export class Physics {
     return events;
   }
 
-  /** A breaker trips when its load is past what it can carry (by the trip factor). */
-  private tripBreakers(pass: Pass, events: WorldEvent[]): void {
+  /**
+   * A breaker trips when its load is past what it can carry (by the trip factor, on that very step). With a trip curve in
+   * the world's physics profile it holds on for the seconds the curve gives for the overload, then trips (REQ-113).
+   */
+  private tripBreakers(pass: Pass, dt: number, events: WorldEvent[]): void {
     const now = this.world.time();
+    const { physics } = this.world;
+    const factor = this.options.tripFactor ?? physics.base("power.protection").tripFactor;
+    const plain =
+      physics.curve("power.protection.tripTimeCurve") === undefined &&
+      !physics.isScoped("power.protection");
     for (const group of [pass.plan.pdus, pass.plan.panels]) {
       for (const i of group) {
         const state = pass.states[i] as StateOf<"pdu"> | StateOf<"power_panel">;
         const capacity = pass.plan.capacity[i] as number;
-        if (state.tripped || !(state.loadW > capacity * this.options.tripFactor)) continue;
+        if (state.tripped) continue;
         const target = (pass.plan.ents[i] as Entity).id;
+        const trips = plain
+          ? state.loadW > capacity * factor
+          : this.overloaded(state, { capacity, target, dt });
+        if (!trips) continue;
         const fault = {
           id: `trip-${target}-${Math.round(now)}`,
           type: "breaker_trip" as const,
@@ -145,6 +158,27 @@ export class Physics {
         events.push(this.world.apply({ type: "fault.add", fault }, CAUSE));
       }
     }
+  }
+
+  /** Whether a breaker trips now: past its factor, or, with a trip curve, out of the time the curve allows. */
+  private overloaded(
+    state: StateOf<"pdu"> | StateOf<"power_panel">,
+    at: { capacity: number; target: string; dt: number },
+  ): boolean {
+    const P = this.world.physicsAt("power.protection", at.target);
+    const ratio = at.capacity > 0 ? state.loadW / at.capacity : state.loadW > 0 ? Infinity : 0;
+    const seconds = tripSeconds(this.world, ratio);
+    if (seconds === undefined)
+      return state.loadW > at.capacity * (this.options.tripFactor ?? P.tripFactor);
+    const step = breakerStep(state.overload ?? 0, {
+      ratio,
+      dt: at.dt,
+      seconds,
+      coolS: P.breakerCoolS,
+    });
+    if (step.trips || step.heat <= 0) delete state.overload;
+    else state.overload = step.heat;
+    return step.trips;
   }
 
   private syncAlarms(): WorldEvent[] {

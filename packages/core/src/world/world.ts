@@ -6,12 +6,19 @@
  */
 import type { Catalog } from "@terrarium/core/catalog";
 import { InvalidValueError, NotFoundError } from "@terrarium/core/kernel";
+import {
+  type ResolvedPhysics,
+  resolveProfile,
+  type SlotId,
+  type SlotValues,
+} from "@terrarium/core/physics/slots";
 import type { AccelCommand } from "./accel-act";
 import type { AppCommand } from "./app-act";
 import type { Blueprint, EntityKind } from "./blueprint";
 import { cloneState } from "./clone";
 import { validateCommand } from "./command-check";
 import type { DbCommand } from "./db-act";
+import { faultsByPosition, groupByTarget, NO_FAULTS } from "./fault-lookup";
 import { type Fault, withParamDefaults } from "./faults";
 import type { FirmwareCommand } from "./firmware";
 import { reduceFirmware } from "./firmware-reduce";
@@ -24,17 +31,11 @@ import { setLinkAdmin, setLoad, setOutlet } from "./operator";
 import { type HostOs, OS_FAULT_TYPES } from "./os";
 import { type PreparedWorld, prepareWorld } from "./prepared";
 import { reduceHostAndService } from "./reduce-os";
+import { ScopeChains } from "./scope-chains";
 import type { SdnCommand } from "./sdn-act";
 import type { ServiceCommand } from "./service-act";
 import type { SiteCommand } from "./site-act";
-import {
-  type Alarm,
-  DEFAULT_OUTDOOR_C,
-  type EntityState,
-  initialState,
-  type StateOf,
-  type WorldState,
-} from "./state";
+import { type Alarm, type EntityState, initialState, type StateOf, type WorldState } from "./state";
 
 export type WorldCommand =
   | { readonly type: "power.set"; readonly target: string; readonly on: boolean }
@@ -137,8 +138,6 @@ export interface WorldPort extends WorldReader {
   apply(command: WorldCommand, cause: string): WorldEvent;
 }
 
-const NO_FAULTS: readonly Fault[] = Object.freeze([]);
-
 export class World implements WorldPort {
   readonly index: BlueprintIndex;
   private state: WorldState;
@@ -155,11 +154,18 @@ export class World implements WorldPort {
   private seq = 0;
   private netChanges = 0;
 
+  /** The physics this world runs on (REQ-113): its numbers, tables and weather. The default physics unless the blueprint says otherwise. */
+  readonly physics: ResolvedPhysics;
+  private readonly scopes: ScopeChains;
+
   private constructor(
     index: BlueprintIndex,
     readonly catalog: Catalog,
+    physics: ResolvedPhysics,
   ) {
     this.index = index;
+    this.physics = physics;
+    this.scopes = new ScopeChains(index);
     this.state = initialState(this.index, catalog);
     this.hosts = new HostRegistry(index, (id) => this.rawState(id));
   }
@@ -171,15 +177,23 @@ export class World implements WorldPort {
 
   /** Build a world on a blueprint that was checked and indexed already (shared with other worlds). */
   static fromPrepared(prepared: PreparedWorld, catalog: Catalog): World {
-    return new World(prepared.index, catalog);
+    return new World(prepared.index, catalog, resolveProfile(prepared.blueprint.physics));
   }
 
   time(): number {
     return this.state.t;
   }
 
+  /** Outdoor air: what a scenario set, else the weather table at this time, else the default of the weather slot. */
   outdoorC(): number {
-    return this.state.outdoorC ?? DEFAULT_OUTDOOR_C;
+    return this.state.outdoorC ?? this.physics.outdoorOrDefault(this.state.t);
+  }
+
+  /** The numbers of a physics slot for one thing: those the profile changed for it, its model or the places around it, else the world's. */
+  physicsAt<S extends SlotId>(slot: S, entityId: string): SlotValues[S] {
+    return this.physics.isScoped(slot)
+      ? this.physics.at(slot, this.scopes.of(entityId))
+      : this.physics.base(slot);
   }
 
   /** Move simulated time forward (physics calls this once per step). */
@@ -258,14 +272,7 @@ export class World implements WorldPort {
   }
 
   faultsOn(target: string): readonly Fault[] {
-    if (!this.faultsByTarget) {
-      this.faultsByTarget = new Map();
-      for (const fault of this.faults()) {
-        const list = this.faultsByTarget.get(fault.target);
-        if (list) list.push(fault);
-        else this.faultsByTarget.set(fault.target, [fault]);
-      }
-    }
+    this.faultsByTarget ??= groupByTarget(this.faults());
     return this.faultsByTarget.get(target) ?? NO_FAULTS;
   }
 
@@ -281,15 +288,7 @@ export class World implements WorldPort {
 
   /** The faults on each entity, in the order of `index.all()` (an empty list where there are none). */
   faultList(): ReadonlyArray<readonly Fault[]> {
-    if (!this.faultArray) {
-      const out: Array<readonly Fault[]> = new Array(this.index.all().length).fill(NO_FAULTS);
-      for (const fault of this.faults()) {
-        const at = this.index.positionOf(fault.target);
-        if (at === undefined) continue; // a fault on a cable
-        out[at] = [...(out[at] as readonly Fault[]), fault];
-      }
-      this.faultArray = out;
-    }
+    this.faultArray ??= faultsByPosition(this.index, this.faults());
     return this.faultArray;
   }
 
@@ -326,20 +325,14 @@ export class World implements WorldPort {
 
   /** Continue from a checkpoint taken on a world of the same blueprint and catalog. */
   adopt(checkpoint: WorldCheckpoint): void {
-    this.state = cloneState(checkpoint.state);
-    this.stateArray = undefined;
-    this.updating = undefined;
-    this.hosts.reset();
-    this.anyDown = undefined;
-    this.sortedAlarms = undefined;
-    this.faultsChanged();
-    this.netChanges++;
+    this.replaceState(checkpoint.state);
     this.seq = checkpoint.seq;
     this.log = [...checkpoint.log];
   }
 
-  restore(snapshot: WorldSnapshot): void {
-    this.state = cloneState(snapshot.state);
+  /** Take a copy of another state and drop everything derived from the old one. */
+  private replaceState(state: WorldState): void {
+    this.state = cloneState(state);
     this.stateArray = undefined;
     this.updating = undefined;
     this.hosts.reset();
@@ -347,6 +340,10 @@ export class World implements WorldPort {
     this.sortedAlarms = undefined;
     this.faultsChanged();
     this.netChanges++;
+  }
+
+  restore(snapshot: WorldSnapshot): void {
+    this.replaceState(snapshot.state);
     this.seq = snapshot.seq;
     this.log = this.log.filter((e) => e.seq <= snapshot.seq);
   }

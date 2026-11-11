@@ -8,6 +8,7 @@ import {
   type ExperimentStatus,
   experimentStatus,
   type Progress,
+  physicsOf,
   progressOf,
   type RecipeChange,
   type RunRecord,
@@ -54,6 +55,8 @@ export interface ParentComparison {
   readonly changes: readonly RecipeChange[];
   readonly scoreDelta?: number;
   readonly passRateDelta: number;
+  /** Set when the original ran on other physics (its fingerprint): scores are then not set side by side (REQ-113). */
+  readonly otherPhysics?: string;
   /** Whether the scores differ beyond both 95% intervals. */
   readonly clear: boolean;
 }
@@ -144,15 +147,19 @@ function compareWithParent(
   a: Omit<ExperimentAnalysis, "findings">,
   parent: ExperimentAnalysis,
 ): ParentComparison {
+  // runs on other physics are not set side by side (REQ-113): no score difference, only the change
+  const samePhysics = physicsOf(a.experiment) === physicsOf(parent.experiment);
   return {
     experimentId: parent.experiment.id,
     name: parent.experiment.name,
     changes: recipeDiff(parent.experiment.recipe, a.experiment.recipe),
-    ...(a.score && parent.score
+    ...(!samePhysics ? { otherPhysics: physicsOf(parent.experiment) } : {}),
+    ...(samePhysics && a.score && parent.score
       ? { scoreDelta: Math.round((a.score.mean - parent.score.mean) * 10) / 10 }
       : {}),
-    passRateDelta: Math.round((a.passRate - parent.passRate) * 1000) / 1000,
+    passRateDelta: samePhysics ? Math.round((a.passRate - parent.passRate) * 1000) / 1000 : 0,
     clear:
+      samePhysics &&
       a.score !== undefined &&
       parent.score !== undefined &&
       clearlyDifferent(a.score, parent.score),
@@ -184,6 +191,8 @@ function experimentFindings(a: Omit<ExperimentAnalysis, "findings">): string[] {
 }
 
 function parentFindings(p: ParentComparison): string[] {
+  if (p.otherPhysics !== undefined)
+    return [`원본 '${p.name}'과 물리가 달라요(${p.otherPhysics}) — 점수를 견주지 않아요`];
   const what = p.changes.map((c) => `${c.label} ${c.before} → ${c.after}`).join("; ");
   if (p.scoreDelta === undefined) return [`원본 '${p.name}'에서 바꾼 것: ${what}`];
   const signed = (n: number) => `${n > 0 ? "+" : ""}${n}`;

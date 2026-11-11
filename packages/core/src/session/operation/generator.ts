@@ -38,11 +38,20 @@ interface Source {
 }
 
 /** Every (fault, equipment) pair the table allows in this world, with its rate. */
-export function sourcesOf(candidates: readonly Candidate[]): Source[] {
+export function sourcesOf(
+  candidates: readonly Candidate[],
+  hazard?: Readonly<Record<string, number>>,
+): Source[] {
+  // the reliability slot (REQ-113): a world's profile may change the hours of a fault kind or scale them all
+  const scale = hazard?.rateScale ?? 1;
   return MTBF_TABLE.flatMap((row) =>
     candidates
       .filter((c) => row.kinds.includes(c.kind))
-      .map((target) => ({ type: row.type, target, rate: 1 / row.hours })),
+      .map((target) => ({
+        type: row.type,
+        target,
+        rate: scale / (hazard?.[`mtbf.${row.type}`] ?? row.hours),
+      })),
   );
 }
 
@@ -93,10 +102,15 @@ function neighbourOf(
   );
 }
 
-function randomPlan(candidates: readonly Candidate[], c: OperationConfig, seed: number) {
+function randomPlan(
+  candidates: readonly Candidate[],
+  c: OperationConfig,
+  seed: number,
+  hazard?: Readonly<Record<string, number>>,
+) {
   const scale =
     (c.source.kind === "preset" ? PRESET_SCALE[c.source.preset] : 1) * (c.rateScale ?? 1);
-  const sources = sourcesOf(candidates);
+  const sources = sourcesOf(candidates, hazard);
   const total = sources.reduce((sum, s) => sum + s.rate, 0);
   if (total === 0) return [];
   const rng = new SeededRng(seed).fork("operation-faults");
@@ -161,11 +175,12 @@ export function planFaults(
   candidates: readonly Candidate[],
   config: OperationConfig,
   seed: number,
+  hazard?: Readonly<Record<string, number>>,
 ): PlannedFault[] {
   const raw =
     config.source.kind === "set"
       ? setPlan(config.source.faults, config.hours, seed)
-      : randomPlan(candidates, config, seed);
+      : randomPlan(candidates, config, seed, hazard);
   const end = config.hours * HOUR;
   return raw
     .filter((f) => f.at < end)

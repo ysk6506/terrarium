@@ -4,6 +4,7 @@
  */
 import { type Catalog, RACK_STANDARD_LABELS } from "@terrarium/core/catalog";
 import { isEntityId, josa, withJosa } from "@terrarium/core/kernel";
+import { profileProblems } from "@terrarium/core/physics/slots";
 import { contains, overlaps, type Rect } from "@terrarium/core/spatial";
 import {
   ALLOWED_PARENTS,
@@ -397,6 +398,18 @@ function checkParentLoops(index: BlueprintIndex): Issue[] {
     );
 }
 
+/** The physics profile of the world (REQ-113) has to be one the engine can use. */
+function checkPhysics(bp: Blueprint): Issue[] {
+  if (bp.physics === undefined) return [];
+  return profileProblems(bp.physics).map((m) =>
+    error(
+      "P001",
+      `물리 프로필: ${m}`,
+      "물리 프로필의 숫자·곡선·날씨를 허용 범위 안으로 고쳐 주세요.",
+    ),
+  );
+}
+
 export function validateBlueprint(bp: Blueprint, catalog: Catalog): Issue[] {
   const index = new BlueprintIndex(bp);
   const loops = checkParentLoops(index);
@@ -410,6 +423,7 @@ export function validateBlueprint(bp: Blueprint, catalog: Catalog): Issue[] {
     ]);
   return [
     ...checkIds(bp),
+    ...checkPhysics(bp),
     ...perEntity,
     ...checkOverlaps(index, catalog),
     ...checkRoomShapes(index, catalog),

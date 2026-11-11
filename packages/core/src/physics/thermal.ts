@@ -6,23 +6,17 @@
  */
 import type { CoolingModel, ServerModel, UpsModel } from "@terrarium/core/catalog";
 import { approach, clamp } from "@terrarium/core/kernel";
+import type { SlotValues } from "@terrarium/core/physics/slots";
 import type { Entity, Fault, StateOf, World } from "@terrarium/core/world";
-import {
-  AIR_ONLY,
-  liquidCpuTarget,
-  type RackLiquid,
-  TANK_SURFACE_W_PER_K,
-  updateRackLiquid,
-} from "./liquid";
+import { AIR_ONLY, liquidCpuTarget, type RackLiquid, updateRackLiquid } from "./liquid";
+import { upsEfficiencyAt } from "./models";
 import { plantAvailabilityAt } from "./plant";
 import { faultParam, hasFault } from "./power-supply";
 import { faultsAt, type Heat, heatOf } from "./thermal-plan";
 
-const ENVELOPE_W_PER_K_M2 = 2;
-/** Air temperature drop across a cooling coil running at full capacity. */
-const COIL_DELTA_C = 12;
-const MASS_J_PER_K_M3 = 1200 * 3;
-const ROOM_HEIGHT_M = 3;
+/** The numbers of the room slot (REQ-113) for the thing at position `i` of the plan: the profile's, else v1's. */
+const roomValues = (heat: Heat, i: number): SlotValues["thermal.room"] =>
+  heat.world.physicsAt("thermal.room", (heat.plan.ents[i] as Entity).id);
 
 function effectiveCapacityW(heat: Heat, unit: number): number {
   const model = heat.plan.models[unit] as CoolingModel;
@@ -54,20 +48,25 @@ function deviceWAt(heat: Heat, rack: number): number {
 function rackAirHeatAt(heat: Heat, rack: number, ambient: number): number {
   const s = heat.states[rack] as StateOf<"rack">;
   if (heat.t.cooling[rack] === "immersion")
-    return Math.max(0, s.bathC - ambient) * TANK_SURFACE_W_PER_K;
+    return (
+      Math.max(0, s.bathC - ambient) *
+      heat.world.physicsAt("cooling.liquid", (heat.plan.ents[rack] as Entity).id).tankSurfaceWPerK
+    );
   return Math.max(0, deviceWAt(heat, rack) - s.liquidW);
 }
 
 function roomHeatAt(heat: Heat, room: number): number {
   const ambient = (heat.states[room] as StateOf<"room">).ambientC;
+  const P = roomValues(heat, room);
   const { start, items } = heat.t.roomSources;
   let sum = 0;
   for (let q = start[room] as number; q < (start[room + 1] as number); q++) {
     const i = items[q] as number;
     const s = heat.states[i];
     if (s?.kind === "rack") sum += rackAirHeatAt(heat, i, ambient);
-    else if (s?.kind === "ups") sum += s.loadW * (1 - (heat.plan.models[i] as UpsModel).efficiency);
-    else if (s?.kind === "cdu") sum += s.running ? 0.04 * s.loadKw * 1000 : 0;
+    else if (s?.kind === "ups")
+      sum += s.loadW * (1 - upsEfficiencyAt(heat.world, heat.plan.models[i] as UpsModel, s.loadW));
+    else if (s?.kind === "cdu") sum += s.running ? P.cduHeatShare * s.loadKw * 1000 : 0;
   }
   return sum;
 }
@@ -79,13 +78,40 @@ export function roomHeatW(world: World, roomId: string): number {
   return roomHeatAt(heatOf(world), room);
 }
 
+/** What one room's step moved, kept for the law checks (REQ-113): the energy balance of the step, term by term. */
+export interface RoomStep {
+  readonly room: string;
+  readonly dt: number;
+  readonly fromC: number;
+  readonly toC: number;
+  /** Heat into the room's air, removed by its cooling units, and lost through the envelope, W. */
+  readonly inW: number;
+  readonly removedW: number;
+  readonly envelopeW: number;
+  /** What the cooling units could have removed, W. */
+  readonly capacityW: number;
+  readonly massJPerK: number;
+  /** The step ended on a bound of the room's temperature (the balance does not hold there). */
+  readonly clamped: boolean;
+}
+
+const ledgers = new WeakMap<World, RoomStep[]>();
+
+/** Start (or, with `undefined`, stop) collecting the room steps of a world into `into`; used by the law checks. */
+export function collectRoomSteps(world: World, into: RoomStep[] | undefined): void {
+  if (into) ledgers.set(world, into);
+  else ledgers.delete(world);
+}
+
 /** One explicit Euler step of a room's energy balance; updates cooling units' load and air temperatures. */
 function updateRoomAt(heat: Heat, room: number, dt: number): void {
   const state = heat.states[room] as StateOf<"room">;
   const t = state.ambientC;
+  const P = roomValues(heat, room);
   const { start, items } = heat.t.roomUnits;
   const sources = roomHeatAt(heat, room);
   let removed = 0;
+  let capacityW = 0;
   for (let q = start[room] as number; q < (start[room + 1] as number); q++) {
     const unit = items[q] as number;
     const unitState = heat.states[unit] as StateOf<"cooling_unit">;
@@ -94,10 +120,11 @@ function updateRoomAt(heat: Heat, room: number, dt: number): void {
       continue;
     }
     const capacity = effectiveCapacityW(heat, unit);
+    capacityW += capacity;
     const setpoint = setpointOf(heat, unit);
-    const removal = clamp((capacity / 10) * (t - setpoint), 0, capacity);
+    const removal = clamp((capacity / P.fullLoadDeltaC) * (t - setpoint), 0, capacity);
     // Supply air leaves the coil cooler than the room by the share of capacity in use, never below setpoint.
-    const supplyC = Math.max(setpoint, t - COIL_DELTA_C * (removal / Math.max(capacity, 1)));
+    const supplyC = Math.max(setpoint, t - P.coilDeltaC * (removal / Math.max(capacity, 1)));
     removed += removal;
     unitState.loadKw = removal / 1000;
     unitState.capacityKw = capacity / 1000;
@@ -105,9 +132,24 @@ function updateRoomAt(heat: Heat, room: number, dt: number): void {
     unitState.returnC = t;
   }
   const area = heat.t.area[room] as number;
-  const envelope = ENVELOPE_W_PER_K_M2 * area * (t - heat.world.outdoorC());
-  const mass = MASS_J_PER_K_M3 * area * ROOM_HEIGHT_M;
-  state.ambientC = clamp(t + (dt * (sources - removed - envelope)) / mass, 5, 75);
+  const envelope = P.envelopeWPerKM2 * area * (t - heat.world.outdoorC());
+  const mass = P.airJPerKM3 * area * P.roomHeightM;
+  const next = t + (dt * (sources - removed - envelope)) / mass;
+  state.ambientC = clamp(next, P.roomMinC, P.roomMaxC);
+  const ledger = ledgers.get(heat.world);
+  if (ledger)
+    ledger.push({
+      room: (heat.plan.ents[room] as Entity).id,
+      dt,
+      fromC: t,
+      toC: state.ambientC,
+      inW: sources,
+      removedW: removed,
+      envelopeW: envelope,
+      capacityW,
+      massJPerK: mass,
+      clamped: next !== state.ambientC,
+    });
 }
 
 /** Supply air reaching a rack: its assigned running units, else any running unit in the room. */
@@ -115,8 +157,8 @@ class AirSupply {
   supplyC = 0;
   extraMix = 0;
 
-  /** Work out the supply for `rack`; false when no unit can cool it. */
-  of(heat: Heat, rack: number, room: number): boolean {
+  /** Work out the supply for `rack`; false when no unit can cool it. `unassignedMix` is the extra mix of a rack nobody serves by name. */
+  of(heat: Heat, rack: number, room: number, unassignedMix: number): boolean {
     const explicit = heat.t.assigned;
     const first = explicit.start[rack] as number;
     const last = explicit.start[rack + 1] as number;
@@ -142,7 +184,7 @@ class AirSupply {
     }
     if (count === 0) return false;
     this.supplyC = sum / count;
-    this.extraMix = assigned > 0 || last === first ? 0 : 0.25;
+    this.extraMix = assigned > 0 || last === first ? 0 : unassignedMix;
     return true;
   }
 }
@@ -155,25 +197,30 @@ function updateRackAt(heat: Heat, rack: number, air: AirSupply, dt: number): voi
   const state = states[rack] as StateOf<"rack">;
   const powerW = deviceWAt(heat, rack);
   const contained = t.contained[rack] === 1;
-  const cooled = air.of(heat, rack, room);
-  const mix = (contained ? 0.12 : 0.3) + (cooled ? air.extraMix : 0);
+  const P = roomValues(heat, rack);
+  const cooled = air.of(heat, rack, room, P.mixUnassigned);
+  const mix = (contained ? P.mixContained : P.mixOpen) + (cooled ? air.extraMix : 0);
   const target = cooled
-    ? air.supplyC + mix * (ambient - air.supplyC) + 0.02 * (powerW / 1000)
+    ? air.supplyC + mix * (ambient - air.supplyC) + P.inletHeatBiasCPerKw * (powerW / 1000)
     : ambient;
-  const inletC = approach(state.inletC, target, dt, 60);
+  const inletC = approach(state.inletC, target, dt, P.inletTauS);
   const entity = heat.plan.ents[rack] as Entity;
   const liquid =
     t.cooling[rack] === "air" ? AIR_ONLY : updateRackLiquid(world, entity, powerW, ambient, dt);
   const airW = Math.max(0, powerW - liquid.liquidW);
   state.inletC = inletC;
-  state.outletC = inletC + (airW > 0 ? Math.min(8 + 0.4 * (airW / 1000), 25) : 0);
+  state.outletC =
+    inletC +
+    (airW > 0
+      ? Math.min(P.outletBaseRiseC + P.outletRiseCPerKw * (airW / 1000), P.outletMaxRiseC)
+      : 0);
   state.powerW = powerW;
   state.liquidW = liquid.liquidW;
   state.coolantC = liquid.coolantC;
   state.bathC = liquid.bathC;
   const kids = t.servers;
   for (let q = kids.start[rack] as number; q < (kids.start[rack + 1] as number); q++)
-    updateServerThermal(heat, kids.items[q] as number, { inletC, contained, liquid, dt });
+    updateServerThermal(heat, kids.items[q] as number, { inletC, contained, liquid, dt, room: P });
 }
 
 /** Mean cold-side and hot-side air temperature inside each containment. */
@@ -210,6 +257,8 @@ interface RackAir {
   readonly contained: boolean;
   readonly liquid: RackLiquid;
   readonly dt: number;
+  /** The room slot's numbers at this rack. */
+  readonly room: SlotValues["thermal.room"];
 }
 
 const NO_FANS: ReadonlySet<number> = new Set();
@@ -226,9 +275,12 @@ function setFanSpeeds(
   fans: number,
   failed: ReadonlySet<number>,
   running: boolean,
+  D: SlotValues["thermal.device"],
 ): void {
-  const rpm = clamp(3000 + 120 * (state.cpuC - 40), 3000, 16000) * (failed.size > 0 ? 1.25 : 1);
-  const speed = Math.round(Math.min(rpm, 18000));
+  const rpm =
+    clamp(D.fanRpmBase + D.fanRpmPerC * (state.cpuC - D.fanRpmRefC), D.fanRpmBase, D.fanRpmMax) *
+    (failed.size > 0 ? D.fanFailBoost : 1);
+  const speed = Math.round(Math.min(rpm, D.fanRpmCap));
   if (state.fanRpm.length !== fans) state.fanRpm = new Array<number>(fans);
   for (let k = 0; k < fans; k++) state.fanRpm[k] = !running || failed.has(k) ? 0 : speed;
 }
@@ -237,7 +289,12 @@ function updateServerThermal(heat: Heat, i: number, air: RackAir): void {
   const model = heat.plan.models[i] as ServerModel;
   const state = heat.states[i] as StateOf<"server">;
   const { contained, liquid, dt } = air;
-  const inletC = air.inletC + 0.03 * ((heat.t.unit[i] as number) - 1) * (contained ? 0.3 : 1);
+  const D = heat.world.physicsAt("thermal.device", (heat.plan.ents[i] as Entity).id);
+  const inletC =
+    air.inletC +
+    air.room.rackUnitBiasC *
+      ((heat.t.unit[i] as number) - 1) *
+      (contained ? air.room.rackUnitContainedShare : 1);
   const failed = failedFans(faultsAt(heat, i));
   const running = state.powered && state.adminOn;
   const util =
@@ -248,14 +305,20 @@ function updateServerThermal(heat: Heat, i: number, air: RackAir): void {
   const fanPct = (heat.plan.ents[i] as Entity).props.fanSpeedPct;
   const held = typeof fanPct === "number" ? clamp(fanPct, 20, 100) / 100 : 1;
   const fanPenalty =
-    (model.fanCount > 0 ? 1 + 0.6 * (failed.size / model.fanCount) : 1) * (1 + 1.2 * (1 - held));
-  const airC = inletC + model.thermalRiseC * (0.35 + 0.65 * clamp(util, 0, 1)) * fanPenalty;
-  const wet = liquidCpuTarget(liquid, model, util, inletC);
+    (model.fanCount > 0 ? 1 + D.fanFailPenalty * (failed.size / model.fanCount) : 1) *
+    (1 + D.fanHeldPenalty * (1 - held));
+  const airC =
+    inletC +
+    model.thermalRiseC * (D.chipRiseBase + D.chipRiseLoad * clamp(util, 0, 1)) * fanPenalty;
+  const wet = liquidCpuTarget(liquid, model, util, inletC, D);
   const target = running ? (wet ?? airC) : liquid.cooling === "immersion" ? liquid.bathC : inletC;
-  const cpuC = approach(state.cpuC, target, dt, 30);
+  const cpuC = approach(state.cpuC, target, dt, D.chipTauS);
   state.inletC = inletC;
   state.cpuC = cpuC;
-  setFanSpeeds(state, model.fanCount, failed, running);
+  setFanSpeeds(state, model.fanCount, failed, running, D);
   state.throttled =
-    running && (state.throttled ? cpuC > model.cpuThrottleC - 5 : cpuC > model.cpuThrottleC);
+    running &&
+    (state.throttled
+      ? cpuC > model.cpuThrottleC - D.throttleHysteresisC
+      : cpuC > model.cpuThrottleC);
 }

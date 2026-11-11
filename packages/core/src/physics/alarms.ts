@@ -277,7 +277,7 @@ function linkAlarms(scan: Scan, out: Draft[]): void {
 
 /** Every alarm the current state implies. */
 export function desiredAlarms(world: World): Draft[] {
-  const scan: Scan = { world, ...passOf(world) };
+  const scan: Scan = { ...passOf(world) };
   const out: Draft[] = [];
   const ents = scan.plan.ents;
   for (let i = 0; i < ents.length; i++) {

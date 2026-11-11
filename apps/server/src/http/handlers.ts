@@ -6,6 +6,7 @@ import { toJsonl } from "@terrarium/core/analysis";
 import type { ParsedBodyOf, ParsedQueryOf, Responses, RouteName } from "@terrarium/core/contract";
 import type { PresetKind } from "@terrarium/core/experiments";
 import { NotFoundError } from "@terrarium/core/kernel";
+import { describeSlots } from "@terrarium/core/physics/slots";
 import type { Platform, ReportFormat, Viewer } from "../runtime";
 
 export interface HandlerInput<N extends RouteName> {
@@ -88,6 +89,9 @@ export const HANDLERS: Handlers = {
   importWorld: (p, i) => p.worlds.import(i.viewer, i.body),
   updateWorld: (p, i) => p.worlds.update(i.viewer, id(i), i.body),
   deleteWorld: (p, i) => p.worlds.delete(i.viewer, id(i)),
+  listPhysicsSlots: async () => describeSlots(),
+  getWorldPhysics: (p, i) => p.worlds.physics(id(i)),
+  putWorldPhysics: (p, i) => p.worlds.setPhysics(i.viewer, id(i), i.body),
 
   listScenarios: (p, i) => p.scenarios.list(i.query.worldId),
   getScenario: (p, i) => p.scenarios.get(id(i)),

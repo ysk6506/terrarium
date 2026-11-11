@@ -3,7 +3,9 @@
  * (REQ-031, REQ-039). Harness, agent and tools are what an experiment compares, so they are not in
  * the key; everything that changes the task itself is.
  */
+
 import { hashValue } from "@terrarium/core/kernel";
+import { DEFAULT_FINGERPRINT } from "@terrarium/core/physics/slots";
 import { operationKey, operationProblem } from "@terrarium/core/session";
 import { TOOL_NAMES } from "@terrarium/core/tools";
 import { isDefaultLeadSettings, resolveLeadSettings } from "@terrarium/core/world";
@@ -107,6 +109,10 @@ export function recipeProblems(recipe: Recipe, ctx: RecipeContext): string[] {
   return out;
 }
 
+/** The physics an experiment ran on (REQ-113); experiments made before the fingerprint existed ran on `v1`. */
+export const physicsOf = (e: { readonly snapshot: Snapshot }): string =>
+  e.snapshot.physics ?? DEFAULT_FINGERPRINT;
+
 /** The comparable task: same world and scenario versions, same scoring, same time and product versions. */
 export function benchmarkKey(
   snapshot: Snapshot,
@@ -129,6 +135,10 @@ export function benchmarkKey(
     scenario: snapshot.scenarioDigest,
     oracle: snapshot.oracle,
     time: recipe.time,
+    // a world with other physics is another task, even before its digest says so (REQ-113); the default leaves the key as it was
+    ...(snapshot.physics && snapshot.physics !== DEFAULT_FINGERPRINT
+      ? { physics: snapshot.physics }
+      : {}),
     profiles: { vcenter: recipe.profiles.vcenter ?? null, vrops: recipe.profiles.vrops ?? null },
     // which faults can happen shapes the task; how escalation is answered and whether a runbook is given are
     // conditions of the agent, like its tools, so they stay out of the key (only where set, so old keys stay)

@@ -1,6 +1,7 @@
 /** The JSON each route answers with (one line per route of the table in routes.ts). */
 
 import type { ScenarioRecord, WorldRecord } from "@terrarium/core/experiments";
+import type { SlotsView } from "@terrarium/core/physics/slots";
 import type { LikeView, UserTitlesView, WorldCardView } from "./community";
 import type {
   AgentHistoryView,
@@ -33,6 +34,7 @@ import type {
   SavedWorld,
   ShareView,
   TelemetryView,
+  WorldPhysicsView,
   WorldSummary,
 } from "./views";
 
@@ -78,6 +80,9 @@ export interface Responses {
   userTitles: UserTitlesView;
   listWorldTemplates: WorldSummary[];
   getWorld: WorldRecord;
+  listPhysicsSlots: SlotsView;
+  getWorldPhysics: WorldPhysicsView;
+  putWorldPhysics: WorldPhysicsView;
   createWorld: SavedWorld;
   generateWorld: GeneratedWorld;
   importWorld: ImportedWorld;

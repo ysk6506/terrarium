@@ -8,6 +8,7 @@ import type { z } from "zod";
 import { COMMUNITY_ROUTES } from "./community-routes";
 import { MODEL_ROUTES } from "./model-routes";
 import { MOSS_ROUTES } from "./moss-routes";
+import { PHYSICS_ROUTES } from "./physics-routes";
 import { ImportPresetsBody, PresetQuery, RenamePresetBody, SavePresetBody } from "./presets";
 import {
   AddAgentVersionBody,
@@ -199,6 +200,7 @@ export const ROUTES = {
 
   ...MODEL_ROUTES,
   ...MOSS_ROUTES,
+  ...PHYSICS_ROUTES,
   ...COMMUNITY_ROUTES,
   ...SERVICE_CARD_ROUTES,
 

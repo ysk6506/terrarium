@@ -43,6 +43,7 @@ import {
 } from "@terrarium/core/experiments";
 import { hashValue, InvalidValueError } from "@terrarium/core/kernel";
 import { ORACLE_VERSION } from "@terrarium/core/oracle";
+import { fingerprintOf } from "@terrarium/core/physics/slots";
 import { BUILTIN_PROFILES } from "@terrarium/core/profiles";
 import { hasErrors, type ScenarioDoc, scopeCheck } from "@terrarium/core/scenario";
 import {
@@ -52,6 +53,7 @@ import {
   operationProblem,
   paceLabel,
 } from "@terrarium/core/session";
+import type { Blueprint } from "@terrarium/core/world";
 import type { AgentVersions } from "./agent-versions";
 import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
 import type { Dispatcher } from "./dispatcher";
@@ -167,6 +169,7 @@ export class Experiments {
         scenarioDigest: scenario.digest,
         scenarioName: scenario.name,
         oracle: ORACLE_VERSION,
+        physics: fingerprintOf(world.blueprint.physics),
       },
       subject,
     };
@@ -175,7 +178,7 @@ export class Experiments {
   /** An operation has no stored scenario: its task is the config itself, so the digest is the config's. */
   private async resolveOperation(
     recipe: Recipe,
-    world: { readonly digest: string; readonly name: string },
+    world: { readonly digest: string; readonly name: string; readonly blueprint: Blueprint },
   ): Promise<{ snapshot: Snapshot; subject: Subject }> {
     const operation = recipe.operation as OperationConfig;
     const problem = operationProblem(operation);
@@ -188,6 +191,7 @@ export class Experiments {
         scenarioDigest: hashValue(operationKey(operation)),
         scenarioName: `${operation.hours}시간 운영 · ${paceLabel(operation.pace)}`,
         oracle: ORACLE_VERSION,
+        physics: fingerprintOf(world.blueprint.physics),
       },
       subject: await this.checkRecipe(recipe),
     };

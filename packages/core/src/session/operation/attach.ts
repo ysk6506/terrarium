@@ -31,7 +31,12 @@ export function attachOperation(config: OperationConfig, o: AttachOptions): Oper
   const { world } = o;
   let worldCursor = world.lastSeq();
   let teamSeen = 0;
-  const plan = planFaults(candidatesOf(world), config, o.seed);
+  const plan = planFaults(
+    candidatesOf(world),
+    config,
+    o.seed,
+    world.physics.base("reliability.hazard"),
+  );
   return new OperationDriver(config, plan, {
     now: () => world.time(),
     apply: (command, cause) => void world.apply(command, cause),

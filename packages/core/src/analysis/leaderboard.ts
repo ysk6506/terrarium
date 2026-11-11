@@ -4,7 +4,7 @@
  * runs of the same configuration (harness × agent × toolset) are pooled across experiments and
  * people; a configuration needs a few runs before it gets a rank.
  */
-import type { Experiment } from "@terrarium/core/experiments";
+import { type Experiment, physicsOf } from "@terrarium/core/experiments";
 import type { ExperimentAnalysis } from "./experiment";
 import type { RunAnalysis } from "./run";
 import { ratio, type Summary, summarize } from "./stats";
@@ -31,6 +31,8 @@ export interface LeaderboardRow {
 
 export interface Leaderboard {
   readonly benchmarkKey: string;
+  /** The physics fingerprint of every run on this board (REQ-113): runs on other physics are on another board. */
+  readonly physics: string;
   readonly title: string;
   readonly snapshot: Experiment["snapshot"];
   readonly time: Experiment["recipe"]["time"];
@@ -106,10 +108,14 @@ export function buildLeaderboards(
   analyses: readonly ExperimentAnalysis[],
   minRuns = MIN_RUNS_TO_RANK,
 ): Leaderboard[] {
+  // only runs on the same physics are ranked together (REQ-113): the key of a set is the benchmark key and the fingerprint
   const sets = new Map<string, ExperimentAnalysis[]>();
-  for (const a of analyses)
-    sets.set(a.experiment.benchmarkKey, [...(sets.get(a.experiment.benchmarkKey) ?? []), a]);
-  const boards = [...sets].map(([key, members]) => {
+  for (const a of analyses) {
+    const set = `${a.experiment.benchmarkKey}|${physicsOf(a.experiment)}`;
+    sets.set(set, [...(sets.get(set) ?? []), a]);
+  }
+  const boards = [...sets.values()].map((members) => {
+    const key = (members[0] as ExperimentAnalysis).experiment.benchmarkKey;
     const configs = new Map<string, ExperimentAnalysis[]>();
     for (const a of members)
       configs.set(configKey(a.experiment), [...(configs.get(configKey(a.experiment)) ?? []), a]);
@@ -117,6 +123,7 @@ export function buildLeaderboards(
     const first = members[0] as ExperimentAnalysis;
     return {
       benchmarkKey: key,
+      physics: physicsOf((members[0] as ExperimentAnalysis).experiment),
       title: `${first.experiment.snapshot.worldName} · ${first.experiment.snapshot.scenarioName}`,
       snapshot: first.experiment.snapshot,
       time: first.experiment.recipe.time,
