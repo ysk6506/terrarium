@@ -189,6 +189,11 @@ jobs:
         run: pnpm tsx harness/src/run-all.ts --base origin/${{ github.base_ref }}
       - if: github.event_name != 'pull_request'
         run: pnpm tsx harness/src/run-all.ts
+      # This change's quality table in the job summary, so every change sees its own grades (ADR-0148). The
+      # committed docs/generated/quality.md is refreshed by the cleanup job, not by each change.
+      - name: Quality table of this change
+        if: always()
+        run: pnpm tsx harness/src/checks/quality.ts print >> "$GITHUB_STEP_SUMMARY"
 
   # Can a person finish each journey in tests/e2e/ux/journeys.ts? Gating (ADR-0141). Only that: no timing, size or
   # accessibility probe runs here. The journeys drive the real screens in a real browser; they are split into

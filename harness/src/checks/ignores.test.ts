@@ -11,6 +11,7 @@ import {
   loadIgnoresConfig,
   main,
   ratchet,
+  report,
   run,
 } from "./ignores";
 import { directiveOf, scanCss, scanSkips, scanTypeScript, scanWorkflow } from "./ignores-scan";
@@ -351,12 +352,17 @@ describe("no silent ignores: the count only falls [REQ-022]", () => {
     expect(codes(root)).toEqual(["IGN005"]);
   });
 
-  test("fewer ignores than the baseline fails until the baseline is lowered (IGN006)", () => {
+  test("fewer ignores than the baseline passes with a note; ratchet lowers the baseline (IGN006)", () => {
     const root = repo(ts("export const x = 1;\n"));
     setBaseline(root, { "biome-ignore": 2, "continue-on-error": 1 });
-    expect(codes(root)).toEqual(["IGN006"]);
+    expect(codes(root)).toEqual([]);
+    const { violations, notes } = report(root);
+    expect(violations).toEqual([]);
+    expect(notes).toHaveLength(2);
+    expect(notes[0]).toContain("IGN006");
+    expect(notes[0]).toContain("baseline still 2");
     expect(ratchet(root)).toEqual(["biome-ignore", "continue-on-error"]);
-    expect(run(root)).toEqual([]);
+    expect(report(root)).toEqual({ violations: [], notes: [] });
   });
 
   test("ratchet never raises a count and never adds a kind", () => {
@@ -395,6 +401,10 @@ describe("no silent ignores: the count only falls [REQ-022]", () => {
     setBaseline(root, { "biome-ignore": 1 });
     expect(main(["ratchet", "--root", root], (l) => lines.push(l))).toBe(0);
     expect(lines[1]).toBe("ratchet: lowered 1 ignore baseline(s): biome-ignore");
+    setBaseline(root, { "biome-ignore": 1 });
+    expect(main(["--root", root], (l) => lines.push(l))).toBe(0);
+    expect(lines.at(-1)).toContain("NOTE ignores [IGN006]");
+    expect(main(["ratchet", "--root", root], (l) => lines.push(l))).toBe(0);
     expect(main(["--root", root], (l) => lines.push(l))).toBe(0);
     expect(lines.at(-1)).toBe("OK   ignores");
   });

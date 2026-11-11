@@ -6,8 +6,10 @@
  * IGN001 no reason written          IGN002 no TD-NNNN / ADR-NNNN to point at
  * IGN003 the debt item is closed or unknown ("the debt is paid, the ignore stayed")
  * IGN004 the ADR does not exist or is not a sealed, active decision
- * IGN005 more ignores of a kind than the baseline   IGN006 fewer than the baseline (run `pnpm ratchet`)
+ * IGN005 more ignores of a kind than the baseline
  * IGN007 (with --base) the baseline was raised or gained a kind
+ * IGN006 is a note, not a failure: fewer ignores than the baseline. A change that removes an ignore must not go red;
+ * the cleanup job lowers the baseline with `pnpm ratchet` (ADR-0148).
  */
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -261,19 +263,23 @@ export function checkCounts(
           "The number of ignores may only go down. Fix the cause instead of adding another.",
         ),
       );
-    } else if (now[kind] < allowed) {
-      out.push(
-        violation(
-          "IGN006",
-          config.baseline,
-          0,
-          `${now[kind]} ${KIND_LABEL[kind]} ignores, baseline still ${allowed}`,
-          "Run: pnpm ratchet (lowers the baseline to the new count).",
-        ),
-      );
     }
   }
   return out;
+}
+
+/** One line per kind whose count fell below the baseline. Never a failure. */
+export function lowerable(
+  root: string,
+  config: IgnoresConfig,
+  found: readonly Suppression[],
+): string[] {
+  const baseline = loadBaseline(root, config);
+  const now = counts(found);
+  return KINDS.filter((kind) => now[kind] < (baseline[kind] ?? 0)).map(
+    (kind) =>
+      `NOTE ignores [IGN006] ${now[kind]} ${KIND_LABEL[kind]} ignores, baseline still ${baseline[kind]}: run pnpm ratchet to lower it`,
+  );
 }
 
 /** Against `base`, no kind may be raised. */
@@ -298,15 +304,20 @@ export function checkBaselineAgainst(
     );
 }
 
-export function run(root: string, base?: string): Violation[] {
+export function report(root: string, base?: string): { violations: Violation[]; notes: string[] } {
   const config = loadIgnoresConfig(root);
   const found = collect(root, config);
-  return [
-    ...checkSuppressions(root, config, found),
-    ...checkCounts(root, config, found),
-    ...(base ? checkBaselineAgainst(root, config, base) : []),
-  ];
+  return {
+    violations: [
+      ...checkSuppressions(root, config, found),
+      ...checkCounts(root, config, found),
+      ...(base ? checkBaselineAgainst(root, config, base) : []),
+    ],
+    notes: lowerable(root, config, found),
+  };
 }
+
+export const run = (root: string, base?: string): Violation[] => report(root, base).violations;
 
 /** Lower each kind's baseline to today's count. Never raises one. Returns the kinds that went down. */
 export function ratchet(root: string): string[] {
@@ -334,7 +345,10 @@ export function main(argv: readonly string[], out: (line: string) => void = cons
     );
     return 0;
   }
-  return finish("ignores", run(root, flag(flags, "base")), out);
+  const { violations, notes } = report(root, flag(flags, "base"));
+  const code = finish("ignores", violations, out);
+  for (const line of notes) out(line);
+  return code;
 }
 
 if (isMain(import.meta.url)) process.exit(main(process.argv.slice(2)));

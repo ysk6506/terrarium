@@ -64375,9 +64375,9 @@
    "added": "2026-11-11",
    "amended_by": null
   },
-  "harness/src/checks/ignores.test.ts::<import:b8fee9fb>": {
+  "harness/src/checks/ignores.test.ts::<import:aa7e1d77>": {
    "kind": "support",
-   "hash": "b8fee9fbb0a209a5",
+   "hash": "aa7e1d77806190eb",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -64385,9 +64385,9 @@
    "added": "2026-11-11",
    "amended_by": null
   },
-  "harness/src/checks/ignores.test.ts::<import:bbd650ba>": {
+  "harness/src/checks/ignores.test.ts::<import:b8fee9fb>": {
    "kind": "support",
-   "hash": "bbd650ba817a2f2e",
+   "hash": "b8fee9fbb0a209a5",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -65128,15 +65128,23 @@
    "added": "2026-11-11",
    "amended_by": null
   },
-  "harness/src/checks/ignores.test.ts::no silent ignores: the count only falls [REQ-022] > fewer ignores than the baseline fails until the baseline is lowered (IGN006)": {
+  "harness/src/checks/ignores.test.ts::no silent ignores: the count only falls [REQ-022] > fewer ignores than the baseline passes with a note; ratchet lowers the baseline (IGN006)": {
    "kind": "test",
-   "hash": "c4abfeb93fd758bd",
-   "asserts": 3,
+   "hash": "0837482f01988fa0",
+   "asserts": 7,
    "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
     "\"1\"",
+    "\"2\"",
+    "\"2\"",
     "\"2\"",
     "\"IGN006\"",
     "\"IGN006\"",
+    "\"baseline still 2\"",
+    "\"baseline still 2\"",
     "\"biome-ignore\"",
     "\"biome-ignore\"",
     "\"biome-ignore\"",
@@ -65144,7 +65152,7 @@
     "\"continue-on-error\"",
     "\"continue-on-error\"",
     "\"export const x = 1;\\n\"",
-    "\"fewer ignores than the baseline fails until the baseline is lowered (IGN006)\""
+    "\"fewer ignores than the baseline passes with a note; ratchet lowers the baseline (IGN006)\""
    ],
    "precision": [],
    "skips": 0,
@@ -65189,8 +65197,8 @@
   },
   "harness/src/checks/ignores.test.ts::no silent ignores: the count only falls [REQ-022] > the CLI ratchets and checks": {
    "kind": "test",
-   "hash": "fd87a04fa2c1bed7",
-   "asserts": 6,
+   "hash": "38088d23f37b3f31",
+   "asserts": 9,
    "literals": [
     "\"--root\"",
     "\"--root\"",
@@ -65198,6 +65206,14 @@
     "\"--root\"",
     "\"--root\"",
     "\"--root\"",
+    "\"--root\"",
+    "\"--root\"",
+    "\"--root\"",
+    "\"--root\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
     "\"0\"",
     "\"0\"",
     "\"0\"",
@@ -65211,10 +65227,18 @@
     "\"1\"",
     "\"1\"",
     "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"NOTE ignores [IGN006]\"",
+    "\"NOTE ignores [IGN006]\"",
     "\"OK   ignores\"",
     "\"OK   ignores\"",
     "\"biome-ignore\"",
+    "\"biome-ignore\"",
     "\"export const x = 1;\\n\"",
+    "\"ratchet\"",
+    "\"ratchet\"",
     "\"ratchet\"",
     "\"ratchet\"",
     "\"ratchet\"",
@@ -65761,6 +65785,16 @@
    "added": "2026-11-11",
    "amended_by": null
   },
+  "harness/src/checks/quality.test.ts::<import:392a161b>": {
+   "kind": "support",
+   "hash": "392a161bd1212237",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "harness/src/checks/quality.test.ts::<import:50321f6c>": {
    "kind": "support",
    "hash": "50321f6c860a7a17",
@@ -65784,16 +65818,6 @@
   "harness/src/checks/quality.test.ts::<import:bd950761>": {
    "kind": "support",
    "hash": "bd95076179fa3654",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
-  },
-  "harness/src/checks/quality.test.ts::<import:e78cec8f>": {
-   "kind": "support",
-   "hash": "e78cec8f741d918d",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -66225,8 +66249,8 @@
   },
   "harness/src/checks/quality.test.ts::recorded coverage feeds the table, nothing is invented [REQ-024] > the CLI writes, records and checks": {
    "kind": "test",
-   "hash": "456481ca0ab68ee3",
-   "asserts": 9,
+   "hash": "4c4e0b5a761c3c55",
+   "asserts": 14,
    "literals": [
     "\"--root\"",
     "\"--root\"",
@@ -66240,6 +66264,8 @@
     "\"--root\"",
     "\"--root\"",
     "\"--root\"",
+    "\"--root\"",
+    "\"--root\"",
     "\"0\"",
     "\"0\"",
     "\"0\"",
@@ -66248,6 +66274,12 @@
     "\"0\"",
     "\"0\"",
     "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
     "\"1\"",
     "\"1\"",
     "\"1\"",
@@ -66258,14 +66290,22 @@
     "\"1\"",
     "\"1\"",
     "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"NOTE quality [QUAL001] 낡음: pnpm quality write\"",
+    "\"NOTE quality [QUAL001] 낡음: pnpm quality write\"",
     "\"OK   quality\"",
     "\"OK   quality\"",
+    "\"QUAL001\"",
+    "\"QUAL001\"",
     "\"\\\"core.world\\\": 100\"",
     "\"\\\"core.world\\\": 100\"",
     "\"\\n\"",
     "\"\\n\"",
     "\"coverage/coverage-summary.json\"",
     "\"packages/core/src/world/a.ts\"",
+    "\"print\"",
+    "\"print\"",
     "\"record\"",
     "\"record\"",
     "\"the CLI writes, records and checks\"",
@@ -66273,6 +66313,8 @@
     "\"write\"",
     "\"write\"",
     "\"write\"",
+    "false",
+    "false",
     "true",
     "true"
    ],
@@ -66317,6 +66359,16 @@
    "added": "2026-11-11",
    "amended_by": null
   },
+  "harness/src/checks/quality.test.ts::the quality table is generated and kept fresh [REQ-024] > =STALE": {
+   "kind": "support",
+   "hash": "40cfc0ac33d22434",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "harness/src/checks/quality.test.ts::the quality table is generated and kept fresh [REQ-024] > a debt item may only name units that exist (QUAL003)": {
    "kind": "test",
    "hash": "bec621ddc4ddc8f3",
@@ -66335,14 +66387,12 @@
    "added": "2026-11-11",
    "amended_by": null
   },
-  "harness/src/checks/quality.test.ts::the quality table is generated and kept fresh [REQ-024] > a fresh table passes; a missing one fails until it is written (QUAL001)": {
+  "harness/src/checks/quality.test.ts::the quality table is generated and kept fresh [REQ-024] > a fresh table is silent; a missing one is a note, not a failure (QUAL001)": {
    "kind": "test",
-   "hash": "bef593c93fc042e2",
-   "asserts": 3,
+   "hash": "3a0f090b5beaf55f",
+   "asserts": 4,
    "literals": [
-    "\"QUAL001\"",
-    "\"QUAL001\"",
-    "\"a fresh table passes; a missing one fails until it is written (QUAL001)\"",
+    "\"a fresh table is silent; a missing one is a note, not a failure (QUAL001)\"",
     "\"utf8\"",
     "\"utf8\""
    ],
@@ -66399,6 +66449,25 @@
     "\"high\"",
     "\"server.http\"",
     "\"server.http\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/quality.test.ts::the quality table is generated and kept fresh [REQ-024] > every unit gets a grade, and a table that cannot be generated fails the check": {
+   "kind": "test",
+   "hash": "c372dec94fa166f9",
+   "asserts": 3,
+   "literals": [
+    "\"1\"",
+    "\"8\"",
+    "\"8\"",
+    "\"\\n\"",
+    "\"docs/exec-plans/tech-debt.yaml\"",
+    "\"every unit gets a grade, and a table that cannot be generated fails the check\"",
+    "\"items: [: bad\"",
+    "\"|\""
    ],
    "precision": [],
    "skips": 0,
@@ -66552,9 +66621,9 @@
    "added": "2026-11-11",
    "amended_by": null
   },
-  "harness/src/checks/quality.test.ts::the quality table is generated and kept fresh [REQ-024] > when %s, the committed table is stale": {
+  "harness/src/checks/quality.test.ts::the quality table is generated and kept fresh [REQ-024] > when %s, the committed table is stale: a note, never a failure": {
    "kind": "test",
-   "hash": "fd1c7c4794428e30",
+   "hash": "3cbb12e088b94c9e",
    "asserts": 2,
    "literals": [
     "\"  if (x > 1) return 1;\\n\"",
@@ -66562,8 +66631,6 @@
     "\"// biome-ignore lint/a11y/noAutofocus: focus on purpose\\nexport const x = 1;\\n\"",
     "\"12\"",
     "\"460\"",
-    "\"QUAL001\"",
-    "\"QUAL001\"",
     "\"TD-0001\"",
     "\"a debt comment cites an item\"",
     "\"a file grows near its limit\"",
@@ -66574,7 +66641,7 @@
     "\"packages/core/src/world/d.ts\"",
     "\"packages/core/src/world/fn.ts\"",
     "\"packages/core/src/world/x.ts\"",
-    "\"when %s, the committed table is stale\""
+    "\"when %s, the committed table is stale: a note, never a failure\""
    ],
    "precision": [],
    "skips": 0,

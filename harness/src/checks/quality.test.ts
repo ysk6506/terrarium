@@ -4,7 +4,17 @@ import { afterEach, describe, expect, test } from "vitest";
 import YAML from "yaml";
 import { findRoot } from "../common";
 import { miniRepo } from "../test-support/mini-repo";
-import { gradeOf, main, recordCoverage, render, renderTable, run, sorted, write } from "./quality";
+import {
+  gradeOf,
+  main,
+  recordCoverage,
+  render,
+  renderTable,
+  report,
+  run,
+  sorted,
+  write,
+} from "./quality";
 import { gatherFacts, NO_UNIT, RECORD_FILE, type UnitFacts } from "./quality-facts";
 
 const real = (file: string): string => readFileSync(path.join(findRoot(), file), "utf8");
@@ -151,10 +161,13 @@ describe("the quality table is generated and kept fresh [REQ-024]", () => {
     delete process.env.TERRARIUM_TODAY;
   });
 
-  test("a fresh table passes; a missing one fails until it is written (QUAL001)", () => {
+  const STALE = "NOTE quality [QUAL001] 낡음: pnpm quality write";
+
+  test("a fresh table is silent; a missing one is a note, not a failure (QUAL001)", () => {
     const root = repo();
-    expect(run(root).map((v) => v.code)).toEqual(["QUAL001"]);
+    expect(report(root)).toEqual({ violations: [], notes: [STALE] });
     write(root);
+    expect(report(root)).toEqual({ violations: [], notes: [] });
     expect(run(root)).toEqual([]);
     expect(readFileSync(path.join(root, TABLE), "utf8")).toBe(render(root));
   });
@@ -180,13 +193,25 @@ describe("the quality table is generated and kept fresh [REQ-024]", () => {
       "packages/core/src/world/d.ts",
       "// TODO(TD-0001): later\nexport const d = 1;\n",
     ],
-  ])("when %s, the committed table is stale", (_name, file, text) => {
+  ])("when %s, the committed table is stale: a note, never a failure", (_name, file, text) => {
     const root = repo({}, [item("TD-0001")]);
     write(root);
     writeFileSync(path.join(root, file), text);
-    expect(run(root).map((v) => v.code)).toEqual(["QUAL001"]);
+    expect(report(root)).toEqual({ violations: [], notes: [STALE] });
     write(root);
-    expect(run(root)).toEqual([]);
+    expect(report(root).notes).toEqual([]);
+  });
+
+  test("every unit gets a grade, and a table that cannot be generated fails the check", () => {
+    const root = repo();
+    const grades = render(root)
+      .split("\n")
+      .filter((line) => /^\| [\w.()가-힣 ]+ \| [ABCD] \|/.test(line))
+      .map((line) => line.split("|")[1]?.trim());
+    expect(grades).toHaveLength(8);
+    expect(grades).toContain(NO_UNIT);
+    writeFileSync(path.join(root, "docs/exec-plans/tech-debt.yaml"), "items: [: bad");
+    expect(() => report(root)).toThrow();
   });
 
   test("the table does not depend on today's date", () => {
@@ -374,12 +399,17 @@ describe("recorded coverage feeds the table, nothing is invented [REQ-024]", () 
       }),
     });
     const lines: string[] = [];
-    expect(main(["--root", root], (l) => lines.push(l))).toBe(1);
+    expect(main(["--root", root], (l) => lines.push(l))).toBe(0);
+    expect(lines.at(-1)).toBe("NOTE quality [QUAL001] 낡음: pnpm quality write");
+    expect(main(["print", "--root", root], (l) => lines.push(l))).toBe(0);
+    expect(lines.at(-1)).toBe(render(root));
+    expect(existsSync(path.join(root, TABLE))).toBe(false);
     expect(main(["write", "--root", root], (l) => lines.push(l))).toBe(0);
     expect(existsSync(path.join(root, TABLE))).toBe(true);
     expect(main(["record", "--root", root], (l) => lines.push(l))).toBe(0);
     expect(lines.join("\n")).toContain('"core.world": 100');
-    expect(main(["--root", root], (l) => lines.push(l))).toBe(1);
+    expect(main(["--root", root], (l) => lines.push(l))).toBe(0);
+    expect(lines.at(-1)).toContain("QUAL001");
     expect(main(["write", "--root", root], (l) => lines.push(l))).toBe(0);
     expect(main(["--root", root], (l) => lines.push(l))).toBe(0);
     expect(lines.at(-1)).toBe("OK   quality");

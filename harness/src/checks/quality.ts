@@ -3,8 +3,10 @@
  * A-D that follows from measured values by the rule printed above the table. The harness writes the file
  * (`pnpm quality write`); this check fails when the committed file differs from what the repository now produces.
  *
- * QUAL001 the table is missing or stale   QUAL002 the coverage record is malformed
- * QUAL003 a debt item names a unit that does not exist
+ * QUAL002 the coverage record is malformed   QUAL003 a debt item names a unit that does not exist
+ * QUAL001 is a note, not a failure: the committed table is missing or stale. Nearly every change moves a cell, so
+ * a red check would make every change regenerate it and every open PR conflict on it. The check fails only when
+ * the table cannot be generated; the cleanup job regenerates and commits it (ADR-0148).
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -117,7 +119,7 @@ export function renderTable(
   return [
     "# 품질 등급표",
     "",
-    "이 문서는 하네스가 만들어요(`pnpm quality write`). 손으로 고치지 않아요. 합칠 때 충돌하면 고치지 말고 다시 만들어요. 코드나 장부가 바뀌어 낡으면 구조 검사 `QUAL001`이 빨개져요.",
+    "이 문서는 하네스가 만들어요(`pnpm quality write`). 손으로 고치지 않아요. 5시간마다 도는 정리 작업이 새로 만들어 올려요. 일반 변경은 건드리지 않아도 되고, 충돌하면 고치지 말고 다시 만들어요. 낡으면 구조 검사가 알림 한 줄(`QUAL001`)만 내고 빨갛게 하지는 않아요. 변경마다 자기 등급은 CI의 job 요약에 나와요.",
     '정리 작업은 이 표의 위쪽, 등급이 가장 낮은 단위부터 시작해요. 한 줄의 "이유" 칸이 무엇을 고치면 등급이 오르는지 알려줘요.',
     "",
     RULES,
@@ -156,38 +158,29 @@ function unitNameProblems(root: string): Violation[] {
   );
 }
 
-export function run(root: string): Violation[] {
+export function report(root: string): { violations: Violation[]; notes: string[] } {
   try {
     readRecord(root);
   } catch (error) {
-    return [
-      violation(
-        "QUAL002",
-        RECORD_FILE,
-        0,
-        (error as Error).message,
-        "Regenerate it from a coverage run: pnpm tsx harness/src/checks/quality.ts record",
-      ),
-    ];
-  }
-  const out = unitNameProblems(root);
-  const file = path.join(root, TABLE_FILE);
-  const current = existsSync(file) ? readFileSync(file, "utf8") : undefined;
-  if (current !== render(root)) {
-    out.push(
-      violation(
-        "QUAL001",
-        TABLE_FILE,
-        0,
-        current === undefined
-          ? "the quality table was never generated"
-          : "the quality table is stale (what the repository measures now differs from the committed file)",
-        "Regenerate and commit it: pnpm quality write (never edit it by hand; on a merge conflict, regenerate).",
-      ),
+    const bad = violation(
+      "QUAL002",
+      RECORD_FILE,
+      0,
+      (error as Error).message,
+      "Regenerate it from a coverage run: pnpm tsx harness/src/checks/quality.ts record",
     );
+    return { violations: [bad], notes: [] };
   }
-  return out;
+  const file = path.join(root, TABLE_FILE);
+  const fresh = render(root); // generating must work even when nothing is committed yet
+  const stale = !existsSync(file) || readFileSync(file, "utf8") !== fresh;
+  return {
+    violations: unitNameProblems(root),
+    notes: stale ? ["NOTE quality [QUAL001] 낡음: pnpm quality write"] : [],
+  };
 }
+
+export const run = (root: string): Violation[] => report(root).violations;
 
 export function write(root: string): void {
   const file = path.join(root, TABLE_FILE);
@@ -223,11 +216,18 @@ export function main(argv: readonly string[], out: (line: string) => void = cons
     out(`wrote ${TABLE_FILE}`);
     return 0;
   }
+  if (positional[0] === "print") {
+    out(render(root));
+    return 0;
+  }
   if (positional[0] === "record") {
     out(recordCoverage(root));
     return 0;
   }
-  return finish("quality", run(root), out);
+  const { violations, notes } = report(root);
+  const code = finish("quality", violations, out);
+  for (const line of notes) out(line);
+  return code;
 }
 
 if (isMain(import.meta.url)) process.exit(main(process.argv.slice(2)));
