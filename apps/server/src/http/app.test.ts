@@ -7,9 +7,10 @@ import { DEFAULT_TOOLSET } from "@terrarium/core/tools";
 import type { FastifyInstance } from "fastify";
 import { afterAll, describe, expect, test } from "vitest";
 import { sampleBlueprint } from "../../../../packages/core/src/world/test-support/sample";
-import { testPlatform, until } from "../runtime/test-support/platform";
+import { ANONYMOUS } from "../runtime";
+import { person, testPlatform, until } from "../runtime/test-support/platform";
 import { buildApp } from "./app";
-import { viewerOf } from "./viewer";
+import { proxyViewer, SELF_ONLY, selfViewer } from "./viewer";
 
 const dirs: string[] = [];
 afterAll(() => {
@@ -204,31 +205,28 @@ describe("an experiment over HTTP [REQ-030] [REQ-038]", () => {
 describe("live progress as server-sent events [REQ-030]", () => {
   test("a summary first, then runs and tool calls as they happen", async () => {
     const { app: a, platform } = app({ heartbeatSeconds: 0.05 });
-    const world = await platform.worlds.create(
-      { name: "연수", source: "self" },
-      { name: "홀", blueprint: sampleBlueprint() },
-    );
-    const { scenario } = await platform.scenarios.create(
-      { name: "연수", source: "self" },
-      { worldId: world.world.id, templateId: "cooling-failure" },
-    );
+    const world = await platform.worlds.create(person("연수"), {
+      name: "홀",
+      blueprint: sampleBlueprint(),
+    });
+    const { scenario } = await platform.scenarios.create(person("연수"), {
+      worldId: world.world.id,
+      templateId: "cooling-failure",
+    });
     await a.listen({ port: 0, host: "127.0.0.1" });
     const base = `http://127.0.0.1:${(a.server.address() as AddressInfo).port}`;
     try {
-      const created = await platform.experiments.create(
-        { name: "연수", source: "self" },
-        {
-          name: "실시간",
-          recipe: {
-            worldId: world.world.id,
-            scenarioId: scenario.id,
-            harnessId: "builtin",
-            agentId: "idle",
-            tools: [...DEFAULT_TOOLSET],
-            seeds: [1],
-          },
+      const created = await platform.experiments.create(person("연수"), {
+        name: "실시간",
+        recipe: {
+          worldId: world.world.id,
+          scenarioId: scenario.id,
+          harnessId: "builtin",
+          agentId: "idle",
+          tools: [...DEFAULT_TOOLSET],
+          seeds: [1],
         },
-      );
+      });
       const controller = new AbortController();
       const res = await fetch(`${base}/api/experiments/${created.experiment.id}/events`, {
         signal: controller.signal,
@@ -274,31 +272,36 @@ describe("the web app is served from the same place [REQ-006]", () => {
 });
 
 describe("who is asking [REQ-033]", () => {
+  const proxy = { ...SELF_ONLY, header: "x-forwarded-user", secret: "test-secret-0001" };
+  const sealed = { "x-terrarium-proxy-secret": "test-secret-0001" };
+
   test("the SSO proxy's header wins and cannot be faked; otherwise the name people typed", () => {
     expect(
-      viewerOf(
-        { "x-forwarded-user": "yeonsu.kim", "x-terrarium-user": "admin" },
-        "x-forwarded-user",
+      proxyViewer(
+        { ...sealed, "x-forwarded-user": "yeonsu.kim", "x-terrarium-user": "admin" },
+        proxy,
       ),
     ).toEqual({
+      id: "yeonsu.kim",
       name: "yeonsu.kim",
+      groups: [],
+      roles: ["user"],
       source: "proxy",
     });
-    expect(viewerOf({ "x-terrarium-user": "admin" }, "x-forwarded-user")).toEqual({
-      name: "anonymous",
+    expect(proxyViewer({ ...sealed, "x-terrarium-user": "admin" }, proxy)).toBeUndefined();
+    expect(selfViewer({ "x-terrarium-user": encodeURIComponent(" 김연수 ") }, SELF_ONLY)).toEqual(
+      person("김연수"),
+    );
+    expect(selfViewer({ "x-terrarium-user": "%E0%A4%A" }, SELF_ONLY)).toMatchObject({
       source: "anonymous",
     });
-    expect(viewerOf({ "x-terrarium-user": encodeURIComponent(" 김연수 ") })).toEqual({
-      name: "김연수",
-      source: "self",
+    expect(selfViewer({ "x-terrarium-user": "a\u0000b" }, SELF_ONLY)).toMatchObject({
+      source: "anonymous",
     });
-    expect(viewerOf({ "x-terrarium-user": "%E0%A4%A" })).toMatchObject({ source: "anonymous" });
-    expect(viewerOf({ "x-terrarium-user": "a\u0000b" })).toMatchObject({ source: "anonymous" });
-    expect(viewerOf({ "x-terrarium-user": "x".repeat(41) })).toMatchObject({ source: "anonymous" });
-    expect(viewerOf({ "x-terrarium-user": ["첫째", "둘째"] })).toEqual({
-      name: "첫째",
-      source: "self",
+    expect(selfViewer({ "x-terrarium-user": "x".repeat(41) }, SELF_ONLY)).toMatchObject({
+      source: "anonymous",
     });
-    expect(viewerOf({})).toEqual({ name: "anonymous", source: "anonymous" });
+    expect(selfViewer({ "x-terrarium-user": ["첫째", "둘째"] }, SELF_ONLY)).toEqual(person("첫째"));
+    expect(selfViewer({}, SELF_ONLY)).toEqual(ANONYMOUS);
   });
 });

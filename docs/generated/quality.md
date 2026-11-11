@@ -32,12 +32,12 @@
 | core.physics | C | 모름 / 97.0 | 0 | 25 (0) | 0 | 2026-11-04 (gpu-fabric.md) | 한도 90% 넘음 25 |
 | core.topology | C | 모름 / 93.0 | 0 | 8 (0) | 0 | 2026-11-11 (application-layer.md) | 한도 90% 넘음 8 |
 | core.facades | C | 모름 / 97.0 | 0 | 5 (0) | 0 | 2026-11-04 (facility-protocols.md) | 한도 90% 넘음 5 |
-| core.tools | C | 모름 / 98.0 | 0 | 7 (0) | 0 | 2026-11-07 (tool-scope-and-sop.md) | 한도 90% 넘음 7 |
+| core.tools | C | 모름 / 98.0 | 0 | 7 (0) | 0 | 2026-11-11 (application-layer.md) | 한도 90% 넘음 7 |
 | core.scenario | C | 모름 / 98.0 | 0 | 7 (0) | 0 | 2026-11-06 (config-scenarios.md) | 한도 90% 넘음 7 |
-| core.sources.worldgen | C | 모름 / 98.0 | 0 | 8 (0) | 0 | 2026-11-05 (capacity.md) | 한도 90% 넘음 8 |
-| core.session | C | 모름 / 98.0 | 0 | 9 (0) | 0 | 2026-11-05 (capacity.md) | 한도 90% 넘음 9 |
+| core.sources.worldgen | C | 모름 / 98.0 | 0 | 8 (0) | 0 | 2026-11-06 (network-fabrics.md) | 한도 90% 넘음 8 |
+| core.session | C | 모름 / 98.0 | 0 | 9 (0) | 0 | 2026-11-10 (operation-agent-guide.md) | 한도 90% 넘음 9 |
 | server.adapters | C | 모름 / 97.0 | 0 | 11 (0) | 0 | 2026-11-10 (operation-agent-guide.md) | 한도 90% 넘음 11 |
-| server.runtime | C | 모름 / 97.0 | 0 | 10 (0) | 0 | 2026-11-05 (capacity.md) | 한도 90% 넘음 10 |
+| server.runtime | C | 모름 / 97.0 | 0 | 10 (0) | 0 | 2026-11-11 (capacity.md) | 한도 90% 넘음 10 |
 | web.logic | C | 모름 / 96.5 | 0 | 27 (0) | 0 | 2026-11-06 (config-scenarios.md) | 한도 90% 넘음 27 |
 | web.ui | C | — | 35 | 59 (0) | 2 (2026-12-08) | 2026-11-07 (airflow-map.md) | 열린 부채 2, 한도 90% 넘음 59, 끄기 35 |
 | harness | C | 모름 / 97.5 | 0 | 12 (0) | 0 | 2026-11-11 (harness-guide.md) | 한도 90% 넘음 12 |
@@ -54,11 +54,11 @@
 | core.sources | B | 모름 / 98.0 | 0 | 1 (0) | 0 | 2026-11-11 (world-sources.md) | 한도 90% 넘음 1, 커버리지 모름 |
 | core.experiments | B | 모름 / 98.0 | 0 | 3 (0) | 0 | 2026-11-11 (experiments-and-analysis.md) | 한도 90% 넘음 3, 커버리지 모름 |
 | core.analysis | B | 모름 / 97.5 | 0 | 2 (0) | 0 | 2026-11-11 (experiments-and-analysis.md) | 한도 90% 넘음 2, 커버리지 모름 |
-| core.contract | B | 모름 / 98.0 | 0 | 2 (0) | 0 | 2026-11-07 (service-catalog.md) | 한도 90% 넘음 2, 커버리지 모름 |
+| core.contract | B | 모름 / 98.0 | 0 | 2 (0) | 0 | 2026-11-11 (http-api.md) | 한도 90% 넘음 2, 커버리지 모름 |
 | server.cluster | B | 모름 / 91.0 | 0 | 1 (0) | 0 | 2026-11-06 (scaling.md) | 한도 90% 넘음 1, 커버리지 모름 |
 | server.mcp | B | 모름 / 98.0 | 0 | 0 (0) | 0 | — | 커버리지 모름 |
-| server.http | B | 모름 / 98.0 | 0 | 0 (0) | 0 | — | 커버리지 모름 |
-| server.main | B | 모름 / 95.0 | 0 | 0 (0) | 0 | 2026-11-11 (operations.md) | 커버리지 모름 |
+| server.http | B | 모름 / 98.0 | 0 | 0 (0) | 0 | 2026-11-11 (operations.md) | 커버리지 모름 |
+| server.main | B | 모름 / 95.0 | 0 | 1 (0) | 0 | 2026-11-11 (operations.md) | 한도 90% 넘음 1, 커버리지 모름 |
 | web.main | B | — | 3 | 0 (0) | 0 | 2026-11-11 (web-ui.md) | 끄기 3 |
 | tests.e2e | B | — | 1 | 0 (0) | 0 | 2026-11-11 (harness-e2e.md) | 끄기 1 |
 | web.moss | A | — | 0 | 0 (0) | 0 | 2026-11-11 (moss.md) | — |

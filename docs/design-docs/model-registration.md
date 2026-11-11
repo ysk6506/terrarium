@@ -15,12 +15,13 @@ covers:
   - apps/web/src/logic/models.ts
   - apps/web/src/ui/pages/model-section.tsx
   - apps/web/src/ui/pages/model-dialog.tsx
-covers_hash: 0ee037e9b18e8e90
+covers_hash: 4a1c23a3ef8dd4c3
 verification_log:
   - "2026-11-06: LLM API 등록"
   - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
   - "2026-11-07: ADR-0125: 이끼는 기본 모델이 있어야만 켜진다(꺼지면 알약만, 409 no_model), 점수 질문 찾기 규칙을 문서에 반영하고 코드와 대조함"
   - "2026-11-11: model-section.tsx에서 안 쓰는 useAction 호출만 지움, 문서 내용과 동작은 그대로"
+  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
 ---
 # 모델 등록 (REQ-099, [ADR-0119](adr/0119-llm-api-registration.md))
 
@@ -37,7 +38,7 @@ verification_log:
 | 어댑터 | `openai-compatible.ts`, `anthropic-compatible.ts` | litellm과 openai는 앞의 것, anthropic은 뒤의 것 |
 | 연결 확인 | `llm/check.ts` (`checkLlm`) | 모델 목록 → 실패하면 `max_tokens: 1` 한 번. 시계를 받는다 |
 | 계약 | `contract/models.ts`, `model-routes.ts` | 요청 검증(zod), 응답 `LlmModelView`, 경로 여섯 ([HTTP API](http-api.md)) |
-| 서버 | `runtime/models.ts` (`Models`) | 등록·고치기·지우기·기본·확인. 키와 헤더 값을 비밀 상자로 봉인 |
+| 서버 | `runtime/models.ts` (`Models`) | 등록·고치기·지우기·기본·확인. 키와 헤더 값을 비밀 상자로 봉인. 고치기·지우기·연결 확인은 등록한 사람과 관리자만, 기본 모델 정하기는 관리자만([권한](permissions.md)) |
 | 저장 | `ExperimentStore`의 `putModel`·`getModel`·`listModels`·`deleteModel` | SQLite `llm_models` 표(기록 한 덩어리), 메모리 구현도 있다 |
 | 화면 | `ui/pages/model-section.tsx`, `model-dialog.tsx`, `logic/models.ts` | 설정의 "모델" 구역 |
 

@@ -5,7 +5,9 @@ import { NotFoundError } from "@terrarium/core/kernel";
 import { describe, expect, test } from "vitest";
 import { buildAdapters, parseConfig } from "../adapters";
 import {
+  ADMIN,
   JIMIN,
+  person,
   recipe,
   ScriptHarness,
   seed,
@@ -127,13 +129,21 @@ describe("sharing results [REQ-038]", () => {
     expect(html).toContain("내장");
     expect(html).toContain('<svg class="spark"');
     expect(await p.results.report(id, "text")).toContain("[테라리움] 공유할 실험");
-    const share = await p.results.createShare(JIMIN, id, {}, "https://terrarium.internal/");
+    // only the experiment's maker (or an admin) opens a door to its report
+    await expect(
+      p.results.createShare(JIMIN, id, {}, "https://terrarium.internal/"),
+    ).rejects.toBeInstanceOf(ForbiddenError);
+    const share = await p.results.createShare(YEONSU, id, {}, "https://terrarium.internal/");
+    // no number given: thirty days, not for ever
+    expect(Date.parse(share.expiresAt as string) - Date.parse(share.createdAt)).toBe(
+      30 * 86_400_000,
+    );
     expect(share.url).toBe(`https://terrarium.internal/r/${share.token}`);
     expect(share.token).toMatch(/^[0-9a-f]{36}$/);
     expect(await p.results.shared(share.token, "text", share.url)).toContain(share.url);
-    await expect(
-      p.results.deleteShare({ name: "other", source: "self" }, share.token),
-    ).rejects.toBeInstanceOf(ForbiddenError);
+    await expect(p.results.deleteShare(person("other"), share.token)).rejects.toBeInstanceOf(
+      ForbiddenError,
+    );
     expect(await p.results.deleteShare(YEONSU, share.token)).toEqual({ deleted: true });
     await expect(p.results.shared(share.token, "html", "x")).rejects.toThrow(
       "공유 링크가 없거나 만료됐어요",
@@ -172,7 +182,7 @@ describe("benchmarks and the digital twin [REQ-039] [REQ-015]", () => {
 
   test("diagnosis records export as JSON Lines; the brief names what imported worlds lack", async () => {
     const { platform: p } = testPlatform();
-    const imported = await p.worlds.import(YEONSU, { source: "sample", name: "가져온 홀" });
+    const imported = await p.worlds.import(ADMIN, { source: "sample", name: "가져온 홀" });
     const room = imported.world.blueprint.entities.find((x) => x.kind === "cooling_unit");
     expect(room).toBeDefined();
     const { scenario } = await p.scenarios.create(YEONSU, {

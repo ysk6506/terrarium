@@ -33,7 +33,8 @@ import {
   type Issue,
   validateBlueprint,
 } from "@terrarium/core/world";
-import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
+import { must, type PlatformContext, type Viewer } from "./context";
+import { allow } from "./permissions";
 
 /** Blueprint problems as form issues: the path names the entity or link that is wrong. */
 export function blueprintIssues(issues: readonly Issue[]) {
@@ -99,7 +100,7 @@ export class Worlds {
     return {
       id: this.ctx.stamps.id("w"),
       name,
-      owner: viewer.name,
+      owner: viewer.id,
       origin,
       createdAt: this.ctx.stamps.now(),
       ...(provenance ? { provenance } : {}),
@@ -152,6 +153,8 @@ export class Worlds {
   }
 
   async import(viewer: Viewer, req: ImportWorldRequest): Promise<ImportedWorld> {
+    // It reads the company's systems with the server's own account, so it is for administrators (ADR-0152).
+    allow(viewer, "administer", {}, "소스에서 세계 가져오기");
     const entry = must(this.ctx.sources.get(req.source), `현실 소스 '${req.source}'`);
     const base = this.fresh(viewer, req.name ?? `${entry.view.name}에서 가져온 세계`, "import");
     let imported: Awaited<ReturnType<typeof importReality>>;
@@ -180,7 +183,7 @@ export class Worlds {
 
   async update(viewer: Viewer, id: string, req: UpdateWorldRequest): Promise<SavedWorld> {
     const current = await this.get(id);
-    ownerOnly(viewer, current.owner, "세계 고치기");
+    allow(viewer, "change", { owner: current.owner }, "세계 고치기");
     if (current.digest !== req.baseDigest)
       throw new ConflictError(
         "그사이 이 세계가 바뀌었어요. 새로고침해서 바뀐 내용을 본 뒤 다시 저장해 주세요",
@@ -197,7 +200,7 @@ export class Worlds {
   /** Save a physics profile with the world: a new version of it, so runs on the old physics keep meaning what they ran on. */
   async setPhysics(viewer: Viewer, id: string, req: PutPhysicsRequest): Promise<WorldPhysicsView> {
     const current = await this.get(id);
-    ownerOnly(viewer, current.owner, "세계의 물리 고치기");
+    allow(viewer, "change", { owner: current.owner }, "세계의 물리 고치기");
     if (current.digest !== req.baseDigest)
       throw new ConflictError(
         "그사이 이 세계가 바뀌었어요. 새로고침해서 바뀐 내용을 본 뒤 다시 저장해 주세요",
@@ -211,7 +214,7 @@ export class Worlds {
 
   async delete(viewer: Viewer, id: string): Promise<{ deleted: boolean }> {
     const current = await this.get(id);
-    ownerOnly(viewer, current.owner, "세계 지우기");
+    allow(viewer, "remove", { owner: current.owner }, "세계 지우기");
     return { deleted: await this.ctx.store.deleteWorld(id) };
   }
 }
