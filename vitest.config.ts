@@ -19,6 +19,8 @@ export default defineConfig({
       "harness/src/**/*.test.ts",
       "tests/spec/**/*.test.ts",
     ],
+    // One turn of the event loop between tests, so long files keep reporting progress (ADR-0140).
+    setupFiles: ["tests/setup/yield-between-tests.ts"],
     environment: "node",
     testTimeout: 20_000,
     coverage: {
