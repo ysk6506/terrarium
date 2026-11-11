@@ -2,18 +2,19 @@
 title: 진짜 하네스로 끝까지 — LangGraph, OpenCode, OpenClaw 실측과 재현 절차
 kind: guide
 status: active
-last_verified: 2026-11-05
+last_verified: 2026-11-11
 covers:
   - apps/server/src/adapters/connectors/langgraph.ts
   - apps/server/src/adapters/connectors/opencode.ts
   - apps/server/src/adapters/connectors/openclaw.ts
   - tests/e2e/harness/*.ts
   - tests/e2e/harness/langgraph-app/*
-covers_hash: 0c2e945da8b9161a
+covers_hash: ac7f5f9a5e6b7ea1
 verification_log:
   - "2026-11-05: 처음 씀. 세 하네스를 실제로 설치해 커넥터로 실험을 완주한 기록이다 (REQ-051, ADR-0042)"
   - "2026-11-05: 처음 씀. 커넥터 세 개와 tests/e2e/harness 파일을 실제 실행 결과와 대조했다(버전, 포트, 설정, 점수)"
   - "2026-11-05: opencode.ts의 변경은 inventory(숨긴 도우미·서브에이전트를 이유별로 셈), showHidden, talk 추가뿐이다. 런북이 말하는 연결·실행 절차와 점수는 그대로 맞다"
+  - "2026-11-11: REQ-118 시드당 반복: 실행 키(시드·반복), 시드 단위 통계, 순위 조건(시드 3개), 한도 60, 화면 반영을 코드와 대조해 고쳤다. 이 문서의 나머지는 그대로 맞다"
 ---
 # 진짜 하네스로 끝까지
 
@@ -35,7 +36,7 @@ verification_log:
 
 세계 `e2e 홀`(천안, 랙 6개), 시나리오 "냉방기 정지", 시드 1, 시간 정책 lockstep, 툴 13개(`DEFAULT_TOOLSET`에서 프로토콜 툴을 뺀 것).
 세 실험 모두 `completed`, 진단 60/60(원인 `ca-dc1-f1-a-crah1`, 종류 `cooling_unit_failure`), 총점 **90.9**, 툴 호출 3회 + 진단.
-순위표(벤치마크 화면)에 세 줄이 떴다. 한 줄이 "3회부터 순위"라서 순위 숫자는 "순위 전"으로 나온다(실행이 3회 쌓여야 매긴다).
+순위표(벤치마크 화면)에 세 줄이 떴다. 한 줄이 "시드 3개부터 순위에 올라요"라서 순위 숫자는 "순위 전"으로 나온다(서로 다른 시드가 3개 쌓여야 매긴다).
 
 | 하네스 | 설치한 버전 | 테라리움이 붙는 곳 | 결과 | 토큰 |
 |---|---|---|---|---|
@@ -184,7 +185,7 @@ openclaw gateway run --port 18789 --bind loopback
 
 1. 세 하네스 모두 실험이 `completed`로 끝나고, 순위표에 줄이 생긴다.
 2. 실행 페이지의 툴 호출 목록에 테라리움 툴만 있다(OpenClaw는 자체 툴이 빠졌는지, OpenCode는 `terrarium-` 말고 편집·셸 툴을 안 쓰는지 본다).
-3. 같은 조건을 3회 이상 돌려 순위 숫자와 구간이 나오는지 본다. 같은 하네스·모델로 점수 편차가 크면 그 자체가 결과다.
+3. 같은 조건을 서로 다른 시드 3개 이상으로 돌려 순위 숫자와 구간이 나오는지 본다. 같은 하네스·모델로 점수 편차가 크면 그 자체가 결과다.
 4. 막힌 곳은 이 문서의 표에 더한다.
 
 ## 이번 실측을 되풀이하려면 (대본 모델)

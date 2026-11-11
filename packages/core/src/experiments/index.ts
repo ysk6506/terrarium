@@ -135,6 +135,7 @@ export {
   runCountOf,
   seedsUpTo,
   sizeProblems,
+  sizeProblemsOf,
 } from "./recipe";
 export { DEFAULT_LIMITS, FairScheduler, type QueuedRun, type SchedulerLimits } from "./scheduler";
 export type { ServiceCardRecord } from "./service-cards";

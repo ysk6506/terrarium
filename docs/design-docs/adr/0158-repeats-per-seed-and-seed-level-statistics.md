@@ -4,10 +4,20 @@ kind: decision
 status: active
 last_verified: 2026-11-11
 enforced_by:
-  - none
-no_enforcement_reason: 구현 전 결정 기록이다(REQ-118 예정). 만들 때 enforced_by를 반복·통계·골든 시험으로 바꾼다.
+  - apps/server/src/runtime/repeats.test.ts
+  - apps/server/src/adapters/sqlite-repeat.test.ts
+  - packages/core/src/analysis/seed-statistics.test.ts
+  - apps/web/src/logic/seed-rows.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
+amends_tests:
+  - packages/core/src/analysis/analysis.test.ts::benchmark leaderboards [REQ-039] > configurations are pooled across people and ranked; small samples wait unranked
+  - packages/core/src/analysis/analysis.test.ts::<import:cc825183>
+  - "packages/core/src/contract/contract.test.ts::experiments: create, fork, add runs [REQ-030] [REQ-040] > a fork changes only what it names; adding runs says how many or which seeds"
+  - packages/core/src/experiments/experiments.test.ts::recipes [REQ-030] [REQ-031] > a sound recipe has no problems; every problem is named in Korean
+  - packages/core/src/experiments/experiments.test.ts::run lifecycle [REQ-030] > runs go queued → running → finished, and finished runs never change
+  - apps/web/src/logic/logic.test.ts::=run
+test_change_reason: 통계의 단위가 실행에서 시드로 바뀌고 실행이 반복 번호를 지니게 되어 다섯 곳의 단언이 바뀐다. 순위표 시험은 같은 시드(1)가 두 실험에 겹쳐 있어 "실행 3번이면 순위"를 단언하고 있었는데, 이제 서로 다른 시드 3개가 필요하므로 시험 입력의 시드를 겹치지 않게 하고 순위 조건 상수의 이름을 바꿨다(성질은 그대로이고 겹친 경우는 새 시험이 따로 단언한다). 나머지는 한도 문구(실행 20번 대신 시드 20개와 실행 60번), 실행 더하기 요청의 안내 문장(반복이 늘었다), 새 실행 기록의 반복 번호(repeat 1), 실행 요약 시험 자료의 반복 번호다. 어느 것도 채점과 점수 분해의 단언을 건드리지 않는다.
 decision_hash: 5510d10fa363c6ba
 ---
 # ADR-0158 시드마다 여러 번 돌리고, 통계의 단위는 실행이 아니라 시드다

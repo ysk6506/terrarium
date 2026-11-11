@@ -3,12 +3,12 @@
  * who is tested (harness, agent), and how (tools, runs, time, product versions).
  */
 import type { ScenarioRecord, WorldSummary } from "@terrarium/core/experiments";
-import { MAX_SEEDS } from "@terrarium/core/experiments";
+import { MAX_REPEATS, MAX_SEEDS } from "@terrarium/core/experiments";
 import { BUILTIN_PROFILES } from "@terrarium/core/profiles";
 import { useEffect } from "react";
 import { experiment, hiddenWarning, howWords, toolPicker } from "../../logic";
 import { useApp } from "../context";
-import { Button, Check, Note, NumberField, SelectField, TextField } from "../kit";
+import { Button, Check, Note, NumberField, Segmented, SelectField, TextField } from "../kit";
 import { DomainScope } from "./experiment-domains";
 import { McpGuide } from "./experiment-mcp";
 import { KindChoice, OperationInstruction, OperationSetup } from "./experiment-operation";
@@ -207,6 +207,33 @@ function RunsField({ draft, set }: Pick<StepProps, "draft" | "set">) {
   );
 }
 
+/** How many times each seed runs: a few quick choices and a box for any other number (ADR-0158). */
+function RepeatsField({ draft, set }: Pick<StepProps, "draft" | "set">) {
+  const quick = howWords.REPEAT_CHOICES.map((n) => ({ value: String(n), label: `${n}번` }));
+  const bad = !Number.isInteger(draft.repeats) || draft.repeats < 1 || draft.repeats > MAX_REPEATS;
+  return (
+    <div className="stack how-repeats" style={{ gap: 8 }}>
+      <NumberField
+        label={howWords.REPEATS_LABEL}
+        error={bad ? howWords.repeatsRange() : undefined}
+        value={draft.repeats}
+        min={1}
+        max={MAX_REPEATS}
+        step={1}
+        unit="번"
+        onChange={(repeats) => repeats !== undefined && set({ repeats: Math.round(repeats) })}
+        help={howWords.REPEATS_HELP}
+      />
+      <Segmented
+        label={howWords.REPEATS_PICK}
+        value={String(draft.repeats)}
+        options={quick}
+        onChange={(v) => set({ repeats: Number(v) })}
+      />
+    </div>
+  );
+}
+
 function TimeFields({ draft, set }: Pick<StepProps, "draft" | "set">) {
   const lockstep = draft.time.kind === "lockstep";
   return (
@@ -286,6 +313,7 @@ export function HowStep({
     <section className="wizard-step stack">
       <StepHead n={3} title="어떻게 시험할까요?" problems={problems} />
       <RunsField draft={draft} set={set} />
+      <RepeatsField draft={draft} set={set} />
       <OperationInstruction draft={draft} set={set} />
       <DomainScope draft={draft} set={set} />
       <div data-moss-action="exp-pick-tools">

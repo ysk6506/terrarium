@@ -454,7 +454,7 @@ describe("repeats of a seed: the seed is the unit [REQ-118]", () => {
   test("the shaking inside a seed is its own number, and so are the seeds that came out both ways", () => {
     expect(r.withinSeed).toEqual({ spread: EXPECT_REPEATED.spread, seeds: 3 });
     expect(r.splitSeeds).toBe(1);
-    expect(r.findings).toContain("시드 3개 중 1개에서 같은 조건인데 합격과 불합격이 갈렸어요");
+    expect(r.findings.join("\n")).not.toContain("흔들려요");
     expect(r.findings[0]).toBe("6번 중 3번 합격 (시드별 합격률의 평균 50%)");
   });
 

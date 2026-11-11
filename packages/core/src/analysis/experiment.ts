@@ -18,14 +18,7 @@ import {
 import { formatDuration } from "@terrarium/core/kernel";
 import { END_REASON_LABELS, type EndReason } from "@terrarium/core/oracle";
 import { analyzeRun, type RunAnalysis } from "./run";
-import {
-  groupBySeed,
-  meanOf,
-  seedRate,
-  seedSummary,
-  splitSeeds,
-  withinSeedSpread,
-} from "./seeds";
+import { groupBySeed, meanOf, seedRate, seedSummary, splitSeeds, withinSeedSpread } from "./seeds";
 import { clearlyDifferent, type Summary } from "./stats";
 import { NO_TELEMETRY, type Telemetry } from "./telemetry";
 
@@ -220,7 +213,7 @@ function experimentFindings(a: Omit<ExperimentAnalysis, "findings">): string[] {
   return out;
 }
 
-/** A wide spread between seeds says to add seeds; a wide spread inside a seed says to repeat more. */
+/** A wide spread between seeds says to add seeds. (The shaking inside a seed has two lines of its own on the screen.) */
 function spreadFindings(a: Omit<ExperimentAnalysis, "findings">): string[] {
   const out: string[] = [];
   if (a.score && a.score.n > 1 && a.score.stdev >= 15)
@@ -229,12 +222,6 @@ function spreadFindings(a: Omit<ExperimentAnalysis, "findings">): string[] {
         ? `시드마다 점수가 크게 달라요 (표준편차 ${a.score.stdev}점) — 시드를 늘려 보는 것이 좋아요`
         : `실행마다 점수가 크게 달라요 (표준편차 ${a.score.stdev}점) — 실행을 늘려 보는 것이 좋아요`,
     );
-  if (a.withinSeed && a.withinSeed.spread >= 15)
-    out.push(
-      `같은 조건에서도 점수가 ±${a.withinSeed.spread}점 흔들려요 — 반복을 늘려 평균을 확인해 보세요`,
-    );
-  if (a.splitSeeds > 0)
-    out.push(`시드 ${a.seeds}개 중 ${a.splitSeeds}개에서 같은 조건인데 합격과 불합격이 갈렸어요`);
   return out;
 }
 

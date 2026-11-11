@@ -211,6 +211,15 @@ export {
 export * as runbook from "./runbook";
 export * as scenario from "./scenario";
 export {
+  DOT_LABELS,
+  DOT_MARKS,
+  type DotState,
+  rangeText,
+  type SeedDot,
+  type SeedRow,
+  seedRows,
+} from "./seed-rows";
+export {
   DEFAULT_SETTINGS,
   readSettings,
   SETTING_DEFS,

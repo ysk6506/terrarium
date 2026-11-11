@@ -33,6 +33,7 @@ import {
   type WorldSummary,
 } from "@terrarium/core/experiments";
 import type { Blueprint, EntityKind } from "@terrarium/core/world";
+import { addRepeatColumn, runOf } from "./sqlite-migrate";
 import { RecordTable } from "./sqlite-records";
 
 const SCHEMA_VERSION = 2;
@@ -86,12 +87,6 @@ CREATE TABLE IF NOT EXISTS title_awards (
 type Row = Record<string, unknown>;
 const parse = <T>(text: unknown): T => JSON.parse(String(text)) as T;
 
-/** A run as stored: the record, with its repeat number from the column (a run saved before repeats existed is the first). */
-const runOf = (row: Row): RunRecord => ({
-  ...parse<RunRecord>(row.record),
-  repeat: Number(row.repeat_no ?? 1),
-});
-
 function countKinds(bp: Blueprint): Partial<Record<EntityKind, number>> {
   const out: Partial<Record<EntityKind, number>> = {};
   for (const e of bp.entities) out[e.kind] = (out[e.kind] ?? 0) + 1;
@@ -126,15 +121,9 @@ export class SqliteStore implements ExperimentStore {
     if (version > SCHEMA_VERSION)
       throw new Error(`데이터 파일이 더 새 버전(${version})이에요. 서버를 업데이트해 주세요`);
     // Version 2 (ADR-0158) gave runs a repeat number; the runs of a version-1 file are the first run of their seed.
-    if (version === 1) this.addRepeatColumn();
+    if (version === 1) addRepeatColumn(this.db);
     this.db.exec(SCHEMA);
     this.db.exec(`PRAGMA user_version = ${SCHEMA_VERSION}`);
-  }
-
-  private addRepeatColumn(): void {
-    const columns = this.db.prepare("PRAGMA table_info(runs)").all() as Row[];
-    if (!columns.some((c) => c.name === "repeat_no"))
-      this.db.exec("ALTER TABLE runs ADD COLUMN repeat_no INTEGER NOT NULL DEFAULT 1");
   }
 
   private sql(text: string): StatementSync {

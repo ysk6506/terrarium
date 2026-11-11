@@ -6,6 +6,7 @@
 import type { CreateExperimentRequest, ForkRequest } from "@terrarium/core/contract";
 import {
   type Experiment,
+  MAX_REPEATS,
   MAX_SEEDS,
   normalizeTools,
   OPERATION_SCENARIO_ID,
@@ -14,6 +15,7 @@ import {
   recipeDiff,
   recipeProblems,
   seedsUpTo,
+  sizeProblemsOf,
 } from "@terrarium/core/experiments";
 import { BUILTIN_PROFILES } from "@terrarium/core/profiles";
 import { type ScenarioDoc, scopeCheck } from "@terrarium/core/scenario";
@@ -45,7 +47,7 @@ import {
 import { SLOT_PENDING_PROBLEM } from "./connection-places";
 
 import { type MetaRow, metadataOf } from "./connections";
-import { RECOMMENDED_RUNS, runsRange } from "./how-words";
+import { DEFAULT_REPEATS, RECOMMENDED_RUNS, repeatsRange, runsRange } from "./how-words";
 
 export interface Draft {
   readonly name: string;
@@ -57,6 +59,8 @@ export interface Draft {
   readonly tools: readonly string[];
   /** Runs with seeds 1..n, so experiments in one benchmark set face the same draws. */
   readonly runs: number;
+  /** How many times each seed is run (ADR-0158); 1 is the usual and is left out of the recipe. */
+  readonly repeats: number;
   readonly time: TimePolicy;
   readonly profiles: { readonly vcenter?: string; readonly vrops?: string };
   /** The domains the experiment is responsible for (REQ-093); none means every domain is its own. */
@@ -90,6 +94,7 @@ export const emptyDraft = (): Draft => ({
   note: "",
   tools: [...DEFAULT_TOOLSET],
   runs: RECOMMENDED_RUNS,
+  repeats: DEFAULT_REPEATS,
   time: DEFAULT_TIME,
   profiles: {},
   domains: [],
@@ -176,6 +181,9 @@ export function withTools(draft: Draft, tools: readonly string[]): Draft {
   return { ...draft, tools: [...tools], sop };
 }
 
+/** Repeats go in the recipe only above one, so an experiment that does not repeat reads as it always did. */
+const repeatsPart = (draft: Draft) => (draft.repeats > 1 ? { repeats: draft.repeats } : {});
+
 /** The recipe the draft stands for, once world, scenario, harness and agent are chosen. */
 export function recipeOf(draft: Draft): Recipe | undefined {
   const scenarioId = draft.operation ? OPERATION_SCENARIO_ID : draft.scenarioId;
@@ -187,6 +195,7 @@ export function recipeOf(draft: Draft): Recipe | undefined {
     agentId: draft.agentId,
     tools: normalizeTools(draft.tools),
     seeds: seedsUpTo(draft.runs),
+    ...repeatsPart(draft),
     time: draft.time,
     profiles: draft.profiles,
     // only where they matter, so an experiment that does not use them reads as it always did
@@ -262,6 +271,17 @@ function whatProblems(draft: Draft, scenario: ScenarioDoc | undefined): string[]
  * What is still missing or wrong, by step of the form. Empty everywhere means it can start. With faults limited to
  * the given tools, a scenario those tools cannot solve is a problem of step 1.
  */
+/** The size of the experiment against the limits, in the words of the form: seeds first, then repeats, then both. */
+function sizeProblemsOfDraft(draft: Draft): string[] {
+  if (draft.runs < 1 || draft.runs > MAX_SEEDS) return [runsRange(MAX_SEEDS)];
+  if (!Number.isInteger(draft.repeats) || draft.repeats < 1 || draft.repeats > MAX_REPEATS)
+    return [repeatsRange()];
+  return sizeProblemsOf(draft.runs, draft.repeats);
+}
+
+/** How many runs the draft makes, seeds times repeats. */
+export const runCount = (draft: Draft): number => draft.runs * draft.repeats;
+
 export function draftProblems(
   draft: Draft,
   agents?: readonly string[],
@@ -276,7 +296,7 @@ export function draftProblems(
   if (!draft.harnessId) who.push("하네스를 골라 주세요");
   else if (!draft.agentId) who.push("에이전트를 골라 주세요");
   else if (slotPending) who.push(SLOT_PENDING_PROBLEM);
-  if (draft.runs < 1 || draft.runs > MAX_SEEDS) how.push(runsRange(MAX_SEEDS));
+  how.push(...sizeProblemsOfDraft(draft));
   recipeSteps(draft, agents, who, how);
   return { what, who, how: [...new Set(how)] };
 }
@@ -304,6 +324,7 @@ export function toRequest(draft: Draft, fallbackName: string): CreateExperimentR
       agentId: recipe.agentId,
       tools: [...recipe.tools],
       runs: draft.runs,
+      ...(recipe.repeats ? { repeats: recipe.repeats } : {}),
       time: recipe.time,
       profiles: recipe.profiles,
       ...(recipe.escalation ? { escalation: recipe.escalation } : {}),
@@ -330,6 +351,7 @@ export function draftFrom(parent: Experiment): Draft {
     agentId: r.agentId,
     tools: [...r.tools],
     runs: r.seeds.length,
+    repeats: r.repeats ?? DEFAULT_REPEATS,
     time: r.time,
     profiles: r.profiles,
     domains: r.domains ?? [],
@@ -359,6 +381,7 @@ export function toForkRequest(parent: Experiment, draft: Draft): ForkRequest {
     sop: "none",
     domains: [],
     leadTimes: {},
+    repeats: DEFAULT_REPEATS,
   };
   for (const c of recipeDiff(parent.recipe, recipe))
     change[c.field] = recipe[c.field] ?? back[c.field];

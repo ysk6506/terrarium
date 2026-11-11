@@ -10,6 +10,7 @@ import type { Browser, Page } from "playwright";
 import { Driver, nav, visitor } from "./driver";
 import { type Context, expectPath, home, SECOND } from "./journey-kit";
 import { ownCardOnly } from "./journey-own-card";
+import { repeatsInTheForm, shakingInTheResult } from "./journey-repeats";
 import { layoutAtWidths } from "./layout";
 import { settle } from "./site";
 
@@ -179,6 +180,7 @@ async function run(c: Context): Promise<void> {
   const { page } = c.v;
   await home(c);
   await c.d.click(page.getByRole("link", { name: "새 실험" }).first());
+  await repeatsInTheForm(c);
   await c.d.click(page.getByRole("button", { name: "실험 시작" }));
   await expectPath(c, /^\/experiments\/e-/);
   await waitForResult(page);
@@ -281,6 +283,12 @@ async function fork(c: Context): Promise<void> {
   await c.d.click(page.getByRole("link", { name: "조건 바꿔 다시 돌리기" }));
   await expectPath(c, /^\/experiments\/new$/);
   await c.d.choose(page.getByLabel("에이전트"), "무작위 추측");
+  // each of the five seeds three times: the fork says what it changes, and the result says how much it shook
+  await c.d.click(page.getByRole("button", { name: "3번", exact: true }));
+  await page
+    .getByText("시드당 반복")
+    .first()
+    .waitFor({ timeout: 5 * SECOND });
   await c.d.click(page.getByRole("button", { name: /조건 바꿔 다시 돌리기|실험 시작/ }));
   await expectPath(c, /^\/experiments\/e-/);
   await waitForResult(page);
@@ -288,6 +296,7 @@ async function fork(c: Context): Promise<void> {
     .getByText("원본과 견주면")
     .first()
     .waitFor({ timeout: 10 * SECOND });
+  await shakingInTheResult(c);
 }
 
 async function compare(c: Context): Promise<void> {
