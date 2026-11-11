@@ -12,6 +12,7 @@ touches_protected:
   - apps/web/package.json
   - packages/core/package.json
   - harness/package.json
+  - AGENTS.md
 decision_hash: 2018ecb30a2d4c19
 ---
 # ADR-0181 테라리움의 라이선스는 Apache License 2.0이다
