@@ -6,7 +6,7 @@
 import { describe, expect, test } from "vitest";
 import { lab } from "./test-support/deep-os-lab";
 
-const CASES: ReadonlyArray<readonly [string, string, boolean?]> = [
+const CASES: Array<[string, string, boolean?]> = [
   ["echo -n hi", "hi"],
   ["echo -e 'a\\tb\\\\c'", "a\tb\\c"],
   ["echo -en 'x\\ny'", "x\ny"],
@@ -465,8 +465,7 @@ const CASES: ReadonlyArray<readonly [string, string, boolean?]> = [
 
 describe("the fake shell's text commands and awk print what the real ones print [REQ-098]", () => {
   const { run } = lab();
-  test.each(CASES.map((c) => [...c]))("%s", (...c) => {
-    const [cmd, expected, fails = false] = c as [string, string, boolean?];
+  test.each(CASES)("%s", (cmd, expected, fails = false) => {
     const r = run("srv-a2", cmd);
     expect(r.stdout.trimEnd()).toBe(expected);
     expect(r.exitCode !== 0).toBe(fails);
