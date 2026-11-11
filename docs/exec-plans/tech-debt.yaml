@@ -4,4 +4,60 @@
 #   - open items past `due` fail the build; so does exceeding the open-debt budget (harness/config/debt.yaml)
 #   - closing an item (done/wontfix) needs a `resolution`, and no marker for it may remain in code
 # Statuses: open | done | wontfix. Severity: low | medium | high.
-items: []
+items:
+  - id: TD-0001
+    title: "main의 CI가 2026-11-07부터 푸시마다 실패한다 (시간 초과 11건, 성능 검사 1건). 전체 테스트가 통과한 기록이 없다"
+    severity: high
+    cost: "CI를 조각으로 나눠 병렬로 돌리고 커버리지를 따로 뗀다. 합치기 전에 CI 초록을 확인한다"
+    created: "2026-11-10"
+    due: "2026-11-17"
+    status: open
+  - id: TD-0002
+    title: "커버리지 하한을 최근에 재지 못했다 (테스트가 먼저 실패해 구조 검사·커버리지 단계가 CI에서 돌지 않았다)"
+    severity: high
+    cost: "CI가 초록이 되면 커버리지를 재고, 하한 아래인 단위에 테스트를 더한다"
+    created: "2026-11-10"
+    due: "2026-11-21"
+    status: open
+  - id: TD-0003
+    title: "REQ-084·085·089·091·092에 테스트가 없다 (TRACE001 다섯 건, 주간 엔트로피 검사가 계속 빨갛다)"
+    severity: medium
+    cost: "구현된 요구는 테스트를 붙이고, 로드맵뿐인 요구는 ADR로 '예정' 상태를 만들어 추적 검사가 구분하게 한다"
+    created: "2026-11-10"
+    due: "2026-11-24"
+    status: open
+  - id: TD-0004
+    title: "UX 측정 기록이 낡았고 build-small 항목이 없어 ux check가 UX004로 실패한다. 이 환경(그래픽 가속 없음)에서는 측정값이 깎인다"
+    severity: medium
+    cost: "UX 검사를 여정(기능)과 측정(속도·접근성)으로 나누고 측정은 CI에서 잰다"
+    created: "2026-11-10"
+    due: "2026-11-24"
+    status: open
+  - id: TD-0005
+    title: "lint 경고 13건이 쌓여 있다 (안 쓰는 import·변수, CSS 특이도)"
+    severity: low
+    cost: "경고를 지우고 경고도 실패로 만든다"
+    created: "2026-11-10"
+    due: "2026-11-24"
+    status: open
+  - id: TD-0006
+    title: "UX 점수가 '처음 온 사람이 이해하는가'를 재지 못한다 (여정 스크립트가 누를 곳을 알고 있다)"
+    severity: medium
+    cost: "화면만 보는 에이전트의 '처음 온 사용자' 검사를 만들고, 클로즈 베타 전에 실제 사용자 5명 과제 테스트를 한다"
+    created: "2026-11-10"
+    due: "2026-12-08"
+    status: open
+  - id: TD-0007
+    title: "화면마다 배치와 부품을 새로 조립한다 (디자인 시스템과 화면 패턴이 없다)"
+    severity: medium
+    cost: "Astryx 두 화면 시험, 화면 패턴 여덟 개 고정과 등록 검사"
+    created: "2026-11-10"
+    due: "2026-12-08"
+    status: open
+  - id: TD-0008
+    title: "합칠 때마다 요구사항 문서·문서 색인·테스트 잠금 파일(3.4MB)에서 충돌이 난다"
+    severity: low
+    cost: "요구사항을 파일로 쪼개고 색인을 생성물로 바꾸고 잠금 파일을 폴더별로 나눈다"
+    created: "2026-11-10"
+    due: "2026-12-08"
+    status: open

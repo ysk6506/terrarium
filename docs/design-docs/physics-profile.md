@@ -2,7 +2,7 @@
 title: 물리 프로필 레퍼런스 — 자리별 숫자·곡선, 지문, 무엇이 자리 뒤로 갔고 무엇이 남았나
 kind: reference
 status: active
-last_verified: 2026-11-10
+last_verified: 2026-11-11
 covers:
   - packages/core/src/physics/slots/registry.ts
   - packages/core/src/physics/slots/profile.ts
@@ -12,7 +12,8 @@ covers:
   - packages/core/src/physics/laws.ts
 verification_log:
   - "2026-11-10: 새 레퍼런스: 자리별 숫자·곡선, 지문, 자리 뒤로 간 것과 남은 것, 법칙 검사 결과(위반 0)"
-covers_hash: cc39d131694ee02e
+  - "2026-11-11: outdoorOrDefault 추가, 범위 검사 표 구동으로 정리 — 문서 내용과 일치 확인"
+covers_hash: 582883ca83499f4d
 ---
 # 물리 프로필 레퍼런스
 
