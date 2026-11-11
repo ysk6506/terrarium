@@ -122358,6 +122358,215 @@
    "added": "2026-11-11",
    "amended_by": null
   },
+  "tests/spec/deep-os-curl-web.test.ts::<import:4765130b>": {
+   "kind": "support",
+   "hash": "4765130b40c20bee",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-curl-web.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-curl-web.test.ts::=Fault": {
+   "kind": "support",
+   "hash": "ca59a15106afa406",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-curl-web.test.ts::=sick": {
+   "kind": "support",
+   "hash": "c0e6cd973575d7ae",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-curl-web.test.ts::a request service stopped by its host's clock, name server or certificate [REQ-098] [REQ-100] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-curl-web.test.ts::a request service stopped by its host's clock, name server or certificate [REQ-098] [REQ-100] > a clock that is far off is a 401 that says negotiate, and the reason is in a header": {
+   "kind": "test",
+   "hash": "88bdeb1a882c102f",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"3600\"",
+    "\"600\"",
+    "\"HTTP/1.1 401 Unauthorized\"",
+    "\"HTTP/1.1 401 Unauthorized\"",
+    "\"WWW-Authenticate: Negotiate\"",
+    "\"WWW-Authenticate: Negotiate\"",
+    "\"X-Reason: clock skew too great\"",
+    "\"X-Reason: clock skew too great\"",
+    "\"\\n\"",
+    "\"a clock that is far off is a 401 that says negotiate, and the reason is in a header\"",
+    "\"curl -sI http://portal/\"",
+    "\"ntp_drift\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-curl-web.test.ts::a request service stopped by its host's clock, name server or certificate [REQ-098] [REQ-100] > a name server that is gone is a 502 from the gateway, and -f turns it into exit code 22": {
+   "kind": "test",
+   "hash": "f120b4afe9e6f303",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"22\"",
+    "\"22\"",
+    "\"900\"",
+    "\"HTTP/1.1 502 Bad Gateway\"",
+    "\"HTTP/1.1 502 Bad Gateway\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"a name server that is gone is a 502 from the gateway, and -f turns it into exit code 22\"",
+    "\"curl -sI http://portal/\"",
+    "\"curl -sI http://portal/\"",
+    "\"curl -sf http://portal/\"",
+    "\"curl -sf http://portal/\"",
+    "\"dns_failure\"",
+    "\"srv-a2\"",
+    "\"srv-a2\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-curl-web.test.ts::a request service stopped by its host's clock, name server or certificate [REQ-098] [REQ-100] > an expired certificate is a TLS error, exit code 60": {
+   "kind": "test",
+   "hash": "f23eddba721d846e",
+   "asserts": 1,
+   "literals": [
+    "\"120\"",
+    "\"60\"",
+    "\"60\"",
+    "\"an expired certificate is a TLS error, exit code 60\"",
+    "\"cert_expired\"",
+    "\"curl -sS http://portal/\"",
+    "\"curl: (60) SSL certificate problem: certificate has expired\"",
+    "\"curl: (60) SSL certificate problem: certificate has expired\"",
+    "\"srv-a2\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-curl-web.test.ts::curl prints what the options ask for [REQ-098] > -o /dev/null hides the body and -w prints the code after it": {
+   "kind": "test",
+   "hash": "aa4d7b2120b45fdf",
+   "asserts": 1,
+   "literals": [
+    "\"-o /dev/null hides the body and -w prints the code after it\"",
+    "\"200\"",
+    "\"200\"",
+    "\"curl -s -o /dev/null -w '%{http_code}\\\\n' http://portal/\"",
+    "\"curl -s -o /dev/null -w '%{http_code}\\\\n' http://portal/\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-curl-web.test.ts::curl prints what the options ask for [REQ-098] > -s hides a failure, -S shows it again, and without -s it is shown": {
+   "kind": "test",
+   "hash": "5c869b2788ec43f3",
+   "asserts": 4,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"-s hides a failure, -S shows it again, and without -s it is shown\"",
+    "\"6\"",
+    "\"6\"",
+    "\"900\"",
+    "\"Could not resolve\"",
+    "\"Could not resolve\"",
+    "\"Could not resolve\"",
+    "\"Could not resolve\"",
+    "\"dns_failure\"",
+    "\"http://licd:8701/healthz\"",
+    "\"srv-a2\"",
+    "\"srv-a2\"",
+    "\"srv-a2\"",
+    "\"srv-a2\"",
+    "\"srv-a2\"",
+    "\"srv-a2\"",
+    "\"srv-a2\"",
+    "\"srv-a2\"",
+    "\"srv-a2\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-curl-web.test.ts::curl prints what the options ask for [REQ-098] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/deep-os-curl-web.test.ts::curl prints what the options ask for [REQ-098] > a user name in the address and a path are not part of the host, and a missing URL is a usage error": {
+   "kind": "test",
+   "hash": "329a5bcb8f9663d5",
+   "asserts": 3,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"\\\"status\\\":\\\"ok\\\"\"",
+    "\"\\\"status\\\":\\\"ok\\\"\"",
+    "\"a user name in the address and a path are not part of the host, and a missing URL is a usage error\"",
+    "\"curl -s -X POST http://portal/\"",
+    "\"curl -s -X POST http://portal/\"",
+    "\"curl -s http://ops@portal/path?x=1\"",
+    "\"curl -s http://ops@portal/path?x=1\"",
+    "\"curl -s\"",
+    "\"curl -s\"",
+    "\"srv-a2\"",
+    "\"srv-a2\"",
+    "\"srv-a2\"",
+    "\"srv-a2\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "tests/spec/deep-os-determinism.test.ts::<import:4765130b>": {
    "kind": "support",
    "hash": "4765130b40c20bee",
@@ -125222,9 +125431,9 @@
    "added": "2026-11-11",
    "amended_by": null
   },
-  "tests/spec/deep-os-option-sweep.test.ts::<import:cf479f8d>": {
+  "tests/spec/deep-os-option-sweep.test.ts::<import:e71fddbd>": {
    "kind": "support",
-   "hash": "cf479f8d5375da94",
+   "hash": "e71fddbddd356cf0",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -125232,9 +125441,9 @@
    "added": "2026-11-11",
    "amended_by": null
   },
-  "tests/spec/deep-os-option-sweep.test.ts::<import:e71fddbd>": {
+  "tests/spec/deep-os-option-sweep.test.ts::=COMMAND_NAMES": {
    "kind": "support",
-   "hash": "e71fddbddd356cf0",
+   "hash": "b65b840d4ee11e37",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -125285,13 +125494,13 @@
   },
   "tests/spec/deep-os-option-sweep.test.ts::an option the fake does not have is named and sent outside the simulation [REQ-098] > =names": {
    "kind": "support",
-   "hash": "eb993541761c33b3",
+   "hash": "8a413b3faaba31c3",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-11",
-   "amended_by": null
+   "amended_by": "0143-shell-fidelity-and-coverage-gate.md"
   },
   "tests/spec/deep-os-oracle.test.ts::<import:4765130b>": {
    "kind": "support",
@@ -160248,6 +160457,7 @@
   "tests/spec/controllability.test.ts::<stmt:c459c3aa>": "0118-deep-os-tests.md",
   "tests/spec/controllability.test.ts::<stmt:c8231bea>": "0115-sdn-network-layer-amend-tests.md",
   "tests/spec/db-worldgen.test.ts::데이터베이스 칩이 세계에 클러스터를 깐다 [REQ-095] > 점선 칩은 가장 가까운 칩 모양으로 짓는다": "0129-site-dr-geo-storage-distributed-db.md",
+  "tests/spec/deep-os-option-sweep.test.ts::<import:cf479f8d>": "0143-shell-fidelity-and-coverage-gate.md",
   "tests/spec/deep-os-text-gnu.test.ts::awk [REQ-098] > [REQ-098] a record separator other than newline is refused, wherever it is set": "0143-shell-fidelity-and-coverage-gate.md",
   "tests/spec/facades.test.ts::vCenter facade [REQ-003] [REQ-004] > lists VMs with filters and shows details with placement": "0058-vmware-api-conformance.md",
   "tests/spec/facility-protocols.test.ts::<import:f6c50b5a>": "0057-facility-standard-interfaces.md",
