@@ -15,7 +15,7 @@
  */
 
 import type { Entity } from "./blueprint";
-import { DB_SHAPE_LABELS, dbClusterDef, instancesOf } from "./db";
+import { dbClusterDef, instancesOf } from "./db";
 import type { ServiceDef } from "./service";
 import type { StateOf } from "./state";
 import type { WorldReader } from "./world";
@@ -131,11 +131,4 @@ export function dependencyVerdict(world: WorldReader, dep: Entity, def: ServiceD
     return cluster ? clusterVerdict(world, cluster, def) : OK;
   }
   return OK;
-}
-
-/** What a cluster is, in words: its shape, and who is primary now. */
-export function clusterSummary(world: WorldReader, cluster: Entity): string {
-  const state = world.stateAs(cluster.id, "db_cluster");
-  const who = state.primary ? world.index.find(state.primary)?.name : undefined;
-  return `${DB_SHAPE_LABELS[dbClusterDef(cluster).shape]}${who ? ` · 프라이머리 ${who}` : " · 프라이머리 없음"}`;
 }

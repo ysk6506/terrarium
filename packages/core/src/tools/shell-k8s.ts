@@ -33,11 +33,13 @@ const age = (t: number, since: number): string => {
 };
 
 function pad(rows: readonly (readonly string[])[]): string {
-  const widths = (rows[0] ?? []).map((_, i) => Math.max(...rows.map((r) => (r[i] ?? "").length)));
+  const widths = (rows[0] as readonly string[]).map((_, i) =>
+    Math.max(...rows.map((r) => (r[i] as string).length)),
+  );
   return rows
     .map((r) =>
       r
-        .map((c, i) => c.padEnd((widths[i] ?? 0) + 3))
+        .map((c, i) => c.padEnd((widths[i] as number) + 3))
         .join("")
         .trimEnd(),
     )
@@ -96,7 +98,7 @@ export function podsTable(world: WorldPort, clusterId: string, ns?: string): str
     const space = k8sWorkloadDef(w).namespace;
     if (ns && ns !== space) continue;
     const words = podWords(world, p);
-    const node = p.node ? (world.index.find(p.node)?.name ?? p.node) : "<none>";
+    const node = p.node ? world.index.entity(p.node).name : "<none>";
     rows.push([
       space,
       p.name,
@@ -189,7 +191,7 @@ const WAITING: Readonly<Record<string, string>> = {
 
 export function describePod(world: WorldPort, w: Entity, p: PodState, clusterId: string): string {
   const def = k8sWorkloadDef(w);
-  const node = p.node ? (world.index.find(p.node)?.name ?? p.node) : "<none>";
+  const node = p.node ? world.index.entity(p.node).name : "<none>";
   const nodes = nodesOfCluster(world.index, clusterId).filter(
     (n) => k8sNodeDef(n).role === "worker",
   );
@@ -234,7 +236,7 @@ export function podLogs(world: WorldPort, w: Entity, p: PodState, tail: number):
     `2026-11-06T09:${String(10 + (i % 40)).padStart(2, "0")}:${String((i * 7) % 60).padStart(2, "0")}Z`;
   const crash = p.phase === "CrashLoopBackOff";
   const lines = crash
-    ? (fault?.params.variant ?? 1) === 2
+    ? fault?.params.variant === 2
       ? [`exec /app/${w.name}: exec format error`]
       : [
           `${stamp(1)} INFO  starting ${w.name}`,

@@ -34,7 +34,7 @@ const round2 = (v: number) => Math.round(v * 100) / 100;
 
 function weighted<T>(rng: SeededRng, items: ReadonlyArray<readonly [T, number]>): T {
   let roll = rng.random() * items.reduce((s, [, w]) => s + w, 0);
-  for (const [item, w] of items) {
+  for (const [item, w] of items.slice(0, -1)) {
     roll -= w;
     if (roll <= 0) return item;
   }

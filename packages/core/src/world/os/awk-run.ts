@@ -12,6 +12,16 @@ export class StrNum {
   }
 }
 
+/** A variable nobody has set: it is both the number 0 and the empty string. */
+class Unset extends StrNum {
+  constructor() {
+    super("");
+  }
+  override get numeric(): boolean {
+    return true;
+  }
+}
+
 export type Val = number | string | StrNum;
 export type Flow = "next" | "exit" | "break" | "continue" | undefined;
 
@@ -47,6 +57,7 @@ export class Rt {
     ["FS", " "],
     ["OFS", " "],
     ["ORS", "\n"],
+    ["RS", "\n"],
     ["NR", 0],
     ["NF", 0],
     ["RSTART", 0],
@@ -61,6 +72,7 @@ export class Rt {
   steps = 0;
   exitCode: number | undefined;
   private seed = 1;
+  private given = 0;
   private readonly regexes = new Map<string, RegExp>();
   readonly ranges = new Map<number, boolean>();
 
@@ -69,10 +81,12 @@ export class Rt {
   }
 
   get(name: string): Val {
-    return this.vars.get(name) ?? new StrNum("");
+    return this.vars.get(name) ?? new Unset();
   }
 
   set(name: string, v: Val): void {
+    if (name === "CONVFMT" || name === "OFMT")
+      throw new AwkSyntax(`${name}는 이 흉내에서 안 돼요 (숫자는 %.6g로 찍어요)`, `awk ${name}`);
     this.vars.set(name, v);
     if (name === "NF") this.setNF(toNum(v));
   }
@@ -104,8 +118,12 @@ export class Rt {
     return this.seed / 2_147_483_648;
   }
 
-  reseed(n: number): void {
+  /** Start the sequence again from `n`; the answer is the seed before (0 at the start), as `srand` returns it. */
+  reseed(n: number): number {
+    const before = this.given;
+    this.given = n;
     this.seed = Math.trunc(n) || 1;
+    return before;
   }
 
   setRecord(line: string): void {
@@ -232,7 +250,7 @@ const EVALS: Evals = {
   idx: (rt, e) => {
     const a = rt.array(e.name);
     const k = key(rt, e.sub);
-    if (!a.has(k)) a.set(k, new StrNum(""));
+    if (!a.has(k)) a.set(k, new Unset());
     return a.get(k) as Val;
   },
   field: (rt, e) => rt.field(Math.trunc(toNum(ev(rt, e.e)))),
@@ -301,12 +319,18 @@ const num1 =
     f(toNum(a[0] ? ev(rt, a[0]) : 0));
 
 const BUILTINS: Readonly<Record<string, Builtin>> = {
-  length: (rt, a) => toStr(a[0] ? ev(rt, a[0]) : rt.field(0)).length,
+  length: (rt, a) => {
+    const arg = a[0];
+    if (arg?.t === "var" && rt.arrays.has(arg.name)) return rt.array(arg.name).size;
+    return toStr(arg ? ev(rt, arg) : rt.field(0)).length;
+  },
+  // the characters from position m for n of them, cut to the string: positions before 1 count but are not there
   substr: (rt, a) => {
     const s = toStr(a[0] ? ev(rt, a[0]) : "");
-    const start = Math.max(1, Math.round(toNum(a[1] ? ev(rt, a[1]) : 1)));
-    const len = a[2] ? Math.round(toNum(ev(rt, a[2]))) : s.length;
-    return s.substr(start - 1, Math.max(0, len));
+    const start = Math.round(toNum(a[1] ? ev(rt, a[1]) : 1));
+    const end = a[2] ? start + Math.round(toNum(ev(rt, a[2]))) : s.length + 1;
+    const [from, to] = [Math.max(start, 1), Math.min(end, s.length + 1)];
+    return from < to ? s.slice(from - 1, to - 1) : "";
   },
   index: (rt, a) => toStr(a[0] ? ev(rt, a[0]) : "").indexOf(toStr(a[1] ? ev(rt, a[1]) : "")) + 1,
   split,
@@ -327,10 +351,7 @@ const BUILTINS: Readonly<Record<string, Builtin>> = {
   cos: num1(Math.cos),
   atan2: (rt, a) => Math.atan2(toNum(a[0] ? ev(rt, a[0]) : 0), toNum(a[1] ? ev(rt, a[1]) : 0)),
   rand: (rt) => rt.random(),
-  srand: (rt, a) => {
-    rt.reseed(toNum(a[0] ? ev(rt, a[0]) : 0));
-    return 0;
-  },
+  srand: (rt, a) => rt.reseed(toNum(a[0] ? ev(rt, a[0]) : 0)),
 };
 
 function callBuiltin(rt: Rt, name: string, args: Expr[]): Val {
@@ -375,6 +396,14 @@ function whileStmt(rt: Rt, s: Extract<Stmt, { t: "while" }>): Flow {
   return undefined;
 }
 
+function doStmt(rt: Rt, s: Extract<Stmt, { t: "do" }>): Flow {
+  do {
+    const r = loopBody(rt, s.body);
+    if (r.stop) return r.flow;
+  } while (truthy(ev(rt, s.c)));
+  return undefined;
+}
+
 function forStmt(rt: Rt, s: Extract<Stmt, { t: "for" }>): Flow {
   if (s.init) exec(rt, s.init);
   while (s.cond === undefined || truthy(ev(rt, s.cond))) {
@@ -405,6 +434,7 @@ const EXECS: Execs = {
   },
   if: (rt, s) => (truthy(ev(rt, s.c)) ? exec(rt, s.a) : s.b ? exec(rt, s.b) : undefined),
   while: whileStmt,
+  do: doStmt,
   for: forStmt,
   forin: forIn,
   block: (rt, s) => block(rt, s.body),

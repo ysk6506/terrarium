@@ -10,6 +10,7 @@ verification_log:
   - "2026-11-10: ADR-0140 링크를 더함"
   - "2026-11-11: 2026-11-11: UX 검사를 여정(게이트)과 측정(게이트 아님)으로 나눔, REQ-114 (ADR-0141)"
   - "2026-11-11: ADR-0142 링크를 더함"
+  - "2026-11-11: ADR-0143 링크"
 ---
 # 문서 색인
 
@@ -210,6 +211,7 @@ verification_log:
 - [0140 CI가 합치기 관문이다 — 테스트는 조각으로 나눠 병렬로, 커버리지는 따로 잰다](design-docs/adr/0140-ci-shards-and-merge-gate.md)
 - [0141 UX 검사를 게이트인 여정과 게이트 아닌 측정으로 나누고, 러너에서 안 되던 화면을 고친다](design-docs/adr/0141-ux-journeys-gate-and-measure.md)
 - [0142 커버리지 하한을 새 단위까지 넓히고, 고장 난 날에도 물리 법칙을 검사한다](design-docs/adr/0142-coverage-floors-and-fault-law-checks.md)
+- [0143 깊은 OS 흉내를 GNU에 더 가깝게 하고 커버리지 하한을 채운다](design-docs/adr/0143-shell-fidelity-and-coverage-gate.md)
 - [0122 세계 인기 순서·좋아요·칭호, 그리고 계급 모델 — 점수는 서버가 기록에서 세고, 칭호는 한 번 얻으면 안 잃고, 계급은 아직 화면에 없다](design-docs/adr/0122-world-popularity-likes-titles.md)
 - [0121 애플리케이션 층을 코어 모델로 올리고 서비스 호출 그래프를 넣는다](design-docs/adr/0121-application-layer-and-calls.md)
 - [0116 진짜 호스트 섞기 (폐기, 0117로 대체)](design-docs/adr/0116-real-hosts-in-the-world.md)

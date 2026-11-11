@@ -186,8 +186,8 @@ function writeFile(run: Run, path: string, text: string, append: boolean): strin
     act(c, "truncate", full, String(fs.stat(full)?.size ?? 0));
     return undefined;
   }
-  const parent = fs.stat(full.slice(0, full.lastIndexOf("/")) || "/");
-  if (parent?.type !== "d") return `bash: ${path}: No such file or directory`;
+  if (!fs.isDir(full.slice(0, full.lastIndexOf("/")) || "/"))
+    return `bash: ${path}: No such file or directory`;
   act(c, "write", full, append ? (old ?? "") + text : text);
   return undefined;
 }

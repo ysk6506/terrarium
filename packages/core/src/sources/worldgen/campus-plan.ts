@@ -191,7 +191,7 @@ const ASPECTS = [0.9, 1.3, 1.6, 2.4, 3.2];
 
 function pickWeighted<T>(rng: SeededRng, items: ReadonlyArray<readonly [T, number]>): T {
   let roll = rng.random();
-  for (const [item, weight] of items) {
+  for (const [item, weight] of items.slice(0, -1)) {
     roll -= weight;
     if (roll <= 0) return item;
   }

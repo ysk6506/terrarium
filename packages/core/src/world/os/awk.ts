@@ -1,9 +1,10 @@
 /** `awk` of the fake shell (ADR-0117 decision 4): a small, real implementation, not a table of canned answers. */
-import { parseArgs } from "./args";
+import { allValues, has, parseArgs } from "./args";
 import { AwkSyntax } from "./awk-lex";
 import { type Program, parseAwk, type Rule } from "./awk-parse";
-import { ev, exec, type Flow, Rt, runBlock, StrNum, toNum, truthy } from "./awk-run";
+import { ev, exec, type Flow, Rt, runBlock, StrNum, toNum, toStr, truthy } from "./awk-run";
 import { errText, readInputs } from "./io";
+import { posixRegExp } from "./regex";
 import type { Cmd } from "./types";
 import { fail, linesOf, type R, unsupported } from "./types";
 
@@ -33,13 +34,26 @@ function runRecord(rt: Rt, program: Program): Flow {
   return undefined;
 }
 
+/** The records of an input under `RS`: lines, paragraphs (`RS = ""`), or what lies between a character or a regular expression. */
+function recordsOf(text: string, rs: string): string[] {
+  if (rs === "\n") return linesOf(text);
+  if (rs === "")
+    return text
+      .split(/\n{2,}/)
+      .map((r) => r.replace(/^\n+|\n+$/g, ""))
+      .filter((r) => r !== "");
+  const parts = text.split(rs.length === 1 ? rs : posixRegExp(rs, { extended: true }));
+  if (parts.at(-1) === "") parts.pop();
+  return parts;
+}
+
 function runProgram(rt: Rt, program: Program, texts: readonly string[]): void {
-  for (const body of program.begin) if (runBlock(rt, body) === "exit") return;
+  // `exit` in BEGIN skips the input but not the END rules
+  let stopped = program.begin.some((body) => runBlock(rt, body) === "exit");
   const needsInput = program.rules.length > 0 || program.end.length > 0;
-  let stopped = false;
-  if (needsInput)
+  if (needsInput && !stopped)
     for (const text of texts) {
-      for (const line of linesOf(text)) {
+      for (const line of recordsOf(text, toStr(rt.get("RS")))) {
         rt.setRecord(line);
         if (runRecord(rt, program) === "exit") {
           stopped = true;
@@ -56,12 +70,22 @@ function unescapeFs(fs: string): string {
   return fs.replace(/\\t/g, "\t").replace(/\\\\/g, "\\");
 }
 
-/** `-v name=value` assignments from the call. */
-function presets(args: readonly string[], rt: Rt): void {
-  args.forEach((a, i) => {
-    const eq = a.indexOf("=");
-    if (args[i - 1] === "-v" && eq > 0) rt.vars.set(a.slice(0, eq), new StrNum(a.slice(eq + 1)));
-  });
+const ASSIGNMENT = /^([A-Za-z_]\w*)=(.*)$/s;
+const AWK_FLAGS = { bool: "", val: "Fvf", long: { version: "bool", assign: "val" } } as const;
+
+/** The escapes awk reads in a value given on the command line: `\\n`, `\\t` and `\\\\`. */
+const escapes = (v: string): string =>
+  v.replace(/\\([nt\\])/g, (_x, ch: string) => (ch === "n" ? "\n" : ch === "t" ? "\t" : "\\"));
+
+/** `-v name=value` (also `-vname=value`, `--assign`) and `name=value` operands: the assignments of a call, in order. */
+function assignments(args: readonly string[], operands: readonly string[]): [string, string][] {
+  return [
+    ...allValues(args, AWK_FLAGS, "v", "assign"),
+    ...operands.filter((o) => ASSIGNMENT.test(o)),
+  ]
+    .map((a) => ASSIGNMENT.exec(a))
+    .filter((m): m is RegExpExecArray => m !== null)
+    .map((m) => [m[1] as string, escapes(m[2] as string)]);
 }
 
 function compileProgram(source: string): Program | R {
@@ -80,8 +104,9 @@ function compileProgram(source: string): Program | R {
 }
 
 export function awk(c: Cmd): R {
-  const p = parseArgs(c.args, { bool: "", val: "Fvf", long: { version: "bool" } });
+  const p = parseArgs(c.args, AWK_FLAGS);
   if (p.bad) return unsupported("awk", p.bad);
+  if (has(p, "--version")) return unsupported("awk", "--version");
   const file = p.flags.get("f");
   const source = file !== undefined ? c.fs.read(file) : p.rest.shift();
   if (source === undefined) return fail("awk: no program given", 2);
@@ -90,8 +115,12 @@ export function awk(c: Cmd): R {
   const rt = new Rt();
   const fs = p.flags.get("F");
   if (fs !== undefined) rt.vars.set("FS", unescapeFs(fs));
-  presets(c.args, rt);
-  const { inputs, errors } = readInputs(c, p.rest);
+  const set = assignments(c.args, p.rest);
+  for (const [name, value] of set) rt.vars.set(name, new StrNum(value));
+  const { inputs, errors } = readInputs(
+    c,
+    p.rest.filter((o) => !ASSIGNMENT.test(o)),
+  );
   try {
     runProgram(
       rt,

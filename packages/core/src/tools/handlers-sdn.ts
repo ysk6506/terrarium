@@ -33,7 +33,7 @@ type Handler = (ctx: ToolContext, args: Args) => unknown;
 
 const opt = (args: Args, key: string): string | undefined =>
   args[key] === undefined || args[key] === "" ? undefined : String(args[key]);
-const need = (args: Args, key: string): string => String(args[key] ?? "");
+const need = (args: Args, key: string): string => String(args[key]);
 
 function controllerRow(world: WorldPort, e: Entity) {
   const s = world.stateAs(e.id, "sdn_controller");
@@ -215,7 +215,7 @@ function underlayBreak(ctx: ToolContext, a: string, b: string): Broken | undefin
   const { world } = ctx;
   if (reachableFrom(world, a).has(b)) return undefined;
   const dead = deadUplinks(world, a)[0] ?? deadUplinks(world, b)[0];
-  const nameOf = (id: string) => world.index.find(id)?.name ?? id;
+  const nameOf = (id: string) => world.index.entity(id).name;
   return dead
     ? {
         at: dead.linkId,
@@ -261,7 +261,7 @@ function underlayOnly(
 const hopsOf = (world: WorldPort, path: UnderlayPath | undefined) =>
   (path?.switches ?? []).map((id, i) => ({
     switch: id,
-    name: world.index.find(id)?.name ?? id,
+    name: world.index.entity(id).name,
     ...(i > 0 && path ? { cable: path.links[i - 1] } : {}),
   }));
 

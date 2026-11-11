@@ -56,8 +56,8 @@ export interface HostOs {
   log: OsLine[];
   /** While down: the world time the system is up again. */
   downUntil?: number;
-  /** Files an operator wrote with `>`, `>>` or `tee` (ADR-0117): path to content. */
-  files?: Record<string, { t: number; text: string }>;
+  /** Files an operator wrote with `>`, `>>` or `tee` (ADR-0117): path to content; also a directory made (`dir`) or a symbolic link (`link`, its target). */
+  files?: Record<string, { t: number; text: string; dir?: true; link?: string }>;
   /** Paths an operator removed. */
   removed?: string[];
   /** Units an operator disabled (`systemctl disable`). */
