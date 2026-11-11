@@ -4,13 +4,12 @@
  * differently, and a host that is down does not answer.
  */
 import { describe, expect, test } from "vitest";
-import {
-  pingable,
-  resolveName,
-  resolverAnswers,
-  resolverOf,
-} from "../../packages/core/src/world/os/net-names";
-import { lab } from "./test-support/deep-os-lab";
+import { Catalog } from "../../catalog";
+import { serviceLab } from "../test-support/service-lab";
+import { World } from "../world";
+import { pingable, resolveName, resolverAnswers, resolverOf } from "./net-names";
+
+const lab = () => ({ world: World.fromBlueprint(serviceLab(), new Catalog()) });
 
 describe("a typed name is resolved to a thing [REQ-098]", () => {
   test("[REQ-098] an id or a name resolves in any case and with any domain behind it", () => {
@@ -38,12 +37,18 @@ describe("what answers a ping [REQ-098]", () => {
       expect(pingable(world, id)).toBe(true);
   });
 
-  test("[REQ-098] a switch that has failed does not answer, and neither does a host that has lost its power", () => {
-    const { world, inject, physics } = lab();
-    inject("switch_failure", "tor-a");
-    inject("psu_failure", "srv-a2", { count: 2 });
-    physics.run(120);
+  test("[REQ-098] a switch that has failed does not answer, and neither does a host that was turned off", () => {
+    const { world } = lab();
+    world.apply(
+      {
+        type: "fault.add",
+        fault: { id: "f1", type: "switch_failure", target: "tor-a", params: {} },
+      },
+      "scenario",
+    );
+    world.stateAs("srv-a2", "server").adminOn = false;
     expect(pingable(world, "tor-a")).toBe(false);
+    expect(pingable(world, "srv-a2")).toBe(false);
     expect(pingable(world, "rack-a")).toBe(true);
   });
 });

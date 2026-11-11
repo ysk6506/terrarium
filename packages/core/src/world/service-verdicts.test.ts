@@ -3,12 +3,14 @@
  * turned off, a server whose memory failed, and a place that is not a host at all.
  */
 import { describe, expect, test } from "vitest";
-import { serviceDef } from "../../packages/core/src/world/service";
-import { hostVerdict } from "../../packages/core/src/world/service-health";
-import { lab } from "./test-support/deep-os-lab";
+import { Catalog } from "../catalog";
+import { serviceDef } from "./service";
+import { hostVerdict } from "./service-health";
+import { serviceLab } from "./test-support/service-lab";
+import { World } from "./world";
 
-const defOf = (world: ReturnType<typeof lab>["world"]) =>
-  serviceDef(world.index.entity("svc-license"));
+const lab = () => ({ world: World.fromBlueprint(serviceLab(), new Catalog()) });
+const defOf = (world: World) => serviceDef(world.index.entity("svc-license"));
 
 describe("a storage box under a service [REQ-087]", () => {
   test("[REQ-087] a box with all its disks and room is fine, and a place that is not a host is never in the way", () => {
@@ -18,9 +20,8 @@ describe("a storage box under a service [REQ-087]", () => {
   });
 
   test("[REQ-087] a box that lost a disk is slow, and says how many", () => {
-    const { world, inject, physics } = lab();
-    inject("disk_failure", "stor-b", { disks: 2 });
-    physics.run(60);
+    const { world } = lab();
+    world.stateAs("stor-b", "storage").failedDisks = 2;
     expect(hostVerdict(world, "stor-b", defOf(world))).toMatchObject({
       state: "slow",
       cause: "storage",
@@ -51,9 +52,14 @@ describe("a storage box under a service [REQ-087]", () => {
 
 describe("a server whose memory failed [REQ-087]", () => {
   test("[REQ-087] the server is dead for its service, and the cause is the hardware", () => {
-    const { world, inject, physics } = lab();
-    inject("memory_failure", "srv-a2");
-    physics.run(60);
+    const { world } = lab();
+    world.apply(
+      {
+        type: "fault.add",
+        fault: { id: "f1", type: "memory_failure", target: "srv-a2", params: {} },
+      },
+      "scenario",
+    );
     expect(hostVerdict(world, "srv-a2", defOf(world))).toMatchObject({
       state: "dead",
       cause: "hardware",
