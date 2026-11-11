@@ -4,11 +4,11 @@ kind: reference
 status: active
 last_verified: 2026-11-11
 verification_log:
-  - "2026-11-11: 생김새 견본 시험 문서와 ADR-0161 링크"
   - "2026-11-11: ADR-0162 링크"
   - "2026-11-11: ADR-0164 링크"
   - "2026-11-11: ADR-0163 링크"
   - "2026-11-11: ADR-0165 링크"
+  - "2026-11-11: 버전과 브랜치 문서, 데이터 용어집, ADR-0166·0167 링크"
 ---
 # 문서 색인
 
@@ -46,6 +46,8 @@ verification_log:
 - [소스 관리 — 동기화 주기, 실행 기록, 안전장치, 신선도](design-docs/source-management.md)
 - [표준 모델 대조 — 층마다 빌려오는 뼈대와 플랫폼 대응](design-docs/model-standards.md)
 - [생김새 견본 시험 — 현실 소스 여덟 가지를 종이 위에서 설계에 넣어 본 결과](design-docs/reality-shape-samples.md)
+- [파이프라인의 버전과 브랜치 — 고쳐 보고, 비교하고, 병합하고, 되돌리기](design-docs/pipeline-versions-and-branches.md)
+- [용어집 — 데이터 파이프라인과 온톨로지 매니저에서 쓰는 말](design-docs/glossary-data.md)
 - [물리 프로필 레퍼런스 — 자리별 숫자·곡선, 지문, 자리 뒤로 간 것과 남은 것](design-docs/physics-profile.md)
 - [CCTV 자리 — 카메라 개체, 보는 자리, 배경 자리](design-docs/camera-and-backdrop.md)
 - [전원·냉방 사다리 확장 — N+1 UPS·랙 배터리·변전소, 리어도어·침지, 파워 캐핑(모델만)](design-docs/power-cooling-ladders.md)
@@ -230,6 +232,8 @@ verification_log:
 - [0156 영향 범위는 포트 단위까지 묶음의 뜻으로 계산하고, 메모리의 색인에서 1초·수 초 안에 답한다](design-docs/adr/0156-blast-radius-ports-redundancy-groups-in-memory-index.md)
 - [0157 모델은 층마다 표준에서 뼈대를 빌리고, 종류는 세 층이며, 가상화 플랫폼은 대응 표로 받는다](design-docs/adr/0157-model-standards-three-tiers-platform-mapping.md)
 - [0161 생김새 견본 시험에서 막힌 열아홉 곳을 메운다 — 손질은 여덟 가지, 딸린 요청, 다듬어 견주기, 묶음의 출처](design-docs/adr/0161-shape-sample-test-fills-the-gaps.md)
+- [0167 데이터 파이프라인과 온톨로지 매니저의 말은 지어내지 않고 현업에서 쓰는 말을 쓴다](design-docs/adr/0167-data-pipeline-words-from-practice.md)
+- [0166 파이프라인은 버전으로 남기고, 브랜치에서 고쳐 미리보기 세계로 확인한 뒤 운영에 병합한다](design-docs/adr/0166-pipeline-versions-snapshots-branches.md)
 - [0165 데이터셋·정제·온톨로지 매핑·링크 조건을 각자의 층으로 나누고, 객체 종류와 링크 종류는 열려 있다](design-docs/adr/0165-dataset-refine-ontology-link-layers-open-types.md)
 - [0164 ECMP는 장비 설정에서 읽고, 위치 엑셀은 목록으로 받고, VMware의 쿠버네티스와 VDI 둘을 대응 표에 넣는다](design-docs/adr/0164-ecmp-from-device-config-list-excel-k8s-vdi.md)
 - [0163 멈춘 실행이 하나라도 있는 실험은 "완료"가 아니라 "멈춤"으로 읽힌다](design-docs/adr/0163-a-stopped-experiment-reads-stopped.md)
