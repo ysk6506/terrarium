@@ -182,7 +182,7 @@ function useShapeCore(
     kept?.manual ?? (fromTemplate ? first.layers : undefined),
     first.layers,
   );
-  const { own, manual, setManual } = picks;
+  const { manual } = picks;
   const [cost, setCost] = useState<-1 | 0 | 1>(kept?.cost ?? 0);
   const options = useMemo<ResolveOptions>(() => ({ cost }), [cost]);
   const shapes = useApart(first.services, kept?.apart, options);

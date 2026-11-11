@@ -2,7 +2,7 @@
 title: 세계 만들기 입구와 서비스부터 (REQ-094)
 kind: spec
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-11
 covers:
   - packages/core/src/world/ladder.ts
   - packages/core/src/sources/worldgen/shaped-db.ts
@@ -48,13 +48,13 @@ covers:
   - apps/web/src/ui/pages/quick-harm-panel.tsx
   - apps/server/src/runtime/experiments-quick.ts
   - apps/server/src/runtime/service-cards.ts
-covers_hash: 3c9fbbaf1e523fd6
+covers_hash: c9e57e744e85c59d
 verification_log:
-  - "2026-11-07: REQ-109: 규칙 표·이유 문구·크기를 코드와 대조했다"
   - "2026-11-07: o15 합치기 (2차 피드백 수정)"
   - "2026-11-07: 2026-11-07: REQ-111(ADR-0134): IAP 빼기·내 카드만·③ 숫자 하나·기반 랙·빌더 오른쪽 아래 칩을 코드와 대조해 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: 2026-11-07: REQ-111 covers 정리"
   - "2026-11-07: 2026-11-07: REQ-111 코드 변경 후 다시 대조: 그대로 맞다"
+  - "2026-11-11: shape-flow.ts 안 쓰는 변수와 Anchored.tsx 효과 없는 억제 주석만 지움, 문서 내용과 동작은 그대로"
 ---
 # 세계 만들기 입구와 서비스부터 (REQ-094, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md), [ADR-0108](adr/0108-world-entry-iap-and-chip-cards.md), [ADR-0109](adr/0109-world-entry-amend-tests.md))
 

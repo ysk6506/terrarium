@@ -2,7 +2,7 @@
 title: 모델 등록 — LLM API를 워크스페이스에 등록하고 연결 확인까지
 kind: spec
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-11
 covers:
   - packages/core/src/llm/types.ts
   - packages/core/src/llm/http.ts
@@ -15,11 +15,12 @@ covers:
   - apps/web/src/logic/models.ts
   - apps/web/src/ui/pages/model-section.tsx
   - apps/web/src/ui/pages/model-dialog.tsx
-covers_hash: ad718758037b6ad1
+covers_hash: 0ee037e9b18e8e90
 verification_log:
   - "2026-11-06: LLM API 등록"
   - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
   - "2026-11-07: ADR-0125: 이끼는 기본 모델이 있어야만 켜진다(꺼지면 알약만, 409 no_model), 점수 질문 찾기 규칙을 문서에 반영하고 코드와 대조함"
+  - "2026-11-11: model-section.tsx에서 안 쓰는 useAction 호출만 지움, 문서 내용과 동작은 그대로"
 ---
 # 모델 등록 (REQ-099, [ADR-0119](adr/0119-llm-api-registration.md))
 

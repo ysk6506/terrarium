@@ -184,7 +184,6 @@ export function ModelSection() {
   const [deleting, setDeleting] = useState<LlmModelView>();
   const state = modelSectionState(list.data);
   const models = list.data ?? [];
-  const { run } = useAction();
   // 주소가 /settings#models 로 열리면 이 구역으로 (이끼가 꺼져 있을 때의 알약)
   useEffect(() => {
     if (window.location.hash === MODELS_HASH)
