@@ -115408,6 +115408,16 @@
    "added": "2026-11-07",
    "amended_by": null
   },
+  "tests/spec/calibration.test.ts::<import:16e09b22>": {
+   "kind": "support",
+   "hash": "16e09b22edd470a7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "tests/spec/calibration.test.ts::<import:2c48501c>": {
    "kind": "support",
    "hash": "2c48501c731acaad",
@@ -115508,16 +115518,6 @@
    "added": "2026-11-04",
    "amended_by": null
   },
-  "tests/spec/calibration.test.ts::<import:f610e077>": {
-   "kind": "support",
-   "hash": "f610e0773381e0db",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-04",
-   "amended_by": null
-  },
   "tests/spec/calibration.test.ts::<import:f6c50b5a>": {
    "kind": "support",
    "hash": "f6c50b5a0713ca5b",
@@ -115530,12 +115530,52 @@
   },
   "tests/spec/calibration.test.ts::=built": {
    "kind": "support",
-   "hash": "6c48fbcf512e8dbb",
+   "hash": "ab180bba19f472ec",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-04",
+   "added": "2026-11-11",
+   "amended_by": "0145-calibration-ask-once.md"
+  },
+  "tests/spec/calibration.test.ts::=calibrationOf": {
+   "kind": "support",
+   "hash": "949f56594ed760bc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/calibration.test.ts::=calibrations": {
+   "kind": "support",
+   "hash": "6b8a38e1813df1fe",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/calibration.test.ts::=Case": {
+   "kind": "support",
+   "hash": "e86423d6eda41e2c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/calibration.test.ts::=cases": {
+   "kind": "support",
+   "hash": "a93d783c33cf8ab5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/calibration.test.ts::=KNOWN_FLOOR": {
@@ -115546,6 +115586,26 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-04",
+   "amended_by": null
+  },
+  "tests/spec/calibration.test.ts::=worldCache": {
+   "kind": "support",
+   "hash": "40042ce16acb4f8d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/calibration.test.ts::=worldOf": {
+   "kind": "support",
+   "hash": "a4d85a1117c041b2",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/calibration.test.ts::=WORLDS": {
@@ -115586,7 +115646,7 @@
   },
   "tests/spec/calibration.test.ts::a quick wrong answer earns nothing for being quick [REQ-070] > time and tool budget count as much as the diagnosis was right": {
    "kind": "test",
-   "hash": "fd77c6f5b72926af",
+   "hash": "0d34f30f0e6c73e1",
    "asserts": 5,
    "literals": [
     "\"0\"",
@@ -115626,12 +115686,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-04",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0145-calibration-ask-once.md"
   },
   "tests/spec/calibration.test.ts::every built-in scenario tells an agent that knows from one that does not [REQ-070] [REQ-007] > %s": {
    "kind": "test",
-   "hash": "f5121f1cc565964e",
+   "hash": "fe1f65197ed221e3",
    "asserts": 4,
    "literals": [
     "\"%s\"",
@@ -115653,8 +115713,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-04",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0145-calibration-ask-once.md"
   },
   "tests/spec/calibration.test.ts::every built-in scenario tells an agent that knows from one that does not [REQ-070] [REQ-007] > <suite>": {
    "kind": "support",
@@ -115666,19 +115726,9 @@
    "added": "2026-11-04",
    "amended_by": null
   },
-  "tests/spec/calibration.test.ts::every built-in scenario tells an agent that knows from one that does not [REQ-070] [REQ-007] > =cases": {
-   "kind": "support",
-   "hash": "a93d783c33cf8ab5",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-04",
-   "amended_by": null
-  },
   "tests/spec/calibration.test.ts::every built-in scenario tells an agent that knows from one that does not [REQ-070] [REQ-007] > the scenarios that give full marks for the answer alone are exactly these (they measure diagnosis, not operation)": {
    "kind": "test",
-   "hash": "7e734c9ba6c0e860",
+   "hash": "fa1c217b6223aad8",
    "asserts": 1,
    "literals": [
     "\"100\"",
@@ -115701,8 +115751,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": "0133-grading-correctness-reference-solver.md"
+   "added": "2026-11-11",
+   "amended_by": "0145-calibration-ask-once.md"
   },
   "tests/spec/campus-light.test.ts::<import:0f465da4>": {
    "kind": "support",
@@ -154201,6 +154251,8 @@
   "packages/core/src/world/construction.test.ts::what land costs where it lies [REQ-059] > every campus has its own market, and an unknown place falls back to ordinary factory land": "0051-real-world-prices.md",
   "packages/core/src/world/workload.test.ts::일감과 사다리 [REQ-094] > 사다리: 여덟 층에 선택지가 마흔네 개이고 층마다 아이디가 겹치지 않는다": "0129-site-dr-geo-storage-distributed-db.md",
   "packages/core/src/world/workload.test.ts::일감과 사다리 [REQ-094] > 사다리: 여덟 층에 선택지가 마흔여섯 개이고 층마다 아이디가 겹치지 않는다": "0130-gpu-layer-power-cooling-ladders.md",
+  "tests/spec/calibration.test.ts::<import:f610e077>": "0145-calibration-ask-once.md",
+  "tests/spec/calibration.test.ts::every built-in scenario tells an agent that knows from one that does not [REQ-070] [REQ-007] > =cases": "0145-calibration-ask-once.md",
   "tests/spec/controllability.test.ts::<import:89c5634a>": "0114-container-layer-amend-tests.md",
   "tests/spec/controllability.test.ts::<stmt:97d8fef7>": "0111-db-storage-layers-amend-tests.md",
   "tests/spec/controllability.test.ts::<stmt:c459c3aa>": "0118-deep-os-tests.md",

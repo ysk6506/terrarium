@@ -2,7 +2,7 @@
 title: 측정의 신뢰 — 효율 점수는 과제를 푼 만큼만, 시험지는 기준 에이전트로 점검
 kind: spec
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-11
 covers:
   - packages/core/src/session/operation/metrics.ts
   - packages/core/src/oracle/oracle.ts
@@ -16,12 +16,12 @@ covers:
   - packages/core/src/oracle/reference-path.ts
   - packages/core/src/oracle/reference-paths.ts
 verification_log:
-  - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-07: REQ-108: 코드와 대조했고 필요한 서술(기대 복구 시간, 서비스 카드 복사, 숫자 보정)을 고쳤다. 나머지는 그대로 맞다"
   - "2026-11-07: 채점 보증 5절, 점수표, 손대지 않는 것이 정답인 시트 설명, 만점 목록 일곱으로 갱신 (ADR-0133)"
   - "2026-11-07: ADR-0133 변경 후 코드와 대조: 점수표, 기대 복구 시간, 손대지 않는 것이 정답인 시트"
   - "2026-11-07: 보고만 함과 정답 풀이의 관계를 ≤로 바로잡음"
-covers_hash: 0176fb209a642844
+  - "2026-11-11: calibrateBaselines 분리(동작 같음, ADR-0145)를 서술에 더했고 나머지는 코드와 대조해 그대로 맞다"
+covers_hash: a324a7f706045cd5
 ---
 # 측정의 신뢰 (REQ-070, ADR-0067)
 
@@ -53,7 +53,7 @@ covers_hash: 0176fb209a642844
 
 ## 2. 시험지를 점검하는 기준 에이전트 (`calibrate`)
 
-`calibrate({ blueprint, scenario })`는 모델 없이 세 에이전트를 같은 시험지에 돌린다.
+`calibrate({ blueprint, scenario })`는 모델 없이 세 에이전트를 같은 시험지에 돌린다. 세 에이전트만 돌리는 앞 절반은 `calibrateBaselines`로 따로 쓸 수 있고(`calibrate`는 그 결과에 아래 탐침을 더한 것), 탐침이 시간의 대부분을 쓰는 시나리오가 있어 `calibration.test.ts`는 이쪽만 묻는다(ADR-0145).
 
 | 기준 에이전트 | 하는 일 | 알려 주는 것 |
 |---|---|---|
