@@ -56,6 +56,8 @@ export interface ShapedResult {
   readonly counts: {
     readonly servers: number;
     readonly racks: number;
+    /** Of the racks, those at the head of each row that hold the network and the storage, not servers (REQ-111). */
+    readonly baseRacks: number;
     readonly rooms: number;
     /** Buildings, and the sites a DR plan names (0 without one). */
     readonly buildings: number;
@@ -416,6 +418,7 @@ function countOf(bp: Blueprint, plan: ShapePlan): ShapedResult["counts"] {
   return {
     servers: n("server"),
     racks: n("rack"),
+    baseRacks: bp.entities.filter((e) => e.kind === "rack" && e.props.infra === true).length,
     rooms: n("room"),
     buildings: n("building"),
     sites: n("dr_site"),

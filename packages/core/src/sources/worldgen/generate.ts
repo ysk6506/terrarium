@@ -39,11 +39,11 @@ export function generateWorld(
   const vcenter = `${preset.code}-vc`;
   if (spec.vmsPerHost > 0) asm.virtual(vcenter, "vcenter", `vcsa-${preset.code}`);
   let plantW = 0;
+  const site: SiteContext = { asm, catalog, rng, spec, preset, vcenter, rooms: 0 };
   for (let b = 1; b <= spec.buildings; b++) {
     const buildingId = `${preset.code}-dc${b}`;
     asm.building(buildingId, preset.code, `DC${b}동`);
-    for (let f = 1; f <= spec.floors; f++)
-      plantW += addFloor({ asm, catalog, rng, spec, preset, vcenter }, buildingId, b, f);
+    for (let f = 1; f <= spec.floors; f++) plantW += addFloor(site, buildingId, b, f);
   }
   if (spec.plant?.substation)
     substationOf(asm, substationId(preset.code), `${preset.name} 변전소`, plantW);
@@ -62,7 +62,13 @@ interface SiteContext {
   readonly spec: WorldgenSpec;
   readonly preset: SitePreset;
   readonly vcenter: string;
+  /** Rooms built so far, to spread the plain compute racks of a counted world over them. */
+  rooms: number;
 }
+
+/** Plain compute racks of the room that comes `k`-th of `rooms`: an even share, the first rooms taking the rest. */
+const shareOf = (total: number, rooms: number, k: number): number =>
+  Math.floor(total / rooms) + (k < total % rooms ? 1 : 0);
 
 /** Builds one floor; returns the electric load of its rooms, W. */
 function addFloor(site: SiteContext, buildingId: string, b: number, f: number): number {
@@ -84,8 +90,18 @@ function addFloor(site: SiteContext, buildingId: string, b: number, f: number): 
         host: `${preset.code}${b}-${f}${letter.toLowerCase()}`,
         vcenter,
         ...(spec.dense && b === 1 && f === 1 && r === 0 ? { dense: spec.dense } : {}),
+        ...(spec.computeRacks !== undefined
+          ? {
+              computeRacks: shareOf(
+                spec.computeRacks,
+                spec.buildings * spec.floors * spec.roomsPerFloor,
+                site.rooms,
+              ),
+            }
+          : {}),
       }),
     );
+    site.rooms += 1;
   }
   powerFloor({ asm, catalog, spec, preset }, { floorId, buildingId, b, f }, rooms);
   const tag = `DC${b}`;

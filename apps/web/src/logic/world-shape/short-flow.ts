@@ -4,7 +4,9 @@
  * which builds the world and starts the experiment in one press. A service added besides the first one adds a pass
  * through ② (its own ladders or "같은 모양"), one press each.
  */
+import { count } from "../format";
 import { costText, type ShapeView } from "./shape-view";
+import { racksText } from "./size-view";
 
 export type Step = "services" | "ladders" | "size";
 export const STEPS: readonly Step[] = ["services", "ladders", "size"];
@@ -53,11 +55,23 @@ export function pressesToExperiment(services: number): number {
   throw new Error("the flow does not end");
 }
 
+/** What the built world holds, as the card after the build says it (the sizing's own totals, REQ-111). */
+export interface MadeTotals {
+  readonly servers: number;
+  readonly racks: number;
+  readonly baseRacks: number;
+  readonly rooms: number;
+}
+
 /** "IAP 실험용 · 호스트 3 · VM 9 · 스위치 2 · 5.3억 원" (GPU가 있으면 스위치 다음에 "GPU 64"). */
-export const builtFact = (name: string, view: ShapeView): string =>
-  `${name} · 호스트 ${view.hosts} · VM ${view.vms} · 스위치 ${view.switches}${view.gpus > 0 ? ` · GPU ${view.gpus}` : ""} · ${costText(view.costM)}${
-    view.dr ? ` · 사이트 둘(${view.dr.label} · ${view.dr.promise})` : ""
-  }`;
+export const builtFact = (name: string, view: ShapeView, made?: MadeTotals): string =>
+  made
+    ? `${name} · 서버 ${count(made.servers)}대 · ${racksText(made.racks, made.baseRacks)} · 서버룸 ${count(made.rooms)}곳${view.gpus > 0 ? ` · GPU ${view.gpus}` : ""}${
+        view.dr ? ` · 사이트 둘(${view.dr.label} · ${view.dr.promise})` : ""
+      }`
+    : `${name} · 호스트 ${view.hosts} · VM ${view.vms} · 스위치 ${view.switches}${view.gpus > 0 ? ` · GPU ${view.gpus}` : ""} · ${costText(view.costM)}${
+        view.dr ? ` · 사이트 둘(${view.dr.label} · ${view.dr.promise})` : ""
+      }`;
 
 /** "이 세계에 맞는 시나리오 23개 · 기본 툴 묶음 · 5번 · 한 번에 약 1시간" */
 export const recommendLine = (scenarios: number): string =>

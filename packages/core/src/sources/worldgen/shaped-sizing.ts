@@ -126,7 +126,9 @@ export function sizingNotes(ask: SizeAsk, plan: ShapePlan): string[] {
   const asked = ask.rooms * plan.buildings;
   if (plan.rooms > asked) notes.push(`고른 모양이 서버룸을 ${plan.rooms}곳으로 만들어요`);
   if (plan.denseRacks > 0)
-    notes.push(`GPU 랙 ${plan.denseRacks}대(서버 ${plan.gpuServers}대)가 따로 더해져요`);
+    notes.push(
+      `${plan.dense?.gpu ? "GPU" : "고밀도"} 랙 ${plan.denseRacks}대(서버 ${plan.denseServers}대)가 따로 더해져요`,
+    );
   const want = askTotal(ask) * plan.buildings;
   if (plan.servers > want && plan.denseRacks === 0)
     notes.push(
@@ -142,6 +144,27 @@ export function sizeTotals(plan: ShapePlan): { servers: number; racks: number; r
   return {
     servers: plan.servers + plan.gpuServers,
     racks: plain + plan.denseRacks,
+    rooms: plan.rooms,
+  };
+}
+
+/**
+ * What the world comes to, in the words of every screen that names its size (REQ-111): servers, all racks, and the
+ * racks by kind: those that hold servers and those at the head of each row that hold the network and the storage. The
+ * builder's foot counts the generated world and says the same; a test holds the two together.
+ */
+export function worldTotals(plan: ShapePlan): {
+  servers: number;
+  racks: number;
+  serverRacks: number;
+  baseRacks: number;
+  rooms: number;
+} {
+  return {
+    servers: plan.servers + plan.denseServers,
+    racks: plan.racks,
+    serverRacks: plan.racks - plan.infraRacks,
+    baseRacks: plan.infraRacks,
     rooms: plan.rooms,
   };
 }

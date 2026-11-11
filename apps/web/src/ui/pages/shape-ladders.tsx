@@ -15,7 +15,7 @@ import {
   withChoice,
 } from "@terrarium/core/world";
 import { type KeyboardEvent, type RefObject, useRef, useState } from "react";
-import { LAYER_INFO, PRESET_LABELS, type PresetId } from "../../logic";
+import { LAYER_INFO, ladderHead, PRESET_LABELS, type PresetId } from "../../logic";
 import { useMossActions } from "../../moss";
 import { ChipDetail } from "./chip-card";
 import { LayerDetail, LayerRow, type Notice, rowFacts } from "./ladder-rows";
@@ -170,12 +170,12 @@ function mattersLine(service: ServiceDraft | undefined): string {
 }
 
 function QHead(props: { readonly title: string; readonly at: number; readonly count: number }) {
-  // with several services this screen is asked once for each: the title is the service's own name
-  const step = props.count > 1 ? `서비스 ${props.at + 1} / ${props.count}` : "2 / 3";
+  // this screen is asked once for each service: the title is the service's own name, the badge counts them
+  const head = ladderHead(props.title, props.at, props.count);
   return (
     <div className="we-qhead">
-      <h1>{withJosa(props.title, "는")} 어떻게 돌리나요?</h1>
-      <span className="we-step">{step}</span>
+      <h1>{head.title}</h1>
+      <span className="we-step">{head.badge}</span>
     </div>
   );
 }

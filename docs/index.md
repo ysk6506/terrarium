@@ -196,6 +196,7 @@ verification_log:
 - [0125 이끼는 LLM을 연결해야만 쓸 수 있다: 기본 모델이 없으면 꺼져 있고, 점수 질문은 채점 문서를 먼저 찾는다](design-docs/adr/0125-moss-requires-model.md)
 - [0126 run-all은 이끼 검사도 돌린다 (0124 보정)](design-docs/adr/0126-run-all-includes-moss.md)
 - [0132 세계 만들기의 크기는 서비스 숫자로 세고, 알아서는 숫자의 규칙 표이며, 빌더 카드는 고른 물체 옆에 붙는다 (베타 피드백 2차)](design-docs/adr/0132-world-entry-sizing-and-ux-fixes.md)
+- [0134 내 카드만으로도 끝까지 가고, 크기의 숫자는 하나의 계산이며, 빌더 오른쪽 아래는 겹치지 않는다 (베타 피드백 3차)](design-docs/adr/0134-own-card-alone-and-one-sizing.md)
 - [0135 지금 하는 방식은 사람이 적고, 에이전트의 값은 코드가 기록에서 세어 둘을 같은 잣대로 견준다](design-docs/adr/0135-process-compare.md)
 - [0130 GPU 가속기 층을 사다리에 올리고, 전원·냉방 사다리를 끝까지 실선으로 늘리며, 파워 캐핑을 모델로 옮긴다](design-docs/adr/0130-gpu-layer-power-cooling-ladders.md)
 - [0131 기준 에이전트가 DR을 알고, 복구 채점의 시간 창이 세계의 모양을 따른다](design-docs/adr/0131-baseline-dr-and-expected-recovery-window.md)

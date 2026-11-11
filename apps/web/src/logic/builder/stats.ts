@@ -15,6 +15,8 @@ import type { Level } from "./levels";
 export interface LevelStats {
   readonly costM: number;
   readonly racks: number;
+  /** Racks at the head of a row that hold the network and the storage, not servers (a generated world marks them). */
+  readonly baseRacks: number;
   readonly servers: number;
   /** Nameplate maximum of the IT equipment (W). */
   readonly itMaxW: number;
@@ -111,6 +113,7 @@ export function levelStats(index: BlueprintIndex, catalog: Catalog, level: Level
   return {
     ...t,
     racks: all.filter((e) => e.kind === "rack").length,
+    baseRacks: all.filter((e) => e.kind === "rack" && e.props.infra === true).length,
     servers: all.filter((e) => e.kind === "server").length,
     warnings: [...(cooling ? [cooling] : []), ...wiringWarnings(index, all, t.coolingKw)],
   };

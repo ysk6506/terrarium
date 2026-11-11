@@ -132,10 +132,8 @@ function problemsOf(shapes: readonly Layers[]): { stops: ScopeKey[]; slows: Scop
   return { stops: [...stops], slows: [...slows] };
 }
 
-const names = (list: readonly ScopeKey[], max = 6): string[] => {
-  const shown = list.slice(0, max).map(problemName);
-  return list.length > max ? [...shown, `외 ${list.length - max}가지`] : shown;
-};
+/** The problems by name, all of them: the screen cuts the list to a few and counts the rest itself. */
+const names = (list: readonly ScopeKey[]): string[] => list.map(problemName);
 
 /** The scenarios of the library whose problems the shape can have. */
 function matching(problems: ReadonlySet<ScopeKey>) {

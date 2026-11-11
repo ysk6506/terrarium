@@ -11,7 +11,7 @@ import {
 } from "@terrarium/core/sources/worldgen";
 import { catalogCard, loadText, type ServiceLoad } from "@terrarium/core/world";
 import { useState } from "react";
-import type { RowMeta } from "../../logic";
+import { noServicesReason, type RowMeta, removeService } from "../../logic";
 import { messageOf, useApp } from "../context";
 import { Button } from "../kit";
 import { TitlePills } from "../titles";
@@ -205,19 +205,6 @@ function Row(props: {
   );
 }
 
-/** The list without service `i`, and without the calls that led to it. */
-function without(list: readonly ServiceDraft[], i: number): ServiceDraft[] {
-  const gone = list[i]?.key;
-  return list
-    .filter((_, k) => k !== i)
-    .map((s) => {
-      if (!s.calls?.includes(gone as string)) return s;
-      const { calls, ...rest } = s;
-      const kept = calls.filter((c) => c !== gone);
-      return kept.length > 0 ? { ...rest, calls: kept } : rest;
-    });
-}
-
 /** "이어서 할까요?" over screen ① when the world of an earlier visit was found (REQ-109). */
 function Resume(props: {
   readonly step: "services" | "ladders" | "size";
@@ -245,6 +232,21 @@ function Resume(props: {
         처음부터 하기
       </Button>
     </output>
+  );
+}
+
+/** Under the list: how many scenarios follow, or why 다음 waits when no service is left. */
+function Foot({ count, scenarios }: { readonly count: number; readonly scenarios: number }) {
+  if (count === 0)
+    return (
+      <output className="we-note" data-testid="no-services">
+        {noServicesReason(0)}
+      </output>
+    );
+  return (
+    <p className="we-foot">
+      시나리오 <b>{scenarios}개</b>가 따라와요
+    </p>
   );
 }
 
@@ -276,6 +278,8 @@ export function ServicesStep({
     onMeta(p.draft.key, p.meta);
     setSheet(false);
   };
+  const rename = (i: number, name: string) =>
+    onChange(services.map((x, k) => (k === i ? { ...x, name } : x)));
   return (
     <>
       {resume && <Resume {...resume} />}
@@ -284,8 +288,8 @@ export function ServicesStep({
         <span className="we-step">1 / 3</span>
       </div>
       <p className="we-sub">
-        IAP가 이미 골라져 있어요. 더 올릴 서비스가 있으면 카탈로그에서 고르세요. 이름과 받는 숫자만
-        바꿀 수 있고, 피해 숫자는 실험을 만들 때 정해요.
+        세계가 떠받칠 서비스를 골라요. 처음에는 IAP가 들어 있고, 빼도 돼요. 카탈로그에서 더하거나 내
+        카드를 골라도 돼요. 이름과 받는 숫자만 바꿀 수 있고, 피해 숫자는 실험을 만들 때 정해요.
       </p>
       <div className="we-svcs">
         {services.map((s, i) => (
@@ -294,10 +298,10 @@ export function ServicesStep({
             draft={s}
             meta={metas[s.key]}
             first={i === 0}
-            onRename={(name) => onChange(services.map((x, k) => (k === i ? { ...x, name } : x)))}
+            onRename={(name) => rename(i, name)}
             onMeta={(m) => onMeta(s.key, m)}
             onLoad={(load) => onChange(services.map((x, k) => (k === i ? { ...x, load } : x)))}
-            {...(services.length > 1 ? { onRemove: () => onChange(without(services, i)) } : {})}
+            onRemove={() => onChange(removeService(services, i))}
           />
         ))}
         <button
@@ -310,9 +314,7 @@ export function ServicesStep({
           {full ? `서비스는 ${SHAPE_LIMITS.services.max}개까지예요` : "+ 서비스 더하기"}
         </button>
       </div>
-      <p className="we-foot">
-        시나리오 <b>{scenarios}개</b>가 따라와요
-      </p>
+      <Foot count={services.length} scenarios={scenarios} />
       {sheet && (
         <ServiceSheet
           taken={services.map((s) => s.key)}

@@ -5,6 +5,8 @@
  */
 export const BAR_VAR = "--bottom-bar-h";
 export const BAR_SELECTOR = "[data-bottom-bar]";
+/** Space under the tallest bar, such as the phone's tab strip; the builder's chips sit in the stage, so the fixed 이끼 pill needs it (REQ-111). */
+export const BELOW_VAR = "--below-bar-h";
 /** Space between the bar and the button. */
 export const BAR_GAP = 16;
 /** Where the button rests with no bar. */
@@ -27,12 +29,20 @@ export function watchBottomBars(
       (el) => el.getBoundingClientRect().height,
     );
     root.style.setProperty(BAR_VAR, `${barHeight(heights)}px`);
+    const gaps = [...doc.querySelectorAll<HTMLElement>(BAR_SELECTOR)].map(
+      (el) => window.innerHeight - el.getBoundingClientRect().bottom,
+    );
+    root.style.setProperty(BELOW_VAR, `${barHeight(gaps)}px`);
   };
   measure();
   const resize = typeof ResizeObserver === "function" ? new ResizeObserver(measure) : undefined;
   const watchAll = () => {
     resize?.disconnect();
-    for (const el of doc.querySelectorAll(BAR_SELECTOR)) resize?.observe(el);
+    // a bar moves when what is around it changes size (the tab strip going to the foot of a phone), not only when it does
+    for (const el of doc.querySelectorAll(BAR_SELECTOR))
+      for (let up: Element | null = el; up && up !== doc.body; up = up.parentElement)
+        resize?.observe(up);
+    resize?.observe(doc.body);
     measure();
   };
   watchAll();
@@ -45,5 +55,6 @@ export function watchBottomBars(
     mutations?.disconnect();
     window.removeEventListener("resize", measure);
     root.style.removeProperty(BAR_VAR);
+    root.style.removeProperty(BELOW_VAR);
   };
 }

@@ -1,14 +1,14 @@
 {
   "measuredOn": "2026-11-11",
-  "webHash": "90988e7591227916",
+  "webHash": "a9a31f6d91ac505f",
   "scores": {
-    "useful": 95.8,
-    "usable": 94.5,
-    "desirable": 39.7,
-    "findable": 50,
+    "useful": 100,
+    "usable": 97.1,
+    "desirable": 91.9,
+    "findable": 100,
     "accessible": 77,
-    "credible": 91.9,
-    "valuable": 100
+    "credible": 90.3,
+    "valuable": 71.4
   },
   "measurements": {
     "journeys": {
@@ -52,10 +52,13 @@
         "ok": true,
         "actions": 7
       },
+      "own-card-only": {
+        "ok": true,
+        "actions": 15
+      },
       "topology": {
-        "ok": false,
-        "actions": 4,
-        "note": "locator.click: Timeout 30000ms exceeded."
+        "ok": true,
+        "actions": 5
       },
       "process-compare": {
         "ok": true,
@@ -79,13 +82,13 @@
       "ok": 3
     },
     "load": {
-      "kb": 1000000,
-      "ms": 1000000,
-      "sceneDrawn": false
+      "kb": 970.20703125,
+      "ms": 262,
+      "sceneDrawn": true
     },
     "reach": {
-      "tried": 1,
-      "ok": 0
+      "tried": 10,
+      "ok": 10
     },
     "orientation": {
       "tried": 14,
@@ -94,7 +97,7 @@
     "axe": {
       "pages": 28,
       "critical": 2,
-      "serious": 6,
+      "serious": 4,
       "moderate": 28
     },
     "keyboard": {
@@ -117,40 +120,40 @@
       "ok": 3
     },
     "provenance": {
-      "tried": 13,
-      "ok": 13
+      "tried": 10,
+      "ok": 10
     },
     "value": {
       "tried": 7,
-      "ok": 7
+      "ok": 5
     },
     "voice": {
-      "tried": 1020,
-      "ok": 1020
+      "tried": 866,
+      "ok": 866
     },
     "oneThing": {
       "tried": 13,
       "ok": 12
     },
     "buttons": {
-      "tried": 166,
-      "ok": 166
+      "tried": 163,
+      "ok": 163
     },
     "targets": {
-      "tried": 565,
-      "ok": 480
+      "tried": 553,
+      "ok": 469
     },
     "disabledWhy": {
       "tried": 12,
       "ok": 11
     },
     "units": {
-      "tried": 106,
-      "ok": 98
+      "tried": 66,
+      "ok": 57
     },
     "hover": {
-      "tried": 33,
-      "ok": 30
+      "tried": 28,
+      "ok": 28
     }
   }
 }
