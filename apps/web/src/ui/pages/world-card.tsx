@@ -80,7 +80,7 @@ export function WorldCard({
     navigate({ name: "world", id: card.id });
   };
   return (
-    // biome-ignore lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: the name inside is the real link for keyboards; the card is only a larger target for the same link
+    // biome-ignore lint/a11y/useKeyWithClickEvents: the name inside is the real link for keyboards; the card is only a larger target for the same link
     <article className="world-card" data-open="world" onClick={open}>
       <div className="wc-head">
         <Go to={{ name: "world", id: card.id }} className="wc-name">

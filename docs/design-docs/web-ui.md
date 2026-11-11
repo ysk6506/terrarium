@@ -75,13 +75,13 @@ covers:
   - apps/web/src/ui/replay/FramesBar.tsx
   - apps/web/src/ui/replay/useClock.ts
   - apps/web/src/logic/topology/words.ts
-covers_hash: 92a71175bf62ca31
+covers_hash: 4cee3e46eef185e5
 verification_log:
-  - "2026-11-11: styles.css의 biome-ignore 이유 문구만 풀어 썼다(ADR-0148). 스타일 규칙은 그대로라 본문과 어긋난 곳 없음"
   - "2026-11-11: ADR-0146: 이끼 알약이 떠 있지 않고 홈에서만 흐름 안, 키보드 도움말은 3D 탭 첫 한 번, 좁은 폭 제목 줄 나눔을 코드와 대조해 맞춤"
   - "2026-11-11: ADR-0146: 하늘 돔 깊이 검사 제거와 3D 상자 크기 변화 때 다시 맞춤을 코드와 대조해 맞음"
   - "2026-11-11: ADR-0146: 홈 이끼 한 줄 위치, 좁은 폭에서 다음 칩이 아래 막대에 드는 것을 코드와 대조해 맞춤"
   - "2026-11-11: ADR-0146: 다음 칩이 토폴로지 보기에서도 아래 막대에 드는 것을 코드와 대조해 맞춤"
+  - "2026-11-11: styles.css 규칙 순서 두 곳(.moss-launch.high, .we-ci)과 world-card.tsx의 효과 없는 끄기 규칙 하나를 정리함. 화면 동작·배치는 그대로라 본문은 고칠 곳 없음"
 ---
 # 웹 화면 (REQ-006, REQ-030~041)
 
