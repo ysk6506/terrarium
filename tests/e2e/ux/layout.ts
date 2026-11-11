@@ -16,6 +16,7 @@ const TITLES = "h1, h2, h3, .toolbar-title b, .page-title, [class*='title']";
 
 const SCRIPT = `(() => {
   const out = [];
+
   const short = (s) => s.replace(/\\s+/g, " ").trim().slice(0, 24);
   const shown = (el) => {
     const r = el.getBoundingClientRect();
@@ -86,7 +87,11 @@ const SCRIPT = `(() => {
     }
   }
 
-  // (c) titles cut
+  // (c) titles cut: a title that is an input is clipped at its edge with no ellipsis, in the middle of a glyph
+  for (const el of document.querySelectorAll(".title-input, .toolbar-title input")) {
+    if (shown(el) && el.scrollWidth > el.clientWidth + 1)
+      out.push("제목 입력칸 \\"" + short(el.value || "") + "\\"이 글자 중간에서 잘려요");
+  }
   for (const el of document.querySelectorAll(${JSON.stringify(TITLES)})) {
     if (!shown(el) || !(el.textContent || "").trim() || el.closest(".sr-only")) continue;
     const s = getComputedStyle(el);
@@ -130,6 +135,7 @@ export async function layoutProblems(page: Page): Promise<string[]> {
 /** The screen at 1440 and at 390 wide, with the page left as it was; returns the first problem, named by its width. */
 export async function layoutAtWidths(page: Page, label: string): Promise<string | undefined> {
   const before = page.viewportSize() ?? { width: 1440, height: 900 };
+  const all: string[] = [];
   try {
     for (const size of [
       { width: 1440, height: 900 },
@@ -137,10 +143,10 @@ export async function layoutAtWidths(page: Page, label: string): Promise<string 
     ]) {
       await page.setViewportSize(size);
       await page.waitForTimeout(600);
-      const found = await layoutProblems(page);
-      if (found.length > 0) return `${label} ${size.width}px: ${found[0]}`;
+      for (const found of await layoutProblems(page))
+        all.push(`${label} ${size.width}px: ${found}`);
     }
-    return undefined;
+    return all.length > 0 ? all.join(" / ") : undefined;
   } finally {
     await page.setViewportSize(before);
     await page.waitForTimeout(300);
