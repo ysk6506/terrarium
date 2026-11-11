@@ -9,6 +9,7 @@ covers:
 covers_hash: cff9f641b7aeb7b6
 verification_log:
   - "2026-11-11: 목표의 글과 맨 위 문서를 맞춤 (ADR-0177)"
+  - "2026-11-11: 목표의 글과 맨 위 문서를 맞춤 (ADR-0177)"
 ---
 # Terrarium
 
