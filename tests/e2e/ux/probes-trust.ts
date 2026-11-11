@@ -220,7 +220,10 @@ export async function value(site: Site, notes: string[]): Promise<Tally> {
       .first()
       .waitFor({ timeout: 60_000 })
       .catch(() => undefined);
-    check("합격률이 첫 화면에 없다", await inFirstScreen(page, ".figure"));
+    const drawn = await inFirstScreen(page, ".figure");
+    check("합격률이 첫 화면에 없다", drawn);
+    // Say what the page showed instead, so a miss can be told from a slow page.
+    if (!drawn) notes.push(`value: ${page.url()}: ${(await mainText(page)).slice(0, 160)}`);
     check(
       "조건을 바꿔 다시 돌리는 길이 첫 화면에 없다",
       await inFirstScreen(page, "a:has-text('조건 바꿔 다시 돌리기')"),

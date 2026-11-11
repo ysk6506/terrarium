@@ -79,7 +79,10 @@ try {
   const clean = { tried: 0, ok: 0 };
   for (const [id, work] of chosen) {
     const began = Date.now();
-    const outcome = await perform(browser, server.url, work);
+    // A browser for each journey: the graphics process of one that drew a 3D world can still be busy tearing it down,
+    // and the next journey would pay for that wait (software rendering on the runner).
+    const own = await launch();
+    const outcome = await perform(own, server.url, work).finally(() => own.close());
     journeys[id] = {
       ok: outcome.ok,
       actions: outcome.actions,

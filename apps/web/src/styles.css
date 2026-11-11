@@ -620,6 +620,7 @@ p {
 .segmented button:hover:not([aria-pressed="true"], [aria-selected="true"]) {
   background: var(--glass-60);
   color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
 }
 
 .segmented button[aria-pressed="true"]:hover,
