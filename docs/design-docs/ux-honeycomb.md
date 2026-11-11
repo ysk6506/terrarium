@@ -9,11 +9,11 @@ covers:
   - tests/e2e/ux/probes-detail.ts
 covers_hash: 12a538c277cd705b
 verification_log:
-  - "2026-11-07: 2026-11-07: REQ-111(ADR-0134): IAP 빼기·내 카드만·③ 숫자 하나·기반 랙·빌더 오른쪽 아래 칩을 코드와 대조해 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: 여정 process-compare(예산 12)를 표에 더하고 score.ts·journeys.ts와 대조했다"
   - "2026-11-11: main(process-compare 9cf2ce8) 합친 뒤 코드와 대조; own-card-only·process-compare 여정과 ADR-0134 내용 모두 유지"
   - "2026-11-11: 2026-11-11: UX 검사를 여정(게이트)과 측정(게이트 아님)으로 나눔, REQ-114 (ADR-0141)"
   - "2026-11-11: 2026-11-11: 호버 탐침이 포인터를 직접 옮기고, 값 탐침이 포크의 원본을 읽는 것을 코드와 대조해 맞음 (ADR-0141)"
+  - "2026-11-11: 2026-11-11: 러너 측정 결과와 cancel 여정의 느린 세계를 반영 (ADR-0141)"
 ---
 # UX를 숫자로 재는 법 (REQ-041, [ADR-0031](adr/0031-ux-honeycomb-measurement.md))
 

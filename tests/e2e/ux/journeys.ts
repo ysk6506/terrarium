@@ -183,19 +183,60 @@ async function run(c: Context): Promise<void> {
   await waitForResult(page);
 }
 
+/**
+ * A world that takes a while to run, with a scenario on it: 20 runs on a tiny world finish before a hand can reach
+ * 멈추기, so the journey asks for this one by name. It is made through the API (like Hwaseong in `topology`), carries a
+ * copy of the scenario `design` saved, and is removed when the journey ends.
+ */
+const SLOW_WORLD = "느린 연습 세계";
+
+async function makeSlowWorld(base: string): Promise<string> {
+  const blueprint = generateCampus(
+    { ...DEFAULT_CAMPUS, site: "hwaseong", seed: 1, name: SLOW_WORLD },
+    new Catalog(),
+  ).blueprint;
+  const made = await fetch(`${base}/api/worlds`, {
+    method: "POST",
+    headers: asViewer,
+    body: JSON.stringify({ name: SLOW_WORLD, blueprint }),
+  });
+  if (!made.ok) throw new Error(`느린 연습 세계를 올리지 못했다 (${made.status})`);
+  const id = ((await made.json()) as { world: { id: string } }).world.id;
+  const listed = await fetch(`${base}/api/scenarios`, { headers: asViewer });
+  const scenarios = (await listed.json()) as Array<{ doc?: { template?: string } }>;
+  const model = scenarios.find((s) => s.doc?.template) ?? scenarios[0];
+  const copy = await fetch(`${base}/api/scenarios`, {
+    method: "POST",
+    headers: asViewer,
+    body: JSON.stringify({ worldId: id, doc: model?.doc, name: "냉방기 정지 (느린 세계)" }),
+  });
+  if (!copy.ok) throw new Error(`느린 세계의 시나리오를 올리지 못했다 (${copy.status})`);
+  return id;
+}
+
 async function cancel(c: Context): Promise<void> {
   const { page } = c.v;
-  await home(c);
-  await c.d.click(page.getByRole("link", { name: "새 실험" }).first());
-  await c.d.fill(page.getByLabel("몇 번 돌릴까요"), "20");
-  await c.d.click(page.getByRole("button", { name: "실험 시작" }));
-  await expectPath(c, /^\/experiments\/e-/);
-  await c.d.click(page.getByRole("button", { name: "멈추기", exact: true }));
-  await c.d.click(page.getByRole("dialog").getByRole("button", { name: /회 멈추기$/ }));
-  await page
-    .getByText(/멈췄어요|멈춤|취소됨/)
-    .first()
-    .waitFor({ timeout: 20 * SECOND });
+  const id = await makeSlowWorld(c.base);
+  try {
+    await home(c);
+    await c.d.click(page.getByRole("link", { name: "새 실험" }).first());
+    await c.d.choose(page.getByLabel("세계", { exact: true }), SLOW_WORLD);
+    // the scenarios are the world's: choosing another world asks for one again
+    await c.d.click(page.getByRole("radio", { name: /냉방기 정지/ }).first());
+    await c.d.fill(page.getByLabel("몇 번 돌릴까요"), "20");
+    await c.d.click(page.getByRole("button", { name: "실험 시작" }));
+    await expectPath(c, /^\/experiments\/e-/);
+    await c.d.click(page.getByRole("button", { name: "멈추기", exact: true }));
+    await c.d.click(page.getByRole("dialog").getByRole("button", { name: /회 멈추기$/ }));
+    await page
+      .getByText(/멈췄어요|멈춤|취소됨/)
+      .first()
+      .waitFor({ timeout: 20 * SECOND });
+  } finally {
+    await fetch(`${c.base}/api/worlds/${id}`, { method: "DELETE", headers: asViewer }).catch(
+      () => undefined,
+    );
+  }
 }
 
 async function openFinishedExperiment(c: Context): Promise<void> {
