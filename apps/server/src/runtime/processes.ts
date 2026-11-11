@@ -25,6 +25,7 @@ import type { CurrentProcessRecord, RunRecord } from "@terrarium/core/experiment
 import { legacyEvents } from "@terrarium/core/session";
 import type { RunEvent } from "@terrarium/core/world";
 import { must, type PlatformContext, type Viewer } from "./context";
+import { allow, may } from "./permissions";
 
 const EXPERIMENT_OPTIONS = 20;
 
@@ -53,7 +54,7 @@ export class Processes {
       steps,
       summary: baselineNumbers(steps),
       ...(record ? { owner: record.owner, updatedAt: record.updatedAt } : {}),
-      canEdit: !record || record.owner === viewer.name,
+      canEdit: may(viewer, "editProcess", { owner: scenario.owner }).ok,
     };
   }
 
@@ -62,14 +63,13 @@ export class Processes {
     scenarioId: string,
     input: PutCurrentProcessRequest,
   ): Promise<CurrentProcessView> {
-    must(await this.ctx.store.getScenario(scenarioId), "시나리오");
+    const scenario = must(await this.ctx.store.getScenario(scenarioId), "시나리오");
+    allow(viewer, "editProcess", { owner: scenario.owner }, "현재 업무 표 적기");
     const old = await this.ctx.store.getCurrentProcess(scenarioId);
-    if (old && old.owner !== viewer.name)
-      throw new ForbiddenError(`이 표는 처음 적은 사람(${old.owner})만 고칠 수 있어요`);
     const now = this.ctx.stamps.now();
     const record: CurrentProcessRecord = {
       id: scenarioId,
-      owner: old?.owner ?? viewer.name,
+      owner: old?.owner ?? viewer.id,
       steps: input.steps.map((s) => ({
         ...s,
         kind: s.kind as CurrentProcessRecord["steps"][0]["kind"],

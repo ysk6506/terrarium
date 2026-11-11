@@ -66,7 +66,10 @@ describe("where a connection's traces pile up is chosen per connection [REQ-079]
       secrets: ["secretKey"],
     });
     expect(JSON.stringify(view)).not.toContain("sk-typed-secret");
-    const stored = await platform.connections.talk(view.id, { agentId: "ops", text: "안녕" });
+    const stored = await platform.connections.talk(YEONSU, view.id, {
+      agentId: "ops",
+      text: "안녕",
+    });
     expect(stored.trace).toMatchObject({ name: "Langfuse", linked: true, spans: 1 });
     const read = fake.requests.find((r) => r.url.includes("/api/public/v2/observations"));
     expect(read?.headers.authorization).toBe(
@@ -88,7 +91,7 @@ describe("where a connection's traces pile up is chosen per connection [REQ-079]
         config: { host: "http://lf.test", publicKey: "pk-2", secretKey: "" },
       },
     });
-    await platform.connections.talk(view.id, { agentId: "ops", text: "안녕" });
+    await platform.connections.talk(YEONSU, view.id, { agentId: "ops", text: "안녕" });
     const read = fake.requests.findLast((r) => r.url.includes("/observations"));
     expect(read?.headers.authorization).toBe(
       `Basic ${Buffer.from("pk-2:sk-typed-secret").toString("base64")}`,
@@ -140,7 +143,7 @@ describe("말 걸어 보기: one question, no tools, and whether the traces came
   test("the answer, how long it took, no tool calls, and traces that arrived", async () => {
     const { platform, fake } = world({ traced: true });
     const view = await platform.connections.create(YEONSU, { ...goclaw, traces });
-    const r = await platform.connections.talk(view.id, {
+    const r = await platform.connections.talk(YEONSU, view.id, {
       agentId: "ops",
       text: "무엇을 할 수 있나요",
     });
@@ -167,7 +170,7 @@ describe("말 걸어 보기: one question, no tools, and whether the traces came
   test("traces that do not come say so, and what to look at", async () => {
     const { platform } = world({ traced: false });
     const view = await platform.connections.create(YEONSU, { ...goclaw, traces });
-    const r = await platform.connections.talk(view.id, { agentId: "ops", text: "안녕" });
+    const r = await platform.connections.talk(YEONSU, view.id, { agentId: "ops", text: "안녕" });
     expect(r.ok).toBe(true);
     expect(r.trace).toMatchObject({ name: "Langfuse", linked: false, spans: 0 });
     expect(r.trace.note).toContain("run_id 태그가 안 보여요");
@@ -179,14 +182,14 @@ describe("말 걸어 보기: one question, no tools, and whether the traces came
       ...goclaw,
       traces: { kind: "none", config: {} },
     });
-    const r = await platform.connections.talk(view.id, { agentId: "ops", text: "안녕" });
+    const r = await platform.connections.talk(YEONSU, view.id, { agentId: "ops", text: "안녕" });
     expect(r.trace).toEqual({ spans: 0 });
   });
 
   test("a refusal is told with its status and what to do, not as a bare failure", async () => {
     const { platform } = world({ chat: () => new Response("invalid token", { status: 401 }) });
     const view = await platform.connections.create(YEONSU, goclaw);
-    const r = await platform.connections.talk(view.id, { agentId: "ops", text: "안녕" });
+    const r = await platform.connections.talk(YEONSU, view.id, { agentId: "ops", text: "안녕" });
     expect(r.ok).toBe(false);
     expect(r.error).toBe(
       "401 — 토큰이 거절됐어요. 받은 말: 채팅 요청에 401로 답했어요: invalid token",
@@ -195,7 +198,10 @@ describe("말 걸어 보기: one question, no tools, and whether the traces came
 
   test("a connection that cannot talk says so instead of failing", async () => {
     const { platform } = world();
-    const r = await platform.connections.talk("builtin", { agentId: "triage", text: "안녕" });
+    const r = await platform.connections.talk(YEONSU, "builtin", {
+      agentId: "triage",
+      text: "안녕",
+    });
     expect(r).toMatchObject({ ok: false, error: "이 연결 방식은 아직 말 걸어 보기를 못 해요" });
     const [builtin] = await platform.connections.views();
     expect(builtin?.canTalk).toBe(false);
@@ -339,9 +345,9 @@ describe("strangers may talk but not choose [REQ-079]", () => {
   test("anyone can talk to a connection; only its owner changes where its traces go", async () => {
     const { platform } = world({ traced: true });
     const view = await platform.connections.create(YEONSU, { ...goclaw, traces });
-    expect((await platform.connections.talk(view.id, { agentId: "ops", text: "안녕" })).ok).toBe(
-      true,
-    );
+    expect(
+      (await platform.connections.talk(YEONSU, view.id, { agentId: "ops", text: "안녕" })).ok,
+    ).toBe(true);
     await expect(
       platform.connections.update(JIMIN, view.id, {
         config: goclaw.config,

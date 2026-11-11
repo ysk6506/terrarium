@@ -48,7 +48,7 @@ export interface CurrentProcessView {
   /** 단계 수 · 사람 수(서로 다른 "누가") · 걸리는 시간, 적은 값에서 더한 숫자. */
   readonly summary: ProcessNumbers;
   readonly owner?: string;
-  /** 고칠 수 있는가: 처음 적은 사람만. 아직 아무도 안 적었으면 누구나. */
+  /** 고칠 수 있는가: 시나리오를 만든 사람과 관리자만 (ADR-0174). */
   readonly canEdit: boolean;
   readonly updatedAt?: string;
 }

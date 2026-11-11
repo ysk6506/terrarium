@@ -252,14 +252,14 @@ describe("a connection nobody uses for a month is removed, after a warning [REQ-
     c.days(10);
     expect((await platform.meta(YEONSU)).expiring).toEqual([]);
     c.days(24);
-    const warned = (await platform.connections.recheck(view.id)).daysLeft;
+    const warned = (await platform.connections.recheck(YEONSU, view.id)).daysLeft;
     expect(warned).toBe(6);
     expect((await platform.meta(YEONSU)).expiring).toEqual([
       { id: view.id, name: "회사 하네스", daysLeft: 6 },
     ]);
     expect((await platform.meta(JIMIN)).expiring).toEqual([]);
 
-    const kept = await platform.connections.keep(view.id);
+    const kept = await platform.connections.keep(YEONSU, view.id);
     expect(kept.daysLeft).toBe(30);
     c.days(60);
     expect(await platform.sweepConnections()).toEqual([view.id]);

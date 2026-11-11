@@ -4,12 +4,11 @@ kind: reference
 status: active
 last_verified: 2026-11-11
 verification_log:
-  - "2026-11-11: ADR-0168 링크"
-  - "2026-11-11: ADR-0169 링크"
-  - "2026-11-11: 제품 설계 한 장과 ADR-0170 링크"
   - "2026-11-11: 골든 안전망 문서 링크"
   - "2026-11-11: 골든 안전망 링크를 더함"
+  - "2026-11-11: 권한 문서와 ADR-0174 링크"
   - "2026-11-11: ADR-0173 링크 (문서만 바뀐 변경의 가벼운 CI 경로)"
+  - "2026-11-11: main을 합친 뒤: ADR-0173과 ADR-0174가 함께 들어감"
 ---
 # 문서 색인
 
@@ -25,6 +24,7 @@ verification_log:
 ## 설계와 결정
 
 - [제품 설계 한 장 — 테라리움의 값, 원칙 여섯, 지금 유효한 결정, 순서](design-docs/product-design.md)
+- [권한 — 누구인지, 무엇을 보고 바꾸는지, 누가 무엇을 했는지](design-docs/permissions.md)
 - [골든 안전망 — 모델을 옮기기 전에 못 박아 둔 영향 범위·파사드·점수](design-docs/golden-safety-net.md)
 - [핵심 신념](design-docs/core-beliefs.md)
 - [ADR 작성 절차](design-docs/adr-process.md)
@@ -235,6 +235,7 @@ verification_log:
 - [0156 영향 범위는 포트 단위까지 묶음의 뜻으로 계산하고, 메모리의 색인에서 1초·수 초 안에 답한다](design-docs/adr/0156-blast-radius-ports-redundancy-groups-in-memory-index.md)
 - [0157 모델은 층마다 표준에서 뼈대를 빌리고, 종류는 세 층이며, 가상화 플랫폼은 대응 표로 받는다](design-docs/adr/0157-model-standards-three-tiers-platform-mapping.md)
 - [0161 생김새 견본 시험에서 막힌 열아홉 곳을 메운다 — 손질은 여덟 가지, 딸린 요청, 다듬어 견주기, 묶음의 출처](design-docs/adr/0161-shape-sample-test-fills-the-gaps.md)
+- [0174 권한은 프록시가 넘겨준 신원, 역할 둘, 공개 범위 셋, 감사 기록으로 한다](design-docs/adr/0174-permissions-proxy-identity-three-scopes-audit.md)
 - [0173 문서만 바뀐 변경은 가벼운 CI 경로를 탄다](design-docs/adr/0173-docs-only-changes-take-a-light-ci-path.md)
 - [0170 제품의 값과 원칙 여섯을 한 장에 두고, 요구사항은 그 한 장에 대 본 뒤 설계한다](design-docs/adr/0170-product-design-one-page-six-principles.md)
 - [0169 모델은 하나다 — 현실에서 만든 세계와 지어낸 세계는 같은 타입과 같은 링크 표현을 쓰고, 매핑의 목적지는 핵심 모델이다](design-docs/adr/0169-one-model-for-invented-and-real-worlds.md)

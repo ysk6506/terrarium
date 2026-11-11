@@ -56,7 +56,16 @@ export interface SourceView {
 
 export interface MetaView {
   readonly version: string;
-  readonly user: { readonly name: string; readonly source: "proxy" | "sso" | "self" | "anonymous" };
+  /** Who is asking: the login `id` that ownership is compared by, the name to show, groups and roles (ADR-0174). */
+  readonly user: {
+    readonly id: string;
+    readonly name: string;
+    readonly groups: readonly string[];
+    readonly roles: readonly ("user" | "admin")[];
+    readonly source: "proxy" | "sso" | "self" | "anonymous";
+  };
+  /** How people are told apart here: `proxy` believes the SSO proxy; `self-declared` believes whatever name is typed (one person, locally). */
+  readonly identity: { readonly mode: "proxy" | "self-declared" };
   readonly harnesses: readonly HarnessView[];
   readonly sources: readonly SourceView[];
   readonly telemetry: { readonly configured: boolean; readonly name: string };
