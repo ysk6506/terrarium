@@ -210,6 +210,7 @@ verification_log:
 - [0139 CCTV는 카메라 개체·보는 자리·배경 자리의 세 자리로 두고, 실험의 그림은 서버가 결정적으로 그린다](design-docs/adr/0139-camera-view-and-backdrop-slots.md)
 - [0140 CI가 합치기 관문이다 — 테스트는 조각으로 나눠 병렬로, 커버리지는 따로 잰다](design-docs/adr/0140-ci-shards-and-merge-gate.md)
 - [0141 UX 검사를 게이트인 여정과 게이트 아닌 측정으로 나누고, 러너에서 안 되던 화면을 고친다](design-docs/adr/0141-ux-journeys-gate-and-measure.md)
+- [0146 캡처 검토에서 나온 화면 결함을 고치고, 겹침 검사를 글자·선·제목까지 넓힌다](design-docs/adr/0146-capture-review-fixes-and-wider-layout-check.md)
 - [0142 커버리지 하한을 새 단위까지 넓히고, 고장 난 날에도 물리 법칙을 검사한다](design-docs/adr/0142-coverage-floors-and-fault-law-checks.md)
 - [0145 보정 시험은 한 번 돌리고 여러 번 묻는다](design-docs/adr/0145-calibration-ask-once.md)
 - [0147 구조 검사는 같은 파일에 같은 질문을 두 번 하지 않는다](design-docs/adr/0147-harness-derived-cache.md)

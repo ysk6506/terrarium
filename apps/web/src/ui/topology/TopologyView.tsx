@@ -120,13 +120,16 @@ export default function TopologyView(props: TopologyProps) {
           {board.tiles.length === 0 ? (
             <p className="topo-empty">{W.none}</p>
           ) : (
-            <BoardView
-              layout={layout}
-              picture={hallTopology.pictureText(board)}
-              moving={!calm}
-              {...(agent ? { pulse: { effect: agent.effect, active: agent.active } } : {})}
-              onPick={press}
-            />
+            <>
+              <p className="topo-slide-hint">옆으로 밀면 오른쪽 칸도 볼 수 있어요</p>
+              <BoardView
+                layout={layout}
+                picture={hallTopology.pictureText(board)}
+                moving={!calm}
+                {...(agent ? { pulse: { effect: agent.effect, active: agent.active } } : {})}
+                onPick={press}
+              />
+            </>
           )}
         </div>
         <div className="topo-top">

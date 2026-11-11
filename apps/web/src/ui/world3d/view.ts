@@ -77,6 +77,8 @@ export class WorldView {
     overlay: {},
   };
   private current: Focus = { kind: "site" };
+  /** Whether the person has moved the camera: until then a new box size re-frames the focus (ADR-0146). */
+  private userMoved = false;
   private readonly ray = new THREE.Raycaster();
   private readonly offs: Array<() => void> = [];
   private size = { w: 1, h: 1 };
@@ -132,6 +134,9 @@ export class WorldView {
     this.animals = this.animalKit.stage;
     this.offs.push(
       this.rig.onClick((x, y) => this.click(x, y)),
+      this.rig.onUserMove(() => {
+        this.userMoved = true;
+      }),
       this.rig.onHover((x, y) => {
         if (this.events.onHover) this.events.onHover(this.pickAt(x, y), x, y);
       }),
@@ -355,6 +360,8 @@ export class WorldView {
     if (w === this.size.w && h === this.size.h) return;
     this.size = { w, h };
     this.engine.resize(w, h);
+    // The first frame may be fitted before the box has its real shape; a narrow box must still show the whole site.
+    if (!this.userMoved && this.site) this.focusOn(this.current, false);
   }
 
   private pickables(): THREE.Object3D[] {

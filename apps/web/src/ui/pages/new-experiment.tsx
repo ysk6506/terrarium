@@ -344,7 +344,7 @@ function Lede({ forkOf, parent }: { readonly forkOf?: string; readonly parent?: 
     );
   return (
     <>
-      세계와 시나리오, 하네스와 에이전트, 쓸 툴을 정해 주세요. 정하는 대로 오른쪽에 무엇이 돌지
+      세계와 시나리오, 하네스와 에이전트, 쓸 툴을 정해 주세요. 정하는 대로 아래에 무엇이 돌지
       보여요.
     </>
   );
