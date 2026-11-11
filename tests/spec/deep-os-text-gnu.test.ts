@@ -191,16 +191,15 @@ describe("awk [REQ-098]", () => {
     expect(sh("awk -F: -v OFS=- '{$1=$1; print}' /etc/passwd | head -1")).toContain("root-");
   });
 
-  test("[REQ-098] a record separator other than newline is refused, wherever it is set", () => {
-    const { run } = lab();
-    const a = run("srv-a2", "awk '{print}' 'RS=;' /etc/hosts");
-    expect(a).toMatchObject({ exitCode: 2 });
-    expect(a.outside.join()).toContain("RS");
-    expect(run("srv-a2", "awk -v RS=, '{print}' /etc/hosts").exitCode).toBe(2);
-    const inside = run("srv-a2", "awk 'BEGIN{RS=\";\"} {print}' /etc/hosts");
-    expect(inside).toMatchObject({ exitCode: 2 });
-    expect(inside.outside).toEqual(["awk RS"]);
-    expect(run("srv-a2", "awk -v RS='\\n' 'END{print NR}' /etc/hosts").exitCode).toBe(0);
+  test("[REQ-098] RS can be a character, a paragraph break or a regular expression, set anywhere", () => {
+    const { sh, run } = lab();
+    sh("printf 'a;b;c\\n' > /tmp/semi; printf 'p1 l1\\np1 l2\\n\\n\\np2 l1\\n' > /tmp/para");
+    expect(sh("awk -v RS=';' '{print NR \":\" $1}' /tmp/semi")).toBe("1:a\n2:b\n3:c");
+    expect(sh("awk '{print NR \":\" $1}' 'RS=;' /tmp/semi")).toBe("1:a\n2:b\n3:c");
+    expect(sh("awk 'BEGIN{RS=\";\"} END{print NR}' /tmp/semi")).toBe("3");
+    expect(sh('awk -v RS= \'{print NR ":" $1 "/" NF}\' /tmp/para')).toBe("1:p1/4\n2:p2/2");
+    expect(sh("awk -v RS='[;,]' 'END{print NR}' /tmp/semi")).toBe("3");
+    expect(sh("awk -v RS='\\n' 'END{print NR}' /etc/hosts")).toBe(sh("wc -l < /etc/hosts"));
     expect(run("srv-a2", "awk --version").outside).toEqual(["awk --version"]);
   });
 });
@@ -208,3 +207,34 @@ describe("awk [REQ-098]", () => {
 function sh_(run: ReturnType<typeof lab>["run"]): void {
   run("srv-a2", SETUP);
 }
+
+describe("awk language details [REQ-098]", () => {
+  const awk = (program: string): string => lab().sh(`awk '${program}'`);
+
+  test("[REQ-098] printf takes %E, %G and a * width, and numbers print as %.6g", () => {
+    expect(awk('BEGIN{printf "%E %G %5.1e|\\n",1234.5,0.00001234,12345}')).toBe(
+      "1.234500E+03 1.234E-05 1.2e+04|",
+    );
+    expect(awk('BEGIN{printf "%*d|%-*d|\\n",5,42,4,7}')).toBe("   42|7   |");
+    expect(awk("BEGIN{print 1e-5, 1234567, 0.1+0.2, 100000*10}")).toBe("1e-05 1234567 0.3 1000000");
+  });
+
+  test("[REQ-098] substr counts positions below 1, length(array) counts elements, an unset variable is 0 and empty", () => {
+    expect(
+      awk('BEGIN{print substr("hello",0,3) "|" substr("hello",-1,3) "|" substr("hello",4,10)}'),
+    ).toBe("he|h|lo");
+    expect(awk("BEGIN{a[1];a[2];print length(a)}")).toBe("2");
+    expect(awk('BEGIN{if(x==0&&x=="")print "both"}')).toBe("both");
+  });
+
+  test("[REQ-098] do-while runs once first, exit in BEGIN still runs END, \\x escapes make characters", () => {
+    expect(awk("BEGIN{i=0;do{i++}while(i<3);print i}")).toBe("3");
+    expect(awk('BEGIN{exit}END{print "end"}')).toBe("end");
+    expect(awk('BEGIN{print "\\x41\\x42"}')).toBe("AB");
+  });
+
+  test("[REQ-098] CONVFMT and OFMT are refused instead of ignored", () => {
+    const r = lab().run("srv-a2", "awk 'BEGIN{OFMT=\"%.2f\"; print 3.14159}'");
+    expect(r.exitCode).not.toBe(0);
+  });
+});

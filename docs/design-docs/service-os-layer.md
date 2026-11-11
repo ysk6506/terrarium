@@ -2,7 +2,7 @@
 title: 서비스와 OS 층 — 장비 위에서 무엇이 도는가
 kind: spec
 status: active
-last_verified: 2026-11-10
+last_verified: 2026-11-11
 covers:
   - packages/core/src/world/service.ts
   - packages/core/src/world/service-events.ts
@@ -20,12 +20,12 @@ covers:
   - packages/core/src/session/shell-reach.ts
   - packages/core/src/scenario/library-os.ts
 verification_log:
-  - "2026-11-07: REQ-106이 호스트 조치 하나(복제기 다시 시작)를 더했다. 서술은 그대로 맞다"
-  - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장이 이 문서의 내용을 바꾸지 않는지 대조했다(층 수·툴 수·칩 수를 세는 문장을 찾아 고쳤고, 나머지는 그대로 맞다)"
   - "2026-11-07: REQ-107: shell-reach.ts의 GPU 흔적을 OS 흔적과 따로 두었고 내용은 그대로 맞다"
   - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
   - "2026-11-10: 물리 상수를 슬롯 표로 옮김(REQ-113). v1 동작은 physics-golden이 비트까지 같음을 확인, 문서 내용 변화 없음"
-covers_hash: 9e92c0afe12c0532
+  - "2026-11-11: 2026-11-11: 깊은 OS 흉내 — mkdir·ln -s·readlink, 디렉터리·링크 항목, find /·du / 순회, 빈 명령 문법 오류, grep·sed·awk·sort의 GNU와 다른 점을 고치고 남은 것을 '흉내 내지 않는 것'에 적음 (REQ-098)"
+  - "2026-11-11: awk: do-while, %E %G %*d, substr, length(배열), 미설정 변수, \\x, BEGIN의 exit 뒤 END"
+covers_hash: 97aaab765db68503
 ---
 # 서비스와 OS 층 (REQ-086, REQ-087, [ADR-0091](adr/0091-service-os-layer-recovery-first.md))
 
@@ -236,7 +236,7 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 | 넷 모두 | 정규식은 자바스크립트 엔진이 POSIX 문법에서 옮겨 돈다: 갈래(`a\|ab`)는 가장 긴 것이 아니라 먼저 맞는 것을 고른다. `LANG=en_US.UTF-8`이라도 글자 순서는 바이트 순서(C 로캘)다: `sort`는 대문자가 소문자보다 앞서고 구두점을 무시하지 않는다. |
 | `grep` | `--color=always`, `-z`는 거절. `-w`는 자바스크립트 `\b`로 단어 경계를 본다(패턴이 `-`·`.`로 시작하면 GNU와 다를 수 있다). 파일 사이의 `--` 구분선은 없다. `--exclude-dir`, `-b`, `-T`, `-U`는 거절. `-P`는 확장 정규식처럼 옮긴다. |
 | `sed` | 명령 `n N D P b t T l r w e z F`, `first~step`·`addr,+N`·`addr,~N` 주소, `0,/re/`, 빈 정규식(`s//x/`, 직전 정규식 다시 쓰기), `s///w`·`e`·`m` 표시는 없다(없는 명령은 문법 오류 `unknown command`). 오류 문구의 `char 0`은 위치가 아니라 자리 채움이다. `-i`의 접미사에 `*`·`/`가 있으면 거절. `--version`, `-u`, `-l`, `--posix`는 거절. |
-| `awk` | `getline`, `print > 파일`·`print \| 명령`·`system()`, 사용자 함수(`function`), gawk 전용 함수(`gensub`, `strftime`, `systime`, `asort`…)는 없다(거절하거나 `function … never defined`). 레코드 구분자 `RS`는 줄바꿈만이고, 다른 값을 정하는 모든 길(`-v RS=`, `RS=` 인자, 프로그램 안의 `RS = …`)은 거절한다. `--version`은 거절. 변수 인자(`name=값`)는 첫 파일을 읽기 전에 한꺼번에 정해진다(파일 사이에서 바뀌지 않는다). |
+| `awk` | `getline`, `print > 파일`·`print \| 명령`·`system()`, 사용자 함수(`function`), `CONVFMT`·`OFMT`(거절; 숫자는 늘 `%.6g`), gawk 전용 함수(`gensub`, `strftime`, `systime`, `asort`…)는 없다(거절하거나 `function … never defined`). `RS`는 줄바꿈, 한 글자, 빈 문자열(문단), 정규식이 되지만 `RT`는 없고, 문단 모드에서 줄바꿈을 칸 구분자로 더하는 일도 없다. `--version`은 거절. 변수 인자(`name=값`)는 첫 파일을 읽기 전에 한꺼번에 정해진다(파일 사이에서 바뀌지 않는다). |
 | `sort` | `-M -d -g -R -m -z`는 거절. `-k F.C`(칸 안의 글자 위치)는 거절. 칸은 공백 덩어리로 나뉘고 키는 앞 공백을 뺀 칸에서 시작한다(`-b`를 준 것과 같다). 긴 옵션은 `--reverse --unique --numeric-sort --ignore-case --human-numeric-sort --version-sort --stable --check --key --field-separator --output`만 된다. |
 
 ## 서비스 툴

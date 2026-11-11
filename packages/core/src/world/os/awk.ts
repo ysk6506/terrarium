@@ -2,8 +2,9 @@
 import { allValues, has, parseArgs } from "./args";
 import { AwkSyntax } from "./awk-lex";
 import { type Program, parseAwk, type Rule } from "./awk-parse";
-import { ev, exec, type Flow, Rt, runBlock, StrNum, toNum, truthy } from "./awk-run";
+import { ev, exec, type Flow, Rt, runBlock, StrNum, toNum, toStr, truthy } from "./awk-run";
 import { errText, readInputs } from "./io";
+import { posixRegExp } from "./regex";
 import type { Cmd } from "./types";
 import { fail, linesOf, type R, unsupported } from "./types";
 
@@ -33,13 +34,26 @@ function runRecord(rt: Rt, program: Program): Flow {
   return undefined;
 }
 
+/** The records of an input under `RS`: lines, paragraphs (`RS = ""`), or what lies between a character or a regular expression. */
+function recordsOf(text: string, rs: string): string[] {
+  if (rs === "\n") return linesOf(text);
+  if (rs === "")
+    return text
+      .split(/\n{2,}/)
+      .map((r) => r.replace(/^\n+|\n+$/g, ""))
+      .filter((r) => r !== "");
+  const parts = text.split(rs.length === 1 ? rs : posixRegExp(rs, { extended: true }));
+  if (parts.at(-1) === "") parts.pop();
+  return parts;
+}
+
 function runProgram(rt: Rt, program: Program, texts: readonly string[]): void {
-  for (const body of program.begin) if (runBlock(rt, body) === "exit") return;
+  // `exit` in BEGIN skips the input but not the END rules
+  let stopped = program.begin.some((body) => runBlock(rt, body) === "exit");
   const needsInput = program.rules.length > 0 || program.end.length > 0;
-  let stopped = false;
-  if (needsInput)
+  if (needsInput && !stopped)
     for (const text of texts) {
-      for (const line of linesOf(text)) {
+      for (const line of recordsOf(text, toStr(rt.get("RS")))) {
         rt.setRecord(line);
         if (runRecord(rt, program) === "exit") {
           stopped = true;
@@ -102,8 +116,6 @@ export function awk(c: Cmd): R {
   const fs = p.flags.get("F");
   if (fs !== undefined) rt.vars.set("FS", unescapeFs(fs));
   const set = assignments(c.args, p.rest);
-  if (set.some(([name, value]) => name === "RS" && value !== "\n"))
-    return unsupported("awk", "RS (레코드 구분자는 줄바꿈만 돼요)");
   for (const [name, value] of set) rt.vars.set(name, new StrNum(value));
   const { inputs, errors } = readInputs(
     c,
@@ -116,13 +128,7 @@ export function awk(c: Cmd): R {
       inputs.map((i) => i.text),
     );
   } catch (e) {
-    if (e instanceof AwkSyntax)
-      return {
-        out: rt.out,
-        err: `awk: ${e.message}\n`,
-        code: 2,
-        ...(e.outside ? { outside: e.outside } : {}),
-      };
+    if (e instanceof AwkSyntax) return { out: rt.out, err: `awk: ${e.message}\n`, code: 2 };
     throw e;
   }
   return { out: rt.out, err: errText(errors), code: rt.exitCode ?? (errors.length ? 2 : 0) };

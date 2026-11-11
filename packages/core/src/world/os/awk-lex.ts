@@ -71,7 +71,11 @@ function readString(src: string, from: number): { v: string; end: number } {
   let v = "";
   let i = from + 1;
   while (i < src.length && src[i] !== '"') {
-    if (src[i] === "\\" && i + 1 < src.length) {
+    const hex = /^\\x([0-9a-fA-F]{1,2})/.exec(src.slice(i, i + 4));
+    if (hex) {
+      v += String.fromCharCode(Number.parseInt(hex[1] as string, 16));
+      i += hex[0].length;
+    } else if (src[i] === "\\" && i + 1 < src.length) {
       v += ESC[src.charAt(i + 1)] ?? `\\${src.charAt(i + 1)}`;
       i += 2;
     } else v += src.charAt(i++);
