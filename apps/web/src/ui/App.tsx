@@ -31,10 +31,7 @@ import { AppContext, type AppServices, Go, type ToastTone, useApp, useAsync } fr
 import { Icon, Mark } from "./icons";
 import { Button, Dialog, Loading, Note, TextField } from "./kit";
 import { MossHost, usePanelState } from "./moss";
-import { ExperimentsPage } from "./pages/experiments";
 import { HomePage } from "./pages/home";
-import { ScenariosPage } from "./pages/scenarios";
-import { WorldsPage } from "./pages/worlds";
 import { MyTitles } from "./titles";
 
 // The 3D builder and the flow editor bring three.js and React Flow; they load when opened (REQ-036).
@@ -42,6 +39,13 @@ const WorldBuilderPage = lazy(() => import("./builder/WorldBuilderPage"));
 const ScenarioEditorPage = lazy(() => import("./scenario/ScenarioEditorPage"));
 
 // Screens the first visit does not need come down when opened: the home page is the budgeted one (700 kB).
+const ExperimentsPage = lazy(() =>
+  import("./pages/experiments").then((m) => ({ default: m.ExperimentsPage })),
+);
+const ScenariosPage = lazy(() =>
+  import("./pages/scenarios").then((m) => ({ default: m.ScenariosPage })),
+);
+const WorldsPage = lazy(() => import("./pages/worlds").then((m) => ({ default: m.WorldsPage })));
 const AgentVersionsPage = lazy(() =>
   import("./pages/agent-versions").then((m) => ({ default: m.AgentVersionsPage })),
 );

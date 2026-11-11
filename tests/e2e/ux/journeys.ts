@@ -457,6 +457,49 @@ export const JOURNEYS: ReadonlyArray<readonly [JourneyId, (c: Context) => Promis
   ["topology", topology],
 ];
 
+/** Journeys that need a world to exist: when `build` does not run before them, a world is put there (see `seedWorld`). */
+const NEEDS_WORLD: readonly JourneyId[] = [
+  "design",
+  "run",
+  "process-compare",
+  "cancel",
+  "share",
+  "fork",
+  "compare",
+  "author",
+];
+
+/**
+ * A world as a person who had built one earlier would have it. In a full run the `build` journey makes it through the
+ * screens; a group that starts without `build` (flow) is given one through the API, the way `topology` is given
+ * Hwaseong. The screens that make a world are walked by the `build`, `site`, `build-small` and `own-card-only` journeys.
+ */
+export async function seedWorld(base: string, ids: readonly JourneyId[]): Promise<void> {
+  const first = ids.find((id) => id === "build" || NEEDS_WORLD.includes(id));
+  if (first === undefined || first === "build") return;
+  const blueprint = generateCampus(
+    { ...DEFAULT_CAMPUS, site: "hwaseong", seed: 1, name: "내 연습 세계" },
+    new Catalog(),
+  ).blueprint;
+  const response = await fetch(`${base}/api/worlds`, {
+    method: "POST",
+    headers: asViewer,
+    body: JSON.stringify({ name: "내 연습 세계", blueprint }),
+  });
+  if (!response.ok) throw new Error(`연습 세계를 올리지 못했다 (${response.status})`);
+}
+
+/**
+ * Runs of journeys that depend on what the earlier ones of the run made (the experiment `run` finishes is the one
+ * `share` and `fork` open; the scenario `design` saves is the one `process-compare` writes on). Each group starts on
+ * a fresh server, so CI can run the groups side by side (ADR-0141). Every journey is in exactly one group.
+ */
+export const JOURNEY_GROUPS: Readonly<Record<string, readonly JourneyId[]>> = {
+  flow: ["design", "run", "process-compare", "cancel", "share", "fork", "compare", "author"],
+  build: ["build", "site", "build-small"],
+  own: ["own-card-only", "topology"],
+};
+
 export async function perform(
   browser: Browser,
   base: string,
