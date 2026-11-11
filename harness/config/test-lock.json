@@ -137276,6 +137276,874 @@
    "added": "2026-11-05",
    "amended_by": null
   },
+  "tests/spec/golden-facade.test.ts::<import:522b25d1>": {
+   "kind": "support",
+   "hash": "522b25d1daac08a9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-facade.test.ts::<import:b951a546>": {
+   "kind": "support",
+   "hash": "b951a546ad2f93ef",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-facade.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-facade.test.ts::=CAMPUS": {
+   "kind": "support",
+   "hash": "25017720ba966e54",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-facade.test.ts::=FABRIC": {
+   "kind": "support",
+   "hash": "4b0f72bb8ba9c2b9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-facade.test.ts::=IAP": {
+   "kind": "support",
+   "hash": "c5d1e83f9bd8b184",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-facade.test.ts::=SDN": {
+   "kind": "support",
+   "hash": "a45febb57177df3a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-facade.test.ts::=TRAIN": {
+   "kind": "support",
+   "hash": "135ca2699de96296",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-facade.test.ts::the network facade prints the recorded text for every matrix world [REQ-062] [REQ-065] [REQ-001] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-facade.test.ts::the network facade prints the recorded text for every matrix world [REQ-062] [REQ-065] [REQ-001] > campus: every switch prints the recorded interfaces, routing and SNMP": {
+   "kind": "test",
+   "hash": "de7b1d7cb012ecdf",
+   "asserts": 1,
+   "literals": [
+    "\"60000\"",
+    "\"campus\"",
+    "\"campus\"",
+    "\"campus: every switch prints the recorded interfaces, routing and SNMP\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-facade.test.ts::the network facade prints the recorded text for every matrix world [REQ-062] [REQ-065] [REQ-001] > fabric: every switch prints the recorded interfaces, routing and SNMP": {
+   "kind": "test",
+   "hash": "99289ca48eaa6453",
+   "asserts": 1,
+   "literals": [
+    "\"60000\"",
+    "\"fabric\"",
+    "\"fabric\"",
+    "\"fabric: every switch prints the recorded interfaces, routing and SNMP\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-facade.test.ts::the network facade prints the recorded text for every matrix world [REQ-062] [REQ-065] [REQ-001] > iap: every switch prints the recorded interfaces, routing and SNMP": {
+   "kind": "test",
+   "hash": "9e2d4e4ec36f8f87",
+   "asserts": 1,
+   "literals": [
+    "\"60000\"",
+    "\"iap\"",
+    "\"iap\"",
+    "\"iap: every switch prints the recorded interfaces, routing and SNMP\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-facade.test.ts::the network facade prints the recorded text for every matrix world [REQ-062] [REQ-065] [REQ-001] > sdn: every switch prints the recorded interfaces, routing and SNMP": {
+   "kind": "test",
+   "hash": "df7e987f5c844107",
+   "asserts": 1,
+   "literals": [
+    "\"60000\"",
+    "\"sdn\"",
+    "\"sdn\"",
+    "\"sdn: every switch prints the recorded interfaces, routing and SNMP\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-facade.test.ts::the network facade prints the recorded text for every matrix world [REQ-062] [REQ-065] [REQ-001] > train: every switch prints the recorded interfaces, routing and SNMP": {
+   "kind": "test",
+   "hash": "825e9e6e5818ab6c",
+   "asserts": 1,
+   "literals": [
+    "\"60000\"",
+    "\"train\"",
+    "\"train\"",
+    "\"train: every switch prints the recorded interfaces, routing and SNMP\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-campus.test.ts::<import:937e26d1>": {
+   "kind": "support",
+   "hash": "937e26d12e5674cd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-campus.test.ts::<import:b951a546>": {
+   "kind": "support",
+   "hash": "b951a546ad2f93ef",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-campus.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-campus.test.ts::=EXPECTED": {
+   "kind": "support",
+   "hash": "e2f170f0f0c25de8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-campus.test.ts::the impact range of the campus world is the recorded one [REQ-078] [REQ-001] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-campus.test.ts::the impact range of the campus world is the recorded one [REQ-078] [REQ-001] > campus: every failure origin makes the recorded range": {
+   "kind": "test",
+   "hash": "962a7a988f7e782e",
+   "asserts": 1,
+   "literals": [
+    "\"120000\"",
+    "\"campus\"",
+    "\"campus\"",
+    "\"campus: every failure origin makes the recorded range\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-fabric.test.ts::<import:937e26d1>": {
+   "kind": "support",
+   "hash": "937e26d12e5674cd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-fabric.test.ts::<import:b951a546>": {
+   "kind": "support",
+   "hash": "b951a546ad2f93ef",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-fabric.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-fabric.test.ts::=EXPECTED": {
+   "kind": "support",
+   "hash": "71711f5bc93abb2e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-fabric.test.ts::the impact range of the fabric world is the recorded one [REQ-078] [REQ-001] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-fabric.test.ts::the impact range of the fabric world is the recorded one [REQ-078] [REQ-001] > fabric: every failure origin makes the recorded range": {
+   "kind": "test",
+   "hash": "68c73c986f1f427f",
+   "asserts": 1,
+   "literals": [
+    "\"120000\"",
+    "\"fabric\"",
+    "\"fabric\"",
+    "\"fabric: every failure origin makes the recorded range\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-iap.test.ts::<import:937e26d1>": {
+   "kind": "support",
+   "hash": "937e26d12e5674cd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-iap.test.ts::<import:b951a546>": {
+   "kind": "support",
+   "hash": "b951a546ad2f93ef",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-iap.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-iap.test.ts::=EXPECTED": {
+   "kind": "support",
+   "hash": "0a7a26be32a75249",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-iap.test.ts::the impact range of the iap world is the recorded one [REQ-078] [REQ-001] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-iap.test.ts::the impact range of the iap world is the recorded one [REQ-078] [REQ-001] > iap: every failure origin makes the recorded range": {
+   "kind": "test",
+   "hash": "6b21e89d4014383c",
+   "asserts": 1,
+   "literals": [
+    "\"120000\"",
+    "\"iap\"",
+    "\"iap\"",
+    "\"iap: every failure origin makes the recorded range\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-sdn.test.ts::<import:937e26d1>": {
+   "kind": "support",
+   "hash": "937e26d12e5674cd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-sdn.test.ts::<import:b951a546>": {
+   "kind": "support",
+   "hash": "b951a546ad2f93ef",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-sdn.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-sdn.test.ts::=EXPECTED": {
+   "kind": "support",
+   "hash": "e0c38a4550e95084",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-sdn.test.ts::the impact range of the sdn world is the recorded one [REQ-078] [REQ-001] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-sdn.test.ts::the impact range of the sdn world is the recorded one [REQ-078] [REQ-001] > sdn: every failure origin makes the recorded range": {
+   "kind": "test",
+   "hash": "4985021ceab74578",
+   "asserts": 1,
+   "literals": [
+    "\"120000\"",
+    "\"sdn\"",
+    "\"sdn\"",
+    "\"sdn: every failure origin makes the recorded range\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-train.test.ts::<import:937e26d1>": {
+   "kind": "support",
+   "hash": "937e26d12e5674cd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-train.test.ts::<import:b951a546>": {
+   "kind": "support",
+   "hash": "b951a546ad2f93ef",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-train.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-train.test.ts::=EXPECTED": {
+   "kind": "support",
+   "hash": "38c903fae2cb9312",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-train.test.ts::the impact range of the train world is the recorded one [REQ-078] [REQ-001] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-impact-train.test.ts::the impact range of the train world is the recorded one [REQ-078] [REQ-001] > train: every failure origin makes the recorded range": {
+   "kind": "test",
+   "hash": "328e5e2df805a710",
+   "asserts": 1,
+   "literals": [
+    "\"120000\"",
+    "\"train\"",
+    "\"train\"",
+    "\"train: every failure origin makes the recorded range\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-campus.test.ts::<import:b951a546>": {
+   "kind": "support",
+   "hash": "b951a546ad2f93ef",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-campus.test.ts::<import:cee56490>": {
+   "kind": "support",
+   "hash": "cee564903a35369f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-campus.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-campus.test.ts::=EXPECTED": {
+   "kind": "support",
+   "hash": "72ab252f5a06d2d2",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-campus.test.ts::the reference solution gives the recorded score and world on campus [REQ-110] [REQ-001] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-campus.test.ts::the reference solution gives the recorded score and world on campus [REQ-110] [REQ-001] > campus: every template it can host gives the recorded score and final world": {
+   "kind": "test",
+   "hash": "a259952c973308f2",
+   "asserts": 1,
+   "literals": [
+    "\"120000\"",
+    "\"campus\"",
+    "\"campus\"",
+    "\"campus: every template it can host gives the recorded score and final world\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-extra.test.ts::<import:2536ce03>": {
+   "kind": "support",
+   "hash": "2536ce03dd19045a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-extra.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-extra.test.ts::=EXPECTED": {
+   "kind": "support",
+   "hash": "c805c9f09a9baf27",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-extra.test.ts::the reference solution gives the recorded score and world on extra [REQ-110] [REQ-001] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-extra.test.ts::the reference solution gives the recorded score and world on extra [REQ-110] [REQ-001] > extra: every template it can host gives the recorded score and final world": {
+   "kind": "test",
+   "hash": "56a04ac136bfd85c",
+   "asserts": 1,
+   "literals": [
+    "\"120000\"",
+    "\"extra: every template it can host gives the recorded score and final world\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-fabric.test.ts::<import:b951a546>": {
+   "kind": "support",
+   "hash": "b951a546ad2f93ef",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-fabric.test.ts::<import:cee56490>": {
+   "kind": "support",
+   "hash": "cee564903a35369f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-fabric.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-fabric.test.ts::=EXPECTED": {
+   "kind": "support",
+   "hash": "43e8b223d6657c74",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-fabric.test.ts::the reference solution gives the recorded score and world on fabric [REQ-110] [REQ-001] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-fabric.test.ts::the reference solution gives the recorded score and world on fabric [REQ-110] [REQ-001] > fabric: every template it can host gives the recorded score and final world": {
+   "kind": "test",
+   "hash": "819989088d876e6d",
+   "asserts": 1,
+   "literals": [
+    "\"120000\"",
+    "\"fabric\"",
+    "\"fabric\"",
+    "\"fabric: every template it can host gives the recorded score and final world\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-iap.test.ts::<import:b951a546>": {
+   "kind": "support",
+   "hash": "b951a546ad2f93ef",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-iap.test.ts::<import:cee56490>": {
+   "kind": "support",
+   "hash": "cee564903a35369f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-iap.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-iap.test.ts::=EXPECTED": {
+   "kind": "support",
+   "hash": "03c5a855b65253ce",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-iap.test.ts::the reference solution gives the recorded score and world on iap [REQ-110] [REQ-001] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-iap.test.ts::the reference solution gives the recorded score and world on iap [REQ-110] [REQ-001] > iap: every template it can host gives the recorded score and final world": {
+   "kind": "test",
+   "hash": "aa6e5742c1fadaf7",
+   "asserts": 1,
+   "literals": [
+    "\"120000\"",
+    "\"iap\"",
+    "\"iap\"",
+    "\"iap: every template it can host gives the recorded score and final world\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-sdn.test.ts::<import:b951a546>": {
+   "kind": "support",
+   "hash": "b951a546ad2f93ef",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-sdn.test.ts::<import:cee56490>": {
+   "kind": "support",
+   "hash": "cee564903a35369f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-sdn.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-sdn.test.ts::=EXPECTED": {
+   "kind": "support",
+   "hash": "44657a43747d6fd0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-sdn.test.ts::the reference solution gives the recorded score and world on sdn [REQ-110] [REQ-001] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-sdn.test.ts::the reference solution gives the recorded score and world on sdn [REQ-110] [REQ-001] > sdn: every template it can host gives the recorded score and final world": {
+   "kind": "test",
+   "hash": "4903b660004e1085",
+   "asserts": 1,
+   "literals": [
+    "\"120000\"",
+    "\"sdn\"",
+    "\"sdn\"",
+    "\"sdn: every template it can host gives the recorded score and final world\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-train.test.ts::<import:b951a546>": {
+   "kind": "support",
+   "hash": "b951a546ad2f93ef",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-train.test.ts::<import:cee56490>": {
+   "kind": "support",
+   "hash": "cee564903a35369f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-train.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-train.test.ts::=EXPECTED": {
+   "kind": "support",
+   "hash": "b43e9e5a1ca50098",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-train.test.ts::the reference solution gives the recorded score and world on train [REQ-110] [REQ-001] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/golden-scenario-train.test.ts::the reference solution gives the recorded score and world on train [REQ-110] [REQ-001] > train: every template it can host gives the recorded score and final world": {
+   "kind": "test",
+   "hash": "a63cf7ef9f168044",
+   "asserts": 1,
+   "literals": [
+    "\"120000\"",
+    "\"train\"",
+    "\"train\"",
+    "\"train: every template it can host gives the recorded score and final world\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "tests/spec/gpu-catalog.test.ts::<import:0f465da4>": {
    "kind": "support",
    "hash": "0f465da4070b74ff",
