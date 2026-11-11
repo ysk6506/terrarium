@@ -20,12 +20,12 @@ covers:
   - packages/core/src/session/shell-reach.ts
   - packages/core/src/scenario/library-os.ts
 verification_log:
-  - "2026-11-11: cat, printf, wc, test, find 연산자, uniq, cut 옵션을 실제 coreutils 출력과 맞춤"
-  - "2026-11-11: free -b/-h, df -m 머리글, find -empty, kill 신호 이름, pgrep 인자 없음, sed 빈 일치를 실제와 맞춤"
   - "2026-11-11: curl 시험 추가, kill/df/sed 함수 분리"
   - "2026-11-11: systemctl start·resolv.conf 쓰기로 시계·DNS 고장을 끝내는 시험 추가"
+  - "2026-11-11: ADR-0172: 제공되는 시나리오 조건(컨테이너 배치 작업·자리, 사이트 서버), 서비스 프로세스 메모리 몫, 정답 풀이 길의 when·later·choose를 코드와 대조해 서술을 더했다. 나머지는 그대로 맞다"
   - "2026-11-11: Checked against the code it covers after the rebase onto main; this change adds tests only."
-covers_hash: 6a578f5900445594
+  - "2026-11-11: main을 합친 뒤 다시 대조: ADR-0172와 ADR-0174, 커버리지 시험 추가가 함께 들어감"
+covers_hash: ed428d01a8cbcb32
 ---
 # 서비스와 OS 층 (REQ-086, REQ-087, [ADR-0091](adr/0091-service-os-layer-recovery-first.md))
 
@@ -113,7 +113,7 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 
 `cpuPct`, `memPct`, `diskPct`, `zombies`, `fs`(rw·ro), `ntpOffsetS`, `dnsOk`, `certOk`, `uptimeS`, `up`, `logRate`, `processes`(이름·pid·사용자·상태·재시작 횟수·CPU 몫·메모리 몫), `log`(마지막 60줄).
 
-기본으로 도는 프로세스는 systemd-journald, sshd, chronyd, systemd-resolved, rsyslogd, crond와 서비스의 프로세스다. 물리 스텝이 고장에 따라 움직이고, **고장이 끝나면(운영자가 풀었든 시간이 지났든) 굽었던 상태가 정상으로 돌아와 어떤 끝이든 멀쩡한 호스트가 남는다.**
+기본으로 도는 프로세스는 systemd-journald, sshd, chronyd, systemd-resolved, rsyslogd, crond와 서비스의 프로세스다. 서비스 프로세스의 메모리 몫은 9%이고, 한 서버에 많이 올라가면(여덟 개를 넘으면) 서버 메모리가 85%를 넘지 않게 프로세스마다 몫을 나눈다. 멀쩡한 서버가 100%로 시작하면 아무 조치도 복구를 끝낼 수 없다(ADR-0172). 물리 스텝이 고장에 따라 움직이고, **고장이 끝나면(운영자가 풀었든 시간이 지났든) 굽었던 상태가 정상으로 돌아와 어떤 끝이든 멀쩡한 호스트가 남는다.**
 
 ### 고장 열 가지와 번짐
 

@@ -1,5 +1,7 @@
 # CI is the merge gate (ADR-0140): every test runs on every merge, spread over parallel shards.
 # Gating: lint-types, test (shards), test-heavy + test-summary, structure, ux-journeys. The `gate` job is the one required check.
+# A pull request whose changed files are all documents takes the light path (ADR-0173): `changes` decides, the heavy jobs are
+# skipped, and structure + docs-tests run instead. Anything else, and every push to main, takes the full path.
 # Non-gating, with a debt item each: coverage (TD-0002), ux-measure (TD-0004).
 name: ci
 on:
@@ -18,9 +20,63 @@ env:
   SHARDS: 12
   # Spec files that need a runner to themselves (see test-heavy). Space separated.
   HEAVY: tests/spec/calibration.test.ts harness/src/common.test.ts
+  # Tests that read the documents themselves at test time (the light path runs these, ADR-0173). Space separated.
+  DOC_TESTS: tests/spec/moss-questions.test.ts apps/server/src/http/moss-api.test.ts apps/server/src/runtime/moss.test.ts apps/web/src/logic/world-shape/load-rules.test.ts
 
 jobs:
+  # Is every changed file a document? Documents are *.md under docs/ (not docs/generated/) and *.md in the repository
+  # root. Everything else is an input of some check or measurement. The diff is against the branch the pull request
+  # merges into; if it cannot be taken, or is empty, or this is not a pull request, the answer is false (full path).
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      docs_only: ${{ steps.scope.outputs.docs_only }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Are all changed files documents?
+        id: scope
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          docs_only=false
+          reason="not a pull request"
+          if [ "$EVENT" = "pull_request" ]; then
+            if files=$(git -c core.quotepath=off diff --name-only --no-renames "origin/$BASE_REF...HEAD") && [ -n "$files" ]; then
+              others=""
+              while IFS= read -r f; do
+                case "$f" in
+                  docs/generated/*) others="$others$f"$'\n' ;;
+                  docs/*.md) ;;
+                  */*) others="$others$f"$'\n' ;;
+                  *.md) ;;
+                  *) others="$others$f"$'\n' ;;
+                esac
+              done <<< "$files"
+              if [ -z "$others" ]; then
+                docs_only=true
+                reason="every changed file is a document"
+              else
+                reason="files that are not documents:"
+              fi
+            else
+              reason="the diff against the base could not be taken or is empty"
+            fi
+          fi
+          echo "docs_only=$docs_only" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Path: $([ "$docs_only" = true ] && echo light || echo full)"
+            echo "$reason"
+            if [ -n "${others:-}" ]; then printf '%s\n' "$others" | head -20 | sed 's/^/- /'; fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "docs_only=$docs_only ($reason)"
+
   lint-types:
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -32,6 +88,8 @@ jobs:
   # No coverage instrumentation here: it slows the simulation tests enough to hit their time limits.
   # Coverage is measured in its own job. The test timeout is the one in vitest.config.ts, unchanged.
   test:
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -60,6 +118,8 @@ jobs:
   # That is the only unhandled error seen here; it is ignored in this job alone, and test-summary still
   # fails on any failed or skipped test.
   test-heavy:
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -75,6 +135,8 @@ jobs:
 
   # What an unsharded run would run, counted while the shards are busy.
   test-list:
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -89,8 +151,8 @@ jobs:
 
   # Every listed test must have run exactly once, passed and not been skipped.
   test-summary:
-    needs: [test, test-heavy, test-list]
-    if: always()
+    needs: [changes, test, test-heavy, test-list]
+    if: always() && needs.changes.result == 'success' && needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -110,6 +172,8 @@ jobs:
   # longer timeout (instrumented simulations are slow) and checks the floors. Non-gating until TD-0002
   # (due 2026-11-21) is closed: the floors have not been measured since 2026-11-07.
   coverage:
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
@@ -129,8 +193,8 @@ jobs:
           if-no-files-found: error
 
   coverage-floors:
-    needs: coverage
-    if: always()
+    needs: [changes, coverage]
+    if: always() && needs.changes.result == 'success' && needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     continue-on-error: true # TD-0002: coverage floors are not gating until every unit meets its floor (due 2026-11-21)
@@ -175,6 +239,30 @@ jobs:
             docs/generated/coverage-record.json
             coverage/coverage-summary.json
 
+  # The light path (ADR-0173): the tests that read the documents, since the full test run is skipped. First it checks
+  # again, with a different pattern than `changes`, that the diff holds nothing but documents.
+  docs-tests:
+    needs: changes
+    if: needs.changes.outputs.docs_only == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: The light path holds only documents (second look)
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          others=$(git -c core.quotepath=off diff --name-only --no-renames "origin/$BASE_REF...HEAD" | grep -vE '^(docs/.+|[^/]+)\.md$' || true)
+          generated=$(git -c core.quotepath=off diff --name-only --no-renames "origin/$BASE_REF...HEAD" | grep -E '^docs/generated/' || true)
+          if [ -n "$others$generated" ]; then
+            echo "::error::the light path was taken but these files are not documents: $others $generated"
+            exit 1
+          fi
+      - uses: ./.github/actions/setup
+      - run: pnpm exec vitest run ${{ env.DOC_TESTS }}
+
   structure:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -199,6 +287,8 @@ jobs:
   # accessibility probe runs here. The journeys drive the real screens in a real browser; they are split into
   # groups that depend on what their own earlier journeys made, and each group runs on a server of its own.
   ux-journeys:
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     strategy:
@@ -239,6 +329,8 @@ jobs:
   # until TD-0004 is closed: it runs on every push to main and on pull requests that touch the web app, and uploads the
   # log and ux-score.json. The CI artifact is the record; the file in the repository is refreshed from it (ADR-0141).
   ux-measure:
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     continue-on-error: true # TD-0004: the UX score misses its floor on the runner, so it is a record until that is closed
@@ -305,11 +397,45 @@ jobs:
             ux-record.log
             docs/generated/ux-score.json
 
+  # The one required check. It always runs. Full path: every gating job succeeded, exactly as before. Light path:
+  # `structure` and `docs-tests` succeeded and every other job was skipped. A skipped job counts as success only where
+  # the path says it should be skipped, so a skip can never stand in for a run.
   gate:
-    needs: [lint-types, test, test-heavy, test-list, test-summary, structure, ux-journeys]
+    needs: [changes, lint-types, test, test-heavy, test-list, test-summary, structure, ux-journeys, docs-tests]
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo '${{ toJSON(needs) }}'
-          test "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped') }}" = "false"
+      - name: Which path was taken, and is every job that should have run green
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+          DOCS_ONLY: ${{ needs.changes.outputs.docs_only }}
+        run: |
+          result() { printf '%s' "$NEEDS" | jq -r --arg j "$1" '.[$j].result // "missing"'; }
+          bad=0
+          if [ "$(result changes)" != "success" ]; then
+            echo "::error::the changes job did not succeed ($(result changes)), so no path can be trusted"
+            bad=1
+          fi
+          case "$DOCS_ONLY" in
+            true) path=light; run="structure docs-tests"; skip="lint-types test test-heavy test-list test-summary ux-journeys" ;;
+            false) path=full; run="lint-types test test-heavy test-list test-summary structure ux-journeys"; skip="docs-tests" ;;
+            *) path=unknown; run=""; skip=""; echo "::error::docs_only is '$DOCS_ONLY', neither true nor false"; bad=1 ;;
+          esac
+          {
+            echo "### gate: $path path"
+            echo "| job | result | expected |"
+            echo "|---|---|---|"
+          } >> "$GITHUB_STEP_SUMMARY"
+          for j in $run; do
+            r=$(result "$j")
+            echo "| $j | $r | success |" >> "$GITHUB_STEP_SUMMARY"
+            if [ "$r" != "success" ]; then echo "::error::$j is $r, expected success on the $path path"; bad=1; fi
+          done
+          for j in $skip; do
+            r=$(result "$j")
+            echo "| $j | $r | skipped |" >> "$GITHUB_STEP_SUMMARY"
+            if [ "$r" != "skipped" ]; then echo "::error::$j is $r, expected skipped on the $path path"; bad=1; fi
+          done
+          echo "path=$path, failed=$bad"
+          printf '%s\n' "$NEEDS" | jq -c 'map_values(.result)'
+          test "$bad" = 0

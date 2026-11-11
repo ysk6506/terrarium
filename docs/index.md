@@ -4,16 +4,16 @@ kind: reference
 status: active
 last_verified: 2026-11-11
 verification_log:
-  - "2026-11-11: 제품 설계 한 장과 ADR-0170 링크"
   - "2026-11-11: 골든 안전망 문서 링크"
   - "2026-11-11: 골든 안전망 링크를 더함"
   - "2026-11-11: 권한 문서와 ADR-0174 링크"
   - "2026-11-11: ADR 목록을 없애고 결정 기록 폴더와 결정 목록을 가리키게 함 (ADR-0180)"
+  - "2026-11-11: ADR 목록을 없애고 결정 기록 폴더와 결정 목록을 가리키게 함. AGENTS.md의 바뀐 곳은 CI 문장이라 색인과 무관 (ADR-0180)"
 follows:
   - AGENTS.md
-follows_hash: d2becae5a5787653
+follows_hash: 16931b02d052cef8
 verified_body: 876cbc22d1a37868
-unchanged_reverifies: 0
+unchanged_reverifies: 1
 ---
 # 문서 색인
 

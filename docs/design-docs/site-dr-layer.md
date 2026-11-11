@@ -22,12 +22,12 @@ covers:
   - packages/core/src/sources/worldgen/shaped-site.ts
   - packages/core/src/topology/impact-site.ts
 verification_log:
-  - "2026-11-07: REQ-108: 코드와 대조했고 필요한 서술(기대 복구 시간, 서비스 카드 복사, 숫자 보정)을 고쳤다. 나머지는 그대로 맞다"
-  - "2026-11-07: 첫 단계에서 멈추는 전환, 창 +5분, 손대지 않는 시트 설명을 ADR-0133에 맞춰 확인"
   - "2026-11-10: 물리 상수를 슬롯 표로 옮김(REQ-113). v1 동작은 physics-golden이 비트까지 같음을 확인, 문서 내용 변화 없음"
   - "2026-11-11: tools·world/os: 닿지 않는 분기 정리와 시험 추가; 동작은 같음(TD-0002), awk는 이름 바로 뒤 '(' 호출과 srand 반환값"
+  - "2026-11-11: ADR-0172: 제공되는 시나리오 조건(컨테이너 배치 작업·자리, 사이트 서버), 서비스 프로세스 메모리 몫, 정답 풀이 길의 when·later·choose를 코드와 대조해 서술을 더했다. 나머지는 그대로 맞다"
   - "2026-11-11: Checked against site-model.ts: the unreferenced siteIds helper was removed, no described behaviour changed."
-covers_hash: 2d3ba0107f337ad0
+  - "2026-11-11: main을 합친 뒤 다시 대조: ADR-0172와 ADR-0174, 커버리지 시험 추가가 함께 들어감"
+covers_hash: a846a020f11d88ab
 ---
 # 사이트·DR 층 (REQ-106, ADR-0129)
 
@@ -130,6 +130,8 @@ GPU(`gpu_status` → `gpu_reset`/`node_drain`, `job_resume`), 전원(`transfer_f
 | 관리형 DB가 영역을 오락가락해요 | `db_managed_failover`로 고정 | 재시작 |
 | 관리형 DB 저장소가 가득 찼어요 | `db_managed_scale_storage` | 재시작 |
 | 지역 복제본이 깨졌어요 | 볼륨 상태 확인 후 넘기기 | 전환 |
+"사이트 전체의 전기가 끊겼어요"와 "전환이 멈췄어요"는 복구 사이트에 서버가 하나라도 있어야 제공한다(ADR-0172). 서버가 없는 복구 사이트로는 전환해도 서비스가 돌아갈 곳이 없어 정답 풀이도 복구하지 못한다.
+
 시험은 시나리오마다 같은 증상을 내는 다른 시나리오와 구별되는지(`discriminability`)와 셸이나 툴로 단서에 닿는지(`shellReach`)를 본다.
 
 ### 정답 풀이는 이 아홉(과 사이트 모드 넷)에서 정확히 100점이다 (REQ-110, ADR-0133)

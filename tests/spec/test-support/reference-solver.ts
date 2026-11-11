@@ -13,7 +13,12 @@ import {
 import type { ScenarioDoc } from "@terrarium/core/scenario";
 import { type RunResult, Session } from "@terrarium/core/session";
 import { TOOL_NAMES } from "@terrarium/core/tools";
-import { type Blueprint, BlueprintIndex } from "@terrarium/core/world";
+import {
+  type Blueprint,
+  BlueprintIndex,
+  servicesOfWorkload,
+  workloadsOfCluster,
+} from "@terrarium/core/world";
 import { namedServers, type Truth, truthOf } from "./reference-truth";
 
 export { type Truth, truthOf };
@@ -89,6 +94,16 @@ function serverOf(b: Bind): string {
   return [link.from, link.to].find((id) => b.index.find(id)?.kind === "server") ?? b.target;
 }
 
+/** A workload of the target's cluster that no service waits on: the one that can give up its room. */
+function idleWorkload(b: Bind): string {
+  return (
+    workloadsOfCluster(b.index, b.target)
+      .filter((w) => servicesOfWorkload(b.index, w.id).length === 0)
+      .map((w) => w.id)
+      .sort()[0] ?? ""
+  );
+}
+
 /** The first VM that runs on that server. */
 const vmOn = (b: Bind): string => b.index.incoming(serverOf(b), "runs_on")[0]?.from ?? "";
 
@@ -98,6 +113,17 @@ const spareFor = (b: Bind): string =>
     .map((e) => e.id)
     .sort()
     .find((id) => id !== serverOf(b)) ?? "";
+
+/**
+ * Where a VM is moved to keep its service alive: the server the service's standby stands on (the host of a standby VM),
+ * else another server.
+ */
+function havenFor(b: Bind): string {
+  const standby = pick(b, "service_status/standby/0", (x) => x);
+  const host =
+    b.index.find(standby)?.kind === "vm" ? b.index.outgoing(standby, "runs_on")[0]?.to : standby;
+  return host && b.index.find(host)?.kind === "server" ? host : spareFor(b);
+}
 
 /** The nearest machine (a VM, else a server) the target runs on, following `hosted_on`/`runs_on` upward. */
 function machineOf(b: Bind): string {
@@ -112,10 +138,16 @@ function machineOf(b: Bind): string {
   return id;
 }
 
-/** The interface of the switch whose description names the peer, in the configuration just read. */
-function portIn(config: string, peer: string): string {
+/**
+ * The interface of the switch whose description names the peer, in the configuration just read. A switch describes a port
+ * by the name of the device cabled to it, which some worlds spell as the id and some as the display name.
+ */
+function portIn(config: string, peer: readonly string[]): string {
   const blocks = config.split(/\n(?=interface )/);
-  const mine = blocks.find((b) => new RegExp(`description ${peer}\\b`).test(b));
+  const literal = (text: string): string => text.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const mine = blocks.find((b) =>
+    peer.some((p) => new RegExp(`description ${literal(p)}\\b`).test(b)),
+  );
   return /^interface (\S+)/.exec(mine ?? "")?.[1] ?? "";
 }
 
@@ -163,6 +195,8 @@ const fillString = (s: string, t: Truth, b: Bind): string =>
     .replaceAll("{host}", machineOf(b))
     .replaceAll("{vmOn}", vmOn(b))
     .replaceAll("{spare}", spareFor(b))
+    .replaceAll("{haven}", () => havenFor(b))
+    .replaceAll("{idle}", () => idleWorkload(b))
     .replaceAll(/\{@([^}]+)\}/g, (_, spec: string) =>
       pick(b, spec, (x) => x.replaceAll("{target}", b.target)),
     )
@@ -172,7 +206,10 @@ const fillString = (s: string, t: Truth, b: Bind): string =>
       (_, c: string) => b.alarms.find((a) => a.code.split(".")[0] === c)?.entityId ?? "",
     )
     .replaceAll("{peer}", b.params.peer ?? t.peer)
-    .replaceAll("{port}", portIn(b.config, b.params.peer ?? t.peer))
+    .replaceAll("{port}", () => {
+      const peer = b.params.peer ?? t.peer;
+      return portIn(b.config, [peer, b.index.find(peer)?.name ?? peer]);
+    })
     .replaceAll("{vlan}", /^vlan (\d+)/m.exec(b.config)?.[1] ?? "")
     .replaceAll("{asn}", /^router bgp (\d+)/m.exec(b.config)?.[1] ?? "")
     .replaceAll("{shutNeighbor}", /neighbor (\S+) shutdown/.exec(b.config)?.[1] ?? "")
@@ -232,6 +269,7 @@ function expand(
     last: run.last,
   };
   return steps.flatMap((s): Array<[ReferenceStep, Bind]> => {
+    if (s.later) return [[s, base]];
     if (s.forEach === "targets") return t.nodes.map((n) => [s, { ...base, ...n }]);
     if (s.forEach === "critical") return t.critical.map((x) => [s, { ...base, target: x }]);
     if (s.forEach === "servers") return t.servers.map((x) => [s, { ...base, target: x }]);
@@ -247,6 +285,13 @@ function expand(
 
 function runSteps(run: Play, steps: Array<[ReferenceStep, Bind]>, t: Truth, strict: boolean): void {
   for (const [s, bind] of steps) {
+    if (s.when !== undefined && fillString(s.when, t, { ...bind, last: run.last }) === "") continue;
+    if (s.later) {
+      // the entities are the ones that have the alarm now, after the steps before this one
+      const { later: _, ...now } = s;
+      runSteps(run, expand([now], t, run), t, strict);
+      continue;
+    }
     if (s.tool === "group") {
       runSteps(
         run,
@@ -319,6 +364,7 @@ function choose(run: Play, path: ReferencePath, truth: Truth): ReferencePath {
   const step = path.choose.read;
   const r = run.call(step.tool, fillArgs(step, truth, base));
   if (r.ok) run.last[step.tool] = r.data;
+  if (step.tool === "list_alarms" && r.ok) run.alarms = r.data as typeof run.alarms;
   const key = fillString(path.choose.at, truth, { ...base, last: run.last });
   return path.choose.cases[key] ?? path;
 }

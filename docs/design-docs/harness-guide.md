@@ -11,6 +11,7 @@ verification_log:
   - "2026-11-11: 2026-11-11: UX 검사를 여정(게이트)과 측정(게이트 아님)으로 나눔, REQ-114 (ADR-0141)"
   - "2026-11-11: 검사 끄기 금지(IGN*)와 품질 등급표(QUAL*) 두 검사, pnpm quality write와 ratchet의 끄기 기준선을 적었다 (ADR-0148)"
   - "2026-11-11: 품질 등급표는 낡으면 알림만, 끄기 감소도 알림만 나오는 것으로 고쳐 적었다 (ADR-0148)"
+  - "2026-11-11: CI 한 문단에 가벼운 경로(changes, docs-tests, gate의 기대 결과)를 더함 (ADR-0173)"
   - "2026-11-11: decisions, link-amends, audit-queue 명령을 명령 목록에 더함 (ADR-0180)"
 verified_body: da92eed094149b72
 unchanged_reverifies: 0
@@ -49,4 +50,4 @@ unchanged_reverifies: 0
 1. 기본 브랜치 보호: `ci` 워크플로 통과 필수, 직접 push 금지.
 2. "코드 소유자 승인 필수"를 켜고 `.github/CODEOWNERS`의 `@terrarium-maintainers`를 실제 사용자나 팀으로 바꾼다.
 
-CI는 이 검사들을 `structure` 작업으로 따로 돌리고, 테스트는 조각으로 나눠 병렬로 돌린다. 조각 합계 검사는 `harness/src/ci/shard-sum.ts` ([ADR-0140](adr/0140-ci-shards-and-merge-gate.md)).
+CI는 이 검사들을 `structure` 작업으로 따로 돌리고, 테스트는 조각으로 나눠 병렬로 돌린다. 조각 합계 검사는 `harness/src/ci/shard-sum.ts` ([ADR-0140](adr/0140-ci-shards-and-merge-gate.md)). 문서(`*.md`)만 바뀐 풀 리퀘스트는 `changes` 작업이 가려 가벼운 경로를 탄다: 테스트 조각·커버리지·UX 작업은 건너뛰고 `structure`와 문서를 읽는 시험(`docs-tests`)만 돌며, `gate`가 어느 경로를 탔는지와 작업별 기대 결과를 비교한다 ([ADR-0173](adr/0173-docs-only-changes-take-a-light-ci-path.md)).

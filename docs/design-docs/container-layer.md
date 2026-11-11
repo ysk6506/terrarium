@@ -21,13 +21,13 @@ covers:
   - packages/core/src/sources/worldgen/shaped-k8s.ts
   - packages/core/src/topology/impact-k8s.ts
   - packages/core/src/world/ladder.ts
-covers_hash: 8f4eb1a3dce88205
+covers_hash: cf66c8a1c13526ce
 verification_log:
-  - "2026-11-07: REQ-106이 사다리 칩과 world/index를 건드렸다. 컨테이너 층 서술은 그대로 맞다"
   - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장이 이 문서의 내용을 바꾸지 않는지 대조했다(층 수·툴 수·칩 수를 세는 문장을 찾아 고쳤고, 나머지는 그대로 맞다)"
   - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
   - "2026-11-07: ADR-0133에 맞춰 대조: 기대 복구 시간(+5분), 손대지 않는 것이 정답인 시트의 만점, 링크 흔들림 서술"
   - "2026-11-11: tools·world/os: 닿지 않는 분기 정리와 시험 추가; 동작은 같음(TD-0002), awk는 이름 바로 뒤 '(' 호출과 srand 반환값"
+  - "2026-11-11: ADR-0172: 제공되는 시나리오 조건(컨테이너 배치 작업·자리, 사이트 서버), 서비스 프로세스 메모리 몫, 정답 풀이 길의 when·later·choose를 코드와 대조해 서술을 더했다. 나머지는 그대로 맞다"
 ---
 # 컨테이너 층 (REQ-096, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0114](adr/0114-container-layer-amend-tests.md))
 
@@ -172,7 +172,7 @@ IAP 기본 카드(`shaped-defaults.ts`)의 컴퓨트 기본은 `cmp-containers`�
 | 자원이 모자라 파드가 Pending이에요 | `k8s_resource_exhausted` + 노드 NotReady | describe로 사유를 읽고 덜 중요한 워크로드를 줄이거나 노드 추가를 요청(넘기기) | drain(−10) |
 | 노드 디스크가 가득 차 파드가 쫓겨났어요 | `k8s_disk_pressure` + 자원 부족 | 디스크를 비우고 uncordon. 쫓겨난 파드는 자리가 없어 Pending으로 남는다 | — |
 
-자원 부족의 크기는 블루프린트의 요청량과 노드 할당량에서 계산한다(같은 세계면 같다). 점검은 고장마다 "아무것도 안 함 = 0점", "정답만 앎 = 60점 미만", 흔한 툴 길로 원인 장비에 닿는지, 그리고 클러스터 고유의 길(롤아웃 재시작, 워크로드 줄이기, kubelet·containerd 다시 시작, 디스크 비우고 uncordon, drain)로 서비스가 돌아오는지를 잰다. 스스로 복구되는 워커 NotReady는 에이전트가 복구 점수를 받을 수 없어 최대 30점이다.
+자원 부족의 크기는 블루프린트의 요청량과 노드 할당량에서 계산한다(같은 세계면 같다). 두 시나리오는 정답이 닿을 때만 제공한다(ADR-0172): "자원이 모자라 파드가 Pending"은 서비스가 기대지 않아 줄여도 되는 배치 작업이 클러스터에 있을 때, "노드 디스크가 가득 차"는 노드를 되살린 뒤 스케줄러가 파드를 모두 앉힐 수 있을 때(노드마다 남는 자리를 파드 크기로 헤아린다) 나온다. 아니면 `unavailable()`이 이유를 말한다. 점검은 고장마다 "아무것도 안 함 = 0점", "정답만 앎 = 60점 미만", 흔한 툴 길로 원인 장비에 닿는지, 그리고 클러스터 고유의 길(롤아웃 재시작, 워크로드 줄이기, kubelet·containerd 다시 시작, 디스크 비우고 uncordon, drain)로 서비스가 돌아오는지를 잰다. 스스로 복구되는 워커 NotReady는 에이전트가 복구 점수를 받을 수 없어 최대 30점이다.
 
 ## 토폴로지
 
