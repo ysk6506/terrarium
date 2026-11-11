@@ -59,7 +59,8 @@ function HoursField({
             data-moss-skip="세부 조절"
             key={h}
             size="small"
-            kind={config.hours === h ? "primary" : "quiet"}
+            kind="quiet"
+            chosen={config.hours === h}
             onClick={() => patch({ hours: h })}
           >
             {h}시간

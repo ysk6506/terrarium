@@ -225,6 +225,11 @@ jobs:
         uses: ./.github/actions/setup
       - if: steps.scope.outputs.run == 'true'
         run: pnpm exec playwright install --with-deps chromium
+      - name: Is the recorded score file in the repository still fresh? (reports only, ADR-0141)
+        if: steps.scope.outputs.run == 'true'
+        run: |
+          set -o pipefail
+          pnpm ux check 2>&1 | tee ux-record.log || echo "::warning::docs/generated/ux-score.json is stale or below a floor; commit the ux-score.json of this job's artifact (ADR-0141)"
       - name: UX measurement (40 minute limit)
         if: steps.scope.outputs.run == 'true'
         env:
@@ -232,12 +237,18 @@ jobs:
         run: |
           set -o pipefail
           node_modules/.bin/tsx -e "import {main,runChild} from './harness/src/ux/run.ts'; main(['measure'],console.log,(c,a,o)=>runChild(c,a,{...o,timeoutMs:40*60_000})).then(c=>process.exit(c))" 2>&1 | tee ux.log
+      - name: Do the fresh scores meet the floors? (what still misses)
+        if: steps.scope.outputs.run == 'true'
+        run: |
+          set -o pipefail
+          pnpm ux check 2>&1 | tee -a ux.log
       - if: always() && steps.scope.outputs.run == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ux-measure
           path: |
             ux.log
+            ux-record.log
             docs/generated/ux-score.json
 
   gate:

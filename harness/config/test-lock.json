@@ -61844,6 +61844,86 @@
    "added": "2026-11-07",
    "amended_by": null
   },
+  "harness/src/checks/moss.test.ts::the registry may be split into per-area files [REQ-114] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/moss.test.ts::the registry may be split into per-area files [REQ-114] > =split": {
+   "kind": "support",
+   "hash": "9d81e258b1e2c474",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/moss.test.ts::the registry may be split into per-area files [REQ-114] > =SPLIT_GLOBAL": {
+   "kind": "support",
+   "hash": "19f558cf8e1b4acb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/moss.test.ts::the registry may be split into per-area files [REQ-114] > =SPLIT_HOME": {
+   "kind": "support",
+   "hash": "cdf4efb2ff90eb3c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/moss.test.ts::the registry may be split into per-area files [REQ-114] > =SPLIT_SETTINGS": {
+   "kind": "support",
+   "hash": "f805787f6ad57e9c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/moss.test.ts::the registry may be split into per-area files [REQ-114] > a route missing from every part is still MOSS001": {
+   "kind": "test",
+   "hash": "9e84e72affdfa21e",
+   "asserts": 1,
+   "literals": [
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"a route missing from every part is still MOSS001\"",
+    "\"apps/web/src/moss/registry-other.ts\"",
+    "\"export const OTHER = {};\"",
+    "\"route \\\"settings\\\" has no entry\"",
+    "\"route \\\"settings\\\" has no entry\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/moss.test.ts::the registry may be split into per-area files [REQ-114] > routes and actions spread over registry-*.ts count as one registry": {
+   "kind": "test",
+   "hash": "5219a3d285640abb",
+   "asserts": 1,
+   "literals": [
+    "\"routes and actions spread over registry-*.ts count as one registry\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "harness/src/checks/ratchets.test.ts::<import:061b407e>": {
    "kind": "support",
    "hash": "061b407e22e80127",
@@ -65153,16 +65233,6 @@
    "added": "2026-10-29",
    "amended_by": null
   },
-  "harness/src/ux/run.test.ts::<import:268837c3>": {
-   "kind": "support",
-   "hash": "268837c327ea4946",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
-  },
   "harness/src/ux/run.test.ts::<import:30102eeb>": {
    "kind": "support",
    "hash": "30102eeb700389a0",
@@ -65171,6 +65241,16 @@
    "precision": [],
    "skips": 0,
    "added": "2026-10-29",
+   "amended_by": null
+  },
+  "harness/src/ux/run.test.ts::<import:63182bff>": {
+   "kind": "support",
+   "hash": "63182bff28926368",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "harness/src/ux/run.test.ts::<import:939c2971>": {
@@ -65314,6 +65394,132 @@
    "precision": [],
    "skips": 0,
    "added": "2026-10-29",
+   "amended_by": null
+  },
+  "harness/src/ux/run.test.ts::only the journeys [REQ-114] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/run.test.ts::only the journeys [REQ-114] > =says": {
+   "kind": "support",
+   "hash": "5bc1312e8ee9bea2",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/run.test.ts::only the journeys [REQ-114] > a browser run that died before it could say is a failure with its last words": {
+   "kind": "test",
+   "hash": "53f17bc3146d681b",
+   "asserts": 2,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"a browser run that died before it could say is a failure with its last words\"",
+    "\"chromium missing\"",
+    "\"chromium missing\"",
+    "\"chromium missing\"",
+    "\"chromium missing\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/run.test.ts::only the journeys [REQ-114] > a journey that was not finished fails the run and says which": {
+   "kind": "test",
+   "hash": "92941770cc0fe714",
+   "asserts": 2,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"a journey that was not finished fails the run and says which\"",
+    "\"note: 여정 cancel 실패 시간 초과\\njourneys: 못 끝낸 여정 cancel\"",
+    "\"못 끝낸 여정 cancel\"",
+    "\"못 끝낸 여정 cancel\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/run.test.ts::only the journeys [REQ-114] > prints a line per journey and exits 0 when every journey was finished": {
+   "kind": "test",
+   "hash": "c433138cf02473c2",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"journeys: 모두 끝냈다\"",
+    "\"journeys: 모두 끝냈다\"",
+    "\"note: 여정 run ok (2번, 11.3초)\"",
+    "\"note: 여정 run ok (2번, 11.3초)\"",
+    "\"prints a line per journey and exits 0 when every journey was finished\"",
+    "\"step: x 1초\"",
+    "\"step: x 1초\"",
+    "\"step: x 1초\\nnote: 여정 run ok (2번, 11.3초)\\nbuilt 123\\njourneys: 모두 끝냈다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/ux/run.test.ts::only the journeys [REQ-114] > the group and the choice go to the browser half, and no measurement file is written": {
+   "kind": "test",
+   "hash": "7113622d39b478f8",
+   "asserts": 3,
+   "literals": [
+    "\"--group\"",
+    "\"--group\"",
+    "\"--group\"",
+    "\"--mode\"",
+    "\"--mode\"",
+    "\"--only\"",
+    "\"--only\"",
+    "\"--only\"",
+    "\"--root\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"flow\"",
+    "\"flow\"",
+    "\"flow\"",
+    "\"journeys\"",
+    "\"journeys\"",
+    "\"journeys\"",
+    "\"journeys: 모두 끝냈다\"",
+    "\"run,share\"",
+    "\"run,share\"",
+    "\"run,share\"",
+    "\"string\"",
+    "\"string\"",
+    "\"tests/e2e/ux/measure.ts\"",
+    "\"tests/e2e/ux/measure.ts\"",
+    "\"the group and the choice go to the browser half, and no measurement file is written\"",
+    "\"tsx\"",
+    "\"tsx\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "harness/src/ux/run.test.ts::running a program and collecting what it says [REQ-041] > <suite>": {
@@ -143006,6 +143212,7 @@
   "apps/web/src/logic/world-shape/world-shape.test.ts::알아서와 프리셋 [REQ-094] > 싸게·보통·멈추지 않게는 여덟 층을 모두 채우고 실제 선택지만 가리킨다": "0130-gpu-layer-power-cooling-ladders.md",
   "apps/web/src/logic/world-shape/world-shape.test.ts::이 모양이면 [REQ-094] > 점선 칸은 고장도 시나리오도 더하지 않는다": "0129-site-dr-geo-storage-distributed-db.md",
   "apps/web/src/moss/moss.test.ts::<import:db6e1c41>": "0125-moss-requires-model.md",
+  "harness/src/ux/run.test.ts::<import:268837c3>": "0141-ux-journeys-gate-and-measure.md",
   "packages/core/src/sources/worldgen/campus-places.test.ts::<import:540ca3f3>": "0047-site-names-and-places.md",
   "packages/core/src/sources/worldgen/shaped-per-service.test.ts::서비스마다 다른 모양 [REQ-094] > 흉내 낼 수 없는 칸을 고르면 어느 서비스가 가까운 모양으로 지어졌는지 알린다": "0129-site-dr-geo-storage-distributed-db.md",
   "packages/core/src/sources/worldgen/shaped.test.ts::서비스부터 세계 생성 [REQ-094] > 흉내 낼 수 없는 칸은 가까운 칸 모양으로 짓고 같은 결과를 낸다": "0129-site-dr-geo-storage-distributed-db.md",

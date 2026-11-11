@@ -457,6 +457,13 @@ p {
   background: var(--primary-hover);
 }
 
+.btn.btn-chosen,
+.btn.btn-chosen:hover {
+  background: var(--control-hover);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 2px var(--primary);
+}
+
 .btn-quiet {
   background: transparent;
   color: var(--ink-3);

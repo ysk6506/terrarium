@@ -275,25 +275,16 @@ function TableCard({
   );
 }
 
-function Screen({
-  view,
-  onSaved,
-}: {
-  readonly view: CurrentProcessView;
-  readonly onSaved: (v: CurrentProcessView) => void;
-}) {
-  const [rows, setRows] = useState(() => pc.rowsOf(view.steps));
+/** 이끼가 이 화면을 읽고 하는 일 셋: 단계 한 줄 더하기, 저장, 저장한 표로 실험 만들기 (REQ-103, ADR-0141). */
+function useProcessMoss(
+  view: CurrentProcessView,
+  rows: ReturnType<typeof pc.rowsOf>,
+  setRows: SetRows,
+  draft: Draft,
+  dirty: boolean,
+  saver: ReturnType<typeof useSaver>,
+) {
   const { navigate } = useApp();
-  const draft = pc.draftOf(rows);
-  const dirty = JSON.stringify(draft.steps) !== JSON.stringify(view.steps) || draft.incomplete > 0;
-  const saver = useSaver(view, draft, (saved) => {
-    onSaved(saved);
-    setRows(pc.rowsOf(saved.steps));
-  });
-  usePageTitle(view.scenarioName);
-  useLeaveGuard(
-    dirty && view.canEdit ? "저장하지 않고 나가면 적은 것이 사라져요. 그래도 나갈까요?" : undefined,
-  );
   useMossScreen("scenarioProcess", {
     read: () => ({
       시나리오: view.scenarioName,
@@ -320,6 +311,27 @@ function Screen({
     },
     summary: () => pc.numbersLine(draft.numbers),
   });
+}
+
+function Screen({
+  view,
+  onSaved,
+}: {
+  readonly view: CurrentProcessView;
+  readonly onSaved: (v: CurrentProcessView) => void;
+}) {
+  const [rows, setRows] = useState(() => pc.rowsOf(view.steps));
+  const draft = pc.draftOf(rows);
+  const dirty = JSON.stringify(draft.steps) !== JSON.stringify(view.steps) || draft.incomplete > 0;
+  const saver = useSaver(view, draft, (saved) => {
+    onSaved(saved);
+    setRows(pc.rowsOf(saved.steps));
+  });
+  usePageTitle(view.scenarioName);
+  useLeaveGuard(
+    dirty && view.canEdit ? "저장하지 않고 나가면 적은 것이 사라져요. 그래도 나갈까요?" : undefined,
+  );
+  useProcessMoss(view, rows, setRows, draft, dirty, saver);
   const readOnly = !view.canEdit;
   return (
     <div className="page">
