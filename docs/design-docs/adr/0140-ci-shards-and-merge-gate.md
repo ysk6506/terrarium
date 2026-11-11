@@ -21,11 +21,12 @@ touches_protected:
   - harness/src/checks/test-config.test.ts
   - harness/config/tests.yaml
   - harness/src/run-all.ts
+  - harness/src/files.ts
   - harness/config/test-lock.json
   - vitest.config.ts
   - docs/product-specs/requirements.md
   - AGENTS.md
-decision_hash: c2c5d2aa368b90c4
+decision_hash: 14ac4d75abc79f1c
 ---
 # ADR-0140 CI가 합치기 관문이다 — 테스트는 조각으로 나눠 병렬로, 커버리지는 따로 잰다
 
@@ -42,6 +43,8 @@ decision_hash: c2c5d2aa368b90c4
 7. **'예정' 요구사항(TD-0003).** 결정은 났지만 아직 만들지 않은 요구사항은 본문을 `**예정(ADR-NNNN)**`으로 시작한다. 추적 검사는 이를 테스트 없이도 실패로 보지 않고 "예정"으로 따로 나열한다. 표시한 ADR이 없으면(`TRACE005`), 이미 테스트가 그 요구를 가리키면(`TRACE006`) 실패한다. 구현된 요구를 예정으로 숨길 수 없다. REQ-084·085·089·091·092는 구현 전 ADR(0089, 0092, 0095, 0096)이 가리키는 로드맵이라 예정으로 표시한다.
 
 8. **느린 파일이 진행 보고를 막지 않게 한다.** 수백 개의 CPU 위주 테스트를 한 약속 사슬로 도는 파일(reference-mutations 등)은 워커가 이벤트 루프로 돌아오지 못해, 모두 통과했는데도 `Timeout calling "onTaskUpdate"`(60초)로 실행이 실패한다. 설정의 `setupFiles`가 테스트마다 이벤트 루프를 한 번 돈다(`tests/setup/yield-between-tests.ts`). `setupFiles`는 계속 금지(`TCFG001`)이고, `harness/config/tests.yaml`의 `allowed_setup_files`에 적힌 이 파일 하나만 예외다. 테스트·단언·`testTimeout`은 그대로다.
+
+9. **느린 파일은 혼자 돌린다.** 보고 시간이 한도를 넘는 `tests/spec/calibration.test.ts`(테스트 하나가 1분 넘게 CPU를 잡는다)와 저장소 전체를 검사하는 `harness/src/common.test.ts`(자기 20초 한도가 빠듯하다)는 `test-heavy` 작업이 차례로 돌리고, 조각은 이 둘을 CLI로 뺀다. 합계 검사가 이 둘도 정확히 한 번 돌았는지 본다. 같은 이유로 `harness/src/files.ts`는 글롭을 한 번만 컴파일한다(구조 검사 전체가 약 15% 빨라진다).
 
 ## 이유
 계측과 병렬 실행이 겹치면 시간 초과가 나는데, 계측 없이 조각으로 나누면 가장 느린 조각이 전체 시간을 정한다. 테스트를 약하게 하거나 빼는 길은 ADR-0004가 막는다. 조각 합계 검사는 나눔 때문에 테스트가 조용히 빠지는 것을 막는다.

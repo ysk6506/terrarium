@@ -61,7 +61,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - run: pnpm exec vitest run ${{ env.HEAVY }} --reporter=default --reporter=json --outputFile.json=shard-heavy.json
+      - run: pnpm exec vitest run ${{ env.HEAVY }} --no-file-parallelism --reporter=default --reporter=json --outputFile.json=shard-heavy.json
       - if: always()
         uses: actions/upload-artifact@v4
         with:
