@@ -5,7 +5,7 @@ import { observe } from "@terrarium/core/experiments";
 import { afterAll, describe, expect, test } from "vitest";
 import { SecretBox, SqliteStore } from "../adapters";
 import { FakeFetch, json } from "../adapters/test-support/fake-fetch";
-import { testPlatform } from "../runtime/test-support/platform";
+import { person, testPlatform } from "../runtime/test-support/platform";
 import { buildApp } from "./app";
 
 const dirs: string[] = [];
@@ -81,7 +81,9 @@ describe("connecting a harness from the screen, over HTTP [REQ-051]", () => {
     expect(bad.status).toBe(400);
     expect(bad.body.error.issues[0].path).toBe("url");
 
-    expect((await send("jimin", "POST", `/api/connections/${id}/keep`)).body.daysLeft).toBe(30);
+    expect((await send("jimin", "POST", `/api/connections/${id}/keep`)).status).toBe(403);
+    expect((await send("jimin", "POST", `/api/connections/${id}/check`)).status).toBe(403);
+    expect((await send("yeonsu", "POST", `/api/connections/${id}/keep`)).body.daysLeft).toBe(30);
     expect((await send("yeonsu", "POST", `/api/connections/${id}/check`)).body.status).toBe("ok");
     expect((await send("yeonsu", "GET", "/api/meta")).body.expiring).toEqual([]);
 
@@ -106,16 +108,13 @@ describe("what was typed on the screen is still there after a restart [REQ-051]"
       { adapters: { connect: { env: {}, fetch: fake.fetch }, secretBox: box } },
       first,
     );
-    const made = await one.platform.connections.create(
-      { name: "yeonsu", source: "proxy" },
-      {
-        connector: "http",
-        name: "저장",
-        config: { url: "https://harness.test", token: "t0ken" },
-        headers: [{ name: "X-K", value: "v4lue", secret: true }],
-        metadata: { team: "ai" },
-      },
-    );
+    const made = await one.platform.connections.create(person("yeonsu", "proxy"), {
+      connector: "http",
+      name: "저장",
+      config: { url: "https://harness.test", token: "t0ken" },
+      headers: [{ name: "X-K", value: "v4lue", secret: true }],
+      metadata: { team: "ai" },
+    });
     const history = observe(
       undefined,
       { harnessId: made.id, agentId: "a/b" },

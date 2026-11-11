@@ -5,14 +5,17 @@ status: active
 last_verified: 2026-11-11
 covers:
   - apps/server/src/adapters/config.ts
+  - apps/server/src/adapters/identity-config.ts
+  - apps/server/src/http/identity.ts
+  - apps/server/src/http/viewer.ts
   - apps/server/src/main.ts
-covers_hash: c6a080abbc6d871d
+covers_hash: ec2d46881e16016e
 verification_log:
-  - "2026-11-04: GoClaw·Hermes 연결과 고정 도구 주소 설명을 하네스 항목에 추가하고, 나머지는 현재 코드와 맞는지 다시 읽었다"
   - "2026-11-04: main.ts에서 항상 참인 secretBox 확인(죽은 가지)만 지웠다. 고정 도구 주소가 서버 열쇠에서 나온다는 본문과 같다"
   - "2026-11-05: config.ts의 하네스 traces 항목(none·default·clickstack·langfuse)과 전역 telemetry가 기본값이라는 것을 설정 표와 확인 목록에 맞췄다 (ADR-0085)"
   - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
   - "2026-11-11: main.ts의 시작 실패 보고를 console.error에서 process.stderr.write로 바꿨다(ADR-0148). 본문 서술과 어긋난 곳 없음"
+  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
 ---
 # 서버 운영
 
@@ -43,7 +46,11 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 {
   "port": 8787,
   "publicUrl": "https://terrarium.dc.internal",
-  "identity": { "header": "x-forwarded-user" },
+  "identity": {
+    "header": "x-forwarded-user", "proxySecretEnv": "TERRARIUM_PROXY_SECRET",
+    "nameHeader": "x-forwarded-name", "groupsHeader": "x-forwarded-groups",
+    "admins": ["yeonsu.kim"], "adminGroup": "terrarium-admins"
+  },
   "limits": { "maxRunning": 200, "perUser": 50, "perHarness": 100 },
   "harnesses": [
     {
@@ -66,7 +73,12 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 | 항목 | 무엇 | 없으면 |
 |---|---|---|
 | `publicUrl` | 사람과 하네스가 이 서버에 닿는 주소. 공유 링크와 실행별 MCP 주소가 이것으로 만들어진다 | 요청의 Host 헤더(로컬 개발용) |
-| `identity.header` | 사내 SSO 프록시가 넣는 사용자 헤더. 있으면 이것만 믿는다([ADR-0028](adr/0028-identity-and-sharing.md)) | 웹에서 이름을 한 번 입력 |
+| `identity.header` | 사내 SSO 프록시가 넣는 로그인 ID 헤더. 있으면 **프록시 모드**: 프록시의 비밀 값이 맞는 요청만 믿는다([ADR-0174](adr/0174-permissions-proxy-identity-three-scopes-audit.md)) | 웹에서 이름을 한 번 입력(혼자 개발할 때만) |
+| `identity.proxySecretEnv` | 프록시가 모든 요청에 실어 보내는 비밀 값이 든 **환경 변수 이름**. 프록시 모드에서는 꼭 있어야 한다 | 프록시 모드면 서버가 안 뜬다 |
+| `identity.secretHeader` | 그 비밀 값을 싣는 헤더 | `x-terrarium-proxy-secret` |
+| `identity.nameHeader` / `groupsHeader` | 보여 줄 이름 / SSO 그룹(쉼표로 구분) 헤더. 이름이 없으면 로그인 ID를 보여 준다. 그룹이 없으면 그룹 없음 | 없음 |
+| `identity.admins` / `adminGroup` | 프록시 모드의 관리자: 로그인 ID 목록, 또는 이 SSO 그룹에 든 사람 | 관리자 없음 |
+| `identity.adminTokenEnv` / `adminTokenHeader` | **이름을 직접 적는 방식**의 관리자 토큰이 든 환경 변수 이름 / 토큰을 싣는 헤더. 이 방식에서는 토큰을 보낸 요청만 관리자다([ADR-0152](adr/0152-reality-worlds-admin-fork-excel-spl.md)) | 관리자 없음 / `x-terrarium-admin-token` |
 | `harnesses` | 파일로 붙일 하네스·에이전트(연결 방식은 [ADR-0042](adr/0042-connectors.md)). `builtin`(내장 기준 에이전트)은 항상 있다. 사람은 화면에서도 연결할 수 있다 | 내장만 |
 | `connections.allowedHosts` | 화면에서 연결할 수 있는 호스트(`*.internal`처럼). 클라우드 메타데이터 주소는 항상 막는다 | 메타데이터 주소만 막음 |
 | `connections.retentionDays` | 화면에서 만든 연결이 실험에 안 쓰이면 지우는 날 수. 0이면 지우지 않는다 | 30 |
@@ -84,7 +96,23 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 
 ## 사용자 식별 자리
 
-`identity.header`가 있으면 그 헤더만 믿고, 없으면 웹이 묻는 이름을 쓴다. 사내 SSO를 서버가 직접 확인해야 하게 되면 식별 방식 하나(`Authenticator`)를 더하면 된다 — [ADR-0044](adr/0044-identity-slot.md). 지금은 헤더 방식과 이름 방식만 있고, 실제 SSO(OIDC·SAML)는 만들지 않았다.
+두 방식이 있고, 시작할 때 하나로 정해진다. 사내 SSO를 서버가 직접 확인해야 하게 되면 식별 방식 하나(`Authenticator`)를 더하면 된다 — [ADR-0044](adr/0044-identity-slot.md). 실제 SSO(OIDC·SAML)는 만들지 않았다. 자세한 규칙은 [권한](permissions.md).
+
+**프록시 모드 (`identity.header`가 있을 때. 사내 배포는 이것이다)**
+
+- 사용자 → 프록시(SSO 로그인을 맡음) → 테라리움. 프록시가 로그인 ID·이름·그룹을 헤더로 넘기고, 프록시만 아는 **비밀 값**(`secretHeader`)을 모든 요청에 싣는다.
+- 비밀 값이 없거나 틀렸거나(일정한 시간으로 견준다) 로그인 헤더가 없으면 공개가 아닌 모든 길과 두 실시간 스트림이 **401**이다. "anonymous"로 통과시키지 않는다. 헤더에 무엇을 더 적어도 같다.
+- 비밀 값은 설정 파일에도 로그에도 응답에도 나오지 않는다. 파일에는 환경 변수 **이름**(`proxySecretEnv`)만 적는다.
+- **그 환경 변수가 없거나 비어 있으면 서버가 시작하지 않는다.** 아무 열린 것도 없이 `problem:`(무엇이 빠졌나)과 `fix:`(무엇을 하면 되나)를 적고 끝난다. `proxySecretEnv`를 적지 않은 경우도 같다.
+- 로그인 ID는 바뀌지 않는 값이라 소유를 여기에 적는다. 이름은 보여 주기용이다. ID·이름·그룹은 한 가지 유니코드 꼴(NFC)로 맞춰, 키보드마다 다르게 들어오는 한글이 같은 사람으로 센다. **"anonymous"는 어느 대소문자로도 로그인 ID로 못 쓴다.**
+- 관리자는 `admins`(로그인 ID 목록)이나 `adminGroup`(SSO 그룹)에서 온다. 나머지 로그인한 사람은 사용자다.
+- 프록시를 거치지 않고 서버에 닿는 길을 막는 것은 배포(망)의 일이다. 비밀 값은 거기에 한 겹을 더할 뿐이다.
+- `/mcp/runs/…`(에이전트의 도구 주소)와 `/r/…`(공유 링크)는 주소 안의 토큰이 지키므로 로그인 밖이다.
+
+**이름을 직접 적는 방식 (`identity.header`가 없을 때. 혼자 쓰는 개발용)**
+
+- 웹이 묻는 이름을 헤더(`x-terrarium-user`)로 보낸다. **누구나 남의 이름을 적을 수 있으니 보호가 아니다.** `GET /api/meta`의 `identity.mode`가 `self-declared`라고 말해, 화면이 그렇게 알릴 수 있다. 이름이 없는 요청은 하나의 "anonymous" 사용자로 지나간다(예전과 같다). 이 말을 이름으로 적으면 이름이 없는 것으로 친다.
+- 관리자는 **관리자 토큰**이 있어야 한다: `adminTokenEnv`가 가리키는 환경 변수의 값을 `adminTokenHeader`에 실은 요청만 관리자다. 토큰을 정하지 않으면 관리자는 없다. 토큰 환경 변수를 적었는데 비어 있으면 서버가 시작하지 않는다. `admins`와 `adminGroup`은 이 방식에서 쓰이지 않는다(이름으로는 누구인지 증명할 수 없으므로).
 
 ## 사내 시스템을 붙일 때 확인할 것
 

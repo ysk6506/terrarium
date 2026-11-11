@@ -16,6 +16,8 @@ export interface HandlerInput<N extends RouteName> {
   readonly viewer: Viewer;
   /** How people reach this server (for share links). */
   readonly baseUrl: string;
+  /** How people are told apart (shown on `meta`, so the screen can say when it is only a typed name). */
+  readonly identityMode: "proxy" | "self-declared";
 }
 
 /** Routes that stay open and push events; app.ts answers them itself. */
@@ -39,17 +41,17 @@ const versionNo = (input: { params: Readonly<Record<string, string>> }) => {
 };
 
 export const HANDLERS: Handlers = {
-  meta: (p, i) => p.meta(i.viewer),
+  meta: (p, i) => p.meta(i.viewer, i.identityMode),
 
   listConnectors: async (p) => p.connections.specs(),
   listTelemetryAdapters: async (p) => p.connections.telemetryAdapters(),
   listConnections: (p) => p.connections.views(),
-  tryConnection: (p, i) => p.connections.talk(id(i), i.body),
+  tryConnection: (p, i) => p.connections.talk(i.viewer, id(i), i.body),
   checkConnection: (p, i) => p.connections.check(i.viewer, i.body, i.baseUrl),
   createConnection: (p, i) => p.connections.create(i.viewer, i.body),
   updateConnection: (p, i) => p.connections.update(i.viewer, id(i), i.body),
-  keepConnection: (p, i) => p.connections.keep(id(i)),
-  recheckConnection: (p, i) => p.connections.recheck(id(i)),
+  keepConnection: (p, i) => p.connections.keep(i.viewer, id(i)),
+  recheckConnection: (p, i) => p.connections.recheck(i.viewer, id(i)),
   deleteConnection: (p, i) => p.connections.remove(i.viewer, id(i)),
   listAgentVersions: (p, i) => p.agentVersions.history(id(i), agentId(i)),
   addAgentVersion: (p, i) => p.agentVersions.add(i.viewer, id(i), agentId(i), i.body),
@@ -68,8 +70,8 @@ export const HANDLERS: Handlers = {
   createModel: (p, i) => p.models.create(i.viewer, i.body),
   updateModel: (p, i) => p.models.update(i.viewer, id(i), i.body),
   deleteModel: (p, i) => p.models.remove(i.viewer, id(i)),
-  checkModel: (p, i) => p.models.check(id(i)),
-  setDefaultModel: (p, i) => p.models.setDefault(id(i)),
+  checkModel: (p, i) => p.models.check(i.viewer, id(i)),
+  setDefaultModel: (p, i) => p.models.setDefault(i.viewer, id(i)),
   askMoss: (p, i) => p.moss.ask(i.body),
   listServiceCards: (p, i) => p.serviceCards.list(i.viewer),
   createServiceCard: (p, i) => p.serviceCards.create(i.viewer, i.body),
@@ -103,7 +105,7 @@ export const HANDLERS: Handlers = {
   updateScenario: (p, i) => p.scenarios.update(i.viewer, id(i), i.body),
   deleteScenario: (p, i) => p.scenarios.delete(i.viewer, id(i)),
   dryRunScenario: (p, i) => p.scenarios.dryRun(id(i), i.body.seed),
-  calibrateScenario: (p, i) => p.scenarios.calibrate(id(i), i.body.seed),
+  calibrateScenario: (p, i) => p.scenarios.calibrate(i.viewer, id(i), i.body.seed),
 
   listExperiments: (p, i) => p.experiments.list(i.query),
   getExperiment: (p, i) => p.experiments.view(i.viewer, id(i)),

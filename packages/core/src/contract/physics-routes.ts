@@ -23,12 +23,14 @@ export const PHYSICS_ROUTES = {
     path: "/api/physics/slots",
     summary: "물리가 닿는 자리들: 숫자(단위·기본값·허용 범위)와 곡선 이름, 입력과 출력",
     produces: json,
+    policy: "signedIn",
   },
   getWorldPhysics: {
     method: "GET",
     path: "/api/worlds/:id/physics",
     summary: "이 세계의 물리 프로필과 지문 (바꾸지 않았으면 기본 물리 v1)",
     produces: json,
+    policy: "signedIn",
   },
   putWorldPhysics: {
     method: "PUT",
@@ -37,5 +39,6 @@ export const PHYSICS_ROUTES = {
       "이 세계의 물리 프로필 저장 (만든 사람만, 버전 확인). 새 세계 버전이 되고 지문이 달라져요",
     body: PutPhysicsBody,
     produces: json,
+    policy: { action: "change" },
   },
 } as const satisfies Record<string, RouteSpec>;

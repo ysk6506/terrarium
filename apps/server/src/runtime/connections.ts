@@ -41,7 +41,8 @@ import type { ConnectionsOptions } from "./connection-options";
 import { adapterList, adapterOf, composeTraces, reachNote, type Traces } from "./connection-traces";
 import { tryTalk } from "./connection-try";
 import { discover, type Entry, expiryOf, viewOf } from "./connection-view";
-import { type HarnessDirectory, must, ownerOnly, type Viewer } from "./context";
+import { type HarnessDirectory, must, type Viewer } from "./context";
+import { allow } from "./permissions";
 
 export type { ConnectionsOptions, FixedConnection } from "./connection-options";
 
@@ -239,7 +240,19 @@ export class Connections implements HarnessDirectory {
   /** The connection being changed or tried as a change; its owner only, since its secrets travel with it. */
   private ownedScreenEntry(viewer: Viewer, id: string, action: string): Entry {
     const entry = this.screenEntry(id, action === "연결 지우기" ? "지울" : "바꿀");
-    ownerOnly(viewer, entry.record?.owner ?? "", action);
+    allow(
+      viewer,
+      action === "연결 지우기" ? "remove" : "change",
+      { owner: entry.record?.owner },
+      action,
+    );
+    return entry;
+  }
+
+  /** A connection the viewer may use: the config file's are for everyone signed in, one made on the screen carries its maker's secrets. */
+  private usable(viewer: Viewer, id: string): Entry {
+    const entry = must(this.fixed.get(id) ?? this.added.get(id), `연결 '${id}'`);
+    allow(viewer, "use", { owner: this.ownerOf(id) }, "이 연결 쓰기");
     return entry;
   }
 
@@ -272,7 +285,7 @@ export class Connections implements HarnessDirectory {
       config: composed.config,
       secrets: composed.secrets,
       headers: composed.headers,
-      owner: viewer.name,
+      owner: viewer.id,
       createdAt: this.options.stamps.now(),
     });
     const result = await probe(port, this.options.agentsTimeoutMs ?? AGENTS_TIMEOUT_MS);
@@ -324,7 +337,7 @@ export class Connections implements HarnessDirectory {
     const connector = this.connectorFor(input.connector);
     const id = this.idFor(input);
     const record = recordOf(
-      { id, owner: viewer.name, createdAt: this.options.stamps.now() },
+      { id, owner: viewer.id, createdAt: this.options.stamps.now() },
       {
         name: input.name,
         description: input.description ?? "",
@@ -380,8 +393,8 @@ export class Connections implements HarnessDirectory {
   }
 
   /** "말 걸어 보기": one question to one agent of a connection, nothing else touched. */
-  async talk(id: string, input: TryConnectionRequest): Promise<TryResult> {
-    const entry = must(this.fixed.get(id) ?? this.added.get(id), `연결 '${id}'`);
+  async talk(viewer: Viewer, id: string, input: TryConnectionRequest): Promise<TryResult> {
+    const entry = this.usable(viewer, id);
     if (!entry.port)
       throw new UnavailableError(entry.error ?? "이 연결은 아직 만들어지지 않았어요");
     return tryTalk(
@@ -394,16 +407,17 @@ export class Connections implements HarnessDirectory {
   }
 
   /** Ask again now: a harness that was down may be up, one whose agents changed shows them. */
-  async recheck(id: string): Promise<ConnectionView> {
-    const entry = must(this.fixed.get(id) ?? this.added.get(id), `연결 '${id}'`);
+  async recheck(viewer: Viewer, id: string): Promise<ConnectionView> {
+    const entry = this.usable(viewer, id);
     const again = entry.record && !entry.port ? this.fromRecord(entry.record) : entry;
     if (again !== entry) this.added.set(id, again);
     return this.fresh(again);
   }
 
-  /** Keep using it: the clock that removes unused connections starts over. Anyone may; it destroys nothing. */
-  async keep(id: string): Promise<ConnectionView> {
+  /** Keep using it: the clock that removes unused connections starts over. Whoever may use the connection. */
+  async keep(viewer: Viewer, id: string): Promise<ConnectionView> {
     this.screenEntry(id, "바꿀");
+    allow(viewer, "use", { owner: this.ownerOf(id) }, "연결 계속 쓰기");
     await this.touch(id);
     return this.fresh(must(this.added.get(id), `연결 '${id}'`));
   }
@@ -435,7 +449,7 @@ export class Connections implements HarnessDirectory {
   async expiring(viewer: Viewer) {
     return (await this.views())
       .filter(
-        (v) => v.owner === viewer.name && v.daysLeft !== undefined && v.daysLeft <= this.warnDays,
+        (v) => v.owner === viewer.id && v.daysLeft !== undefined && v.daysLeft <= this.warnDays,
       )
       .map((v) => ({ id: v.id, name: v.name, daysLeft: v.daysLeft as number }));
   }

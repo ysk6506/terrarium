@@ -2,7 +2,7 @@
 title: 서비스 카탈로그 — 기본 제공 카드 열 장과 내 카드 (REQ-104)
 kind: spec
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-11
 covers:
   - packages/core/src/world/service-catalog.ts
   - packages/core/src/world/service-load.ts
@@ -10,13 +10,13 @@ covers:
   - apps/server/src/runtime/service-cards.ts
   - apps/server/src/runtime/experiments-quick.ts
   - packages/core/src/contract/service-cards.ts
-covers_hash: ad65ac1e437b410a
+covers_hash: 0afb4bda84540cb6
 verification_log:
-  - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-07: REQ-109: 코드와 대조했다. 해당 문장을 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: REQ-109: 코드와 대조했다"
   - "2026-11-07: o15 합치기 (2차 피드백 수정)"
   - "2026-11-07: 2026-11-07: REQ-111(ADR-0134): IAP 빼기·내 카드만·③ 숫자 하나·기반 랙·빌더 오른쪽 아래 칩을 코드와 대조해 고쳤고 나머지는 그대로 맞다"
+  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
 ---
 # 서비스 카탈로그 (REQ-104, [ADR-0127](adr/0127-short-world-flow-and-service-catalog.md))
 
@@ -66,7 +66,7 @@ verification_log:
 | `owner` | 저장한 사람. 카탈로그에 이름과 칭호 알약으로 보인다 |
 | `shared` (기본 false) | true: 모두의 카탈로그에 보인다. false: 만든 사람에게만 보인다 |
 
-`GET`은 내 카드와 공유된 카드를, `PATCH /:id`는 이름·피해 숫자·`load`·`shared`를 만든 사람만, `DELETE /:id`도 만든 사람만 한다. **카드는 늘 잠겨 있다**(REQ-108): `locked` 칸은 없고 보내면 400이다. 남의 카드는 `POST /:id/copy { name? }`로 복사해서 내 카드로 쓴다(복사본은 복사한 사람의 것이고 공유 안 된 상태다). 공유되지 않은 남의 카드는 403이다. 카탈로그를 통해 세계에 더해진 서비스는 카드의 **복사본**이라, 나중에 원본을 고쳐도 이미 지은 세계는 바뀌지 않는다.
+`GET`은 내 카드와 공유된 카드를, `PATCH /:id`는 이름·피해 숫자·`load`·`shared`를 만든 사람(과 관리자)만, `DELETE /:id`도 만든 사람(과 관리자)만 한다. 누가 하는지는 한 함수(`may`)가 정하고 소유는 로그인 ID로 견준다([권한](permissions.md)). **카드는 늘 잠겨 있다**(REQ-108): `locked` 칸은 없고 보내면 400이다. 남의 카드는 `POST /:id/copy { name? }`로 복사해서 내 카드로 쓴다(복사본은 복사한 사람의 것이고 공유 안 된 상태다). 공유되지 않은 남의 카드는 403이다. 카탈로그를 통해 세계에 더해진 서비스는 카드의 **복사본**이라, 나중에 원본을 고쳐도 이미 지은 세계는 바뀌지 않는다.
 
 ## 하지 않은 것
 - 카드를 직접 설계(구조·종류 바꾸기)하는 편집기. 모양은 기본 제공 열 장뿐이다.
