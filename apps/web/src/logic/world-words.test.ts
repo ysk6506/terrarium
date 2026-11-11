@@ -103,6 +103,10 @@ const SCREENS = [
   "ui/builder/KeysHint.tsx",
   "ui/builder/FillPanel.tsx",
   "ui/pages/experiment-steps.tsx",
+  "ui/pages/experiment-parts.tsx",
+  "ui/pages/experiment.tsx",
+  "ui/pages/new-experiment.tsx",
+  "ui/pages/benchmarks.tsx",
 ];
 
 /** The source of every screen the check reads (vite hands it over as text; the list is the same as SCREENS). */
@@ -134,6 +138,10 @@ const SOURCES = (import.meta as unknown as ImportMetaGlob).glob(
     "../ui/builder/KeysHint.tsx",
     "../ui/builder/FillPanel.tsx",
     "../ui/pages/experiment-steps.tsx",
+    "../ui/pages/experiment-parts.tsx",
+    "../ui/pages/experiment.tsx",
+    "../ui/pages/new-experiment.tsx",
+    "../ui/pages/benchmarks.tsx",
   ],
   { query: "?raw", import: "default", eager: true },
 ) as Record<string, string>;
@@ -179,11 +187,13 @@ describe("글 잣대: 해요체, 숫자와 단위, 시스템 말 금지, 버튼�
 
   test("the experiment form starts on the recommended number of runs, and says the range when it is out", () => {
     expect(experiment.emptyDraft().runs).toBe(howWords.RECOMMENDED_RUNS);
-    expect(howWords.RUNS_RECOMMEND).toBe("권장 5번");
-    expect(howWords.runsRange(20)).toBe("몇 번 돌릴지는 1~20번 사이로 정해 주세요");
+    expect(howWords.RUNS_LABEL).toBe("서로 다른 상황을 몇 개 돌릴까요");
+    expect(howWords.RUNS_RECOMMEND).toBe("권장 5개");
+    expect(howWords.runsRange(20)).toBe("몇 개 돌릴지는 1~20개 사이로 정해 주세요");
     expect(howWords.RUNS_HELP).toMatch(
-      /^같은 시나리오를 여러 번 돌리면 운이 아니라 실력인지 알 수 있어요\./,
+      /^상황이 다르면 고장이 나는 때와 사람들이 답하는 시간이 달라져요\./,
     );
+    expect(howWords.REPEATS_LABEL).toBe("같은 상황을 몇 번씩 돌릴까요");
   });
 
   test("the rules catch what they are for", () => {

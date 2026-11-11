@@ -124,7 +124,7 @@ describe("repeats of a seed [REQ-118]", () => {
     const make = (extra: Record<string, unknown>) =>
       p.experiments.create(YEONSU, { name: "많이", recipe: recipe(world.id, scenario.id, extra) });
     await expect(make({ runs: 20, repeats: 4 })).rejects.toMatchObject({
-      issues: [{ message: "실행은 한 실험에 60번까지예요 (시드 20개 × 4번 = 80번)" }],
+      issues: [{ message: "실행은 한 실험에 60번까지예요 (상황 20개 × 4번씩 = 80번)" }],
     });
     expect(await store.listExperiments()).toEqual([]);
     const ok = await make({ seeds: [1], repeats: 2 });
@@ -132,7 +132,7 @@ describe("repeats of a seed [REQ-118]", () => {
     await expect(
       p.experiments.addRuns(YEONSU, ok.experiment.id, { repeats: 10 }),
     ).rejects.toMatchObject({
-      issues: [{ message: "같은 조건은 시드마다 1~10번 돌릴 수 있어요" }],
+      issues: [{ message: "같은 상황은 1~10번씩 돌릴 수 있어요" }],
     });
   });
 });

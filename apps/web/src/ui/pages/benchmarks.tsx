@@ -44,7 +44,7 @@ function Row({
       <td className="num">
         {row.runs}번
         <div className="tiny muted">
-          {row.rank ? `시드 ${row.seeds}개` : `시드 ${MIN_SEEDS_TO_RANK}개부터 순위에 올라요`}
+          {row.rank ? `상황 ${row.seeds}개` : `상황 ${MIN_SEEDS_TO_RANK}개부터 순위에 올라요`}
         </div>
       </td>
       <td className="num">{percent(row.passRate)}</td>
@@ -188,7 +188,7 @@ export function BenchmarksPage() {
             </Go>
           }
         >
-          실험이 끝나면 여기에 세트별로 모여요. 같은 조건을 서로 다른 시드 {MIN_SEEDS_TO_RANK}개
+          실험이 끝나면 여기에 세트별로 모여요. 같은 조건을 서로 다른 상황 {MIN_SEEDS_TO_RANK}개
           이상으로 돌려야 순위에 올라요.
         </Empty>
       )}

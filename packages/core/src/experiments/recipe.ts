@@ -57,12 +57,12 @@ export function sizeProblems(recipe: Pick<Recipe, "seeds" | "repeats">): string[
 /** The same, for a number of seeds and of repeats (a form that has not made seeds yet). */
 export function sizeProblemsOf(seeds: number, repeats: number): string[] {
   const out: string[] = [];
-  if (seeds > MAX_SEEDS) out.push(`시드는 한 실험에 ${MAX_SEEDS}개까지예요 (지금 ${seeds}개)`);
+  if (seeds > MAX_SEEDS) out.push(`상황은 한 실험에 ${MAX_SEEDS}개까지예요 (지금 ${seeds}개)`);
   if (!Number.isInteger(repeats) || repeats < 1 || repeats > MAX_REPEATS)
-    out.push(`같은 조건은 시드마다 1~${MAX_REPEATS}번 돌릴 수 있어요`);
+    out.push(`같은 상황은 1~${MAX_REPEATS}번씩 돌릴 수 있어요`);
   else if (seeds * repeats > MAX_RUNS)
     out.push(
-      `실행은 한 실험에 ${MAX_RUNS}번까지예요 (시드 ${seeds}개 × ${repeats}번 = ${seeds * repeats}번)`,
+      `실행은 한 실험에 ${MAX_RUNS}번까지예요 (상황 ${seeds}개 × ${repeats}번씩 = ${seeds * repeats}번)`,
     );
   return out;
 }

@@ -10,25 +10,27 @@ import { toolTexts } from "./tool-words";
 
 /** How many times a scenario is run when nobody says: enough to tell skill from luck, still quick. */
 export const RECOMMENDED_RUNS = 5;
-/** The fewest different situations (seeds) that put an experiment on a benchmark's ranking. */
+/** The fewest different situations that put an experiment on a benchmark's ranking. */
 export const RANKING_SITUATIONS = MIN_SEEDS_TO_RANK;
 /** How many times a seed is run when nobody says: the experiment looks as it always did. */
 export const DEFAULT_REPEATS = 1;
 /** The quick choices of how many times a seed is run. */
 export const REPEAT_CHOICES: readonly number[] = [1, 3, 5];
 
-export const RUNS_LABEL = "몇 번 돌릴까요";
-export const RUNS_HELP = `같은 시나리오를 여러 번 돌리면 운이 아니라 실력인지 알 수 있어요. 서로 다른 상황으로 ${RANKING_SITUATIONS}번 이상 돌려야 벤치마크 순위에 올라요.`;
-export const RUNS_RECOMMEND = `권장 ${RECOMMENDED_RUNS}번`;
+export const RUNS_LABEL = "서로 다른 상황을 몇 개 돌릴까요";
+export const RUNS_HELP = `상황이 다르면 고장이 나는 때와 사람들이 답하는 시간이 달라져요. ${RANKING_SITUATIONS}개부터 벤치마크 순위에 올라요.`;
+export const RUNS_RECOMMEND = `권장 ${RECOMMENDED_RUNS}개`;
 /** The error when the number is out of range. */
-export const runsRange = (max: number): string => `몇 번 돌릴지는 1~${max}번 사이로 정해 주세요`;
+export const runsRange = (max: number): string => `몇 개 돌릴지는 1~${max}개 사이로 정해 주세요`;
 
-export const REPEATS_LABEL = "같은 조건을 몇 번씩 돌릴까요";
+export const REPEATS_LABEL = "같은 상황을 몇 번씩 돌릴까요";
 export const REPEATS_HELP =
-  "같은 세계에서 여러 번 돌리면 에이전트가 같은 상황에서도 얼마나 흔들리는지 알 수 있어요. 평균과 순위는 서로 다른 상황의 수로 세요.";
-export const REPEATS_PICK = "자주 고르는 횟수";
+  "같은 상황을 여러 번 돌리면 에이전트가 같은 상황에서도 얼마나 흔들리는지 알 수 있어요. 평균과 순위는 서로 다른 상황의 수로 세요.";
+/** The last of the quick choices: the box for any other number shows only when it is chosen. */
+export const REPEATS_DIRECT = "직접";
+export const REPEATS_DIRECT_LABEL = "몇 번씩인지 직접 정하기";
 /** The error when the number of repeats is out of range. */
-export const repeatsRange = (): string => `같은 조건은 1~${MAX_REPEATS}번 사이로 정해 주세요`;
+export const repeatsRange = (): string => `같은 상황은 1~${MAX_REPEATS}번 사이로 정해 주세요`;
 
 export const TOOLS_TITLE = "에이전트가 쓸 도구";
 export const TOOLS_LEDE =
@@ -72,7 +74,8 @@ export function howTexts(): string[] {
     runsRange(20),
     REPEATS_LABEL,
     REPEATS_HELP,
-    REPEATS_PICK,
+    REPEATS_DIRECT,
+    REPEATS_DIRECT_LABEL,
     repeatsRange(),
     TOOLS_TITLE,
     TOOLS_LEDE,

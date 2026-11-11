@@ -116,7 +116,7 @@ function RunLine({ draft }: { readonly draft: Draft }) {
   return (
     <p className="small">
       {draft.repeats > 1
-        ? `실행 ${experiment.runCount(draft)}번 (시드 ${draft.runs}개 × ${draft.repeats}번)`
+        ? `실행 ${experiment.runCount(draft)}번 (상황 ${draft.runs}개 × ${draft.repeats}번씩)`
         : `${draft.runs}회 실행`}
       . 툴 {experiment.countTools(draft)}개
       {draft.operation

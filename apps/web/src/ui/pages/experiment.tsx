@@ -35,7 +35,6 @@ import {
   ResultFigures,
   RunsTable,
   SeedRows,
-  Steadiness,
 } from "./experiment-parts";
 import { SubjectPanel } from "./experiment-subject";
 import { OperationCards } from "./operation-card";
@@ -214,9 +213,9 @@ function AddRuns({
         busy={busy}
         disabled={repeatsWhy !== undefined}
         why={repeatsWhy}
-        onClick={() => void more({ repeats: 1 }, `시드마다 한 번씩 더했어요`)}
+        onClick={() => void more({ repeats: 1 }, `상황마다 한 번씩 더했어요`)}
       >
-        {`시드마다 한 번씩 더 돌리기 (실행 ${seeds}번)`}
+        {`상황마다 한 번씩 더 돌리기 (실행 ${seeds}번)`}
       </Button>
     </div>
   );
@@ -351,7 +350,6 @@ function Figures({ view }: { readonly view: ExperimentView }) {
   return (
     <>
       <ResultFigures a={view.analysis} />
-      <Steadiness a={view.analysis} />
     </>
   );
 }
@@ -394,7 +392,7 @@ export function ExperimentPage({ id }: { readonly id: string }) {
       <Figures view={view} />
       <LiveStatus view={view} status={status} />
       <Findings items={view.analysis.findings} />
-      <SeedRows runs={runs} repeats={view.analysis.repeats} />
+      <SeedRows runs={runs} analysis={view.analysis} />
       <ProcessSections view={view} />
       {view.analysis.parent && (
         <ParentCard parent={view.analysis.parent} ready={view.analysis.progress.completed > 0} />

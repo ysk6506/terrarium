@@ -27,13 +27,13 @@ import { Figures, Note, Section, Status } from "../kit";
 import { RateBar, ScoreBar } from "../results";
 import { ExperimentTable } from "./experiments";
 
-/** What the numbers are over: "시드 5개 × 3번", or "시드 5개" when each seed ran once. */
+/** What the numbers are over: "상황 5개 × 3번씩", or "상황 5개" when each situation ran once. */
 export const designText = (a: Pick<ExperimentAnalysis, "seeds" | "repeats">): string | undefined =>
   a.seeds === 0
     ? undefined
     : a.repeats > 1
-      ? `시드 ${a.seeds}개 × ${a.repeats}번`
-      : `시드 ${a.seeds}개`;
+      ? `상황 ${a.seeds}개 × ${a.repeats}번씩`
+      : `상황 ${a.seeds}개`;
 
 export function ResultFigures({ a }: { readonly a: ExperimentAnalysis }) {
   const done = a.progress.completed;
@@ -49,7 +49,7 @@ export function ResultFigures({ a }: { readonly a: ExperimentAnalysis }) {
           label: "평균 점수",
           value: meanText(a.score, "점"),
           note: designText(a),
-          hint: "오차는 95% 신뢰구간. 시드가 적으면 넓어요",
+          hint: "오차는 95% 신뢰구간. 상황이 적으면 넓어요",
         },
         {
           label: "정확한 진단",
@@ -72,35 +72,28 @@ export function ResultFigures({ a }: { readonly a: ExperimentAnalysis }) {
   );
 }
 
-/** Two lines for an experiment that ran each seed more than once: how much the same condition shakes, and where it split. */
-export function Steadiness({ a }: { readonly a: ExperimentAnalysis }) {
-  if (a.repeats < 2 || a.seeds === 0) return null;
-  return (
-    <ul className="list-plain steadiness" aria-label="같은 조건의 흔들림">
-      {a.withinSeed && <li>같은 조건에서 ±{a.withinSeed.spread.toFixed(1)}점 흔들려요</li>}
-      <li>
-        시드 {a.seeds}개 중 {a.splitSeeds}개에서 결과가 갈렸어요
-      </li>
-    </ul>
-  );
-}
-
-/** One line per seed: a dot for each time it ran (shape and mark as well as colour), and the range of its scores. */
+/** One line per situation, under two lines on how much the same situation shakes: a dot for each time it ran (shape and mark as well as colour), and the range of its scores. */
 export function SeedRows({
   runs,
-  repeats,
+  analysis: a,
 }: {
   readonly runs: readonly RunSummary[];
-  readonly repeats: number;
+  readonly analysis: ExperimentAnalysis;
 }) {
   const rows = seedRows(runs);
-  if (repeats < 2 || rows.length === 0) return null;
+  if (a.repeats < 2 || rows.length === 0) return null;
   return (
-    <Section title="시드별로" aside={<span className="tiny muted">점 하나가 한 번이에요</span>}>
+    <Section title="상황별로" aside={<span className="tiny muted">점 하나가 한 번이에요</span>}>
+      <ul className="list-plain steadiness" aria-label="같은 상황의 흔들림">
+        {a.withinSeed && <li>같은 상황에서 ±{a.withinSeed.spread.toFixed(1)}점 흔들려요</li>}
+        <li>
+          상황 {a.seeds}개 중 {a.splitSeeds}개에서 결과가 갈렸어요
+        </li>
+      </ul>
       <ul className="seed-rows">
         {rows.map((row) => (
           <li key={row.seed} className="seed-row" data-split={row.split ? "yes" : undefined}>
-            <span className="seed-name">시드 {row.seed}</span>
+            <span className="seed-name">상황 {row.seed}</span>
             <span className="seed-dots">
               {row.dots.map((d) => (
                 <span
@@ -263,7 +256,7 @@ export function RunsTable({
               #
             </th>
             <th>상태</th>
-            <th className="num">시드</th>
+            <th className="num">상황</th>
             {repeated && <th className="num">반복</th>}
             <th className="num">점수</th>
             <th>결과</th>

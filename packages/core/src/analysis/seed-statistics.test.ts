@@ -455,7 +455,22 @@ describe("repeats of a seed: the seed is the unit [REQ-118]", () => {
     expect(r.withinSeed).toEqual({ spread: EXPECT_REPEATED.spread, seeds: 3 });
     expect(r.splitSeeds).toBe(1);
     expect(r.findings.join("\n")).not.toContain("흔들려요");
-    expect(r.findings[0]).toBe("6번 중 3번 합격 (시드별 합격률의 평균 50%)");
+    expect(r.findings[0]).toBe("6번 중 3번 합격 (상황별 합격률의 평균 50%)");
+  });
+
+  test("repeated runs say where the differences come from: the shaking inside a situation or the situations apart", () => {
+    // seed means 90.9 / 76.35 / 18.2 against a spread of 11.88 inside the seeds: the situations differ
+    expect(r.findings).toContain("점수 차이는 주로 상황이 달라서 생겨요 — 상황을 늘려 보세요");
+    expect(r.findings.join("\n")).not.toContain("시드");
+    // both seeds come out 54.55 on average but each is good once and wrong once: the agent shakes
+    const shaky = analysed(repeated({ id: "s", runs: [good, wrong, good, wrong] }, 2));
+    expect(shaky.findings).toContain(
+      "점수 차이는 주로 에이전트가 같은 상황에서도 흔들려서 생겨요 — 같은 상황을 더 여러 번 돌려 보세요",
+    );
+    expect(shaky.findings.join("\n")).not.toContain("주로 상황이 달라서");
+    // run once, the old sentence stays and no comparison is made
+    const once = analysed(experimentOf({ id: "o", runs: [good, partial, wrong] }));
+    expect(once.findings.join("\n")).not.toContain("주로");
   });
 
   test("a seed run once has no spread to tell; with every seed run once nothing is said about splits", () => {
@@ -476,7 +491,7 @@ describe("repeats of a seed: the seed is the unit [REQ-118]", () => {
     };
     const one = against(4, 1);
     expect(one.parent).toMatchObject({ scoreDelta: 72.7, clear: false });
-    expect(one.findings.at(-1)).toContain("시드 수에 비해 아직 분명한 차이는 아니에요");
+    expect(one.findings.at(-1)).toContain("상황 수에 비해 아직 분명한 차이는 아니에요");
     const two = against(2, 2);
     expect(two.parent).toMatchObject({ scoreDelta: 72.7, clear: true });
     expect(two.findings.at(-1)).toContain("분명한 차이예요");

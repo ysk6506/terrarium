@@ -199,7 +199,7 @@ function experimentFindings(a: Omit<ExperimentAnalysis, "findings">): string[] {
   const passed = done.filter((r) => r.passed).length;
   const out =
     a.repeats > 1
-      ? [`${done.length}번 중 ${passed}번 합격 (시드별 합격률의 평균 ${pct(a.passRate)})`]
+      ? [`${done.length}번 중 ${passed}번 합격 (상황별 합격률의 평균 ${pct(a.passRate)})`]
       : [`${done.length}번 중 ${passed}번 합격 (${pct(a.passRate)})`];
   out.push(...spreadFindings(a));
   for (const c of a.criteria.filter((x) => x.rate < 0.5))
@@ -213,16 +213,30 @@ function experimentFindings(a: Omit<ExperimentAnalysis, "findings">): string[] {
   return out;
 }
 
-/** A wide spread between seeds says to add seeds. (The shaking inside a seed has two lines of its own on the screen.) */
+/** Below this many points both spreads are small enough that nothing needs saying about where the differences come from. */
+const SPREAD_WORTH_SAYING = 5;
+
+/**
+ * Where the score differences come from. Repeated: compare the shaking inside a situation (pooled spread within
+ * seeds) with the spread between situations (the spread of the seed means) and say which is the larger. Once: only
+ * a wide spread between runs is worth a line, as it always was. (The two figures have lines of their own on the screen.)
+ */
 function spreadFindings(a: Omit<ExperimentAnalysis, "findings">): string[] {
-  const out: string[] = [];
+  if (a.repeats > 1 && a.withinSeed && a.score && a.score.n > 1) {
+    const within = a.withinSeed.spread;
+    const between = a.score.stdev;
+    if (Math.max(within, between) < SPREAD_WORTH_SAYING) return [];
+    return within >= between
+      ? [
+          "점수 차이는 주로 에이전트가 같은 상황에서도 흔들려서 생겨요 — 같은 상황을 더 여러 번 돌려 보세요",
+        ]
+      : ["점수 차이는 주로 상황이 달라서 생겨요 — 상황을 늘려 보세요"];
+  }
   if (a.score && a.score.n > 1 && a.score.stdev >= 15)
-    out.push(
-      a.repeats > 1
-        ? `시드마다 점수가 크게 달라요 (표준편차 ${a.score.stdev}점) — 시드를 늘려 보는 것이 좋아요`
-        : `실행마다 점수가 크게 달라요 (표준편차 ${a.score.stdev}점) — 실행을 늘려 보는 것이 좋아요`,
-    );
-  return out;
+    return [
+      `실행마다 점수가 크게 달라요 (표준편차 ${a.score.stdev}점) — 실행을 늘려 보는 것이 좋아요`,
+    ];
+  return [];
 }
 
 function parentFindings(p: ParentComparison, repeated: boolean): string[] {
@@ -232,7 +246,7 @@ function parentFindings(p: ParentComparison, repeated: boolean): string[] {
   if (p.scoreDelta === undefined) return [`원본 '${p.name}'에서 바꾼 것: ${what}`];
   const signed = (n: number) => `${n > 0 ? "+" : ""}${n}`;
   const unclear = repeated
-    ? "시드 수에 비해 아직 분명한 차이는 아니에요"
+    ? "상황 수에 비해 아직 분명한 차이는 아니에요"
     : "실행 수에 비해 아직 분명한 차이는 아니에요";
   const verdict = p.clear ? "분명한 차이예요" : unclear;
   return [

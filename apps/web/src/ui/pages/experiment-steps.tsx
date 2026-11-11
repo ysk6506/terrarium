@@ -5,7 +5,7 @@
 import type { ScenarioRecord, WorldSummary } from "@terrarium/core/experiments";
 import { MAX_REPEATS, MAX_SEEDS } from "@terrarium/core/experiments";
 import { BUILTIN_PROFILES } from "@terrarium/core/profiles";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { experiment, hiddenWarning, howWords, toolPicker } from "../../logic";
 import { useApp } from "../context";
 import { Button, Check, Note, NumberField, Segmented, SelectField, TextField } from "../kit";
@@ -18,6 +18,8 @@ import { ScenarioPick } from "./scenario-pick";
 import { ToolPicker } from "./tool-picker";
 
 type Draft = experiment.Draft;
+/** The value of the choice that opens the box for any other number of repeats. */
+const DIRECT = "direct";
 interface StepProps {
   readonly draft: Draft;
   readonly set: (change: Partial<Draft>) => void;
@@ -186,7 +188,7 @@ function RunsField({ draft, set }: Pick<StepProps, "draft" | "set">) {
         min={1}
         max={MAX_SEEDS}
         step={1}
-        unit="번"
+        unit="개"
         onChange={(runs) => runs !== undefined && set({ runs: Math.round(runs) })}
         help={howWords.RUNS_HELP}
       />
@@ -199,7 +201,7 @@ function RunsField({ draft, set }: Pick<StepProps, "draft" | "set">) {
             kind="quiet"
             onClick={() => set({ runs: howWords.RECOMMENDED_RUNS })}
           >
-            {howWords.RECOMMENDED_RUNS}번으로 맞추기
+            {howWords.RECOMMENDED_RUNS}개로 맞추기
           </Button>
         )}
       </div>
@@ -207,29 +209,45 @@ function RunsField({ draft, set }: Pick<StepProps, "draft" | "set">) {
   );
 }
 
-/** How many times each seed runs: a few quick choices and a box for any other number (ADR-0158). */
+/** How many times each situation runs: three quick choices, and a box for any other number once 직접 is chosen (ADR-0158). */
 function RepeatsField({ draft, set }: Pick<StepProps, "draft" | "set">) {
-  const quick = howWords.REPEAT_CHOICES.map((n) => ({ value: String(n), label: `${n}번` }));
+  const [direct, setDirect] = useState(false);
+  const quick = howWords.REPEAT_CHOICES;
+  const boxed = direct || !quick.includes(draft.repeats);
+  const options = [
+    ...quick.map((n) => ({ value: String(n), label: `${n}번` })),
+    { value: DIRECT, label: howWords.REPEATS_DIRECT },
+  ];
   const bad = !Number.isInteger(draft.repeats) || draft.repeats < 1 || draft.repeats > MAX_REPEATS;
   return (
     <div className="stack how-repeats" style={{ gap: 8 }}>
-      <NumberField
-        label={howWords.REPEATS_LABEL}
-        error={bad ? howWords.repeatsRange() : undefined}
-        value={draft.repeats}
-        min={1}
-        max={MAX_REPEATS}
-        step={1}
-        unit="번"
-        onChange={(repeats) => repeats !== undefined && set({ repeats: Math.round(repeats) })}
-        help={howWords.REPEATS_HELP}
-      />
-      <Segmented
-        label={howWords.REPEATS_PICK}
-        value={String(draft.repeats)}
-        options={quick}
-        onChange={(v) => set({ repeats: Number(v) })}
-      />
+      <div className="field">
+        <div className="field-label" aria-hidden="true">
+          {howWords.REPEATS_LABEL}
+        </div>
+        <Segmented
+          label={howWords.REPEATS_LABEL}
+          value={boxed ? DIRECT : String(draft.repeats)}
+          options={options}
+          onChange={(v) => {
+            setDirect(v === DIRECT);
+            if (v !== DIRECT) set({ repeats: Number(v) });
+          }}
+        />
+        <div className="field-help">{howWords.REPEATS_HELP}</div>
+      </div>
+      {boxed && (
+        <NumberField
+          label={howWords.REPEATS_DIRECT_LABEL}
+          error={bad ? howWords.repeatsRange() : undefined}
+          value={draft.repeats}
+          min={1}
+          max={MAX_REPEATS}
+          step={1}
+          unit="번"
+          onChange={(repeats) => repeats !== undefined && set({ repeats: Math.round(repeats) })}
+        />
+      )}
     </div>
   );
 }

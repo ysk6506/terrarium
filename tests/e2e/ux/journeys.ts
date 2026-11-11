@@ -226,7 +226,7 @@ async function cancel(c: Context): Promise<void> {
     await c.d.choose(page.getByLabel("세계", { exact: true }), SLOW_WORLD);
     // the scenarios are the world's: choosing another world asks for one again
     await c.d.click(page.getByRole("radio", { name: /냉방기 정지/ }).first());
-    await c.d.fill(page.getByLabel("몇 번 돌릴까요"), "20");
+    await c.d.fill(page.getByLabel("몇 개 돌릴까요"), "20");
     await c.d.click(page.getByRole("button", { name: "실험 시작" }));
     await expectPath(c, /^\/experiments\/e-/);
     await c.d.click(page.getByRole("button", { name: "멈추기", exact: true }));
@@ -283,10 +283,12 @@ async function fork(c: Context): Promise<void> {
   await c.d.click(page.getByRole("link", { name: "조건 바꿔 다시 돌리기" }));
   await expectPath(c, /^\/experiments\/new$/);
   await c.d.choose(page.getByLabel("에이전트"), "무작위 추측");
+  // however many situations the original had, this one has five
+  await c.d.fill(page.getByLabel("몇 개 돌릴까요"), "5");
   // each of the five seeds three times: the fork says what it changes, and the result says how much it shook
   await c.d.click(page.getByRole("button", { name: "3번", exact: true }));
   await page
-    .getByText("시드당 반복")
+    .getByText("상황당 반복")
     .first()
     .waitFor({ timeout: 5 * SECOND });
   await c.d.click(page.getByRole("button", { name: /조건 바꿔 다시 돌리기|실험 시작/ }));

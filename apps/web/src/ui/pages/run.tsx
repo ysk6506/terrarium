@@ -91,7 +91,7 @@ function RunHead({ view }: { readonly view: RunView }) {
           <Go to={{ name: "experiment", id: run.experimentId }}>{experiment.experiment.name}</Go>
         </>
       }
-      title={`${run.index + 1}번째 실행 (시드 ${run.seed})`}
+      title={`${run.index + 1}번째 실행 (상황 ${run.seed})`}
       lede={
         <>
           <Status status={run.status} operation={operation} /> {ended}
