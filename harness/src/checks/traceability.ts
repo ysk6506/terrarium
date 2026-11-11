@@ -4,8 +4,12 @@
  *
  * TRACE001 requirement with no test   TRACE002 test cites an unknown requirement
  * TRACE003 spec test file without any requirement link   TRACE004 requirement id defined twice
+ *
+ * A requirement that is decided but not built yet starts its text with `**예정(ADR-NNNN)**` (TD-0003). It
+ * needs no test and is listed as "예정" instead of failing, but the ADR must exist (TRACE005), and the
+ * marker must go once a test cites the requirement (TRACE006), so it cannot hide an implemented one.
  */
-import { readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { findRoot, finish, flag, isMain, parseArgs, type Violation, violation } from "../common";
 import { lineOf, parse, ts, walk } from "../ts-ast";
@@ -14,6 +18,8 @@ import { loadTestsConfig } from "./testguard";
 
 const REQUIREMENTS = "docs/product-specs/requirements.md";
 const ROW_RE = /^\|\s*(REQ-\d{3})\s*\|/;
+const PLANNED_RE = /^\|\s*(REQ-\d{3})\s*\|\s*\*\*예정\((ADR-\d{4})\)\*\*/;
+const ADR_DIR = "docs/design-docs/adr";
 const REF_RE = /REQ-\d{3}/g;
 const LINKED_DIRS = ["tests/spec/"];
 
@@ -40,6 +46,22 @@ export function requirementIds(root: string): { ids: string[]; violations: Viola
   return { ids, violations };
 }
 
+/** Requirements marked 예정 (planned), with the ADR that plans them. */
+export function plannedRequirements(root: string): Map<string, string> {
+  const planned = new Map<string, string>();
+  for (const line of readFileSync(path.join(root, REQUIREMENTS), "utf8").split("\n")) {
+    const match = PLANNED_RE.exec(line);
+    if (match?.[1] && match[2]) planned.set(match[1], match[2]);
+  }
+  return planned;
+}
+
+const adrExists = (root: string, adr: string): boolean => {
+  const dir = path.join(root, ADR_DIR);
+  const prefix = `${adr.slice(4)}-`;
+  return existsSync(dir) && readdirSync(dir).some((name) => name.startsWith(prefix));
+};
+
 /** Requirement ids cited in describe/test titles of a file, with line numbers. */
 export function citations(root: string, file: string): Array<[string, number]> {
   const sf = parse(file, readFileSync(path.join(root, file), "utf8"));
@@ -55,7 +77,8 @@ export function citations(root: string, file: string): Array<[string, number]> {
   return found;
 }
 
-export function run(root: string): Violation[] {
+/** The verdict plus, apart from it, the planned (예정) requirements that still have no test. */
+export function report(root: string): { violations: Violation[]; planned: string[] } {
   const { ids, violations } = requirementIds(root);
   const config = loadTestsConfig(root);
   const covered = new Set<string>();
@@ -86,7 +109,31 @@ export function run(root: string): Violation[] {
       );
     }
   }
-  for (const id of ids.filter((i) => !covered.has(i))) {
+  const planned = plannedRequirements(root);
+  for (const [id, adr] of planned) {
+    if (!adrExists(root, adr))
+      violations.push(
+        violation(
+          "TRACE005",
+          REQUIREMENTS,
+          0,
+          `${id} cites ${adr}, which does not exist`,
+          "Name the ADR that plans it.",
+        ),
+      );
+    if (covered.has(id))
+      violations.push(
+        violation(
+          "TRACE006",
+          REQUIREMENTS,
+          0,
+          `${id} is marked 예정 but a test cites it`,
+          "Remove the 예정 marker.",
+        ),
+      );
+  }
+  const open = [...planned].filter(([id]) => !covered.has(id));
+  for (const id of ids.filter((i) => !covered.has(i) && !planned.has(i))) {
     violations.push(
       violation(
         "TRACE001",
@@ -97,12 +144,24 @@ export function run(root: string): Violation[] {
       ),
     );
   }
-  return violations;
+  const lines =
+    open.length === 0
+      ? []
+      : [`PLAN traceability: 예정 ${open.length}건 (테스트 없음, 실패 아님)`].concat(
+          open.map(([id, adr]) => `     ${id} (${adr})`),
+        );
+  return { violations, planned: lines };
 }
+
+export const run = (root: string): Violation[] => report(root).violations;
 
 export function main(argv: readonly string[], out: (line: string) => void = console.log): number {
   const { flags } = parseArgs(argv);
-  return finish("traceability", run(findRoot(flag(flags, "root"))), out);
+  const root = findRoot(flag(flags, "root"));
+  const { violations, planned } = report(root);
+  const code = finish("traceability", violations, out);
+  for (const line of planned) out(line);
+  return code;
 }
 
 if (isMain(import.meta.url)) process.exit(main(process.argv.slice(2)));
