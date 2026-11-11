@@ -16,7 +16,8 @@ permissions:
 
 env:
   SHARDS: 12
-  HEAVY: tests/spec/calibration.test.ts
+  # Spec files that need a runner to themselves (see test-heavy). Space separated.
+  HEAVY: tests/spec/calibration.test.ts harness/src/common.test.ts
 
 jobs:
   lint-types:
@@ -40,7 +41,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - run: pnpm exec vitest run --shard=${{ matrix.shard }}/${{ env.SHARDS }} --exclude=${{ env.HEAVY }} --reporter=default --reporter=json --outputFile.json=shard-${{ matrix.shard }}.json
+      - run: |
+          for f in $HEAVY; do exclude="$exclude --exclude=$f"; done
+          pnpm exec vitest run --shard=${{ matrix.shard }}/${{ env.SHARDS }} $exclude --reporter=default --reporter=json --outputFile.json=shard-${{ matrix.shard }}.json
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -48,9 +51,10 @@ jobs:
           path: shard-${{ matrix.shard }}.json
           if-no-files-found: error
 
-  # One spec file has a single test that runs about a minute without yielding to the event loop. Next to other
-  # workers it slows down past the runner's 60 s progress limit and the run ends with "Timeout calling
-  # onTaskUpdate". It runs here alone; the shards exclude it, and test-summary checks it ran exactly once.
+  # Two spec files cannot share a runner with other workers: calibration runs minutes of CPU-bound work (one
+  # test about a minute without yielding), and the run-all test (harness/src/common.test.ts) checks the whole
+  # repository against its own 20 s limit, which contention pushes past. They run here, the shards exclude
+  # them, and test-summary checks that every test ran exactly once.
   test-heavy:
     runs-on: ubuntu-latest
     timeout-minutes: 30
