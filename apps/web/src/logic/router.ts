@@ -17,6 +17,8 @@ export type Page =
     }
   | { readonly name: "scenarios"; readonly worldId?: string }
   | { readonly name: "scenario"; readonly id: string }
+  /** The steps people take today for a scenario, written down for the before/after comparison (REQ-112). */
+  | { readonly name: "scenarioProcess"; readonly id: string }
   | { readonly name: "experiments"; readonly mine?: boolean }
   | {
       readonly name: "newExperiment";
@@ -51,7 +53,7 @@ export const SECTIONS: ReadonlyArray<{
     key: "scenarios",
     label: "시나리오",
     page: { name: "scenarios" },
-    owns: ["scenarios", "scenario"],
+    owns: ["scenarios", "scenario", "scenarioProcess"],
   },
   {
     key: "experiments",
@@ -101,6 +103,10 @@ const PATTERNS: ReadonlyArray<[RegExp, (m: RegExpExecArray, q: URLSearchParams) 
         : { name: "scenarios" },
   ],
   [new RegExp(`^/scenarios/${ID}$`), (m) => ({ name: "scenario", id: m[1] as string })],
+  [
+    new RegExp(`^/scenarios/${ID}/process$`),
+    (m) => ({ name: "scenarioProcess", id: m[1] as string }),
+  ],
   [
     /^\/experiments\/?$/,
     (_, q) =>
@@ -166,6 +172,7 @@ const HREFS: { readonly [N in PageName]: (page: Of<N>) => string } = {
     }),
   scenarios: (p) => withQuery("/scenarios", { world: p.worldId }),
   scenario: (p) => `/scenarios/${enc(p.id)}`,
+  scenarioProcess: (p) => `/scenarios/${enc(p.id)}/process`,
   experiments: (p) => withQuery("/experiments", { mine: p.mine ? "1" : undefined }),
   newExperiment: (p) =>
     withQuery("/experiments/new", {

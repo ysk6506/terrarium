@@ -2,6 +2,7 @@
 import type { Blueprint, EntityKind } from "@terrarium/core/world";
 import type { AgentHistory } from "./agent-version";
 import type { CalibrationMark, TitleAward, WorldLike } from "./community";
+import type { CurrentProcessRecord } from "./current-process";
 import type { Journal, JournalEntry } from "./journal";
 import type { LlmModelRecord } from "./llm-models";
 import type { Experiment, RunRecord, ScenarioRecord, WorldRecord } from "./model";
@@ -77,6 +78,7 @@ export class MemoryStore implements ExperimentStore {
   private readonly presets = new Map<string, PresetRecord>();
   private readonly models = new Map<string, LlmModelRecord>();
   private readonly serviceCards = new Map<string, ServiceCardRecord>();
+  private readonly processes = new Map<string, CurrentProcessRecord>();
   private readonly likes = new Map<string, WorldLike>();
   private readonly marks = new Map<string, CalibrationMark>();
   private readonly awards = new Map<string, TitleAward>();
@@ -297,6 +299,15 @@ export class MemoryStore implements ExperimentStore {
 
   async deleteServiceCard(id: string): Promise<boolean> {
     return this.serviceCards.delete(id);
+  }
+
+  async putCurrentProcess(process: CurrentProcessRecord): Promise<void> {
+    this.processes.set(process.id, copy(process));
+  }
+
+  async getCurrentProcess(scenarioId: string): Promise<CurrentProcessRecord | undefined> {
+    const p = this.processes.get(scenarioId);
+    return p && copy(p);
   }
 
   async putLike(like: WorldLike): Promise<void> {

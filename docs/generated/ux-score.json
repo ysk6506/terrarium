@@ -1,28 +1,24 @@
 {
-  "measuredOn": "2026-11-05",
-  "webHash": "d9dd2ae65b8164d6",
+  "measuredOn": "2026-11-11",
+  "webHash": "90988e7591227916",
   "scores": {
-    "useful": 100,
-    "usable": 100,
-    "desirable": 100,
-    "findable": 100,
-    "accessible": 100,
-    "credible": 100,
+    "useful": 95.8,
+    "usable": 94.5,
+    "desirable": 39.7,
+    "findable": 50,
+    "accessible": 77,
+    "credible": 91.9,
     "valuable": 100
   },
   "measurements": {
     "journeys": {
       "build": {
         "ok": true,
-        "actions": 7
-      },
-      "import": {
-        "ok": true,
-        "actions": 4
+        "actions": 10
       },
       "design": {
         "ok": true,
-        "actions": 6
+        "actions": 7
       },
       "author": {
         "ok": true,
@@ -50,33 +46,46 @@
       },
       "site": {
         "ok": true,
-        "actions": 6
+        "actions": 8
+      },
+      "build-small": {
+        "ok": true,
+        "actions": 7
+      },
+      "topology": {
+        "ok": false,
+        "actions": 4,
+        "note": "locator.click: Timeout 30000ms exceeded."
+      },
+      "process-compare": {
+        "ok": true,
+        "actions": 10
       }
     },
     "clean": {
-      "tried": 32,
-      "ok": 32
+      "tried": 43,
+      "ok": 43
     },
     "invalid": {
-      "tried": 4,
-      "ok": 4
+      "tried": 3,
+      "ok": 3
     },
     "colors": {
-      "literals": 82,
-      "offToken": 0
+      "literals": 120,
+      "offToken": 2
     },
     "progress": {
       "tried": 3,
       "ok": 3
     },
     "load": {
-      "kb": 685.517578125,
-      "ms": 224,
-      "sceneDrawn": true
+      "kb": 1000000,
+      "ms": 1000000,
+      "sceneDrawn": false
     },
     "reach": {
-      "tried": 10,
-      "ok": 10
+      "tried": 1,
+      "ok": 0
     },
     "orientation": {
       "tried": 14,
@@ -84,17 +93,17 @@
     },
     "axe": {
       "pages": 28,
-      "critical": 0,
-      "serious": 0,
-      "moderate": 0
+      "critical": 2,
+      "serious": 6,
+      "moderate": 28
     },
     "keyboard": {
       "tried": 5,
       "ok": 5
     },
     "focus": {
-      "tried": 84,
-      "ok": 84
+      "tried": 97,
+      "ok": 97
     },
     "motion": {
       "animated": 0
@@ -105,7 +114,7 @@
     },
     "empties": {
       "tried": 4,
-      "ok": 4
+      "ok": 3
     },
     "provenance": {
       "tried": 13,
@@ -116,32 +125,32 @@
       "ok": 7
     },
     "voice": {
-      "tried": 789,
-      "ok": 789
+      "tried": 1020,
+      "ok": 1020
     },
     "oneThing": {
       "tried": 13,
-      "ok": 13
+      "ok": 12
     },
     "buttons": {
-      "tried": 124,
-      "ok": 124
+      "tried": 166,
+      "ok": 166
     },
     "targets": {
-      "tried": 344,
-      "ok": 344
+      "tried": 565,
+      "ok": 480
     },
     "disabledWhy": {
-      "tried": 13,
-      "ok": 13
+      "tried": 12,
+      "ok": 11
     },
     "units": {
-      "tried": 90,
-      "ok": 90
+      "tried": 106,
+      "ok": 98
     },
     "hover": {
-      "tried": 25,
-      "ok": 25
+      "tried": 33,
+      "ok": 30
     }
   }
 }
