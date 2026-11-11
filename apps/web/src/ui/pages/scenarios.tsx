@@ -234,6 +234,10 @@ function ScenarioTable({
                   <Go to={{ name: "newExperiment", scenarioId: s.id }}>
                     실험하기<span className="sr-only"> ({s.name})</span>
                   </Go>
+                  {" · "}
+                  <Go to={{ name: "scenarioProcess", id: s.id }}>
+                    지금 방식<span className="sr-only"> ({s.name})</span>
+                  </Go>
                 </td>
               </tr>
             ))}

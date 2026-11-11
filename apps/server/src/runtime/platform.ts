@@ -22,6 +22,7 @@ import { Models, type ModelsOptions } from "./models";
 import { Moss } from "./moss";
 import { findDocsDir } from "./moss-index";
 import { Presets } from "./presets";
+import { Processes } from "./processes";
 import { Results } from "./results";
 import { Scenarios } from "./scenarios";
 import { ServiceCards } from "./service-cards";
@@ -154,6 +155,8 @@ export class Platform {
   /** The model APIs the workspace registered for later (REQ-099, ADR-0119). */
   readonly models: Models;
   readonly serviceCards: ServiceCards;
+  /** 시나리오마다 적은 "지금 하는 방식"과 전후 비교, 세계의 온톨로지 요구 (REQ-112, ADR-0135). */
+  readonly processes: Processes;
   /** 이끼, the helper that answers from the repo docs and the screen's state (REQ-103, ADR-0124). */
   readonly moss: Moss;
   /** The world list in popularity order with hearts (REQ-101, ADR-0122). */
@@ -216,6 +219,7 @@ export class Platform {
       ...(options.adapters.allowedHosts ? { allowedHosts: options.adapters.allowedHosts } : {}),
     });
     this.serviceCards = new ServiceCards(this.ctx, this.titles);
+    this.processes = new Processes(this.ctx);
     const docsDir = options.docsDir ?? findDocsDir();
     this.moss = new Moss(this.models, docsDir ? { docsDir } : {});
     this.experiments = new Experiments(

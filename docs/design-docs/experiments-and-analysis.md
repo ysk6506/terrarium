@@ -2,7 +2,7 @@
 title: 실험과 결과 분석
 kind: spec
 status: active
-last_verified: 2026-11-10
+last_verified: 2026-11-11
 covers:
   - packages/core/src/experiments/agent-version.ts
   - packages/core/src/experiments/recipe.ts
@@ -18,13 +18,13 @@ covers:
   - packages/core/src/world/incidents.ts
   - apps/server/src/runtime/executor-operation.ts
   - packages/core/src/session/run-events.ts
-covers_hash: 4d8b7e36e47450b4
+covers_hash: 5315deb6e1ac0abb
 verification_log:
-  - "2026-11-06: 2f 합치기 · 2차 끝"
-  - "2026-11-06: LLM API 등록"
   - "2026-11-06: REQ-101: 저장소 포트·출발점(startedFrom) 반영, ADR-0122"
   - "2026-11-07: 2026-11-07: REQ-104 빠른 실험·서비스 카드 포트 대조"
   - "2026-11-10: 물리 프로필(REQ-113) 반영: 새 라우트·벤치마크 키 지문"
+  - "2026-11-07: 프로세스 비교 문단을 더하고 나머지는 그대로 맞다"
+  - "2026-11-11: main 합치기 뒤 다시 읽음: 물리 프로필(REQ-113) 반영 문단과 라우트 행이 main의 새 내용과 함께 맞다"
 ---
 # 실험과 결과 분석 (REQ-015, REQ-030~033, REQ-037~040)
 
@@ -77,6 +77,8 @@ verification_log:
 레시피에 `domains`(내 도메인, 없으면 모든 도메인)와 `leadTimes`(벤더 SLA·예비 부품·야간 가산·일을 맡는 때)가 선택으로 있다. 둘 다 과제를 바꾸므로 **벤치마크 키에 들어간다**(안 정한 레시피의 키는 그대로다). 포크 비교는 "내 도메인", "담당자·벤더 설정"으로 바뀐 것을 말하고 세트가 갈린다고 알린다. 실행 결과(`RunResult.scope`)는 도메인과 설정을 남기고, 점수(`Score.handoff`)는 넘긴 일을 남긴다. 자세히는 [도메인과 가상 담당자](domains-and-counterparts.md).
 
 ## 운영 실험 (REQ-090)
+**프로세스 비교**(REQ-112, ADR-0135): `core.analysis`의 `foldRun`이 실행 기록을 단계 장부로 접고(에이전트의 연속 호출은 "툴 N번" 한 줄) `meanNumbers`가 실행들의 평균을 낸다. 시나리오마다 사람이 적은 "지금 하는 방식" 표(`ExperimentStore`의 `currentProcess`)와 나란히 놓이고 표가 없으면 잰 값만 나온다. 자세히는 [프로세스 비교](process-compare.md).
+
 레시피에 `operation`(운영 시간·시간 방식·고장 출처·연쇄/동시 확률·알람마다 깨우기·지시문·호출 상한)이 있으면 그 실험은 **운영**이다. 시나리오가 없고(`scenarioId`는 `operation`) 시간 정책은 쓰이지 않는다. 한 시드가 하루이므로 "실행 n번"은 "n개의 다른 하루"다. **벤치마크 키**에는 길이·시간 방식(실시간/빨리 감기 N배)·고장 출처·고장률·연쇄·동시가 들어가고 지시문과 알람마다 깨우기는 안 들어간다(에이전트의 조건). 결과(`RunResult.operation`)는 설정, 지표, 서비스 피해 값, 계획한 고장 수와 일어나지 않게 한 수를 담고, 지표는 사건 기록에서 다시 계산할 수 있다(하네스가 토큰을 알려 주면 화면이 토큰을 넣어 다시 센다). 실험 화면에는 합격·점수가 없고 실행 화면 첫 줄이 가용률·놓친 알람·탐지 지연이다. 자세한 규칙은 [운영 모드](operation-mode.md).
 
 **권장값으로 한 번에 (REQ-104)**: `POST /api/worlds/:id/quick-experiment`는 위 운영 실험의 시나리오 세트(세계가 만들 수 있는 시나리오의 고장 주입)에 기본 툴 · 5번 · 실제 시간 1시간 · 마지막으로 쓴 에이전트(없으면 내장 `operator`)를 채운 레시피를 만들어 `create`에 넘긴다. 새 실험 종류는 없다([설명](world-entry.md#실험-시작--권장값-한-번에)). 서비스 카드 저장소(`ServiceCardRecord`)도 같은 저장소 포트에 있다([카탈로그](service-catalog.md)).

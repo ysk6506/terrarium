@@ -77,6 +77,10 @@ export const HANDLERS: Handlers = {
   copyServiceCard: (p, i) => p.serviceCards.copy(i.viewer, id(i), i.body),
   deleteServiceCard: (p, i) => p.serviceCards.remove(i.viewer, id(i)),
   quickExperiment: (p, i) => p.experiments.quick(i.viewer, id(i), i.body),
+  getCurrentProcess: (p, i) => p.processes.get(i.viewer, id(i)),
+  putCurrentProcess: (p, i) => p.processes.put(i.viewer, id(i), i.body),
+  experimentProcess: (p, i) => p.processes.compare(id(i)),
+  worldOntology: (p, i) => p.processes.ontology(id(i), i.query),
 
   listWorlds: (p, i) => p.board.list(i.viewer, i.query.sort),
   likeWorld: (p, i) => p.board.like(i.viewer, id(i)),

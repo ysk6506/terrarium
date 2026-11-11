@@ -10,6 +10,7 @@ import { MODEL_ROUTES } from "./model-routes";
 import { MOSS_ROUTES } from "./moss-routes";
 import { PHYSICS_ROUTES } from "./physics-routes";
 import { ImportPresetsBody, PresetQuery, RenamePresetBody, SavePresetBody } from "./presets";
+import { PROCESS_ROUTES } from "./process-routes";
 import {
   AddAgentVersionBody,
   AddRunsBody,
@@ -203,6 +204,7 @@ export const ROUTES = {
   ...PHYSICS_ROUTES,
   ...COMMUNITY_ROUTES,
   ...SERVICE_CARD_ROUTES,
+  ...PROCESS_ROUTES,
 
   listWorldTemplates: {
     method: "GET",

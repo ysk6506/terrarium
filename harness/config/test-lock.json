@@ -10057,7 +10057,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/physics-api.test.ts::<import:741f635d>": {
@@ -10067,7 +10067,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/physics-api.test.ts::<import:886f13ce>": {
@@ -10077,7 +10077,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/physics-api.test.ts::<import:ce214579>": {
@@ -10087,7 +10087,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/physics-api.test.ts::<import:e71fddbd>": {
@@ -10097,7 +10097,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/physics-api.test.ts::=HOT": {
@@ -10107,7 +10107,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/physics-api.test.ts::=setup": {
@@ -10117,7 +10117,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/physics-api.test.ts::the physics slots and a world's physics profile over HTTP [REQ-113] > <suite>": {
@@ -10127,7 +10127,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/physics-api.test.ts::the physics slots and a world's physics profile over HTTP [REQ-113] > a profile that cannot be used is refused with every problem in Korean; a stale version and a stranger are refused too": {
@@ -10165,7 +10165,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/physics-api.test.ts::the physics slots and a world's physics profile over HTTP [REQ-113] > a world starts on the default physics, v1": {
@@ -10185,7 +10185,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/physics-api.test.ts::the physics slots and a world's physics profile over HTTP [REQ-113] > an experiment keeps the fingerprint of the physics it ran on, and the run result says it too": {
@@ -10206,7 +10206,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/physics-api.test.ts::the physics slots and a world's physics profile over HTTP [REQ-113] > GET /api/physics/slots lists the slots with their numbers, units, defaults and ranges": {
@@ -10243,7 +10243,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/physics-api.test.ts::the physics slots and a world's physics profile over HTTP [REQ-113] > saving a profile makes a new version of the world with another fingerprint; saving the default puts it back": {
@@ -10271,7 +10271,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "apps/server/src/http/presets-api.test.ts::<import:436dd109>": {
@@ -10514,6 +10514,296 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/server/src/http/process-api.test.ts::<import:05f9b251>": {
+   "kind": "support",
+   "hash": "05f9b251c2f5d26f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/http/process-api.test.ts::<import:886f13ce>": {
+   "kind": "support",
+   "hash": "886f13ce4c0a8070",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/http/process-api.test.ts::<import:917b2dea>": {
+   "kind": "support",
+   "hash": "917b2dea932abae5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/http/process-api.test.ts::<import:ce214579>": {
+   "kind": "support",
+   "hash": "ce214579b09faf36",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/http/process-api.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/http/process-api.test.ts::=seed": {
+   "kind": "support",
+   "hash": "767625dc080121d8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/http/process-api.test.ts::=setup": {
+   "kind": "support",
+   "hash": "2a386e83a0f4bcc0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/http/process-api.test.ts::=STEPS": {
+   "kind": "support",
+   "hash": "fe25e64cde02de18",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/http/process-api.test.ts::실험의 전후 비교와 세계의 온톨로지 [REQ-112] > [REQ-112] 세계의 요구는 시나리오에서 뽑고, 실험을 고르면 쓴 것이 붙는다": {
+   "kind": "test",
+   "hash": "30ab480ec6807f15",
+   "asserts": 8,
+   "literals": [
+    "\"/api/experiments\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"200\"",
+    "\"200\"",
+    "\"404\"",
+    "\"404\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"POST\"",
+    "\"[REQ-112] 세계의 요구는 시나리오에서 뽑고, 실험을 고르면 쓴 것이 붙는다\"",
+    "\"builtin\"",
+    "\"completed\"",
+    "\"triage\"",
+    "\"쓴 것\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/http/process-api.test.ts::실험의 전후 비교와 세계의 온톨로지 [REQ-112] > [REQ-112] 잰 값은 실행 기록에서 나오고, 적은 표가 없으면 적은 값은 없다": {
+   "kind": "test",
+   "hash": "0fe1b24d5ca099c2",
+   "asserts": 10,
+   "literals": [
+    "\"/api/experiments\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"200\"",
+    "\"200\"",
+    "\"3\"",
+    "\"3\"",
+    "\"3\"",
+    "\"3\"",
+    "\"9000\"",
+    "\"9000\"",
+    "\"9000\"",
+    "\"9000\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"POST\"",
+    "\"PUT\"",
+    "\"[REQ-112] 잰 값은 실행 기록에서 나오고, 적은 표가 없으면 적은 값은 없다\"",
+    "\"agent\"",
+    "\"agent\"",
+    "\"builtin\"",
+    "\"completed\"",
+    "\"triage\"",
+    "\"비교\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/http/process-api.test.ts::실험의 전후 비교와 세계의 온톨로지 [REQ-112] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/http/process-api.test.ts::지금 하는 방식 표 [REQ-112] > [REQ-112] 비거나 틀린 표는 받지 않고, 처음 적은 사람만 고친다": {
+   "kind": "test",
+   "hash": "45856ec464c7154d",
+   "asserts": 9,
+   "literals": [
+    "\"  \"",
+    "\"  \"",
+    "\"/api/scenarios/없는/current-process\"",
+    "\"/api/scenarios/없는/current-process\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"200\"",
+    "\"200\"",
+    "\"400\"",
+    "\"400\"",
+    "\"400\"",
+    "\"400\"",
+    "\"400\"",
+    "\"400\"",
+    "\"400\"",
+    "\"400\"",
+    "\"403\"",
+    "\"403\"",
+    "\"404\"",
+    "\"404\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"[REQ-112] 비거나 틀린 표는 받지 않고, 처음 적은 사람만 고친다\"",
+    "\"jimin\"",
+    "\"jimin\"",
+    "\"jimin\"",
+    "\"몰라\"",
+    "\"몰라\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/http/process-api.test.ts::지금 하는 방식 표 [REQ-112] > [REQ-112] 안 적은 시나리오는 비어 있고, 적으면 단계·사람·시간이 더해져 돌아온다": {
+   "kind": "test",
+   "hash": "cd01087567a8f4ae",
+   "asserts": 5,
+   "literals": [
+    "\"150\"",
+    "\"150\"",
+    "\"2\"",
+    "\"2\"",
+    "\"200\"",
+    "\"200\"",
+    "\"3\"",
+    "\"3\"",
+    "\"3\"",
+    "\"3\"",
+    "\"60\"",
+    "\"60\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"PUT\"",
+    "\"[REQ-112] 안 적은 시나리오는 비어 있고, 적으면 단계·사람·시간이 더해져 돌아온다\"",
+    "\"yeonsu\"",
+    "\"yeonsu\"",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/http/process-api.test.ts::지금 하는 방식 표 [REQ-112] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
    "amended_by": null
   },
   "apps/server/src/http/routes.test.ts::<import:05f9b251>": {
@@ -37519,6 +37809,536 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/export-name.test.ts::<import:cbc9880e>": {
+   "kind": "support",
+   "hash": "cbc9880efff798ff",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/export-name.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/export-name.test.ts::내려받는 파일 이름 [REQ-112] > [REQ-112] 한글 세계 이름은 그대로 파일 이름이 되고, 파일 이름에 못 쓰는 글자만 바뀐다": {
+   "kind": "test",
+   "hash": "bcd12950bf43cdfd",
+   "asserts": 2,
+   "literals": [
+    "\"[REQ-112] 한글 세계 이름은 그대로 파일 이름이 되고, 파일 이름에 못 쓰는 글자만 바뀐다\"",
+    "\"csv\"",
+    "\"csv\"",
+    "\"json\"",
+    "\"json\"",
+    "\"화성 A동\"",
+    "\"화성 A동\"",
+    "\"화성-A동-1-ontology.json\"",
+    "\"화성-A동-1-ontology.json\"",
+    "\"화성-A동-ontology.csv\"",
+    "\"화성-A동-ontology.csv\"",
+    "\"화성/A동: 1*\"",
+    "\"화성/A동: 1*\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/export-name.test.ts::내려받는 파일 이름 [REQ-112] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-10",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::<import:58d1ffc8>": {
+   "kind": "support",
+   "hash": "58d1ffc866ecdf2a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::=filled": {
+   "kind": "support",
+   "hash": "c2856d6e2844aab7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::Object · Link · Action 표 내보내기 [REQ-112] > [REQ-112] CSV는 쉼표·따옴표를 감싸고 수식으로 읽힐 글을 막고 BOM으로 시작한다": {
+   "kind": "test",
+   "hash": "6d1f820eb52864d7",
+   "asserts": 3,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"1\"",
+    "\"=HYPERLINK(\\\"a\\\")\"",
+    "\"Object\"",
+    "\"[REQ-112] CSV는 쉼표·따옴표를 감싸고 수식으로 읽힐 글을 막고 BOM으로 시작한다\"",
+    "\"\\\"'=HYPERLINK(\\\"\\\"a\\\"\\\")\\\"\"",
+    "\"\\\"'=HYPERLINK(\\\"\\\"a\\\"\\\")\\\"\"",
+    "\"\\\"팬 고장, 심함\\\"\"",
+    "\"\\\"팬 고장, 심함\\\"\"",
+    "\"x\"",
+    "\"﻿type,id,name,count,targets,faults,doer\\r\\n\"",
+    "\"﻿type,id,name,count,targets,faults,doer\\r\\n\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::Object · Link · Action 표 내보내기 [REQ-112] > [REQ-112] JSON은 세 묶음이고 파일 이름은 세계 이름에서 만든다": {
+   "kind": "test",
+   "hash": "d33329ca03e25b18",
+   "asserts": 4,
+   "literals": [
+    "\"///\"",
+    "\"///\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"IAP 실험용 / 1\"",
+    "\"IAP 실험용 / 1\"",
+    "\"IAP-실험용-1-ontology.csv\"",
+    "\"IAP-실험용-1-ontology.csv\"",
+    "\"[REQ-112] JSON은 세 묶음이고 파일 이름은 세계 이름에서 만든다\"",
+    "\"csv\"",
+    "\"csv\"",
+    "\"json\"",
+    "\"json\"",
+    "\"world-ontology.json\"",
+    "\"world-ontology.json\"",
+    "\"홀\"",
+    "\"홀\"",
+    "\"홀\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::Object · Link · Action 표 내보내기 [REQ-112] > [REQ-112] 객체·링크·액션이 한 표로 나가고 쓴 것은 실험을 골랐을 때만 붙는다": {
+   "kind": "test",
+   "hash": "64faa26ac9abec3f",
+   "asserts": 3,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"3\"",
+    "\"3\"",
+    "\"Action\"",
+    "\"Action\"",
+    "\"Link\"",
+    "\"Link\"",
+    "\"Object\"",
+    "\"Object\"",
+    "\"[REQ-112] 객체·링크·액션이 한 표로 나가고 쓴 것은 실험을 골랐을 때만 붙는다\"",
+    "\"서버 12\"",
+    "\"서버 12\"",
+    "\"에이전트\"",
+    "\"에이전트\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::Object · Link · Action 표 내보내기 [REQ-112] > [REQ-112] 시나리오에 없던 액션을 에이전트가 썼으면 그것도 Action 줄로 나간다": {
+   "kind": "test",
+   "hash": "bf348d217baf68af",
+   "asserts": 1,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"2\"",
+    "\"2\"",
+    "\"Action\"",
+    "\"Action\"",
+    "\"VM 옮기기\"",
+    "\"[REQ-112] 시나리오에 없던 액션을 에이전트가 썼으면 그것도 Action 줄로 나간다\"",
+    "\"agent\"",
+    "\"power.server\"",
+    "\"power.server\"",
+    "\"vm.migrate\"",
+    "\"vm.migrate\"",
+    "\"vm.migrate\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::Object · Link · Action 표 내보내기 [REQ-112] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::Object · Link · Action 표 내보내기 [REQ-112] > =needs": {
+   "kind": "support",
+   "hash": "8eb722cc72c11a6a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::Object · Link · Action 표 내보내기 [REQ-112] > =use": {
+   "kind": "support",
+   "hash": "690d5b2b3ed5aadd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::숫자를 말로 [REQ-112] > [REQ-112] 시간은 분 단위로, 바뀐 양은 부호와 함께": {
+   "kind": "test",
+   "hash": "ed3d5dc825250743",
+   "asserts": 13,
+   "literals": [
+    "\"+10분\"",
+    "\"+10분\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"01:10\"",
+    "\"01:10\"",
+    "\"0분\"",
+    "\"0분\"",
+    "\"145\"",
+    "\"145\"",
+    "\"1시간 25분\"",
+    "\"1시간 25분\"",
+    "\"2.7\"",
+    "\"2.7\"",
+    "\"230\"",
+    "\"230\"",
+    "\"3\"",
+    "\"3\"",
+    "\"3개 — 호스트 정지 · 외 2\"",
+    "\"3개 — 호스트 정지 · 외 2\"",
+    "\"3시간 50분\"",
+    "\"3시간 50분\"",
+    "\"4200\"",
+    "\"4200\"",
+    "\"45\"",
+    "\"45\"",
+    "\"45초\"",
+    "\"45초\"",
+    "\"5100\"",
+    "\"5100\"",
+    "\"60\"",
+    "\"60\"",
+    "\"60\"",
+    "\"60\"",
+    "\"600\"",
+    "\"600\"",
+    "\"[REQ-112] 시간은 분 단위로, 바뀐 양은 부호와 함께\"",
+    "\"a\"",
+    "\"a\"",
+    "\"b\"",
+    "\"b\"",
+    "\"—\"",
+    "\"—\"",
+    "\"−2.7\"",
+    "\"−2.7\"",
+    "\"−2시간 25분\"",
+    "\"−2시간 25분\"",
+    "\"−3\"",
+    "\"−3\"",
+    "\"부품\"",
+    "\"부품\"",
+    "\"부품\"",
+    "\"부품\"",
+    "\"호스트 정지\"",
+    "\"호스트 정지\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::숫자를 말로 [REQ-112] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::지금 하는 방식 표 만들기 [REQ-112] > [REQ-112] 단계·사람·시간은 적는 대로 더해진다 (사람은 서로 다른 누가)": {
+   "kind": "test",
+   "hash": "805bd294c597fa09",
+   "asserts": 2,
+   "literals": [
+    "\"10\"",
+    "\"2\"",
+    "\"20\"",
+    "\"230\"",
+    "\"230\"",
+    "\"30\"",
+    "\"4\"",
+    "\"4\"",
+    "\"5\"",
+    "\"5\"",
+    "\"50\"",
+    "\"5단계 · 사람 4명 · 3시간 50분\"",
+    "\"5단계 · 사람 4명 · 3시간 50분\"",
+    "\"60\"",
+    "\"60\"",
+    "\"VM 상태 확인\"",
+    "\"VM 옮기기\"",
+    "\"[REQ-112] 단계·사람·시간은 적는 대로 더해진다 (사람은 서로 다른 누가)\"",
+    "\"가상화팀\"",
+    "\"가상화팀\"",
+    "\"모니터링 담당\"",
+    "\"서버팀\"",
+    "\"서비스 확인\"",
+    "\"서비스팀\"",
+    "\"시간\"",
+    "\"알람 확인\"",
+    "\"현장 점검\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::지금 하는 방식 표 만들기 [REQ-112] > [REQ-112] 빈 줄은 건너뛰고 반쯤 채운 줄은 저장을 막으며 무엇이 빠졌는지 말한다": {
+   "kind": "test",
+   "hash": "57320e82d3a6d3e3",
+   "asserts": 7,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"10\"",
+    "\"2\"",
+    "\"2\"",
+    "\"5\"",
+    "\"5\"",
+    "\"[REQ-112] 빈 줄은 건너뛰고 반쯤 채운 줄은 저장을 막으며 무엇이 빠졌는지 말한다\"",
+    "\"a\"",
+    "\"a\"",
+    "\"b\"",
+    "\"b\"",
+    "\"time\"",
+    "\"time\"",
+    "\"what\"",
+    "\"what\"",
+    "\"모니터링 담당\"",
+    "\"서버팀\"",
+    "\"알람 확인\"",
+    "false",
+    "false",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::지금 하는 방식 표 만들기 [REQ-112] > [REQ-112] 시간은 분이나 시간으로 적고 분으로 저장한다": {
+   "kind": "test",
+   "hash": "db240831b9e95af0",
+   "asserts": 7,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"-3\"",
+    "\"-3\"",
+    "\"1,5\"",
+    "\"1,5\"",
+    "\"120\"",
+    "\"120\"",
+    "\"2\"",
+    "\"2\"",
+    "\"50\"",
+    "\"50\"",
+    "\"50\"",
+    "\"50\"",
+    "\"90\"",
+    "\"90\"",
+    "\"999999\"",
+    "\"999999\"",
+    "\"[REQ-112] 시간은 분이나 시간으로 적고 분으로 저장한다\"",
+    "\"abc\"",
+    "\"abc\"",
+    "\"분\"",
+    "\"분\"",
+    "\"분\"",
+    "\"분\"",
+    "\"분\"",
+    "\"분\"",
+    "\"분\"",
+    "\"분\"",
+    "\"시간\"",
+    "\"시간\"",
+    "\"시간\"",
+    "\"시간\"",
+    "\"시간\"",
+    "\"시간\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::지금 하는 방식 표 만들기 [REQ-112] > [REQ-112] 저장된 단계는 시간 단위로 나누어 떨어지면 시간으로 보인다": {
+   "kind": "test",
+   "hash": "87cc3d2fd706422e",
+   "asserts": 2,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"120\"",
+    "\"2\"",
+    "\"2\"",
+    "\"50\"",
+    "\"50\"",
+    "\"50\"",
+    "\"[REQ-112] 저장된 단계는 시간 단위로 나누어 떨어지면 시간으로 보인다\"",
+    "\"check\"",
+    "\"physical\"",
+    "\"가상화팀\"",
+    "\"분\"",
+    "\"분\"",
+    "\"서버팀\"",
+    "\"시간\"",
+    "\"시간\"",
+    "\"점검\"",
+    "\"확인\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::지금 하는 방식 표 만들기 [REQ-112] > [REQ-112] 줄 더하기·지우기·옮기기: 30줄까지, 지워도 한 줄은 남는다": {
+   "kind": "test",
+   "hash": "dc7b0f706dc70b9e",
+   "asserts": 7,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"40\"",
+    "\"[REQ-112] 줄 더하기·지우기·옮기기: 30줄까지, 지워도 한 줄은 남는다\"",
+    "\"a\"",
+    "\"a\"",
+    "\"a\"",
+    "\"a\"",
+    "\"a\"",
+    "\"approve\"",
+    "\"approve\"",
+    "\"approve\"",
+    "\"approve\"",
+    "\"b\"",
+    "\"b\"",
+    "\"b\"",
+    "\"b\"",
+    "\"b\"",
+    "\"b\"",
+    "\"b\"",
+    "\"physical\"",
+    "\"physical\"",
+    "\"physical\"",
+    "\"physical\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/web/src/logic/process-compare/process-compare.test.ts::지금 하는 방식 표 만들기 [REQ-112] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
    "amended_by": null
   },
   "apps/web/src/logic/quick-draft.test.ts::<import:0f4d6d97>": {
@@ -65560,6 +66380,343 @@
    "added": "2026-11-03",
    "amended_by": "0050-toss-ux-principles.md"
   },
+  "packages/core/src/analysis/ontology.test.ts::<import:014c93d9>": {
+   "kind": "support",
+   "hash": "014c93d9c78c853e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::<import:435b1c37>": {
+   "kind": "support",
+   "hash": "435b1c37d1698718",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::<import:75493674>": {
+   "kind": "support",
+   "hash": "754936741195c9f9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::<import:f6756f4b>": {
+   "kind": "support",
+   "hash": "f6756f4b09732506",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::=known": {
+   "kind": "support",
+   "hash": "0d88e585469c18c0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::고장마다 풀 액션이 있다 [REQ-112] > [REQ-112] 모든 고장 종류는 알려진 액션 하나 이상으로 이어진다 (새 고장 종류가 생기면 여기서 걸린다)": {
+   "kind": "test",
+   "hash": "5521243e5afa722d",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"[REQ-112] 모든 고장 종류는 알려진 액션 하나 이상으로 이어진다 (새 고장 종류가 생기면 여기서 걸린다)\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::고장마다 풀 액션이 있다 [REQ-112] > [REQ-112] 모든 설정 실수와 일 종류도 액션이 있고, 원격으로 못 푸는 고장은 물리 처리다": {
+   "kind": "test",
+   "hash": "57ae2b9b063a3915",
+   "asserts": 6,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"[REQ-112] 모든 설정 실수와 일 종류도 액션이 있고, 원격으로 못 푸는 고장은 물리 처리다\"",
+    "\"breaker.reset\"",
+    "\"breaker.reset\"",
+    "\"breaker_trip\"",
+    "\"breaker_trip\"",
+    "\"disk_failure\"",
+    "\"disk_failure\"",
+    "\"없는_고장\"",
+    "\"없는_고장\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::고장마다 풀 액션이 있다 [REQ-112] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::세계가 E2E로 가려면 [REQ-112] > [REQ-112] 물리로 넘긴 고장은 현장 처리 액션을 물리로 센다": {
+   "kind": "test",
+   "hash": "1b65c419cc305eea",
+   "asserts": 2,
+   "literals": [
+    "\"\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"5\"",
+    "\"5\"",
+    "\"60\"",
+    "\"65\"",
+    "\"[REQ-112] 물리로 넘긴 고장은 현장 처리 액션을 물리로 센다\"",
+    "\"counterpart\"",
+    "\"disk_failure\"",
+    "\"f\"",
+    "\"h\"",
+    "\"handed\"",
+    "\"part\"",
+    "\"physical\"",
+    "\"physical\"",
+    "\"s\"",
+    "\"server\"",
+    "\"team\"",
+    "\"서버 팀\"",
+    "\"현장 점검·부품 교체\"",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::세계가 E2E로 가려면 [REQ-112] > [REQ-112] 시나리오 정의에서 객체·링크·액션을 뽑고 고장은 처음 만난 순서다": {
+   "kind": "test",
+   "hash": "1e71dfc7764d9017",
+   "asserts": 10,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"3\"",
+    "\"3\"",
+    "\"[REQ-112] 시나리오 정의에서 객체·링크·액션을 뽑고 고장은 처음 만난 순서다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::세계가 E2E로 가려면 [REQ-112] > [REQ-112] 시나리오가 없으면 요구도 비어 있다": {
+   "kind": "test",
+   "hash": "9e8c86427dd99e6f",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"[REQ-112] 시나리오가 없으면 요구도 비어 있다\"",
+    "\"s\"",
+    "\"s\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::세계가 E2E로 가려면 [REQ-112] > [REQ-112] 시나리오가 필요로 하지 않은 액션을 에이전트가 썼으면 필요한 것 뒤에 따로 붙는다": {
+   "kind": "test",
+   "hash": "9f244fbe2f2dec70",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"[REQ-112] 시나리오가 필요로 하지 않은 액션을 에이전트가 썼으면 필요한 것 뒤에 따로 붙는다\"",
+    "\"vcenter_request\"",
+    "\"vm\"",
+    "\"vm-x\"",
+    "\"vm.migrate\"",
+    "\"vm.migrate\"",
+    "\"vm_migrate\"",
+    "\"현장 점검·부품 교체\"",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::세계가 E2E로 가려면 [REQ-112] > [REQ-112] 쓴 것: 승인 뒤의 액션, 물리로 간 액션, 한 번도 안 쓴 액션을 센다": {
+   "kind": "test",
+   "hash": "57efca575593f6bf",
+   "asserts": 4,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"[REQ-112] 쓴 것: 승인 뒤의 액션, 물리로 간 액션, 한 번도 안 쓴 액션을 센다\"",
+    "\"ask_human\"",
+    "\"get_server\"",
+    "\"none\"",
+    "\"power.server\"",
+    "\"power_off\"",
+    "\"power_on\"",
+    "\"power_server\"",
+    "\"power_server\"",
+    "\"server\"",
+    "false",
+    "false",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::세계가 E2E로 가려면 [REQ-112] > [REQ-112] 항상 승인으로 간 액션은 키네틱 층의 승인 액션으로 설계하라고 말한다": {
+   "kind": "test",
+   "hash": "153ff49cb57f7c38",
+   "asserts": 4,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"VM 옮기기\"",
+    "\"[REQ-112] 항상 승인으로 간 액션은 키네틱 층의 승인 액션으로 설계하라고 말한다\"",
+    "\"approved\"",
+    "\"approved\"",
+    "\"ask_human\"",
+    "\"vcenter_request\"",
+    "\"vm\"",
+    "\"vm-x\"",
+    "\"vm.migrate\"",
+    "\"vm_migrate\"",
+    "\"이 실험은 세계를 바꾸는 액션을 쓰지 않았어요.\"",
+    "\"이 실험은 세계를 바꾸는 액션을 쓰지 않았어요.\"",
+    "\"항상 승인으로 간 액션 1개는 키네틱 층에서 승인 액션으로 설계할 것이에요.\"",
+    "\"항상 승인으로 간 액션 1개는 키네틱 층에서 승인 액션으로 설계할 것이에요.\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::세계가 E2E로 가려면 [REQ-112] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::세계가 E2E로 가려면 [REQ-112] > =blueprint": {
+   "kind": "support",
+   "hash": "95e0dcec7ea4f547",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::세계가 E2E로 가려면 [REQ-112] > =docs": {
+   "kind": "support",
+   "hash": "57ff146abe8e1c6d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/ontology.test.ts::세계가 E2E로 가려면 [REQ-112] > =index": {
+   "kind": "support",
+   "hash": "006d350797e2528a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
   "packages/core/src/analysis/physics-board.test.ts::<import:9078e46a>": {
    "kind": "support",
    "hash": "9078e46a632f021d",
@@ -65567,7 +66724,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/analysis/physics-board.test.ts::<import:92de1810>": {
@@ -65577,7 +66734,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/analysis/physics-board.test.ts::<import:993be4ad>": {
@@ -65587,7 +66744,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/analysis/physics-board.test.ts::<import:e71fddbd>": {
@@ -65597,7 +66754,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/analysis/physics-board.test.ts::=analysed": {
@@ -65607,7 +66764,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/analysis/physics-board.test.ts::=base": {
@@ -65617,7 +66774,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/analysis/physics-board.test.ts::=hot": {
@@ -65627,7 +66784,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/analysis/physics-board.test.ts::=THREE": {
@@ -65637,7 +66794,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/analysis/physics-board.test.ts::only runs on the same physics are ranked together [REQ-113] > <suite>": {
@@ -65647,7 +66804,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/analysis/physics-board.test.ts::only runs on the same physics are ranked together [REQ-113] > a fork on other physics than its original is not compared by score; on the same physics it is": {
@@ -65676,7 +66833,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/analysis/physics-board.test.ts::only runs on the same physics are ranked together [REQ-113] > a snapshot that says v1 or says nothing gives the same key as before the fingerprint existed": {
@@ -65693,7 +66850,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/analysis/physics-board.test.ts::only runs on the same physics are ranked together [REQ-113] > another physics is another benchmark set, even for the same world, scenario and agent": {
@@ -65706,7 +66863,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/analysis/physics-board.test.ts::only runs on the same physics are ranked together [REQ-113] > even when two sets carry the same benchmark key, a different fingerprint keeps them apart": {
@@ -65728,7 +66885,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/analysis/physics-board.test.ts::only runs on the same physics are ranked together [REQ-113] > two experiments on different physics make two boards and do not pool their runs": {
@@ -65751,7 +66908,520 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::<import:3bb0363c>": {
+   "kind": "support",
+   "hash": "3bb0363cbad6756d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::<import:98f6e721>": {
+   "kind": "support",
+   "hash": "98f6e721ab90ce54",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::=answered": {
+   "kind": "support",
+   "hash": "2f79e680788eb50d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::=asked": {
+   "kind": "support",
+   "hash": "422adac3f4411d31",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::=handed": {
+   "kind": "support",
+   "hash": "1f0764c46dea1907",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::=input": {
+   "kind": "support",
+   "hash": "6c09757269a47cd6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::=seq": {
+   "kind": "support",
+   "hash": "452e9853446144f4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::=tool": {
+   "kind": "support",
+   "hash": "a80904546247ac4e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::=ToolEffect": {
+   "kind": "support",
+   "hash": "e125e974764b0d93",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::적은 값과 잰 값 [REQ-112] > [REQ-112] 장부는 평균 시간에 가장 가까운 실행을 보여 준다": {
+   "kind": "test",
+   "hash": "f09aeae6d4a07add",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"100\"",
+    "\"100\"",
+    "\"2\"",
+    "\"2\"",
+    "\"500\"",
+    "\"500\"",
+    "\"520\"",
+    "\"520\"",
+    "\"900\"",
+    "\"900\"",
+    "\"[REQ-112] 장부는 평균 시간에 가장 가까운 실행을 보여 준다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::적은 값과 잰 값 [REQ-112] > [REQ-112] 적은 표의 단계·사람·시간을 더한다 (사람은 서로 다른 누가)": {
+   "kind": "test",
+   "hash": "841f5f5d58301439",
+   "asserts": 1,
+   "literals": [
+    "\"230\"",
+    "\"230\"",
+    "\"4\"",
+    "\"4\"",
+    "\"6\"",
+    "\"6\"",
+    "\"60\"",
+    "\"60\"",
+    "\"[REQ-112] 적은 표의 단계·사람·시간을 더한다 (사람은 서로 다른 누가)\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::적은 값과 잰 값 [REQ-112] > [REQ-112] 평균은 소수 한 자리이고 차이는 잰 값에서 적은 값을 뺀다": {
+   "kind": "test",
+   "hash": "090cc930a29532bf",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1.3\"",
+    "\"1.3\"",
+    "\"13800\"",
+    "\"13800\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2.3\"",
+    "\"2.3\"",
+    "\"2.7\"",
+    "\"2.7\"",
+    "\"2.7\"",
+    "\"2.7\"",
+    "\"3\"",
+    "\"4\"",
+    "\"4\"",
+    "\"5\"",
+    "\"5\"",
+    "\"5100\"",
+    "\"5100\"",
+    "\"5200\"",
+    "\"5200\"",
+    "\"5400\"",
+    "\"8600\"",
+    "\"8600\"",
+    "\"[REQ-112] 평균은 소수 한 자리이고 차이는 잰 값에서 적은 값을 뺀다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::적은 값과 잰 값 [REQ-112] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::적은 값과 잰 값 [REQ-112] > =steps": {
+   "kind": "support",
+   "hash": "947534c3ff3bd6ee",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::한 실행을 단계로 접기 [REQ-112] > [REQ-112] ask_human은 승인 한 단계이고 사람은 운영자 한 명이다": {
+   "kind": "test",
+   "hash": "631e15e822400d19",
+   "asserts": 5,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1000\"",
+    "\"1200\"",
+    "\"1200\"",
+    "\"1260\"",
+    "\"1300\"",
+    "\"2\"",
+    "\"2\"",
+    "\"200\"",
+    "\"200\"",
+    "\"260\"",
+    "\"260\"",
+    "\"[REQ-112] ask_human은 승인 한 단계이고 사람은 운영자 한 명이다\"",
+    "\"act\"",
+    "\"agent\"",
+    "\"agent\"",
+    "\"agent\"",
+    "\"agent\"",
+    "\"approve\"",
+    "\"approve\"",
+    "\"ask_human\"",
+    "\"ask_human\"",
+    "\"ask_human\"",
+    "\"get_server\"",
+    "\"vm_migrate\"",
+    "\"운영자\"",
+    "\"운영자\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::한 실행을 단계로 접기 [REQ-112] > [REQ-112] 기다리는 동안의 기다림 호출은 넘기기에 속하고, 일하는 호출은 에이전트 줄로 남는다": {
+   "kind": "test",
+   "hash": "4c3f37a3092de662",
+   "asserts": 2,
+   "literals": [
+    "\"1000\"",
+    "\"1000\"",
+    "\"1300\"",
+    "\"1400\"",
+    "\"1500\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2000\"",
+    "\"2100\"",
+    "\"[REQ-112] 기다리는 동안의 기다림 호출은 넘기기에 속하고, 일하는 호출은 에이전트 줄로 남는다\"",
+    "\"act\"",
+    "\"agent\"",
+    "\"agent\"",
+    "\"answer\"",
+    "\"escalate\"",
+    "\"events_since\"",
+    "\"get_server\"",
+    "\"physical\"",
+    "\"physical\"",
+    "\"submit_diagnosis\"",
+    "\"wait\"",
+    "\"wait\"",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::한 실행을 단계로 접기 [REQ-112] > [REQ-112] 기록이 없는 ask_human 호출도 한 단계로 센다": {
+   "kind": "test",
+   "hash": "7264467d7dde4ce4",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1200\"",
+    "\"[REQ-112] 기록이 없는 ask_human 호출도 한 단계로 센다\"",
+    "\"approve\"",
+    "\"approve\"",
+    "\"ask_human\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::한 실행을 단계로 접기 [REQ-112] > [REQ-112] 끝나기 전에 실행이 끝나면 실행 끝까지만 세고 그렇게 말한다": {
+   "kind": "test",
+   "hash": "157b7f330048f0ab",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1000\"",
+    "\"1000\"",
+    "\"1000\"",
+    "\"1000\"",
+    "\"1000\"",
+    "\"2000\"",
+    "\"9000\"",
+    "\"[REQ-112] 끝나기 전에 실행이 끝나면 실행 끝까지만 세고 그렇게 말한다\"",
+    "\"act\"",
+    "\"escalate\"",
+    "\"끝나기 전\"",
+    "\"끝나기 전\"",
+    "\"끝났어요\"",
+    "\"끝났어요\"",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::한 실행을 단계로 접기 [REQ-112] > [REQ-112] 넘기기는 리드타임과 함께 한 단계이고, 현장에 가면 물리다": {
+   "kind": "test",
+   "hash": "84f5c4031b537788",
+   "asserts": 6,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"100\"",
+    "\"100\"",
+    "\"1000\"",
+    "\"1100\"",
+    "\"1100\"",
+    "\"1100\"",
+    "\"1100\"",
+    "\"1700\"",
+    "\"1시간\"",
+    "\"1시간\"",
+    "\"4700\"",
+    "\"700\"",
+    "\"700\"",
+    "\"[REQ-112] 넘기기는 리드타임과 함께 한 단계이고, 현장에 가면 물리다\"",
+    "\"act\"",
+    "\"act\"",
+    "\"agent\"",
+    "\"agent\"",
+    "\"escalate\"",
+    "\"escalate\"",
+    "\"handoff\"",
+    "\"handoff\"",
+    "\"list_alarms\"",
+    "\"physical\"",
+    "\"physical\"",
+    "\"리드타임 10분\"",
+    "\"리드타임 10분\"",
+    "\"서버 팀\"",
+    "\"서버 팀\"",
+    "false",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::한 실행을 단계로 접기 [REQ-112] > [REQ-112] 사람 수는 남은 단계의 서로 다른 '누가'이고 같은 팀은 한 번만 센다": {
+   "kind": "test",
+   "hash": "1b7733baeb6f3462",
+   "asserts": 2,
+   "literals": [
+    "\"1000\"",
+    "\"1000\"",
+    "\"1500\"",
+    "\"1600\"",
+    "\"1600\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2000\"",
+    "\"2100\"",
+    "\"2100\"",
+    "\"2160\"",
+    "\"3\"",
+    "\"3\"",
+    "\"[REQ-112] 사람 수는 남은 단계의 서로 다른 '누가'이고 같은 팀은 한 번만 센다\"",
+    "\"act\"",
+    "\"act\"",
+    "\"ask_human\"",
+    "\"escalate\"",
+    "\"escalate\"",
+    "\"서버 팀\"",
+    "\"서버 팀\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::한 실행을 단계로 접기 [REQ-112] > [REQ-112] 사람이 한 단계도 안 남으면 그렇게 말한다": {
+   "kind": "test",
+   "hash": "fb6fb49846a4f1f4",
+   "asserts": 2,
+   "literals": [
+    "\"1000\"",
+    "\"1000\"",
+    "\"1100\"",
+    "\"1100\"",
+    "\"1700\"",
+    "\"1800\"",
+    "\"1800\"",
+    "\"1860\"",
+    "\"[REQ-112] 사람이 한 단계도 안 남으면 그렇게 말한다\"",
+    "\"act\"",
+    "\"ask_human\"",
+    "\"escalate\"",
+    "\"get_server\"",
+    "\"get_server\"",
+    "\"남은 2단계는 사람이 현장에 가야 하는 일(물리), 바꾸기 전 승인이에요.\"",
+    "\"남은 2단계는 사람이 현장에 가야 하는 일(물리), 바꾸기 전 승인이에요.\"",
+    "\"남은 단계가 없어요\"",
+    "\"남은 단계가 없어요\"",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::한 실행을 단계로 접기 [REQ-112] > [REQ-112] 에이전트의 툴 호출은 한 줄로 접히고 툴 수가 센다": {
+   "kind": "test",
+   "hash": "22c56f492d20936d",
+   "asserts": 7,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1000\"",
+    "\"1060\"",
+    "\"1120\"",
+    "\"120\"",
+    "\"120\"",
+    "\"120\"",
+    "\"120\"",
+    "\"3\"",
+    "\"3\"",
+    "\"[REQ-112] 에이전트의 툴 호출은 한 줄로 접히고 툴 수가 센다\"",
+    "\"agent\"",
+    "\"agent\"",
+    "\"answer\"",
+    "\"get_server\"",
+    "\"list_alarms\"",
+    "\"submit_diagnosis\"",
+    "\"진단\"",
+    "\"진단\"",
+    "\"확인\"",
+    "\"확인\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
+   "amended_by": null
+  },
+  "packages/core/src/analysis/process.test.ts::한 실행을 단계로 접기 [REQ-112] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-07",
    "amended_by": null
   },
   "packages/core/src/analysis/share.test.ts::<import:65fcb103>": {
@@ -73326,7 +74996,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::<import:21fad195>": {
@@ -73336,7 +75006,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::<import:334d6c79>": {
@@ -73346,7 +75016,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::<import:75493674>": {
@@ -73356,7 +75026,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::<import:7bdaa307>": {
@@ -73366,7 +75036,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::<import:80eb662a>": {
@@ -73376,7 +75046,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::<import:b2677072>": {
@@ -73386,7 +75056,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::<import:e71fddbd>": {
@@ -73396,7 +75066,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::=boot": {
@@ -73406,7 +75076,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::=catalog": {
@@ -73416,7 +75086,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::=step": {
@@ -73426,7 +75096,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::the default physics keeps the laws on a small room [REQ-113] > <suite>": {
@@ -73436,7 +75106,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::the default physics keeps the laws on a small room [REQ-113] > a simulated hour: no violation, and the exceptions of v1 are named": {
@@ -73455,7 +75125,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::the laws catch a world that breaks them [REQ-113] > <suite>": {
@@ -73465,7 +75135,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::the laws catch a world that breaks them [REQ-113] > a balanced room step is clean; one that creates energy, removes more than the capacity, or cools with cooling off is not": {
@@ -73500,7 +75170,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::the laws catch a world that breaks them [REQ-113] > a number that is not finite, a temperature out of range and a draw above the maximum are found": {
@@ -73526,7 +75196,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::the laws catch a world that breaks them [REQ-113] > a step that ended on the room's bound is not held to the balance": {
@@ -73544,7 +75214,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::the laws catch a world that breaks them [REQ-113] > a table that gives less power for more load is a direction violation, found when the monitor starts": {
@@ -73564,7 +75234,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/laws.test.ts::the laws catch a world that breaks them [REQ-113] > an efficiency table of exactly 1 at full load is allowed (no energy out of nothing, none lost)": {
@@ -73582,7 +75252,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/light-rack.test.ts::<import:79e2711a>": {
@@ -76372,7 +78042,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::<import:174810e7>": {
@@ -76382,7 +78052,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::<import:604750d4>": {
@@ -76392,7 +78062,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::<import:62161caa>": {
@@ -76402,7 +78072,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::<import:95733fea>": {
@@ -76412,7 +78082,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::<import:bfc767de>": {
@@ -76422,7 +78092,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::<import:d14d614c>": {
@@ -76432,7 +78102,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::<import:e71fddbd>": {
@@ -76442,7 +78112,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::=HANGUL": {
@@ -76452,7 +78122,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::a number changed for one place only: the more specific place wins [REQ-113] > <suite>": {
@@ -76462,7 +78132,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::a number changed for one place only: the more specific place wins [REQ-113] > a model id is a place for a device slot, and its number loses to the rack's own": {
@@ -76503,7 +78173,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::a number changed for one place only: the more specific place wins [REQ-113] > world, model, building, room and rack, in that order of strength": {
@@ -76574,7 +78244,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::a profile is checked and fingerprinted [REQ-113] > <suite>": {
@@ -76584,7 +78254,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::a profile is checked and fingerprinted [REQ-113] > a changed number gives another fingerprint, the same content gives the same one whatever the order": {
@@ -76612,7 +78282,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::a profile is checked and fingerprinted [REQ-113] > a profile that cannot be used is refused when it is made ready, with the reasons": {
@@ -76630,7 +78300,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::a profile is checked and fingerprinted [REQ-113] > a scoped number must name a place its slot allows, and a base version that exists": {
@@ -76663,7 +78333,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::a profile is checked and fingerprinted [REQ-113] > a table's points must be inside the range of that table": {
@@ -76685,7 +78355,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::a profile is checked and fingerprinted [REQ-113] > an unknown name, a number out of its range and a table out of order are refused in Korean, with every problem": {
@@ -76736,7 +78406,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::a profile is checked and fingerprinted [REQ-113] > the default physics, empty overrides and numbers left at their default all have the fingerprint v1": {
@@ -76768,7 +78438,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::tables are straight lines between points, flat past the ends, and always give the same answer [REQ-113] > <suite>": {
@@ -76778,7 +78448,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::tables are straight lines between points, flat past the ends, and always give the same answer [REQ-113] > =pts": {
@@ -76788,7 +78458,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::tables are straight lines between points, flat past the ends, and always give the same answer [REQ-113] > a weather file of time_s,outdoor_c[,humidity_pct] lines is read, a header skipped, a bad line reported": {
@@ -76819,7 +78489,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::tables are straight lines between points, flat past the ends, and always give the same answer [REQ-113] > interpolation": {
@@ -76855,7 +78525,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::tables are straight lines between points, flat past the ends, and always give the same answer [REQ-113] > the weather table gives the outdoor air by time, and repeats daily when asked": {
@@ -76898,7 +78568,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::the thirteen slots are listed with units, defaults and ranges [REQ-113] > <suite>": {
@@ -76908,7 +78578,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::the thirteen slots are listed with units, defaults and ranges [REQ-113] > a full name splits into its slot and the number's or table's name": {
@@ -76932,7 +78602,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::the thirteen slots are listed with units, defaults and ranges [REQ-113] > every number has a unit, a default inside its range and a line of Korean; every table's sample is a valid table": {
@@ -76946,7 +78616,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::the thirteen slots are listed with units, defaults and ranges [REQ-113] > every slot has a Korean name, a contract, a v1 description and places an override may name": {
@@ -76968,7 +78638,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/physics/slots/slots.test.ts::the thirteen slots are listed with units, defaults and ranges [REQ-113] > the reliability slot has a number for every fault kind of the failure-rate table, and a scale": {
@@ -76983,7 +78653,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "packages/core/src/profiles/profiles.test.ts::<import:aad5a2d2>": {
@@ -127738,7 +129408,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-determinism.test.ts::<import:4eb3d6bb>": {
@@ -127748,7 +129418,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-determinism.test.ts::<import:8db63a14>": {
@@ -127758,7 +129428,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-determinism.test.ts::<import:e71fddbd>": {
@@ -127768,7 +129438,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-determinism.test.ts::=PROFILE": {
@@ -127778,7 +129448,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-determinism.test.ts::=SAMPLE": {
@@ -127788,7 +129458,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-determinism.test.ts::=wallDelay": {
@@ -127798,7 +129468,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-determinism.test.ts::a score on a changed physics is a function of the scenario, the seed and the actions [REQ-113] > <stmt:00eff85e>": {
@@ -127808,7 +129478,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-determinism.test.ts::a score on a changed physics is a function of the scenario, the seed and the actions [REQ-113] > <suite>": {
@@ -127818,7 +129488,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-determinism.test.ts::a score on a changed physics is a function of the scenario, the seed and the actions [REQ-113] > the result of a run on the default physics says v1": {
@@ -127835,7 +129505,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-golden.test.ts::<import:0f465da4>": {
@@ -128079,7 +129749,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-laws.test.ts::<import:208ed770>": {
@@ -128089,7 +129759,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-laws.test.ts::<import:a1beb448>": {
@@ -128099,7 +129769,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-laws.test.ts::<import:b2677072>": {
@@ -128109,7 +129779,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-laws.test.ts::<import:e71fddbd>": {
@@ -128119,7 +129789,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-laws.test.ts::=catalog": {
@@ -128129,7 +129799,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-laws.test.ts::=DAY_S": {
@@ -128139,7 +129809,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-laws.test.ts::=STEP_S": {
@@ -128149,7 +129819,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-laws.test.ts::every built-in world keeps the physics laws for a simulated day on the default physics [REQ-113] > %s": {
@@ -128163,7 +129833,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-laws.test.ts::every built-in world keeps the physics laws for a simulated day on the default physics [REQ-113] > <suite>": {
@@ -128173,7 +129843,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-laws.test.ts::every built-in world keeps the physics laws for a simulated day on the default physics [REQ-113] > each exception of v1 names the law and the reason": {
@@ -128187,7 +129857,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile-reference.test.ts::<import:1c109464>": {
@@ -128197,7 +129867,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile-reference.test.ts::<import:97906a15>": {
@@ -128207,7 +129877,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile-reference.test.ts::<import:e71fddbd>": {
@@ -128217,7 +129887,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile-reference.test.ts::=HOT": {
@@ -128227,7 +129897,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile-reference.test.ts::=THERMAL": {
@@ -128237,7 +129907,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile-reference.test.ts::the reference solution on a profile [REQ-113] > <suite>": {
@@ -128247,7 +129917,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile-reference.test.ts::the reference solution on a profile [REQ-113] > on a profile that makes the room heat much faster, the hook lists the sheets that can no longer be won": {
@@ -128268,7 +129938,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile-reference.test.ts::the reference solution on a profile [REQ-113] > on the default physics it scores 100 on the sheets it is tried on": {
@@ -128284,7 +129954,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::<import:34dc86b5>": {
@@ -128294,7 +129964,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::<import:5187ff5e>": {
@@ -128304,7 +129974,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::<import:5639b5aa>": {
@@ -128314,7 +129984,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::<import:88eaf280>": {
@@ -128324,7 +129994,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::<import:b2677072>": {
@@ -128334,7 +130004,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::<import:e71fddbd>": {
@@ -128344,7 +130014,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::<import:f7869bfc>": {
@@ -128354,7 +130024,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::=boot": {
@@ -128364,7 +130034,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::=catalog": {
@@ -128374,7 +130044,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::=gpu": {
@@ -128384,7 +130054,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::=stateHash": {
@@ -128394,7 +130064,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::=withPhysics": {
@@ -128404,7 +130074,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a breaker with a trip curve holds on for the time the curve gives [REQ-113] > <suite>": {
@@ -128414,7 +130084,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a breaker with a trip curve holds on for the time the curve gives [REQ-113] > =curve": {
@@ -128424,7 +130094,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a breaker with a trip curve holds on for the time the curve gives [REQ-113] > =overload": {
@@ -128434,7 +130104,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a breaker with a trip curve holds on for the time the curve gives [REQ-113] > =overloaded": {
@@ -128444,7 +130114,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a breaker with a trip curve holds on for the time the curve gives [REQ-113] > a curve that says 0 seconds trips on the step, as the default does": {
@@ -128464,7 +130134,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a breaker with a trip curve holds on for the time the curve gives [REQ-113] > it trips after about the seconds of the curve, not on the first step": {
@@ -128497,7 +130167,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a breaker with a trip curve holds on for the time the curve gives [REQ-113] > when the load goes away the heat drains and the breaker holds": {
@@ -128527,7 +130197,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a number changed is a number the engine follows [REQ-113] > <suite>": {
@@ -128537,7 +130207,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a number changed is a number the engine follows [REQ-113] > =BOTH_OFF": {
@@ -128547,7 +130217,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a number changed is a number the engine follows [REQ-113] > =heatUp": {
@@ -128557,7 +130227,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a number changed is a number the engine follows [REQ-113] > a bigger trip factor holds a breaker that the default drops": {
@@ -128599,7 +130269,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a number changed is a number the engine follows [REQ-113] > a lower ceiling means less air to heat: the room warms faster once cooling stops": {
@@ -128616,7 +130286,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a number changed is a number the engine follows [REQ-113] > the failure-rate numbers reach the generator: a scale on all of them changes the plan": {
@@ -128642,7 +130312,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a number changed is a number the engine follows [REQ-113] > the same number for the room alone does the same; for another place it does nothing": {
@@ -128672,7 +130342,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a profile that changes nothing changes nothing [REQ-113] > <suite>": {
@@ -128682,7 +130352,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a profile that changes nothing changes nothing [REQ-113] > =restated": {
@@ -128692,7 +130362,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a profile that changes nothing changes nothing [REQ-113] > a profile the engine cannot use refuses the world, in Korean": {
@@ -128707,7 +130377,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a profile that changes nothing changes nothing [REQ-113] > a world with other physics is another version of the world: its digest differs": {
@@ -128724,7 +130394,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a profile that changes nothing changes nothing [REQ-113] > no profile, an empty one and one that restates the defaults give the same bits and the same digest": {
@@ -128751,7 +130421,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a table swapped in for a formula is followed, and only then [REQ-113] > <suite>": {
@@ -128761,7 +130431,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a table swapped in for a formula is followed, and only then [REQ-113] > a plant keeps its share of capacity by a table over the outdoor air; without one, the formula": {
@@ -128814,7 +130484,7 @@
     12
    ],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a table swapped in for a formula is followed, and only then [REQ-113] > a UPS carries its load over an efficiency table: the supplier behind it carries more when the table is lower": {
@@ -128848,7 +130518,7 @@
     3
    ],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a table swapped in for a formula is followed, and only then [REQ-113] > cap to speed: the table replaces the 0.4 power": {
@@ -128899,7 +130569,7 @@
     9
    ],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a table swapped in for a formula is followed, and only then [REQ-113] > server power over utilisation: the table sets how much of the range is drawn": {
@@ -128939,7 +130609,7 @@
     6
    ],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::a table swapped in for a formula is followed, and only then [REQ-113] > the cooling unit's work follows a COP table over the outdoor air": {
@@ -128961,7 +130631,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::the weather table sets the outdoor air; a scenario's own change comes first [REQ-113] > <suite>": {
@@ -128971,7 +130641,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::the weather table sets the outdoor air; a scenario's own change comes first [REQ-113] > outdoor air follows the table over the day": {
@@ -129003,7 +130673,7 @@
     9
    ],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/physics-profile.test.ts::the weather table sets the outdoor air; a scenario's own change comes first [REQ-113] > without a table the outdoor air is the default of the weather slot, 25 °C": {
@@ -129025,7 +130695,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-10",
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/plant-control.test.ts::<import:0f465da4>": {

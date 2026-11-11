@@ -14,6 +14,7 @@ import type {
 import type { LlmModelView } from "./models";
 import type { MossAnswerView } from "./moss";
 import type { PresetListView, PresetView } from "./presets";
+import type { CurrentProcessView, ProcessCompareView, WorldOntologyView } from "./process";
 import type { QuickExperimentView, ServiceCardView } from "./service-cards";
 import type {
   CalibrationView,
@@ -74,6 +75,10 @@ export interface Responses {
   copyServiceCard: ServiceCardView;
   deleteServiceCard: { readonly deleted: boolean };
   quickExperiment: QuickExperimentView;
+  getCurrentProcess: CurrentProcessView;
+  putCurrentProcess: CurrentProcessView;
+  experimentProcess: ProcessCompareView;
+  worldOntology: WorldOntologyView;
   listWorlds: WorldCardView[];
   likeWorld: LikeView;
   unlikeWorld: LikeView;

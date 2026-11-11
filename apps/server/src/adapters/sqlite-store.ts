@@ -12,6 +12,7 @@ import {
   type AgentHistory,
   type CalibrationMark,
   type ConnectionRecord,
+  type CurrentProcessRecord,
   type Experiment,
   type ExperimentFilter,
   type ExperimentStore,
@@ -70,10 +71,9 @@ CREATE TABLE IF NOT EXISTS run_journal (
 CREATE TABLE IF NOT EXISTS presets (
   id TEXT PRIMARY KEY, owner TEXT NOT NULL, kind TEXT NOT NULL, created_at TEXT NOT NULL, record TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS presets_owner ON presets (owner, kind);
-CREATE TABLE IF NOT EXISTS llm_models (
-  id TEXT PRIMARY KEY, created_at TEXT NOT NULL, record TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS service_cards (
-  id TEXT PRIMARY KEY, created_at TEXT NOT NULL, record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS llm_models (id TEXT PRIMARY KEY, created_at TEXT NOT NULL, record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS service_cards (id TEXT PRIMARY KEY, created_at TEXT NOT NULL, record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS current_processes (id TEXT PRIMARY KEY, created_at TEXT NOT NULL, record TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS world_likes (
   world_id TEXT NOT NULL, user_name TEXT NOT NULL, at TEXT NOT NULL, PRIMARY KEY (world_id, user_name));
 CREATE TABLE IF NOT EXISTS calibration_marks (
@@ -402,36 +402,23 @@ export class SqliteStore implements ExperimentStore {
   }
 
   private readonly models = new RecordTable<LlmModelRecord>((q) => this.sql(q), "llm_models");
-
-  async putModel(model: LlmModelRecord): Promise<void> {
-    this.models.put(model);
-  }
-  async getModel(id: string): Promise<LlmModelRecord | undefined> {
-    return this.models.get(id);
-  }
-  async listModels(): Promise<LlmModelRecord[]> {
-    return this.models.list();
-  }
-
-  async deleteModel(id: string): Promise<boolean> {
-    return this.models.delete(id);
-  }
+  putModel = async (m: LlmModelRecord): Promise<void> => this.models.put(m);
+  getModel = async (id: string) => this.models.get(id);
+  listModels = async () => this.models.list();
+  deleteModel = async (id: string) => this.models.delete(id);
 
   private readonly cards = new RecordTable<ServiceCardRecord>((q) => this.sql(q), "service_cards");
+  putServiceCard = async (c: ServiceCardRecord): Promise<void> => this.cards.put(c);
+  getServiceCard = async (id: string) => this.cards.get(id);
+  listServiceCards = async () => this.cards.list();
+  deleteServiceCard = async (id: string) => this.cards.delete(id);
 
-  async putServiceCard(c: ServiceCardRecord): Promise<void> {
-    this.cards.put(c);
-  }
-  async getServiceCard(id: string): Promise<ServiceCardRecord | undefined> {
-    return this.cards.get(id);
-  }
-  async listServiceCards(): Promise<ServiceCardRecord[]> {
-    return this.cards.list();
-  }
-
-  async deleteServiceCard(id: string): Promise<boolean> {
-    return this.cards.delete(id);
-  }
+  private readonly processes = new RecordTable<CurrentProcessRecord>(
+    (q) => this.sql(q),
+    "current_processes",
+  );
+  putCurrentProcess = async (p: CurrentProcessRecord): Promise<void> => this.processes.put(p);
+  getCurrentProcess = async (scenarioId: string) => this.processes.get(scenarioId);
 
   async putLike(like: WorldLike): Promise<void> {
     this.sql("INSERT OR IGNORE INTO world_likes (world_id, user_name, at) VALUES (?, ?, ?)").run(

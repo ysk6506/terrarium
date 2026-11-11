@@ -7,13 +7,13 @@ covers:
   - harness/src/ux/score.ts
   - tests/e2e/ux/probes-voice.ts
   - tests/e2e/ux/probes-detail.ts
-covers_hash: 6faf17d6c7eeec12
+covers_hash: 8bd58275a3fee338
 verification_log:
-  - "2026-11-04: 여정 표에 author(빈 캔버스에서 시험지 점검까지, 예산 8)를 더하고 score.ts의 JOURNEY_BUDGETS·JOURNEY_LABELS, journeys.ts와 대조했다. 여정 수는 열 개"
   - "2026-11-05: REQ-077 세계 만들기 재설계(작업 #90) 반영: 코드와 대조해 맞는 것을 확인했다"
   - "2026-11-05: 여정 표에 topology(예산 5, 화성 실제 크기에서 타일 150개 이하·첫 그림 3초)를 더하고 score.ts의 JOURNEY_BUDGETS·JOURNEY_LABELS, journeys.ts와 대조했다. 여정 수는 열한 개"
   - "2026-11-05: ADR-0083(build-small, import 없음)과 ADR-0084(topology)를 합친 뒤 score.ts·journeys.ts와 대조: 여정 열한 개, 순서 author → build-small → topology"
   - "2026-11-07: REQ-102(ADR-0123): 사다리·직접 짓기 화면과 말(시운전·미리 보기·전제)을 코드와 대조해 고쳤다"
+  - "2026-11-07: 여정 process-compare(예산 12)를 표에 더하고 score.ts·journeys.ts와 대조했다"
 ---
 # UX를 숫자로 재는 법 (REQ-041, [ADR-0031](adr/0031-ux-honeycomb-measurement.md))
 
@@ -78,6 +78,7 @@ UI를 바꿨다면 `pnpm ux`를 한 번 돌려야 `pnpm check`가 통과한다(�
 | fork | 6 | 끝난 실험에서 에이전트를 바꿔 다시 돌리고 원본과 견주는 결과를 본다 |
 | compare | 4 | 벤치마크에서 줄을 골라 조건을 바꿔 해 보는 화면까지 간다 |
 | site | 6 | 작게 시작으로 작은 사업장을 만들고, 팔고 있는 땅을 사서 "팔고 있는 땅이 n곳"이 줄어드는 것을 보고, 되돌린다 |
+| process-compare | 12 | 시나리오 목록의 "지금 방식"에서 한 줄 적어 저장하고, 그 표로 실험을 돌려 결과의 전후 비교(적은 값·잰 값)와 단계 장부를 본 뒤 세계의 Object · Link · Action 표를 CSV로 내려받는다 (REQ-112, ADR-0135). `run` 다음이다 |
 | build-small | 8 | 작게 시작 → 다음 할 일 칩으로 서버룸 채우기(랙 24대) → 시운전까지 (REQ-077, ADR-0083). 맨 뒤에 둔다 |
 | topology | 5 | 화성을 실제 크기로 올려 두고 세계 목록에서 열어 토폴로지를 누른다. **타일이 150개 이하**이고 **첫 그림이 3초 안에** 나오는지 재고, 층(전원)을 바꾸고, 접힌 묶음 하나를 펼친다 (REQ-078). 끝나면 그 세계를 숨긴다. 맨 뒤 여정이다 |
 

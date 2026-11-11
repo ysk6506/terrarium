@@ -2,7 +2,7 @@
 title: HTTP API 계약
 kind: spec
 status: active
-last_verified: 2026-11-10
+last_verified: 2026-11-11
 covers:
   - packages/core/src/contract/routes.ts
   - packages/core/src/contract/responses.ts
@@ -13,13 +13,13 @@ covers:
   - packages/core/src/contract/model-routes.ts
   - packages/core/src/contract/community.ts
   - packages/core/src/contract/community-routes.ts
-covers_hash: f5878f9822628dbb
+covers_hash: fb9dbeec350e93a4
 verification_log:
-  - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
-  - "2026-11-07: 2026-11-07: REQ-104(ADR-0127) 코드와 대조해 고쳤다"
   - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-07: o15 합치기 (2차 피드백 수정)"
   - "2026-11-10: 물리 프로필(REQ-113) 반영: 새 라우트·벤치마크 키 지문"
+  - "2026-11-07: REQ-112의 경로 넷을 표에 더했다"
+  - "2026-11-11: main 합치기 뒤 다시 읽음: 물리 프로필(REQ-113) 반영 문단과 라우트 행이 main의 새 내용과 함께 맞다"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -96,6 +96,10 @@ verification_log:
 | `GET /api/scenarios/:id` | 시나리오 하나 | |
 | `POST /api/scenarios` | 새 시나리오 (빈 것, 템플릿, 문서) | |
 | `PUT /api/scenarios/:id` | 시나리오 고쳐 저장 (버전 확인) | |
+| `GET /api/scenarios/:id/current-process` | 시나리오의 "지금 하는 방식" 표(적은 값, 안 적었으면 빈 표) (REQ-112) | |
+| `PUT /api/scenarios/:id/current-process` | 표 저장 (처음 적은 사람만 고친다. 줄 1~30, 시간은 분) | |
+| `GET /api/experiments/:id/process` | 전후 비교: 코드가 실행 기록에서 센 단계·사람·시간(평균), 적은 표와의 차이, 대표 실행의 단계 장부 | |
+| `GET /api/worlds/:id/ontology` | 이 세계를 E2E로 가려면: Object·Link·Action 요구와 `?experimentId=`로 고른 실험에서 쓴 것 | |
 | `DELETE /api/scenarios/:id` | 시나리오 숨기기 | |
 | `POST /api/scenarios/:id/dry-run` | 에이전트 없이 미리 보기 | |
 | `POST /api/scenarios/:id/calibrate` | 시험지 점검: 아무것도 안 하는·찍는·정답만 아는 에이전트로 점수 재 보기. 서비스를 옮겨 복구하는 길(`recoveryPath`)과 흔한 툴만으로 원인에 닿는 길(`commonReach`)도 함께 답한다. 또 툴 설명만 읽는 기준 에이전트가 상황마다 고른 툴과 모호한 쌍(`toolPick`)도 답한다 | |
