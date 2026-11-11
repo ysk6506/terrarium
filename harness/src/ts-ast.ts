@@ -30,6 +30,23 @@ export function lineOf(sf: ts.SourceFile, pos: number): number {
   return sf.getLineAndCharacterOfPosition(pos).line + 1;
 }
 
+/**
+ * What a check derives from a parsed file is computed once per parsed tree: the checks of one run ask the same
+ * questions of the same files (comments, structure, functions, imports). The tree is replaced when the text
+ * changes (see `parse`), so a cached answer is never stale. Results are read only; arrays are copied on the way out.
+ */
+const derivedCache = new WeakMap<object, Map<(arg: never) => unknown, unknown>>();
+
+function derived<K extends object, V>(compute: (key: K) => V, key: K): V {
+  let byFn = derivedCache.get(key);
+  if (!byFn) {
+    byFn = new Map();
+    derivedCache.set(key, byFn);
+  }
+  if (!byFn.has(compute)) byFn.set(compute, compute(key));
+  return byFn.get(compute) as V;
+}
+
 export function walk(node: ts.Node, visit: (node: ts.Node) => void): void {
   visit(node);
   ts.forEachChild(node, (child) => walk(child, visit));
@@ -62,6 +79,10 @@ function callRef(sf: ts.SourceFile, node: ts.Node): ModuleRef | undefined {
 
 /** Every module a file depends on: static imports/exports, dynamic import(), require(). */
 export function moduleRefs(sf: ts.SourceFile): ModuleRef[] {
+  return [...derived(moduleRefsOf, sf)];
+}
+
+function moduleRefsOf(sf: ts.SourceFile): ModuleRef[] {
   const refs: ModuleRef[] = [];
   walk(sf, (node) => {
     const ref = declarationRef(sf, node) ?? callRef(sf, node);
@@ -78,6 +99,11 @@ export interface Comment {
 /** All comments in a file with their line numbers (strings and templates are not comments). */
 export function comments(file: string, text: string): Comment[] {
   const sf = parse(file, text);
+  return [...derived(commentsOf, sf)];
+}
+
+function commentsOf(sf: ts.SourceFile): Comment[] {
+  const text = sf.text;
   const found = new Map<number, Comment>();
   const collect = (ranges: readonly ts.CommentRange[] | undefined): void => {
     for (const range of ranges ?? []) {
@@ -98,21 +124,26 @@ export function comments(file: string, text: string): Comment[] {
   return [...found.values()].sort((a, b) => a.line - b.line);
 }
 
+/** Kinds whose `.text` is part of the program's meaning; every other kind has none (see `meaningfulText`). */
+const TEXT_KINDS: ReadonlySet<ts.SyntaxKind> = new Set([
+  ts.SyntaxKind.Identifier,
+  ts.SyntaxKind.PrivateIdentifier,
+  ts.SyntaxKind.StringLiteral,
+  ts.SyntaxKind.NoSubstitutionTemplateLiteral,
+  ts.SyntaxKind.NumericLiteral,
+  ts.SyntaxKind.BigIntLiteral,
+  ts.SyntaxKind.RegularExpressionLiteral,
+  ts.SyntaxKind.TemplateHead,
+  ts.SyntaxKind.TemplateMiddle,
+  ts.SyntaxKind.TemplateTail,
+  ts.SyntaxKind.JsxText,
+]);
+
 /** Literal-ish nodes whose text is part of the program's meaning. */
 function meaningfulText(node: ts.Node): string | undefined {
-  if (ts.isIdentifier(node) || ts.isPrivateIdentifier(node)) return node.text;
-  if (ts.isStringLiteralLike(node) || ts.isNumericLiteral(node) || ts.isBigIntLiteral(node))
-    return node.text;
-  if (
-    ts.isRegularExpressionLiteral(node) ||
-    ts.isTemplateHead(node) ||
-    ts.isTemplateMiddle(node) ||
-    ts.isTemplateTail(node)
-  ) {
-    return node.text;
-  }
+  if (!TEXT_KINDS.has(node.kind)) return undefined;
   if (ts.isJsxText(node)) return node.text.replace(/\s+/g, " ").trim();
-  return undefined;
+  return (node as ts.Identifier | ts.StringLiteral).text;
 }
 
 /**
@@ -135,7 +166,7 @@ export function structureOf(node: ts.Node): string {
 
 /** Structure of a whole file (see structureOf). */
 export function normalized(file: string, text: string): string {
-  return structureOf(parse(file, text));
+  return derived(structureOf, parse(file, text));
 }
 
 export function sha16(text: string): string {
@@ -162,16 +193,19 @@ export type FunctionLike =
   | ts.GetAccessorDeclaration
   | ts.SetAccessorDeclaration;
 
+const FUNCTION_LIKE_KINDS: ReadonlySet<ts.SyntaxKind> = new Set([
+  ts.SyntaxKind.FunctionDeclaration,
+  ts.SyntaxKind.MethodDeclaration,
+  ts.SyntaxKind.ArrowFunction,
+  ts.SyntaxKind.FunctionExpression,
+  ts.SyntaxKind.Constructor,
+  ts.SyntaxKind.GetAccessor,
+  ts.SyntaxKind.SetAccessor,
+]);
+
+/** One set lookup by node kind: the same seven kinds the `ts.is*` guards test, without seven calls per node. */
 export function isFunctionLike(node: ts.Node): node is FunctionLike {
-  return (
-    ts.isFunctionDeclaration(node) ||
-    ts.isMethodDeclaration(node) ||
-    ts.isArrowFunction(node) ||
-    ts.isFunctionExpression(node) ||
-    ts.isConstructorDeclaration(node) ||
-    ts.isGetAccessorDeclaration(node) ||
-    ts.isSetAccessorDeclaration(node)
-  );
+  return FUNCTION_LIKE_KINDS.has(node.kind);
 }
 
 function functionName(node: FunctionLike): string {
@@ -208,6 +242,10 @@ export interface FunctionInfo {
 
 /** Every function in a file, with a qualified name like `Class.method` or `outer.inner`. */
 export function functions(sf: ts.SourceFile): FunctionInfo[] {
+  return [...derived(functionsOf, sf)];
+}
+
+function functionsOf(sf: ts.SourceFile): FunctionInfo[] {
   const out: FunctionInfo[] = [];
   const visit = (node: ts.Node, prefix: string): void => {
     if (isFunctionLike(node)) {
