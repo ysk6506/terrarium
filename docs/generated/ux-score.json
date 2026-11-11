@@ -1,14 +1,14 @@
 {
   "measuredOn": "2026-11-11",
-  "webHash": "a9a31f6d91ac505f",
+  "webHash": "9594b828c82c997f",
   "scores": {
     "useful": 100,
-    "usable": 97.1,
-    "desirable": 91.9,
+    "usable": 100,
+    "desirable": 96.1,
     "findable": 100,
-    "accessible": 77,
-    "credible": 90.3,
-    "valuable": 71.4
+    "accessible": 100,
+    "credible": 100,
+    "valuable": 100
   },
   "measurements": {
     "journeys": {
@@ -30,7 +30,7 @@
       },
       "cancel": {
         "ok": true,
-        "actions": 5
+        "actions": 7
       },
       "share": {
         "ok": true,
@@ -66,15 +66,15 @@
       }
     },
     "clean": {
-      "tried": 43,
-      "ok": 43
+      "tried": 48,
+      "ok": 48
     },
     "invalid": {
       "tried": 3,
       "ok": 3
     },
     "colors": {
-      "literals": 120,
+      "literals": 123,
       "offToken": 2
     },
     "progress": {
@@ -82,8 +82,8 @@
       "ok": 3
     },
     "load": {
-      "kb": 970.20703125,
-      "ms": 262,
+      "kb": 823.6923828125,
+      "ms": 319,
       "sceneDrawn": true
     },
     "reach": {
@@ -96,9 +96,9 @@
     },
     "axe": {
       "pages": 28,
-      "critical": 2,
-      "serious": 4,
-      "moderate": 28
+      "critical": 0,
+      "serious": 0,
+      "moderate": 0
     },
     "keyboard": {
       "tried": 5,
@@ -117,43 +117,43 @@
     },
     "empties": {
       "tried": 4,
-      "ok": 3
+      "ok": 4
     },
     "provenance": {
-      "tried": 10,
-      "ok": 10
+      "tried": 13,
+      "ok": 13
     },
     "value": {
       "tried": 7,
-      "ok": 5
+      "ok": 7
     },
     "voice": {
-      "tried": 866,
-      "ok": 866
+      "tried": 1050,
+      "ok": 1050
     },
     "oneThing": {
       "tried": 13,
-      "ok": 12
+      "ok": 13
     },
     "buttons": {
-      "tried": 163,
-      "ok": 163
+      "tried": 176,
+      "ok": 176
     },
     "targets": {
-      "tried": 553,
-      "ok": 469
+      "tried": 595,
+      "ok": 595
     },
     "disabledWhy": {
       "tried": 12,
-      "ok": 11
+      "ok": 12
     },
     "units": {
-      "tried": 66,
-      "ok": 57
+      "tried": 108,
+      "ok": 108
     },
     "hover": {
-      "tried": 28,
-      "ok": 28
+      "tried": 31,
+      "ok": 31
     }
   }
 }
