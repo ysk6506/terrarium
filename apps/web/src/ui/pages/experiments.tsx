@@ -28,6 +28,56 @@ export function MetaTags({ metadata }: { readonly metadata?: Readonly<Record<str
   );
 }
 
+function ExperimentRow({
+  s,
+  showOwner,
+  showTitles,
+  now,
+  agentName,
+}: {
+  readonly s: ExperimentSummary;
+  readonly showOwner: boolean;
+  readonly showTitles: boolean;
+  readonly now: number;
+  readonly agentName: (e: ExperimentSummary["experiment"]) => string;
+}) {
+  return (
+    <tr>
+      <td className="exp-name">
+        <Go to={{ name: "experiment", id: s.experiment.id }}>{s.experiment.name}</Go>
+        {s.experiment.parentId && (
+          <span className="tag" style={{ marginLeft: 6 }}>
+            포크
+          </span>
+        )}
+        <MetaTags metadata={s.experiment.metadata} />
+      </td>
+      <td className="exp-status">
+        <Status status={s.status} operation={s.experiment.recipe.operation !== undefined} />{" "}
+        <span className="tiny muted">{progressText(s)}</span>
+      </td>
+      <td className="exp-scenario">{s.experiment.snapshot.scenarioName}</td>
+      <td className="exp-agent">
+        {agentName(s.experiment)}
+        {s.experiment.agentVersion !== undefined && (
+          <span className="tag" style={{ marginLeft: 6 }} title="실험을 만들 때의 에이전트 버전">
+            v{s.experiment.agentVersion}
+          </span>
+        )}
+      </td>
+      <td className="num exp-pass">{s.progress.completed > 0 ? percent(s.passRate) : "—"}</td>
+      <td className="num exp-mean">{scoreText(s.meanScore)}</td>
+      {showOwner && (
+        <td className="exp-owner">
+          {s.experiment.owner}
+          {showTitles && <TitlePills who={s.experiment.owner} titles={s.ownerTitles ?? []} />}
+        </td>
+      )}
+      <td className="exp-time">{relativeTime(s.experiment.createdAt, now)}</td>
+    </tr>
+  );
+}
+
 export function ExperimentTable({
   items,
   showOwner = true,
@@ -48,7 +98,7 @@ export function ExperimentTable({
     e.recipe.agentId;
   return (
     <div className="table-wrap">
-      <table className="table">
+      <table className="table experiments-table">
         <thead>
           <tr>
             <th>이름</th>
@@ -63,45 +113,14 @@ export function ExperimentTable({
         </thead>
         <tbody>
           {items.map((s) => (
-            <tr key={s.experiment.id}>
-              <td>
-                <Go to={{ name: "experiment", id: s.experiment.id }}>{s.experiment.name}</Go>
-                {s.experiment.parentId && (
-                  <span className="tag" style={{ marginLeft: 6 }}>
-                    포크
-                  </span>
-                )}
-                <MetaTags metadata={s.experiment.metadata} />
-              </td>
-              <td>
-                <Status status={s.status} operation={s.experiment.recipe.operation !== undefined} />{" "}
-                <span className="tiny muted">{progressText(s)}</span>
-              </td>
-              <td>{s.experiment.snapshot.scenarioName}</td>
-              <td>
-                {agentName(s.experiment)}
-                {s.experiment.agentVersion !== undefined && (
-                  <span
-                    className="tag"
-                    style={{ marginLeft: 6 }}
-                    title="실험을 만들 때의 에이전트 버전"
-                  >
-                    v{s.experiment.agentVersion}
-                  </span>
-                )}
-              </td>
-              <td className="num">{s.progress.completed > 0 ? percent(s.passRate) : "—"}</td>
-              <td className="num">{scoreText(s.meanScore)}</td>
-              {showOwner && (
-                <td>
-                  {s.experiment.owner}
-                  {showTitles && (
-                    <TitlePills who={s.experiment.owner} titles={s.ownerTitles ?? []} />
-                  )}
-                </td>
-              )}
-              <td>{relativeTime(s.experiment.createdAt, now)}</td>
-            </tr>
+            <ExperimentRow
+              key={s.experiment.id}
+              s={s}
+              showOwner={showOwner}
+              showTitles={showTitles}
+              now={now}
+              agentName={agentName}
+            />
           ))}
         </tbody>
       </table>

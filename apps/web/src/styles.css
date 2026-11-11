@@ -679,6 +679,188 @@ p {
   overflow-x: auto;
 }
 
+/*
+ * The runs of an experiment on a phone: each run is two lines instead of a row of eight squeezed columns.
+ * Line 1 is the tick box, the number, the status, the situation, the repeat and the score (right); line 2 is the
+ * sentence and the way in. The header row stays for screen readers and is only hidden from the eye.
+ */
+@media (max-width: 640px) {
+  .runs-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .runs-table,
+  .runs-table tbody {
+    display: block;
+  }
+
+  .runs-table tr {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 12px;
+    padding: 0 0 2px;
+    border-bottom: 1px solid var(--fill);
+  }
+
+  .runs-table tr:last-child {
+    border-bottom: 0;
+  }
+
+  .runs-table td {
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  .runs-table .run-tick {
+    min-width: 44px;
+    min-height: 44px;
+    margin-right: -8px;
+  }
+
+  .runs-table .run-no::before {
+    content: "#";
+  }
+
+  .runs-table .run-seed::before {
+    content: "상황 ";
+  }
+
+  .runs-table .run-score {
+    margin-left: auto;
+    font-weight: 600;
+  }
+
+  /* Wider than what is left of line 1, so the sentence always starts line 2; the way in keeps its own room beside it. */
+  .runs-table .run-note {
+    flex: 1 1 calc(100% - 112px);
+    min-width: 0;
+    padding-left: 4px;
+    color: var(--ink-2);
+    font-size: 14px;
+  }
+
+  .runs-table .run-go {
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+
+  .runs-table .run-go a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    white-space: nowrap;
+  }
+}
+
+/*
+ * The other two tables on a phone, the same way: a row is a few short lines, nothing past the right edge.
+ * Their header rows stay for screen readers, so a value that is only a number says what it is in its own words.
+ */
+@media (max-width: 640px) {
+  .criteria-table thead,
+  .experiments-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .criteria-table,
+  .criteria-table tbody,
+  .experiments-table,
+  .experiments-table tbody {
+    display: block;
+  }
+
+  .criteria-table tr,
+  .experiments-table tr {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 14px;
+    row-gap: 4px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--fill);
+  }
+
+  .criteria-table tr:last-child,
+  .experiments-table tr:last-child {
+    border-bottom: 0;
+  }
+
+  .criteria-table td,
+  .experiments-table td {
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  .criteria-table .criteria-label {
+    flex: 1 1 100%;
+  }
+
+  .criteria-table .criteria-rate {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .experiments-table .exp-name {
+    order: 0;
+    flex: 1 1 100%;
+    font-weight: 600;
+  }
+
+  .experiments-table .exp-status {
+    order: 1;
+  }
+
+  .experiments-table .exp-pass {
+    order: 2;
+  }
+
+  .experiments-table .exp-pass::before {
+    content: "합격률 ";
+  }
+
+  .experiments-table .exp-mean {
+    order: 3;
+  }
+
+  .experiments-table .exp-mean::before {
+    content: "평균 ";
+  }
+
+  .experiments-table .exp-scenario,
+  .experiments-table .exp-agent,
+  .experiments-table .exp-owner,
+  .experiments-table .exp-time {
+    color: var(--ink-2);
+    font-size: 14px;
+  }
+
+  .experiments-table .exp-scenario {
+    order: 4;
+    flex: 1 1 100%;
+  }
+
+  .experiments-table .exp-agent {
+    order: 5;
+  }
+
+  .experiments-table .exp-owner {
+    order: 6;
+  }
+
+  .experiments-table .exp-time {
+    order: 7;
+  }
+}
+
 .status {
   display: inline-flex;
   align-items: center;
@@ -4627,6 +4809,14 @@ button.title-pill {
   min-width: 32px;
   min-height: 32px;
   cursor: pointer;
+}
+
+/* On a phone the tick box of a run is a whole finger wide (the runs table is two lines per run). */
+@media (max-width: 640px) {
+  .runs-table .hit-box {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
 button.title-pill:hover {

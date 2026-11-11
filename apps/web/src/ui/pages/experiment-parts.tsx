@@ -235,7 +235,7 @@ function runNote(run: RunSummary, analysis: ExperimentAnalysis, calls: LiveState
 function ScoreCell({ run }: { readonly run: RunSummary }) {
   const done = run.status === "completed";
   return (
-    <td className="num">
+    <td className="num run-score">
       {done ? scoreText(run.score) : "—"}
       {done && <span className="sr-only">{run.passed ? ", 합격" : ", 불합격"}</span>}
     </td>
@@ -259,7 +259,7 @@ export function RunsTable({
   const repeated = analysis.repeats > 1;
   return (
     <div className="table-wrap">
-      <table className="table">
+      <table className="table runs-table">
         <thead>
           <tr>
             <th style={{ width: 40 }}>
@@ -281,7 +281,7 @@ export function RunsTable({
         <tbody>
           {runs.map((r) => (
             <tr key={r.id}>
-              <td>
+              <td className="run-tick">
                 {r.status === "completed" && (
                   <label className="hit-box">
                     <input
@@ -293,18 +293,18 @@ export function RunsTable({
                   </label>
                 )}
               </td>
-              <td className="num">{r.index + 1}</td>
+              <td className="num run-no">{r.index + 1}</td>
               <td>
                 <Status
                   status={r.status}
                   operation={analysis.experiment.recipe.operation !== undefined}
                 />
               </td>
-              <td className="num">{r.seed}</td>
+              <td className="num run-seed">{r.seed}</td>
               {repeated && <td className="num">{r.repeat}번째</td>}
               <ScoreCell run={r} />
-              <td>{runNote(r, analysis, live?.calls ?? {})}</td>
-              <td>
+              <td className="run-note">{runNote(r, analysis, live?.calls ?? {})}</td>
+              <td className="run-go">
                 {r.status !== "queued" && (
                   <Go to={{ name: "run", id: r.id }}>
                     들여다보기<span className="sr-only"> ({r.index + 1}번째 실행)</span>
@@ -327,7 +327,7 @@ export function CriteriaTable({ criteria }: { readonly criteria: ExperimentAnaly
       aside={<span className="tiny muted">감점 항목은 피한 비율이에요</span>}
     >
       <div className="table-wrap">
-        <table className="table">
+        <table className="table criteria-table">
           <thead>
             <tr>
               <th>항목</th>
@@ -338,8 +338,8 @@ export function CriteriaTable({ criteria }: { readonly criteria: ExperimentAnaly
           <tbody>
             {criteria.map((c) => (
               <tr key={c.id}>
-                <td>{c.label}</td>
-                <td>
+                <td className="criteria-label">{c.label}</td>
+                <td className="criteria-rate">
                   <RateBar rate={c.rate} />
                 </td>
                 <td className="num">
