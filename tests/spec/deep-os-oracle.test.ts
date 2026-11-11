@@ -465,7 +465,8 @@ const CASES: ReadonlyArray<readonly [string, string, boolean?]> = [
 
 describe("the fake shell's text commands and awk print what the real ones print [REQ-098]", () => {
   const { run } = lab();
-  test.each(CASES)("%s", (cmd, expected, fails = false) => {
+  test.each(CASES.map((c) => [...c]))("%s", (...c) => {
+    const [cmd, expected, fails = false] = c as [string, string, boolean?];
     const r = run("srv-a2", cmd);
     expect(r.stdout.trimEnd()).toBe(expected);
     expect(r.exitCode !== 0).toBe(fails);
