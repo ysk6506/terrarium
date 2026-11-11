@@ -6,5 +6,8 @@ export {
   type AuthRequest,
   authenticatorOf,
   headerAuthenticator,
+  type IdentityMode,
+  modeOf,
+  settingsOf,
 } from "./identity";
-export { SELF_HEADER, viewerOf } from "./viewer";
+export { type IdentitySettings, proxyViewer, SELF_HEADER, SELF_ONLY, selfViewer } from "./viewer";

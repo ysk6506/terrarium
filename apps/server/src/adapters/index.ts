@@ -15,6 +15,7 @@ export {
   type FalkorSourceConfig,
   type HarnessConfig,
   type HttpHarnessConfig,
+  type IdentityConfig,
   loadConfig,
   parseConfig,
   secret,

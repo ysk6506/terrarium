@@ -281,7 +281,7 @@ describe("칭호 [REQ-101]", () => {
       worldId: w.id,
       templateId: "cooling-failure",
     });
-    await platform.scenarios.calibrate(scenario.id, 1);
+    await platform.scenarios.calibrate(YEONSU, scenario.id, 1);
     const marks = await store.listCalibrationMarks();
     expect(marks).toHaveLength(1);
     expect(marks[0]).toMatchObject({ scenarioId: scenario.id, digest: scenario.digest });

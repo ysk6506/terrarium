@@ -10,8 +10,9 @@ export {
   ANONYMOUS,
   type HarnessDirectory,
   must,
-  ownerOnly,
+  NOBODY,
   type PlatformContext,
+  type Role,
   type Viewer,
 } from "./context";
 export { Dispatcher, type Execute } from "./dispatcher";
@@ -38,6 +39,15 @@ export { Models } from "./models";
 export { Moss } from "./moss";
 export { buildMossIndex, isRelevant, type MossChunk, MossIndex } from "./moss-index";
 export { isScoringQuestion, SCORING_FILES, scoringChunk } from "./moss-scoring";
+export {
+  allow,
+  allowRunOn,
+  type Decision,
+  isAdmin,
+  isSignedIn,
+  may,
+  type Resource,
+} from "./permissions";
 export { Platform, type PlatformOptions, withCapacity } from "./platform";
 export { Presets } from "./presets";
 export { type ReportFormat, Results } from "./results";

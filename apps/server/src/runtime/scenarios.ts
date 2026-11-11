@@ -37,8 +37,9 @@ import {
 } from "@terrarium/core/session";
 import { TOOL_NAMES } from "@terrarium/core/tools";
 import { BlueprintIndex } from "@terrarium/core/world";
-import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
+import { must, type PlatformContext, type Viewer } from "./context";
 import type { PlainSessionConfig } from "./hosts";
+import { allow } from "./permissions";
 
 /** The longest a dry run looks past the agent's task (simulated). */
 const DRY_RUN_SECONDS = 3600;
@@ -121,7 +122,7 @@ export class Scenarios {
       id,
       worldId: req.worldId,
       name,
-      owner: viewer.name,
+      owner: viewer.id,
       doc: { ...start, id, worldId: req.worldId, name },
       createdAt: this.ctx.stamps.now(),
     });
@@ -129,7 +130,7 @@ export class Scenarios {
 
   async update(viewer: Viewer, id: string, req: UpdateScenarioRequest): Promise<SavedScenario> {
     const current = await this.get(id);
-    ownerOnly(viewer, current.owner, "시나리오 고치기");
+    allow(viewer, "change", { owner: current.owner }, "시나리오 고치기");
     if (current.digest !== req.baseDigest)
       throw new ConflictError(
         "그사이 이 시나리오가 바뀌었어요. 새로고침해서 바뀐 내용을 본 뒤 다시 저장해 주세요",
@@ -142,7 +143,7 @@ export class Scenarios {
 
   async delete(viewer: Viewer, id: string): Promise<{ deleted: boolean }> {
     const current = await this.get(id);
-    ownerOnly(viewer, current.owner, "시나리오 지우기");
+    allow(viewer, "remove", { owner: current.owner }, "시나리오 지우기");
     return { deleted: await this.ctx.store.deleteScenario(id) };
   }
 
@@ -180,8 +181,9 @@ export class Scenarios {
    * Check the exam paper before anyone is scored on it: run three agents that need no model (one that waits, one
    * that guesses, one that knows the answer and takes no action) and say what their scores mean (REQ-070).
    */
-  async calibrate(id: string, seed: number): Promise<CalibrationView> {
+  async calibrate(viewer: Viewer, id: string, seed: number): Promise<CalibrationView> {
     const scenario = await this.get(id);
+    allow(viewer, "calibrate", { owner: scenario.owner }, "보정 표시");
     const issues = await this.issuesOf(scenario.doc);
     if (hasErrors(issues)) return { runs: [], floor: 0, diagnosisOnly: 0, warnings: [], issues };
     const world = must(await this.ctx.store.getWorld(scenario.worldId), `세계 ${scenario.worldId}`);

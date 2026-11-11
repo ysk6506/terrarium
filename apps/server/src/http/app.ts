@@ -18,21 +18,21 @@ import {
   type RouteName,
   type RouteSpec,
   toErrorReply,
+  UnauthenticatedError,
 } from "@terrarium/core/contract";
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from "fastify";
 import type { McpGateway } from "../mcp";
-import { ANONYMOUS, type Platform } from "../runtime";
+import { allow, isSignedIn, NOBODY, type Platform, type Viewer } from "../runtime";
 import { compressWeb } from "./compress";
 import { HANDLERS, type HandlerInput, type StreamRoute } from "./handlers";
-import { type Authenticator, headerAuthenticator } from "./identity";
+import { type Authenticator, headerAuthenticator, modeOf } from "./identity";
+import { SELF_ONLY } from "./viewer";
 
 export interface AppOptions {
   readonly platform: Platform;
   readonly gateway?: McpGateway;
-  /** Who is asking (ADR-0044). Left out: `identityHeader` decides, as before. */
+  /** Who is asking (ADR-0044). Left out: people type their own names, for one person on their own machine. */
   readonly authenticator?: Authenticator;
-  /** Header set by a trusted SSO proxy with the signed-in user. Ignored when `authenticator` is given. */
-  readonly identityHeader?: string;
   /** How people reach the server; derived from each request when absent. */
   readonly publicUrl?: string;
   /** Built web app to serve (apps/web/dist). */
@@ -97,6 +97,25 @@ function contentTypeFor(name: RouteName, route: RouteSpec, query: unknown): stri
   return CONTENT_TYPES[route.produces];
 }
 
+/**
+ * Who is asking, and whether the route's policy lets them in (ADR-0174). Said before the request body is looked
+ * at, so a caller the server does not know learns nothing from an answer about a field. `{ action }` policies are
+ * decided by the handler once it knows what the request is about; here they need only a signed-in person.
+ */
+async function viewerFor(
+  route: RouteSpec,
+  req: FastifyRequest,
+  auth: Authenticator,
+): Promise<Viewer> {
+  // A link with its secret in the address is open to people with no sign-in (REQ-038).
+  if (route.public) return NOBODY;
+  const viewer = await auth.authenticate(req);
+  if (route.policy === "open") return viewer;
+  if (!isSignedIn(viewer)) throw new UnauthenticatedError("로그인이 필요해요");
+  if (route.policy === "admin") allow(viewer, "administer");
+  return viewer;
+}
+
 function registerRoute(
   app: FastifyInstance,
   name: Exclude<RouteName, StreamRoute>,
@@ -108,6 +127,12 @@ function registerRoute(
     method: route.method,
     url: route.path,
     handler: async (req, reply) => {
+      let viewer: Viewer;
+      try {
+        viewer = await viewerFor(route, req, auth);
+      } catch (err) {
+        return sendError(reply, err);
+      }
       const parsed = parseInput(route, req, reply);
       if (!parsed) return reply;
       try {
@@ -115,9 +140,9 @@ function registerRoute(
           params: req.params as Record<string, string>,
           query: parsed.query,
           body: parsed.body,
-          // A link with its secret in the address is open to people with no sign-in (REQ-038).
-          viewer: route.public ? ANONYMOUS : await auth.authenticate(req),
+          viewer,
           baseUrl: baseUrlOf(req, options.publicUrl),
+          identityMode: modeOf(auth),
         } as HandlerInput<typeof name>;
         const result = await (HANDLERS[name] as (p: Platform, i: typeof input) => Promise<unknown>)(
           options.platform,
@@ -169,7 +194,7 @@ function registerEvents(app: FastifyInstance, options: AppOptions, auth: Authent
     const id = (req.params as { id: string }).id;
     let first: ExperimentEvent;
     try {
-      const viewer = await auth.authenticate(req);
+      const viewer = await viewerFor(ROUTES.experimentEvents, req, auth);
       const view = await options.platform.experiments.view(viewer, id);
       first = {
         type: "experiment",
@@ -191,10 +216,11 @@ function registerEvents(app: FastifyInstance, options: AppOptions, auth: Authent
 }
 
 /** Who is working in one world now (REQ-050): the runs already going, then every call as it happens. */
-function registerActivity(app: FastifyInstance, options: AppOptions): void {
+function registerActivity(app: FastifyInstance, options: AppOptions, auth: Authenticator): void {
   app.get(ROUTES.worldActivity.path, async (req, reply) => {
     const id = (req.params as { id: string }).id;
     try {
+      await viewerFor(ROUTES.worldActivity, req, auth);
       await options.platform.worlds.get(id);
     } catch (err) {
       return sendError(reply, err);
@@ -282,13 +308,13 @@ export function buildApp(options: AppOptions): FastifyInstance {
     return sendError(reply, err);
   });
   app.get("/healthz", async () => ({ ok: true }));
-  const auth = options.authenticator ?? headerAuthenticator(options.identityHeader);
+  const auth = options.authenticator ?? headerAuthenticator(SELF_ONLY);
   auth.mount?.(app);
   for (const name of Object.keys(ROUTES) as RouteName[])
     if (name !== "experimentEvents" && name !== "worldActivity")
       registerRoute(app, name, options, auth);
   registerEvents(app, options, auth);
-  registerActivity(app, options);
+  registerActivity(app, options, auth);
   if (options.gateway) registerMcp(app, options.gateway);
   registerWeb(app, options.webDist);
   return app;

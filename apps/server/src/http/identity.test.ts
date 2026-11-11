@@ -1,9 +1,10 @@
 import { UnauthenticatedError } from "@terrarium/core/contract";
 import { describe, expect, test } from "vitest";
+import { parseConfig } from "../adapters";
 import { ANONYMOUS } from "../runtime";
-import { testPlatform } from "../runtime/test-support/platform";
+import { person, testPlatform } from "../runtime/test-support/platform";
 import { buildApp } from "./app";
-import { type Authenticator, authenticatorOf, headerAuthenticator } from "./identity";
+import { type Authenticator, authenticatorOf } from "./identity";
 
 /** A stand-in for the company's identity provider: a bearer token that maps to a login. */
 function sso(logins: Record<string, string>, strict = false): Authenticator & { mounted: number } {
@@ -17,7 +18,7 @@ function sso(logins: Record<string, string>, strict = false): Authenticator & { 
     async authenticate(req: { headers: Record<string, string | string[] | undefined> }) {
       await Promise.resolve();
       const login = logins[String(req.headers.authorization ?? "").replace(/^Bearer /, "")];
-      if (login) return { name: login, source: "sso" as const };
+      if (login) return person(login, "sso");
       if (strict) throw new UnauthenticatedError("로그인이 필요해요");
       return ANONYMOUS;
     },
@@ -40,13 +41,13 @@ describe("who is asking is one slot an SSO can fill [REQ-054]", () => {
       url: "/api/meta",
       headers: { ...bearer("tok-1"), "x-terrarium-user": encodeURIComponent("사칭") },
     });
-    expect(signedIn.json().user).toEqual({ name: "s.yeonsu", source: "sso" });
+    expect(signedIn.json().user).toMatchObject({ id: "s.yeonsu", name: "s.yeonsu", source: "sso" });
     const stranger = await app.inject({
       method: "GET",
       url: "/api/meta",
       headers: { "x-terrarium-user": encodeURIComponent("사칭") },
     });
-    expect(stranger.json().user).toEqual({ name: "anonymous", source: "anonymous" });
+    expect(stranger.json().user).toMatchObject({ id: "anonymous", source: "anonymous" });
   });
 
   test("a method that refuses strangers answers 401 on routes and on live streams, but not on shared links", async () => {
@@ -72,17 +73,21 @@ describe("who is asking is one slot an SSO can fill [REQ-054]", () => {
   });
 
   test("without an SSO the settings give the proxy header, else a typed name", async () => {
-    expect(authenticatorOf({ header: "x-forwarded-user" }).kind).toBe("proxy-header");
-    expect(authenticatorOf({}).kind).toBe("self-declared");
-    const proxy = headerAuthenticator("x-forwarded-user");
-    expect(proxy.authenticate({ headers: { "x-forwarded-user": "kim" } })).toEqual({
-      name: "kim",
-      source: "proxy",
-    });
+    const identity = (raw: object) => parseConfig({ identity: raw }).identity;
+    const env = { PROXY_SECRET: "test-secret-0002" };
+    const settings = { header: "x-forwarded-user", proxySecretEnv: "PROXY_SECRET" };
+    expect(authenticatorOf(identity(settings), env).kind).toBe("proxy-header");
+    expect(authenticatorOf(identity({}), env).kind).toBe("self-declared");
+    const proxy = authenticatorOf(identity(settings), env);
     expect(
-      authenticatorOf({}).authenticate({
+      proxy.authenticate({
+        headers: { "x-forwarded-user": "kim", "x-terrarium-proxy-secret": "test-secret-0002" },
+      }),
+    ).toEqual(person("kim", "proxy"));
+    expect(
+      authenticatorOf(identity({}), env).authenticate({
         headers: { "x-terrarium-user": encodeURIComponent("연수") },
       }),
-    ).toEqual({ name: "연수", source: "self" });
+    ).toEqual(person("연수"));
   });
 });

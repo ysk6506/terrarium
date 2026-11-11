@@ -12,10 +12,12 @@ import type {
 import { ForbiddenError, InvalidInputError } from "@terrarium/core/contract";
 import type { ServiceCardRecord } from "@terrarium/core/experiments";
 import { catalogCard, loadProblem } from "@terrarium/core/world";
-import { must, ownerOnly, type PlatformContext, type Viewer } from "./context";
+import { must, type PlatformContext, type Viewer } from "./context";
+import { allow, may } from "./permissions";
 import type { Titles } from "./titles";
 
-const canEdit = (viewer: Viewer, c: ServiceCardRecord): boolean => c.owner === viewer.name;
+const canEdit = (viewer: Viewer, c: ServiceCardRecord): boolean =>
+  may(viewer, "change", { owner: c.owner }).ok;
 
 /** The numbers a card carries must be sayable (REQ-109): the schema checks the shape, this the meaning. */
 function checkLoad(load: CreateServiceCardRequest["load"]): void {
@@ -55,7 +57,7 @@ export class ServiceCards {
     const all = await this.ctx.store.listServiceCards();
     return this.views(
       viewer,
-      all.filter((c) => c.shared || c.owner === viewer.name),
+      all.filter((c) => c.shared || c.owner === viewer.id),
     );
   }
 
@@ -72,7 +74,7 @@ export class ServiceCards {
     checkLoad(input.load);
     const record: ServiceCardRecord = {
       id: this.ctx.stamps.id("sc"),
-      owner: viewer.name,
+      owner: viewer.id,
       name: input.name,
       card: input.card,
       ...(input.harm ? { harm: input.harm } : {}),
@@ -90,8 +92,7 @@ export class ServiceCards {
     input: UpdateServiceCardRequest,
   ): Promise<ServiceCardView> {
     const old = must(await this.ctx.store.getServiceCard(id), "서비스 카드");
-    if (!old.shared && old.owner !== viewer.name)
-      throw new ForbiddenError("공유되지 않은 카드예요");
+    if (!old.shared && old.owner !== viewer.id) throw new ForbiddenError("공유되지 않은 카드예요");
     if (!canEdit(viewer, old))
       throw new ForbiddenError(
         `카드는 만든 사람(${old.owner})만 고칠 수 있어요. 복사해서 내 카드로 쓰세요`,
@@ -117,11 +118,10 @@ export class ServiceCards {
   /** A shared card (or my own) copied into a new card owned by whoever copies it, not shared yet. */
   async copy(viewer: Viewer, id: string, input: CopyServiceCardRequest): Promise<ServiceCardView> {
     const old = must(await this.ctx.store.getServiceCard(id), "서비스 카드");
-    if (!old.shared && old.owner !== viewer.name)
-      throw new ForbiddenError("공유되지 않은 카드예요");
+    if (!old.shared && old.owner !== viewer.id) throw new ForbiddenError("공유되지 않은 카드예요");
     const record: ServiceCardRecord = {
       id: this.ctx.stamps.id("sc"),
-      owner: viewer.name,
+      owner: viewer.id,
       name: input.name ?? old.name,
       card: old.card,
       ...(old.harm ? { harm: old.harm } : {}),
@@ -135,7 +135,7 @@ export class ServiceCards {
 
   async remove(viewer: Viewer, id: string): Promise<{ readonly deleted: boolean }> {
     const old = must(await this.ctx.store.getServiceCard(id), "서비스 카드");
-    ownerOnly(viewer, old.owner, "지우기");
+    allow(viewer, "remove", { owner: old.owner }, "지우기");
     await this.ctx.store.deleteServiceCard(id);
     return { deleted: true };
   }

@@ -11,6 +11,7 @@ import { InvalidValueError, josa } from "@terrarium/core/kernel";
 import { z } from "zod";
 import { CONNECTORS, connectorOf } from "./connectors";
 import { EnvName, Id, Url } from "./connectors/fields";
+import { type IdentityConfig, IdentitySchema } from "./identity-config";
 import { TELEMETRY_KINDS, telemetryKindOf } from "./telemetry";
 
 /**
@@ -141,8 +142,8 @@ export const ConfigSchema = z
     /** How people reach the server; share links and harness MCP URLs are built from it. */
     publicUrl: Url.optional(),
     dataDir: z.string().default("data"),
-    /** Header a company SSO proxy sets with the signed-in user (REQ-033). */
-    identity: z.object({ header: z.string().toLowerCase().optional() }).strict().default({}),
+    /** Who is asking and who administers: the company's SSO proxy, or typed names for local use (REQ-033, ADR-0174). */
+    identity: IdentitySchema,
     workers: z.number().int().min(0).max(64).optional(),
     limits: z
       .object({
@@ -180,6 +181,7 @@ export interface HarnessConfig {
   readonly [setting: string]: unknown;
 }
 
+export type { IdentityConfig };
 export type Config = z.output<typeof ConfigSchema>;
 export type { HttpHarnessConfig } from "./connectors/harness-http";
 export type FalkorSourceConfig = z.output<typeof FalkorSource>;

@@ -241,10 +241,20 @@ export class Platform {
     this.events.emit(experimentId, { type: "experiment", summary });
   }
 
-  async meta(viewer: Viewer): Promise<MetaView> {
+  async meta(
+    viewer: Viewer,
+    mode: MetaView["identity"]["mode"] = "self-declared",
+  ): Promise<MetaView> {
     return {
       version: this.options.version ?? "dev",
-      user: { name: viewer.name, source: viewer.source },
+      user: {
+        id: viewer.id,
+        name: viewer.name,
+        groups: viewer.groups,
+        roles: viewer.roles,
+        source: viewer.source,
+      },
+      identity: { mode },
       harnesses: (await this.connections.views()).map(harnessViewOf),
       sources: [...this.ctx.sources.values()].map((s) => s.view),
       telemetry: this.ctx.telemetry

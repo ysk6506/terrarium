@@ -48,7 +48,7 @@ export class Presets {
   /** The records of one person; a preset of someone else is simply not there. */
   private async mine(viewer: Viewer, id: string): Promise<PresetRecord> {
     const found = await this.ctx.store.getPreset(id);
-    return must(found?.owner === viewer.name ? found : undefined, "저장해 둔 것");
+    return must(found?.owner === viewer.id ? found : undefined, "저장해 둔 것");
   }
 
   private expired(p: PresetRecord): boolean {
@@ -59,7 +59,7 @@ export class Presets {
   }
 
   async list(viewer: Viewer, kind?: PresetKind): Promise<PresetListView> {
-    const all = await this.ctx.store.listPresets(viewer.name, kind);
+    const all = await this.ctx.store.listPresets(viewer.id, kind);
     const gone = all.filter((p) => this.expired(p));
     await Promise.all(gone.map((p) => this.ctx.store.deletePreset(p.id)));
     const kept = all.filter((p) => !gone.includes(p));
@@ -77,7 +77,7 @@ export class Presets {
 
   /** A name that is in use among the live ones of this kind. */
   private async named(viewer: Viewer, kind: PresetKind, name: string) {
-    return (await this.ctx.store.listPresets(viewer.name, kind)).find(
+    return (await this.ctx.store.listPresets(viewer.id, kind)).find(
       (p) => p.name === name && p.deletedAt === undefined,
     );
   }
@@ -92,7 +92,7 @@ export class Presets {
       ? { ...same, body: input.body, updatedAt: now }
       : {
           id: this.ctx.stamps.id("pre"),
-          owner: viewer.name,
+          owner: viewer.id,
           kind,
           name: input.name,
           body: input.body,
@@ -108,7 +108,7 @@ export class Presets {
       if (bodyProblem(kind, item.body) || (await this.named(viewer, kind, item.name))) continue;
       await this.ctx.store.putPreset({
         id: this.ctx.stamps.id("pre"),
-        owner: viewer.name,
+        owner: viewer.id,
         kind,
         name: item.name,
         body: item.body,
