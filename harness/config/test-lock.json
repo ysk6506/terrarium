@@ -119683,6 +119683,156 @@
    "added": "2026-11-04",
    "amended_by": null
   },
+  "tests/spec/db-direct-deps.test.ts::<import:0f465da4>": {
+   "kind": "support",
+   "hash": "0f465da4070b74ff",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/db-direct-deps.test.ts::<import:b2677072>": {
+   "kind": "support",
+   "hash": "b26770722ae02ccc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/db-direct-deps.test.ts::<import:c54ae633>": {
+   "kind": "support",
+   "hash": "c54ae6332d702489",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/db-direct-deps.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/db-direct-deps.test.ts::<import:fb538936>": {
+   "kind": "support",
+   "hash": "fb538936f4ca88c9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/db-direct-deps.test.ts::=lab": {
+   "kind": "support",
+   "hash": "a84a7363c47fb4e5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/db-direct-deps.test.ts::=MINUTE": {
+   "kind": "support",
+   "hash": "07a3d29c8b1ec668",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/db-direct-deps.test.ts::a service that leans on a storage pool or an instance directly [REQ-095] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/db-direct-deps.test.ts::a service that leans on a storage pool or an instance directly [REQ-095] > a distributed pool that loses a node is slow for the service that leans on it, with the pool's words": {
+   "kind": "test",
+   "hash": "20d49913e63e0619",
+   "asserts": 2,
+   "literals": [
+    "\" \"",
+    "\" \"",
+    "\"a distributed pool that loses a node is slow for the service that leans on it, with the pool's words\"",
+    "\"degraded\"",
+    "\"degraded\"",
+    "\"distributed\"",
+    "\"down\"",
+    "\"down\"",
+    "\"pool-db\"",
+    "\"stor-c1\"",
+    "\"storage_node_lost\"",
+    "\"풀-DB\"",
+    "\"풀-DB\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/db-direct-deps.test.ts::a service that leans on a storage pool or an instance directly [REQ-095] > it is healthy while the pool is, and stopped by the pool's own stop with the pool's words": {
+   "kind": "test",
+   "hash": "45751e67116efad7",
+   "asserts": 3,
+   "literals": [
+    "\" \"",
+    "\" \"",
+    "\"ctl-a\"",
+    "\"ctl-b\"",
+    "\"down\"",
+    "\"down\"",
+    "\"dual\"",
+    "\"healthy\"",
+    "\"healthy\"",
+    "\"it is healthy while the pool is, and stopped by the pool's own stop with the pool's words\"",
+    "\"pool-db\"",
+    "\"storage_controller_failure\"",
+    "\"storage_controller_failure\"",
+    "\"풀-DB\"",
+    "\"풀-DB\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/db-direct-deps.test.ts::a service that leans on a storage pool or an instance directly [REQ-095] > leaning on one instance is leaning on the cluster it belongs to": {
+   "kind": "test",
+   "hash": "ef5973374775b15a",
+   "asserts": 2,
+   "literals": [
+    "\"db-1\"",
+    "\"db-2\"",
+    "\"db_primary_down\"",
+    "\"dual\"",
+    "\"healthy\"",
+    "\"healthy\"",
+    "\"healthy\"",
+    "\"healthy\"",
+    "\"leaning on one instance is leaning on the cluster it belongs to\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "tests/spec/db-physics.test.ts::<import:04ad3282>": {
    "kind": "support",
    "hash": "04ad3282ccad2e46",
