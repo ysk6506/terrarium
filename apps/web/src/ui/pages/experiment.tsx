@@ -35,6 +35,7 @@ import {
 } from "./experiment-parts";
 import { SubjectPanel } from "./experiment-subject";
 import { OperationCards } from "./operation-card";
+import { ProcessSections } from "./process-compare";
 import { useLive } from "./useLive";
 
 const ACTIVE = new Set(["queued", "running"]);
@@ -357,6 +358,7 @@ export function ExperimentPage({ id }: { readonly id: string }) {
       )}
       <LiveStatus view={view} status={status} />
       <Findings items={view.analysis.findings} />
+      <ProcessSections view={view} />
       {view.analysis.parent && (
         <ParentCard parent={view.analysis.parent} ready={view.analysis.progress.completed > 0} />
       )}

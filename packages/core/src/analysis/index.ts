@@ -14,6 +14,45 @@ export {
   MIN_RUNS_TO_RANK,
 } from "./leaderboard";
 export {
+  actionLabel,
+  actionsFor,
+  deriveNeeds,
+  faultTypesOf,
+  MISTAKE_ACTIONS,
+  type OntologyAction,
+  type OntologyCount,
+  type OntologyNeeds,
+  PHYSICAL_ACTION,
+  TASK_ACTIONS,
+} from "./ontology";
+export {
+  DOER_LABELS,
+  DOERS,
+  type Doer,
+  deriveUse,
+  type OntologyUse,
+  type UsedAction,
+  type UseRun,
+} from "./ontology-use";
+export {
+  baselineNumbers,
+  deltaNumbers,
+  meanNumbers,
+  type ProcessNumbers,
+  remainingLine,
+  TAG_LABELS,
+  typicalRun,
+} from "./process-compare";
+export {
+  AGENT_WHO,
+  type FoldInput,
+  foldRun,
+  HUMAN_WHO,
+  type LedgerRow,
+  type LedgerTag,
+  type RunProcess,
+} from "./process-steps";
+export {
   escapeHtml,
   metricLabel,
   type RenderOptions,

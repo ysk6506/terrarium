@@ -8,6 +8,7 @@ import type { ToolResult, ToolSpec } from "@terrarium/core/tools";
 import type { Blueprint, EntityKind } from "@terrarium/core/world";
 import type { AgentHistory } from "./agent-version";
 import type { CalibrationMark, TitleAward, WorldLike } from "./community";
+import type { CurrentProcessRecord } from "./current-process";
 import type { Journal, JournalEntry } from "./journal";
 import type { LlmModelRecord } from "./llm-models";
 import type { Experiment, HarnessRunInfo, RunRecord, ScenarioRecord, WorldRecord } from "./model";
@@ -278,6 +279,9 @@ export interface ExperimentStore {
   /** Every saved service card, oldest first. */
   listServiceCards(): Promise<ServiceCardRecord[]>;
   deleteServiceCard(id: string): Promise<boolean>;
+  /** Save or replace what a scenario's people do today (REQ-112); a scenario has one table. */
+  putCurrentProcess(process: CurrentProcessRecord): Promise<void>;
+  getCurrentProcess(scenarioId: string): Promise<CurrentProcessRecord | undefined>;
   /** Put a heart on a world; asking twice leaves one (REQ-101). */
   putLike(like: WorldLike): Promise<void>;
   /** Take the heart back. False when there was none. */

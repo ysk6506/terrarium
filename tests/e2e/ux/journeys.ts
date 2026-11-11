@@ -3,6 +3,7 @@
  * through the screen's own buttons. Each journey throws when it cannot be finished; the runner turns
  * that into "not ok" and counts the actions it took.
  */
+import { readFileSync } from "node:fs";
 import { Catalog } from "@terrarium/core/catalog";
 import { DEFAULT_CAMPUS, generateCampus, SITE_CAMPUS_MIX } from "@terrarium/core/sources/worldgen";
 import type { Browser, Page } from "playwright";
@@ -20,7 +21,8 @@ export type JourneyId =
   | "compare"
   | "site"
   | "build-small"
-  | "topology";
+  | "topology"
+  | "process-compare";
 
 export interface Outcome {
   readonly ok: boolean;
@@ -408,11 +410,55 @@ async function openTopology(c: Context): Promise<void> {
   if (after > MAX_TILES) throw new Error(`펼치고 나서 타일이 ${after}개다`);
 }
 
+/**
+ * 프로세스 비교 (REQ-112): 시나리오의 "지금 하는 방식"을 한 줄 적어 저장하고, 그 표로 실험을 돌려 결과에서 전후 비교(적은 값과
+ * 잰 값)와 단계 장부를 보고, 세계의 Object · Link · Action 표를 CSV로 내려받는다.
+ */
+async function processCompare(c: Context): Promise<void> {
+  const { page } = c.v;
+  await home(c);
+  await c.d.click(nav(page, "시나리오"));
+  // the scenario the design journey made: a real one, so the experiment on it can finish
+  const row = page.getByRole("row", { name: /냉방기 정지/ }).first();
+  await c.d.click(row.getByRole("link", { name: /^지금 방식/ }));
+  await expectPath(c, /^\/scenarios\/[^/]+\/process$/);
+  await c.d.fill(page.getByLabel("1번 단계 누가"), "모니터링 담당");
+  await c.d.fill(page.getByLabel("1번 단계 무엇을"), "알람 확인");
+  await c.d.fill(page.getByLabel("1번 단계 걸리는 시간"), "10");
+  await c.d.click(page.getByRole("button", { name: "저장", exact: true }));
+  await page
+    .getByText("지금 하는 방식:")
+    .first()
+    .waitFor({ timeout: 10 * SECOND });
+  await c.d.click(page.getByRole("link", { name: "이 표로 실험 만들기" }));
+  await c.d.click(page.getByRole("button", { name: "실험 시작" }));
+  await expectPath(c, /^\/experiments\/e-/);
+  await waitForResult(page);
+  // the written side and the measured side, side by side, then the ledger
+  await page.getByRole("region", { name: "지금 하는 방식" }).waitFor({ timeout: 30 * SECOND });
+  await page.getByRole("region", { name: "에이전트가 하면" }).waitFor({ timeout: 10 * SECOND });
+  await page.getByRole("list", { name: "단계 장부" }).waitFor({ timeout: 10 * SECOND });
+  const download = page.waitForEvent("download", { timeout: 15 * SECOND });
+  await c.d.click(page.getByRole("button", { name: /Object · Link · Action 표로 내보내기/ }));
+  await c.d.click(page.getByRole("menuitem", { name: /CSV로 받기/ }));
+  const file = await download;
+  // headless Chromium drops a Hangul name from a blob ("download"), so the name is not asserted; the content is
+  const saved = file.suggestedFilename();
+  if (saved !== "download" && !saved.endsWith("-ontology.csv"))
+    throw new Error(`내려받은 파일 이름이 -ontology.csv로 끝나지 않는다 (${saved})`);
+  const path = await file.path();
+  const text = path ? readFileSync(path, "utf8") : "";
+  if (!text.replace(/^\uFEFF/, "").startsWith("type,id,name,count,targets,faults,doer"))
+    throw new Error("내려받은 CSV의 머리 줄이 다르다");
+  if (!/\r?\nAction,/.test(text)) throw new Error("내려받은 CSV에 Action 줄이 없다");
+}
+
 /** In the order they depend on each other: later ones use what earlier ones made. */
 export const JOURNEYS: ReadonlyArray<readonly [JourneyId, (c: Context) => Promise<void>]> = [
   ["build", build],
   ["design", design],
   ["run", run],
+  ["process-compare", processCompare],
   ["cancel", cancel],
   ["share", share],
   ["fork", fork],
