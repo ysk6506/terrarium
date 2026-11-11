@@ -27,7 +27,7 @@ touches_protected:
   - .github/workflows/ci.yml
   - AGENTS.md
   - docs/product-specs/requirements.md
-decision_hash: ebae5430392e5b56
+decision_hash: c44957bb80394982
 ---
 # ADR-0148 검사는 조용히 끌 수 없고, 단위별 품질 등급표는 하네스가 만든다
 
@@ -41,25 +41,25 @@ decision_hash: ebae5430392e5b56
 
 | 종류 | 처음 수 | 없앰(원인을 고침) | 이유만 적음 | ADR 근거 | 부채 근거 |
 |---|---|---|---|---|---|
-| `biome-ignore` | 42 | 1 | 40 | 1 | 0 |
+| `biome-ignore` | 42 | 1 | 17 | 1 | 23 (규칙 단위) |
 | `eslint-disable` | 0 | 0 | 0 | 0 | 0 |
 | `@ts-ignore`, `@ts-nocheck` | 0 | 0 | 0 | 0 | 0 |
 | `@ts-expect-error` | 0 | 0 | 0 | 0 | 0 |
 | 건너뛴 시험(`skip`, `todo`, `skipIf`, `fails`) | 0 | 0 | 0 | 0 | 0 |
 | `continue-on-error` | 4 | 0 | 0 | 2 (ADR-0140) | 2 (TD-0002, TD-0004) |
 
-`@ts-ignore`나 건너뛴 시험이 보이는 곳은 검사 자신의 시험(`testguard.test.ts`, `architecture.test.ts`)이 문자열로 든 예시와 잠금 파일의 지문뿐이다. `ARCH051`이 이미 `@ts-ignore`와 `@ts-nocheck`를 코드에서 막고 있고, `TEST002`가 건너뛴 시험에 `TD-NNNN`을 요구한다. 40곳이 한 부류(아래 결정 3번)에 들고, 그중 37곳이 `apps/web/src/ui/` 안에 있다.
+`@ts-ignore`나 건너뛴 시험이 보이는 곳은 검사 자신의 시험(`testguard.test.ts`, `architecture.test.ts`)이 문자열로 든 예시와 잠금 파일의 지문뿐이다. `ARCH051`이 이미 `@ts-ignore`와 `@ts-nocheck`를 코드에서 막고 있고, `TEST002`가 건너뛴 시험에 `TD-NNNN`을 요구한다. 37곳이 `apps/web/src/ui/` 안에 있고, 17곳(`noArrayIndexKey` 14, CSS 3)이 아래 결정 3번의 부류에 든다. 접근성(`a11y`) 16곳과 의존성(`useExhaustiveDependencies`) 7곳은 이유는 있으나 번호가 없어 부채가 필요했다.
 
 ## 결정
 ### A. 무시 금지 규칙 (`harness/src/checks/ignores.ts`)
 1. **무엇이 끄기인가.** `biome-ignore`(`-all`, `-start` 포함), `eslint-disable`, `@ts-ignore`, `@ts-expect-error`, `@ts-nocheck`, 건너뛴 시험(`skip`, `todo`, `skipIf`, `runIf`, `fails`, `fixme`, `ctx.skip()`), 그리고 `.github/` 안의 `continue-on-error`(`false`가 아닌 것). TypeScript는 컴파일러가 읽은 주석과 호출식으로 센다. 주석은 **시작이 지시문일 때만** 지시문이다. 문장 중간에서 이름을 말하거나 문자열·템플릿 안에 든 예시는 세지 않는다(`IGN` 시험이 확인한다). CSS는 문자열을 건너뛰는 주석 읽개로, YAML은 줄 단위로 읽는다.
 2. **이유와 근거 번호.** 같은 줄 또는 바로 윗줄(윗줄은 그 줄에서 끝나는 주석)에 이유가 있고(`IGN001`, 공백·문장부호·번호를 뺀 8자 이상), 근거 번호가 있어야 한다(`IGN002`). 근거는 **열려 있는 `TD-NNNN`**이거나 **봉인된 활성 `ADR-NNNN`**이다. 닫혔거나 장부에 없는 부채를 가리키면 빨강이다(`IGN003`, "부채는 닫혔는데 끄기는 남음"). 없거나 봉인되지 않은 ADR을 가리켜도 빨강이다(`IGN004`).
-3. **이유만 있으면 되는 부류.** 아래 둘은 근거 번호가 없어도 되고, 이유는 여전히 있어야 한다(`harness/config/ignores.yaml`의 `reason_only_rules`).
-   - Biome의 `lint/a11y/*`, `noArrayIndexKey`, `useExhaustiveDependencies`, `noImportantStyles`, `noDescendingSpecificity`. 이 규칙들은 위젯이나 목록의 모양을 보고 판단하는 휴리스틱이라 틀린 경보의 답이 그 자리에서만 정해지고(줄에 identity가 없는 행, 키보드를 직접 다루는 위젯, 움직임 줄이기가 이겨야 하는 CSS), 고치는 방법이 코드를 비틀어 같은 뜻을 다른 모양으로 쓰는 것뿐이다. Biome가 이미 설명을 요구하므로 규칙이 더하는 것은 설명의 최소 길이와 수의 래칫이다.
-   - 시험 파일의 `@ts-expect-error`. 타입 시험은 컴파일 오류가 나야 한다는 것을 일부러 단언한다.
-   그 밖의 규칙(`noExplicitAny`, `noNonNullAssertion`, 정확성·타입 규칙)과 시험 밖의 `@ts-expect-error`, 건너뛴 시험, `continue-on-error`는 번호가 필요하다. 목록에 규칙을 더하려면 ADR이 필요하다(설정 파일이 보호 경로다).
+3. **이유만 있으면 되는 부류, 규칙 단위 근거.** 근거 번호를 줄에 적는 것이 원칙이다. 예외는 둘이다(`harness/config/ignores.yaml`).
+   - **이유만 있으면 되는 부류(`reason_only_rules`).** Biome의 `noArrayIndexKey`(정체성이 없는 행의 목록), `noImportantStyles`(움직임 줄이기가 모든 부품의 시간보다 이겨야 하는 CSS), `noDescendingSpecificity`(스타일 순서)와, 시험 파일의 `@ts-expect-error`(타입 시험은 컴파일 오류가 나야 한다는 것을 일부러 단언한다). 이들은 그 자리의 사정으로 답이 정해지는 모양 규칙이고, 고치려면 코드를 비틀어 같은 뜻을 다른 모양으로 쓰는 수밖에 없다. Biome가 이미 설명을 요구하므로 규칙이 더하는 것은 설명의 최소 길이와 수의 래칫이다. 목록에 규칙을 더하려면 ADR이 필요하다(설정 파일이 보호 경로다).
+   - **규칙 단위 근거(`basis_by_rule`).** 줄마다 번호를 적을 수 없는 끄기(다른 작업이 고치는 중인 파일)는 규칙마다 열린 부채 하나를 근거로 둔다. 그 규칙의 끄기는 해당 부채가 열려 있는 동안만 통과하고, 부채가 닫히면 남은 끄기가 모두 빨강이다(`IGN003`). 줄에 번호가 있으면 줄의 번호가 우선이다. 접근성(`lint/a11y/`)은 부품이 접근성을 갖추지 못한 것이지 그 자리의 사정이 아니라서 디자인 시스템 부품으로 바꿀 때 없앨 빚이다(TD-0013, 기한 2026-12-22). `useExhaustiveDependencies`는 의존성 누락이 낡은 값을 읽는 진짜 버그 부류라서 한 곳씩 판정해 고치거나 ADR로 정당화한다(TD-0014, 기한 2026-12-08).
+   그 밖의 규칙(`noExplicitAny`, `noNonNullAssertion`, 정확성·타입 규칙)과 시험 밖의 `@ts-expect-error`, 건너뛴 시험, `continue-on-error`는 줄에 번호가 필요하다.
 4. **수는 늘 수 없다(래칫).** `harness/config/ignores-baseline.json`에 종류별 개수를 적는다. 개수가 기준선보다 늘면 `IGN005`, 줄었는데 기준선이 그대로면 `IGN006`이다(`pnpm ratchet`이 낮춘다. 기준선이 느슨하면 줄어든 자리에 다른 끄기가 슬쩍 들어오기 때문이다). PR에서는 `--base`로 기준선을 올렸는지도 본다(`IGN007`). `pnpm ratchet`은 올리거나 새 종류를 만들지 않는다.
-5. **지금 있는 것의 정리.** 원인을 고칠 수 있는 하나(`apps/server/src/main.ts`의 `console.error`, 프로세스 진입점이므로 `process.stderr.write`로 바꿨다)는 끄기를 없앴다. 시험 밖에서 느슨한 JSON을 읽는 일회용 드라이버(`tests/e2e/harness/drive.ts`의 `type Json = any`)는 이 ADR을 근거로 적었다. 타입을 하나하나 쓰면 일회용 스크립트가 길어지고 얻는 것이 없다. 이유가 너무 짧던 `apps/web/src/styles.css`의 "as above"는 이유를 풀어 썼다. `.github/workflows/ci.yml`의 네 곳은 이유와 근거(커버리지 조각의 시간 초과는 게이트 조각이 판정한다는 ADR-0140 두 곳, 커버리지 하한 TD-0002, UX 측정 TD-0004)를 적었다. `apps/web/src/ui/`의 37곳은 다른 작업이 그 파일을 고치는 중이라 건드리지 않았고 세기만 했다. 모두 3번의 부류이며 이유가 이미 적혀 있다. 이번 조사에서 새 부채 항목은 만들지 않았다.
+5. **지금 있는 것의 정리.** 원인을 고칠 수 있는 하나(`apps/server/src/main.ts`의 `console.error`, 프로세스 진입점이므로 `process.stderr.write`로 바꿨다)는 끄기를 없앴다. 시험 밖에서 느슨한 JSON을 읽는 일회용 드라이버(`tests/e2e/harness/drive.ts`의 `type Json = any`)는 이 ADR을 근거로 적었다. 타입을 하나하나 쓰면 일회용 스크립트가 길어지고 얻는 것이 없다. 이유가 너무 짧던 `apps/web/src/styles.css`의 "as above"는 이유를 풀어 썼다. `.github/workflows/ci.yml`의 네 곳은 이유와 근거(커버리지 조각의 시간 초과는 게이트 조각이 판정한다는 ADR-0140 두 곳, 커버리지 하한 TD-0002, UX 측정 TD-0004)를 적었다. `apps/web/src/ui/`의 37곳은 다른 작업이 그 파일을 고치는 중이라 건드리지 않았고 세기만 했다. 그중 14곳은 이유만 부류이고, 접근성 16곳과 의존성 7곳은 규칙 단위 근거로 새 부채 TD-0013, TD-0014를 올렸다.
 
 ### B. 품질 등급표 (`harness/src/checks/quality.ts`)
 6. `docs/generated/quality.md`는 하네스가 **만든다**(`pnpm quality write`). 사람이 고치지 않는다. 합칠 때 충돌하면 다시 만든다. 구조 검사 `quality`가 다시 만든 결과가 커밋된 것과 다르면 `QUAL001`로 실패한다(문서가 낡음). 단위는 `architecture.yaml`의 단위 나눔이고 어느 단위에도 속하지 않는 파일은 "(단위 밖)" 줄이다. 단위마다 커버리지(값 / 하한), 끄기 수, 한도(파일 500줄, 함수 80줄, 복잡도 12)의 90%를 넘은 파일·함수 수와 한도를 넘은 수, 열린 부채 수와 가장 이른 기한, 그 단위의 코드를 `covers`하는 활성 문서 중 가장 오래된 `last_verified`, 등급과 이유를 적는다. 표는 등급이 가장 낮은 단위부터 나열하고, AGENTS.md가 정리 작업에게 그 위쪽부터 시작하라고 한다.
@@ -80,7 +80,8 @@ decision_hash: ebae5430392e5b56
 
 ## 버린 길
 - **끄기를 전부 금지**: 휴리스틱 규칙의 틀린 경보와 타입 시험의 일부러 낸 오류처럼 정당한 경우가 있고, 금지하면 코드를 비틀어 같은 뜻을 쓰게 된다. 이유와 근거를 요구하고 수를 막는 쪽이 낫다.
-- **모든 끄기에 근거 번호를 요구**: Biome가 이미 설명을 요구하는 휴리스틱 규칙 40곳에 억지 번호를 붙이게 된다. 번호가 의미 없어진다.
+- **모든 끄기에 근거 번호를 요구**: 모양 규칙(`noArrayIndexKey` 등) 17곳에 억지 번호를 붙이게 된다. 번호가 의미 없어진다.
+- **a11y와 의존성 끄기를 이유만 부류에 두기**: 이유가 적혀 있다는 이유로 "지금 그대로 두기"가 되고, 고칠 빚이 어디에도 남지 않는다.
 - **정규식으로 줄만 훑기**: 문자열이나 주석 속의 예시를 끄기로 세거나, 시작이 아닌 곳의 이름을 지시문으로 센다. 이 저장소의 검사 시험이 바로 그런 예시를 담는다.
 - **기준선이 줄어도 빨강으로 하지 않기**: 줄어든 만큼의 여유에 다른 끄기가 숨어 들어온다.
 - **오늘 날짜로 등급을 정하기**(기한 지난 부채는 D): 아무도 손대지 않은 날 표가 낡아 매일 빨강이 될 수 있다. 기한은 `DEBT011`이 이미 지킨다.
@@ -91,4 +92,4 @@ decision_hash: ebae5430392e5b56
 - 새 끄기는 이유와 근거가 없으면 빨강이다. 끄기를 없애면 `pnpm ratchet`으로 기준선을 낮춘다. `apps/web/src/ui/`의 끄기를 다른 작업이 줄이면 그 작업이나 합치는 쪽이 한 번 `pnpm ratchet`을 돌려야 한다(`IGN006`).
 - 첫 등급표에서 커버리지는 모두 "모름"이다. 다음 `coverage-floors` 실행 로그의 기록을 커밋하면 채워진다. 그 전까지 모든 측정 단위는 B가 상한이다.
 - 등급표는 코드나 장부, 문서 확인일이 바뀔 때마다 다시 만들어야 해서 병합 충돌이 날 수 있다(TD-0008과 같은 부류). 충돌하면 손으로 풀지 않고 다시 만든다.
-- 이번에 새 부채 항목을 만들지 않았다. 부채 예산(12건)에서 남은 자리는 그대로다.
+- 새 부채 항목은 TD-0013(접근성), TD-0014(의존성) 두 건이다. 열린 항목이 부채 예산(12건)을 채웠으므로 다음 부채는 하나를 닫고서야 올릴 수 있다.

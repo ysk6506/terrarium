@@ -95,3 +95,19 @@ items:
     created: "2026-11-11"
     due: "2026-12-08"
     status: open
+  - id: TD-0013
+    title: "웹 화면 부품 16곳이 접근성 검사(Biome lint/a11y)를 끄고 있다 (알약 라디오 묶음, 카드 라디오, 클릭 가능한 카드, 3D 캔버스 등). 부품이 접근성을 스스로 갖추지 못해 줄마다 끈 것이다. 줄에는 번호 없이 harness/config/ignores.yaml의 basis_by_rule이 이 항목을 근거로 삼는다 (ADR-0148)"
+    severity: medium
+    cost: "디자인 시스템 부품(라디오 묶음, 선택 카드, 대화상자 등)으로 바꾸며 끄기를 하나씩 없앤다. apps/web/src/ui/ 안이라 TD-0007(디자인 시스템)과 같이 간다. 다 없애면 basis_by_rule의 항목을 지우고 닫는다"
+    units: [web.ui]
+    created: "2026-11-11"
+    due: "2026-12-22"
+    status: open
+  - id: TD-0014
+    title: "웹 화면의 useExhaustiveDependencies 끄기 7곳(useGestures, context, fields, moss/Panel 둘, process-ontology, useWorldView)이 낡은 값을 읽는 버그인지 판정되지 않았다. 줄에는 번호 없이 harness/config/ignores.yaml의 basis_by_rule이 이 항목을 근거로 삼는다 (ADR-0148)"
+    severity: medium
+    cost: "한 곳씩 읽어 의존성 누락이 낡은 값을 읽는 진짜 버그인지 판정한다. 버그면 고치고, 일부러 그런 것이면 이유와 ADR 번호를 줄에 적는다. 7곳이 모두 정리되면 basis_by_rule의 항목을 지우고 닫는다"
+    units: [web.ui]
+    created: "2026-11-11"
+    due: "2026-12-08"
+    status: open

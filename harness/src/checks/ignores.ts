@@ -37,6 +37,7 @@ import {
 
 const CONFIG_PATH = "harness/config/ignores.yaml";
 const REF_RE = /\b(TD|ADR)-(\d{4})\b/g;
+const HAS_REF = /\b(TD|ADR)-\d{4}\b/;
 
 export interface IgnoresConfig {
   scan_dirs: string[];
@@ -45,6 +46,8 @@ export interface IgnoresConfig {
   baseline: string;
   /** Biome rule ids (or id prefixes ending in `/`) whose suppression needs a reason only, no TD or ADR. */
   reason_only_rules: string[];
+  /** Biome rule id (or prefix ending in `/`) -> the debt item that allows every ignore of it while it is open. */
+  basis_by_rule: Record<string, string>;
   /** `@ts-expect-error` in a test file needs a reason only (a type test asserts the error on purpose). */
   reason_only_ts_expect_error_in_tests: boolean;
   /** A reason is at least this many characters once spaces and the numbers are taken out. */
@@ -85,6 +88,22 @@ export function counts(found: readonly Suppression[]): Record<Kind, number> {
   return out;
 }
 
+const ruleMatches = (entry: string, rule: string): boolean =>
+  entry.endsWith("/") ? rule.startsWith(entry) : rule === entry;
+
+/** Debt items that stand in for a number on the line, one per rule; undefined when some rule has none. */
+function ruleBases(config: IgnoresConfig, s: Suppression): string[] | undefined {
+  if (s.kind !== "biome-ignore" || s.rules.length === 0) return undefined;
+  const bases: string[] = [];
+  for (const rule of s.rules) {
+    if (config.reason_only_rules.some((entry) => ruleMatches(entry, rule))) continue;
+    const entry = Object.keys(config.basis_by_rule).find((key) => ruleMatches(key, rule));
+    if (entry === undefined) return undefined;
+    bases.push(config.basis_by_rule[entry] as string);
+  }
+  return bases;
+}
+
 const textOf = (s: Suppression): string => `${s.own}\n${s.above}`;
 
 function reasonLength(s: Suppression): number {
@@ -98,9 +117,7 @@ function reasonOnly(config: IgnoresConfig, s: Suppression): boolean {
     return config.reason_only_ts_expect_error_in_tests && isTestPath(s.file);
   if (s.kind !== "biome-ignore" || s.rules.length === 0) return false;
   return s.rules.every((rule) =>
-    config.reason_only_rules.some((entry) =>
-      entry.endsWith("/") ? rule.startsWith(entry) : rule === entry,
-    ),
+    config.reason_only_rules.some((entry) => ruleMatches(entry, rule)),
   );
 }
 
@@ -160,6 +177,38 @@ function refProblems(
   return out;
 }
 
+/** What is missing when the line itself names no TD or ADR: nothing for a reason-only rule or one with an open rule-level debt. */
+function missingBasis(
+  config: IgnoresConfig,
+  s: Suppression,
+  status: ReadonlyMap<string, string>,
+): Violation[] {
+  if (HAS_REF.test(textOf(s)) || reasonOnly(config, s)) return [];
+  const bases = ruleBases(config, s);
+  if (bases === undefined) {
+    return [
+      violation(
+        "IGN002",
+        s.file,
+        s.line,
+        `${KIND_LABEL[s.kind]} does not say which debt item or ADR allows it`,
+        "Write TD-NNNN (an open item in docs/exec-plans/tech-debt.yaml) or ADR-NNNN with the reason, or fix the cause.",
+      ),
+    ];
+  }
+  return bases
+    .filter((id) => status.get(id) !== "open")
+    .map((id) =>
+      violation(
+        "IGN003",
+        s.file,
+        s.line,
+        `${KIND_LABEL[s.kind]} rests on ${id} (basis_by_rule), which is ${status.get(id) ?? "not in the register"}`,
+        "The debt is closed but the ignore stayed: remove the ignores of that rule, or reopen the item.",
+      ),
+    );
+}
+
 export function checkSuppressions(
   root: string,
   config: IgnoresConfig,
@@ -181,18 +230,7 @@ export function checkSuppressions(
         ),
       );
     }
-    const cited = [...textOf(s).matchAll(REF_RE)].length > 0;
-    if (!cited && !reasonOnly(config, s)) {
-      out.push(
-        violation(
-          "IGN002",
-          s.file,
-          s.line,
-          `${KIND_LABEL[s.kind]} does not say which debt item or ADR allows it`,
-          "Write TD-NNNN (an open item in docs/exec-plans/tech-debt.yaml) or ADR-NNNN with the reason, or fix the cause.",
-        ),
-      );
-    }
+    out.push(...missingBasis(config, s, status));
     out.push(...refProblems(s, status, adrs));
   }
   return out;

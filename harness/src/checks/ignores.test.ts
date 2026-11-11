@@ -40,7 +40,12 @@ function repo(files: Record<string, string>): string {
       "harness/config/ignores.yaml": real("harness/config/ignores.yaml"),
       "harness/config/debt.yaml": real("harness/config/debt.yaml"),
       "docs/exec-plans/tech-debt.yaml": YAML.stringify({
-        items: [debtItem("TD-0001"), debtItem("TD-0002", "done")],
+        items: [
+          debtItem("TD-0001"),
+          debtItem("TD-0002", "done"),
+          debtItem("TD-0013"),
+          debtItem("TD-0014", "done"),
+        ],
       }),
       ...adr("0100-sealed", "status: active\ndecision_hash: abc123"),
       ...adr("0101-unsealed", "status: active"),
@@ -135,13 +140,37 @@ describe("no silent ignores: suppression comments [REQ-022]", () => {
     const only =
       "// biome-ignore lint/suspicious/noArrayIndexKey: rows have no ids until saved\nexport const x = 1;\n";
     expect(run(repo(ts(only)))).toEqual([]);
-    const a11y =
-      "// biome-ignore lint/a11y/useSemanticElements lint/a11y/noAutofocus: a card is not a radio\nexport const x = 1;\n";
-    expect(run(repo(ts(a11y)))).toEqual([]);
-    const mixed = `// biome-ignore lint/a11y/noAutofocus ${NOT_REASON_ONLY}: a dialog focuses its first field\nexport const x = 1;\n`;
+    const css =
+      "// biome-ignore lint/complexity/noImportantStyles: reduced motion must win\nexport const x = 1;\n";
+    expect(run(repo(ts(css)))).toEqual([]);
+    const mixed = `// biome-ignore lint/suspicious/noArrayIndexKey ${NOT_REASON_ONLY}: a dialog focuses its first field\nexport const x = 1;\n`;
     expect(codes(repo(ts(mixed)))).toEqual(["IGN002"]);
     const bare = "// biome-ignore lint/suspicious/noArrayIndexKey: x\nexport const x = 1;\n";
     expect(codes(repo(ts(bare)))).toEqual(["IGN001"]);
+  });
+
+  test("a rule with a basis of its own passes while that debt item is open and fails once it is closed (IGN003)", () => {
+    const a11y =
+      "// biome-ignore lint/a11y/noAutofocus: a dialog focuses its first field\nexport const x = 1;\n";
+    expect(run(repo(ts(a11y)))).toEqual([]);
+    const deps =
+      "// biome-ignore lint/correctness/useExhaustiveDependencies: follow the value only\nexport const x = 1;\n";
+    const closed = run(repo(ts(deps)));
+    expect(closed.map((v) => v.code)).toEqual(["IGN003"]);
+    expect(closed[0]?.message).toContain("TD-0014");
+  });
+
+  test("a rule with a basis of its own still needs a reason, and a rule without one needs a number", () => {
+    const bare = "// biome-ignore lint/a11y/noAutofocus: x\nexport const x = 1;\n";
+    expect(codes(repo(ts(bare)))).toEqual(["IGN001"]);
+    const mixed = `// biome-ignore lint/a11y/noAutofocus ${NOT_REASON_ONLY}: a dialog focuses its first field\nexport const x = 1;\n`;
+    expect(codes(repo(ts(mixed)))).toEqual(["IGN002"]);
+  });
+
+  test("a number on the line itself takes precedence over the rule's basis", () => {
+    const own =
+      "// biome-ignore lint/correctness/useExhaustiveDependencies: TD-0001 follow the value only\nexport const x = 1;\n";
+    expect(run(repo(ts(own)))).toEqual([]);
   });
 
   test("@ts-expect-error in a test file needs a reason only; in other code it needs a basis too", () => {

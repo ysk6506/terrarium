@@ -9,15 +9,20 @@ adr_dir: docs/design-docs/adr
 baseline: harness/config/ignores-baseline.json
 
 # Suppressing these Biome rules needs a reason only (Biome already demands one). They are heuristics about a
-# widget or a list whose answer is local to the site; ADR-0148 explains the line between these and the rest.
-# A prefix ends in `/`. Any other rule (noExplicitAny, noNonNullAssertion, correctness and type rules...)
-# needs TD-NNNN or ADR-NNNN as well.
+# list or a stylesheet whose answer is local to the site; ADR-0148 explains the line between these and the rest.
+# A prefix ends in `/`. Any other rule (noExplicitAny, a11y, dependency and type rules...) needs TD-NNNN or
+# ADR-NNNN as well.
 reason_only_rules:
-  - lint/a11y/
   - lint/suspicious/noArrayIndexKey
-  - lint/correctness/useExhaustiveDependencies
   - lint/complexity/noImportantStyles
   - lint/style/noDescendingSpecificity
+
+# A basis held for a whole rule, for ignores that cannot carry a number on their own line yet. An ignore of such a
+# rule passes while that debt item is open; when the item is closed, every remaining ignore of the rule fails
+# (IGN003). A TD-NNNN written on the line itself takes precedence. A prefix ends in `/`.
+basis_by_rule:
+  lint/a11y/: TD-0013
+  lint/correctness/useExhaustiveDependencies: TD-0014
 
 # A type test asserts a compile error on purpose, so `@ts-expect-error` in a test file needs a reason only.
 reason_only_ts_expect_error_in_tests: true

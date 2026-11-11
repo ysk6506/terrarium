@@ -64477,7 +64477,7 @@
   },
   "harness/src/checks/ignores.test.ts::=repo": {
    "kind": "support",
-   "hash": "fdf2e9b4cacf1521",
+   "hash": "026c9d07d1e454b7",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -64864,6 +64864,19 @@
    "added": "2026-11-11",
    "amended_by": null
   },
+  "harness/src/checks/ignores.test.ts::no silent ignores: suppression comments [REQ-022] > a number on the line itself takes precedence over the rule's basis": {
+   "kind": "test",
+   "hash": "0aec142ce1bec52f",
+   "asserts": 1,
+   "literals": [
+    "\"// biome-ignore lint/correctness/useExhaustiveDependencies: TD-0001 follow the value only\\nexport const x = 1;\\n\"",
+    "\"a number on the line itself takes precedence over the rule's basis\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "harness/src/checks/ignores.test.ts::no silent ignores: suppression comments [REQ-022] > a reason with an open TD item on the same line or the line above passes": {
    "kind": "test",
    "hash": "d3a59350268bff00",
@@ -64886,6 +64899,43 @@
     "\"a repository without ignores passes\"",
     "\"export const x = 1;\\n\"",
     "\"export const x = 1;\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/ignores.test.ts::no silent ignores: suppression comments [REQ-022] > a rule with a basis of its own passes while that debt item is open and fails once it is closed (IGN003)": {
+   "kind": "test",
+   "hash": "e77fe95f341d0617",
+   "asserts": 3,
+   "literals": [
+    "\"// biome-ignore lint/a11y/noAutofocus: a dialog focuses its first field\\nexport const x = 1;\\n\"",
+    "\"// biome-ignore lint/correctness/useExhaustiveDependencies: follow the value only\\nexport const x = 1;\\n\"",
+    "\"0\"",
+    "\"0\"",
+    "\"IGN003\"",
+    "\"IGN003\"",
+    "\"TD-0014\"",
+    "\"TD-0014\"",
+    "\"a rule with a basis of its own passes while that debt item is open and fails once it is closed (IGN003)\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/ignores.test.ts::no silent ignores: suppression comments [REQ-022] > a rule with a basis of its own still needs a reason, and a rule without one needs a number": {
+   "kind": "test",
+   "hash": "14bab127ed285fef",
+   "asserts": 2,
+   "literals": [
+    "\"// biome-ignore lint/a11y/noAutofocus: x\\nexport const x = 1;\\n\"",
+    "\"IGN001\"",
+    "\"IGN001\"",
+    "\"IGN002\"",
+    "\"IGN002\"",
+    "\"a rule with a basis of its own still needs a reason, and a rule without one needs a number\""
    ],
    "precision": [],
    "skips": 0,
@@ -64972,10 +65022,10 @@
   },
   "harness/src/checks/ignores.test.ts::no silent ignores: suppression comments [REQ-022] > rules listed as reason-only need a reason and nothing else; one rule outside the list does not": {
    "kind": "test",
-   "hash": "b38ac6980110be52",
+   "hash": "7b1c70a70b715216",
    "asserts": 4,
    "literals": [
-    "\"// biome-ignore lint/a11y/useSemanticElements lint/a11y/noAutofocus: a card is not a radio\\nexport const x = 1;\\n\"",
+    "\"// biome-ignore lint/complexity/noImportantStyles: reduced motion must win\\nexport const x = 1;\\n\"",
     "\"// biome-ignore lint/suspicious/noArrayIndexKey: rows have no ids until saved\\nexport const x = 1;\\n\"",
     "\"// biome-ignore lint/suspicious/noArrayIndexKey: x\\nexport const x = 1;\\n\"",
     "\"IGN001\"",
