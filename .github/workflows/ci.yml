@@ -392,29 +392,6 @@ jobs:
             ux.log
             docs/generated/ux-score.json
 
-  # TEMPORARY (ADR-0175 proof): the measurement as one job, the way it ran before the slices. Removed after the comparison.
-  ux-whole:
-    needs: changes
-    if: needs.changes.outputs.web == 'true' && needs.changes.outputs.docs_only != 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 40
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-      - uses: ./.github/actions/browser
-      - name: The whole measurement in one job
-        env:
-          TERRARIUM_UX_ECHO: "1"
-        run: |
-          set -o pipefail
-          node_modules/.bin/tsx -e "import {main,runChild} from './harness/src/ux/run.ts'; main(['measure'],console.log,(c,a,o)=>runChild(c,a,{...o,timeoutMs:40*60_000})).then(c=>process.exit(c))" 2>&1 | tee ux-whole.log
-        shell: bash
-      - if: always()
-        run: |
-          echo "::group::ux-whole-score.json"
-          cat docs/generated/ux-score.json
-          echo "::endgroup::"
-
   # The one required check. It always runs. Full path: every gating job succeeded, exactly as before. Light path:
   # `structure` and `docs-tests` succeeded and every other job was skipped. A skipped job counts as success only where
   # the path says it should be skipped, so a skip can never stand in for a run.
