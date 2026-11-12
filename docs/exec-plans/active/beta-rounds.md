@@ -4,15 +4,15 @@ kind: plan
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-12: main을 합친 뒤 양쪽 변경을 함께 둠"
   - "2026-11-12: 이슈 47의 순서를 바꿈: 범용 유저랜드를 진짜 구현으로 바꾸는 실험을 앞으로, 흉내를 둘로 나누는 선을 적음"
   - "2026-11-12: 날짜를 지우고 순서만 둠(제품 책임자 결정). 지금의 순서 절을 더함"
   - "2026-11-12: main을 합침: 따라가는 requirements.md의 바뀐 곳은 REQ-098의 한계 알림 문장(ADR-0184). 이 문서와 어긋나지 않는다"
   - "2026-11-12: 지금의 순서에 워크플로 자동화(8번)를 더함 (ADR-0189)"
+  - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
 follows:
   - docs/product-specs/requirements.md
-follows_hash: 78df9aa58197fcb3
-verified_body: 9564c299f5787684
+follows_hash: 1f00bb0c44752419
+verified_body: f3d1edea56b84ca0
 unchanged_reverifies: 0
 ---
 # 클로즈 베타 차수 계획

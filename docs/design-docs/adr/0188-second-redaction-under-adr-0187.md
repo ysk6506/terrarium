@@ -7,13 +7,10 @@ enforced_by:
   - none
 no_enforcement_reason: 어떤 문장이 내부 사실인지는 기계가 가릴 수 없다(ADR-0187과 같다). 정리 작업의 독립 감사와 사람의 검토로 본다.
 updates_docs:
-  - AGENTS.md
   - README.md
   - docs/design-docs/camera-and-backdrop.md
   - docs/design-docs/campus-layout.md
   - docs/design-docs/container-layer.md
-  - docs/design-docs/core-beliefs.md
-  - docs/design-docs/glossary-data.md
   - docs/design-docs/gpu-catalog.md
   - docs/design-docs/harness-e2e.md
   - docs/design-docs/harness-protocol.md
@@ -43,7 +40,6 @@ updates_docs:
   - docs/index.md
   - docs/product-specs/requirements.md
 touches_protected:
-  - AGENTS.md
   - docs/product-specs/requirements.md
   - docs/design-docs/adr/**
   - harness/config/test-lock.json
@@ -317,7 +313,7 @@ amends_tests:
   - tests/spec/store.test.ts::=scenario
   - tests/spec/store.test.ts::=world
 test_change_reason: 요구사항이 바뀐 것은 아니다. 시험이 쓰는 견본 사용자 이름과 견본 모델 이름, 시험 제목 한 곳을 지어낸 것으로 바꿔 저장소에 개인 이름과 내부에서 쓰는 이름이 남지 않게 한다. 단언하는 동작과 기대하는 값의 뜻은 같고, 이름 순서가 바뀌어 정렬 결과를 단정한 세 곳은 기대값의 순서만 따라갔다.
-decision_hash: 7347f4454eb82ae2
+decision_hash: 2c0d098d11cd2e87
 ---
 # ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기
 
@@ -335,7 +331,7 @@ ADR-0187은 공개 저장소에 내부에서 들은 사실을 두지 않기로 �
 | 배포 환경과 소유 조직을 가리키는 한정어("사내" 등), 내부 도구·프로젝트 이름 | 한정어를 빼거나 "조직 안에서", "닫힌 망에서" 같은 일반 말로. 내부 도구 이름은 중립 설명으로 | 결정 기록 19, 설계 문서와 색인 10, 최상위 문서 2, 차수 계획 1, 코드 주석 1 |
 | 실제 사업장·건물에서 서버룸이 어디에 있는지, 지도와 배치도의 출처 | 건물마다 다르다는 요구와 "가정", "예시 값"으로. 출처는 공개 지도와 보도로만 | 결정 기록 5, 설계 문서 1, 코드 주석 2, 시험 제목 1 |
 | 장비 제조사 분포에 기댄 선택의 이유 | 제조사가 공개한 규격이라는 이유와 "제품 책임자의 결정"까지만 | 결정 기록 1, 설계 문서 1 |
-| 제품 목표 문장의 소유 조직 수식어, 쓰임새 이름 | 수식어를 뺌. 목표 문장은 요구사항·README·AGENTS.md에서 같다(`DOC093`) | 결정 기록 1, 설계 문서 1, 최상위 문서 3 |
+| 요구사항 머리글의 쓰임새 이름 | 일반 말로 바꿈. 제품 목표 문장은 고치지 않는다(제품 책임자가 정한 글이고, "사내"는 제품의 자리를 말하는 것이지 내부 사실이 아니다) | 요구사항 1 |
 | 일정, 사용 한도, 개발 운영 | 우선순위만 남기고 날짜 열과 한도 문장을 뺌 | 차수 계획 3 |
 | 기본값이 "실제 모양"이라거나 "들은 대로"라는 코드 주석, 화면 문구의 조직 용어 | 예시 값이라고만 적음. 화면 문구의 조직 용어는 "사용자"로 | 코드 4, 설계 문서 2, 목업 2 |
 | 제품 책임자의 개인 이름 | 문서는 "제품 책임자"로(호칭과 조사를 맞춤). 시험·견본의 사용자 이름은 지어낸 이름으로 | 문서 68, 시험과 도우미 코드 65 |

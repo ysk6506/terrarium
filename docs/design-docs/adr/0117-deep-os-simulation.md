@@ -11,7 +11,7 @@ enforced_by:
   - tests/spec/deep-os-outside.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
-decision_hash: 933b30a723d6756d
+decision_hash: 85cc3d71e0e2466c
 amended_by:
   - adr: "0184"
     what: 흉내가 못 하는 것은 command not found나 안 돼요로만 답하고 센다

@@ -4,16 +4,16 @@ kind: guide
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-12: 따라가는 beta-rounds.md에 이슈 47 일정 절이 더해짐. 차수의 순서와 내용은 그대로라 이 문서와 어긋나지 않는다"
   - "2026-11-12: 순서 2(바탕)에 범용 도구를 진짜 구현으로 바꾸는 실험을, 위험에 손으로 쓴 OS 흉내를 더함"
   - "2026-11-12: 설계는 계획을 따라가지 않는다(ADR-0186의 한 방향): follows에서 beta-rounds.md를 뺌. 5절의 순서는 차수 계획의 '지금의 순서'와 어긋나지 않는다"
   - "2026-11-12: main을 합침: 따라가는 requirements.md의 바뀐 곳은 REQ-098의 한계 알림 문장(ADR-0184). 이 문서와 어긋나지 않는다"
   - "2026-11-12: 목표 문장, 기둥 넷, 원칙 6의 글, 순서 6, 위험 한 줄을 고침. 화면 설계의 기준은 목표가 아닌 것으로 정해짐 (ADR-0189)"
+  - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
 follows:
   - docs/product-specs/requirements.md
-follows_hash: 78df9aa58197fcb3
+follows_hash: 1f00bb0c44752419
 verified_body: 519de35e9f0b713a
-unchanged_reverifies: 3
+unchanged_reverifies: 4
 ---
 # 제품 설계 한 장 (ADR-0170)
 

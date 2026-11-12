@@ -6,13 +6,14 @@ last_verified: 2026-11-12
 follows:
   - docs/design-docs/product-design.md
   - docs/design-docs/reality-data-and-ontology.md
-follows_hash: 9b55d380beaf6778
+follows_hash: 990614dec08c4400
 verified_body: b8938a00c06330d1
-unchanged_reverifies: 0
+unchanged_reverifies: 1
 verification_log:
   - "2026-11-12: 제품 책임자의 결정을 받아 고쳐 씀: 게이트웨이 가정, 권한 두 층, 에이전트에게 주는 MCP 툴, 조건 분기·반복·병렬·대기, 갈래마다 검증. 현업에서 쓰는 말로 맞춤(조건 분기, 툴 매핑) (ADR-0189)"
   - "2026-11-12: 14절에 성과를 건마다 재는 법을 더함: 기준(적은 값)과 잰 값, 경로마다의 기준, 그림자 단계에서 기준을 잰 값으로 바꾸기"
   - "2026-11-12: 11절에 검증에서 실제 툴 자리에 서는 모의 툴, 검증 수준 셋, 검증이 말해 주는 것과 못 하는 것을 더함. 7절과 15절의 관련 문장을 고침 (ADR-0190)"
+  - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
 ---
 # E2E 워크플로 자동화 (REQ-120 예정, [ADR-0189](adr/0189-verified-workflows-go-to-operation.md))
 

@@ -4,16 +4,16 @@ kind: spec
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: 목표의 글과 맨 위 문서를 맞춤 (ADR-0177)"
-  - "2026-11-11: 따라가는 product-design.md의 바뀐 곳(1절 기둥을 목표 세 부분으로, 4절을 생성된 목록으로)이 이 문서의 목표 세 부분과 맞다. REQ 본문은 그대로"
   - "2026-11-12: 따라가는 product-design.md는 ADR-0171 만드는 중 표시만 지워졌고 이 문서의 말과 상관없다"
   - "2026-11-12: 따라가는 문서를 제품 목표의 결정 기록(ADR-0138)으로 바꿈. 목표 글은 ADR-0138·0177과 같다 (ADR-0186)"
   - "2026-11-12: 목표 문장을 넓히고 넷째 부분과 REQ-120(예정)을 더함 (ADR-0189)"
+  - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
+  - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
 follows:
   - docs/design-docs/adr/0138-product-goal.md
-follows_hash: 47e5ea30846f7b06
-verified_body: 7bc3541ccd1878cf
-unchanged_reverifies: 3
+follows_hash: 71c9945a6b4ea026
+verified_body: 439be5344d3e8136
+unchanged_reverifies: 4
 ---
 # 테라리움 요구사항
 
