@@ -12,7 +12,7 @@ statuses: [active, superseded, archived]
 required_keys: [title, kind, status, last_verified]
 
 # An active doc older than this many days since last_verified fails (null = never ages).
-max_age_days: {guide: 60, reference: 90, spec: 180, plan: 30, decision: null}
+max_age_days: {guide: 30, reference: 90, spec: 180, plan: 14, decision: null}
 
 # Line limits keep docs readable and force splitting instead of sprawl.
 max_lines: {AGENTS.md: 120, default: 400}
@@ -20,3 +20,9 @@ max_lines: {AGENTS.md: 120, default: 400}
 # `inline code` that looks like a path and starts with one of these is checked for existence.
 path_roots: [packages/, apps/, docs/, harness/, tests/, .github/]
 root_files: [package.json, README.md, AGENTS.md, ARCHITECTURE.md, vitest.config.ts, biome.json, tsconfig.json, pnpm-workspace.yaml]
+
+# The product goal sentence (the bold line under goal_heading in goal_source) leads these docs (DOC093, ADR-0180).
+goal_source: docs/product-specs/requirements.md
+goal_docs: [README.md, AGENTS.md]
+# Made from ADR front matter by `docs.ts decisions` (ADR-0180); a stale copy is a notice, not a failure.
+decisions_file: docs/generated/decisions.md

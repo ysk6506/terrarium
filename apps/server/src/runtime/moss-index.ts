@@ -350,7 +350,7 @@ export class MossIndex {
   }
 }
 
-const SKIPPED_DIRS: ReadonlySet<string> = new Set(["exec-plans"]);
+const SKIPPED_DIRS: ReadonlySet<string> = new Set(["exec-plans", "generated"]);
 
 /** `docsDir`(보통 리포의 `docs`) 아래 마크다운을 모두 읽어 색인한다. 파일 이름은 `repoRoot` 기준으로 적는다. */
 export function buildMossIndex(docsDir: string, repoRoot = path.dirname(docsDir)): MossIndex {

@@ -9,6 +9,11 @@ no_enforcement_reason: 구현 전 결정 기록이다(REQ-119 예정). 만들 �
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 2e08fd253ab78079
+amends:
+  - adr: "0157"
+    what: 타입 세 층
+  - adr: "0156"
+    what: 포트를 타입에 넣지 않음
 ---
 # ADR-0169 모델은 하나다 — 현실에서 만든 세계와 지어낸 세계는 같은 타입과 같은 링크 표현을 쓰고, 매핑의 목적지는 핵심 모델이다
 

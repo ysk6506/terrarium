@@ -9,6 +9,13 @@ no_enforcement_reason: 구현 전 결정 기록이다(REQ-119 예정). 만들 �
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: b460d0e0c0715765
+amends:
+  - adr: "0165"
+    what: 사용자 타입은 실험에 안 들어감
+  - adr: "0156"
+    what: 모르는 것은 보고
+  - adr: "0157"
+    what: 모르는 것은 보고
 ---
 # ADR-0168 실험용 복사본은 운영 세계와 같은 의미로 움직인다 — 전파 엔진은 하나이고, 모든 타입이 실험에 들어간다
 

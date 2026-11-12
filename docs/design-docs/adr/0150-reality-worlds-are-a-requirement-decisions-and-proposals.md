@@ -8,6 +8,16 @@ enforced_by:
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: b4605bdf5e0483db
+amends:
+  - adr: "0084"
+    what: 현실 가져오기를 지움
+amended_by:
+  - adr: "0151"
+    what: 계속 동기화는 범위 밖
+  - adr: "0152"
+    what: 같은 것 알아보기는 둘째 걸음
+  - adr: "0153"
+    what: 평면 둘·고가용성은 제안
 ---
 # ADR-0150 현실 데이터로 세계 만들기는 요구사항이고, 그 설계를 결정과 제안으로 나눈다
 

@@ -9,6 +9,14 @@ no_enforcement_reason: 일하는 방식의 결정이라 기계가 확인하지 �
 touches_protected:
   - AGENTS.md
 decision_hash: 718d3dc17208798e
+amends:
+  - adr: "0144"
+    what: 단계 A~D의 순서
+  - adr: "0167"
+    what: 객체·링크와 개체·관계를 나중에 맞춤
+amended_by:
+  - adr: "0180"
+    what: 4절의 손으로 쓴 결정 목록
 ---
 # ADR-0170 제품의 값과 원칙 여섯을 한 장에 두고, 요구사항은 그 한 장에 대 본 뒤 설계한다
 

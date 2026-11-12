@@ -15,6 +15,9 @@ amends_tests:
   - "tests/spec/campus-light.test.ts::tools and scenarios on a light-rack campus [REQ-049] [REQ-033] > %s: builds on servers that exist"
 test_change_reason: 골든 안전망의 캠퍼스 포트 불량 짝은 대기 쪽이 있는 서비스를 옮기지 않던 정답 풀이로, 훈련 세계의 공조 부족 짝은 서버가 열 보호로 꺼지던 너무 얕은 전력 캡으로 기록돼 있었다. 풀이를 고쳐 같은 짝이 더 넓은 세계에서도 100점을 받게 했고, 그 두 짝의 세계 지문 세 값만 바뀐다. 생성된 캠퍼스에서 정전 시트가 만들어지는지 보던 두 시험은, 그 시트를 이유와 함께 제공하지 않게 되었으므로 그 이유를 확인하도록 고친다(다른 두 시트는 그대로 만들어짐을 확인한다).
 decision_hash: d05ba73897d0e8c4
+amends:
+  - adr: "0172"
+    what: 정답 풀이 불변식은 골든 행렬의 다섯 세계만
 ---
 # ADR-0178 제공되는 시나리오는 제품이 만드는 모든 세계 모양에서 정답 풀이가 만점을 받는다
 
