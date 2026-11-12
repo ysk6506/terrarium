@@ -30,7 +30,7 @@ import {
   streamsOfPlan,
   volumes,
 } from "@terrarium/core/world";
-import { agent, allOf, doc, Flow, type ScenarioTemplate, SUBMIT } from "./library-kit";
+import { agent, allOf, byId, doc, Flow, type ScenarioTemplate, SUBMIT } from "./library-kit";
 import type { ActionKind, Condition, Expectation } from "./model";
 
 interface Case {
@@ -68,7 +68,6 @@ interface Plan {
 }
 
 const OWN: readonly Domain[] = ["service_os", "virtualization"];
-const byId = (a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id);
 const KIND_ORDER = ["request", "stateful", "batch"];
 const rank = (e: Entity) => KIND_ORDER.indexOf(String(e.props.serviceKind));
 const services = (index: BlueprintIndex, ids: readonly string[]): Entity[] =>
