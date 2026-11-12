@@ -6,7 +6,7 @@ Terrarium은 Apache License 2.0이에요 ([LICENSE](LICENSE)). 이 파일은 Ter
 - 이 목록은 웹·서버에서 닿을 수 있는 모든 패키지를 담아 실제 묶음보다 넓어요.
 - 소스 zip과 컨테이너 이미지에 이 파일이 들어 있어요.
 
-<!-- licenses-fingerprint: c17d3fe508fe0c26 -->
+<!-- licenses-fingerprint: 09ee56cd2e30751d -->
 
 ## 요약
 

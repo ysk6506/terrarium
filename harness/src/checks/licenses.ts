@@ -247,7 +247,7 @@ const fingerprintOf = (
 ): string =>
   createHash("sha256")
     .update(
-      JSON.stringify(
+      JSON.stringify([
         components.map((c) => [
           c.name,
           c.version,
@@ -256,7 +256,7 @@ const fingerprintOf = (
           c.notices,
         ]),
         references,
-      ),
+      ]),
     )
     .digest("hex")
     .slice(0, 16);
