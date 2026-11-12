@@ -13603,13 +13603,13 @@
   },
   "apps/server/src/http/scoring-unchanged.test.ts::=SCORE_FINGERPRINTS": {
    "kind": "support",
-   "hash": "5d4bf65a8eadc97b",
+   "hash": "3f96499d2ce6251a",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "apps/server/src/http/scoring-unchanged.test.ts::=SECRET": {
    "kind": "support",
@@ -22162,7 +22162,7 @@
   },
   "apps/server/src/runtime/platform.test.ts::forks, more runs and lineage [REQ-040] > more runs continue the seeds; repeating a seed or someone else's experiment is refused": {
    "kind": "test",
-   "hash": "1fbde31147d942bb",
+   "hash": "91fbd78adbdca439",
    "asserts": 5,
    "literals": [
     "\"0\"",
@@ -22203,14 +22203,14 @@
     "\"more runs continue the seeds; repeating a seed or someone else's experiment is refused\"",
     "\"seeds\"",
     "\"seeds\"",
-    "\"시드 2는 이미 있어요\"",
-    "\"시드 2는 이미 있어요\"",
+    "\"상황 2번은 이미 있어요\"",
+    "\"상황 2번은 이미 있어요\"",
     "\"추가\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "apps/server/src/runtime/platform.test.ts::what the server says about itself [REQ-031] [REQ-033] > <suite>": {
    "kind": "support",
@@ -22553,7 +22553,7 @@
   },
   "apps/server/src/runtime/repeats.test.ts::repeats of a seed [REQ-118] > adding a repeat gives every seed one more run; adding seeds gives them the repeats it has now": {
    "kind": "test",
-   "hash": "2fde625e65e5146c",
+   "hash": "216fcd33ba1c3496",
    "asserts": 6,
    "literals": [
     "\"1\"",
@@ -22617,13 +22617,13 @@
     "\"seeds\"",
     "\"seeds\"",
     "\"더하기\"",
-    "\"시드 1는 이미 있어요\"",
-    "\"시드 1는 이미 있어요\""
+    "\"상황 1번은 이미 있어요\"",
+    "\"상황 1번은 이미 있어요\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "apps/server/src/runtime/repeats.test.ts::repeats of a seed [REQ-118] > an experiment makes its runs a round at a time, and says how it was made": {
    "kind": "test",
@@ -37269,7 +37269,7 @@
   },
   "apps/web/src/logic/editor-units.test.ts::durations are minutes wherever people read them [REQ-071] > canvas summaries and dry-run lines say minutes": {
    "kind": "test",
-   "hash": "13f81e2b0c31e0be",
+   "hash": "77d133dfc6d9aae5",
    "asserts": 4,
    "literals": [
     "\"0\"",
@@ -37302,14 +37302,14 @@
     "\"wait\"",
     "\"wait\"",
     "\"wait\"",
-    "\"툴 40회, 60분 안에\"",
-    "\"툴 40회, 60분 안에\"",
+    "\"툴 40번, 60분 안에\"",
+    "\"툴 40번, 60분 안에\"",
     "true"
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-04",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "apps/web/src/logic/editor-units.test.ts::durations are minutes wherever people read them [REQ-071] > the agent's time limit and a condition wait's timeout are minutes too": {
    "kind": "test",
@@ -38364,7 +38364,7 @@
   },
   "apps/web/src/logic/editors.test.ts::the scenario canvas [REQ-034] > a template becomes nodes and wires, each node saying what it does and what is wrong with it": {
    "kind": "test",
-   "hash": "51eab2e17638a1ad",
+   "hash": "701e8895b300264b",
    "asserts": 7,
    "literals": [
     "\"1\"",
@@ -38395,8 +38395,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "apps/web/src/logic/editors.test.ts::the scenario canvas [REQ-034] > blocks are added, wired, rewired, edited and removed — unusable ones say why": {
    "kind": "test",
@@ -38610,7 +38610,7 @@
   },
   "apps/web/src/logic/editors.test.ts::the scoring sheet [REQ-034] > add, change and remove items; the total aims at 100": {
    "kind": "test",
-   "hash": "58617d20cde284cf",
+   "hash": "b55d771e2f324c7c",
    "asserts": 9,
    "literals": [
     "\"0\"",
@@ -38623,8 +38623,8 @@
     "\"100\"",
     "\"110\"",
     "\"110\"",
-    "\"20회 이하\"",
-    "\"20회 이하\"",
+    "\"20번 이하\"",
+    "\"20번 이하\"",
     "\"30분 안에\"",
     "\"30분 안에\"",
     "\"50\"",
@@ -38669,8 +38669,8 @@
     "\"재시작 (crah-1)\"",
     "\"재시작\"",
     "\"재시작\"",
-    "\"전원 끄기 1회마다 −20점\"",
-    "\"전원 끄기 1회마다 −20점\"",
+    "\"전원 끄기 1번마다 −20점\"",
+    "\"전원 끄기 1번마다 −20점\"",
     "\"채점 항목이 없으면 점수가 나오지 않아요\"",
     "\"채점 항목이 없으면 점수가 나오지 않아요\"",
     "\"합이 80점이에요. 100점이 아니어도 되지만, 100점이면 읽기 쉬워요\"",
@@ -38678,8 +38678,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-04",
-   "amended_by": "0072-editor-words-amend-tests.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "apps/web/src/logic/expected-recovery.test.ts::<import:09cfbe3f>": {
    "kind": "support",
@@ -40524,7 +40524,7 @@
   },
   "apps/web/src/logic/human-talk.test.ts::escalation and runbook compliance on a result [REQ-081] [REQ-082] > three figures: how often it asked, how long a person kept it waiting, what people did": {
    "kind": "test",
-   "hash": "accc8b5a3c837851",
+   "hash": "eeeb12c88e31d00a",
    "asserts": 4,
    "literals": [
     "\"0\"",
@@ -40535,8 +40535,8 @@
     "\"2\"",
     "\"2\"",
     "\"2\"",
-    "\"2회\"",
-    "\"2회\"",
+    "\"2번\"",
+    "\"2번\"",
     "\"3분 5초\"",
     "\"3분 5초\"",
     "\"900\"",
@@ -40548,18 +40548,18 @@
     "\"wait\"",
     "\"기다린 시간\"",
     "\"기다린 시간\"",
+    "\"넘긴 일\"",
+    "\"넘긴 일\"",
     "\"사람이 답할 때까지 기다림\"",
     "\"사람이 답할 때까지 기다림\"",
     "\"사람이 한 조치\"",
     "\"사람이 한 조치\"",
-    "\"에스컬레이션\"",
-    "\"에스컬레이션\"",
     "true"
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "apps/web/src/logic/human-talk.test.ts::the card of a run that waits [REQ-081] > <suite>": {
    "kind": "support",
@@ -42514,7 +42514,7 @@
   },
   "apps/web/src/logic/operation-text.test.ts::the operation screens word each measure by what is known of it [REQ-090] > the pace note says whether the score is official, and a run stopped by the call limit says which limit": {
    "kind": "test",
-   "hash": "54ecf3c6d7261c2e",
+   "hash": "be88851063689011",
    "asserts": 6,
    "literals": [
     "\"0\"",
@@ -42533,8 +42533,8 @@
     "\"300\"",
     "\"300\"",
     "\"300\"",
-    "\"300회 상한\"",
-    "\"300회 상한\"",
+    "\"300번 상한\"",
+    "\"300번 상한\"",
     "\"60\"",
     "\"60\"",
     "\"fast\"",
@@ -42559,12 +42559,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "apps/web/src/logic/operation-text.test.ts::the operation screens word each measure by what is known of it [REQ-090] > tokens and calls per incident appear only when the harness told them": {
    "kind": "test",
-   "hash": "cd37fab7f3416ab4",
+   "hash": "85ac84c0f95837fe",
    "asserts": 6,
    "literals": [
     "\"12,346\"",
@@ -42573,8 +42573,8 @@
     "\"2000\"",
     "\"300\"",
     "\"5\"",
-    "\"5.0회\"",
-    "\"5.0회\"",
+    "\"5.0번\"",
+    "\"5.0번\"",
     "\"5분\"",
     "\"5분\"",
     "\"tokens and calls per incident appear only when the harness told them\"",
@@ -42597,8 +42597,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "apps/web/src/logic/operation.test.ts::<import:03ce4c22>": {
    "kind": "support",
@@ -43684,7 +43684,7 @@
   },
   "apps/web/src/logic/progress-words.test.ts::how far an experiment got reads as stopped when a person stopped it [REQ-030] > a stopped experiment says what it planned beside what ended": {
    "kind": "test",
-   "hash": "76af2f5fe63d2ce5",
+   "hash": "06de6da3b9a29916",
    "asserts": 2,
    "literals": [
     "\"0\"",
@@ -43693,12 +43693,12 @@
     "\"1\"",
     "\"20\"",
     "\"20\"",
-    "\"20회 중 1회 끝\"",
-    "\"20회 중 1회 끝\"",
+    "\"20번 중 1번 끝\"",
+    "\"20번 중 1번 끝\"",
     "\"3\"",
     "\"3\"",
-    "\"3회 중 0회 끝\"",
-    "\"3회 중 0회 끝\"",
+    "\"3번 중 0번 끝\"",
+    "\"3번 중 0번 끝\"",
     "\"a stopped experiment says what it planned beside what ended\"",
     "\"cancelled\"",
     "\"cancelled\"",
@@ -43707,20 +43707,20 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "apps/web/src/logic/progress-words.test.ts::how far an experiment got reads as stopped when a person stopped it [REQ-030] > the other states say it as before": {
    "kind": "test",
-   "hash": "e5b14a1d0dab0ef8",
+   "hash": "9db97453a87002d2",
    "asserts": 3,
    "literals": [
     "\"0\"",
     "\"0\"",
     "\"0\"",
     "\"0\"",
-    "\"0/4회\"",
-    "\"0/4회\"",
+    "\"0/4번\"",
+    "\"0/4번\"",
     "\"2\"",
     "\"2\"",
     "\"20\"",
@@ -43729,16 +43729,16 @@
     "\"3\"",
     "\"3\"",
     "\"3\"",
-    "\"3/20회, 2회 실행 중\"",
-    "\"3/20회, 2회 실행 중\"",
+    "\"3/20번, 2번 실행 중\"",
+    "\"3/20번, 2번 실행 중\"",
     "\"4\"",
     "\"4\"",
     "\"5\"",
     "\"5\"",
     "\"5\"",
     "\"5\"",
-    "\"5회 끝\"",
-    "\"5회 끝\"",
+    "\"5번 끝\"",
+    "\"5번 끝\"",
     "\"completed\"",
     "\"completed\"",
     "\"queued\"",
@@ -43749,8 +43749,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "apps/web/src/logic/quick-draft.test.ts::<import:0f4d6d97>": {
    "kind": "support",
@@ -75903,6 +75903,293 @@
    "added": "2026-11-10",
    "amended_by": null
   },
+  "harness/src/checks/ui-words.test.ts::<import:0458d18f>": {
+   "kind": "support",
+   "hash": "0458d18f1a491d16",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ui-words.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ui-words.test.ts::<import:cf623878>": {
+   "kind": "support",
+   "hash": "cf623878056373da",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ui-words.test.ts::<import:e43dc2a3>": {
+   "kind": "support",
+   "hash": "e43dc2a35c678754",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ui-words.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ui-words.test.ts::=config": {
+   "kind": "support",
+   "hash": "efccfc0b2be2d161",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ui-words.test.ts::=found": {
+   "kind": "support",
+   "hash": "9f97739861c15bd0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ui-words.test.ts::the word list: old words on screen fail with the word to use [REQ-071] > %s": {
+   "kind": "test",
+   "hash": "69ef94906f466b52",
+   "asserts": 1,
+   "literals": [
+    "\"%s\"",
+    "\"1\"",
+    "\"1\"",
+    "\":\"",
+    "\":\"",
+    "\"E2E로 가려면\"",
+    "\"const a = <Field unit=\\\"회\\\" />;\"",
+    "\"const a = <p>지금 {n}회 실행 중</p>;\"",
+    "\"const a = \\\"3회 실행\\\";\"",
+    "\"const a = \\\"5번째가 아니라 5회째예요\\\";\"",
+    "\"const a = \\\"관계 종류를 골라요\\\";\"",
+    "\"const a = \\\"매핑하지 못한 라벨·관계\\\";\"",
+    "\"const a = \\\"서비스 개체에 저장돼요\\\";\"",
+    "\"const a = \\\"에스컬레이션 처리\\\";\"",
+    "\"const a = \\\"이 세계를 E2E로 가려면\\\";\"",
+    "\"const a = \\\"이미 돌린 시드예요\\\";\"",
+    "\"const a = \\\"툴 호출 횟수\\\";\"",
+    "\"const a = `$\"",
+    "\"const state = { 시드_번호: 3 };\"",
+    "\"const state = { 횟수: 3 };\"",
+    "\"{n}회 끝`;\"",
+    "\"개체\"",
+    "\"관계 종류\"",
+    "\"라벨·관계\"",
+    "\"시드\"",
+    "\"시드\"",
+    "\"에스컬레이션\"",
+    "\"회\"",
+    "\"회\"",
+    "\"회\"",
+    "\"회\"",
+    "\"회째\"",
+    "\"횟수\"",
+    "\"횟수\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ui-words.test.ts::the word list: old words on screen fail with the word to use [REQ-071] > %s#2": {
+   "kind": "test",
+   "hash": "8ef2f4d092e621da",
+   "asserts": 1,
+   "literals": [
+    "\"%s\"",
+    "\"/** 시드 in a doc comment */ export const b = 1;\"",
+    "\"const a = 3; // 3회 횟수 시드 개체 in a comment\"",
+    "\"const a = \\\"3 states\\\";\"",
+    "\"const a = \\\"3번 중 1번 합격했어요\\\";\"",
+    "\"const a = \\\"escalate 툴을 불러요\\\";\"",
+    "\"const a = \\\"객체 종류와 링크 종류\\\";\"",
+    "\"const a = \\\"관계없이 돌아가요\\\";\"",
+    "\"const a = \\\"냉방 관계가 없는 랙이에요\\\";\"",
+    "\"const a = \\\"넘긴 일 2번\\\";\"",
+    "\"const a = \\\"툴 호출 3번째\\\";\"",
+    "\"const a = \\\"회사 회색 개회 회의\\\";\"",
+    "\"import x from \\\"./시드\\\";\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ui-words.test.ts::the word list: old words on screen fail with the word to use [REQ-071] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ui-words.test.ts::the word list: old words on screen fail with the word to use [REQ-071] > a whole repo: test files are skipped, source files are not": {
+   "kind": "test",
+   "hash": "579577794cf10269",
+   "asserts": 1,
+   "literals": [
+    "\"  - {id: hoe, pattern: '(?<![가-힣])회(?![가-힣])', use: '번'}\"",
+    "\"WORD001 apps/web/src/bad.ts:1\"",
+    "\"WORD001 apps/web/src/bad.ts:1\"",
+    "\"\\n\"",
+    "\"a whole repo: test files are skipped, source files are not\"",
+    "\"apps/web/src/bad.test.ts\"",
+    "\"apps/web/src/bad.ts\"",
+    "\"apps/web/src/ok.ts\"",
+    "\"export const a = \\\"3번\\\";\\n\"",
+    "\"export const a = \\\"3회\\\";\\n\"",
+    "\"export const a = \\\"3회\\\";\\n\"",
+    "\"harness/config/ui-words.yaml\"",
+    "\"rules:\"",
+    "\"scan_dirs: [apps/web/src]\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ui-words.test.ts::the word list: old words on screen fail with the word to use [REQ-071] > an exception holds for its phrase in its path, and nowhere else": {
+   "kind": "test",
+   "hash": "084afeb8798abc0e",
+   "asserts": 5,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"a.ts\"",
+    "\"a.ts\"",
+    "\"a.ts\"",
+    "\"a.ts\"",
+    "\"an exception holds for its phrase in its path, and nowhere else\"",
+    "\"apps/web/src/legacy/**\"",
+    "\"apps/web/src/legacy/a.ts\"",
+    "\"apps/web/src/legacy/a.ts\"",
+    "\"apps/web/src/moss/**\"",
+    "\"apps/web/src/moss/r.ts\"",
+    "\"apps/web/src/moss/r.ts\"",
+    "\"apps/web/src/ui/r.ts\"",
+    "\"apps/web/src/ui/r.ts\"",
+    "\"const a = [\\\"횟수\\\"];\"",
+    "\"const a = \\\"돌릴 횟수\\\";\"",
+    "\"const a = \\\"돌릴 횟수\\\";\"",
+    "\"const a = \\\"툴 호출 횟수\\\";\"",
+    "\"const a = \\\"툴 호출 횟수\\\";\"",
+    "\"r\"",
+    "\"r\"",
+    "\"t\"",
+    "\"typed input\"",
+    "\"돌릴 횟수\"",
+    "\"몇 번\"",
+    "\"횟수\"",
+    "\"횟수\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ui-words.test.ts::the word list: old words on screen fail with the word to use [REQ-071] > it names the line, the found word and the word to use": {
+   "kind": "test",
+   "hash": "6adaf10c0204dcd8",
+   "asserts": 3,
+   "literals": [
+    "\"2\"",
+    "\"2\"",
+    "\"WORD001\"",
+    "\"WORD001\"",
+    "\"\\\"번\\\"\"",
+    "\"\\\"번\\\"\"",
+    "\"\\\"회\\\"\"",
+    "\"\\\"회\\\"\"",
+    "\"apps/web/src/a.ts\"",
+    "\"apps/web/src/a.ts\"",
+    "\"apps/web/src/a.ts\"",
+    "\"const a = 1;\\nconst b = \\\"3회\\\";\\n\"",
+    "\"it names the line, the found word and the word to use\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ui-words.test.ts::the word list: old words on screen fail with the word to use [REQ-071] > only text a person can read is scanned: comments, imports and English strings are not": {
+   "kind": "test",
+   "hash": "2659406e322886fb",
+   "asserts": 1,
+   "literals": [
+    "\"// 3회\\nimport a from \\\"./횟수\\\";\\nconst x = \\\"plain\\\";\\nconst y = \\\"한 번\\\";\\nconst z = <b>글자</b>;\\n\"",
+    "\"a.tsx\"",
+    "\"only text a person can read is scanned: comments, imports and English strings are not\"",
+    "\"글자\"",
+    "\"글자\"",
+    "\"한 번\"",
+    "\"한 번\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ui-words.test.ts::the word list: old words on screen fail with the word to use [REQ-071] > the word list is checked too: a bad pattern, no word to use, an exception without a reason": {
+   "kind": "test",
+   "hash": "74d7cb3083b4956a",
+   "asserts": 2,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"(\"",
+    "\"WORD002\"",
+    "\"WORD002\"",
+    "\"WORD002\"",
+    "\"WORD002\"",
+    "\"WORD002\"",
+    "\"WORD002\"",
+    "\"a\"",
+    "\"apps/web/src\"",
+    "\"b\"",
+    "\"b\"",
+    "\"c\"",
+    "\"c\"",
+    "\"c\"",
+    "\"the word list is checked too: a bad pattern, no word to use, an exception without a reason\"",
+    "\"x\"",
+    "\"x\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "harness/src/ci/shard-sum-main.test.ts::<import:30102eeb>": {
    "kind": "support",
    "hash": "30102eeb700389a0",
@@ -76341,7 +76628,7 @@
   },
   "harness/src/common.test.ts::check entry points [REQ-024] > run-all runs every check and prints a verdict": {
    "kind": "test",
-   "hash": "8959c2f4bb196219",
+   "hash": "144f0bcb33556c3c",
    "asserts": 4,
    "literals": [
     "\"\"",
@@ -76378,14 +76665,16 @@
     "\"test-integrity\"",
     "\"traceability\"",
     "\"traceability\"",
+    "\"ui-words\"",
+    "\"ui-words\"",
     "false",
     "false",
     "true"
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0148-no-silent-ignores-and-quality-grades.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "harness/src/common.test.ts::check entry points [REQ-024] > traceability and protected CLIs return 0 or 1": {
    "kind": "test",
@@ -81548,7 +81837,7 @@
   },
   "packages/core/src/analysis/share.test.ts::diagnosis records and the modelling brief [REQ-015] > the brief hands the simulator developer where the world is thin": {
    "kind": "test",
-   "hash": "ff34207cdb8e6cc3",
+   "hash": "a1f51c295c3a1ba7",
    "asserts": 9,
    "literals": [
     "\"# 시뮬레이터 모델링 브리프\\n\"",
@@ -81561,8 +81850,8 @@
     "\"'평택 P2 가져오기'를 가져올 때 매핑하지 못한 것: Chiller, FEEDS_WATER\"",
     "\"- 가정: 랙 높이를 42U로 가정했어요\"",
     "\"- 가정: 랙 높이를 42U로 가정했어요\"",
-    "\"- 매핑하지 못한 라벨·관계: Chiller 4개, FEEDS_WATER 9개\"",
-    "\"- 매핑하지 못한 라벨·관계: Chiller 4개, FEEDS_WATER 9개\"",
+    "\"- 매핑하지 못한 라벨·링크: Chiller 4개, FEEDS_WATER 9개\"",
+    "\"- 매핑하지 못한 라벨·링크: Chiller 4개, FEEDS_WATER 9개\"",
     "\"- 실행 4번 (진단 요구 4번), 실험 2개, 에이전트 2종\"",
     "\"- 실행 4번 (진단 요구 4번), 실험 2개, 에이전트 2종\"",
     "\"2026-10-29\"",
@@ -81584,8 +81873,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "packages/core/src/analysis/share.test.ts::diagnosis records and the modelling brief [REQ-015] > tool errors group by the shape of the message, not the ids in it": {
    "kind": "test",
@@ -81745,7 +82034,7 @@
   },
   "packages/core/src/analysis/share.test.ts::sharing results as text, Markdown and HTML [REQ-038] > Markdown: tables survive names and summaries with pipes in them": {
    "kind": "test",
-   "hash": "173dd2c11c0a9397",
+   "hash": "5f77565004c236dd",
    "asserts": 8,
    "literals": [
     "\"# 실험 e1\\n\"",
@@ -81765,8 +82054,8 @@
     "\"[테라리움에서 보기](https://terrarium.example/e/e1)\"",
     "\"\\n\"",
     "\"https://terrarium.example/e/e1\"",
-    "\"| # | 시드 | 상태 | 점수 | 판정 | 종료 | 진단 | 툴 호출 | 진단까지 |\"",
-    "\"| # | 시드 | 상태 | 점수 | 판정 | 종료 | 진단 | 툴 호출 | 진단까지 |\"",
+    "\"| # | 상황 | 상태 | 점수 | 판정 | 종료 | 진단 | 툴 호출 | 진단까지 |\"",
+    "\"| # | 상황 | 상태 | 점수 | 판정 | 종료 | 진단 | 툴 호출 | 진단까지 |\"",
     "\"| 90.9 | 합격 | 진단 제출 | 정답 |\"",
     "\"| 90.9 | 합격 | 진단 제출 | 정답 |\"",
     "\"| 실패 | — | 불합격 | — | 미제출 |\"",
@@ -81780,8 +82069,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-04",
-   "amended_by": "0076-operation-scoring-amend-tests.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "packages/core/src/analysis/share.test.ts::sharing results as text, Markdown and HTML [REQ-038] > text to paste: what ran, the key numbers, findings and the link": {
    "kind": "test",
@@ -82701,7 +82990,7 @@
   },
   "packages/core/src/contract/contract.test.ts::experiments: create, fork, add runs [REQ-030] [REQ-040] > a fork changes only what it names; adding runs says how many or which seeds": {
    "kind": "test",
-   "hash": "737ead5499b3dad5",
+   "hash": "080f97813c8e953c",
    "asserts": 5,
    "literals": [
     "\"2\"",
@@ -82717,10 +83006,10 @@
     "\"deep\"",
     "\"me\"",
     "\"me\"",
-    "\"더할 실행 횟수, 시드, 반복 중 하나를 정해요\"",
-    "\"더할 실행 횟수, 시드, 반복 중 하나를 정해요\"",
-    "\"더할 실행 횟수, 시드, 반복 중 하나를 정해요\"",
-    "\"더할 실행 횟수, 시드, 반복 중 하나를 정해요\"",
+    "\"더할 상황 수, 상황 번호, 몇 번씩 중 하나를 정해요\"",
+    "\"더할 상황 수, 상황 번호, 몇 번씩 중 하나를 정해요\"",
+    "\"더할 상황 수, 상황 번호, 몇 번씩 중 하나를 정해요\"",
+    "\"더할 상황 수, 상황 번호, 몇 번씩 중 하나를 정해요\"",
     "true",
     "true",
     "true",
@@ -82728,12 +83017,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0158-repeats-per-seed-and-seed-level-statistics.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "packages/core/src/contract/contract.test.ts::experiments: create, fork, add runs [REQ-030] [REQ-040] > a recipe takes seeds or a run count, not both; seeds are unique": {
    "kind": "test",
-   "hash": "3b190d6818439867",
+   "hash": "fd2013672ffdc72d",
    "asserts": 6,
    "literals": [
     "\" 첫 실험 \"",
@@ -82753,10 +83042,10 @@
     "\"a recipe takes seeds or a run count, not both; seeds are unique\"",
     "\"name: 비어 있으면 안 돼요\"",
     "\"name: 비어 있으면 안 돼요\"",
-    "\"recipe.runs: 시드 목록과 실행 횟수 중 하나만 정해요\"",
-    "\"recipe.runs: 시드 목록과 실행 횟수 중 하나만 정해요\"",
-    "\"recipe.seeds: 같은 시드가 두 번 있어요\"",
-    "\"recipe.seeds: 같은 시드가 두 번 있어요\"",
+    "\"recipe.runs: 상황 번호 목록과 상황 수 중 하나만 정해요\"",
+    "\"recipe.runs: 상황 번호 목록과 상황 수 중 하나만 정해요\"",
+    "\"recipe.seeds: 같은 상황이 두 번 있어요\"",
+    "\"recipe.seeds: 같은 상황이 두 번 있어요\"",
     "\"recipe.time.kind: 종류는 'lockstep', 'realtime' 중 하나여야 해요\"",
     "\"recipe.time.kind: 종류는 'lockstep', 'realtime' 중 하나여야 해요\"",
     "\"recipe.tools: 1개 이상이어야 해요\"",
@@ -82778,8 +83067,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "packages/core/src/contract/contract.test.ts::experiments: create, fork, add runs [REQ-030] [REQ-040] > query strings: numbers are read from text and blanks mean 'not given'": {
    "kind": "test",
@@ -85184,7 +85473,7 @@
   },
   "packages/core/src/experiments/experiments.test.ts::recipes [REQ-030] [REQ-031] > a sound recipe has no problems; every problem is named in Korean": {
    "kind": "test",
-   "hash": "f0b943bd58b1bacc",
+   "hash": "8eb29b15b1096505",
    "asserts": 6,
    "literals": [
     "\"\"",
@@ -85226,18 +85515,18 @@
     "\"vrops/1\"",
     "\"warp\"",
     "\"warp\"",
-    "\"같은 시드가 두 번 들어 있어요\"",
-    "\"같은 시드가 두 번 들어 있어요\"",
+    "\"같은 상황이 두 번 들어 있어요\"",
+    "\"같은 상황이 두 번 들어 있어요\"",
     "\"같은 툴이 두 번 들어 있어요\"",
     "\"같은 툴이 두 번 들어 있어요\"",
+    "\"상황 번호는 0 이상의 정수여야 해요\"",
+    "\"상황 번호는 0 이상의 정수여야 해요\"",
     "\"상황은 한 실험에 20개까지예요 (지금 21개)\"",
     "\"상황은 한 실험에 20개까지예요 (지금 21개)\"",
+    "\"상황을 하나 이상 정해야 해요\"",
+    "\"상황을 하나 이상 정해야 해요\"",
     "\"시간 배속은 0보다 크고 100 이하여야 해요\"",
     "\"시간 배속은 0보다 크고 100 이하여야 해요\"",
-    "\"시드는 0 이상의 정수여야 해요\"",
-    "\"시드는 0 이상의 정수여야 해요\"",
-    "\"시드를 하나 이상 정해야 해요\"",
-    "\"시드를 하나 이상 정해야 해요\"",
     "\"알 수 없는 vCenter 버전 'vcenter/9.9'\"",
     "\"알 수 없는 vCenter 버전 'vcenter/9.9'\"",
     "\"알 수 없는 vROps 버전 'vrops/1'\"",
@@ -85259,8 +85548,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0158-repeats-per-seed-and-seed-level-statistics.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "packages/core/src/experiments/experiments.test.ts::recipes [REQ-030] [REQ-031] > the benchmark key ignores what is compared and follows what changes the task": {
    "kind": "test",
@@ -87869,7 +88158,7 @@
   },
   "packages/core/src/oracle/end-label.test.ts::how an operation says it ended [REQ-090] > the hours used up, a person's stop and the call limit are told in an operation's own words": {
    "kind": "test",
-   "hash": "5760d53e9bff74ed",
+   "hash": "86225bae5ee34950",
    "asserts": 4,
    "literals": [
     "\"1\"",
@@ -87889,15 +88178,15 @@
     "\"멈춤(사람)\"",
     "\"운영 시간 끝(8시간)\"",
     "\"운영 시간 끝(8시간)\"",
-    "\"호출 상한(120회)\"",
-    "\"호출 상한(120회)\"",
-    "\"호출 상한(5,000회)\"",
-    "\"호출 상한(5,000회)\""
+    "\"호출 상한(120번)\"",
+    "\"호출 상한(120번)\"",
+    "\"호출 상한(5,000번)\"",
+    "\"호출 상한(5,000번)\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "packages/core/src/oracle/oracle.test.ts::<import:2ecae18c>": {
    "kind": "support",
@@ -88264,7 +88553,7 @@
   },
   "packages/core/src/oracle/oracle.test.ts::oracle: state, actions and efficiency [REQ-007] [REQ-037] > required and forbidden actions are judged by effect, whichever tool caused them": {
    "kind": "test",
-   "hash": "155bf8c6679661b4",
+   "hash": "810d3ccafde0689c",
    "asserts": 7,
    "literals": [
     "\"0\"",
@@ -88283,8 +88572,8 @@
     "\"20\"",
     "\"20\"",
     "\"20\"",
-    "\"2회 했어요 (−30점)\"",
-    "\"2회 했어요 (−30점)\"",
+    "\"2번 했어요 (−30점)\"",
+    "\"2번 했어요 (−30점)\"",
     "\"30\"",
     "\"30\"",
     "\"30\"",
@@ -88349,12 +88638,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "packages/core/src/oracle/oracle.test.ts::oracle: state, actions and efficiency [REQ-007] [REQ-037] > time and tool budget count only when a diagnosis was submitted": {
    "kind": "test",
-   "hash": "3a71bdc8fcb652bf",
+   "hash": "f259c8f1244174ff",
    "asserts": 5,
    "literals": [
     "\"0\"",
@@ -88394,15 +88683,15 @@
     "\"진단까지 8분 20초 (제한 10분)\"",
     "\"진단을 제출하지 않아 시간 점수가 없어요\"",
     "\"진단을 제출하지 않아 시간 점수가 없어요\"",
-    "\"진단을 제출하지 않아 효율 점수가 없어요 (툴 호출 0회)\"",
-    "\"진단을 제출하지 않아 효율 점수가 없어요 (툴 호출 0회)\"",
-    "\"툴 호출 3회 (상한 3회)\"",
-    "\"툴 호출 3회 (상한 3회)\""
+    "\"진단을 제출하지 않아 효율 점수가 없어요 (툴 호출 0번)\"",
+    "\"진단을 제출하지 않아 효율 점수가 없어요 (툴 호출 0번)\"",
+    "\"툴 호출 3번 (상한 3번)\"",
+    "\"툴 호출 3번 (상한 3번)\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-04",
-   "amended_by": "0073-app-words-amend-tests.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "packages/core/src/oracle/recovery-cluster.test.ts::<import:50862f67>": {
    "kind": "support",
@@ -109334,7 +109623,7 @@
   },
   "packages/core/src/sources/worldgen/worldgen.test.ts::worldgen limits [REQ-009] > a spec outside the limits is refused with every reason in Korean": {
    "kind": "test",
-   "hash": "1010f9a320fc8a47",
+   "hash": "8f4f28956634c33f",
    "asserts": 2,
    "literals": [
     "\"0\"",
@@ -109346,12 +109635,12 @@
     "\"seoul\"",
     "\"건물 수: 1~4 사이의 정수여야 해요 (지금 0)\"",
     "\"건물 수: 1~4 사이의 정수여야 해요 (지금 0)\"",
+    "\"다시 만들기 번호는 정수여야 해요\"",
+    "\"다시 만들기 번호는 정수여야 해요\"",
     "\"랙 채움 비율: 0.1~0.9 사이여야 해요 (지금 2)\"",
     "\"랙 채움 비율: 0.1~0.9 사이여야 해요 (지금 2)\"",
     "\"서버룸당 랙 줄: 1~12 사이의 정수여야 해요 (지금 1.5)\"",
     "\"서버룸당 랙 줄: 1~12 사이의 정수여야 해요 (지금 1.5)\"",
-    "\"시드는 정수여야 해요\"",
-    "\"시드는 정수여야 해요\"",
     "\"알 수 없는 사업장 'seoul'\"",
     "\"알 수 없는 사업장 'seoul'\"",
     "\"컨테인먼트: 알 수 없는 값 'glass'\"",
@@ -109359,8 +109648,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "packages/core/src/sources/worldgen/worldgen.test.ts::worldgen limits [REQ-009] > worlds are capped in size": {
    "kind": "test",
@@ -149434,13 +149723,13 @@
   },
   "tests/spec/golden-scenario-campus.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "a5ad101b9fe111da",
+   "hash": "393d9adda6154f1f",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0178-offered-scenario-solved-on-every-world-shape.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "tests/spec/golden-scenario-campus.test.ts::the reference solution gives the recorded score and world on campus [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",
@@ -149552,13 +149841,13 @@
   },
   "tests/spec/golden-scenario-fabric.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "1b7931fd7faee580",
+   "hash": "91b36bc1288d9058",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0172-offered-scenario-means-reference-solution-reaches-full-score.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "tests/spec/golden-scenario-fabric.test.ts::the reference solution gives the recorded score and world on fabric [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",
@@ -149617,13 +149906,13 @@
   },
   "tests/spec/golden-scenario-iap.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "0c121b62246fe2af",
+   "hash": "f6f8928faf943895",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0172-offered-scenario-means-reference-solution-reaches-full-score.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "tests/spec/golden-scenario-iap.test.ts::the reference solution gives the recorded score and world on iap [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",
@@ -149682,13 +149971,13 @@
   },
   "tests/spec/golden-scenario-sdn.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "0455475b5fc89fba",
+   "hash": "997a85abba6a6873",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0172-offered-scenario-means-reference-solution-reaches-full-score.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "tests/spec/golden-scenario-sdn.test.ts::the reference solution gives the recorded score and world on sdn [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",
@@ -149747,13 +150036,13 @@
   },
   "tests/spec/golden-scenario-train.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "955edc1786ac9829",
+   "hash": "539eba709e3b3627",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0178-offered-scenario-solved-on-every-world-shape.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "tests/spec/golden-scenario-train.test.ts::the reference solution gives the recorded score and world on train [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",

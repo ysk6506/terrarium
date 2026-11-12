@@ -5,13 +5,13 @@ status: active
 last_verified: 2026-11-12
 covers:
   - harness/src/run-all.ts
-covers_hash: ab26b5426386b29f
+covers_hash: e7cfa03761796168
 verification_log:
-  - "2026-11-11: CI 한 문단에 가벼운 경로(changes, docs-tests, gate의 기대 결과)를 더함 (ADR-0173)"
-  - "2026-11-11: decisions, link-amends, audit-queue 명령을 명령 목록에 더함 (ADR-0180)"
   - "2026-11-11: run-all이 문서 검사 안에서 결정 관련 검사와 알림(DOC090~DOC098)도 돌리게 된 것을 명령 목록에 맞춤 (ADR-0180)"
+  - "2026-11-12: ADR-0183: 따라가는 용어집의 새 절(한 가지 말, 조건의 뜻)을 읽고, 이 문서에 옛 말(회·횟수·시드·개체·에스컬레이션)이 없음을 확인했다"
   - "2026-11-12: 제3자 라이선스 검사 행과 licenses.ts write 명령, LIC001~LIC004를 더함 (ADR-0185)"
   - "2026-11-12: run-all.ts은 라이선스 검사를 architecture 검사 안에서 돌리도록 한 곳만 바뀜. 표와 명령은 그대로 맞다 (ADR-0185)"
+  - "2026-11-12: main 합침: 용어집 확인(ADR-0183)과 라이선스 행·명령(ADR-0185)이 함께 있다. 이 문서에 옛 말 없음"
 verified_body: c53cc372467fc329
 unchanged_reverifies: 1
 ---

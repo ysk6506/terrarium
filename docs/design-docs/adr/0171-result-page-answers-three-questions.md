@@ -16,6 +16,9 @@ touches_protected:
 amends_tests: []
 test_change_reason: ""
 decision_hash: ca2509ade9902c2b
+amended_by:
+  - adr: "0183"
+    what: 목록과 홈은 아직 회라는 말(5번)
 ---
 # ADR-0171 실험 결과의 첫 화면은 세 물음에 답하고, 나머지는 탭 뒤로 간다
 

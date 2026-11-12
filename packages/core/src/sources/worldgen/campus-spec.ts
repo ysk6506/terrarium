@@ -151,7 +151,7 @@ export function campusProblems(spec: CampusSpec): string[] {
   if (spec.buildings + spec.fabs + spec.labs < 1)
     out.push("건물이 하나도 없어요. 데이터센터나 팹을 하나 이상 둬요");
   if (!sitePreset(spec.site)) out.push(`알 수 없는 사업장 '${spec.site}'`);
-  if (!Number.isInteger(spec.seed)) out.push("시드는 정수여야 해요");
+  if (!Number.isInteger(spec.seed)) out.push("다시 만들기 번호는 정수여야 해요");
   out.push(...numberProblems(spec));
   for (const key of Object.keys(CHOICES) as Array<keyof typeof CHOICES>)
     if (!(CHOICES[key] as readonly string[]).includes(spec[key]))

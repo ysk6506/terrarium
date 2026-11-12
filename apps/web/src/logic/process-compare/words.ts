@@ -74,7 +74,7 @@ export function clock(seconds: number): string {
 }
 
 export const ONTOLOGY_WORDS = {
-  title: "이 세계를 E2E로 가려면",
+  title: "이 세계에 필요한 액션",
   sub: (scenarios: number) =>
     `왼쪽은 이 세계의 시나리오 ${scenarios}개를 풀려면 어떤 액션이 있어야 하는지(시나리오 정의에서 뽑음), 오른쪽은 고른 실험에서 그 액션을 실제로 누가 했는지예요.`,
   needs: "필요한 것",

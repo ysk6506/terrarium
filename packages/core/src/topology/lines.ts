@@ -80,7 +80,7 @@ const READERS: Readonly<Record<string, Reader>> = {
   db_cluster: (s) => {
     if (s.kind !== "db_cluster") return undefined;
     if (s.splitBrain) return "스플릿 브레인";
-    return s.primary ? `승격 ${s.failovers}회` : "프라이머리가 없어요";
+    return s.primary ? `승격 ${s.failovers}번` : "프라이머리가 없어요";
   },
   db_instance: (s) => {
     if (s.kind !== "db_instance") return undefined;

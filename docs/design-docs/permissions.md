@@ -2,15 +2,18 @@
 title: 권한 — 누구인지, 무엇을 보고 바꾸는지, 누가 무엇을 했는지
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 verification_log:
   - "2026-11-11: 처음 씀 (ADR-0174). http/identity.ts, http/viewer.ts, runtime/context.ts의 ownerOnly, contract/routes.ts와 대조한 현황 조사를 바탕으로"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-11: self-declared admin: token, else loopback socket address only; proxy mode unchanged"
+  - "2026-11-12: ADR-0183: 따라가는 용어집의 새 절(한 가지 말, 조건의 뜻)을 읽고, 이 문서에 옛 말(회·횟수·시드·개체·에스컬레이션)이 없음을 확인했다"
 follows:
   - docs/design-docs/http-api.md
   - docs/design-docs/operations.md
-follows_hash: 0fefa952fcf49c0f
+follows_hash: d4b658eefbdfb824
+verified_body: 98334152a7797862
+unchanged_reverifies: 0
 ---
 # 권한 (클로즈 베타 1차, ADR-0174)
 

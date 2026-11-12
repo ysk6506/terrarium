@@ -169,7 +169,7 @@ function choiceProblems(spec: WorldgenSpec): string[] {
 export function specProblems(spec: WorldgenSpec): string[] {
   const out: string[] = [];
   if (!sitePreset(spec.site)) out.push(`알 수 없는 사업장 '${spec.site}'`);
-  if (!Number.isInteger(spec.seed)) out.push("시드는 정수여야 해요");
+  if (!Number.isInteger(spec.seed)) out.push("다시 만들기 번호는 정수여야 해요");
   for (const field of WORLDGEN_FIELDS) {
     const problem = fieldProblem(field, spec[field.key]);
     if (problem) out.push(problem);

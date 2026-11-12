@@ -69,10 +69,11 @@ export function sizeProblemsOf(seeds: number, repeats: number): string[] {
 
 function seedProblems(recipe: Pick<Recipe, "seeds" | "repeats">): string[] {
   const { seeds } = recipe;
-  if (seeds.length === 0) return ["시드를 하나 이상 정해야 해요"];
+  if (seeds.length === 0) return ["상황을 하나 이상 정해야 해요"];
   const out = sizeProblems(recipe);
-  if (seeds.some((s) => !Number.isInteger(s) || s < 0)) out.push("시드는 0 이상의 정수여야 해요");
-  if (new Set(seeds).size !== seeds.length) out.push("같은 시드가 두 번 들어 있어요");
+  if (seeds.some((s) => !Number.isInteger(s) || s < 0))
+    out.push("상황 번호는 0 이상의 정수여야 해요");
+  if (new Set(seeds).size !== seeds.length) out.push("같은 상황이 두 번 들어 있어요");
   return out;
 }
 
@@ -90,7 +91,7 @@ function humanProblems(recipe: Recipe): string[] {
   const out: string[] = [];
   const mode = recipe.escalation?.mode;
   if (mode !== undefined && !["wait", "auto", "fail"].includes(mode))
-    out.push(`알 수 없는 에스컬레이션 처리 '${mode}'`);
+    out.push(`알 수 없는 넘기기 처리 '${mode}'`);
   if ((recipe.escalation?.reply ?? "").length > MAX_REPLY)
     out.push(`정해 둔 답은 ${MAX_REPLY}자까지 쓸 수 있어요`);
   if (recipe.faultScope !== undefined && !["inside", "all"].includes(recipe.faultScope))

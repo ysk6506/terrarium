@@ -88,7 +88,7 @@ const SUMMARIES: Readonly<Record<string, (n: ScenarioNode, index?: BlueprintInde
   outlet_set: (n, index) =>
     `${nameOf(index, n.params.target)} ${String(n.params.outlet ?? "?")}번 콘센트를 ${n.params.on === true ? "켜요" : "꺼요"}`,
   agent_task: (n) =>
-    `툴 ${String(n.params.maxToolCalls ?? "?")}회, ${minutesText(Number(n.params.timeLimitSeconds ?? 0))} 안에`,
+    `툴 ${String(n.params.maxToolCalls ?? "?")}번, ${minutesText(Number(n.params.timeLimitSeconds ?? 0))} 안에`,
 };
 
 export function summaryOf(node: ScenarioNode, index?: BlueprintIndex): string {

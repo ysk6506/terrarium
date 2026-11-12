@@ -25,7 +25,7 @@ export function runState(view: RunView) {
     화면: "실행 결과",
     실행: {
       번호: run.index + 1,
-      시드: run.seed,
+      상황_번호: run.seed,
       반복: run.repeat,
       상태: run.status,
       끝난_이유: analysis.endLabel ?? analysis.endReason ?? null,
@@ -43,9 +43,9 @@ export function runState(view: RunView) {
     채점_요약: result?.score.summary ?? null,
     알아낸_것: analysis.findings,
     효율: {
-      조사_호출: `${analysis.efficiency.investigationCalls}회`,
-      실패한_호출: `${analysis.efficiency.failedCalls}회`,
-      같은_호출_반복: `${analysis.behaviour.repeated}회`,
+      조사_호출: `${analysis.efficiency.investigationCalls}번`,
+      실패한_호출: `${analysis.efficiency.failedCalls}번`,
+      같은_호출_반복: `${analysis.behaviour.repeated}번`,
     },
     사건_기록: view.timeline.slice(0, EVENTS).map((t) => `${simTime(t.t)} ${t.text}`),
     사건_기록_전체: view.timeline.length,
@@ -59,7 +59,7 @@ const runLine = (r: ExperimentSummary) => ({
   진행:
     r.status === "cancelled"
       ? stoppedWords(r.progress)
-      : `${r.progress.finished}/${r.progress.total}회`,
+      : `${r.progress.finished}/${r.progress.total}번`,
   합격률: r.progress.completed > 0 ? percent(r.passRate) : null,
   평균_점수: r.meanScore === undefined ? null : `${r.meanScore.toFixed(1)}점`,
 });
@@ -84,19 +84,19 @@ export function experimentState(view: ExperimentView) {
       시나리오: view.experiment.recipe.scenarioId,
       에이전트: view.experiment.recipe.agentId,
       툴: `${view.experiment.recipe.tools.length}개`,
-      횟수: `${view.experiment.recipe.seeds.length}번`,
-      시드당_반복: `${a.repeats}번`,
+      상황: `${view.experiment.recipe.seeds.length}개`,
+      상황마다_몇_번씩: `${a.repeats}번`,
     },
     평균_점수: a.score
-      ? `${a.score.mean.toFixed(1)}점 (오차 ±${a.score.ci95.toFixed(1)}, 시드 ${a.score.n}개)`
+      ? `${a.score.mean.toFixed(1)}점 (오차 ±${a.score.ci95.toFixed(1)}, 상황 ${a.score.n}개)`
       : null,
-    같은_조건의_흔들림: a.withinSeed ? `±${a.withinSeed.spread.toFixed(1)}점` : null,
-    결과가_갈린_시드: `${a.seeds}개 중 ${a.splitSeeds}개`,
+    같은_상황의_흔들림: a.withinSeed ? `±${a.withinSeed.spread.toFixed(1)}점` : null,
+    결과가_갈린_상황: `${a.seeds}개 중 ${a.splitSeeds}개`,
     알아낸_것: a.findings,
     실행: view.runs.map((r) => ({
       번호: r.index + 1,
       id: r.id,
-      시드: r.seed,
+      상황_번호: r.seed,
       반복: r.repeat,
       상태: r.status,
       점수: scoreText(r.score),
@@ -212,7 +212,7 @@ export function draftState(d: experiment.Draft, names: DraftNames, remaining: re
     하네스: names.harness ?? null,
     에이전트: names.agent ?? null,
     툴: `${d.tools.length}개`,
-    횟수: `${d.runs}번`,
+    상황: `${d.runs}개`,
     아직_비어_있는_것: remaining,
   };
 }

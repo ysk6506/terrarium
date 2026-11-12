@@ -41,7 +41,7 @@ function keyNumbers(a: ExperimentAnalysis): string[] {
   const done = a.progress.completed;
   return [
     `합격 ${a.runs.filter((x) => x.passed).length}/${done} (${pct(a.passRate)}) · 평균 ${mean(a.score, "점")}`,
-    `진단 정확도 ${pct(a.diagnosisRate)} · 진단까지 ${a.timeToDiagnosis ? formatDuration(a.timeToDiagnosis.mean) : "—"} · 툴 호출 ${mean(a.calls, "회")}`,
+    `진단 정확도 ${pct(a.diagnosisRate)} · 진단까지 ${a.timeToDiagnosis ? formatDuration(a.timeToDiagnosis.mean) : "—"} · 툴 호출 ${mean(a.calls, "번")}`,
   ];
 }
 
@@ -68,7 +68,7 @@ function runRow(r: RunAnalysis): string[] {
   ];
 }
 
-const RUN_HEADERS = ["#", "시드", "상태", "점수", "판정", "종료", "진단", "툴 호출", "진단까지"];
+const RUN_HEADERS = ["#", "상황", "상태", "점수", "판정", "종료", "진단", "툴 호출", "진단까지"];
 
 export function renderMarkdown(a: ExperimentAnalysis, o: RenderOptions = {}): string {
   const out = [
@@ -201,7 +201,7 @@ export function renderHtml(a: ExperimentAnalysis, o: RenderOptions = {}): string
     ),
     tile(pct(a.diagnosisRate), "진단 정확도"),
     tile(a.timeToDiagnosis ? formatDuration(a.timeToDiagnosis.mean) : "—", "진단까지 (시뮬레이션)"),
-    tile(a.calls ? `${a.calls.mean.toFixed(1)}회` : "—", "툴 호출"),
+    tile(a.calls ? `${a.calls.mean.toFixed(1)}번` : "—", "툴 호출"),
   ].join("");
   const criteria = a.criteria
     .map(

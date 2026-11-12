@@ -3046,7 +3046,7 @@ ol.elevation li:first-child .u-slot {
   padding-right: 14px;
 }
 
-/* 툴 고르기, 에스컬레이션, 절차서 (ADR-0087). */
+/* 툴 고르기, 넘기기, 절차서 (ADR-0087). */
 .tool-need {
   border: 1px solid var(--line);
 }

@@ -2,7 +2,7 @@
 title: 프로세스 비교 — 지금 하는 방식과 에이전트가 하는 방식을 단계·사람·시간으로 견주기 (REQ-112)
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/contract/process.ts
   - packages/core/src/contract/process-routes.ts
@@ -18,13 +18,13 @@ covers:
   - apps/web/src/ui/pages/process-table.tsx
   - apps/web/src/ui/pages/process-compare.tsx
   - apps/web/src/ui/pages/process-ontology.tsx
-covers_hash: 4b1699287379225e
+covers_hash: a302d3a21bb0a2d2
 verification_log:
-  - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
   - "2026-11-11: 2026-11-11: 이끼 동작 셋을 코드와 대조해 맞음 (ADR-0141)"
   - "2026-11-11: result page split into tabs (ADR-0171); checked against covered code"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-11: merged main; result page tabs (ADR-0171) checked against covered code"
+  - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
 ---
 # 프로세스 비교 (REQ-112, [ADR-0135](adr/0135-process-compare.md))
 
@@ -85,14 +85,14 @@ verification_log:
 - 에이전트의 연속 호출을 한 줄로 접는 건 읽기 쉽게 하려는 것이고, 접힌 줄 안의 호출 수가 "툴 N번"이에요. 장부 위에 설명 한 줄이 있어요 ("에이전트의 연속 호출은 한 줄로 접었어요").
 - 숫자는 `meanNumbers`가 실행들의 평균을 내요. 대표 장부는 평균에 가장 가까운 실행(`typicalRun`)이에요.
 
-## 3. 이 세계를 E2E로 가려면 (온톨로지)
+## 3. 이 세계에 필요한 액션 (온톨로지)
 
 세계 화면(`GET /api/worlds/:id/ontology?experimentId=`)에서 시나리오의 정의가 무엇을 요구하는지 Object·Link·Action으로 보여 줘요.
 
 - **Object**: 시나리오의 고장이 건드리는 물체 종류 (서버·스위치·냉각 장치 …). `deriveNeeds`가 시나리오 문서와 세계의 청사진에서 뽑아요.
 - **Link**: 필요한 물체 종류와 이어진 관계 (전원·네트워크·냉각·스토리지 …). 양끝 가운데 한쪽이 필요한 물체면 세어요.
 - **Action**: 고장 종류마다 풀 수 있는 조치. `MISTAKE_ACTIONS`·`TASK_ACTIONS`가 고장 종류를 조치로 옮기고, 사람이 해야 하는 일은 `physical.repair` ("현장 점검·부품 교체") 하나로 모아요. **모든 고장 종류는 적어도 한 조치에 닿아요.** 시험이 이를 확인해요.
-- **쓴 것**: 고른 실험들의 실행이 실제로 부른 툴·넘긴 도메인·사람에게 물은 횟수를 `deriveUse`가 세요. "에이전트 2 · 승인 뒤 0 · 물리 1" 같은 줄이 돼요.
+- **쓴 것**: 고른 실험들의 실행이 실제로 부른 툴·넘긴 도메인·사람에게 물은 일을 `deriveUse`가 세요. "에이전트 2 · 승인 뒤 0 · 물리 1" 같은 줄이 돼요.
 
 실험을 고르지 않으면 "필요한 것"만 나와요.
 
@@ -100,11 +100,11 @@ verification_log:
 
 세계 요구 카드의 "Object · Link · Action 표로 내보내기"는 서버를 거치지 않고 브라우저에서 만들어요 (`logic/process-compare/export.ts`).
 
-- 한 줄이 Object·Link·Action 하나예요. 칸은 `type·id·name·count·targets·faults·doer`예요. 실험을 골랐으면 Action의 `count`(쓴 횟수)와 `doer`(가장 많이 한 쪽)가 차요.
+- 한 줄이 Object·Link·Action 하나예요. 칸은 `type·id·name·count·targets·faults·doer`예요. 실험을 골랐으면 Action의 `count`(몇 번 했는지)와 `doer`(가장 많이 한 쪽)가 차요.
 - **CSV**: 엑셀에서 한글이 깨지지 않게 BOM을 붙이고, `=`·`+`·`-`·`@`로 시작하는 글은 수식으로 읽히지 않게 막아요.
 - **JSON**: `{ world, objects, links, actions }`예요.
 - 파일 이름은 `<세계 이름>-ontology.csv`예요. 한글 이름은 그대로 쓰고, 글자·숫자·`_`·`-`가 아닌 것(공백, `/ \ : * ? " < > |`, 제어 문자)은 `-`로 바꿔요. 이름이 비면 `world`예요 (`fileName`).
-- 실험을 안 골랐으면 쓴 횟수는 빈칸이에요 (0으로 채우지 않아요).
+- 실험을 안 골랐으면 몇 번 했는지는 빈칸이에요 (0으로 채우지 않아요).
 - 전후 비교의 숫자는 화면에서 보고, 내보내는 건 세계 요구 표예요.
 
 ## 5. 이끼 (REQ-092 연결)

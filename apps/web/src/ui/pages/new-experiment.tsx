@@ -125,7 +125,7 @@ function RunLine({ draft }: { readonly draft: Draft }) {
     <p className="small">
       {draft.repeats > 1
         ? `실행 ${experiment.runCount(draft)}번 (상황 ${draft.runs}개 × ${draft.repeats}번씩)`
-        : `${draft.runs}회 실행`}
+        : `실행 ${draft.runs}번`}
       . 툴 {experiment.countTools(draft)}개
       {draft.operation
         ? `, ${operationWords.paceNote(draft.operation)}`
@@ -158,7 +158,7 @@ function QueueNote({
   if (!queue || (queue.running === 0 && queue.queued === 0)) return null;
   return (
     <p className="tiny muted">
-      지금 {queue.running}회 실행 중, {queue.queued}회 대기. 사람마다 공평하게 차례가 돌아가요.
+      지금 {queue.running}번 실행 중, {queue.queued}번 대기. 사람마다 공평하게 차례가 돌아가요.
     </p>
   );
 }

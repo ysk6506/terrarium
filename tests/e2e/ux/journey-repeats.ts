@@ -24,8 +24,8 @@ export async function repeatsInTheForm(c: Context): Promise<void> {
   await page.getByRole("button", { name: "3번", exact: true }).waitFor({ timeout: 10 * SECOND });
   await expectText(page, "같은 상황을 몇 번씩 돌릴까요", "실험 만들기");
   const first = await bar(page).innerText();
-  if (!first.includes("5회 실행"))
-    throw new Error(`요약 막대가 5회 실행을 말하지 않는다: ${first}`);
+  if (!first.includes("실행 5번"))
+    throw new Error(`요약 막대가 실행 5번을 말하지 않는다: ${first}`);
   await c.d.click(page.getByRole("button", { name: "3번", exact: true }));
   await bar(page)
     .getByText("실행 15번 (상황 5개 × 3번씩)")
@@ -40,7 +40,7 @@ export async function repeatsInTheForm(c: Context): Promise<void> {
     .waitFor({ timeout: 5 * SECOND });
   await c.d.click(page.getByRole("button", { name: "1번", exact: true }));
   await bar(page)
-    .getByText("5회 실행")
+    .getByText("실행 5번")
     .waitFor({ timeout: 5 * SECOND });
 }
 
