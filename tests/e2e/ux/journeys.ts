@@ -611,6 +611,11 @@ export async function perform(
     "framenavigated",
     (f) => f === v.page.mainFrame() && screens.add(new URL(f.url()).pathname),
   );
+  const seen: string[] = [];
+  v.page.on("response", (r) => {
+    if (r.url().includes("/api/"))
+      seen.push(`${r.status()} ${r.request().method()} ${r.url().replace(base, "")}`);
+  });
   try {
     await work({ browser, base, v, d });
     return {
@@ -621,6 +626,11 @@ export async function perform(
     };
   } catch (err) {
     const note = err instanceof Error ? err.message.split("\n")[0] : String(err);
+    const text = await v.page.locator("body").innerText().catch(() => "");
+    const api = seen.filter((l) => !l.includes("/escalations")).slice(-10);
+    process.stdout.write(
+      `DEBUG ${note} url=${v.page.url()} api=${JSON.stringify(api)} text=${JSON.stringify(text.replace(/\s+/g, " ").slice(0, 400))}\n`,
+    );
     return {
       ok: false,
       actions: d.actions,
