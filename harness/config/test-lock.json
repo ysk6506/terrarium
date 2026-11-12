@@ -5936,6 +5936,319 @@
    "added": "2026-11-11",
    "amended_by": null
   },
+  "apps/server/src/adapters/sqlite-scope.test.ts::[REQ-054] a data file from before scopes > [REQ-054] everyone's records are stored without scope fields, as old records are": {
+   "kind": "test",
+   "hash": "733e286b194ffe43",
+   "asserts": 2,
+   "literals": [
+    "\"SELECT record, scope FROM worlds WHERE id = 'w1'\"",
+    "\"[REQ-054] everyone's records are stored without scope fields, as old records are\"",
+    "\"olivia\"",
+    "\"same\"",
+    "\"same\"",
+    "\"scope\"",
+    "\"scope\"",
+    "\"terrarium.db\"",
+    "\"w1\"",
+    "\"예전 세계\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::[REQ-054] a data file from before scopes > [REQ-054] opens, and every old record reads as everyone's, whatever its kind": {
+   "kind": "test",
+   "hash": "9477e61aa4d73fb9",
+   "asserts": 8,
+   "literals": [
+    "\"3\"",
+    "\"3\"",
+    "\"PRAGMA user_version\"",
+    "\"PRAGMA user_version\"",
+    "\"SELECT owner FROM scenarios\"",
+    "\"SELECT owner FROM scenarios\"",
+    "\"SELECT owner FROM worlds\"",
+    "\"SELECT owner FROM worlds\"",
+    "\"[REQ-054] opens, and every old record reads as everyone's, whatever its kind\"",
+    "\"c1\"",
+    "\"c1\"",
+    "\"e1\"",
+    "\"e1\"",
+    "\"m1\"",
+    "\"m1\"",
+    "\"old\"",
+    "\"old\"",
+    "\"olivia\"",
+    "\"olivia\"",
+    "\"olivia\"",
+    "\"olivia\"",
+    "\"s1\"",
+    "\"s1\"",
+    "\"terrarium.db\"",
+    "\"w1\"",
+    "\"w1\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::[REQ-054] a data file from before scopes > [REQ-054] the owner of an old world is found in its record, so narrowing it later keeps the maker's sight": {
+   "kind": "test",
+   "hash": "a89c84d50642d594",
+   "asserts": 3,
+   "literals": [
+    "\"[REQ-054] the owner of an old world is found in its record, so narrowing it later keeps the maker's sight\"",
+    "\"narrow\"",
+    "\"olivia\"",
+    "\"olivia\"",
+    "\"olivia\"",
+    "\"private\"",
+    "\"w1\"",
+    "\"w1\"",
+    "\"w1\"",
+    "\"w1\"",
+    "\"w1\"",
+    "\"x\"",
+    "\"x\"",
+    "\"예전 세계\"",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::[REQ-054] a data file from before scopes > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::[REQ-054] the SQL filter and the rule of core agree > [REQ-054] for every combination of owner, scope and group, each person gets the same worlds from both stores": {
+   "kind": "test",
+   "hash": "552e9b4cb24f9741",
+   "asserts": 2,
+   "literals": [
+    "\":memory:\"",
+    "\"[REQ-054] for every combination of owner, scope and group, each person gets the same worlds from both stores\"",
+    "\"none\"",
+    "\"none\"",
+    "\"세계\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::[REQ-054] the SQL filter and the rule of core agree > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::[REQ-054] the SQL filter and the rule of core agree > =GROUPS": {
+   "kind": "support",
+   "hash": "94df9715bc436181",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::[REQ-054] the SQL filter and the rule of core agree > =OWNERS": {
+   "kind": "support",
+   "hash": "9256cf52bcfce0f8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::[REQ-054] the SQL filter and the rule of core agree > =SCOPES": {
+   "kind": "support",
+   "hash": "d557a8f6acbc1b68",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::[REQ-054] the SQL filter and the rule of core agree > =SIGHTS": {
+   "kind": "support",
+   "hash": "233e1058352959c6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::<hook:afterAll>": {
+   "kind": "support",
+   "hash": "f160015a0e4bf149",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::<import:09835585>": {
+   "kind": "support",
+   "hash": "0983558566dc500f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::<import:4890bf55>": {
+   "kind": "support",
+   "hash": "4890bf55064228a3",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::<import:71444cf1>": {
+   "kind": "support",
+   "hash": "71444cf1bb84ca1b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::<import:bc2806ff>": {
+   "kind": "support",
+   "hash": "bc2806ff0885bfae",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::<import:e365fd8f>": {
+   "kind": "support",
+   "hash": "e365fd8f38200096",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::<import:fc38e4e0>": {
+   "kind": "support",
+   "hash": "fc38e4e01244139f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::=AT": {
+   "kind": "support",
+   "hash": "c3367ab9db45f0a2",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::=BLUEPRINT": {
+   "kind": "support",
+   "hash": "46ae27764201c42f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::=dir": {
+   "kind": "support",
+   "hash": "84a7fd05d410431e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::=oldFile": {
+   "kind": "support",
+   "hash": "eb8733594ce29939",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::=stranger": {
+   "kind": "support",
+   "hash": "56b1fe79f6a63d1b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::=VERSION_2": {
+   "kind": "support",
+   "hash": "7fc852276cdd84bd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/adapters/sqlite-scope.test.ts::=whole": {
+   "kind": "support",
+   "hash": "20ce89744c7c0783",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "apps/server/src/adapters/telemetry/telemetry.test.ts::<import:1de8a7b5>": {
    "kind": "support",
    "hash": "1de8a7b563515f06",
@@ -7700,24 +8013,14 @@
    "added": "2026-11-11",
    "amended_by": null
   },
-  "apps/server/src/http/activity-stream.test.ts::<import:886f13ce>": {
+  "apps/server/src/http/activity-stream.test.ts::<import:06e344b8>": {
    "kind": "support",
-   "hash": "886f13ce4c0a8070",
+   "hash": "06e344b88c37b7ea",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
-  },
-  "apps/server/src/http/activity-stream.test.ts::<import:88b11dba>": {
-   "kind": "support",
-   "hash": "88b11dba5f728e46",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-11",
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/http/activity-stream.test.ts::<import:9210ce3f>": {
@@ -7772,12 +8075,14 @@
   },
   "apps/server/src/http/activity-stream.test.ts::the live view of a world as server-sent events [REQ-050] > runs already working come first, then what they do as it happens; a world that is not there is a 404": {
    "kind": "test",
-   "hash": "43d4d4af89ac64aa",
+   "hash": "3867ad2bee1ad64e",
    "asserts": 4,
    "literals": [
     "\"\"",
     "\"0\"",
+    "\"0\"",
     "\"0.05\"",
+    "\"1\"",
     "\"127.0.0.1\"",
     "\"404\"",
     "\"404\"",
@@ -7794,14 +8099,11 @@
     "\"event: start\\ndata: \"",
     "\"get_entity\"",
     "\"observe\"",
-    "\"r-1\"",
-    "\"r-1\"",
     "\"runs already working come first, then what they do as it happens; a world that is not there is a 404\"",
     "\"start\"",
     "\"text/event-stream; charset=utf-8\"",
     "\"text/event-stream; charset=utf-8\"",
-    "\"하늘\"",
-    "\"홀\"",
+    "\"냉방 점검\"",
     "true",
     "true",
     "true"
@@ -7809,7 +8111,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/http/agent-versions-api.test.ts::<import:3186e2b6>": {
    "kind": "support",
@@ -7863,7 +8165,7 @@
   },
   "apps/server/src/http/agent-versions-api.test.ts::the versions of an agent over HTTP [REQ-053] > list, add, edit and delete by address; an agent with a slash in its id works": {
    "kind": "test",
-   "hash": "071981a4b6b70a2c",
+   "hash": "ba0875aeeb918248",
    "asserts": 10,
    "literals": [
     "\"\"",
@@ -7888,8 +8190,8 @@
     "\"200\"",
     "\"400\"",
     "\"400\"",
-    "\"403\"",
-    "\"403\"",
+    "\"404\"",
+    "\"404\"",
     "\"404\"",
     "\"404\"",
     "\"404\"",
@@ -7943,7 +8245,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/http/app.test.ts::<hook:afterAll>": {
    "kind": "support",
@@ -9052,7 +9354,7 @@
   },
   "apps/server/src/http/connection-try-api.test.ts::말 걸어 보기 and the tools for traces over HTTP [REQ-079] > over HTTP: the route runs the turn, and the tools for traces are listed": {
    "kind": "test",
-   "hash": "3daca7d7df0ba835",
+   "hash": "b17b488670fe6006",
    "asserts": 7,
    "literals": [
     "\" \"",
@@ -9064,8 +9366,8 @@
     "\"200\"",
     "\"400\"",
     "\"400\"",
-    "\"403\"",
-    "\"403\"",
+    "\"404\"",
+    "\"404\"",
     "\"404\"",
     "\"404\"",
     "\"GET\"",
@@ -9111,7 +9413,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/http/connections-api.test.ts::<hook:afterAll>": {
    "kind": "support",
@@ -9163,16 +9465,6 @@
    "added": "2026-10-30",
    "amended_by": null
   },
-  "apps/server/src/http/connections-api.test.ts::<import:88b11dba>": {
-   "kind": "support",
-   "hash": "88b11dba5f728e46",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
-  },
   "apps/server/src/http/connections-api.test.ts::<import:9428df5f>": {
    "kind": "support",
    "hash": "9428df5f77306cf0",
@@ -9201,6 +9493,16 @@
    "precision": [],
    "skips": 0,
    "added": "2026-10-30",
+   "amended_by": null
+  },
+  "apps/server/src/http/connections-api.test.ts::<import:d7c7e1a6>": {
+   "kind": "support",
+   "hash": "d7c7e1a6f6c880eb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/http/connections-api.test.ts::<import:fc38e4e0>": {
@@ -9255,7 +9557,7 @@
   },
   "apps/server/src/http/connections-api.test.ts::connecting a harness from the screen, over HTTP [REQ-051] > try, save, change, keep, re-check and remove; strangers may not change it": {
    "kind": "test",
-   "hash": "35bd3aaab954a763",
+   "hash": "441b542107de0d7e",
    "asserts": 20,
    "literals": [
     "\"\"",
@@ -9282,14 +9584,14 @@
     "\"30\"",
     "\"400\"",
     "\"400\"",
-    "\"403\"",
-    "\"403\"",
-    "\"403\"",
-    "\"403\"",
-    "\"403\"",
-    "\"403\"",
-    "\"403\"",
-    "\"403\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
     "\"404\"",
     "\"404\"",
     "\"Bearer typed-secret\"",
@@ -9386,7 +9688,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/http/connections-api.test.ts::what was typed on the screen is still there after a restart [REQ-051] > <suite>": {
    "kind": "support",
@@ -9400,7 +9702,7 @@
   },
   "apps/server/src/http/connections-api.test.ts::what was typed on the screen is still there after a restart [REQ-051] > the SQLite store keeps the sealed secrets, headers, metadata and agent versions": {
    "kind": "test",
-   "hash": "d58b9df8e175ff1e",
+   "hash": "e2d27a04ca54021b",
    "asserts": 9,
    "literals": [
     "\"0\"",
@@ -9453,7 +9755,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/http/identity-loopback.test.ts::<import:13263dda>": {
    "kind": "support",
@@ -11439,7 +11741,7 @@
   },
   "apps/server/src/http/models-api.test.ts::registering model APIs: add, list, change, delete [REQ-099] > only one is the default; deleting the default hands it to the one registered first": {
    "kind": "test",
-   "hash": "5a28bfa5b3a1224d",
+   "hash": "2a1800ca35d87ebe",
    "asserts": 4,
    "literals": [
     "\"/api/models\"",
@@ -11469,18 +11771,19 @@
     "\"POST\"",
     "\"POST\"",
     "\"admin-kim\"",
+    "\"everyone\"",
     "\"only one is the default; deleting the default hands it to the one registered first\"",
     "true",
     "true"
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
-  "apps/server/src/http/models-api.test.ts::registering model APIs: add, list, change, delete [REQ-099] > only whoever registered it changes, deletes or checks it; only an admin chooses the default": {
+  "apps/server/src/http/models-api.test.ts::registering model APIs: add, list, change, delete [REQ-099] > only whoever registered it changes or deletes it; its maker or an admin chooses the default": {
    "kind": "test",
-   "hash": "6a27c3c765d2fa4c",
+   "hash": "661830fc1c07bf15",
    "asserts": 9,
    "literals": [
     "\"/api/models\"",
@@ -11495,10 +11798,10 @@
     "\"200\"",
     "\"200\"",
     "\"200\"",
-    "\"403\"",
-    "\"403\"",
-    "\"403\"",
-    "\"403\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
     "\"403\"",
     "\"403\"",
     "\"403\"",
@@ -11529,6 +11832,7 @@
     "\"admin-kim\"",
     "\"admin-kim\"",
     "\"admin-kim\"",
+    "\"everyone\"",
     "\"haneul\"",
     "\"haneul\"",
     "\"haneul\"",
@@ -11544,14 +11848,14 @@
     "\"jimin\"",
     "\"jimin\"",
     "\"jimin\"",
-    "\"only whoever registered it changes, deletes or checks it; only an admin chooses the default\"",
+    "\"only whoever registered it changes or deletes it; its maker or an admin chooses the default\"",
     "\"x\"",
     "\"x\""
    ],
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": null
   },
   "apps/server/src/http/models-api.test.ts::registering model APIs: add, list, change, delete [REQ-099] > the same name twice is a conflict": {
    "kind": "test",
@@ -11605,7 +11909,7 @@
   },
   "apps/server/src/http/models-api.test.ts::registrations survive a restart, sealed [REQ-099] > the SQLite file keeps them, the key is not readable in it, and the same secret box opens it again": {
    "kind": "test",
-   "hash": "f565ebadd18c9cac",
+   "hash": "6325764735aed01a",
    "asserts": 4,
    "literals": [
     "\"/v1/models\"",
@@ -11617,8 +11921,10 @@
     "\"b\"",
     "\"haneul\"",
     "\"haneul\"",
+    "\"haneul\"",
     "\"https://llm.corp.test\"",
     "\"openai\"",
+    "\"proxy\"",
     "\"proxy\"",
     "\"proxy\"",
     "\"terrarium-llm-\"",
@@ -11637,7 +11943,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/http/models-api.test.ts::the key stays out of the logs [REQ-099] > <hook:afterEach>": {
    "kind": "support",
@@ -12167,7 +12473,7 @@
   },
   "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] a config-file connection's agent versions are managed by admins; a screen-made one's by its maker": {
    "kind": "test",
-   "hash": "5ef8e62ddbd9a0f4",
+   "hash": "71d60126a0c86fd6",
    "asserts": 8,
    "literals": [
     "\"/api/connections/builtin/agents/triage/versions\"",
@@ -12185,8 +12491,8 @@
     "\"403\"",
     "\"403\"",
     "\"403\"",
-    "\"403\"",
-    "\"403\"",
+    "\"404\"",
+    "\"404\"",
     "\"DELETE\"",
     "\"DELETE\"",
     "\"DELETE\"",
@@ -12232,8 +12538,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] a connection of the config file may be used by every signed-in person": {
    "kind": "test",
@@ -12334,7 +12640,7 @@
   },
   "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] an experiment on someone's screen-made connection, created or forked, is for that person and admins; the config file's is open": {
    "kind": "test",
-   "hash": "9b031ca065515d0b",
+   "hash": "e6e1acc5bb28b0ae",
    "asserts": 4,
    "literals": [
     "\"/api/experiments\"",
@@ -12344,10 +12650,10 @@
     "\"200\"",
     "\"403\"",
     "\"403\"",
-    "\"403\"",
-    "\"403\"",
-    "\"403\"",
-    "\"403\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
     "\"POST\"",
     "\"POST\"",
     "\"POST\"",
@@ -12372,24 +12678,28 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
-  "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] checking a model opens its sealed key, so it is for whoever registered it; choosing the default is for admins": {
+  "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] checking a model opens its sealed key, so it is for those who may see it; choosing the default is for its maker and admins": {
    "kind": "test",
-   "hash": "668f1439521c3737",
-   "asserts": 5,
+   "hash": "826a39e8ceea1aae",
+   "asserts": 7,
    "literals": [
     "\"200\"",
     "\"200\"",
     "\"200\"",
     "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"400\"",
+    "\"400\"",
     "\"403\"",
     "\"403\"",
-    "\"403\"",
-    "\"403\"",
-    "\"403\"",
-    "\"403\"",
+    "\"404\"",
+    "\"404\"",
     "\"POST\"",
     "\"POST\"",
     "\"POST\"",
@@ -12400,21 +12710,32 @@
     "\"POST\"",
     "\"POST\"",
     "\"POST\"",
-    "\"[REQ-054] checking a model opens its sealed key, so it is for whoever registered it; choosing the default is for admins\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"PUT\"",
+    "\"[REQ-054] checking a model opens its sealed key, so it is for those who may see it; choosing the default is for its maker and admins\"",
     "\"admin-kim\"",
     "\"admin-kim\"",
     "\"alice\"",
     "\"alice\"",
     "\"alice\"",
     "\"alice\"",
+    "\"alice\"",
+    "\"alice\"",
+    "\"alice\"",
     "\"bob\"",
     "\"bob\"",
     "\"bob\"",
-    "\"bob\""
+    "\"bob\"",
+    "\"bob\"",
+    "\"bob\"",
+    "\"everyone\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] importing a world from a source is for admins": {
@@ -12513,15 +12834,15 @@
   },
   "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] talking through, keeping, re-checking a connection a person made on the screen is for that person": {
    "kind": "test",
-   "hash": "5cce00c03c2aa815",
+   "hash": "b02e5c67f31608b5",
    "asserts": 3,
    "literals": [
     "\"200\"",
     "\"200\"",
     "\"200\"",
     "\"200\"",
-    "\"403\"",
-    "\"403\"",
+    "\"404\"",
+    "\"404\"",
     "\"POST\"",
     "\"POST\"",
     "\"POST\"",
@@ -12537,8 +12858,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] the current-process table is written by the scenario's maker, not by whoever came first": {
    "kind": "test",
@@ -13521,6 +13842,1115 @@
    "added": "2026-10-29",
    "amended_by": null
   },
+  "apps/server/src/http/scope-default-model.test.ts::[REQ-054] the default model is a model made for everyone > [REQ-054] a private or group model cannot be chosen as the default, and the default cannot be narrowed": {
+   "kind": "test",
+   "hash": "2cf0057f4106a184",
+   "asserts": 6,
+   "literals": [
+    "\"/api/models\"",
+    "\"/api/models\"",
+    "\"/api/models\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"400\"",
+    "\"400\"",
+    "\"400\"",
+    "\"400\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"[REQ-054] a private or group model cannot be chosen as the default, and the default cannot be narrowed\"",
+    "\"everyone\"",
+    "\"everyone\"",
+    "\"private\"",
+    "\"private\"",
+    "\"private\"",
+    "\"나만\"",
+    "\"둘째\"",
+    "\"먼저 다른 모델을 기본으로 정해 주세요\"",
+    "\"먼저 다른 모델을 기본으로 정해 주세요\"",
+    "\"모두\"",
+    "\"모두\"",
+    "\"모두\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-default-model.test.ts::[REQ-054] the default model is a model made for everyone > [REQ-054] an admin's own default does not fall on someone else's private model": {
+   "kind": "test",
+   "hash": "4851a4236d68f9a1",
+   "asserts": 1,
+   "literals": [
+    "\"/api/models\"",
+    "\"POST\"",
+    "\"[REQ-054] an admin's own default does not fall on someone else's private model\"",
+    "\"올리비아\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-default-model.test.ts::[REQ-054] the default model is a model made for everyone > [REQ-054] only an admin or the model's maker chooses it; deleting the default hands it to the first one made for everyone": {
+   "kind": "test",
+   "hash": "914c561377b1324d",
+   "asserts": 8,
+   "literals": [
+    "\"/api/models\"",
+    "\"/api/models\"",
+    "\"/api/models\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"DELETE\"",
+    "\"DELETE\"",
+    "\"DELETE\"",
+    "\"DELETE\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] only an admin or the model's maker chooses it; deleting the default hands it to the first one made for everyone\"",
+    "\"everyone\"",
+    "\"everyone\"",
+    "\"가\"",
+    "\"다\"",
+    "\"사적\"",
+    "\"사적\"",
+    "\"사적\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-default-model.test.ts::[REQ-054] the default model is a model made for everyone > [REQ-054] someone's private model that is the only one is no one else's default, and no one else can use it": {
+   "kind": "test",
+   "hash": "096bb5edc96bbf61",
+   "asserts": 6,
+   "literals": [
+    "\" \"",
+    "\" \"",
+    "\"/api/models\"",
+    "\"/api/moss/ask\"",
+    "\"/api/moss/ask\"",
+    "\"0\"",
+    "\"404\"",
+    "\"404\"",
+    "\"409\"",
+    "\"409\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] someone's private model that is the only one is no one else's default, and no one else can use it\"",
+    "\"home\"",
+    "\"home\"",
+    "\"sk-올리비아\"",
+    "\"sk-올리비아\"",
+    "\"안녕\"",
+    "\"안녕\"",
+    "\"올리비아\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-default-model.test.ts::[REQ-054] the default model is a model made for everyone > [REQ-054] the first model made for everyone becomes the default, whoever registered the private ones before it": {
+   "kind": "test",
+   "hash": "804b0e459c97e0a4",
+   "asserts": 2,
+   "literals": [
+    "\"/api/models\"",
+    "\"/api/models\"",
+    "\"200\"",
+    "\"200\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] the first model made for everyone becomes the default, whoever registered the private ones before it\"",
+    "\"everyone\"",
+    "\"나만\"",
+    "\"모두\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-default-model.test.ts::[REQ-054] the default model is a model made for everyone > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-default-model.test.ts::<import:076d84f8>": {
+   "kind": "support",
+   "hash": "076d84f851f618d0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-default-model.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-default-model.test.ts::=model": {
+   "kind": "support",
+   "hash": "5489a08adfc9c64f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-default-model.test.ts::=Row": {
+   "kind": "support",
+   "hash": "0bea660ce3be4ec6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-default-model.test.ts::=rows": {
+   "kind": "support",
+   "hash": "32d45bf468259471",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::[REQ-054] a get of what the viewer may not see answers like 'not found' > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::[REQ-054] a get of what the viewer may not see answers like 'not found' > =cases": {
+   "kind": "support",
+   "hash": "3dd9e701926a1ad6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::[REQ-054] a get of what the viewer may not see answers like 'not found' > =GETS": {
+   "kind": "support",
+   "hash": "b777a374b0f0027d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::[REQ-054] a get of what the viewer may not see answers like 'not found' > $route under $scope, asked by the $label": {
+   "kind": "test",
+   "hash": "d5c38af03f43c189",
+   "asserts": 3,
+   "literals": [
+    "\"$route under $scope, asked by the $label\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
+    "\"GET\"",
+    "\"not_found\"",
+    "\"not_found\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::[REQ-054] a list holds only what the viewer may see > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::[REQ-054] a list holds only what the viewer may see > =cases": {
+   "kind": "support",
+   "hash": "bdb88a166f95953d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::[REQ-054] a list holds only what the viewer may see > =LISTS": {
+   "kind": "support",
+   "hash": "2563b2c6ef3a4c50",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::[REQ-054] a list holds only what the viewer may see > $kind under $scope, asked by the $label": {
+   "kind": "test",
+   "hash": "f6fa6eeff864ec7a",
+   "asserts": 2,
+   "literals": [
+    "\"$kind under $scope, asked by the $label\"",
+    "\"200\"",
+    "\"200\"",
+    "\"GET\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::[REQ-054] streams and exports follow the experiment's scope > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::[REQ-054] streams and exports follow the experiment's scope > =cases": {
+   "kind": "support",
+   "hash": "13ef8e25a986e531",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::[REQ-054] streams and exports follow the experiment's scope > the event streams of an experiment under $scope are closed to the $label": {
+   "kind": "test",
+   "hash": "bb818eea70bb71fd",
+   "asserts": 1,
+   "literals": [
+    "\"404\"",
+    "\"404\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"the event streams of an experiment under $scope are closed to the $label\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::[REQ-054] streams and exports follow the experiment's scope > twin export under $scope, asked by the $label": {
+   "kind": "test",
+   "hash": "da0d54c1c5987dc7",
+   "asserts": 2,
+   "literals": [
+    "\"/api/twin/diagnoses\"",
+    "\"200\"",
+    "\"200\"",
+    "\"GET\"",
+    "\"twin export under $scope, asked by the $label\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::<hook:afterAll>": {
+   "kind": "support",
+   "hash": "1ee7bc90712552af",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::<hook:beforeAll>": {
+   "kind": "support",
+   "hash": "6d534c5fb89ba128",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::<import:40294155>": {
+   "kind": "support",
+   "hash": "40294155fc93cebe",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::<import:8f18181a>": {
+   "kind": "support",
+   "hash": "8f18181a299f807f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::=apps": {
+   "kind": "support",
+   "hash": "66c66d31f3b9c7bf",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::=at": {
+   "kind": "support",
+   "hash": "558ae0ddae0d7f0a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::=Scope": {
+   "kind": "support",
+   "hash": "d968919257d6e4d5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::=SCOPES": {
+   "kind": "support",
+   "hash": "0c663a7b2a3c1e27",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::=sees": {
+   "kind": "support",
+   "hash": "019e6279a2b07ebd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-matrix.test.ts::=WHO": {
+   "kind": "support",
+   "hash": "c642e2d8c87ae255",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-model-names.test.ts::[REQ-054] a model name does not give away someone's private model > [REQ-054] among models made for everyone a name is still one, and widening a private one is refused when it would be a second": {
+   "kind": "test",
+   "hash": "56bb41a8e2b22a2f",
+   "asserts": 4,
+   "literals": [
+    "\"/api/models\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"409\"",
+    "\"409\"",
+    "\"409\"",
+    "\"409\"",
+    "\"POST\"",
+    "\"PUT\"",
+    "\"[REQ-054] among models made for everyone a name is still one, and widening a private one is refused when it would be a second\"",
+    "\"everyone\"",
+    "\"everyone\"",
+    "\"everyone\"",
+    "\"everyone\"",
+    "\"everyone\"",
+    "\"모두의 이름\"",
+    "\"모두의 이름\"",
+    "\"모두의 이름\"",
+    "\"모두의 이름\"",
+    "\"모두의 이름\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-model-names.test.ts::[REQ-054] a model name does not give away someone's private model > [REQ-054] renaming follows the same rule": {
+   "kind": "test",
+   "hash": "f0767cdf2b3c9ac4",
+   "asserts": 2,
+   "literals": [
+    "\"/api/models\"",
+    "\"/api/models\"",
+    "\"/api/models\"",
+    "\"200\"",
+    "\"200\"",
+    "\"409\"",
+    "\"409\"",
+    "\"A\"",
+    "\"A\"",
+    "\"A\"",
+    "\"B\"",
+    "\"C\"",
+    "\"C\"",
+    "\"C\"",
+    "\"PATCH\"",
+    "\"PATCH\"",
+    "\"PATCH\"",
+    "\"PATCH\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] renaming follows the same rule\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-model-names.test.ts::[REQ-054] a model name does not give away someone's private model > [REQ-054] two people may each keep a private model of the same name; one person may not repeat theirs": {
+   "kind": "test",
+   "hash": "a03257b82fdd2614",
+   "asserts": 3,
+   "literals": [
+    "\"/api/models\"",
+    "\"/api/models\"",
+    "\"/api/models\"",
+    "\"/api/models\"",
+    "\"/api/models\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"409\"",
+    "\"409\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] two people may each keep a private model of the same name; one person may not repeat theirs\"",
+    "\"공용 이름\"",
+    "\"공용 이름\"",
+    "\"공용 이름\"",
+    "\"공용 이름\"",
+    "\"공용 이름\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-model-names.test.ts::[REQ-054] a model name does not give away someone's private model > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-model-names.test.ts::<import:a442bc01>": {
+   "kind": "support",
+   "hash": "a442bc01b7134bdf",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-model-names.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-model-names.test.ts::=model": {
+   "kind": "support",
+   "hash": "5489a08adfc9c64f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-038] links to an experiment's report > [REQ-038] the list of links is for the maker and admins, and a lost link stays lost": {
+   "kind": "test",
+   "hash": "a853ea043311e16a",
+   "asserts": 7,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"404\"",
+    "\"404\"",
+    "\"7\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"POST\"",
+    "\"[REQ-038] the list of links is for the maker and admins, and a lost link stays lost\"",
+    "\"everyone\"",
+    "\"olivia\"",
+    "\"olivia\"",
+    "\"private\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-038] links to an experiment's report > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-054] counts and boards only hold what everyone may see > [REQ-054] the leaderboard ignores experiments that are not everyone's": {
+   "kind": "test",
+   "hash": "b95cf8589e9418bb",
+   "asserts": 2,
+   "literals": [
+    "\"/api/leaderboards\"",
+    "\"GET\"",
+    "\"[REQ-054] the leaderboard ignores experiments that are not everyone's\"",
+    "\"everyone\"",
+    "\"private\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-054] counts and boards only hold what everyone may see > [REQ-054] the world board counts nothing of a private world, even for its maker": {
+   "kind": "test",
+   "hash": "116ce6de0add8feb",
+   "asserts": 2,
+   "literals": [
+    "\"/api/worlds\"",
+    "\"/api/worlds\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"[REQ-054] the world board counts nothing of a private world, even for its maker\"",
+    "\"private\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-054] counts and boards only hold what everyone may see > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-054] using needs sight > [REQ-054] a fork cannot be pointed at a connection the person cannot see": {
+   "kind": "test",
+   "hash": "ae0493c96aaef6ba",
+   "asserts": 2,
+   "literals": [
+    "\"/api/connections\"",
+    "\"200\"",
+    "\"200\"",
+    "\"404\"",
+    "\"404\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] a fork cannot be pointed at a connection the person cannot see\"",
+    "\"builtin\"",
+    "\"builtin\"",
+    "\"everyone\"",
+    "\"guess\"",
+    "\"guess\"",
+    "\"http\"",
+    "\"https://harness.test\"",
+    "\"olivia-secret\"",
+    "\"triage\"",
+    "\"내 것\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-054] using needs sight > [REQ-054] a private connection's credentials are not spent by another person": {
+   "kind": "test",
+   "hash": "eb005f3809478d5f",
+   "asserts": 4,
+   "literals": [
+    "\"/api/connections\"",
+    "\"/api/connections/check\"",
+    "\"/api/experiments\"",
+    "\"/api/models\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] a private connection's credentials are not spent by another person\"",
+    "\"http\"",
+    "\"https://elsewhere.test\"",
+    "\"olivia-secret\"",
+    "\"olivia-secret\"",
+    "\"sk-olivia-secret-0001\"",
+    "\"sk-olivia-secret-0001\"",
+    "\"x\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-054] using needs sight > [REQ-054] a scenario cannot be made on a world the person cannot see": {
+   "kind": "test",
+   "hash": "6d07915eb064458d",
+   "asserts": 3,
+   "literals": [
+    "\"/api/scenarios\"",
+    "\"/api/scenarios\"",
+    "\"/api/scenarios\"",
+    "\"/api/scenarios\"",
+    "\"/api/scenarios\"",
+    "\"/api/scenarios\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"404\"",
+    "\"404\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] a scenario cannot be made on a world the person cannot see\"",
+    "\"cooling-failure\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-054] using needs sight > [REQ-054] an experiment cannot be made on a world, scenario or connection the person cannot see": {
+   "kind": "test",
+   "hash": "42630b111d6a3020",
+   "asserts": 3,
+   "literals": [
+    "\"/api/experiments\"",
+    "\"/api/worlds\"",
+    "\"0\"",
+    "\"1\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
+    "\"GET\"",
+    "\"POST\"",
+    "\"[REQ-054] an experiment cannot be made on a world, scenario or connection the person cannot see\"",
+    "\"남의 것\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-054] using needs sight > [REQ-054] checking a model needs sight of it; a model made for everyone is checked by anyone": {
+   "kind": "test",
+   "hash": "02f7e98636377c4d",
+   "asserts": 4,
+   "literals": [
+    "\"/api/models\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"404\"",
+    "\"404\"",
+    "\"GET\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] checking a model needs sight of it; a model made for everyone is checked by anyone\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-054] using needs sight > [REQ-054] quick experiment, talking, keeping and re-checking need sight of what they use": {
+   "kind": "test",
+   "hash": "2f144401aa3c2753",
+   "asserts": 5,
+   "literals": [
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
+    "\"404\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"[REQ-054] quick experiment, talking, keeping and re-checking need sight of what they use\"",
+    "\"triage\"",
+    "\"안녕\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-054] using needs sight > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-054] who may change a scope > [REQ-054] a group scope is refused with a reason when the person has no group, or names one that is not theirs": {
+   "kind": "test",
+   "hash": "00bad5b3fdcce4bd",
+   "asserts": 3,
+   "literals": [
+    "\"400\"",
+    "\"400\"",
+    "\"400\"",
+    "\"400\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"[REQ-054] a group scope is refused with a reason when the person has no group, or names one that is not theirs\"",
+    "\"everyone\"",
+    "\"everyone\"",
+    "\"group\"",
+    "\"group\"",
+    "\"part-b\"",
+    "\"그룹\"",
+    "\"그룹\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-054] who may change a scope > [REQ-054] narrowing a world keeps other people's experiments, which stay readable to their owners": {
+   "kind": "test",
+   "hash": "edab7f69b6e7c1d2",
+   "asserts": 6,
+   "literals": [
+    "\"/api/experiments\"",
+    "\"1\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"404\"",
+    "\"404\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"POST\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"[REQ-054] narrowing a world keeps other people's experiments, which stay readable to their owners\"",
+    "\"everyone\"",
+    "\"private\"",
+    "\"private\"",
+    "\"오마의 실험\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-054] who may change a scope > [REQ-054] only the maker and an admin change it, through the one scope route all five kinds share": {
+   "kind": "test",
+   "hash": "81d27d1046aff45a",
+   "asserts": 4,
+   "literals": [
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"200\"",
+    "\"403\"",
+    "\"403\"",
+    "\"404\"",
+    "\"404\"",
+    "\"[REQ-054] only the maker and an admin change it, through the one scope route all five kinds share\"",
+    "\"connection\"",
+    "\"everyone\"",
+    "\"everyone\"",
+    "\"everyone\"",
+    "\"everyone\"",
+    "\"experiment\"",
+    "\"group\"",
+    "\"group\"",
+    "\"model\"",
+    "\"part-a\"",
+    "\"part-a\"",
+    "\"private\"",
+    "\"private\"",
+    "\"scenario\"",
+    "\"world\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-054] who may change a scope > [REQ-054] the answer says what scope it has and whether the viewer may change it": {
+   "kind": "test",
+   "hash": "08b70d3238fc08f4",
+   "asserts": 4,
+   "literals": [
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"[REQ-054] the answer says what scope it has and whether the viewer may change it\"",
+    "\"group\"",
+    "\"group\"",
+    "\"group\"",
+    "\"group\"",
+    "\"group\"",
+    "\"part-a\"",
+    "\"part-a\"",
+    "\"part-a\"",
+    "\"part-a\"",
+    "\"part-a\"",
+    "false",
+    "false",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-054] who may change a scope > [REQ-054] the update routes no longer change a scope, and a scope change needs nothing else in its body": {
+   "kind": "test",
+   "hash": "ea5f457749a67608",
+   "asserts": 4,
+   "literals": [
+    "\"200\"",
+    "\"200\"",
+    "\"400\"",
+    "\"400\"",
+    "\"400\"",
+    "\"400\"",
+    "\"PATCH\"",
+    "\"PUT\"",
+    "\"PUT\"",
+    "\"[REQ-054] the update routes no longer change a scope, and a scope change needs nothing else in its body\"",
+    "\"everyone\"",
+    "\"everyone\"",
+    "\"group\"",
+    "\"group\"",
+    "\"group\"",
+    "\"part-a\"",
+    "\"part-a\"",
+    "\"part-a\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-054] who may change a scope > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::[REQ-054] who may change a scope > =change": {
+   "kind": "support",
+   "hash": "2ef96f042d45b9c1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::<import:4dd7de42>": {
+   "kind": "support",
+   "hash": "4dd7de425cd7495c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::<import:50423652>": {
+   "kind": "support",
+   "hash": "504236526ae9c77e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::=PRIVATE": {
+   "kind": "support",
+   "hash": "dd5663e5b76b91f1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/scope-use.test.ts::=privateSetup": {
+   "kind": "support",
+   "hash": "144c3098cb6177d7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "apps/server/src/http/scoring-unchanged.test.ts::<import:2473807b>": {
    "kind": "support",
    "hash": "2473807bbc6c9b1f",
@@ -14355,6 +15785,226 @@
    "skips": 0,
    "added": "2026-11-03",
    "amended_by": "0050-toss-ux-principles.md"
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::<import:0569a0e2>": {
+   "kind": "support",
+   "hash": "0569a0e21b24fe84",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::<import:06f0c08c>": {
+   "kind": "support",
+   "hash": "06f0c08cb08fdd2a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::<import:15c759f4>": {
+   "kind": "support",
+   "hash": "15c759f45be9f29a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::<import:89f93698>": {
+   "kind": "support",
+   "hash": "89f9369875be9a69",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::<import:9074fef8>": {
+   "kind": "support",
+   "hash": "9074fef8a2fd9944",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::<import:e9af30b5>": {
+   "kind": "support",
+   "hash": "e9af30b532bd43a6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::=BOSS": {
+   "kind": "support",
+   "hash": "08aa0e8883ffa7d6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::=ENV": {
+   "kind": "support",
+   "hash": "26cfce5474cb6ee1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::=LONE": {
+   "kind": "support",
+   "hash": "bea6cb4fe0b76738",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::=Made": {
+   "kind": "support",
+   "hash": "fcf360bb727e178f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::=makeAll": {
+   "kind": "support",
+   "hash": "01207a2a49e4af7e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::=MINA": {
+   "kind": "support",
+   "hash": "d15d3fb170405b85",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::=OLIVIA": {
+   "kind": "support",
+   "hash": "852c699e28aeee51",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::=OMAR": {
+   "kind": "support",
+   "hash": "e7eb56ce7483329f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::=PEOPLE": {
+   "kind": "support",
+   "hash": "865e1ac44addc34a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::=Person": {
+   "kind": "support",
+   "hash": "4355e7bd7922ee0e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::=PROXY": {
+   "kind": "support",
+   "hash": "dd8f82b61cf10f15",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::=scopedApp": {
+   "kind": "support",
+   "hash": "f04cbea82269eef9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::=ScopedApp": {
+   "kind": "support",
+   "hash": "62e5e57908bbbd4f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::=Scoping": {
+   "kind": "support",
+   "hash": "5c20287626755694",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::=SECRET": {
+   "kind": "support",
+   "hash": "381ad821f7abe243",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/http/test-support/scoped-app.ts::=Send": {
+   "kind": "support",
+   "hash": "44a5e3926ba1e472",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
   },
   "apps/server/src/http/world-community-api.test.ts::<import:64623614>": {
    "kind": "support",
@@ -16191,7 +17841,7 @@
   },
   "apps/server/src/runtime/agent-versions.test.ts::an agent that changed gets a new version when an experiment is made [REQ-053] > a fork looks at the agent again; a fork that is refused changes nothing": {
    "kind": "test",
-   "hash": "a17b94babe6cbf6d",
+   "hash": "ca7f7ebd39f7dd27",
    "asserts": 6,
    "literals": [
     "\"0\"",
@@ -16218,11 +17868,11 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/agent-versions.test.ts::an agent that changed gets a new version when an experiment is made [REQ-053] > a harness that cannot be reached says so, and the versions are still there": {
    "kind": "test",
-   "hash": "8f8acc7b28eafecd",
+   "hash": "9a71f285ab95a21f",
    "asserts": 4,
    "literals": [
     "\"0\"",
@@ -16239,12 +17889,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/agent-versions.test.ts::an agent that changed gets a new version when an experiment is made [REQ-053] > experiments made at the same moment write one version, not two": {
    "kind": "test",
-   "hash": "c2f2fe385d0ed2c1",
+   "hash": "ea2ddc87ef729985",
    "asserts": 2,
    "literals": [
     "\"0\"",
@@ -16265,12 +17915,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/agent-versions.test.ts::an agent that changed gets a new version when an experiment is made [REQ-053] > the history says what the next experiment would add, without adding it": {
    "kind": "test",
-   "hash": "62c47e1639c126ea",
+   "hash": "e39a7129027fdc00",
    "asserts": 4,
    "literals": [
     "\"0\"",
@@ -16300,12 +17950,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/agent-versions.test.ts::an agent that changed gets a new version when an experiment is made [REQ-053] > the same agent keeps its version; a changed one gets the next, with the date and what differs": {
    "kind": "test",
-   "hash": "3b4a20acd3562bed",
+   "hash": "ed02b72724d14377",
    "asserts": 9,
    "literals": [
     "\"0\"",
@@ -16374,7 +18024,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > <suite>": {
    "kind": "support",
@@ -16476,7 +18126,7 @@
   },
   "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > only whoever connected it may change its versions; the config file's connection is for admins": {
    "kind": "test",
-   "hash": "cad9597748756f1c",
+   "hash": "91c515c4ab094bdf",
    "asserts": 5,
    "literals": [
     "\"0\"",
@@ -16511,8 +18161,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > the first version may be a person's, then it is the agent as it is now": {
    "kind": "test",
@@ -16541,7 +18191,7 @@
   },
   "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > the versions go away with the connection; a different agent's stay": {
    "kind": "test",
-   "hash": "6c9a6c762dfbf0db",
+   "hash": "66b52e875fdef2b5",
    "asserts": 2,
    "literals": [
     "\"1\"",
@@ -16555,7 +18205,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/alarm-wake.test.ts::<import:50862f67>": {
    "kind": "support",
@@ -16666,9 +18316,19 @@
    "added": "2026-11-06",
    "amended_by": null
   },
-  "apps/server/src/runtime/connection-secrets.test.ts::<import:2070e6e0>": {
+  "apps/server/src/runtime/connection-secrets.test.ts::<import:29a4010a>": {
    "kind": "support",
-   "hash": "2070e6e0616265d1",
+   "hash": "29a4010a635d8232",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/connection-secrets.test.ts::<import:8f931061>": {
+   "kind": "support",
+   "hash": "8f93106141746ac1",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -16706,19 +18366,19 @@
    "added": "2026-10-30",
    "amended_by": null
   },
-  "apps/server/src/runtime/connection-secrets.test.ts::<import:e71fddbd>": {
+  "apps/server/src/runtime/connection-secrets.test.ts::<import:a64d0d35>": {
    "kind": "support",
-   "hash": "e71fddbddd356cf0",
+   "hash": "a64d0d353daf4f0c",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
+   "added": "2026-11-12",
    "amended_by": null
   },
-  "apps/server/src/runtime/connection-secrets.test.ts::<import:e9fa8dc5>": {
+  "apps/server/src/runtime/connection-secrets.test.ts::<import:e71fddbd>": {
    "kind": "support",
-   "hash": "e9fa8dc568536d06",
+   "hash": "e71fddbddd356cf0",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -16818,7 +18478,7 @@
   },
   "apps/server/src/runtime/connection-secrets.test.ts::a connection nobody uses for a month is removed, after a warning [REQ-051] > an experiment made on it counts as use; the config file's connections never expire": {
    "kind": "test",
-   "hash": "d016850d0aacf94b",
+   "hash": "3a552d5ffcfb667a",
    "asserts": 4,
    "literals": [
     "\"20\"",
@@ -16832,7 +18492,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::a connection nobody uses for a month is removed, after a warning [REQ-051] > its owner is told a week before, and keeping it starts the month again": {
    "kind": "test",
@@ -16937,7 +18597,7 @@
   },
   "apps/server/src/runtime/connection-secrets.test.ts::a token typed on the screen is used, kept sealed and never shown again [REQ-051] > after a restart it still opens; with another key it says what happened": {
    "kind": "test",
-   "hash": "fc74acde30d8be3a",
+   "hash": "affb216ebb5202b6",
    "asserts": 5,
    "literals": [
     "\"Bearer kept\"",
@@ -16958,11 +18618,11 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::a token typed on the screen is used, kept sealed and never shown again [REQ-051] > it is sent to the harness, but not found in the view, the meta, the store or any answer": {
    "kind": "test",
-   "hash": "8f8e97caed66ad4d",
+   "hash": "0ef41f8e91ad5c6f",
    "asserts": 5,
    "literals": [
     "\"0\"",
@@ -16978,7 +18638,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::a token typed on the screen is used, kept sealed and never shown again [REQ-051] > typing it and naming a server variable for it is one too many": {
    "kind": "test",
@@ -17048,7 +18708,7 @@
   },
   "apps/server/src/runtime/connection-secrets.test.ts::changing a connection keeps its secrets unless told otherwise [REQ-051] > only its owner may change it or try a change; a change that does not build changes nothing": {
    "kind": "test",
-   "hash": "70c06399218d586a",
+   "hash": "abc4935293f0ad93",
    "asserts": 7,
    "literals": [
     "\"Bearer old-token\"",
@@ -17069,7 +18729,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::changing a connection keeps its secrets unless told otherwise [REQ-051] > what is left blank stays, what is typed replaces, null removes": {
    "kind": "test",
@@ -17207,6 +18867,16 @@
    "added": "2026-11-12",
    "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
+  "apps/server/src/runtime/connection-traces.test.ts::<import:65383208>": {
+   "kind": "support",
+   "hash": "65383208cf4b206f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "apps/server/src/runtime/connection-traces.test.ts::<import:9428df5f>": {
    "kind": "support",
    "hash": "9428df5f77306cf0",
@@ -17245,16 +18915,6 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-05",
-   "amended_by": null
-  },
-  "apps/server/src/runtime/connection-traces.test.ts::<import:e810df6f>": {
-   "kind": "support",
-   "hash": "e810df6f20d42326",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/runtime/connection-traces.test.ts::<import:fd94f20e>": {
@@ -17499,7 +19159,7 @@
   },
   "apps/server/src/runtime/connection-traces.test.ts::strangers may talk but not choose [REQ-079] > anyone can talk to a connection; only its owner changes where its traces go": {
    "kind": "test",
-   "hash": "dfc81641328b08a2",
+   "hash": "102a757f72ffb82a",
    "asserts": 2,
    "literals": [
     "\"anyone can talk to a connection; only its owner changes where its traces go\"",
@@ -17507,10 +19167,10 @@
     "\"none\"",
     "\"ops\"",
     "\"ops\"",
-    "\"만든 사람\"",
-    "\"만든 사람\"",
     "\"안녕\"",
     "\"안녕\"",
+    "\"찾을 수 없어요\"",
+    "\"찾을 수 없어요\"",
     "true",
     "true",
     "true"
@@ -17518,7 +19178,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::where a connection's traces pile up is chosen per connection [REQ-079] > <suite>": {
    "kind": "support",
@@ -17570,7 +19230,7 @@
   },
   "apps/server/src/runtime/connection-traces.test.ts::where a connection's traces pile up is chosen per connection [REQ-079] > changing a connection keeps the key unless a new one is typed; leaving traces out keeps the choice": {
    "kind": "test",
-   "hash": "6fe044dac8314bdc",
+   "hash": "55f541db0d5b0956",
    "asserts": 3,
    "literals": [
     "\"\"",
@@ -17595,7 +19255,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::where a connection's traces pile up is chosen per connection [REQ-079] > checking a connection also says when the tool for its traces does not answer": {
    "kind": "test",
@@ -17674,7 +19334,7 @@
   },
   "apps/server/src/runtime/connection-traces.test.ts::말 걸어 보기: one question, no tools, and whether the traces came along [REQ-079] > a connection that cannot talk says so instead of failing": {
    "kind": "test",
-   "hash": "4bbffdbcdeb7f028",
+   "hash": "c1d46fa518ea94dc",
    "asserts": 2,
    "literals": [
     "\"a connection that cannot talk says so instead of failing\"",
@@ -17691,7 +19351,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::말 걸어 보기: one question, no tools, and whether the traces came along [REQ-079] > a connection with no place for traces has nothing to check": {
    "kind": "test",
@@ -17797,9 +19457,9 @@
    "added": "2026-11-12",
    "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
-  "apps/server/src/runtime/connections.test.ts::<import:869ea03e>": {
+  "apps/server/src/runtime/connections.test.ts::<import:77b37140>": {
    "kind": "support",
-   "hash": "869ea03e3d03388e",
+   "hash": "77b37140df742b52",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -17827,6 +19487,16 @@
    "added": "2026-10-30",
    "amended_by": null
   },
+  "apps/server/src/runtime/connections.test.ts::<import:a64d0d35>": {
+   "kind": "support",
+   "hash": "a64d0d353daf4f0c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "apps/server/src/runtime/connections.test.ts::<import:cee89d55>": {
    "kind": "support",
    "hash": "cee89d553ae205aa",
@@ -17840,16 +19510,6 @@
   "apps/server/src/runtime/connections.test.ts::<import:e71fddbd>": {
    "kind": "support",
    "hash": "e71fddbddd356cf0",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
-  },
-  "apps/server/src/runtime/connections.test.ts::<import:e9fa8dc5>": {
-   "kind": "support",
-   "hash": "e9fa8dc568536d06",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -17953,7 +19613,7 @@
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > a fresh server lists the built-in agent as a read-only connection": {
    "kind": "test",
-   "hash": "465501a8dc1bf01b",
+   "hash": "1bd9b786386a2193",
    "asserts": 3,
    "literals": [
     "\"0\"",
@@ -17972,12 +19632,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > a harness from the config file keeps its settings for display, and ports of any kind are listed": {
    "kind": "test",
-   "hash": "34f7782f3752796e",
+   "hash": "83340906a83005ae",
    "asserts": 2,
    "literals": [
     "\"a harness from the config file keeps its settings for display, and ports of any kind are listed\"",
@@ -18021,8 +19681,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-04",
-   "amended_by": "0055-goclaw-hermes-slot.md"
+   "added": "2026-11-12",
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > a harness that answers badly, or finds nothing, is told apart from a wrong form": {
    "kind": "test",
@@ -18165,7 +19825,7 @@
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > asking again sees a harness's new agents without waiting for the cache": {
    "kind": "test",
-   "hash": "e7a16b8fae52831e",
+   "hash": "1820f5bb9448e852",
    "asserts": 3,
    "literals": [
     "\"0\"",
@@ -18181,7 +19841,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > connecting a harness finds its agents, and they can be chosen in an experiment": {
    "kind": "test",
@@ -18239,7 +19899,7 @@
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > only whoever connected it can remove it, and not while runs are on it": {
    "kind": "test",
-   "hash": "21fce50fae49a6aa",
+   "hash": "5c2e0fc80483862c",
    "asserts": 7,
    "literals": [
     "\"builtin\"",
@@ -18262,7 +19922,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > the command connector is for the config file only": {
    "kind": "test",
@@ -18285,7 +19945,7 @@
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > trying a connection reports the agents it found and the time it took, and saves nothing": {
    "kind": "test",
-   "hash": "5ea85f88115daf51",
+   "hash": "e13e141f02d0585b",
    "asserts": 4,
    "literals": [
     "\"0\"",
@@ -18302,7 +19962,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > what is wrong with the form is said by field": {
    "kind": "test",
@@ -18333,7 +19993,7 @@
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > what people connected is still there after a restart; one that no longer builds is shown, not lost": {
    "kind": "test",
-   "hash": "99f743cdbf8b36cb",
+   "hash": "854cc498dbdfc68d",
    "asserts": 6,
    "literals": [
     "\"2\"",
@@ -18356,7 +20016,17 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
+  },
+  "apps/server/src/runtime/escalation.test.ts::<import:34655448>": {
+   "kind": "support",
+   "hash": "34655448269d222f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
   },
   "apps/server/src/runtime/escalation.test.ts::<import:552de795>": {
    "kind": "support",
@@ -18366,16 +20036,6 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-06",
-   "amended_by": null
-  },
-  "apps/server/src/runtime/escalation.test.ts::<import:6b061108>": {
-   "kind": "support",
-   "hash": "6b0611082472bd81",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/runtime/escalation.test.ts::<import:e71fddbd>": {
@@ -18450,7 +20110,7 @@
   },
   "apps/server/src/runtime/escalation.test.ts::a draft runbook from the best run [REQ-082] > it is made from the calls of the run with the highest score, and says which run": {
    "kind": "test",
-   "hash": "f5e34306eb49a4a5",
+   "hash": "ae2a720c971741e0",
    "asserts": 4,
    "literals": [
     "\"17\"",
@@ -18484,7 +20144,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/escalation.test.ts::a run that waits for a person [REQ-081] > <suite>": {
    "kind": "support",
@@ -19568,6 +21228,16 @@
    "added": "2026-10-30",
    "amended_by": null
   },
+  "apps/server/src/runtime/metadata.test.ts::<import:847d2cbe>": {
+   "kind": "support",
+   "hash": "847d2cbe59844c96",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "apps/server/src/runtime/metadata.test.ts::<import:9428df5f>": {
    "kind": "support",
    "hash": "9428df5f77306cf0",
@@ -19576,16 +21246,6 @@
    "precision": [],
    "skips": 0,
    "added": "2026-10-30",
-   "amended_by": null
-  },
-  "apps/server/src/runtime/metadata.test.ts::<import:e5b6340c>": {
-   "kind": "support",
-   "hash": "e5b6340cf905f536",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/runtime/metadata.test.ts::<import:e71fddbd>": {
@@ -19720,7 +21380,7 @@
   },
   "apps/server/src/runtime/metadata.test.ts::metadata that tells results apart: kept, shown and searched [REQ-052] > experiments are found by their own metadata or by the connection's, with a value or without": {
    "kind": "test",
-   "hash": "bfdc1759583c6c0b",
+   "hash": "463d2902dab8744e",
    "asserts": 7,
    "literals": [
     "\"3\"",
@@ -19766,7 +21426,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/metadata.test.ts::metadata that tells results apart: kept, shown and searched [REQ-052] > metadata is few, short and plain": {
    "kind": "test",
@@ -21520,6 +23180,230 @@
    "added": "2026-11-06",
    "amended_by": null
   },
+  "apps/server/src/runtime/permissions-scope.test.ts::<import:8f931061>": {
+   "kind": "support",
+   "hash": "8f93106141746ac1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions-scope.test.ts::<import:d6afee21>": {
+   "kind": "support",
+   "hash": "d6afee214dfddb4e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions-scope.test.ts::<import:e0699739>": {
+   "kind": "support",
+   "hash": "e0699739fe2fe4a5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions-scope.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions-scope.test.ts::=maker": {
+   "kind": "support",
+   "hash": "5170be0fc554e552",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions-scope.test.ts::=member": {
+   "kind": "support",
+   "hash": "40fab208a0314013",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions-scope.test.ts::=outsider": {
+   "kind": "support",
+   "hash": "b84679aea30ebcbb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions-scope.test.ts::=WHO": {
+   "kind": "support",
+   "hash": "c40e0c757757d4db",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions-scope.test.ts::changing the scope, and listing the links [REQ-054] > [REQ-054] %s is for the maker and an admin": {
+   "kind": "test",
+   "hash": "6dfb4b4609a35ef2",
+   "asserts": 4,
+   "literals": [
+    "\"[REQ-054] %s is for the maker and an admin\"",
+    "\"changeScope\"",
+    "\"everyone\"",
+    "\"listShares\"",
+    "false",
+    "false",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions-scope.test.ts::changing the scope, and listing the links [REQ-054] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions-scope.test.ts::the read rule: who sees a resource [REQ-054] > [REQ-054] %s": {
+   "kind": "test",
+   "hash": "ca126065a1da67e3",
+   "asserts": 2,
+   "literals": [
+    "\"[REQ-054] %s\"",
+    "\"see\"",
+    "\"see\"",
+    "\"see\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions-scope.test.ts::the read rule: who sees a resource [REQ-054] > [REQ-054] a resource nobody made and without a scope is open to every signed-in person": {
+   "kind": "test",
+   "hash": "f6586c0dd68528be",
+   "asserts": 1,
+   "literals": [
+    "\"[REQ-054] a resource nobody made and without a scope is open to every signed-in person\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions-scope.test.ts::the read rule: who sees a resource [REQ-054] > [REQ-054] seeing something that is not allowed answers like not found": {
+   "kind": "test",
+   "hash": "a636c2fc4774a52e",
+   "asserts": 2,
+   "literals": [
+    "\"[REQ-054] seeing something that is not allowed answers like not found\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"private\"",
+    "\"private\"",
+    "\"private\"",
+    "\"private\"",
+    "\"세계\"",
+    "\"세계\"",
+    "\"세계\"",
+    "\"세계\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions-scope.test.ts::the read rule: who sees a resource [REQ-054] > [REQ-054] using needs sight, and the person's sight carries the id, the groups and the admin role": {
+   "kind": "test",
+   "hash": "81887ce69e6c11ed",
+   "asserts": 4,
+   "literals": [
+    "\"[REQ-054] using needs sight, and the person's sight carries the id, the groups and the admin role\"",
+    "\"group\"",
+    "\"group\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"mina\"",
+    "\"mina\"",
+    "\"part-a\"",
+    "\"part-a\"",
+    "\"part-a\"",
+    "\"part-a\"",
+    "\"private\"",
+    "\"private\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\"",
+    "\"use\"",
+    "false",
+    "false",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions-scope.test.ts::the read rule: who sees a resource [REQ-054] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/permissions-scope.test.ts::the read rule: who sees a resource [REQ-054] > =cases": {
+   "kind": "support",
+   "hash": "feec47e760f6b131",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "apps/server/src/runtime/permissions.test.ts::<import:1bf08ac9>": {
    "kind": "support",
    "hash": "1bf08ac9bbeed1f6",
@@ -21939,7 +23823,7 @@
   },
   "apps/server/src/runtime/platform.test.ts::an experiment from creation to result [REQ-030] [REQ-037] > the built-in triage agent solves the cooling failure three times out of three": {
    "kind": "test",
-   "hash": "529aca2e4817984d",
+   "hash": "a6b6a15c72760ea6",
    "asserts": 12,
    "literals": [
     "\"1\"",
@@ -22005,7 +23889,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/platform.test.ts::cancelling and the queue [REQ-030] [REQ-032] > <suite>": {
    "kind": "support",
@@ -22318,7 +24202,7 @@
   },
   "apps/server/src/runtime/platform.test.ts::worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034] > saves check the blueprint, refuse stale versions and let only the owner change things": {
    "kind": "test",
-   "hash": "6022aa886541e7ca",
+   "hash": "6b4a5edbdc7c982c",
    "asserts": 9,
    "literals": [
     "\"builder\"",
@@ -22369,11 +24253,11 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/platform.test.ts::worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034] > scenarios: drafts may have problems, templates must fit the world, saves are versioned": {
    "kind": "test",
-   "hash": "253a631d48059cf3",
+   "hash": "e2090289903eb9d4",
    "asserts": 11,
    "literals": [
     "\"cooling-failure\"",
@@ -22406,7 +24290,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/platform.test.ts::worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034] > worlds come from presets and from reality, with what was assumed": {
    "kind": "test",
@@ -22865,6 +24749,16 @@
    "added": "2026-10-29",
    "amended_by": null
   },
+  "apps/server/src/runtime/results.test.ts::<import:dc9cce41>": {
+   "kind": "support",
+   "hash": "dc9cce4148665617",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "apps/server/src/runtime/results.test.ts::<import:e71fddbd>": {
    "kind": "support",
    "hash": "e71fddbddd356cf0",
@@ -22907,7 +24801,7 @@
   },
   "apps/server/src/runtime/results.test.ts::benchmarks and the digital twin [REQ-039] [REQ-015] > diagnosis records export as JSON Lines; the brief names what imported worlds lack": {
    "kind": "test",
-   "hash": "f1995964311bf5db",
+   "hash": "42a4135d8d2a1a41",
    "asserts": 8,
    "literals": [
     "\"# 시뮬레이터 모델링 브리프\"",
@@ -22944,7 +24838,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/results.test.ts::benchmarks and the digital twin [REQ-039] [REQ-015] > leaderboards rank configurations within one benchmark set": {
    "kind": "test",
@@ -23010,7 +24904,7 @@
   },
   "apps/server/src/runtime/results.test.ts::one run in depth, with the harness's telemetry [REQ-037] > the run view folds in tokens from ClickStack; the raw trace is there too": {
    "kind": "test",
-   "hash": "375f79595bbececa",
+   "hash": "71061777ef4a3fea",
    "asserts": 7,
    "literals": [
     "\"# 추적\"",
@@ -23041,7 +24935,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/results.test.ts::one run in depth, with the harness's telemetry [REQ-037] > without telemetry configured there is simply nothing extra": {
    "kind": "test",
@@ -23075,7 +24969,7 @@
   },
   "apps/server/src/runtime/results.test.ts::sharing results [REQ-038] > reports in three formats, and links that open without the app until taken back or expired": {
    "kind": "test",
-   "hash": "4c6927d3219400a7",
+   "hash": "1dd31f2ba8f9e29b",
    "asserts": 15,
    "literals": [
     "\"1\"",
@@ -23126,7 +25020,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/runtime/run-events.test.ts::<import:8f931061>": {
    "kind": "support",
@@ -24774,9 +26668,9 @@
    "added": "2026-11-04",
    "amended_by": null
   },
-  "apps/server/src/runtime/world-templates.test.ts::<import:b95fbde8>": {
+  "apps/server/src/runtime/world-templates.test.ts::<import:9533d283>": {
    "kind": "support",
-   "hash": "b95fbde8fc6d5bef",
+   "hash": "9533d283fdb0b8ba",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -24838,7 +26732,7 @@
   },
   "apps/server/src/runtime/world-templates.test.ts::서비스부터 만든 세계와 템플릿 [REQ-094] > 템플릿은 세계 목록에 끼지 않고 따로 나열되며, 구성을 그대로 담는다": {
    "kind": "test",
-   "hash": "3a29672917bc38b1",
+   "hash": "05a2a92a9d4da038",
    "asserts": 4,
    "literals": [
     "\"0\"",
@@ -24860,7 +26754,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/server/src/scale-out.test.ts::<hook:afterAll>": {
    "kind": "support",
@@ -40784,6 +42678,94 @@
    "added": "2026-11-06",
    "amended_by": null
   },
+  "apps/web/src/logic/live.test.ts::<import:73535287>": {
+   "kind": "support",
+   "hash": "735352871ebf5732",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/web/src/logic/live.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/web/src/logic/live.test.ts::<import:e8f26ae3>": {
+   "kind": "support",
+   "hash": "e8f26ae3511a28b0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/web/src/logic/live.test.ts::=summary": {
+   "kind": "support",
+   "hash": "decb7fe6b9cc5b91",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/web/src/logic/live.test.ts::an experiment that finished runs before the live stream opened [REQ-030] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/web/src/logic/live.test.ts::an experiment that finished runs before the live stream opened [REQ-030] > a summary further along than the page's own asks for the full view again": {
+   "kind": "test",
+   "hash": "f175fd93268fe0d8",
+   "asserts": 1,
+   "literals": [
+    "\"0\"",
+    "\"5\"",
+    "\"5\"",
+    "\"a summary further along than the page's own asks for the full view again\"",
+    "\"experiment\"",
+    "\"experiment\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/web/src/logic/live.test.ts::an experiment that finished runs before the live stream opened [REQ-030] > a summary that agrees with the page changes nothing to fetch": {
+   "kind": "test",
+   "hash": "d13f0fc4c4c14e37",
+   "asserts": 1,
+   "literals": [
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"a summary that agrees with the page changes nothing to fetch\"",
+    "\"experiment\"",
+    "\"experiment\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "apps/web/src/logic/logic.test.ts::<import:1c771af5>": {
    "kind": "support",
    "hash": "1c771af57f36c73e",
@@ -41480,13 +43462,13 @@
   },
   "apps/web/src/logic/models.test.ts::=view": {
    "kind": "support",
-   "hash": "651a4cc89060403c",
+   "hash": "f1350f7784c59e6f",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0188-second-redaction-under-adr-0187.md"
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "apps/web/src/logic/models.test.ts::the model form turns typing into requests [REQ-099] > <suite>": {
    "kind": "support",
@@ -84086,18 +86068,18 @@
   },
   "packages/core/src/contract/policies.test.ts::every route says who may call it [REQ-054] > [REQ-054] what the survey found open before is now guarded by a named policy": {
    "kind": "test",
-   "hash": "b0fc28d4a4e30bb3",
+   "hash": "cce8b8ce7f592e44",
    "asserts": 11,
    "literals": [
     "\"[REQ-054] what the survey found open before is now guarded by a named policy\"",
     "\"admin\"",
     "\"admin\"",
-    "\"admin\"",
-    "\"admin\"",
     "\"calibrate\"",
     "\"calibrate\"",
     "\"calibrateScenario\"",
     "\"calibrateScenario\"",
+    "\"change\"",
+    "\"change\"",
     "\"checkModel\"",
     "\"checkModel\"",
     "\"createExperiment\"",
@@ -84137,8 +86119,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0179-visibility-scopes-amend-adr-0174-locked-tests.md"
   },
   "packages/core/src/contract/policies.test.ts::every route says who may call it [REQ-054] > <suite>": {
    "kind": "support",
@@ -181273,16 +183255,21 @@
   "apps/server/src/adapters/harness.test.ts::an OpenAI-compatible model as a harness [REQ-031] > tool replies are JSON the model can read, cut when huge": "0042-connectors.md",
   "apps/server/src/adapters/test-support/fake-fetch.ts::<import:28b66704>": "0042-connectors.md",
   "apps/server/src/http/activity-stream.test.ts::<import:436dd109>": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/http/activity-stream.test.ts::<import:886f13ce>": "0179-visibility-scopes-amend-adr-0174-locked-tests.md",
+  "apps/server/src/http/activity-stream.test.ts::<import:88b11dba>": "0179-visibility-scopes-amend-adr-0174-locked-tests.md",
   "apps/server/src/http/agent-versions-api.test.ts::<import:f3449f0e>": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/http/app.test.ts::<import:05f9b251>": "0174-permissions-proxy-identity-three-scopes-audit.md",
   "apps/server/src/http/app.test.ts::<import:d7b9cf00>": "0174-permissions-proxy-identity-three-scopes-audit.md",
   "apps/server/src/http/connections-api.test.ts::<import:436dd109>": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/http/connections-api.test.ts::<import:88b11dba>": "0179-visibility-scopes-amend-adr-0174-locked-tests.md",
   "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > [REQ-054] with no token configured nobody is an admin, whatever is sent": "0174-permissions-proxy-identity-three-scopes-audit.md",
   "apps/server/src/http/identity.test.ts::<import:436dd109>": "0174-permissions-proxy-identity-three-scopes-audit.md",
   "apps/server/src/http/identity.test.ts::<import:ead56c57>": "0174-permissions-proxy-identity-three-scopes-audit.md",
   "apps/server/src/http/models-api.test.ts::<import:436dd109>": "0174-permissions-proxy-identity-three-scopes-audit.md",
   "apps/server/src/http/models-api.test.ts::registering model APIs: add, list, change, delete [REQ-099] > only whoever registered it changes or deletes it; anyone else can still check and choose the default": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/http/models-api.test.ts::registering model APIs: add, list, change, delete [REQ-099] > only whoever registered it changes, deletes or checks it; only an admin chooses the default": "0179-visibility-scopes-amend-adr-0174-locked-tests.md",
   "apps/server/src/http/moss-api.test.ts::POST /api/moss/ask answers from the docs and the screen state [REQ-103] > without a default model it is 503 with the way out, and nothing is guessed": "0125-moss-requires-model.md",
+  "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] checking a model opens its sealed key, so it is for whoever registered it; choosing the default is for admins": "0179-visibility-scopes-amend-adr-0174-locked-tests.md",
   "apps/server/src/http/physics-api.test.ts::<import:4eea0d07>": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/http/presets-api.test.ts::<import:436dd109>": "0174-permissions-proxy-identity-three-scopes-audit.md",
   "apps/server/src/http/process-api.test.ts::지금 하는 방식 표 [REQ-112] > [REQ-112] 비거나 틀린 표는 받지 않고, 처음 적은 사람만 고친다": "0174-permissions-proxy-identity-three-scopes-audit.md",
@@ -181293,13 +183280,20 @@
   "apps/server/src/runtime/agent-versions.test.ts::<import:b0dd44bd>": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > only whoever connected it may change its versions; the config file's connection is open to everyone": "0174-permissions-proxy-identity-three-scopes-audit.md",
   "apps/server/src/runtime/connection-secrets.test.ts::<import:11dddb1f>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/connection-secrets.test.ts::<import:2070e6e0>": "0179-visibility-scopes-amend-adr-0174-locked-tests.md",
+  "apps/server/src/runtime/connection-secrets.test.ts::<import:e9fa8dc5>": "0179-visibility-scopes-amend-adr-0174-locked-tests.md",
   "apps/server/src/runtime/connection-traces.test.ts::<import:68f3a5c2>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/connection-traces.test.ts::<import:e810df6f>": "0179-visibility-scopes-amend-adr-0174-locked-tests.md",
   "apps/server/src/runtime/connections.test.ts::<import:2d409afc>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/connections.test.ts::<import:869ea03e>": "0179-visibility-scopes-amend-adr-0174-locked-tests.md",
+  "apps/server/src/runtime/connections.test.ts::<import:e9fa8dc5>": "0179-visibility-scopes-amend-adr-0174-locked-tests.md",
+  "apps/server/src/runtime/escalation.test.ts::<import:6b061108>": "0179-visibility-scopes-amend-adr-0174-locked-tests.md",
   "apps/server/src/runtime/escalation.test.ts::<import:8e8150af>": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/runtime/executor-activity.test.ts::<import:f7d767d7>": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/runtime/executor.test.ts::<import:a6bcd901>": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/runtime/meta-slot.test.ts::<import:88d2955a>": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/runtime/metadata.test.ts::<import:1b1baf5b>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/metadata.test.ts::<import:e5b6340c>": "0179-visibility-scopes-amend-adr-0174-locked-tests.md",
   "apps/server/src/runtime/models-sealed.test.ts::<import:88d2955a>": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/runtime/moss.test.ts::<import:c34bd671>": "0125-moss-requires-model.md",
   "apps/server/src/runtime/moss.test.ts::<import:d2d0b133>": "0125-moss-requires-model.md",
@@ -181318,6 +183312,7 @@
   "apps/server/src/runtime/run-events.test.ts::<import:1b1baf5b>": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/runtime/test-support/platform.ts::=YEONSU": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/runtime/world-templates.test.ts::<import:88d2955a>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/world-templates.test.ts::<import:b95fbde8>": "0179-visibility-scopes-amend-adr-0174-locked-tests.md",
   "apps/web/src/logic/app-words.test.ts::<import:3c3e2cad>": "0077-airflow-words-amend-tests.md",
   "apps/web/src/logic/connections.test.ts::<import:69983d44>": "0048-connections-screens.md",
   "apps/web/src/logic/crew-words.test.ts::the lines of the people in the server room [REQ-074] > there are 3 to 5 for each of the six situations": "0106-domains-escalate-amend-tests.md",

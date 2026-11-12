@@ -57,7 +57,7 @@ export {
   type MossAskRequest,
   type MossSourceView,
 } from "./moss";
-export { ACTIONS, type Action, type RoutePolicy } from "./permissions";
+export { ACTIONS, type Action, DECIDED_ONLY, type Decided, type RoutePolicy } from "./permissions";
 export { PutPhysicsBody, type PutPhysicsRequest } from "./physics-routes";
 export {
   ImportPresetsBody,
@@ -169,6 +169,7 @@ export {
   ToolsSchema,
   WorldgenSpecSchema,
 } from "./schemas";
+export { ScopeBody, ScopeFields, type ScopeRequest, type SharingView } from "./scope";
 export {
   CARD_NAME_MAX,
   CopyServiceCardBody,
@@ -205,9 +206,12 @@ export type {
   RunWorldView,
   SavedScenario,
   SavedWorld,
+  ScenarioWithScope,
+  ShareListItem,
   ShareView,
   SourceView,
   TelemetryView,
   WorldPhysicsView,
   WorldSummary,
+  WorldWithScope,
 } from "./views";

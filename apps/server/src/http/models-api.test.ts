@@ -190,18 +190,19 @@ describe("registering model APIs: add, list, change, delete [REQ-099]", () => {
     await platform.stop();
   });
 
-  test("only whoever registered it changes, deletes or checks it; only an admin chooses the default", async () => {
+  test("only whoever registered it changes or deletes it; its maker or an admin chooses the default", async () => {
     const { send, platform } = setup({ "/v1/models": models("a") });
-    const made = await send("POST", "/api/models", mine, "haneul");
+    const made = await send("POST", "/api/models", { ...mine, scope: "everyone" }, "haneul");
     expect(
       (await send("PATCH", `/api/models/${made.body.id}`, { name: "x" }, "jimin")).status,
     ).toBe(403);
     expect((await send("DELETE", `/api/models/${made.body.id}`, undefined, "jimin")).status).toBe(
       403,
     );
+    // made for everyone, so anyone who is signed in may check it (ADR-0174)
     expect(
       (await send("POST", `/api/models/${made.body.id}/check`, undefined, "jimin")).status,
-    ).toBe(403);
+    ).toBe(200);
     expect(
       (await send("POST", `/api/models/${made.body.id}/check`, undefined, "haneul")).status,
     ).toBe(200);
@@ -210,7 +211,7 @@ describe("registering model APIs: add, list, change, delete [REQ-099]", () => {
     ).toBe(200);
     expect(
       (await send("POST", `/api/models/${made.body.id}/default`, undefined, "haneul")).status,
-    ).toBe(403);
+    ).toBe(200);
     expect(
       (await send("POST", `/api/models/${made.body.id}/default`, undefined, "jimin")).status,
     ).toBe(403);
@@ -230,9 +231,10 @@ describe("registering model APIs: add, list, change, delete [REQ-099]", () => {
 
   test("only one is the default; deleting the default hands it to the one registered first", async () => {
     const { send, platform } = setup();
-    const a = await send("POST", "/api/models", { ...mine, name: "A" });
-    const b = await send("POST", "/api/models", { ...mine, name: "B" });
-    const c = await send("POST", "/api/models", { ...mine, name: "C" });
+    const shared = { ...mine, scope: "everyone" };
+    const a = await send("POST", "/api/models", { ...shared, name: "A" });
+    const b = await send("POST", "/api/models", { ...shared, name: "B" });
+    const c = await send("POST", "/api/models", { ...shared, name: "C" });
     await send("POST", `/api/models/${c.body.id}/default`, undefined, "admin-kim");
     const flags = async () =>
       ((await send("GET", "/api/models")).body as { name: string; isDefault: boolean }[]).map(
@@ -401,7 +403,7 @@ describe("registrations survive a restart, sealed [REQ-099]", () => {
       { adapters: { secretBox: box }, llm: { fetch: up.fetch } },
       second,
     );
-    const [again] = await two.platform.models.list();
+    const [again] = await two.platform.models.list(person("haneul", "proxy"));
     expect(again).toMatchObject({ id: made.id, keyHint: "…ab12", isDefault: true });
     const checked = await two.platform.models.check(person("haneul", "proxy"), made.id);
     expect(checked.lastCheck).toMatchObject({ ok: true, modelCount: 2 });

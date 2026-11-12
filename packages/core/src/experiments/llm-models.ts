@@ -1,9 +1,11 @@
+import type { Shared } from "./scope";
+
 /**
  * A model API registered for the whole workspace (REQ-099, ADR-0119): not an experiment's own connection but something
  * the workspace uses later (reading results, guiding). The key and header values are kept sealed; only the last four
  * letters of the key stay in the open, for the card.
  */
-export interface LlmModelRecord {
+export interface LlmModelRecord extends Shared {
   readonly id: string;
   /** Who registered it; only they change or delete it. */
   readonly owner: string;

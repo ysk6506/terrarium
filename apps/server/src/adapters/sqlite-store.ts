@@ -27,31 +27,36 @@ import {
   type ScenarioRecord,
   type ServiceCardRecord,
   type ShareRecord,
+  type Sight,
+  seen,
   type TitleAward,
   type WorldLike,
   type WorldRecord,
   type WorldSummary,
 } from "@terrarium/core/experiments";
 import type { Blueprint, EntityKind } from "@terrarium/core/world";
+import { CommunityTables } from "./sqlite-community";
 import { addRepeatColumn, runOf } from "./sqlite-migrate";
 import { RecordTable } from "./sqlite-records";
+import { addScopeColumns, scopeColumns, visibleSql } from "./sqlite-scope";
 
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS worlds (
   id TEXT PRIMARY KEY, record TEXT NOT NULL, counts TEXT NOT NULL,
-  updated_at TEXT NOT NULL, deleted INTEGER NOT NULL DEFAULT 0);
+  updated_at TEXT NOT NULL, deleted INTEGER NOT NULL DEFAULT 0, owner TEXT, scope TEXT, grp TEXT);
 CREATE TABLE IF NOT EXISTS world_versions (
   id TEXT NOT NULL, digest TEXT NOT NULL, blueprint TEXT NOT NULL, PRIMARY KEY (id, digest));
 CREATE TABLE IF NOT EXISTS scenarios (
   id TEXT PRIMARY KEY, world_id TEXT NOT NULL, record TEXT NOT NULL,
-  updated_at TEXT NOT NULL, deleted INTEGER NOT NULL DEFAULT 0);
+  updated_at TEXT NOT NULL, deleted INTEGER NOT NULL DEFAULT 0, owner TEXT, scope TEXT, grp TEXT);
 CREATE TABLE IF NOT EXISTS scenario_versions (
   id TEXT NOT NULL, digest TEXT NOT NULL, doc TEXT NOT NULL, PRIMARY KEY (id, digest));
 CREATE TABLE IF NOT EXISTS experiments (
   id TEXT PRIMARY KEY, owner TEXT NOT NULL, benchmark_key TEXT NOT NULL, parent_id TEXT,
-  world_id TEXT NOT NULL, scenario_id TEXT NOT NULL, created_at TEXT NOT NULL, record TEXT NOT NULL);
+  world_id TEXT NOT NULL, scenario_id TEXT NOT NULL, created_at TEXT NOT NULL, record TEXT NOT NULL,
+  scope TEXT, grp TEXT);
 CREATE INDEX IF NOT EXISTS experiments_created ON experiments (created_at DESC, id DESC);
 CREATE INDEX IF NOT EXISTS experiments_benchmark ON experiments (benchmark_key);
 CREATE INDEX IF NOT EXISTS experiments_parent ON experiments (parent_id);
@@ -122,6 +127,8 @@ export class SqliteStore implements ExperimentStore {
       throw new Error(`데이터 파일이 더 새 버전(${version})이에요. 서버를 업데이트해 주세요`);
     // Version 2 (ADR-0158) gave runs a repeat number; the runs of a version-1 file are the first run of their seed.
     if (version === 1) addRepeatColumn(this.db);
+    // Version 3 (permissions step 나) gave worlds, scenarios and experiments an owner, scope and group column; old rows read as everyone's.
+    if (version > 0 && version < 3) addScopeColumns(this.db);
     this.db.exec(SCHEMA);
     this.db.exec(`PRAGMA user_version = ${SCHEMA_VERSION}`);
   }
@@ -144,8 +151,15 @@ export class SqliteStore implements ExperimentStore {
     this.db.exec("BEGIN");
     try {
       this.sql(
-        "INSERT INTO worlds (id, record, counts, updated_at, deleted) VALUES (?, ?, ?, ?, 0) ON CONFLICT(id) DO UPDATE SET record = excluded.record, counts = excluded.counts, updated_at = excluded.updated_at, deleted = 0",
-      ).run(world.id, JSON.stringify(rest), JSON.stringify(countKinds(blueprint)), world.updatedAt);
+        "INSERT INTO worlds (id, record, counts, updated_at, deleted, owner, scope, grp) VALUES (?, ?, ?, ?, 0, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET record = excluded.record, counts = excluded.counts, updated_at = excluded.updated_at, deleted = 0, owner = excluded.owner, scope = excluded.scope, grp = excluded.grp",
+      ).run(
+        world.id,
+        JSON.stringify(rest),
+        JSON.stringify(countKinds(blueprint)),
+        world.updatedAt,
+        world.owner,
+        ...scopeColumns(world),
+      );
       this.sql("INSERT OR IGNORE INTO world_versions (id, digest, blueprint) VALUES (?, ?, ?)").run(
         world.id,
         world.digest,
@@ -168,10 +182,13 @@ export class SqliteStore implements ExperimentStore {
     return blueprint && { ...rest, blueprint };
   }
 
-  async listWorlds(): Promise<WorldSummary[]> {
-    const rows = this.sql(
-      "SELECT record, counts FROM worlds WHERE deleted = 0 ORDER BY updated_at DESC",
-    ).all() as Row[];
+  async listWorlds(visibleTo?: Sight): Promise<WorldSummary[]> {
+    const visible = visibleSql(visibleTo);
+    const rows = this.db
+      .prepare(
+        `SELECT record, counts FROM worlds WHERE deleted = 0${visible ? ` AND ${visible.sql}` : ""} ORDER BY updated_at DESC`,
+      )
+      .all(...(visible?.params ?? [])) as Row[];
     return rows.map((r) => ({
       ...parse<Omit<WorldRecord, "blueprint">>(r.record),
       counts: parse(r.counts),
@@ -196,8 +213,15 @@ export class SqliteStore implements ExperimentStore {
 
   async putScenario(scenario: ScenarioRecord): Promise<void> {
     this.sql(
-      "INSERT INTO scenarios (id, world_id, record, updated_at, deleted) VALUES (?, ?, ?, ?, 0) ON CONFLICT(id) DO UPDATE SET world_id = excluded.world_id, record = excluded.record, updated_at = excluded.updated_at, deleted = 0",
-    ).run(scenario.id, scenario.worldId, JSON.stringify(scenario), scenario.updatedAt);
+      "INSERT INTO scenarios (id, world_id, record, updated_at, deleted, owner, scope, grp) VALUES (?, ?, ?, ?, 0, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET world_id = excluded.world_id, record = excluded.record, updated_at = excluded.updated_at, deleted = 0, owner = excluded.owner, scope = excluded.scope, grp = excluded.grp",
+    ).run(
+      scenario.id,
+      scenario.worldId,
+      JSON.stringify(scenario),
+      scenario.updatedAt,
+      scenario.owner,
+      ...scopeColumns(scenario),
+    );
     this.sql("INSERT OR IGNORE INTO scenario_versions (id, digest, doc) VALUES (?, ?, ?)").run(
       scenario.id,
       scenario.digest,
@@ -212,14 +236,15 @@ export class SqliteStore implements ExperimentStore {
     return row && parse<ScenarioRecord>(row.record);
   }
 
-  async listScenarios(worldId?: string): Promise<ScenarioRecord[]> {
-    const rows = (
-      worldId === undefined
-        ? this.sql("SELECT record FROM scenarios WHERE deleted = 0 ORDER BY updated_at DESC").all()
-        : this.sql(
-            "SELECT record FROM scenarios WHERE deleted = 0 AND world_id = ? ORDER BY updated_at DESC",
-          ).all(worldId)
-    ) as Row[];
+  async listScenarios(worldId?: string, visibleTo?: Sight): Promise<ScenarioRecord[]> {
+    const visible = visibleSql(visibleTo);
+    const conditions = ["deleted = 0", ...(worldId === undefined ? [] : ["world_id = ?"])];
+    if (visible) conditions.push(visible.sql);
+    const rows = this.db
+      .prepare(
+        `SELECT record FROM scenarios WHERE ${conditions.join(" AND ")} ORDER BY updated_at DESC`,
+      )
+      .all(...(worldId === undefined ? [] : [worldId]), ...(visible?.params ?? [])) as Row[];
     return rows.map((r) => parse<ScenarioRecord>(r.record));
   }
 
@@ -241,7 +266,7 @@ export class SqliteStore implements ExperimentStore {
 
   async putExperiment(e: Experiment): Promise<void> {
     this.sql(
-      "INSERT OR REPLACE INTO experiments (id, owner, benchmark_key, parent_id, world_id, scenario_id, created_at, record) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT OR REPLACE INTO experiments (id, owner, benchmark_key, parent_id, world_id, scenario_id, created_at, record, scope, grp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     ).run(
       e.id,
       e.owner,
@@ -251,6 +276,7 @@ export class SqliteStore implements ExperimentStore {
       e.recipe.scenarioId,
       e.createdAt,
       JSON.stringify(e),
+      ...scopeColumns(e),
     );
   }
 
@@ -261,11 +287,13 @@ export class SqliteStore implements ExperimentStore {
 
   async listExperiments(filter: ExperimentFilter = {}): Promise<Experiment[]> {
     const used = COLUMN_FILTERS.filter(([key]) => filter[key] !== undefined);
-    const where =
-      used.length > 0 ? `WHERE ${used.map(([, col]) => `${col} = ?`).join(" AND ")}` : "";
+    const visible = visibleSql(filter.visibleTo);
+    const conditions = used.map(([, col]) => `${col} = ?`);
+    if (visible) conditions.push(visible.sql);
+    const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
     const rows = this.db
       .prepare(`SELECT record FROM experiments ${where} ORDER BY created_at DESC, id DESC`)
-      .all(...used.map(([key]) => String(filter[key]))) as Row[];
+      .all(...used.map(([key]) => String(filter[key])), ...(visible?.params ?? [])) as Row[];
     const found = rows
       .map((r) => parse<Experiment>(r.record))
       .filter((e) => matchesText(e, filter.text) && matchesMetadata(e, filter.meta));
@@ -320,6 +348,15 @@ export class SqliteStore implements ExperimentStore {
     return row && parse<ShareRecord>(row.record);
   }
 
+  async listShares(experimentId: string): Promise<ShareRecord[]> {
+    const rows = this.sql("SELECT record FROM shares WHERE experiment_id = ?").all(
+      experimentId,
+    ) as Row[];
+    return rows
+      .map((r) => parse<ShareRecord>(r.record))
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt) || a.token.localeCompare(b.token));
+  }
+
   async deleteShare(token: string): Promise<boolean> {
     return Number(this.sql("DELETE FROM shares WHERE token = ?").run(token).changes) > 0;
   }
@@ -332,9 +369,11 @@ export class SqliteStore implements ExperimentStore {
     );
   }
 
-  async listConnections(): Promise<ConnectionRecord[]> {
+  async listConnections(visibleTo?: Sight): Promise<ConnectionRecord[]> {
     const rows = this.sql("SELECT record FROM connections ORDER BY created_at, id").all() as Row[];
-    return rows.map((r) => parse<ConnectionRecord>(r.record));
+    return rows
+      .map((r) => parse<ConnectionRecord>(r.record))
+      .filter((c) => visibleTo === undefined || seen(visibleTo, c));
   }
 
   async deleteConnection(id: string): Promise<boolean> {
@@ -417,7 +456,8 @@ export class SqliteStore implements ExperimentStore {
   private readonly models = new RecordTable<LlmModelRecord>((q) => this.sql(q), "llm_models");
   putModel = async (m: LlmModelRecord): Promise<void> => this.models.put(m);
   getModel = async (id: string) => this.models.get(id);
-  listModels = async () => this.models.list();
+  listModels = async (visibleTo?: Sight) =>
+    this.models.list().filter((m) => visibleTo === undefined || seen(visibleTo, m));
   deleteModel = async (id: string) => this.models.delete(id);
 
   private readonly cards = new RecordTable<ServiceCardRecord>((q) => this.sql(q), "service_cards");
@@ -433,67 +473,14 @@ export class SqliteStore implements ExperimentStore {
   putCurrentProcess = async (p: CurrentProcessRecord): Promise<void> => this.processes.put(p);
   getCurrentProcess = async (scenarioId: string) => this.processes.get(scenarioId);
 
-  async putLike(like: WorldLike): Promise<void> {
-    this.sql("INSERT OR IGNORE INTO world_likes (world_id, user_name, at) VALUES (?, ?, ?)").run(
-      like.worldId,
-      like.user,
-      like.at,
-    );
-  }
-
-  async deleteLike(worldId: string, user: string): Promise<boolean> {
-    return (
-      Number(
-        this.sql("DELETE FROM world_likes WHERE world_id = ? AND user_name = ?").run(worldId, user)
-          .changes,
-      ) > 0
-    );
-  }
-
-  async listLikes(): Promise<WorldLike[]> {
-    const rows = this.sql(
-      "SELECT world_id, user_name, at FROM world_likes ORDER BY at, world_id, user_name",
-    ).all() as Row[];
-    return rows.map((r) => ({
-      worldId: String(r.world_id),
-      user: String(r.user_name),
-      at: String(r.at),
-    }));
-  }
-
-  async putCalibrationMark(mark: CalibrationMark): Promise<void> {
-    this.sql(
-      "INSERT OR REPLACE INTO calibration_marks (scenario_id, digest, at, clean) VALUES (?, ?, ?, ?)",
-    ).run(mark.scenarioId, mark.digest, mark.at, mark.clean ? 1 : 0);
-  }
-
-  async listCalibrationMarks(): Promise<CalibrationMark[]> {
-    const rows = this.sql(
-      "SELECT scenario_id, digest, at, clean FROM calibration_marks ORDER BY at, scenario_id",
-    ).all() as Row[];
-    return rows.map((r) => ({
-      scenarioId: String(r.scenario_id),
-      digest: String(r.digest),
-      at: String(r.at),
-      clean: Number(r.clean) === 1,
-    }));
-  }
-
-  async listTitleAwards(): Promise<TitleAward[]> {
-    const rows = this.sql(
-      "SELECT user_name, key, earned_at FROM title_awards ORDER BY earned_at, user_name, key",
-    ).all() as Row[];
-    return rows.map((r) => ({
-      user: String(r.user_name),
-      key: String(r.key),
-      earnedAt: String(r.earned_at),
-    }));
-  }
-
-  async putTitleAwards(awards: readonly TitleAward[]): Promise<void> {
-    for (const a of awards)
-      this.sql(
-        "INSERT OR IGNORE INTO title_awards (user_name, key, earned_at) VALUES (?, ?, ?)",
-      ).run(a.user, a.key, a.earnedAt);
-  }
+  private readonly community = new CommunityTables((q) => this.sql(q));
+  putLike = async (like: WorldLike): Promise<void> => this.community.putLike(like);
+  deleteLike = async (worldId: string, user: string) => this.community.deleteLike(worldId, user);
+  listLikes = async () => this.community.listLikes();
+  putCalibrationMark = async (m: CalibrationMark): Promise<void> =>
+    this.community.putCalibrationMark(m);
+  listCalibrationMarks = async () => this.community.listCalibrationMarks();
+  listTitleAwards = async () => this.community.listTitleAwards();
+  putTitleAwards = async (awards: readonly TitleAward[]): Promise<void> =>
+    this.community.putTitleAwards(awards);
 }

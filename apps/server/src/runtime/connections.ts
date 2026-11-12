@@ -12,7 +12,7 @@ import {
   type ConnectorSpec,
   type CreateConnectionRequest,
   InvalidInputError,
-  parseWith,
+  type ScopeRequest,
   type TelemetryAdapterList,
   type TryConnectionRequest,
   type TryResult,
@@ -23,26 +23,24 @@ import type { ConnectionRecord, HarnessPort } from "@terrarium/core/experiments"
 import { ConflictError } from "@terrarium/core/kernel";
 import { CONNECTORS, type Connector, connectorOf } from "../adapters";
 import {
-  checkFields,
   compose,
   fail,
-  given,
   messageOf,
   metadataOf,
   probe,
   problem,
   recordOf,
-  reveal,
   slug,
   toolsNotes,
-  withHeaders,
 } from "./connection-form";
 import type { ConnectionsOptions } from "./connection-options";
+import { portFor } from "./connection-port";
 import { adapterList, adapterOf, composeTraces, reachNote, type Traces } from "./connection-traces";
 import { tryTalk } from "./connection-try";
 import { discover, type Entry, expiryOf, viewOf } from "./connection-view";
 import { type HarnessDirectory, must, type Viewer } from "./context";
-import { allow } from "./permissions";
+import { allow, canSee, mustSee, standing } from "./permissions";
+import { canChangeScope, changeScope, startingScope } from "./scoping";
 
 export type { ConnectionsOptions, FixedConnection } from "./connection-options";
 
@@ -113,6 +111,13 @@ export class Connections implements HarnessDirectory {
     return this.added.get(id)?.record?.owner;
   }
 
+  /** Who made it and who can see it: a connection of the config file has neither owner nor scope and is for everyone signed in. */
+  standingOf(id: string) {
+    const entry = this.fixed.get(id) ?? this.added.get(id);
+    if (!entry) return undefined;
+    return entry.record ? standing(entry.record) : {};
+  }
+
   /**
    * Where this connection's traces are read from. A choice made on the form wins ("default" is the server's own
    * telemetry); a connection nobody chose for keeps the older rule: the server's, if the harness says it emits traces.
@@ -164,8 +169,16 @@ export class Connections implements HarnessDirectory {
     }
   }
 
-  async views(): Promise<ConnectionView[]> {
-    return Promise.all(this.entries().map((e) => this.viewOfEntry(e)));
+  /** The connections the person can see, each saying whether they may change who sees it. */
+  async views(viewer: Viewer): Promise<ConnectionView[]> {
+    const seen = this.entries().filter((e) => canSee(viewer, this.standingOf(e.id) ?? {}));
+    return Promise.all(seen.map(async (e) => this.forViewer(viewer, await this.viewOfEntry(e))));
+  }
+
+  /** Whether the person asking may change who sees a connection made on the screen: its maker and admins. */
+  private forViewer(viewer: Viewer, view: ConnectionView): ConnectionView {
+    if (view.source !== "screen") return view;
+    return { ...view, sharing: { ...view.sharing, canChange: canChangeScope(viewer, view.owner) } };
   }
 
   private fromRecord(record: ConnectionRecord): Entry {
@@ -205,30 +218,7 @@ export class Connections implements HarnessDirectory {
 
   /** The port this record describes, or an InvalidInputError whose issues name the form fields. */
   private portOf(record: ConnectionRecord): HarnessPort {
-    const { id, name } = record;
-    const connector = connectorOf(record.connector);
-    if (!connector) return fail([problem("connector", `연결 방식 '${record.connector}'을 몰라요`)]);
-    if (!connector.spec.fromScreen)
-      fail([problem("connector", "이 연결 방식은 서버 설정 파일에서만 더할 수 있어요")]);
-    const identity = { id, name, description: record.description ?? "" };
-    const parsed = parseWith(connector.schema, {
-      ...given(record.config),
-      ...identity,
-      kind: record.connector,
-    });
-    if (!parsed.ok) return fail(parsed.issues.map((i) => problem(i.path ?? "", i.message)));
-    const values = parsed.value as Record<string, unknown>;
-    checkFields(connector, values, this.options.connect.env, this.options.allowedHosts);
-    const { secrets, headers } = reveal(record, this.options.box);
-    try {
-      return connector.connect(values, {
-        ...this.options.connect,
-        fetch: withHeaders(this.options.connect.fetch, headers),
-        ...(Object.keys(secrets).length > 0 ? { secrets } : {}),
-      });
-    } catch (err) {
-      return fail([problem("", messageOf(err))]);
-    }
+    return portFor(record, this.options);
   }
 
   private connectorFor(kind: string): Connector {
@@ -239,7 +229,7 @@ export class Connections implements HarnessDirectory {
 
   /** The connection being changed or tried as a change; its owner only, since its secrets travel with it. */
   private ownedScreenEntry(viewer: Viewer, id: string, action: string): Entry {
-    const entry = this.screenEntry(id, action === "연결 지우기" ? "지울" : "바꿀");
+    const entry = this.screenEntry(viewer, id, action === "연결 지우기" ? "지울" : "바꿀");
     allow(
       viewer,
       action === "연결 지우기" ? "remove" : "change",
@@ -252,16 +242,19 @@ export class Connections implements HarnessDirectory {
   /** A connection the viewer may use: the config file's are for everyone signed in, one made on the screen carries its maker's secrets. */
   private usable(viewer: Viewer, id: string): Entry {
     const entry = must(this.fixed.get(id) ?? this.added.get(id), `연결 '${id}'`);
-    allow(viewer, "use", { owner: this.ownerOf(id) }, "이 연결 쓰기");
+    // using needs sight; a connection the person cannot see answers as one that is not there
+    mustSee(viewer, this.standingOf(id) ?? {}, `연결 '${id}'`);
     return entry;
   }
 
-  private screenEntry(id: string, verb: string): Entry {
+  private screenEntry(viewer: Viewer, id: string, verb: string): Entry {
     if (this.fixed.has(id))
       throw new InvalidInputError(`서버 설정 파일에 적힌 연결은 화면에서 ${verb} 수 없어요`, [
         problem("id", "설정 파일에서 고친 뒤 서버를 다시 시작해 주세요"),
       ]);
-    return must(this.added.get(id), `연결 '${id}'`);
+    const entry = must(this.added.get(id), `연결 '${id}'`);
+    mustSee(viewer, this.standingOf(id) ?? {}, `연결 '${id}'`);
+    return entry;
   }
 
   /**
@@ -337,7 +330,13 @@ export class Connections implements HarnessDirectory {
     const connector = this.connectorFor(input.connector);
     const id = this.idFor(input);
     const record = recordOf(
-      { id, owner: viewer.id, createdAt: this.options.stamps.now() },
+      {
+        id,
+        owner: viewer.id,
+        createdAt: this.options.stamps.now(),
+        // a connection carries its maker's secrets: private until they say otherwise
+        ...startingScope(viewer, input, "private"),
+      },
       {
         name: input.name,
         description: input.description ?? "",
@@ -348,7 +347,7 @@ export class Connections implements HarnessDirectory {
     );
     const port = this.portOf(record);
     await this.options.store.putConnection(record);
-    return this.fresh(this.entryOf(record, port));
+    return this.forViewer(viewer, await this.fresh(this.entryOf(record, port)));
   }
 
   /** Change a connection: its owner only. Nothing is saved unless the new settings build. */
@@ -357,7 +356,8 @@ export class Connections implements HarnessDirectory {
     id: string,
     input: UpdateConnectionRequest,
   ): Promise<ConnectionView> {
-    const base = this.ownedScreenEntry(viewer, id, "연결 고치기").record as ConnectionRecord;
+    const kept = this.ownedScreenEntry(viewer, id, "연결 고치기").record as ConnectionRecord;
+    const base = kept;
     const connector = this.connectorFor(base.connector);
     const record = recordOf(
       base,
@@ -371,7 +371,18 @@ export class Connections implements HarnessDirectory {
     );
     const port = this.portOf(record);
     await this.options.store.putConnection(record);
-    return this.fresh(this.entryOf(record, port));
+    return this.forViewer(viewer, await this.fresh(this.entryOf(record, port)));
+  }
+
+  /** Who can see a connection (ADR-0174): the one place its scope changes; nothing else about it is rebuilt. */
+  async setScope(viewer: Viewer, id: string, req: ScopeRequest): Promise<ConnectionView> {
+    const what = "연결 공개 범위 바꾸기";
+    const entry = this.ownedScreenEntry(viewer, id, what);
+    const record = changeScope(viewer, entry.record as ConnectionRecord, req, what);
+    await this.options.store.putConnection(record);
+    const next: Entry = { ...entry, record };
+    this.added.set(id, next);
+    return this.forViewer(viewer, await this.fresh(next));
   }
 
   private entryOf(record: ConnectionRecord, port: HarnessPort): Entry {
@@ -411,15 +422,14 @@ export class Connections implements HarnessDirectory {
     const entry = this.usable(viewer, id);
     const again = entry.record && !entry.port ? this.fromRecord(entry.record) : entry;
     if (again !== entry) this.added.set(id, again);
-    return this.fresh(again);
+    return this.forViewer(viewer, await this.fresh(again));
   }
 
   /** Keep using it: the clock that removes unused connections starts over. Whoever may use the connection. */
   async keep(viewer: Viewer, id: string): Promise<ConnectionView> {
-    this.screenEntry(id, "바꿀");
-    allow(viewer, "use", { owner: this.ownerOf(id) }, "연결 계속 쓰기");
+    this.screenEntry(viewer, id, "바꿀");
     await this.touch(id);
-    return this.fresh(must(this.added.get(id), `연결 '${id}'`));
+    return this.forViewer(viewer, await this.fresh(must(this.added.get(id), `연결 '${id}'`)));
   }
 
   private fresh(entry: Entry): Promise<ConnectionView> {
@@ -447,7 +457,7 @@ export class Connections implements HarnessDirectory {
 
   /** The person's own connections that will be removed within the warning time. */
   async expiring(viewer: Viewer) {
-    return (await this.views())
+    return (await this.views(viewer))
       .filter(
         (v) => v.owner === viewer.id && v.daysLeft !== undefined && v.daysLeft <= this.warnDays,
       )

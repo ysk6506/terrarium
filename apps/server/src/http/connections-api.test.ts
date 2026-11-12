@@ -5,7 +5,7 @@ import { observe } from "@terrarium/core/experiments";
 import { afterAll, describe, expect, test } from "vitest";
 import { SecretBox, SqliteStore } from "../adapters";
 import { FakeFetch, json } from "../adapters/test-support/fake-fetch";
-import { person, testPlatform } from "../runtime/test-support/platform";
+import { ADMIN, person, testPlatform } from "../runtime/test-support/platform";
 import { buildApp } from "./app";
 
 const dirs: string[] = [];
@@ -66,8 +66,8 @@ describe("connecting a harness from the screen, over HTTP [REQ-051]", () => {
       name: "가로채기",
       config: { url: "https://evil.test" },
     });
-    expect(stranger.status).toBe(403);
-    expect((await send("jimin", "DELETE", `/api/connections/${id}`)).status).toBe(403);
+    expect(stranger.status).toBe(404);
+    expect((await send("jimin", "DELETE", `/api/connections/${id}`)).status).toBe(404);
 
     const changed = await send("haneul", "PUT", `/api/connections/${id}`, {
       name: "새 이름",
@@ -81,8 +81,8 @@ describe("connecting a harness from the screen, over HTTP [REQ-051]", () => {
     expect(bad.status).toBe(400);
     expect(bad.body.error.issues[0].path).toBe("url");
 
-    expect((await send("jimin", "POST", `/api/connections/${id}/keep`)).status).toBe(403);
-    expect((await send("jimin", "POST", `/api/connections/${id}/check`)).status).toBe(403);
+    expect((await send("jimin", "POST", `/api/connections/${id}/keep`)).status).toBe(404);
+    expect((await send("jimin", "POST", `/api/connections/${id}/check`)).status).toBe(404);
     expect((await send("haneul", "POST", `/api/connections/${id}/keep`)).body.daysLeft).toBe(30);
     expect((await send("haneul", "POST", `/api/connections/${id}/check`)).body.status).toBe("ok");
     expect((await send("haneul", "GET", "/api/meta")).body.expiring).toEqual([]);
@@ -132,7 +132,7 @@ describe("what was typed on the screen is still there after a restart [REQ-051]"
       second,
     );
     await two.platform.start();
-    const [, view] = await two.platform.connections.views();
+    const [, view] = await two.platform.connections.views(ADMIN);
     expect(view).toMatchObject({
       id: made.id,
       secrets: ["token"],

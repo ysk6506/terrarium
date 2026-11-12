@@ -1,7 +1,7 @@
 /** What every service of the platform shares, and small rules they all apply. */
 import type { TelemetryAdapter, TelemetryPort } from "@terrarium/core/analysis";
 import type { Catalog } from "@terrarium/core/catalog";
-import type { ExperimentStore, HarnessPort } from "@terrarium/core/experiments";
+import type { ExperimentStore, HarnessPort, Scope } from "@terrarium/core/experiments";
 import { NotFoundError, withJosa } from "@terrarium/core/kernel";
 import type { SourceEntry } from "../adapters";
 import type { EventBus, RunLogs } from "./events";
@@ -52,6 +52,10 @@ export interface HarnessDirectory {
   telemetryOf?(id: string): TelemetryAdapter | undefined;
   /** Who made it, when it was made on the screen; a connection of the config file has no owner (REQ-053). */
   ownerOf?(id: string): string | undefined;
+  /** Who made it and who can see it (ADR-0174); a connection of the config file has no owner and is for everyone signed in. A plain map has none. */
+  standingOf?(
+    id: string,
+  ): { readonly owner?: string; readonly scope?: Scope; readonly group?: string } | undefined;
 }
 
 export interface PlatformContext {

@@ -2,7 +2,7 @@
 title: 서버 운영 — 설치와 외부 시스템 연결
 kind: guide
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - apps/server/src/adapters/config.ts
   - apps/server/src/adapters/identity-config.ts
@@ -11,11 +11,11 @@ covers:
   - apps/server/src/main.ts
 covers_hash: 1a1eaa19042e97e1
 verification_log:
-  - "2026-11-05: config.ts의 하네스 traces 항목(none·default·clickstack·langfuse)과 전역 telemetry가 기본값이라는 것을 설정 표와 확인 목록에 맞췄다 (ADR-0085)"
-  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
   - "2026-11-11: main.ts의 시작 실패 보고를 console.error에서 process.stderr.write로 바꿨다(ADR-0148). 본문 서술과 어긋난 곳 없음"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-11: self-declared admin: token, else loopback socket address only; proxy mode unchanged"
+  - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
+  - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
 ---
 # 서버 운영
 
@@ -97,6 +97,8 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 ## 사용자 식별 자리
 
 두 방식이 있고, 시작할 때 하나로 정해진다. SSO를 서버가 직접 확인해야 하게 되면 식별 방식 하나(`Authenticator`)를 더하면 된다 — [ADR-0044](adr/0044-identity-slot.md). 실제 SSO(OIDC·SAML)는 만들지 않았다. 자세한 규칙은 [권한](permissions.md).
+
+**공개 범위와 예전 기록 (ADR-0174 나 단계).** SQLite 스키마는 3판이다. 열 때 2판 이하 파일에 `scope`·`grp` 열(세계·시나리오는 `owner`도, 저장된 기록의 `owner`에서 채운다)을 더하고 `PRAGMA user_version`을 올린다. 범위가 없는 예전 기록은 세계·시나리오·실험·연결·모델 등록 모두 **`everyone`으로 읽는다**(새 연결·모델 등록의 처음 값이 "나만"이어도 예전 것을 갑자기 숨기지 않는다). "모두"인 새 기록도 범위를 적지 않아 예전 기록과 바이트까지 같다. 소유자가 없는 예전 기록은 범위가 없으면 로그인한 누구나 본다.
 
 **프록시 모드 (`identity.header`가 있을 때. 여럿이 쓰는 배포는 이것이다)**
 

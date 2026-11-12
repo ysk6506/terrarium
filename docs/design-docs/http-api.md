@@ -13,7 +13,7 @@ covers:
   - packages/core/src/contract/model-routes.ts
   - packages/core/src/contract/community.ts
   - packages/core/src/contract/community-routes.ts
-covers_hash: cd562149b0e6a238
+covers_hash: eb2ac775fe9ac774
 verification_log:
   - "2026-11-07: REQ-112의 경로 넷을 표에 더했다"
   - "2026-11-11: main 합치기 뒤 다시 읽음: 물리 프로필(REQ-113) 반영 문단과 라우트 행이 main의 새 내용과 함께 맞다"
@@ -67,11 +67,11 @@ verification_log:
 | `DELETE /api/presets/:id` | 지우기: 7일 동안 남겨 두었다가 목록을 읽을 때 정리한다 | |
 | `POST /api/presets/:id/restore` | 지운 것 되돌리기 | |
 | `GET /api/models` | 워크스페이스에 등록한 LLM API 목록(모두에게 같다). 키는 `hasKey`와 `keyHint`(`…ab12`)뿐이고 헤더는 이름만 나온다. `lastCheck`에 마지막 확인 결과가 있다 | |
-| `POST /api/models` | 등록 `{kind: litellm\|openai\|anthropic, name, baseUrl, apiKey?, defaultModel?, headers?: [{name, value}]}`. 첫 번째는 기본이 된다. 같은 이름은 409, 주소가 안 맞으면(메타데이터 주소 등) 400 | |
+| `POST /api/models` | 등록 `{kind: litellm\|openai\|anthropic, name, baseUrl, apiKey?, defaultModel?, headers?: [{name, value}]}`. 범위가 "모두"인 첫 번째가 기본이 된다. 같은 이름은 내 등록 사이와 "모두"로 만든 등록 사이에서만 409(남의 "나만" 모델과는 견주지 않는다), 주소가 안 맞으면(메타데이터 주소 등) 400 | |
 | `PATCH /api/models/:id` | 고치기(만든 사람과 관리자). 안 보낸 칸은 그대로, `apiKey`를 비우면 기존 키, `clearKey: true`면 키 삭제, 헤더는 `value` 없는 줄이 기존 값을 유지. 주소·키·헤더가 바뀌면 `lastCheck`가 지워진다 | |
 | `DELETE /api/models/:id` | 지우기(만든 사람과 관리자). 저장한 키도 지워진다. 기본이었으면 가장 먼저 등록한 것이 기본이 된다 | |
 | `POST /api/models/:id/check` | 연결 확인: 모델 목록을 읽고(`GET /v1/models`, LiteLLM은 `/model/info`도), 안 되면 기본 모델 이름이 있을 때 `max_tokens: 1` 완성 한 번. 결과(`ok`·`ms`·`via`·`modelCount`·`models`·`reason`·`error`)와 시각을 기록해 모델을 돌려준다. 이 호출은 **서버에서 바깥으로** 나가므로, 나가지 못하는 환경이면 `reason: network`로 그렇게 말한다. 봉인된 키를 열어 쓰므로 등록한 사람과 관리자만 부른다 | |
-| `POST /api/models/:id/default` | 기본 모델로 정하기(하나만 기본). 모든 사용자의 이끼 질문이 이 모델로 가므로 관리자만 | |
+| `POST /api/models/:id/default` | 모두의 기본 모델로 정하기(하나만 기본). 모든 사용자의 이끼 질문이 이 모델로 가므로 관리자와 그 모델의 주인만, 범위가 "모두"인 모델만(아니면 400) | |
 | `POST /api/moss/ask` | 이끼에게 묻기(REQ-103, [ADR-0124](adr/0124-moss-assistant.md), [설명](moss.md)) `{screen, question, state?, actions?: [{id, label}]}` → `{answer, answered, sources: [{kind: "doc", id, title, file, path} \| {kind: "state"}], suggestedActions, followUps, model, rough?}`. 서버가 문서 조각(BM25 방식 낱말 점수)과 화면 상태로 프롬프트를 짜 **기본 모델**에 묻는다. 답은 세 문장 안이고, 없는 출처와 `actions`에 없는 동작 id는 버리며, 근거가 없으면 모델을 부르지 않고 "문서에 없어요"로 답한다. **서버는 동작을 실행하지 않는다.** 기본 모델이 없으면 **409** `{ error: { code: "no_model", reason: "no_model" } }`([ADR-0125](adr/0125-moss-requires-model.md): 이끼는 기본 모델이 있어야만 쓸 수 있다)이고, 모델이 답하지 않으면 503 | |
 | `GET /api/worlds?sort=` | 세계 목록(템플릿 제외). `sort`는 `popular`(기본)·`active`·`new`·`mine`, 밖의 값은 400. 카드마다 `stats`(`experiments30d`·`experiments`·`likes`·`startedByOthers`·`score`·`week`), `likes`, `likedByMe`, `ownerTitles`가 실려 온다 (REQ-101, ADR-0122) | |
 | `GET /api/physics/slots` | 물리 자리 열세 개: 이름·계약·허용 범위·숫자(단위·기본값·범위·설명)·곡선 이름 (REQ-113, [ADR-0137](adr/0137-physics-slots-and-profile-core.md), [레퍼런스](physics-profile.md)) | |
@@ -91,6 +91,7 @@ verification_log:
 | `GET /api/world-templates` | 저장해 둔 세계 템플릿 목록(구성은 `provenance.shape`). `GET /api/worlds`에는 나오지 않는다 | |
 | `POST /api/worlds/import` | 현실(KG 등)에서 읽기 전용으로 가져오기 (관리자만) | |
 | `PUT /api/worlds/:id` | 세계 고쳐 저장 (버전 확인) | |
+| `PUT /api/worlds/:id/scope` · `PUT /api/scenarios/:id/scope` · `PUT /api/experiments/:id/scope` · `PUT /api/connections/:id/scope` · `PUT /api/models/:id/scope` | 누가 볼 수 있는지 바꾸기 `{ scope, group? }` (만든 사람과 관리자. 보이지 않으면 404). 아래 "공개 범위" | |
 | `DELETE /api/worlds/:id` | 세계 숨기기 (실험이 쓴 버전은 남는다) | |
 | `GET /api/scenarios` | 시나리오 목록 | |
 | `GET /api/scenarios/:id` | 시나리오 하나 | |
@@ -136,10 +137,18 @@ verification_log:
 | `public` | 주소 안의 토큰이 비밀. 로그인 밖 (`GET /r/:token`) | 1 |
 | `open` | 신원 방식이 들여보낸 누구나. 누구인지 알려 주는 `meta` 하나 | 1 |
 | `signedIn` | 로그인한 누구나. 읽기, 만들기, 내 것만 보이는 저장해 둔 것 | 47 |
-| `admin` | 관리자만, 앱이 핸들러 앞에서 막는다 (기본 모델 정하기, 소스에서 세계 가져오기) | 2 |
-| `{ action }` | 무엇에 하는 일인지 안 뒤 핸들러가 `may(viewer, action, resource)`로 정한다 | 31 |
+| `admin` | 관리자만, 앱이 핸들러 앞에서 막는다 (소스에서 세계 가져오기) | 1 |
+| `{ action }` | 무엇에 하는 일인지 안 뒤 핸들러가 `may(viewer, action, resource)`로 정한다 | 38 |
 
-`{ action }`의 열두 가지 말(열세째 `administer`는 `admin` 정책이 쓴다): `change`·`remove`·`cancel`·`addRuns`·`answerEscalation`·`calibrate`·`editProcess`·`createShare`는 만든 사람과 관리자, `editAgentVersions`는 만든 사람과 관리자(설정 파일의 연결은 관리자), `use`(연결·모델 쓰기, 그 연결로 실험 만들기·복제)는 설정 파일의 연결이면 로그인한 누구나·화면에서 만든 것이면 만든 사람과 관리자, `deleteShare`는 링크를 만든 사람·실험을 만든 사람·관리자, `like`는 이름이 있는 사람. 소유는 로그인 ID로 견준다. 판정은 `apps/server/src/runtime/permissions.ts`의 `may` 한 곳이다.
+`{ action }`의 열네 가지 말(열다섯째 `administer`는 `admin` 정책이 쓴다): `change`·`remove`·`cancel`·`addRuns`·`answerEscalation`·`calibrate`·`editProcess`·`createShare`·`listShares`·`changeScope`는 만든 사람과 관리자, `editAgentVersions`는 만든 사람과 관리자(설정 파일의 연결은 관리자), `use`(연결·모델 쓰기, 그 연결로 실험 만들기·복제)는 **그것이 내게 보이는 사람**(설정 파일의 연결과 관리자가 정한 기본 모델은 로그인한 누구나), `deleteShare`는 링크를 만든 사람·실험을 만든 사람·관리자, `like`는 이름이 있는 사람. 소유는 로그인 ID로 견준다. 판정은 `apps/server/src/runtime/permissions.ts`의 `may` 한 곳이다.
+
+### 공개 범위 (ADR-0174 나 단계, [권한](permissions.md#3-공개-범위는-셋))
+
+- 세계·시나리오·실험·화면에서 만든 연결·모델 등록은 `scope`(`private`·`group`·`everyone`)와 `group`을 가진다. 만들 때는 생성 요청에 적고, **바꿀 때는 다섯 종류 모두 같은 길**이다: `PUT /api/<worlds|scenarios|experiments|connections|models>/:id/scope`, 본문은 `{ scope, group? }`뿐이다(만든 사람과 관리자, 정책 `changeScope`). 기존 고치기 길(`PUT /api/worlds/:id` 등)은 `scope`를 받지 않는다. 바꾸기는 한 함수(`changeScope`)를 지난다. 그룹이 하나도 없는 사람이 `group`을 고르면 400에 까닭이 실린다. 모두의 기본 모델은 범위가 `everyone`인 모델만 될 수 있어서, 기본 모델의 범위를 좁히면 400이다.
+- 처음 값: 세계·시나리오·실험은 `everyone`, 연결·모델은 `private`. 범위가 없는 예전 기록은 종류와 상관없이 `everyone`으로 읽는다.
+- 볼 수 없는 것은 **목록에 없고 하나를 물으면 404**다(이미 있는 것과 같은 말). 보이지만 내 것이 아니면 바꾸기는 403이다. 딸린 길(실행·보고서·진단·사건·세계·텔레메트리·넘기기 카드·두 스트림·내보내기)은 세계나 실험의 범위를 따른다. 순위표와 세계 인기·좋아요·칭호는 `everyone`만 센다.
+- 응답: 세계·시나리오·실험은 `scope`·`group`과 `canChangeScope`(내가 바꿀 수 있나)를 싣고, 연결·모델은 `sharing: { scope, group?, canChange }`를 싣는다(연결의 `scope`는 "harness|agent"라는 다른 뜻이라 따로 뒀다).
+- `GET /api/experiments/:id/shares`: 그 실험의 링크 목록(만든 사람과 관리자만, 기간이 지난 링크 제외). 항목은 링크 보기에 `createdBy`를 더한 것이다.
 
 ### 연결 (REQ-051, REQ-053)
 

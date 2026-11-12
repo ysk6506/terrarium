@@ -28,11 +28,18 @@ import type {
   RunView,
   RunWho,
   RunWorldView,
+  ShareListItem,
   ShareView,
   TwinQueryParams,
 } from "@terrarium/core/contract";
 import { UnavailableError } from "@terrarium/core/contract";
-import type { Experiment, RunRecord } from "@terrarium/core/experiments";
+import {
+  type Experiment,
+  PUBLIC_SIGHT,
+  type RunRecord,
+  type Sight,
+  seen,
+} from "@terrarium/core/experiments";
 import { NotFoundError, randomToken } from "@terrarium/core/kernel";
 import {
   type CommonReach,
@@ -45,7 +52,8 @@ import { spanOf } from "@terrarium/core/topology";
 import { must, type PlatformContext, type Viewer } from "./context";
 import { whoIs } from "./executor";
 import type { Experiments } from "./experiments";
-import { allow } from "./permissions";
+import { Gate } from "./gate";
+import { allow, sightOf } from "./permissions";
 
 export type ReportFormat = "html" | "md" | "text";
 
@@ -57,10 +65,14 @@ export const DEFAULT_SHARE_DAYS = 30;
 const REACH = new Map<string, CommonReach | null>();
 
 export class Results {
+  private readonly gate: Gate;
+
   constructor(
     private readonly ctx: PlatformContext,
     private readonly experiments: Experiments,
-  ) {}
+  ) {
+    this.gate = new Gate(ctx);
+  }
 
   /** Where the traces of this run's connection are read from, if anywhere (ADR-0085). */
   private async adapterOf(run: RunRecord): Promise<TelemetryAdapter | undefined> {
@@ -172,17 +184,18 @@ export class Results {
   }
 
   /** Analysis with the harnesses' telemetry folded in (token counts, model time). */
-  private async fullAnalysis(experiment: Experiment): Promise<ExperimentAnalysis> {
+  private async fullAnalysis(experiment: Experiment, looker: Sight): Promise<ExperimentAnalysis> {
     const runs = await this.ctx.store.listRuns(experiment.id);
     const telemetry = new Map<string, Telemetry>();
     for (const r of runs)
       if (r.harness?.traceId) telemetry.set(r.harness.traceId, await this.telemetryOf(r));
-    return this.experiments.analysis(experiment, runs, telemetry);
+    return this.experiments.analysis(experiment, runs, telemetry, looker);
   }
 
-  async report(id: string, format: ReportFormat, url?: string): Promise<string> {
+  /** `looker` is who the report is for: it is compared with the parent experiment only when they may see it. */
+  async report(id: string, format: ReportFormat, looker: Sight, url?: string): Promise<string> {
     const experiment = await this.experiments.get(id);
-    const analysis = await this.fullAnalysis(experiment);
+    const analysis = await this.fullAnalysis(experiment, looker);
     const names = Object.fromEntries(
       [...this.ctx.harnesses.values()].map((h) => [h.info.id, h.info.name]),
     );
@@ -234,13 +247,28 @@ export class Results {
     };
   }
 
+  /** The links of one experiment, newest first: for its maker and admins (they are the ones who may take them back). */
+  async listShares(viewer: Viewer, id: string, baseUrl: string): Promise<ShareListItem[]> {
+    const experiment = await this.gate.experiment(viewer, id);
+    allow(viewer, "listShares", { owner: experiment.owner }, "공유 링크 보기");
+    const now = this.ctx.stamps.now();
+    return (await this.ctx.store.listShares(id))
+      .filter((s) => !s.expiresAt || s.expiresAt >= now)
+      .map((s) => ({
+        token: s.token,
+        url: `${baseUrl.replace(/\/$/, "")}/r/${s.token}`,
+        createdAt: s.createdAt,
+        createdBy: s.createdBy,
+        ...(s.expiresAt ? { expiresAt: s.expiresAt } : {}),
+      }));
+  }
+
   async deleteShare(viewer: Viewer, token: string): Promise<{ deleted: boolean }> {
-    const share = must(await this.ctx.store.getShare(token), "공유 링크");
-    const experiment = await this.ctx.store.getExperiment(share.experimentId);
+    const { share, experiment } = await this.gate.share(viewer, token);
     allow(
       viewer,
       "deleteShare",
-      { owner: experiment?.owner, creator: share.createdBy },
+      { owner: experiment.owner, creator: share.createdBy },
       "공유 링크 끊기",
     );
     return { deleted: await this.ctx.store.deleteShare(token) };
@@ -251,11 +279,19 @@ export class Results {
     const share = await this.ctx.store.getShare(token);
     if (!share || (share.expiresAt && share.expiresAt < this.ctx.stamps.now()))
       throw new NotFoundError("공유 링크가 없거나 만료됐어요");
-    return this.report(share.experimentId, format, url);
+    // seen as its maker sees it: the parent it was forked from is in the report only if the maker could see it too
+    const experiment = await this.experiments.get(share.experimentId);
+    return this.report(
+      share.experimentId,
+      format,
+      { id: experiment.owner, groups: [], admin: false },
+      url,
+    );
   }
 
-  private async everything(filter: { worldId?: string; scenarioId?: string }) {
+  private async everything(filter: { worldId?: string; scenarioId?: string }, to: Sight) {
     const experiments = await this.ctx.store.listExperiments({
+      visibleTo: to,
       ...(filter.worldId ? { worldId: filter.worldId } : {}),
       ...(filter.scenarioId ? { scenarioId: filter.scenarioId } : {}),
     });
@@ -265,15 +301,16 @@ export class Results {
   }
 
   async leaderboards(query: LeaderboardQueryParams): Promise<LeaderboardView[]> {
-    const all = await this.everything(query);
+    // only what is for everyone is ranked: a private or group experiment is not on a list that all can read
+    const all = await this.everything(query, PUBLIC_SIGHT);
     return buildLeaderboards(
       all.map((x) => analyzeExperiment(x)),
       query.minRuns,
     );
   }
 
-  async twinRecords(query: TwinQueryParams): Promise<DiagnosisRecord[]> {
-    const all = await this.everything(query);
+  async twinRecords(viewer: Viewer, query: TwinQueryParams): Promise<DiagnosisRecord[]> {
+    const all = await this.everything(query, sightOf(viewer));
     return all
       .filter(
         ({ experiment: e }) =>
@@ -284,14 +321,14 @@ export class Results {
       .flatMap(({ experiment, runs }) => diagnosisRecords(experiment, runs));
   }
 
-  async twinBrief(query: TwinQueryParams): Promise<string> {
-    const records = await this.twinRecords(query);
+  async twinBrief(viewer: Viewer, query: TwinQueryParams): Promise<string> {
+    const records = await this.twinRecords(viewer, query);
     const worldIds = [...new Set(records.map((r) => r.world.id))];
     const worlds: WorldGaps[] = [];
     for (const id of worldIds) {
       const w = await this.ctx.store.getWorld(id);
       const report = w?.provenance?.report as ImportReport | undefined;
-      if (w && report)
+      if (w && report && seen(sightOf(viewer), w))
         worlds.push({
           worldId: w.id,
           worldName: w.name,

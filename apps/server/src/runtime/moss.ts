@@ -9,6 +9,7 @@ import {
   UnavailableError,
 } from "@terrarium/core/contract";
 import { LlmError } from "@terrarium/core/llm";
+import type { Viewer } from "./context";
 import type { Models } from "./models";
 import { isRelevant, LOW_SCORE, type MossChunk, type MossIndex, mossIndexFor } from "./moss-index";
 import { hasState, NOT_IN_DOCS, parseReply, SYSTEM_PROMPT, userPrompt } from "./moss-prompt";
@@ -57,8 +58,8 @@ export class Moss {
     return table ? [table, ...docs] : docs;
   }
 
-  async ask(input: MossAskRequest): Promise<MossAnswerView> {
-    const model = await this.models.defaultClient();
+  async ask(input: MossAskRequest, viewer?: Viewer): Promise<MossAnswerView> {
+    const model = await this.models.defaultClient(viewer);
     if (!model) throw new NoModelError(NO_MODEL);
     const chunks = this.retrieve(input.question, input.state);
     // 문서에도 화면에도 근거가 없으면 모델에게 묻지 않는다: 지어낼 틈을 주지 않는다.

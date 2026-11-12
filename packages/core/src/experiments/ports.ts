@@ -13,6 +13,7 @@ import type { Journal, JournalEntry } from "./journal";
 import type { LlmModelRecord } from "./llm-models";
 import type { Experiment, HarnessRunInfo, RunRecord, ScenarioRecord, WorldRecord } from "./model";
 import type { PresetKind, PresetRecord } from "./presets";
+import type { Shared, Sight } from "./scope";
 import type { ServiceCardRecord } from "./service-cards";
 
 export interface HarnessInfo {
@@ -172,6 +173,8 @@ export interface ExperimentFilter {
   readonly scenarioId?: string;
   /** Words that must all appear in the name or note (case-insensitive). */
   readonly text?: string;
+  /** Only what this person may see (ADR-0174): the filter is part of the query, so a list never holds the rest. */
+  readonly visibleTo?: Sight;
   /** `name=value`, or just `name`: the experiment, or the connection it ran on, carries that metadata (REQ-052). */
   readonly meta?: string;
   readonly limit?: number;
@@ -190,7 +193,7 @@ export interface ShareRecord {
  * Secrets are never in `config` in the clear: the names of the environment variables that hold them, or the
  * values sealed under `secrets` and `headers`.
  */
-export interface ConnectionRecord {
+export interface ConnectionRecord extends Shared {
   readonly id: string;
   readonly name: string;
   readonly description?: string;
@@ -225,14 +228,14 @@ export interface ExperimentStore {
   /** Save the head of a world and keep its version under its digest. */
   putWorld(world: WorldRecord): Promise<void>;
   getWorld(id: string): Promise<WorldRecord | undefined>;
-  listWorlds(): Promise<WorldSummary[]>;
+  listWorlds(visibleTo?: Sight): Promise<WorldSummary[]>;
   /** A world as it was at `digest`, even after later edits. */
   worldVersion(id: string, digest: string): Promise<Blueprint | undefined>;
   /** Hide a world from lists; its versions stay for the experiments that used them. */
   deleteWorld(id: string): Promise<boolean>;
   putScenario(scenario: ScenarioRecord): Promise<void>;
   getScenario(id: string): Promise<ScenarioRecord | undefined>;
-  listScenarios(worldId?: string): Promise<ScenarioRecord[]>;
+  listScenarios(worldId?: string, visibleTo?: Sight): Promise<ScenarioRecord[]>;
   scenarioVersion(id: string, digest: string): Promise<ScenarioRecord["doc"] | undefined>;
   deleteScenario(id: string): Promise<boolean>;
   putExperiment(experiment: Experiment): Promise<void>;
@@ -247,10 +250,12 @@ export interface ExperimentStore {
   listActiveRuns(): Promise<RunRecord[]>;
   putShare(share: ShareRecord): Promise<void>;
   getShare(token: string): Promise<ShareRecord | undefined>;
+  /** The links of one experiment, newest first. */
+  listShares(experimentId: string): Promise<ShareRecord[]>;
   deleteShare(token: string): Promise<boolean>;
   putConnection(connection: ConnectionRecord): Promise<void>;
   /** In the order they were made. */
-  listConnections(): Promise<ConnectionRecord[]>;
+  listConnections(visibleTo?: Sight): Promise<ConnectionRecord[]>;
   deleteConnection(id: string): Promise<boolean>;
   /** The versions of one agent of one harness (REQ-053). */
   getAgentHistory(harnessId: string, agentId: string): Promise<AgentHistory | undefined>;
@@ -276,7 +281,7 @@ export interface ExperimentStore {
   putModel(model: LlmModelRecord): Promise<void>;
   getModel(id: string): Promise<LlmModelRecord | undefined>;
   /** Every registered model API, in the order they were registered. */
-  listModels(): Promise<LlmModelRecord[]>;
+  listModels(visibleTo?: Sight): Promise<LlmModelRecord[]>;
   deleteModel(id: string): Promise<boolean>;
   /** Save or replace a service card (REQ-104). */
   putServiceCard(card: ServiceCardRecord): Promise<void>;

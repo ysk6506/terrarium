@@ -24,8 +24,9 @@ import { ForbiddenError } from "@terrarium/core/contract";
 import type { CurrentProcessRecord, RunRecord } from "@terrarium/core/experiments";
 import { legacyEvents } from "@terrarium/core/session";
 import type { RunEvent } from "@terrarium/core/world";
-import { must, type PlatformContext, type Viewer } from "./context";
-import { allow, may } from "./permissions";
+import type { PlatformContext, Viewer } from "./context";
+import { Gate } from "./gate";
+import { allow, canSee, may, sightOf, standing } from "./permissions";
 
 const EXPERIMENT_OPTIONS = 20;
 
@@ -40,10 +41,14 @@ function fold(run: RunRecord): RunProcess | undefined {
 }
 
 export class Processes {
-  constructor(private readonly ctx: PlatformContext) {}
+  private readonly gate: Gate;
+
+  constructor(private readonly ctx: PlatformContext) {
+    this.gate = new Gate(ctx);
+  }
 
   async get(viewer: Viewer, scenarioId: string): Promise<CurrentProcessView> {
-    const scenario = must(await this.ctx.store.getScenario(scenarioId), "시나리오");
+    const scenario = await this.gate.scenario(viewer, scenarioId);
     const record = await this.ctx.store.getCurrentProcess(scenarioId);
     const steps = record?.steps ?? [];
     return {
@@ -63,7 +68,7 @@ export class Processes {
     scenarioId: string,
     input: PutCurrentProcessRequest,
   ): Promise<CurrentProcessView> {
-    const scenario = must(await this.ctx.store.getScenario(scenarioId), "시나리오");
+    const scenario = await this.gate.scenario(viewer, scenarioId);
     allow(viewer, "editProcess", { owner: scenario.owner }, "현재 업무 표 적기");
     const old = await this.ctx.store.getCurrentProcess(scenarioId);
     const now = this.ctx.stamps.now();
@@ -81,13 +86,12 @@ export class Processes {
     return this.get(viewer, scenarioId);
   }
 
-  async compare(experimentId: string): Promise<ProcessCompareView> {
-    const experiment = must(
-      await this.ctx.store.getExperiment(experimentId),
-      `실험 ${experimentId}`,
-    );
+  async compare(viewer: Viewer, experimentId: string): Promise<ProcessCompareView> {
+    const experiment = await this.gate.experiment(viewer, experimentId);
     const { scenarioId } = experiment.recipe;
-    const scenario = await this.ctx.store.getScenario(scenarioId);
+    // the scenario's own name and table only if the person may see the scenario; else what the experiment kept
+    const found = await this.ctx.store.getScenario(scenarioId);
+    const scenario = found && canSee(viewer, standing(found)) ? found : undefined;
     const runs = await this.ctx.store.listRuns(experimentId);
     const done = runs.flatMap((run) => {
       const process = fold(run);
@@ -120,22 +124,27 @@ export class Processes {
     };
   }
 
-  async ontology(worldId: string, query: WorldOntologyQueryParams): Promise<WorldOntologyView> {
-    const world = must(await this.ctx.store.getWorld(worldId), `세계 ${worldId}`);
-    const scenarios = await this.ctx.store.listScenarios(worldId);
+  async ontology(
+    viewer: Viewer,
+    worldId: string,
+    query: WorldOntologyQueryParams,
+  ): Promise<WorldOntologyView> {
+    const world = await this.gate.world(viewer, worldId);
+    const scenarios = await this.ctx.store.listScenarios(worldId, sightOf(viewer));
     const needs = deriveNeeds(
       scenarios.map((s) => s.doc),
       world.blueprint,
     );
     const experiments = (
-      await this.ctx.store.listExperiments({ worldId, limit: EXPERIMENT_OPTIONS })
+      await this.ctx.store.listExperiments({
+        worldId,
+        limit: EXPERIMENT_OPTIONS,
+        visibleTo: sightOf(viewer),
+      })
     ).map((e) => ({ id: e.id, name: e.name }));
     const base = { worldId, worldName: world.name, needs, experiments };
     if (!query.experimentId) return base;
-    const experiment = must(
-      await this.ctx.store.getExperiment(query.experimentId),
-      `실험 ${query.experimentId}`,
-    );
+    const experiment = await this.gate.experiment(viewer, query.experimentId);
     if (experiment.recipe.worldId !== worldId)
       throw new ForbiddenError("이 세계의 실험이 아니에요");
     const blueprint =

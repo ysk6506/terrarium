@@ -40,7 +40,7 @@ function useStart(
   quick = false,
   runs?: number,
 ) {
-  const { api, identity } = useApp();
+  const { api, me } = useApp();
   return useAsync(
     async (signal): Promise<Start> => {
       const worlds = await api.call("listWorlds", { query: { sort: "new" }, signal });
@@ -62,7 +62,7 @@ function useStart(
         const world = await api.call("getWorld", { params: { id: worldId }, signal });
         const shape = world.provenance?.shape as ShapeSpec | undefined;
         const mine = await api.call("listExperiments", {
-          query: { owner: identity.name, limit: 1 },
+          query: { owner: me, limit: 1 },
           signal,
         });
         const last = mine[0]?.experiment.recipe;

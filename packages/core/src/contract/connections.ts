@@ -3,6 +3,7 @@
  * screen can draw its form and the server can check what was typed without either knowing the protocol.
  */
 import type { AgentInfo, FieldChange, HarnessInfo } from "@terrarium/core/experiments";
+import type { SharingView } from "./scope";
 
 /** What kind of value a form field takes; the screen picks the input from this. */
 export type FieldType =
@@ -139,6 +140,8 @@ export interface ConnectionView extends HarnessInfo {
   readonly source: "config" | "screen";
   readonly owner?: string;
   readonly createdAt?: string;
+  /** Who sees it (a connection made on the screen starts private), and whether the person asking may change that. */
+  readonly sharing: SharingView;
   readonly agents: readonly AgentInfo[];
   /** How many agents there are, how many are in the list, and why the rest are not. */
   readonly census: AgentCensus;

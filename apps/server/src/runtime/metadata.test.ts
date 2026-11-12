@@ -2,6 +2,7 @@ import { MetadataBody } from "@terrarium/core/contract";
 import { describe, expect, test } from "vitest";
 import { FakeFetch, json } from "../adapters/test-support/fake-fetch";
 import {
+  ADMIN,
   HANEUL,
   recipe,
   ScriptHarness,
@@ -112,14 +113,16 @@ describe("metadata that tells results apart: kept, shown and searched [REQ-052]"
     await plain("b", { metadata: { prompt: "v2" } });
     await plain("c");
     const found = (meta: string) =>
-      platform.experiments.list({ meta }).then((l) => l.map((s) => s.experiment.name).sort());
+      platform.experiments
+        .list(ADMIN, { meta })
+        .then((l) => l.map((s) => s.experiment.name).sort());
     expect(await found("prompt=v1")).toEqual(["a"]);
     expect(await found("prompt")).toEqual(["a", "b"]);
     expect(await found("team=platform")).toEqual(["a", "b", "c"]);
     expect(await found("버전=1.4")).toEqual(["a", "b", "c"]);
     expect(await found("team=other")).toEqual([]);
     expect(await found("nothing")).toEqual([]);
-    expect(await platform.experiments.list({})).toHaveLength(3);
+    expect(await platform.experiments.list(ADMIN, {})).toHaveLength(3);
   });
 
   test("metadata is few, short and plain", () => {

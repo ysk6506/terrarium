@@ -11,33 +11,48 @@ import { useMossActions } from "../../moss";
 import { useAction, useApp } from "../context";
 import { Button, Dialog, NumberField } from "../kit";
 import { CompareRuns } from "../topology/RunReplay";
+import { copiedWords, DEFAULT_DAYS, ShareDialog, useCopy } from "./share-links";
 
-/** 공유: one press makes a link anyone can open without signing in, and copies it. */
+/**
+ * 공유: one press makes a link anyone can open without signing in (30 days), and copies it. "링크 관리" opens the dialog
+ * where the life of a link is chosen and the experiment's links are listed and taken back (ADR-0174).
+ */
 export function ShareButton({ view }: { readonly view: ExperimentView }) {
-  const { api, toast } = useApp();
+  const { api } = useApp();
   const { busy, run } = useAction();
+  const copy = useCopy();
+  const [managing, setManaging] = useState(false);
   const share = async () => {
     const made = await run(
-      () => api.call("createShare", { params: { id: view.experiment.id }, body: {} }),
+      () =>
+        api.call("createShare", {
+          params: { id: view.experiment.id },
+          body: { expiresInDays: DEFAULT_DAYS },
+        }),
       undefined,
     );
-    if (!made) return;
-    try {
-      await navigator.clipboard.writeText(made.url);
-      toast("링크를 복사했어요. 받은 사람은 로그인 없이 보고서를 볼 수 있어요");
-    } catch {
-      toast("복사하지 못했어요. 브라우저가 클립보드를 막고 있어요", "bad");
-    }
+    if (made) await copy(made.url, copiedWords(DEFAULT_DAYS));
   };
   return (
-    <Button
-      icon="share"
-      busy={busy}
-      data-moss-skip="공유 링크는 누가 열 수 있는지 사람이 정해요"
-      onClick={() => void share()}
-    >
-      공유
-    </Button>
+    <>
+      <Button
+        icon="share"
+        busy={busy}
+        data-moss-skip="공유 링크는 누가 열 수 있는지 사람이 정해요"
+        onClick={() => void share()}
+      >
+        공유
+      </Button>
+      {view.canChangeScope !== false && (
+        <Button
+          data-moss-skip="공유 링크는 누가 열 수 있는지 사람이 정해요"
+          onClick={() => setManaging(true)}
+        >
+          링크 관리
+        </Button>
+      )}
+      {managing && <ShareDialog view={view} onClose={() => setManaging(false)} />}
+    </>
   );
 }
 

@@ -20,12 +20,14 @@ covers:
   - apps/web/src/ui/pages/world-board.tsx
   - apps/web/src/ui/pages/world-card.tsx
 verification_log:
-  - "2026-11-07: REQ-109: 코드와 대조했다"
   - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
   - "2026-11-11: 2026-11-11: 좋아요 수의 title을 더한 것을 코드와 대조해 맞음 (ADR-0141)"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
-covers_hash: bb6057de457dec6b
+  - "2026-11-12: main을 합친 뒤 공개 범위(ADR-0174 나 단계, ADR-0179)에서 더한 서술을 합쳐진 코드와 대조했고, 바뀐 화면 글(ADR-0183)과 옛 말이 없음을 확인했다"
+covers_hash: ac3bc30b18765591
+verified_body: b43aee3516432e40
+unchanged_reverifies: 0
 ---
 # 세계 인기·좋아요·칭호와 계급 모델 (REQ-101, [ADR-0122](adr/0122-world-popularity-likes-titles.md))
 
@@ -130,3 +132,7 @@ covers_hash: bb6057de457dec6b
 | `server.runtime/titles.ts`, `watched-store.ts` | 칭호 조건, 기록, 캐시 |
 | `web.logic/world-board.ts`, `titles.ts` | 한 줄 근거, 정렬 기억, 낙관적 하트, 칭호 글 |
 | `web.ui/pages/world-board.tsx`, `world-card.tsx`, `ui/titles.tsx` | 세계 구역, 카드, 알약과 팝오버 |
+
+## 공개 범위와 셈 (ADR-0174 나 단계)
+
+순위표, 세계 인기·좋아요, 칭호의 근거는 **"모두"인 세계·실험만** 세요. "나만"·"우리 파트"인 것은 만든 사람에게도 이 숫자에 들어가지 않아요(남이 숫자로 존재를 짐작하지 못하게). 셈은 누가 묻든 같아요. 자세한 규칙은 [권한](permissions.md).

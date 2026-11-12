@@ -4389,6 +4389,31 @@
       "kind": "auto"
     },
     {
+      "q": "ADR-0179 공개 범위의 두 결정 과 ADR-0174의 바뀐 시험 목록의 맥락이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0179-visibility-scopes-amend-adr-0174-locked-tests.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0179 공개 범위의 두 결정 과 ADR-0174의 바뀐 시험 목록의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0179-visibility-scopes-amend-adr-0174-locked-tests.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0179 공개 범위의 두 결정 과 ADR-0174의 바뀐 시험 목록의 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0179-visibility-scopes-amend-adr-0174-locked-tests.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0179 공개 범위의 두 결정 과 ADR-0174의 바뀐 시험 목록의 버린 길이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0179-visibility-scopes-amend-adr-0174-locked-tests.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0179 공개 범위의 두 결정 과 ADR-0174의 바뀐 시험 목록의 결과가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0179-visibility-scopes-amend-adr-0174-locked-tests.md"],
+      "kind": "auto"
+    },
+    {
       "q": "ADR-0180 문서는 코드뿐 아니라 결정도 따라간다 — 결정이 바꾸는 문서를 적고, 고쳐진 결정에 표시를 남기고, 목록은 만들어 낸다의 맥락이 뭐예요?",
       "expect": ["docs/design-docs/adr/0180-docs-follow-decisions-not-only-code.md"],
       "kind": "auto"
@@ -5494,6 +5519,11 @@
       "kind": "auto"
     },
     {
+      "q": "실험과 결과 분석의 공개 범위가 뭐예요?",
+      "expect": ["docs/design-docs/experiments-and-analysis.md"],
+      "kind": "auto"
+    },
+    {
       "q": "설비의 표준 인터페이스의 한 줄로가 뭐예요?",
       "expect": ["docs/design-docs/facility-protocols.md"],
       "kind": "auto"
@@ -6109,7 +6139,17 @@
       "kind": "auto"
     },
     {
+      "q": "HTTP API 계약의 경로가 뭐예요?",
+      "expect": ["docs/design-docs/http-api.md"],
+      "kind": "auto"
+    },
+    {
       "q": "HTTP API 계약의 누가 부를 수 있나가 뭐예요?",
+      "expect": ["docs/design-docs/http-api.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "HTTP API 계약의 공개 범위가 뭐예요?",
       "expect": ["docs/design-docs/http-api.md"],
       "kind": "auto"
     },
@@ -6494,6 +6534,11 @@
       "kind": "auto"
     },
     {
+      "q": "모델 등록의 공개 범위가 뭐예요?",
+      "expect": ["docs/design-docs/model-registration.md"],
+      "kind": "auto"
+    },
+    {
       "q": "표준 모델 대조가 뭐예요?",
       "expect": ["docs/design-docs/model-standards.md"],
       "kind": "auto"
@@ -6864,7 +6909,22 @@
       "kind": "auto"
     },
     {
+      "q": "권한의 나 단계에서 만든 것과 알려진 한계가 뭐예요?",
+      "expect": ["docs/design-docs/permissions.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "권한의 다음에 할 일이 뭐예요?",
+      "expect": ["docs/design-docs/permissions.md"],
+      "kind": "auto"
+    },
+    {
       "q": "권한의 하지 않는 것이 뭐예요?",
+      "expect": ["docs/design-docs/permissions.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "권한의 시험이 뭐예요?",
       "expect": ["docs/design-docs/permissions.md"],
       "kind": "auto"
     },
@@ -7159,6 +7219,11 @@
       "kind": "auto"
     },
     {
+      "q": "프로세스 비교의 공개 범위가 뭐예요?",
+      "expect": ["docs/design-docs/process-compare.md"],
+      "kind": "auto"
+    },
+    {
       "q": "제품 설계 한 장이 뭐예요?",
       "expect": ["docs/design-docs/product-design.md"],
       "kind": "auto"
@@ -7260,6 +7325,11 @@
     },
     {
       "q": "세계 인기·좋아요·칭호와 계급 모델의 코드 구조가 뭐예요?",
+      "expect": ["docs/design-docs/ranking-and-titles.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "세계 인기·좋아요·칭호와 계급 모델의 공개 범위와 셈이 뭐예요?",
       "expect": ["docs/design-docs/ranking-and-titles.md"],
       "kind": "auto"
     },
@@ -8880,6 +8950,11 @@
     },
     {
       "q": "세계 만들기 입구와 서비스부터의 하지 않은 것이 뭐예요?",
+      "expect": ["docs/design-docs/world-entry.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "세계 만들기 입구와 서비스부터의 공개 범위가 뭐예요?",
       "expect": ["docs/design-docs/world-entry.md"],
       "kind": "auto"
     },

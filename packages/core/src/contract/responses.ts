@@ -1,6 +1,5 @@
 /** The JSON each route answers with (one line per route of the table in routes.ts). */
 
-import type { ScenarioRecord, WorldRecord } from "@terrarium/core/experiments";
 import type { SlotsView } from "@terrarium/core/physics/slots";
 import type { LikeView, UserTitlesView, WorldCardView } from "./community";
 import type {
@@ -33,10 +32,13 @@ import type {
   RunWorldView,
   SavedScenario,
   SavedWorld,
+  ScenarioWithScope,
+  ShareListItem,
   ShareView,
   TelemetryView,
   WorldPhysicsView,
   WorldSummary,
+  WorldWithScope,
 } from "./views";
 
 /** JSON response of each route; document routes answer with text. */
@@ -84,7 +86,7 @@ export interface Responses {
   unlikeWorld: LikeView;
   userTitles: UserTitlesView;
   listWorldTemplates: WorldSummary[];
-  getWorld: WorldRecord;
+  getWorld: WorldWithScope;
   listPhysicsSlots: SlotsView;
   getWorldPhysics: WorldPhysicsView;
   putWorldPhysics: WorldPhysicsView;
@@ -93,8 +95,8 @@ export interface Responses {
   importWorld: ImportedWorld;
   updateWorld: SavedWorld;
   deleteWorld: { readonly deleted: boolean };
-  listScenarios: ScenarioRecord[];
-  getScenario: ScenarioRecord;
+  listScenarios: ScenarioWithScope[];
+  getScenario: ScenarioWithScope;
   createScenario: SavedScenario;
   updateScenario: SavedScenario;
   deleteScenario: { readonly deleted: boolean };
@@ -112,6 +114,12 @@ export interface Responses {
   experimentDiagnoses: string;
   createShare: ShareView;
   deleteShare: { readonly deleted: boolean };
+  listShares: ShareListItem[];
+  setExperimentScope: ExperimentView;
+  setWorldScope: WorldWithScope;
+  setScenarioScope: ScenarioWithScope;
+  setConnectionScope: ConnectionView;
+  setModelScope: LlmModelView;
   getRun: RunView;
   runbookDraft: RunbookDraftView;
   listEscalations: EscalationCard[];

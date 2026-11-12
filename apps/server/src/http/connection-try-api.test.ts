@@ -59,7 +59,7 @@ describe("말 걸어 보기 and the tools for traces over HTTP [REQ-079]", () =>
       headers: { "x-terrarium-user": "jimin" },
       payload: { agentId: "ops", text: "안녕" },
     });
-    expect(stranger.statusCode).toBe(403);
+    expect(stranger.statusCode).toBe(404);
     const tried = await a.inject({
       method: "POST",
       url: `/api/connections/${id}/try`,

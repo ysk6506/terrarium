@@ -26,6 +26,10 @@ export const ACTIONS = [
   "use",
   /** Make a share link for an experiment. The experiment's maker or an admin. */
   "createShare",
+  /** See an experiment's share links. The experiment's maker or an admin. */
+  "listShares",
+  /** Change who can see something (its scope). Its maker or an admin; every such change is to be audited (step 다). */
+  "changeScope",
   /** Take a share link back. Whoever made the link, the experiment's maker or an admin. */
   "deleteShare",
   /** Like a world. Anyone who has said who they are. */
@@ -35,6 +39,13 @@ export const ACTIONS = [
 ] as const;
 
 export type Action = (typeof ACTIONS)[number];
+
+/**
+ * What the server decides without a route naming it: whether a person can see a record (`see`, the read rule of the
+ * three scopes) and the use that follows from sight. Kept apart so that the closed list above is only what routes name.
+ */
+export const DECIDED_ONLY = ["see"] as const;
+export type Decided = Action | (typeof DECIDED_ONLY)[number];
 
 /** A route's policy; a route that is `public` says so with its own flag instead. */
 export type RoutePolicy = "open" | "signedIn" | "admin" | { readonly action: Action };

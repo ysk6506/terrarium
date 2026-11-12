@@ -18,13 +18,15 @@ covers:
   - apps/web/src/ui/pages/process-table.tsx
   - apps/web/src/ui/pages/process-compare.tsx
   - apps/web/src/ui/pages/process-ontology.tsx
-covers_hash: a302d3a21bb0a2d2
+covers_hash: 6692b66f7f8d3646
 verification_log:
-  - "2026-11-11: 2026-11-11: 이끼 동작 셋을 코드와 대조해 맞음 (ADR-0141)"
   - "2026-11-11: result page split into tabs (ADR-0171); checked against covered code"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-11: merged main; result page tabs (ADR-0171) checked against covered code"
   - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
+  - "2026-11-12: main을 합친 뒤 공개 범위(ADR-0174 나 단계, ADR-0179)에서 더한 서술을 합쳐진 코드와 대조했고, 바뀐 화면 글(ADR-0183)과 옛 말이 없음을 확인했다"
+verified_body: ffeaeeb160f81b6a
+unchanged_reverifies: 0
 ---
 # 프로세스 비교 (REQ-112, [ADR-0135](adr/0135-process-compare.md))
 
@@ -138,3 +140,7 @@ verification_log:
 - 적은 값을 어림해 채우지 않아요. 모델이 표를 대신 적지도 않아요.
 - 비용(돈)은 이 비교에 넣지 않아요. 돈은 실험의 "바꾸기"와 `capacity.md`가 다뤄요.
 - 승인 줄은 에이전트가 `ask_human`을 부른 실행에만 나와요. 내장 에이전트는 부르지 않으므로 그 실행에는 승인 줄이 없어요.
+
+## 공개 범위 (ADR-0174 나 단계)
+
+비교와 온톨로지는 보는 사람에게 보이는 시나리오·실험만 써요. 시나리오가 보이지 않으면 현재 업무 표 없이 비교해요. 자세한 규칙은 [권한](permissions.md).

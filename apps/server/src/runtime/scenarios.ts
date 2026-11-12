@@ -9,9 +9,16 @@ import type {
   DryRunView,
   RunbookDraftView,
   SavedScenario,
+  ScenarioWithScope,
+  ScopeRequest,
   UpdateScenarioRequest,
 } from "@terrarium/core/contract";
-import type { Experiment, RunRecord, ScenarioRecord } from "@terrarium/core/experiments";
+import {
+  type Experiment,
+  type RunRecord,
+  type ScenarioRecord,
+  withScope,
+} from "@terrarium/core/experiments";
 import { ConflictError, InvalidValueError } from "@terrarium/core/kernel";
 import {
   draftFromCalls,
@@ -39,7 +46,8 @@ import { TOOL_NAMES } from "@terrarium/core/tools";
 import { BlueprintIndex } from "@terrarium/core/world";
 import { must, type PlatformContext, type Viewer } from "./context";
 import type { PlainSessionConfig } from "./hosts";
-import { allow } from "./permissions";
+import { allow, mustSee, sightOf, standing } from "./permissions";
+import { canChangeScope, changeScope, startingScope } from "./scoping";
 
 /** The longest a dry run looks past the agent's task (simulated). */
 const DRY_RUN_SECONDS = 3600;
@@ -47,8 +55,13 @@ const DRY_RUN_SECONDS = 3600;
 export class Scenarios {
   constructor(private readonly ctx: PlatformContext) {}
 
-  list(worldId?: string): Promise<ScenarioRecord[]> {
-    return this.ctx.store.listScenarios(worldId);
+  list(viewer: Viewer, worldId?: string): Promise<ScenarioRecord[]> {
+    return this.ctx.store.listScenarios(worldId, sightOf(viewer));
+  }
+
+  /** A scenario as one person sees it: with the scope it reads as, and whether they may change it. */
+  seenBy(viewer: Viewer, scenario: ScenarioRecord): ScenarioWithScope {
+    return { ...withScope(scenario), canChangeScope: canChangeScope(viewer, scenario.owner) };
   }
 
   async get(id: string): Promise<ScenarioRecord> {
@@ -59,10 +72,14 @@ export class Scenarios {
    * A first draft of the scenario's runbook from the best run so far (ADR-0087 item 6): among the runs of every
    * experiment on this scenario, the one with the highest score (the earliest on a tie), as its tool calls in order.
    */
-  async runbookDraft(id: string): Promise<RunbookDraftView> {
+  async runbookDraft(viewer: Viewer, id: string): Promise<RunbookDraftView> {
     const scenario = await this.get(id);
     let best: { score: number; run: RunRecord; experiment: Experiment } | undefined;
-    for (const experiment of await this.ctx.store.listExperiments({ scenarioId: id }))
+    // only runs the person may see: a private experiment's calls do not end up in someone else's draft
+    for (const experiment of await this.ctx.store.listExperiments({
+      scenarioId: id,
+      visibleTo: sightOf(viewer),
+    }))
       for (const run of await this.ctx.store.listRuns(experiment.id)) {
         const score = run.result?.score.total;
         if (run.status !== "completed" || typeof score !== "number") continue;
@@ -114,7 +131,9 @@ export class Scenarios {
   }
 
   async create(viewer: Viewer, req: CreateScenarioRequest): Promise<SavedScenario> {
-    must(await this.ctx.store.getWorld(req.worldId), `세계 ${req.worldId}`);
+    const world = must(await this.ctx.store.getWorld(req.worldId), `세계 ${req.worldId}`);
+    // a scenario is written on a world, so the world has to be one the person can see
+    mustSee(viewer, standing(world), `세계 ${req.worldId}`);
     const id = this.ctx.stamps.id("s");
     const start = await this.startingDoc(id, req);
     const name = req.name ?? start.name;
@@ -125,6 +144,7 @@ export class Scenarios {
       owner: viewer.id,
       doc: { ...start, id, worldId: req.worldId, name },
       createdAt: this.ctx.stamps.now(),
+      ...startingScope(viewer, req, "everyone"),
     });
   }
 
@@ -139,6 +159,13 @@ export class Scenarios {
     const doc = { ...(req.doc ?? current.doc), id, worldId: current.worldId, name };
     const { digest: _d, updatedAt: _u, ...rest } = current;
     return this.save({ ...rest, name, doc });
+  }
+
+  /** Who can see a scenario (ADR-0174): the one place its scope changes. */
+  async setScope(viewer: Viewer, id: string, req: ScopeRequest): Promise<ScenarioWithScope> {
+    const scoped = changeScope(viewer, await this.get(id), req, "시나리오 공개 범위 바꾸기");
+    const { digest: _d, updatedAt: _u, ...rest } = scoped;
+    return this.seenBy(viewer, (await this.save(rest)).scenario);
   }
 
   async delete(viewer: Viewer, id: string): Promise<{ deleted: boolean }> {

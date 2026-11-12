@@ -45,7 +45,7 @@ describe("the versions of an agent over HTTP [REQ-053]", () => {
     expect((await send("PUT", `${base}/2`, { label: "" })).status).toBe(400);
     expect((await send("PUT", `${base}/x`, { note: "a" })).status).toBe(404);
     expect((await send("PUT", `${base}/0`, { note: "a" })).status).toBe(404);
-    expect((await send("DELETE", `${base}/2`, undefined, "jimin")).status).toBe(403);
+    expect((await send("DELETE", `${base}/2`, undefined, "jimin")).status).toBe(404);
     expect(
       (await send("DELETE", `${base}/2`)).body.versions.map((v: { n: number }) => v.n),
     ).toEqual([1]);

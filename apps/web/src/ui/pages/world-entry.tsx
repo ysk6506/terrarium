@@ -74,10 +74,10 @@ function Templates({ items }: { readonly items: readonly WorldSummary[] }) {
 type Saved = "campus" | "build" | undefined;
 
 export function WorldEntry({ onService }: { readonly onService: () => void }) {
-  const { api, identity } = useApp();
+  const { api, me } = useApp();
   const templates = useAsync((signal) => api.call("listWorldTemplates", { signal }), []);
   const [open, setOpen] = useState<Saved>();
-  const mine = (templates.data ?? []).filter((t) => t.owner === identity.name);
+  const mine = (templates.data ?? []).filter((t) => t.owner === me);
   return (
     <div className="we">
       <h1>무엇을 하려고 하세요?</h1>

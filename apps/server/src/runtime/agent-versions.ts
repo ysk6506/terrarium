@@ -26,7 +26,7 @@ import {
   snapshotOf,
 } from "@terrarium/core/experiments";
 import { must, type PlatformContext, type Viewer } from "./context";
-import { allow } from "./permissions";
+import { allow, allowRunOn, sightOf } from "./permissions";
 import { subjectOf } from "./subject";
 
 export class AgentVersions {
@@ -69,8 +69,13 @@ export class AgentVersions {
     return subjectOf(harness.info, agent, this.ctx.harnesses.metadata?.(harnessId));
   }
 
-  private async view(history: AgentHistory | undefined, key: AgentKey): Promise<AgentHistoryView> {
-    const experiments = await this.ctx.store.listExperiments();
+  private async view(
+    viewer: Viewer,
+    history: AgentHistory | undefined,
+    key: AgentKey,
+  ): Promise<AgentHistoryView> {
+    // how many experiments ran as each version: the ones the person may see
+    const experiments = await this.ctx.store.listExperiments({ visibleTo: sightOf(viewer) });
     const used = new Map<number, number>();
     for (const e of experiments)
       if (
@@ -104,10 +109,16 @@ export class AgentVersions {
     }
   }
 
-  async history(harnessId: string, agentId: string): Promise<AgentHistoryView> {
+  /** The connection, if the person can see it: one they cannot answers as one that is not there. */
+  private known(viewer: Viewer, harnessId: string): void {
+    allowRunOn(viewer, this.ctx.harnesses, harnessId);
     must(this.ctx.harnesses.get(harnessId), `하네스 '${harnessId}'`);
+  }
+
+  async history(viewer: Viewer, harnessId: string, agentId: string): Promise<AgentHistoryView> {
+    this.known(viewer, harnessId);
     const key = { harnessId, agentId };
-    return this.view(await this.ctx.store.getAgentHistory(harnessId, agentId), key);
+    return this.view(viewer, await this.ctx.store.getAgentHistory(harnessId, agentId), key);
   }
 
   /** Whoever made a connection decides what its versions say; the config file's connections have no owner, so admins do. */
@@ -126,7 +137,7 @@ export class AgentVersions {
     agentId: string,
     req: AddAgentVersionRequest,
   ): Promise<AgentHistoryView> {
-    must(this.ctx.harnesses.get(harnessId), `하네스 '${harnessId}'`);
+    this.known(viewer, harnessId);
     this.mayEdit(viewer, harnessId);
     const key = { harnessId, agentId };
     const history = await this.serially(key, async () => {
@@ -145,7 +156,7 @@ export class AgentVersions {
       await this.ctx.store.putAgentHistory(added.history);
       return added.history;
     });
-    return this.view(history, key);
+    return this.view(viewer, history, key);
   }
 
   private async change(
@@ -154,7 +165,7 @@ export class AgentVersions {
     agentId: string,
     edit: (history: AgentHistory) => AgentHistory,
   ): Promise<AgentHistoryView> {
-    must(this.ctx.harnesses.get(harnessId), `하네스 '${harnessId}'`);
+    this.known(viewer, harnessId);
     this.mayEdit(viewer, harnessId);
     const key = { harnessId, agentId };
     const history = await this.serially(key, async () => {
@@ -166,7 +177,7 @@ export class AgentVersions {
       await this.ctx.store.putAgentHistory(after);
       return after;
     });
-    return this.view(history, key);
+    return this.view(viewer, history, key);
   }
 
   edit(

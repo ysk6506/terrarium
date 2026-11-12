@@ -14,6 +14,7 @@ import type {
   WorldSummary,
 } from "./ports";
 import type { PresetKind, PresetRecord } from "./presets";
+import { type Sight, seen } from "./scope";
 import type { ServiceCardRecord } from "./service-cards";
 
 const copy = <T>(value: T): T => structuredClone(value);
@@ -52,15 +53,21 @@ export function matchesMetadata(
   );
 }
 
+/** The filter keys that are one column of an experiment each, with where the experiment keeps that value. */
+const COLUMNS: readonly [keyof ExperimentFilter, (e: Experiment) => unknown][] = [
+  ["owner", (e) => e.owner],
+  ["benchmarkKey", (e) => e.benchmarkKey],
+  ["parentId", (e) => e.parentId],
+  ["worldId", (e) => e.recipe.worldId],
+  ["scenarioId", (e) => e.recipe.scenarioId],
+];
+
 function matches(e: Experiment, f: ExperimentFilter): boolean {
   return (
     matchesText(e, f.text) &&
     matchesMetadata(e, f.meta) &&
-    (f.owner === undefined || e.owner === f.owner) &&
-    (f.benchmarkKey === undefined || e.benchmarkKey === f.benchmarkKey) &&
-    (f.parentId === undefined || e.parentId === f.parentId) &&
-    (f.worldId === undefined || e.recipe.worldId === f.worldId) &&
-    (f.scenarioId === undefined || e.recipe.scenarioId === f.scenarioId)
+    COLUMNS.every(([key, of]) => f[key] === undefined || of(e) === f[key]) &&
+    (f.visibleTo === undefined || seen(f.visibleTo, e))
   );
 }
 
@@ -93,8 +100,9 @@ export class MemoryStore implements ExperimentStore {
     return w && copy(w);
   }
 
-  async listWorlds(): Promise<WorldSummary[]> {
+  async listWorlds(visibleTo?: Sight): Promise<WorldSummary[]> {
     return [...this.worlds.values()]
+      .filter((w) => visibleTo === undefined || seen(visibleTo, w))
       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
       .map(({ blueprint, ...rest }) => ({ ...copy(rest), counts: countKinds(blueprint) }));
   }
@@ -118,9 +126,10 @@ export class MemoryStore implements ExperimentStore {
     return s && copy(s);
   }
 
-  async listScenarios(worldId?: string): Promise<ScenarioRecord[]> {
+  async listScenarios(worldId?: string, visibleTo?: Sight): Promise<ScenarioRecord[]> {
     return [...this.scenarios.values()]
       .filter((s) => worldId === undefined || s.worldId === worldId)
+      .filter((s) => visibleTo === undefined || seen(visibleTo, s))
       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
       .map(copy);
   }
@@ -182,6 +191,13 @@ export class MemoryStore implements ExperimentStore {
     return s && copy(s);
   }
 
+  async listShares(experimentId: string): Promise<ShareRecord[]> {
+    return [...this.shares.values()]
+      .filter((s) => s.experimentId === experimentId)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt) || a.token.localeCompare(b.token))
+      .map(copy);
+  }
+
   async deleteShare(token: string): Promise<boolean> {
     return this.shares.delete(token);
   }
@@ -190,8 +206,9 @@ export class MemoryStore implements ExperimentStore {
     this.connections.set(connection.id, copy(connection));
   }
 
-  async listConnections(): Promise<ConnectionRecord[]> {
+  async listConnections(visibleTo?: Sight): Promise<ConnectionRecord[]> {
     return [...this.connections.values()]
+      .filter((c) => visibleTo === undefined || seen(visibleTo, c))
       .sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id))
       .map(copy);
   }
@@ -272,8 +289,9 @@ export class MemoryStore implements ExperimentStore {
     return m && copy(m);
   }
 
-  async listModels(): Promise<LlmModelRecord[]> {
+  async listModels(visibleTo?: Sight): Promise<LlmModelRecord[]> {
     return [...this.models.values()]
+      .filter((m) => visibleTo === undefined || seen(visibleTo, m))
       .sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id))
       .map(copy);
   }

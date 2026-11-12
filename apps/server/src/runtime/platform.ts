@@ -16,6 +16,7 @@ import { Escalations } from "./escalations";
 import { EventBus, RunLogs } from "./events";
 import { executeRun, type ToolGateway } from "./executor";
 import { Experiments, summarize } from "./experiments";
+import { Gate } from "./gate";
 import type { SessionHost } from "./hosts";
 import { type Stamps, SYSTEM_STAMPS } from "./ids";
 import { Models, type ModelsOptions } from "./models";
@@ -143,6 +144,8 @@ export class Platform {
   readonly scenarios: Scenarios;
   readonly experiments: Experiments;
   readonly results: Results;
+  /** Looks things up on behalf of a person: what they cannot see is not found (ADR-0174). */
+  readonly gate: Gate;
   readonly events = new EventBus();
   readonly logs = new RunLogs();
   /** Runs that wait for a person to answer their `ask_human` (ADR-0087 item 4). */
@@ -206,6 +209,7 @@ export class Platform {
         : { ...DEFAULT_LIMITS, ...options.limits },
       (id) => void this.announce(id),
     );
+    this.gate = new Gate(this.ctx);
     this.titles = new Titles(this.ctx, watched.version);
     this.worlds = new Worlds(this.ctx);
     this.board = new WorldBoard(this.ctx, this.worlds, this.titles);
@@ -255,7 +259,7 @@ export class Platform {
         source: viewer.source,
       },
       identity: { mode },
-      harnesses: (await this.connections.views()).map(harnessViewOf),
+      harnesses: (await this.connections.views(viewer)).map(harnessViewOf),
       sources: [...this.ctx.sources.values()].map((s) => s.view),
       telemetry: this.ctx.telemetry
         ? { configured: true, name: this.ctx.telemetry.name }

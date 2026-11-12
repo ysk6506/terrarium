@@ -4,6 +4,7 @@
  */
 import { LLM_KINDS, type LlmFailReason, type LlmKind } from "@terrarium/core/llm";
 import { z } from "zod";
+import { ScopeFields, type SharingView } from "./scope";
 
 export const MODEL_NAME_MAX = 60;
 export const MODEL_HEADERS_MAX = 10;
@@ -33,6 +34,7 @@ export const CreateModelBody = z
       .array(z.object({ name: HeaderName, value: HeaderValue.min(1) }).strict())
       .max(MODEL_HEADERS_MAX)
       .default([]),
+    ...ScopeFields,
   })
   .strict();
 
@@ -83,6 +85,8 @@ export interface LlmModelView {
   readonly headers: readonly string[];
   readonly isDefault: boolean;
   readonly owner: string;
+  /** Who sees it, and whether the person asking may change that. The default model is used by everyone whatever this says. */
+  readonly sharing: SharingView;
   readonly createdAt: string;
   readonly updatedAt?: string;
   readonly lastCheck?: ModelCheckView;

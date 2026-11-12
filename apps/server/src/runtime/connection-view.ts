@@ -1,7 +1,12 @@
 /** A connection as the screen shows it (REQ-051, ADR-0085): what is kept of it, and what was found out just now. */
 import type { TelemetryAdapter } from "@terrarium/core/analysis";
 import type { ConnectionView } from "@terrarium/core/contract";
-import type { ConnectionRecord, HarnessInfo, HarnessPort } from "@terrarium/core/experiments";
+import {
+  type ConnectionRecord,
+  type HarnessInfo,
+  type HarnessPort,
+  scopeOf,
+} from "@terrarium/core/experiments";
 import { connectorOf } from "../adapters";
 import { NO_AGENTS, type Survey, survey } from "./connection-agents";
 import { headerViews, messageOf, slotView } from "./connection-form";
@@ -85,6 +90,12 @@ export function viewOf(
     scope: spec?.scope ?? "harness",
     source: entry.source,
     ...(record ? { owner: record.owner, createdAt: record.createdAt } : {}),
+    // who the person asking is decides `canChange`; the directory says it for them (a connection of the config file is everyone's)
+    sharing: {
+      scope: scopeOf(record ?? {}),
+      ...(record?.group ? { group: record.group } : {}),
+      canChange: false,
+    },
     agents: found.agents,
     census: found.census,
     hiddenAgents: found.hiddenAgents,

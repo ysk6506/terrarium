@@ -26,7 +26,7 @@ export interface AppServices {
   readonly meta?: MetaView;
   reloadMeta(): void;
   toast(message: string, tone?: ToastTone): void;
-  /** The viewer's name, as the server knows it. */
+  /** The viewer's login id, as the server knows it: what `owner` fields are compared with. Their name for showing is `meta.user.name`. */
   readonly me?: string;
   askName(): void;
   /** While set, leaving the page asks first (unsaved work); returns the question to ask. */

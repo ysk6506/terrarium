@@ -48,14 +48,14 @@ covers:
   - apps/web/src/ui/pages/quick-harm-panel.tsx
   - apps/server/src/runtime/experiments-quick.ts
   - apps/server/src/runtime/service-cards.ts
-covers_hash: 4b850a3fc21bce0f
+covers_hash: f6798c84b53dcdb7
 verification_log:
-  - "2026-11-07: 2026-11-07: REQ-111 covers 정리"
   - "2026-11-07: 2026-11-07: REQ-111 코드 변경 후 다시 대조: 그대로 맞다"
   - "2026-11-11: shape-flow.ts 안 쓰는 변수와 Anchored.tsx 효과 없는 억제 주석만 지움, 문서 내용과 동작은 그대로"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-12: 내부 사실 서술을 요구의 말로 고침 (ADR-0188)"
-verified_body: b635e25ee145d96b
+  - "2026-11-12: main을 합친 뒤 공개 범위(ADR-0174 나 단계, ADR-0179)에서 더한 서술을 합쳐진 코드와 대조했고, 바뀐 화면 글(ADR-0183)과 옛 말이 없음을 확인했다"
+verified_body: baae5bfcb1694b60
 unchanged_reverifies: 0
 ---
 # 세계 만들기 입구와 서비스부터 (REQ-094, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md), [ADR-0108](adr/0108-world-entry-iap-and-chip-cards.md), [ADR-0109](adr/0109-world-entry-amend-tests.md))
@@ -239,3 +239,7 @@ unchanged_reverifies: 0
 - 복구 우선 채점의 등급별 피해와 쿠버네티스 자동 복구 구분(위).
 - 일감을 따라 움직이는 부하(운영 모드 2c의 몫).
 - 3D 랙 자체의 빈 U 누르기: 랙 정면은 3D 위의 HTML 판이다.
+
+## 공개 범위 (ADR-0174 나 단계)
+
+세계 목록·템플릿 목록은 내게 보이는 것만 나와요. 보이지 않는 세계에 시나리오를 만들거나 빠른 실험을 돌리면 404예요. 응답에 `scope`, `group`, `canChangeScope`가 있어요(고르는 화면은 라 단계). 자세한 규칙은 [권한](permissions.md).

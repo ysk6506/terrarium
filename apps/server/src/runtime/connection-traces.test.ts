@@ -4,6 +4,7 @@ import { describe, expect, test } from "vitest";
 import { SecretBox } from "../adapters";
 import { FakeFetch, json } from "../adapters/test-support/fake-fetch";
 import {
+  ADMIN,
   HANEUL,
   JIMIN,
   recipe,
@@ -81,9 +82,9 @@ describe("where a connection's traces pile up is chosen per connection [REQ-079]
     const { platform, fake } = world({ traced: true });
     const view = await platform.connections.create(HANEUL, { ...goclaw, traces });
     await platform.connections.update(HANEUL, view.id, { config: goclaw.config });
-    expect((await platform.connections.views()).find((v) => v.id === view.id)?.traces.kind).toBe(
-      "langfuse",
-    );
+    expect(
+      (await platform.connections.views(ADMIN)).find((v) => v.id === view.id)?.traces.kind,
+    ).toBe("langfuse");
     await platform.connections.update(HANEUL, view.id, {
       config: goclaw.config,
       traces: {
@@ -203,7 +204,7 @@ describe("말 걸어 보기: one question, no tools, and whether the traces came
       text: "안녕",
     });
     expect(r).toMatchObject({ ok: false, error: "이 연결 방식은 아직 말 걸어 보기를 못 해요" });
-    const [builtin] = await platform.connections.views();
+    const [builtin] = await platform.connections.views(ADMIN);
     expect(builtin?.canTalk).toBe(false);
   });
 });
@@ -353,6 +354,6 @@ describe("strangers may talk but not choose [REQ-079]", () => {
         config: goclaw.config,
         traces: { kind: "none", config: {} },
       }),
-    ).rejects.toThrow("만든 사람");
+    ).rejects.toThrow("찾을 수 없어요");
   });
 });

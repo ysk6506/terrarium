@@ -284,7 +284,7 @@ export function compose(
 
 /** The record to store: empty parts are left out. */
 export function recordOf(
-  base: Pick<ConnectionRecord, "id" | "owner" | "createdAt" | "lastUsedAt">,
+  base: Pick<ConnectionRecord, "id" | "owner" | "createdAt" | "lastUsedAt" | "scope" | "group">,
   fields: {
     readonly name: string;
     readonly description: string;
@@ -307,6 +307,8 @@ export function recordOf(
     owner: base.owner,
     createdAt: base.createdAt,
     ...(base.lastUsedAt ? { lastUsedAt: base.lastUsedAt } : {}),
+    ...(base.scope ? { scope: base.scope } : {}),
+    ...(base.group ? { group: base.group } : {}),
   };
 }
 

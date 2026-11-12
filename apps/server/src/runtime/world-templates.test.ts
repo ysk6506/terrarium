@@ -1,6 +1,6 @@
 import { DEFAULT_SHAPE } from "@terrarium/core/sources/worldgen";
 import { describe, expect, test } from "vitest";
-import { HANEUL, testPlatform } from "./test-support/platform";
+import { ADMIN, HANEUL, testPlatform } from "./test-support/platform";
 
 describe("서비스부터 만든 세계와 템플릿 [REQ-094]", () => {
   test("모양으로 세계를 만들고, 서비스·일감이 세계에 저장된다", async () => {
@@ -23,8 +23,8 @@ describe("서비스부터 만든 세계와 템플릿 [REQ-094]", () => {
       name: "우리 IAP",
     });
     expect(saved.world.origin).toBe("template");
-    expect((await p.worlds.list()).map((w) => w.origin)).toEqual(["worldgen"]);
-    const templates = await p.worlds.templates();
+    expect((await p.worlds.list(ADMIN)).map((w) => w.origin)).toEqual(["worldgen"]);
+    const templates = await p.worlds.templates(ADMIN);
     expect(templates.map((t) => t.name)).toEqual(["우리 IAP"]);
     expect((templates[0]?.provenance?.shape as { servers: number }).servers).toBe(48);
   });

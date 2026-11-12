@@ -52,10 +52,10 @@ describe("an experiment from creation to result [REQ-030] [REQ-037]", () => {
     expect(seen).toContain("call");
     expect(seen).toContain("run");
     expect(seen).toContain("experiment");
-    const listed = await p.experiments.list({ owner: "haneul", status: "completed" });
+    const listed = await p.experiments.list(ADMIN, { owner: "haneul", status: "completed" });
     expect(listed.map((s) => s.experiment.id)).toEqual([created.experiment.id]);
-    expect(await p.experiments.list({ status: "running" })).toEqual([]);
-    expect(await p.experiments.list({ q: "기준선", limit: 1 })).toHaveLength(1);
+    expect(await p.experiments.list(ADMIN, { status: "running" })).toEqual([]);
+    expect(await p.experiments.list(ADMIN, { q: "기준선", limit: 1 })).toHaveLength(1);
   });
 
   test("a recipe is checked against what really exists before anything is queued", async () => {
@@ -263,7 +263,7 @@ describe("worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034]", 
       name: "새 이름",
     });
     expect(renamed.world.blueprint.name).toBe("새 이름");
-    expect((await p.worlds.list()).map((w) => w.name)).toEqual(["새 이름"]);
+    expect((await p.worlds.list(ADMIN)).map((w) => w.name)).toEqual(["새 이름"]);
     await expect(p.worlds.delete(JIMIN, "w-1")).rejects.toBeInstanceOf(ForbiddenError);
     expect(await p.worlds.delete(HANEUL, "w-1")).toEqual({ deleted: true });
     await expect(p.worlds.get("w-1")).rejects.toThrow("세계 w-1을 찾을 수 없어요");
@@ -343,7 +343,7 @@ describe("worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034]", 
     expect(renamed.scenario.doc.name).toBe("이름만");
     await expect(p.scenarios.delete(JIMIN, scenario.id)).rejects.toBeInstanceOf(ForbiddenError);
     expect(await p.scenarios.delete(HANEUL, scenario.id)).toEqual({ deleted: true });
-    expect((await p.scenarios.list(world.id)).map((s) => s.id)).not.toContain(scenario.id);
+    expect((await p.scenarios.list(ADMIN, world.id)).map((s) => s.id)).not.toContain(scenario.id);
   });
 
   test("a dry run shows what the scenario does to the world, with no agent", async () => {
