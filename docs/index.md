@@ -4,15 +4,15 @@ kind: reference
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: 골든 안전망 링크를 더함"
   - "2026-11-11: 권한 문서와 ADR-0174 링크"
   - "2026-11-11: ADR 목록을 없애고 결정 기록 폴더와 결정 목록을 가리키게 함 (ADR-0180)"
   - "2026-11-11: ADR 목록을 없애고 결정 기록 폴더와 결정 목록을 가리키게 함. AGENTS.md의 바뀐 곳은 CI 문장이라 색인과 무관 (ADR-0180)"
   - "2026-11-12: 따라가는 AGENTS.md에 내부 사실을 적지 않는다는 줄이 더해짐(ADR-0187). 색인과 무관. 지운 참고 문서는 색인에 없었다"
+  - "2026-11-12: E2E 워크플로 자동화(제안) 문서 링크를 더함"
 follows:
   - AGENTS.md
 follows_hash: 7bea53a6b8bb4599
-verified_body: 876cbc22d1a37868
+verified_body: 8ad7bde2c2838b54
 unchanged_reverifies: 2
 ---
 # 문서 색인
@@ -92,6 +92,7 @@ unchanged_reverifies: 2
 - [도메인과 가상 담당자 — 내 도메인 밖의 고장은 넘기고, 기다리는 동안 다른 일을 한다](design-docs/domains-and-counterparts.md)
 - [시나리오 편집기 검토 — 처음 쓰는 사람의 눈으로, 토스의 원칙으로 (세 번째 검토: 질문 셋·문장 채점표)](design-docs/scenario-editor-review.md)
 - [운영 모드 — 끝이 없는 실험, 당겨서 보는 모니터링, 실시간과 빨리 감기](design-docs/operation-mode.md)
+- [E2E 워크플로 자동화(제안) — 검증한 워크플로만 운영에 나가고, 나간 뒤에도 잰다](design-docs/workflow-automation.md)
 - [운영 에이전트 설계 가이드 — 8시간 동안 지켜보는 에이전트를 만드는 법](guides/operation-agent-guide.md)
 - [용어집 — 화면에 쓰는 말은 여기서 정한다](design-docs/glossary.md)
 - [용어집 층별 말 — SDN·컨테이너·애플리케이션·가속기·사이트](design-docs/glossary-layers.md)
