@@ -6,15 +6,15 @@ last_verified: 2026-11-12
 covers:
   - package.json
   - docs/exec-plans/active/beta-rounds.md
-covers_hash: f968d221bdb0bdc2
+covers_hash: ca8c780ae2895a08
 verification_log:
-  - "2026-11-12: beta-rounds.md에 이슈 47 일정이 더해짐. '지금 단계'의 차수 서술은 그대로 맞다"
   - "2026-11-12: 덮는 beta-rounds.md는 ADR-0171/0173의 만드는 중 표시만 지워졌고 README에 그 표시가 없다"
   - "2026-11-12: 따라가는 beta-rounds.md에 이슈 47 일정 절이 더해짐. 차수의 순서와 내용은 그대로라 이 문서와 어긋나지 않는다"
   - "2026-11-12: 따라가는 beta-rounds.md의 이슈 47 절에서 단계의 순서가 바뀜. 차수의 순서와 내용은 그대로라 이 문서와 어긋나지 않는다"
   - "2026-11-12: 따라가는 beta-rounds.md에서 날짜를 지우고 '지금의 순서' 절을 더함. 차수의 내용은 그대로라 이 문서와 어긋나지 않는다"
+  - "2026-11-12: main을 합침: 따라가는 문서는 날짜를 지운 순서 절과 내부 출처 서술을 걷어낸 한 줄(ADR-0187)이 함께 들어감. 이 문서와 어긋나지 않는다"
 verified_body: 8b0ca42880fa2e30
-unchanged_reverifies: 3
+unchanged_reverifies: 4
 ---
 # Terrarium
 
