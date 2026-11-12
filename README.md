@@ -8,13 +8,13 @@ covers:
   - docs/exec-plans/active/beta-rounds.md
 covers_hash: bdd2c705460d3199
 verification_log:
-  - "2026-11-12: 따라가는 beta-rounds.md에서 날짜를 지우고 '지금의 순서' 절을 더함. 차수의 내용은 그대로라 이 문서와 어긋나지 않는다"
-  - "2026-11-12: main을 합침: 따라가는 문서는 날짜를 지운 순서 절과 내부 출처 서술을 걷어낸 한 줄(ADR-0187)이 함께 들어감. 이 문서와 어긋나지 않는다"
-  - "2026-11-12: main을 합침: 덮는 beta-rounds.md는 순서 절과 확인 기록이 바뀜. README의 단계 서술과 어긋나지 않는다"
-  - "2026-11-12: 목표 문장을 맞추고 '통과한 것만 운영에 나가요(설계 단계)' 절을 더함 (ADR-0189)"
-  - "2026-11-12: 목표 문장을 맞추고 설계 단계 절을 더함. 덮는 beta-rounds.md의 8번과 맞다 (ADR-0189)"
-verified_body: d9ac8a6dcb90e444
-unchanged_reverifies: 6
+  - "2026-11-12: 따라가는 beta-rounds.md의 파워 캐핑 한 줄에서 내부 출처 서술이 빠짐(ADR-0187). 차수의 내용은 그대로라 이 문서와 어긋나지 않는다"
+  - "2026-11-12: 라이선스 절에 제3자 고지 파일 링크 한 문장을 더함. 나머지는 그대로 맞다 (ADR-0185)"
+  - "2026-11-12: main 합침: 라이선스 행·링크(ADR-0185)와 내부 사실 줄(ADR-0187)이 함께 있다. 서로 어긋나지 않는다"
+  - "2026-11-12: main을 합침: 라이선스 절의 고지 파일 링크(ADR-0185)와 main의 변경이 함께 들어감"
+  - "2026-11-12: main을 합침: 넓힌 목표 문장과 설계 단계 절(ADR-0189), 라이선스 절의 고지 파일 링크(ADR-0185)가 함께 들어감"
+verified_body: 44ab343d6cba8798
+unchanged_reverifies: 3
 ---
 # Terrarium
 
@@ -152,7 +152,7 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 
 ## 라이선스
 
-[Apache License 2.0](LICENSE)이에요. 저작권 표기는 [NOTICE](NOTICE)에 있어요.
+[Apache License 2.0](LICENSE)이에요. 저작권 표기는 [NOTICE](NOTICE)에, 함께 나가는 제3자 구성요소와 그 라이선스는 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)에 있어요.
 
 ## 코드를 고치는 사람에게
 
