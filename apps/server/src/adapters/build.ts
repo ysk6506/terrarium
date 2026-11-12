@@ -34,6 +34,7 @@ export interface Adapters {
   readonly audit: AuditStore;
   /** Days an audit entry is kept; 0 keeps them all. */
   readonly auditRetentionDays: number;
+  readonly auditPreAuthLinesPerMinute: number;
   readonly harnesses: readonly HarnessPort[];
   /** What the config file says about each of those harnesses, to show them (settings only name variables, never hold secrets). */
   readonly harnessConfigs: readonly HarnessConfig[];
@@ -124,6 +125,7 @@ export function buildAdapters(config: Config, options: AdapterOptions = {}): Ada
     store: options.store ?? (ownStore as SqliteStore),
     audit: options.audit ?? ownStore?.audit ?? new MemoryAuditStore(),
     auditRetentionDays: config.audit.retentionDays,
+    auditPreAuthLinesPerMinute: config.audit.preAuthLinesPerMinute,
     harnesses,
     harnessConfigs: config.harnesses,
     connect: { env, fetch: fetchImpl },

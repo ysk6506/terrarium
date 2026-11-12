@@ -14,6 +14,12 @@ export function auditMetricsText(counts: AuditCounts): string {
     lines.push(`terrarium_audit_entries_total{action="${action}",outcome="${outcome}"} ${n}`);
   }
   lines.push(
+    "# HELP terrarium_audit_suppressed_total Failures before sign-in that got no line of their own, by reason.",
+    "# TYPE terrarium_audit_suppressed_total counter",
+  );
+  for (const [reason, n] of [...counts.suppressed].sort(([a], [b]) => a.localeCompare(b)))
+    lines.push(`terrarium_audit_suppressed_total{reason="${reason}"} ${n}`);
+  lines.push(
     "# HELP terrarium_audit_write_failures_total Audit entries that could not be written.",
     "# TYPE terrarium_audit_write_failures_total counter",
     `terrarium_audit_write_failures_total ${counts.failures}`,

@@ -90,6 +90,7 @@ export const AUDIT_ACTIONS = [
   "audit.export",
   "audit.read_own",
   "audit.sweep",
+  "audit.limit",
 ] as const;
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
 

@@ -12,19 +12,20 @@ enforced_by:
   - apps/server/src/http/audit-failure.test.ts
   - apps/server/src/runtime/audit.test.ts
   - apps/server/src/adapters/sqlite-audit.test.ts
+  - apps/server/src/http/audit-fold.test.ts
 touches_protected: []
 amends_tests: []
 updates_docs:
   - docs/design-docs/permissions.md
   - docs/design-docs/http-api.md
   - docs/design-docs/operations.md
-decision_hash: dc517d432f850d69
+decision_hash: dcc0ca53b6382df2
 ---
 # ADR-0193 감사 기록
 
 ## 맥락
 
-[ADR-0174](0174-permissions-proxy-identity-three-scopes-audit.md)는 권한을 만드는 순서를 가·나·다·라·마로 정했고, 가(신원·판정 한 곳)와 나(공개 범위)는 만들어졌어요. 다는 감사 기록이에요. 초대한 사용자가 둘 이상이 되면 "누가 무엇을 했나"와 "누가 무엇을 하려다 막혔나"에 답할 수 있어야 해요. 또 앞으로 워크플로의 건과 승인도 같은 기록에 남아야 해서(워크플로 자동화 13절), 사람만 있는 모양으로 굳히면 안 돼요.
+[ADR-0174](0174-permissions-proxy-identity-three-scopes-audit.md)는 권한을 만드는 순서를 가·나·다·라·마로 정했고, 가(신원·판정 한 곳)와 나(공개 범위)는 만들어졌어요. 다는 감사 기록이에요. 초대한 사용자가 둘 이상이 되면 "누가 무엇을 했나"와 "누가 무엇을 하려다 막혔나"에 답할 수 있어야 해요.
 
 이 변경은 요구를 정한 제품 책임자의 결정을 그대로 따라요. 아래 "결정"의 앞 열한 가지가 그 결정이고, 뒤의 "이 변경에서 고른 것"이 구현이 고른 이름과 자리예요.
 
@@ -37,10 +38,11 @@ decision_hash: dc517d432f850d69
 5. **기록하는 곳은 하나이고** 길마다 `records: change | read-override | none` 분류가 있어야 해요. `none`은 이유를 적어요. 없으면 시험이 실패해요. 막힘은 판정이 난 자리에서 적어 두고 기록해요.
 6. **쓰기가 안 되면** 바꾸는 요청은 실패로 닫혀요(쉬운 한국어로 알려요). 읽기는 답하고 실패를 지표로 세고 로그에 남겨요.
 7. **읽기**: 관리자는 목록(시간 범위, 누가, 일, 종류와 ID, 결과로 거르기, 새것부터, 커서 쪽 나눔)과 JSON Lines 파일. 다른 사람은 자기가 만든 것에 있던 일을 누가·언제·무엇을·어떻게 끝났나로만 봐요. 정책 표에 둘 다 있어요.
-8. **워크플로를 위한 모양**: 주체는 사람이나 에이전트(나 서버 자신), 선택 칸으로 대신한 사람(`onBehalfOf`)과 건(`caseId`), 대상 종류는 등록부로 검증하는 열린 말이에요.
+8. **주체의 모양**: 주체는 사람이나 에이전트(나 서버 자신), 선택 칸으로 대신한 사람(`onBehalfOf`)과 건(`caseId`), 대상 종류는 등록부로 검증하는 열린 말이에요.
 9. **저장**은 메모리와 SQLite예요. SQLite는 새 표, 스키마 4판, 3판 파일을 여는 시험, 시각·주체·대상 색인이 있어요. 표는 기록자만 써요.
 10. **관찰**: 행동과 결과별 개수 하나와 쓰기 실패 개수 하나. 로그에는 행동 이름과 결과만 나가요.
 11. **화면은 이 단계에 없어요.** API가 말 열쇠(`labelKey`)와 그때의 대상 이름을 줘요.
+12. **로그인 전의 실패는 접어서 써요.** 6번 때문에 기록을 못 쓰면 모든 변경이 막혀요. 그래서 로그인 없이 실패 줄을 끝없이 쌓을 수 있으면 디스크를 채워 변경을 막는 지렛대가 돼요. `unauthenticated`·`proxy_secret_missing`·`proxy_secret_wrong`·`proxy_login_missing`은 (원격 주소, 까닭)마다 1분에 한 줄만 쓰고 그 줄에 그 1분의 횟수(`detail.count`)를 남겨요. 이런 줄은 모두 합쳐 1분에 `audit.preAuthLinesPerMinute`(기본 60)줄까지예요. 넘은 것과 접힌 것은 지표(`terrarium_audit_suppressed_total{reason}`)로만 세고, 상한에 닿으면 서버가 쓴 `audit.limit` 줄 하나가 버린 횟수를 말해요. 줄은 덧붙이기만 지키려고 그 1분이 끝난 뒤(또는 서버가 멈출 때) 한 번에 써요. 시계는 주입한 것이에요.
 
 ## 이 변경에서 고른 것
 
@@ -72,6 +74,5 @@ decision_hash: dc517d432f850d69
 
 ## 결과
 
-- 알려진 한계(권한 문서 9절 참고): 합쳐 읽는 길 셋은 관리자의 남의 것 읽기를 기록하지 않아요. 로그인 실패 기록은 빈도를 제한하지 않아요. `/metrics`는 클러스터 토큰이 있을 때만 열려요. 확인과 쓰기 사이의 틈. `GET /api/audit/mine`은 일과 결과 외에 대상의 종류·ID·이름을 줘요.
+- 알려진 한계(권한 문서 9절 참고): 합쳐 읽는 길 셋은 관리자의 남의 것 읽기를 기록하지 않아요. 로그인 전의 실패는 접히므로 상한을 넘은 주소는 줄 없이 지표로만 세요. `/metrics`는 클러스터 토큰이 있을 때만 열려요. 확인과 쓰기 사이의 틈. `GET /api/audit/mine`은 일과 결과 외에 대상의 종류·ID·이름을 줘요.
 - 라 단계(화면)는 `labelKey`와 `label`, `reasonLabel`을 그대로 쓰면 돼요.
-- 워크플로의 건과 승인은 종류를 등록부에 더하고 같은 기록자를 써요.

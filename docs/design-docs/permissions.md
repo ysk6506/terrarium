@@ -4,16 +4,16 @@ kind: spec
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: self-declared admin: token, else loopback socket address only; proxy mode unchanged"
   - "2026-11-12: ADR-0183: 따라가는 용어집의 새 절(한 가지 말, 조건의 뜻)을 읽고, 이 문서에 옛 말(회·횟수·시드·개체·에스컬레이션)이 없음을 확인했다"
   - "2026-11-12: 따라가는 문서나 코드의 내부 사실 서술이 요구의 말로 바뀐 것을 대조했고 이 문서의 내용은 그대로 맞다 (ADR-0188)"
   - "2026-11-12: main을 합친 뒤 공개 범위(ADR-0174 나 단계, ADR-0179)에서 더한 서술을 합쳐진 코드와 대조했고, 바뀐 화면 글(ADR-0183)과 옛 말이 없음을 확인했다"
   - "2026-11-12: ADR-0193 다 단계: 6절, 9절, 시험 표를 audit 코드와 시험 파일에 대어 쓰고, 따라가는 http-api.md와 operations.md의 새 서술과 맞는지 확인"
+  - "2026-11-12: ADR-0193: 6절 로그인 전 실패 접기 단락, 한계 줄, 시험 표를 audit-fold.ts와 audit-fold.test.ts에 대어 확인. 워크플로 줄 둘은 제품 목표 변경에 맞춰 뺐다"
 follows:
   - docs/design-docs/http-api.md
   - docs/design-docs/operations.md
-follows_hash: b507f3f44ecd3075
-verified_body: fafdbad97c0a2302
+follows_hash: 20e4252ac1f59c7e
+verified_body: a813c0a300fcf16c
 unchanged_reverifies: 1
 ---
 # 권한 (클로즈 베타 1차, ADR-0174)
@@ -114,8 +114,8 @@ unchanged_reverifies: 1
 - **적지 않는 것**: 비밀 값·토큰·프록시 비밀 값, 요청 본문, 세계·시나리오·실행·행의 내용. 보낸 칸의 **이름**은 적을 수 있고, **값**은 범위·그룹·역할·주인·공유 칸만 적어요. 시험이 길마다 입력에 알아볼 수 있는 비밀 값을 심고 기록에 없는지 봐요.
 - **기록하는 곳은 하나예요.** 핸들러는 아무것도 적지 않아요. 판정(`may`, `allow`, `mustSee`)이 막힌 자리에서 요청의 메모에 적어 두고, 모든 길이 지나는 앱의 등록 함수가 요청이 끝날 때 기록자(`Auditor`)로 써요. 새 길은 `AUDIT_CLASSES`에 `records: change | read-override | none`을 적어야 하고 `none`은 이유가 있어야 해요. 없으면 타입 검사와 `audit-classes.test.ts`가 실패해요.
 - **쓰기가 안 될 때**(저장소가 기록을 못 받을 때): 바꾸는 요청은 **하기 전에** 막아요. 503과 "감사 기록을 남길 수 없어서 이 일을 하지 않았어요…"를 줘요. 읽기는 그대로 답하고 실패를 지표로 세고 로그에 행동 이름과 결과만 남겨요. 막힌 시도도 막힌 채로 답해요. 한계: 확인한 뒤 쓰는 사이에 깨지면 일은 끝났고 기록이 없어요. 이때는 "일은 끝났지만 감사 기록을 남기지 못했어요"라고 말해요([서버 운영](operations.md)).
+- **로그인 전의 실패는 접어서 써요.** 쓰기가 안 될 때 바꾸는 요청을 막는 설계라서, 로그인 없이 실패 줄을 끝없이 쌓을 수 있으면 디스크를 채워 모든 변경을 막는 지렛대가 돼요. 그래서 로그인 전의 실패(`unauthenticated`·`proxy_secret_missing`·`proxy_secret_wrong`·`proxy_login_missing`)는 (호출한 쪽 주소, 까닭)마다 1분에 한 줄만 쓰고 그 줄의 `detail.count`에 그 1분의 횟수를 남겨요. 줄은 그 1분이 끝난 뒤(또는 서버가 멈출 때) 써요. 이런 줄은 모두 합쳐 1분에 `audit.preAuthLinesPerMinute`(기본 60)줄까지예요. 넘으면 그 분의 나머지는 지표(`terrarium_audit_suppressed_total`)로만 세고, 서버가 쓴 `audit.limit` 줄 하나가 "상한에 닿았다"와 버린 횟수를 말해요. 접힌 줄과 버린 횟수는 지표에는 남지만 줄로는 남지 않아요.
 - **보는 사람**: 관리자는 목록과 JSON Lines 파일(거르기: 시간 범위, 누가, 일, 종류와 ID, 결과. 새것부터, 쪽 나눔)을 봐요. 다른 사람은 **자기가 만든 것**에 있던 일을 누가·언제·무엇을·어떻게 끝났나로만 봐요. 기록을 보거나 내려받은 일도 기록돼요.
-- **워크플로를 위해**: 기록의 주체는 사람이거나 에이전트이고, 대신한 사람(`onBehalfOf`)과 건(`caseId`)을 선택으로 둘 수 있고, 대상 종류는 등록부에 더하는 열린 말이에요. 워크플로의 건과 승인도 같은 기록자를 쓰게 돼요([워크플로 자동화](workflow-automation.md) 13절). 그때 표를 바꾸지 않아요.
 
 ## 7. 화면
 
@@ -165,14 +165,13 @@ unchanged_reverifies: 1
 - **로그인 실패의 까닭**(비밀 값 없음·틀림·로그인 ID 없음)은 기록에만 구별돼 있고 호출한 사람에게는 모두 같은 401이에요. 막힌 시도는 401·403·"볼 수 없어서 404"가 서로 다른 까닭으로 적혀요.
 - **ID는 확인된 것만 적어요.** 주소에 적힌 ID는 조회가 있다고 확인한 뒤에만 기록에 들어가요. 없는 ID나 토큰이 기록에 새지 않아요.
 - 한계: 관리자가 남의 것을 읽은 일을 `twinDiagnoses`·`twinBrief`·`listEscalations`에서는 기록하지 않아요(여러 실험을 합쳐 읽는 길이라 한 사람의 것을 가릴 수 없어요. `AUDIT_CLASSES`에 이유가 있어요).
-- 한계: 로그인 실패 기록에는 빈도 제한이 없어요. 반복되면 보관 기간까지 쌓여요.
+- 한계: 로그인 전의 실패는 접어서 쓰므로 한 주소가 1분에 몇 번 틀렸는지는 줄의 `count`로만 알 수 있고, 상한을 넘은 주소는 줄 없이 지표로만 세요.
 - 한계: `/metrics`는 클러스터 토큰이 있을 때만 열려서, 토큰 없는 한 대짜리 서버에서는 감사 지표가 길로 나오지 않아요.
 - 한계: `GET /api/audit/mine`의 항목에는 일과 결과 말고도 대상의 종류와 ID, 이름이 있어요. 화면이 "무엇에 한 일인지"를 보여 주려면 필요해서예요.
 - 한계: 쓰기가 안 될 때 확인과 쓰기 사이에 깨지는 틈이 있어요(6절).
 
 ## 다음에 할 일
 
-- 감사 기록은 권한이 바뀐 일뿐 아니라 워크플로의 건과 승인도 같은 기록에 남겨요([워크플로 자동화](workflow-automation.md) 13절). 같은 기록자를 쓰고 표는 그대로예요.
 - 자원은 공개 범위와 별도로 자원마다 맡은 일(주인, 편집, 승인 같은)을 사람이나 무리에게 줄 수 있게 돼요. 같은 문서 13절이 맡은 일을 정해요.
 
 ## 하지 않는 것
@@ -196,6 +195,7 @@ unchanged_reverifies: 1
 | 감사: 비밀 값 | 모든 길의 입력에 심은 비밀 값이 기록·내려받기·지표·로그에 없다 | `apps/server/src/http/audit-secrets.test.ts` |
 | 감사: 읽기 | 목록·파일의 거르기, 쪽 나눔, 누가 부를 수 있나, 내 것의 제한된 보기, 읽은 일의 기록, 시계 | `apps/server/src/http/audit-read.test.ts` |
 | 감사: 쓰기 실패 | 쓰기가 안 되면 바꾸는 요청은 하지 않고 503, 읽기는 답함, 지표와 로그 | `apps/server/src/http/audit-failure.test.ts` |
+| 감사: 로그인 전 실패 | 같은 주소·까닭은 1분에 한 줄과 횟수, 합쳐 상한, 1분이 지나면 다시 한 줄, 메모리와 SQLite가 같은 답 | `apps/server/src/http/audit-fold.test.ts` |
 | 감사: 분류 | 모든 길이 기록 분류를 가지고, `none`은 이유가 있다 | `packages/core/src/contract/audit-classes.test.ts` |
 | 감사: 기록자와 저장소 | 닫힌 목록 밖의 말은 거절, 정리 하나뿐인 지우기, 시계, SQLite와 메모리가 같은 답, 3판 파일 열기 | `apps/server/src/runtime/audit.test.ts`, `packages/core/src/experiments/audit.test.ts`, `apps/server/src/adapters/sqlite-audit.test.ts`, `apps/server/src/http/audit-http.test.ts` |
 | 채점 불변 | 권한을 켜도 같은 실험의 점수 분해가 바이트까지 같다 | `apps/server/src/http/scoring-unchanged.test.ts` |

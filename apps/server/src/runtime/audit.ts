@@ -17,6 +17,7 @@ import {
   VALUE_FIELDS,
 } from "@terrarium/core/experiments";
 import { randomToken, TerrariumError } from "@terrarium/core/kernel";
+import { type ClosedMinute, isPreAuth, PreAuthFold } from "./audit-fold";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const NAME_MAX = 120;
@@ -44,6 +45,8 @@ export interface AuditCounts {
   readonly entries: ReadonlyMap<string, number>;
   /** Writes that failed. */
   readonly failures: number;
+  /** Failures before sign-in that got no line of their own (folded into another or over the limit), by reason. */
+  readonly suppressed: ReadonlyMap<string, number>;
 }
 
 /** Plain text with no control characters, cut to length. */
@@ -118,6 +121,8 @@ export function cleaned(input: NewAuditEntry): NewAuditEntry {
 export class Auditor {
   private readonly entries = new Map<string, number>();
   private failures = 0;
+  private readonly suppressed = new Map<string, number>();
+  private readonly fold: PreAuthFold;
 
   /**
    * `now` is the platform's clock; `line` receives the action and outcome of an entry that could not be written, for the
@@ -127,10 +132,17 @@ export class Auditor {
     private readonly store: AuditStore,
     private readonly now: () => string,
     private readonly line: AuditLogLine = () => undefined,
-  ) {}
+    preAuthLinesPerMinute = 60,
+  ) {
+    this.fold = new PreAuthFold(preAuthLinesPerMinute);
+  }
 
   counts(): AuditCounts {
-    return { entries: new Map(this.entries), failures: this.failures };
+    return {
+      entries: new Map(this.entries),
+      failures: this.failures,
+      suppressed: new Map(this.suppressed),
+    };
   }
 
   /** Whether a write would work now: asked before a change is made, so that it can be refused instead of left unrecorded. */
@@ -159,8 +171,48 @@ export class Auditor {
     }
   }
 
-  /** Write one entry and carry on if it cannot be written (a refusal, a read): the failure is counted and logged. */
+  /**
+   * Write one entry and carry on if it cannot be written (a refusal, a read): the failure is counted and logged.
+   * A failure before sign-in is folded first (`audit-fold.ts`): it is written when its minute has ended.
+   */
   async tryRecord(input: NewAuditEntry): Promise<boolean> {
+    await this.flushDue();
+    if (!isPreAuth(input)) return this.write(input);
+    if (!this.fold.add(input, this.now())) {
+      const reason = input.reason ?? "unknown";
+      this.suppressed.set(reason, (this.suppressed.get(reason) ?? 0) + 1);
+    }
+    return true;
+  }
+
+  /** Write the lines of a minute of failures before sign-in that has ended (all of them when `force`, as when stopping). */
+  async flushDue(force = false): Promise<void> {
+    const closed = this.fold.closeIfEnded(this.now(), force);
+    if (closed) await this.writeClosed(closed);
+  }
+
+  private async writeClosed(closed: ClosedMinute): Promise<void> {
+    for (const line of closed.lines) {
+      // the folded ones beyond the first of each line are counted as suppressed when they arrive; the first has its line
+      await this.write(line);
+    }
+    if (closed.over > 0) {
+      await this.write({
+        requestId: `limit-${randomToken(6)}`,
+        subject: SYSTEM,
+        action: "audit.limit",
+        outcome: "allowed",
+        resource: { kind: "audit" },
+        detail: {
+          dropped: closed.over,
+          lines: closed.lines.length,
+          windowStart: closed.windowStart,
+        },
+      });
+    }
+  }
+
+  private async write(input: NewAuditEntry): Promise<boolean> {
     try {
       await this.record(input);
       return true;
@@ -182,7 +234,7 @@ export class Auditor {
     if (days <= 0) return 0;
     const cutoff = new Date(Date.parse(this.now()) - days * DAY_MS).toISOString();
     const removed = await this.store.sweep(cutoff);
-    await this.tryRecord({
+    await this.write({
       requestId: `sweep-${randomToken(6)}`,
       subject: SYSTEM,
       action: "audit.sweep",

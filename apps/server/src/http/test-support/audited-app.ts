@@ -10,6 +10,7 @@ import type { AuditLogLine } from "../../runtime";
 import { testPlatform } from "../../runtime/test-support/platform";
 import { buildApp } from "../app";
 import { authenticatorOf } from "../identity";
+import { recorderOf } from "./audit-support";
 import type { Send } from "./scoped-app";
 
 export const PROXY_SECRET = "proxy-secret-for-scope-tests-0001";
@@ -36,6 +37,7 @@ export function auditedApp(
     },
     llm: { fetch: async () => new Response(JSON.stringify({ data: [{ id: "m" }] })) },
   });
+  recorderOf(audit, t.platform.audit);
   const app = buildApp({
     platform: t.platform,
     authenticator: authenticatorOf(parseConfig({ identity: PROXY }).identity, {
@@ -59,6 +61,7 @@ export function auditedApp(
     } catch {
       // a report or a file, not JSON
     }
+    await t.platform.audit.flushDue(true);
     return { status: r.statusCode, body, text: r.body };
   };
   return { ...t, app, send, llmCalls: [] as string[], audit, close: () => t.platform.stop() };

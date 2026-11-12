@@ -52,6 +52,7 @@ export interface PlatformOptions {
         | "telemetryDefault"
         | "audit"
         | "auditRetentionDays"
+        | "auditPreAuthLinesPerMinute"
       >
     >;
   readonly host: SessionHost;
@@ -232,7 +233,12 @@ export class Platform {
       (id) => void this.announce(id),
     );
     const auditStore = options.adapters.audit ?? new MemoryAuditStore();
-    this.audit = new Auditor(auditStore, () => stamps.now(), options.auditLine);
+    this.audit = new Auditor(
+      auditStore,
+      () => stamps.now(),
+      options.auditLine,
+      options.adapters.auditPreAuthLinesPerMinute,
+    );
     this.auditLog = new AuditLog(auditStore);
     this.gate = new Gate(this.ctx);
     this.titles = new Titles(this.ctx, watched.version);
@@ -314,6 +320,7 @@ export class Platform {
   }
 
   async stop(): Promise<void> {
+    await this.audit.flushDue(true);
     await this.dispatcher.shutdown();
   }
 }

@@ -4774,7 +4774,42 @@
       "kind": "auto"
     },
     {
+      "q": "ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리움으로 보낸다 — 에이전트는 두 세계에서 같은 게이트웨이를 같은 이름으로 부른다의 맥락이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리움으로 보낸다 — 에이전트는 두 세계에서 같은 게이트웨이를 같은 이름으로 부른다의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리움으로 보낸다 — 에이전트는 두 세계에서 같은 게이트웨이를 같은 이름으로 부른다의 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리움으로 보낸다 — 에이전트는 두 세계에서 같은 게이트웨이를 같은 이름으로 부른다의 버린 길이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리움으로 보낸다 — 에이전트는 두 세계에서 같은 게이트웨이를 같은 이름으로 부른다의 남은 일이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리움으로 보낸다 — 에이전트는 두 세계에서 같은 게이트웨이를 같은 이름으로 부른다의 결과가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md"],
+      "kind": "auto"
+    },
+    {
       "q": "ADR-0193 감사 기록의 맥락이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0193-audit-log-one-recording-point.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0193 감사 기록의 결정이 뭐예요?",
       "expect": ["docs/design-docs/adr/0193-audit-log-one-recording-point.md"],
       "kind": "auto"
     },
@@ -6889,6 +6924,11 @@
       "kind": "auto"
     },
     {
+      "q": "서버 운영의 사용자 식별 자리가 뭐예요?",
+      "expect": ["docs/design-docs/operations.md"],
+      "kind": "auto"
+    },
+    {
       "q": "서버 운영의 외부 시스템을 붙일 때 확인할 것이 뭐예요?",
       "expect": ["docs/design-docs/operations.md"],
       "kind": "auto"
@@ -8790,6 +8830,11 @@
     },
     {
       "q": "E2E 워크플로 자동화의 11. 적용 단계가 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 검증에서는 실제 툴 자리에 모의 툴이 서요가 뭐예요?",
       "expect": ["docs/design-docs/workflow-automation.md"],
       "kind": "auto"
     },

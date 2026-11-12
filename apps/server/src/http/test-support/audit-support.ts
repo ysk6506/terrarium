@@ -10,8 +10,16 @@ import {
 import type { AuditedApp } from "./audited-app";
 import type { Person } from "./scoped-app";
 
+/** The recorder of each store, so that reading the entries first writes the folded lines of a minute that is still open. */
+const RECORDERS = new WeakMap<AuditStore, { flushDue(force?: boolean): Promise<void> }>();
+export const recorderOf = (
+  store: AuditStore,
+  recorder: { flushDue(force?: boolean): Promise<void> },
+) => RECORDERS.set(store, recorder);
+
 /** Every entry written, oldest first. */
 export async function allEntries(audit: AuditStore): Promise<AuditEntry[]> {
+  await RECORDERS.get(audit)?.flushDue(true);
   const page = await audit.query({ limit: 100_000 });
   return [...page.entries].reverse();
 }

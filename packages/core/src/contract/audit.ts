@@ -152,6 +152,7 @@ export const AUDIT_LABELS: Readonly<Record<AuditAction, string>> = {
   "audit.export": "감사 기록 내려받기",
   "audit.read_own": "내 것에 있던 일 열어 보기",
   "audit.sweep": "오래된 감사 기록 정리하기",
+  "audit.limit": "로그인 전 실패 기록이 상한에 닿음",
 };
 
 /** Why a try was refused or failed, in words a person can act on. */
