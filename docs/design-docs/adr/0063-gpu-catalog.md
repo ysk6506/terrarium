@@ -2,7 +2,6 @@
 title: ADR-0063 GPU는 칩 이름으로 다루고, 아직 출시되지 않은 칩은 예정으로만 둔다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - tests/spec/gpu-catalog.test.ts
   - packages/core/src/world/construction.test.ts

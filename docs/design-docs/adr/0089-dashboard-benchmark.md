@@ -2,7 +2,6 @@
 title: ADR-0089 홈은 경영진 한 장이고 그 뒤가 엔지니어 근거다 — 벤치마크는 pass^k·실패 유형·버전 세트·비용을 말한다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다. 구현 작업이 끝나면 frontmatter의 enforced_by를 그 작업의 시험으로 바꾼다.

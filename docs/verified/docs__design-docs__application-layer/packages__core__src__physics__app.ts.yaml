@@ -1,0 +1,7 @@
+doc: "docs/design-docs/application-layer.md"
+target: "packages/core/src/physics/app.ts"
+hash: "de03a3feb807de71"
+date: "2026-11-12"
+note: "덮는 physics/app.ts와 app-calls.ts가 똑같이 두 번 쓰던 사건 도우미(note, back)를 app-calls.ts 한 곳에 둠. 동작과 사건의 원인은 그대로이고 '알아서 하는 일' 표와 대조해 맞다"
+text_changed: false
+doc_hash: "24096d703cb84a51"

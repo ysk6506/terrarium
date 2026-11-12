@@ -2,7 +2,6 @@
 title: 설비의 표준 인터페이스 — Redfish, SNMP, BACnet
 kind: spec
 status: active
-last_verified: 2026-11-04
 covers:
   - packages/core/src/facades/protocols.ts
   - packages/core/src/facades/redfish-facility.ts
@@ -19,13 +18,6 @@ covers:
   - packages/core/src/facades/bacnet-core.ts
   - packages/core/src/facades/bacnet-points.ts
   - tests/spec/redfish-schemas/validator.ts
-covers_hash: 5d7269e8c552cc5f
-verification_log:
-  - "2026-11-04: 처음 썼다: protocols.ts의 설비별 말, Redfish 시설 리소스, SNMP 엔진·UPS-MIB·IF-MIB, BACnet 서비스·우선순위 배열·오류 번호를 코드와 대조했다 (REQ-060, ADR-0057)"
-  - "2026-11-04: 스위치 포트 이름과 순서를 명령줄과 같게(netos-model), ifAdminStatus 쓰기, protocols.ts의 switch 말 추가를 반영"
-  - "2026-11-04: ORv3 랙·파워 셸프·콘센트 제어(REQ-063, ADR-0060)를 코드와 대조해 반영했다"
-  - "2026-11-04: 냉동기·CDU·발전기의 Unit-Enable(쓰기)을 bacnet-points.ts와 대조해 표와 설명에 반영. PDU 콘센트가 읽기 전용이라는 낡은 문장을 지움"
-  - "2026-11-04: BACnet Outdoor-Air-Temperature 점(항온항습기 5, 플랜트 6)을 bacnet-points.ts와 대조해 더함 (REQ-073)"
 ---
 # 설비의 표준 인터페이스 (REQ-060, ADR-0057)
 

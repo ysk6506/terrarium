@@ -2,7 +2,6 @@
 title: ADR-0033 워밍업 상태를 기억해 두고 세션을 빨리 연다
 kind: decision
 status: active
-last_verified: 2026-10-29
 enforced_by:
   - packages/core/src/session/warm.test.ts
 touches_protected: []

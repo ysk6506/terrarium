@@ -3,7 +3,6 @@ title: ADR-0026 하네스 연결은 세 가지 — 내장, OpenAI 호환, 하네
 kind: decision
 status: superseded
 superseded_by: 0042-connectors.md
-last_verified: 2026-10-30
 enforced_by:
   - apps/server/src/adapters/harness.test.ts
 touches_protected: []

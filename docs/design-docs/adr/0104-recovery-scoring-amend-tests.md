@@ -2,7 +2,6 @@
 title: ADR-0104 복구 우선 채점을 구현하면서 시험 세 개의 기대값을 고친다
 kind: decision
 status: active
-last_verified: 2026-11-06
 enforced_by:
   - packages/core/src/oracle/recovery.test.ts
   - tests/spec/recovery-scoring.test.ts

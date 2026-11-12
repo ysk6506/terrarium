@@ -2,7 +2,6 @@
 title: ADR-0108 서비스부터는 IAP 하나로 시작하고, 사다리의 칩마다 그림·설명 카드가 있다 (0107 보정)
 kind: decision
 status: active
-last_verified: 2026-11-06
 enforced_by:
   - apps/web/src/logic/world-shape/world-shape.test.ts
   - apps/server/src/runtime/world-templates.test.ts

@@ -1,0 +1,7 @@
+doc: "docs/design-docs/service-catalog.md"
+target: "apps/server/src/runtime/service-cards.ts"
+hash: "289dfb6a83b47183"
+date: "2026-11-11"
+note: "step 가 (ADR-0174): identity and policy; statements checked against the code"
+text_changed: true
+doc_hash: "ee7bf908b6de7987"

@@ -2,7 +2,6 @@
 title: 가속기(GPU) 층 — GPU·NVLink·IB 패브릭·스케줄러·학습 잡·추론 풀, 고장 여덟과 시스템이 스스로 하는 일
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - packages/core/src/world/accel.ts
   - packages/core/src/world/accel-act.ts
@@ -17,15 +16,6 @@ covers:
   - packages/core/src/scenario/library-accel.ts
   - packages/core/src/sources/worldgen/shaped-gpu.ts
   - packages/core/src/session/probes-accel.ts
-covers_hash: a5c4113030412a14
-verification_log:
-  - "2026-11-07: ADR-0133에 맞춰 대조: 기대 복구 시간(+5분), 손대지 않는 것이 정답인 시트의 만점, 링크 흔들림 서술"
-  - "2026-11-10: 물리 상수를 슬롯 표로 옮김(REQ-113). v1 동작은 physics-golden이 비트까지 같음을 확인, 문서 내용 변화 없음"
-  - "2026-11-11: tools·world/os: 닿지 않는 분기 정리와 시험 추가; 동작은 같음(TD-0002), awk는 이름 바로 뒤 '(' 호출과 srand 반환값"
-  - "2026-11-11: Checked against accel-act.ts: the unreferenced jobNeeds helper was removed, no described behaviour changed."
-  - "2026-11-12: ADR-0184: 흉내의 한계 힌트 변경 뒤에도 내용이 맞는지 다시 봤어요"
-verified_body: 320003d8f6949027
-unchanged_reverifies: 0
 ---
 # 가속기(GPU) 층 (REQ-107, ADR-0130)
 

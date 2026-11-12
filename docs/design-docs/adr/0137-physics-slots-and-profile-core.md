@@ -2,7 +2,6 @@
 title: ADR-0137 물리 모델 자리(이음매)와 물리 프로필(숫자·곡선·바깥 온도·지문)의 코어를 만든다
 kind: decision
 status: active
-last_verified: 2026-11-10
 enforced_by:
   - tests/spec/physics-golden.test.ts
   - tests/spec/physics-laws.test.ts

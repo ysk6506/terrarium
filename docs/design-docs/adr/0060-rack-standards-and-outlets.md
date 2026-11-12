@@ -2,7 +2,6 @@
 title: ADR-0060 랙은 두 규격(EIA-310, OCP ORv3)을 다루고, PDU 콘센트는 하나씩 끌 수 있다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - tests/spec/pdu-outlets.test.ts
   - tests/spec/orv3-racks.test.ts

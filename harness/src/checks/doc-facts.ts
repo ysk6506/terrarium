@@ -4,9 +4,11 @@
  * touch these: a wrong number has to be corrected.
  */
 import { execFileSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { type Violation, violation } from "../common";
+import { listFiles } from "../files";
+import { sha16 } from "../ts-ast";
 import { type ClaimContext, contractRoutes, proseLines } from "./doc-claims";
 
 const FACT_RE = /<!--\s*fact:([a-z_]+)\s*-->\s*([0-9][0-9,]*)\s*<!--\s*\/fact\s*-->/g;
@@ -16,16 +18,56 @@ const CORE_SCRIPT = "scripts/doc-facts-core.ts";
 /** Names a document may state, and how each is counted (the core ones need the running code). */
 export const FACT_NAMES = [...CORE_FACTS, "contract_routes", "check_codes"] as const;
 
+const CACHE_FILE = "node_modules/.cache/terrarium/doc-facts.json";
+
+/** The counts depend only on these files, so a run that finds them unchanged reuses the last answer. */
+function coreKey(root: string): string {
+  const files = [
+    ...listFiles(root, ["packages/core"], (n) => /\.tsx?$/.test(n)),
+    CORE_SCRIPT,
+    "harness/src/common.ts",
+  ];
+  return sha16(
+    files.map((f) => `${f}:${sha16(readFileSync(path.join(root, f), "utf8"))}`).join("\n"),
+  );
+}
+
+function cachedFacts(root: string, key: string): Record<string, number> | null {
+  try {
+    const hit = JSON.parse(readFileSync(path.join(root, CACHE_FILE), "utf8")) as {
+      key?: string;
+      facts?: Record<string, number>;
+    };
+    return hit.key === key && hit.facts ? hit.facts : null;
+  } catch {
+    return null;
+  }
+}
+
+function storeFacts(root: string, key: string, facts: Record<string, number>): void {
+  try {
+    mkdirSync(path.dirname(path.join(root, CACHE_FILE)), { recursive: true });
+    writeFileSync(path.join(root, CACHE_FILE), JSON.stringify({ key, facts }), "utf8");
+  } catch {
+    // The cache is an optimisation only.
+  }
+}
+
 function coreFacts(root: string): Record<string, number> | null {
   if (!existsSync(path.join(root, CORE_SCRIPT)) || !existsSync(path.join(root, "packages/core")))
     return null;
+  const key = coreKey(root);
+  const known = cachedFacts(root, key);
+  if (known) return known;
   try {
     const out = execFileSync(process.execPath, ["--import", "tsx", CORE_SCRIPT], {
       cwd: root,
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
     });
-    return JSON.parse(out.trim().split("\n").pop() as string) as Record<string, number>;
+    const facts = JSON.parse(out.trim().split("\n").pop() as string) as Record<string, number>;
+    storeFacts(root, key, facts);
+    return facts;
   } catch {
     return null;
   }

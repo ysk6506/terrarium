@@ -2,7 +2,6 @@
 title: ADR-0125 이끼는 LLM을 연결해야만 쓸 수 있다 — 기본 모델이 없으면 꺼져 있고, 점수 질문은 채점 문서를 먼저 찾는다
 kind: decision
 status: active
-last_verified: 2026-11-07
 enforced_by:
   - apps/web/src/moss/moss.test.ts
   - apps/web/src/ui/moss/moss-gate.test.ts

@@ -11,7 +11,7 @@ const read = (root: string, file: string) => readFileSync(path.join(root, file),
 describe("docs follow other docs [REQ-020]", () => {
   test("a document with neither covers nor follows fails DOC092, an ADR is exempt", () => {
     const bare = docsRepo({
-      "docs/guide.md": `${front({ follows: undefined, follows_hash: undefined })}# G\n`,
+      "docs/guide.md": `${front({ follows: undefined })}# G\n`,
     });
     expect(codes(bare)).toEqual(["DOC092"]);
     const withAdr = docsRepo({
@@ -24,7 +24,7 @@ describe("docs follow other docs [REQ-020]", () => {
   test("a followed doc whose body changes makes the follower stale, front matter changes do not", () => {
     const root = docsRepo({
       "docs/spec.md": `${front()}# Spec\nv1\n`,
-      "docs/plan.md": `${front({ follows: ["docs/spec.md"], follows_hash: undefined })}# Plan\n[s](spec.md)\n`,
+      "docs/plan.md": `${front({ follows: ["docs/spec.md"] })}# Plan\n[s](spec.md)\n`,
       "docs/index.md": `${front()}[g](guide.md) [p](plan.md) [s](spec.md)\n`,
     });
     expect(codes(root)).toEqual(["DOC011"]);
@@ -33,7 +33,7 @@ describe("docs follow other docs [REQ-020]", () => {
     const spec = read(root, "docs/spec.md");
     writeFileSync(
       path.join(root, "docs/spec.md"),
-      spec.replace("last_verified: 2026-11-11", "last_verified: 2026-11-10"),
+      spec.replace("title: T", "title: Another title"),
     );
     expect(codes(root)).toEqual([]);
     writeFileSync(path.join(root, "docs/spec.md"), spec.replace("v1", "v2"));
@@ -44,7 +44,7 @@ describe("docs follow other docs [REQ-020]", () => {
 
   test("follows that match nothing fail DOC012", () => {
     const root = docsRepo({
-      "docs/guide.md": `${front({ follows: ["docs/gone.md"], follows_hash: "x" })}# G\n`,
+      "docs/guide.md": `${front({ follows: ["docs/gone.md"] })}# G\n`,
     });
     expect(codes(root)).toEqual(["DOC012"]);
   });

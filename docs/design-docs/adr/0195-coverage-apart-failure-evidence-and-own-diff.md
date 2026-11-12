@@ -2,7 +2,6 @@
 title: ADR-0195 커버리지는 게이트 조각 밖에서 네 작업으로 재고, 실패한 여정 단계는 증거를 남기고, 가벼운 경로는 풀 리퀘스트 자신의 차이로 가른다
 kind: decision
 status: active
-last_verified: 2026-11-12
 enforced_by:
   - .github/workflows/ci.yml
   - tests/spec/ux-evidence.test.ts

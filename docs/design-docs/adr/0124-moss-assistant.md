@@ -2,7 +2,6 @@
 title: "ADR-0124 이끼 — 테라리움 도우미: 이름, 지식 둘, 화면 등록, 누락 검사, 기본 모델, 품질 측정, 먼저 말 걸지 않는다"
 kind: decision
 status: active
-last_verified: 2026-11-07
 enforced_by:
   - harness/src/checks/moss.test.ts
   - apps/server/src/runtime/moss.test.ts
@@ -24,6 +23,9 @@ amends_tests:
   - apps/web/src/logic/models.test.ts::the model section's state and words [REQ-099] > the three kinds have cards in order, with the labels the card shows
 test_change_reason: 모델 등록 화면의 "아직 쓰는 곳은 없어요" 한 줄이 이끼가 기본 모델을 쓰게 되면서 거짓이 되어, 쓰는 곳은 이끼이고 작은 모델이면 답이 거칠 수 있다는 말로 바꾼다.
 decision_hash: 7bebd3250ec4c7b2
+amended_by:
+  - adr: "0194"
+    what: 자동 질문은 파일에 커밋하지 않고 시험이 만든다
 ---
 # ADR-0124 이끼 — 테라리움 도우미
 

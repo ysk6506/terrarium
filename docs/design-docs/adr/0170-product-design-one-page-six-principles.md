@@ -2,7 +2,6 @@
 title: ADR-0170 제품의 값과 원칙 여섯을 한 장에 두고, 요구사항은 그 한 장에 대 본 뒤 설계한다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 일하는 방식의 결정이라 기계가 확인하지 못한다. 한 장(product-design.md)의 4절이 낡았는지는 결정 기록을 쓸 때마다 사람이 맞춘다.

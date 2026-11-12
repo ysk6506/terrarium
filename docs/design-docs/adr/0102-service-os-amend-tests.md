@@ -2,7 +2,6 @@
 title: ADR-0102 서비스·OS 층을 구현하면서 시험 다섯 개의 기대값을 고친다
 kind: decision
 status: active
-last_verified: 2026-11-06
 enforced_by:
   - packages/core/src/physics/service-os.test.ts
   - tests/spec/service-tools.test.ts

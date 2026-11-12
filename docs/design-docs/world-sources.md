@@ -2,7 +2,6 @@
 title: 세계 소스 — 생성과 가져오기
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - packages/core/src/sources/assembly.ts
   - packages/core/src/sources/assembly-site.ts
@@ -18,13 +17,6 @@ covers:
   - packages/core/src/sources/worldgen/shaped-plan.ts
   - packages/core/src/sources/realimport/mapping.ts
   - packages/core/src/sources/realimport/synthesize.ts
-verification_log:
-  - "2026-11-07: REQ-109: 코드와 대조했다"
-  - "2026-11-07: 2026-11-07: REQ-111(ADR-0134): 기반 랙·서버 수 합계·빌더 오른쪽 아래 칩을 코드와 대조해 고쳤고 나머지는 그대로 맞다"
-  - "2026-11-07: 2026-11-07: REQ-111 코드 변경 후 다시 대조: 그대로 맞다"
-  - "2026-11-11: 2026-11-11: 가중 뽑기 세 곳(room, campus-rack, campus-plan)의 도달할 수 없던 끝 줄을 정리했을 뿐 결과는 같다. 문서의 서술은 그대로 맞다"
-  - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
-covers_hash: 595dd0e361f04343
 ---
 # 세계 소스 (REQ-009~013, REQ-035, REQ-043~049)
 

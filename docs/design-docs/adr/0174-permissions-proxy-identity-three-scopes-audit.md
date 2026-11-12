@@ -2,7 +2,6 @@
 title: ADR-0174 권한은 프록시가 넘겨준 신원, 역할 둘, 공개 범위 셋, 감사 기록으로 한다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - packages/core/src/contract/policies.test.ts
   - apps/server/src/runtime/permissions.test.ts

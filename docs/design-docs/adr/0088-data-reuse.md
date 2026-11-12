@@ -2,7 +2,6 @@
 title: ADR-0088 테라리움의 데이터는 재활용하도록 설계한다 — 불변 사건, 버전 묶음, 표준 내보내기, 라벨 사건
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다. 구현 작업이 끝나면 frontmatter의 enforced_by를 그 작업의 시험으로 바꾼다.

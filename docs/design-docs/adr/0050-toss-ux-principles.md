@@ -2,7 +2,6 @@
 title: ADR-0050 UX는 토스의 원칙으로 한다 — 한 화면에 한 가지, 해요체, 눈에 보이는 디테일마다 기준과 측정
 kind: decision
 status: active
-last_verified: 2026-11-03
 enforced_by:
   - harness/src/ux/score.test.ts
 touches_protected:

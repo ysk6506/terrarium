@@ -2,7 +2,6 @@
 title: ADR-0067 효율 점수는 과제를 푼 만큼만 주고, 시험지는 기준선 에이전트로 점검한다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - tests/spec/calibration.test.ts
   - tests/spec/reproducibility.test.ts

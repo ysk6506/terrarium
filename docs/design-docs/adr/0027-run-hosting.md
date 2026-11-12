@@ -2,7 +2,6 @@
 title: ADR-0027 실행은 워커 스레드에서, 끝나는 방식은 다섯 가지로 정한다
 kind: decision
 status: active
-last_verified: 2026-10-29
 enforced_by:
   - apps/server/src/runtime/hosts.test.ts
   - apps/server/src/runtime/executor.test.ts

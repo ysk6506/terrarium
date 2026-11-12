@@ -2,7 +2,6 @@
 title: ADR-0009 읽기 전용 현실 소스 포트
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
   - ARCH020
 touches_protected: []

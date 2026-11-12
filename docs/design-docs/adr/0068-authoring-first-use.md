@@ -2,7 +2,6 @@
 title: ADR-0068 블록은 누르면 이어 붙고, 뻔한 문제는 버튼으로 고치고, 시험지 점검은 편집기에서 한다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - apps/web/src/logic/scenario-append.test.ts
   - apps/web/src/logic/home-copy.test.ts

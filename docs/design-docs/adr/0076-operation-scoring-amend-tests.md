@@ -2,7 +2,6 @@
 title: ADR-0076 운영 채점으로 채점표와 기대값이 달라진 시험 열네 개의 기대값을 고친다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - tests/spec/operation-scoring.test.ts
 touches_protected: []

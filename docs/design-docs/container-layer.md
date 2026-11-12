@@ -2,7 +2,6 @@
 title: 컨테이너 층 — 쿠버네티스 클러스터, 노드, 파드, 그리고 클러스터가 알아서 하는 일
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - packages/core/src/world/k8s.ts
   - packages/core/src/world/k8s-sched.ts
@@ -21,15 +20,6 @@ covers:
   - packages/core/src/sources/worldgen/shaped-k8s.ts
   - packages/core/src/topology/impact-k8s.ts
   - packages/core/src/world/ladder.ts
-covers_hash: 42c937232220a6ac
-verification_log:
-  - "2026-11-11: ADR-0172: 제공되는 시나리오 조건(컨테이너 배치 작업·자리, 사이트 서버), 서비스 프로세스 메모리 몫, 정답 풀이 길의 when·later·choose를 코드와 대조해 서술을 더했다. 나머지는 그대로 맞다"
-  - "2026-11-12: ADR-0184: 흉내의 한계 힌트 변경 뒤에도 내용이 맞는지 다시 봤어요"
-  - "2026-11-12: ADR-0184: 한계 출력 모양 변경(terrarium 줄만)이 이 문서 내용과 어긋나지 않음을 대조"
-  - "2026-11-12: main을 합침: IAP 기본 카드 설명에서 내부 출처 서술을 걷어낸 것(ADR-0187)과 이 변경의 한계 힌트 서술이 함께 들어감"
-  - "2026-11-12: 덮는 시나리오 라이브러리에서 정렬 도우미 byId의 자리만 library-kit.ts로 옮김. 동작은 그대로이고 이 문서는 그 이름을 말하지 않는다"
-verified_body: 82acef923ae61bc4
-unchanged_reverifies: 2
 ---
 # 컨테이너 층 (REQ-096, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0114](adr/0114-container-layer-amend-tests.md))
 

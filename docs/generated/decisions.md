@@ -7,7 +7,7 @@
 | 결정 | 상태 | 무엇이 고쳤나 |
 |---|---|---|
 | [ADR-0001 레이어 아키텍처](../design-docs/adr/0001-layered-architecture.md) | 대체됨 | 대체: [0011](../design-docs/adr/0011-units-v2.md) |
-| [ADR-0002 문서 신선도 장치](../design-docs/adr/0002-doc-freshness.md) | 유효 |  |
+| [ADR-0002 문서 신선도 장치](../design-docs/adr/0002-doc-freshness.md) | 유효 | 일부 고침: [0194](../design-docs/adr/0194-docs-verification-records-without-conflicts.md) (문서의 확인 날짜는 앞부분이 아니라 확인 기록에 둔다) |
 | [ADR-0003 기술 부채 장부와 래칫](../design-docs/adr/0003-debt-ledger.md) | 유효 |  |
 | [ADR-0004 테스트 잠금](../design-docs/adr/0004-test-lock.md) | 유효 |  |
 | [ADR-0005 보호 경로](../design-docs/adr/0005-protected-paths.md) | 유효 |  |
@@ -126,7 +126,7 @@
 | [ADR-0121 애플리케이션 층을 코어 모델로 올리고 서비스 호출 그래프를 넣는다 — 시험의 목록 기대값을 늘린다](../design-docs/adr/0121-application-layer-and-calls.md) | 유효 |  |
 | [ADR-0122 세계 인기 순서·좋아요·칭호, 그리고 계급 모델 — 점수는 서버가 기록에서 세고, 칭호는 한 번 얻으면 안 잃고, 계급은 아직 화면에 없다](../design-docs/adr/0122-world-popularity-likes-titles.md) | 유효 |  |
 | [ADR-0123 사다리 화면과 직접 짓기를 주인공 하나로 다시 그리고, 칩에 전제 규칙을 두고, 돌려 보기를 시운전으로 부른다](../design-docs/adr/0123-ladder-and-builder-focus.md) | 유효 |  |
-| [ADR-0124 이끼 — 테라리움 도우미: 이름, 지식 둘, 화면 등록, 누락 검사, 기본 모델, 품질 측정, 먼저 말 걸지 않는다](../design-docs/adr/0124-moss-assistant.md) | 유효 |  |
+| [ADR-0124 이끼 — 테라리움 도우미: 이름, 지식 둘, 화면 등록, 누락 검사, 기본 모델, 품질 측정, 먼저 말 걸지 않는다](../design-docs/adr/0124-moss-assistant.md) | 유효 | 일부 고침: [0194](../design-docs/adr/0194-docs-verification-records-without-conflicts.md) (자동 질문은 파일에 커밋하지 않고 시험이 만든다) |
 | [ADR-0125 이끼는 LLM을 연결해야만 쓸 수 있다 — 기본 모델이 없으면 꺼져 있고, 점수 질문은 채점 문서를 먼저 찾는다](../design-docs/adr/0125-moss-requires-model.md) | 유효 |  |
 | [ADR-0126 run-all은 이끼 검사도 돌린다 (0124 보정)](../design-docs/adr/0126-run-all-includes-moss.md) | 유효 |  |
 | [ADR-0127 서비스부터는 질문 셋과 "실험 시작"(클릭 넷), 서비스는 카탈로그에서 고르고 내 카드로 저장·공유한다, 입구 그림은 비운다](../design-docs/adr/0127-short-world-flow-and-service-catalog.md) | 유효 |  |
@@ -142,7 +142,7 @@
 | [ADR-0137 물리 모델 자리(이음매)와 물리 프로필(숫자·곡선·바깥 온도·지문)의 코어를 만든다](../design-docs/adr/0137-physics-slots-and-profile-core.md) | 유효 |  |
 | [ADR-0138 제품 목표를 요구사항 문서 맨 위에 적고 설계 결정의 기준으로 삼는다](../design-docs/adr/0138-product-goal.md) | 유효 | 일부 고침: [0189](../design-docs/adr/0189-verified-workflows-go-to-operation.md) (목표 문장과 목표의 세 부분) |
 | [ADR-0139 CCTV는 카메라 개체·보는 자리·배경 자리의 세 자리로 두고, 실험의 그림은 서버가 결정적으로 그린다](../design-docs/adr/0139-camera-view-and-backdrop-slots.md) | 유효 |  |
-| [ADR-0140 CI가 합치기 관문이다 — 테스트는 조각으로 나눠 병렬로, 커버리지는 따로 잰다](../design-docs/adr/0140-ci-shards-and-merge-gate.md) | 유효 | 일부 고침: [0195](../design-docs/adr/0195-coverage-apart-failure-evidence-and-own-diff.md) (커버리지 조각 열둘) |
+| [ADR-0140 CI가 합치기 관문이다 — 테스트는 조각으로 나눠 병렬로, 커버리지는 따로 잰다](../design-docs/adr/0140-ci-shards-and-merge-gate.md) | 유효 |  |
 | [ADR-0141 UX 검사를 게이트인 여정과 게이트 아닌 측정으로 나누고, 러너에서 안 되던 화면을 고친다](../design-docs/adr/0141-ux-journeys-gate-and-measure.md) | 유효 | 일부 고침: [0175](../design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md) (점수 파일을 변경마다 커밋하고 여정 묶음은 셋) |
 | [ADR-0142 커버리지 하한을 새 단위까지 넓히고, 고장 난 날에도 물리 법칙을 검사한다](../design-docs/adr/0142-coverage-floors-and-fault-law-checks.md) | 유효 |  |
 | [ADR-0143 깊은 OS 흉내를 GNU에 더 가깝게 하고 커버리지 하한을 채운다](../design-docs/adr/0143-shell-fidelity-and-coverage-gate.md) | 유효 |  |
@@ -175,13 +175,13 @@
 | [ADR-0170 제품의 값과 원칙 여섯을 한 장에 두고, 요구사항은 그 한 장에 대 본 뒤 설계한다](../design-docs/adr/0170-product-design-one-page-six-principles.md) | 유효 | 일부 고침: [0180](../design-docs/adr/0180-docs-follow-decisions-not-only-code.md) (4절의 손으로 쓴 결정 목록), [0189](../design-docs/adr/0189-verified-workflows-go-to-operation.md) (원칙 6 현실에는 읽기만 한다의 글), [0192](../design-docs/adr/0192-terrarium-returns-to-its-first-goal.md) (원칙 3과 6의 글) |
 | [ADR-0171 실험 결과의 첫 화면은 세 물음에 답하고, 나머지는 탭 뒤로 간다](../design-docs/adr/0171-result-page-answers-three-questions.md) | 유효 | 일부 고침: [0183](../design-docs/adr/0183-one-vocabulary-on-every-screen.md) (목록과 홈은 아직 회라는 말(5번)) |
 | [ADR-0172 제공되는 시나리오는 그 세계에서 정답 풀이가 만점을 받는다](../design-docs/adr/0172-offered-scenario-means-reference-solution-reaches-full-score.md) | 유효 | 일부 고침: [0178](../design-docs/adr/0178-offered-scenario-solved-on-every-world-shape.md) (정답 풀이 불변식은 골든 행렬의 다섯 세계만) |
-| [ADR-0173 문서만 바뀐 변경은 가벼운 CI 경로를 탄다](../design-docs/adr/0173-docs-only-changes-take-a-light-ci-path.md) | 유효 | 일부 고침: [0195](../design-docs/adr/0195-coverage-apart-failure-evidence-and-own-diff.md) (판정에 쓰는 차이를 합친 참조가 아니라 풀 리퀘스트의 base와 head로) |
+| [ADR-0173 문서만 바뀐 변경은 가벼운 CI 경로를 탄다](../design-docs/adr/0173-docs-only-changes-take-a-light-ci-path.md) | 유효 |  |
 | [ADR-0174 권한은 프록시가 넘겨준 신원, 역할 둘, 공개 범위 셋, 감사 기록으로 한다](../design-docs/adr/0174-permissions-proxy-identity-three-scopes-audit.md) | 유효 | 일부 고침: [0179](../design-docs/adr/0179-visibility-scopes-amend-adr-0174-locked-tests.md) (기본 모델은 범위가 모두인 모델만, 범위 바꾸기는 한 길) |
-| [ADR-0175 UX 검사를 더 잘게 나눠 돌리고, 점수 파일은 변경마다 커밋하지 않는다](../design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md) | 유효 | 일부 고침: [0195](../design-docs/adr/0195-coverage-apart-failure-evidence-and-own-diff.md) (진단용 아티팩트를 올리지 않는다는 5번) |
+| [ADR-0175 UX 검사를 더 잘게 나눠 돌리고, 점수 파일은 변경마다 커밋하지 않는다](../design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md) | 유효 |  |
 | [ADR-0177 제품 목표의 "현실을 닮은 세계"에 현실의 데이터로 지은 세계를 적고, 맨 위 문서를 목표에 맞춘다](../design-docs/adr/0177-goal-text-reality-worlds-and-top-level-docs.md) | 유효 | 일부 고침: [0189](../design-docs/adr/0189-verified-workflows-go-to-operation.md) (목표의 문장은 그대로다), [0192](../design-docs/adr/0192-terrarium-returns-to-its-first-goal.md) (목표 첫째 부분의 한 줄) |
 | [ADR-0178 제공되는 시나리오는 제품이 만드는 모든 세계 모양에서 정답 풀이가 만점을 받는다](../design-docs/adr/0178-offered-scenario-solved-on-every-world-shape.md) | 유효 |  |
 | [ADR-0179 공개 범위의 두 결정(기본 모델은 "모두"인 모델만, 범위 바꾸기는 한 길)과 ADR-0174의 바뀐 시험 목록](../design-docs/adr/0179-visibility-scopes-amend-adr-0174-locked-tests.md) | 유효 |  |
-| [ADR-0180 문서는 코드뿐 아니라 결정도 따라간다 — 결정이 바꾸는 문서를 적고, 고쳐진 결정에 표시를 남기고, 목록은 만들어 낸다](../design-docs/adr/0180-docs-follow-decisions-not-only-code.md) | 유효 | 일부 고침: [0182](../design-docs/adr/0182-amends-says-what-it-changed.md) (amends와 amended_by는 파일 이름만 적음), [0186](../design-docs/adr/0186-requirements-do-not-follow-the-design-page.md) (follows는 문서의 서로 가리킴에서 고른다) |
+| [ADR-0180 문서는 코드뿐 아니라 결정도 따라간다 — 결정이 바꾸는 문서를 적고, 고쳐진 결정에 표시를 남기고, 목록은 만들어 낸다](../design-docs/adr/0180-docs-follow-decisions-not-only-code.md) | 유효 | 일부 고침: [0182](../design-docs/adr/0182-amends-says-what-it-changed.md) (amends와 amended_by는 파일 이름만 적음), [0186](../design-docs/adr/0186-requirements-do-not-follow-the-design-page.md) (follows는 문서의 서로 가리킴에서 고른다), [0194](../design-docs/adr/0194-docs-verification-records-without-conflicts.md) (확인 상태와 목록 생성물을 변경이 커밋하지 않는다) |
 | [ADR-0181 테라리움의 라이선스는 Apache License 2.0이다](../design-docs/adr/0181-license-apache-2.md) | 유효 | 일부 고침: [0185](../design-docs/adr/0185-third-party-notices-and-license-check.md) (묶을 수 있는 라이선스 목록에 MPL-2.0을 수정 안 한 것만 더함) |
 | [ADR-0182 고친 결정에는 무엇을 고쳤는지 한 구절을 적는다 — amends의 what, link-amends가 옮겨 적고, 결정 목록이 보인다](../design-docs/adr/0182-amends-says-what-it-changed.md) | 유효 |  |
 | [ADR-0183 화면의 모든 글은 한 가지 말을 쓰고, 옛 말이 돌아오지 못하게 검사한다](../design-docs/adr/0183-one-vocabulary-on-every-screen.md) | 유효 |  |
@@ -195,6 +195,6 @@
 | [ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리움으로 보낸다 — 에이전트는 두 세계에서 같은 게이트웨이를 같은 이름으로 부른다](../design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md) | 대체됨 | 대체: [0192](../design-docs/adr/0192-terrarium-returns-to-its-first-goal.md) |
 | [ADR-0192 테라리움은 처음의 목표로 돌아간다 — 현실 세계 만들기와 워크플로 자동화는 다른 프로젝트가 맡고, 둘 사이는 세계 스냅샷과 판정으로만 잇는다](../design-docs/adr/0192-terrarium-returns-to-its-first-goal.md) | 유효 |  |
 | [ADR-0193 감사 기록 — 덧붙이기만 하고, 기록하는 곳은 하나이고, 못 쓰면 바꾸는 일을 하지 않는다](../design-docs/adr/0193-audit-log-one-recording-point.md) | 유효 |  |
-| [ADR-0195 커버리지는 게이트 조각 밖에서 네 작업으로 재고, 실패한 여정 단계는 증거를 남기고, 가벼운 경로는 풀 리퀘스트 자신의 차이로 가른다](../design-docs/adr/0195-coverage-apart-failure-evidence-and-own-diff.md) | 유효 |  |
+| [ADR-0194 확인 상태는 문서 밖의 (문서, 대상) 기록에 둔다 — 허브 문서의 앞부분 충돌을 없애고, 생성물은 변경이 커밋하지 않고, 문서 검사를 빠르게 한다](../design-docs/adr/0194-docs-verification-records-without-conflicts.md) | 유효 |  |
 | [ADR-0196 셸과 awk는 진짜 구현을 WASM으로 돌려 바꾼다 — 결과를 가르는 한도는 세는 것만 쓰고, sleep은 세계 시간이며, 유틸리티는 따로 시험한다](../design-docs/adr/0196-shell-and-awk-run-as-real-implementations.md) | 유효 |  |
 | [ADR-0197 실험은 "맡겨도 되나"에 답한다 — 맡기는 범위는 실험 조건, 승인은 규칙, 지킬 것은 점수와 따로, 판정은 업무와 근무 둘](../design-docs/adr/0197-experiments-answer-whether-to-entrust.md) | 유효 |  |

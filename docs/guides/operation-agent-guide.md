@@ -2,19 +2,11 @@
 title: 운영 에이전트 설계 가이드 — 8시간 동안 지켜보는 에이전트를 만드는 법
 kind: guide
 status: active
-last_verified: 2026-11-12
 covers:
   - packages/core/src/session/operation/clock.ts
   - packages/core/src/session/operation/metrics.ts
   - packages/core/src/session/operation/mtbf.ts
   - apps/server/src/adapters/harness/scripted-operator.ts
-covers_hash: 22c3ae681915eb29
-verification_log:
-  - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
-  - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
-  - "2026-11-07: operator는 관찰 기반 규칙 전문가, 정답 풀이는 시험 도구임을 확인 (ADR-0133)"
-  - "2026-11-10: 고장 계획 함수가 선택 hazard 인자를 받음(기본 동일). 안내 내용 변화 없음"
-  - "2026-11-12: ADR-0183: 숫자 카드 이름을 넘긴 일로 맞췄다"
 ---
 # 운영 에이전트 설계 가이드
 

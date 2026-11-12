@@ -2,7 +2,6 @@
 title: 네트워크의 두 가지 모양 — 레거시(VLAN·스패닝 트리)와 클라우드(leaf-spine·BGP)
 kind: spec
 status: active
-last_verified: 2026-11-06
 covers:
   - packages/core/src/world/net-bgp.ts
   - packages/core/src/world/net-stp.ts
@@ -11,13 +10,6 @@ covers:
   - packages/core/src/facades/netos-stp.ts
   - packages/core/src/facades/netos-routes.ts
   - packages/core/src/sources/worldgen/campus-families.ts
-verification_log:
-  - "2026-11-04: 최종 코드와 대조"
-  - "2026-11-04: net-stp의 함수 분리(동작 동일)를 확인"
-  - "2026-11-04: fabric gpu 값과 GPU 백엔드 문서 링크를 net-bgp(레거시만 건너뜀)·netos-bgp(overlayOn)와 대조"
-  - "2026-11-04: net-design의 함수 분리(동작 동일)를 확인"
-  - "2026-11-06: 리프-스파인 설계는 그대로이고 그 위에 오버레이가 얹힌다는 한 줄만 더했다 (REQ-097)"
-covers_hash: 0317c67f32d97f9a
 ---
 # 네트워크의 두 가지 모양 (REQ-065, ADR-0062)
 

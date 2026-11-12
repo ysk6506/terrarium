@@ -1,0 +1,7 @@
+doc: "docs/design-docs/glossary-layers.md"
+target: "docs/design-docs/glossary.md"
+hash: "039bc39ec784359a"
+date: "2026-11-12"
+note: "ADR-0192: 따라가는 용어집의 바뀐 곳은 받은 세계와 모델의 말 절. 층별 말과 겹치지 않는다"
+text_changed: false
+doc_hash: "07b7cff4cb473118"

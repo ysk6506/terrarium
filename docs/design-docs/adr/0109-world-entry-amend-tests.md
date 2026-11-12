@@ -2,7 +2,6 @@
 title: ADR-0109 세계 만들기 입구를 구현하면서 글 잣대 시험의 화면 목록 둘을 고친다
 kind: decision
 status: active
-last_verified: 2026-11-06
 enforced_by:
   - apps/web/src/logic/world-words.test.ts
   - apps/web/src/logic/world-shape/world-shape.test.ts

@@ -2,7 +2,6 @@
 title: ADR-0058 vCenter와 Aria Operations 응답은 제조사의 공개 API 참고서를 따르고, 참고서에서 옮긴 스키마로 대조한다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - tests/spec/vmware-conformance.test.ts
   - tests/spec/facades.test.ts

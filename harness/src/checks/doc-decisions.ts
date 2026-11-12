@@ -7,7 +7,7 @@ import path from "node:path";
 import { joinFrontMatter, splitFrontMatter } from "../common";
 import { listFiles } from "../files";
 import { adrNumber, amendEntries, backEntry } from "./doc-amends";
-import type { DocsConfig } from "./docs";
+import type { DocsConfig } from "./doc-config";
 
 /** A notice, not a failure: the committed decisions file is behind the ADR front matter. */
 export const STALE_CODE = "DOC098";

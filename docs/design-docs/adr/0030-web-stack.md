@@ -2,7 +2,6 @@
 title: ADR-0030 웹은 Vite와 React 한 벌, 라우터는 직접, 3D와 편집기는 열 때 내려받는다
 kind: decision
 status: active
-last_verified: 2026-10-29
 enforced_by:
   - ARCH010
   - ARCH020

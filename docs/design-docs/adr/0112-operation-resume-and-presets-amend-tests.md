@@ -2,7 +2,6 @@
 title: ADR-0112 서버가 멈춰도 운영은 이어 가고, 저장해 둔 것은 서버에 두고, 서비스마다 모양을 고르고, 운영의 끝은 운영의 말로 쓴다
 kind: decision
 status: active
-last_verified: 2026-11-06
 enforced_by:
   - packages/core/src/session/operation/journal.test.ts
   - apps/server/src/runtime/operation-resume.test.ts

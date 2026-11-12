@@ -1,0 +1,7 @@
+doc: "README.md"
+target: "docs/exec-plans/active/beta-rounds.md"
+hash: "cd90458686bbf957"
+date: "2026-11-12"
+note: "덮는 beta-rounds.md는 검사 시간 줄이기 항목 문장만 바뀜(ADR-0195). README에는 그 항목이나 CI 작업 구성이 없어 어긋나지 않는다"
+text_changed: false
+doc_hash: "d2e57522ca3c5c44"

@@ -3,7 +3,6 @@ title: ADR-0190 검증에서는 실제 툴 자리에 이름과 입력이 같은 
 kind: decision
 status: superseded
 superseded_by: 0192-terrarium-returns-to-its-first-goal.md
-last_verified: 2026-11-12
 enforced_by:
   - none
 no_enforcement_reason: 아직 만들지 않은 기능(REQ-120 예정)의 설계 결정이다. 만들 때 "검증 건의 주소에는 실제 툴이 없다"와 "모의 툴의 이름·입력 모양이 읽어 온 실제 툴과 같다"를 시험으로 건다.

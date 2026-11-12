@@ -2,7 +2,6 @@
 title: ADR-0131 내장 에이전트가 DR을 알고, 복구 채점의 시간 창이 세계의 모양을 따른다
 kind: decision
 status: active
-last_verified: 2026-11-07
 enforced_by:
   - tests/spec/baseline-agents.test.ts
   - tests/spec/expected-recovery.test.ts

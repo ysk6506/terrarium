@@ -2,7 +2,6 @@
 title: ADR-0016 시나리오는 흐름 그래프와 채점표로 나눈다
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
   - packages/core/src/scenario/scenario.test.ts
   - packages/core/src/scenario/runner.test.ts

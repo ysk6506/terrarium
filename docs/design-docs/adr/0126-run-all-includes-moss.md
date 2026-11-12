@@ -2,7 +2,6 @@
 title: ADR-0126 run-all은 이끼 검사도 돌린다 (0124 보정)
 kind: decision
 status: active
-last_verified: 2026-11-07
 enforced_by:
   - harness/src/common.test.ts
 touches_protected:

@@ -2,7 +2,6 @@
 title: ADR-0013 같은 호출을 두 번 비교하는 단언은 허용한다 (TEST003 보정)
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
   - TEST003
   - harness/src/checks/testguard.test.ts

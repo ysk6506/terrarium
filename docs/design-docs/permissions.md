@@ -2,22 +2,9 @@
 title: 권한 — 누구인지, 무엇을 보고 바꾸는지, 누가 무엇을 했는지
 kind: spec
 status: active
-last_verified: 2026-11-12
-verification_log:
-  - "2026-11-11: self-declared admin: token, else loopback socket address only; proxy mode unchanged"
-  - "2026-11-12: ADR-0183: 따라가는 용어집의 새 절(한 가지 말, 조건의 뜻)을 읽고, 이 문서에 옛 말(회·횟수·시드·개체·에스컬레이션)이 없음을 확인했다"
-  - "2026-11-12: 따라가는 문서나 코드의 내부 사실 서술이 요구의 말로 바뀐 것을 대조했고 이 문서의 내용은 그대로 맞다 (ADR-0188)"
-  - "2026-11-12: main을 합친 뒤 공개 범위(ADR-0174 나 단계, ADR-0179)에서 더한 서술을 합쳐진 코드와 대조했고, 바뀐 화면 글(ADR-0183)과 옛 말이 없음을 확인했다"
-  - "2026-11-12: ADR-0192: 테라리움은 처음의 목표로 돌아감. 감사 기록에 워크플로의 건과 승인을 남긴다는 줄을 뺌"
-  - "2026-11-12: ADR-0193 다 단계: 6절, 9절, 시험 표를 audit 코드와 시험 파일에 대어 쓰고, 따라가는 http-api.md와 operations.md의 새 서술과 맞는지 확인"
-  - "2026-11-12: ADR-0193: 6절 로그인 전 실패 접기 단락, 한계 줄, 시험 표를 audit-fold.ts와 audit-fold.test.ts에 대어 확인. 워크플로 줄 둘은 제품 목표 변경에 맞춰 뺐다"
-  - "2026-11-12: ADR-0193 8번이 바뀐 것(건·대신한 사람·에이전트 주체를 뺌)을 따라가는 문서와 대어 봤다: 이 문서에는 그 필드 서술이 없고 맞다"
 follows:
   - docs/design-docs/http-api.md
   - docs/design-docs/operations.md
-follows_hash: b8b55f6e3f524c74
-verified_body: a813c0a300fcf16c
-unchanged_reverifies: 2
 ---
 # 권한 (클로즈 베타 1차, ADR-0174)
 

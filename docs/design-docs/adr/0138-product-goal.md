@@ -2,7 +2,6 @@
 title: ADR-0138 제품 목표를 요구사항 문서 맨 위에 적고 설계 결정의 기준으로 삼는다
 kind: decision
 status: active
-last_verified: 2026-11-10
 enforced_by:
   - none
 no_enforcement_reason: 목표 문장은 시험으로 검사할 수 없다. 3번(채점이 늘 맞고 같다)은 ADR-0133의 시험이 지킨다.

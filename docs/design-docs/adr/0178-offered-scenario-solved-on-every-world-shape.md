@@ -2,7 +2,6 @@
 title: ADR-0178 제공되는 시나리오는 제품이 만드는 모든 세계 모양에서 정답 풀이가 만점을 받는다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - tests/spec/offered-means-solvable.test.ts
   - tests/spec/offered-means-shapes.test.ts

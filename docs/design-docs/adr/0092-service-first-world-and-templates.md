@@ -2,7 +2,6 @@
 title: ADR-0092 서비스부터 세계를 만들 수 있고, 만든 구성은 저장해 두고 다시 쓴다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다. 구현 작업이 끝나면 frontmatter의 enforced_by를 그 작업의 시험으로 바꾼다.

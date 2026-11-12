@@ -2,7 +2,6 @@
 title: ADR-0040 지도에서 옮긴 사업장 배치와 하나의 3D 무대(WorldStage)
 kind: decision
 status: active
-last_verified: 2026-10-30
 enforced_by:
   - packages/core/src/spatial/outline-spread.test.ts
   - packages/core/src/sources/worldgen/site-slots.test.ts

@@ -2,7 +2,6 @@
 title: ADR-0080 방은 직사각형 조각을 붙인 하나의 공간이다 — L자와 육각형 윤곽을 그대로 만든다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - apps/web/src/logic/builder/builder.test.ts
 touches_protected:

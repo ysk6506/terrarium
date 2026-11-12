@@ -2,7 +2,6 @@
 title: ADR-0047 건물은 지도가 부르는 이름과 자리를 따르고, 월드가 만들지 않는 건물도 그 자리에 선다
 kind: decision
 status: active
-last_verified: 2026-10-30
 enforced_by:
   - packages/core/src/sources/worldgen/site-places.test.ts
   - packages/core/src/sources/worldgen/site-slots.test.ts

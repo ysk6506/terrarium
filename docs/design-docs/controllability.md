@@ -2,19 +2,11 @@
 title: 제어 가능 요소표 — 실험이 무엇을 바꿀 수 있고, 에이전트가 무엇을 할 수 있는가
 kind: spec
 status: active
-last_verified: 2026-11-07
 covers:
   - packages/core/src/scenario/controls.ts
   - packages/core/src/facades/bacnet-points.ts
   - packages/core/src/world/command-check.ts
   - packages/core/src/scenario/controls-site.ts
-verification_log:
-  - "2026-11-07: REQ-106 사이트·DR·합의·관리형 DB 줄 여덟과 고장 표를 코드(controls-site.ts)와 대조해 더했다"
-  - "2026-11-07: REQ-106 마무리(툴 인자·설명 문구·고장 설명 다듬기)에 맞춰 다시 대조했다. 서술은 그대로 맞다"
-  - "2026-11-06: 호스트 조치 두 줄의 명령 예를 깊은 OS 흉내(ADR-0117)에 맞췄다: 지우기는 du·find로 찾은 큰 로그, 다시 시작에 stop·start·kill 추가"
-  - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장 절을 더하거나 고쳤고 나머지는 코드와 대조해 그대로 맞다"
-  - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
-covers_hash: 3bb2c0188686bafd
 ---
 # 제어 가능 요소표 (REQ-069, ADR-0066)
 

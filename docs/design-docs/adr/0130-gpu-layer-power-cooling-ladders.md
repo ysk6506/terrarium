@@ -2,7 +2,6 @@
 title: ADR-0130 GPU 가속기 층을 사다리에 올리고, 전원·냉방 사다리를 끝까지 실선으로 늘리며, 파워 캐핑을 모델로 옮긴다
 kind: decision
 status: active
-last_verified: 2026-11-07
 enforced_by:
   - tests/spec/gpu-layer.test.ts
   - tests/spec/power-cooling-ladders.test.ts

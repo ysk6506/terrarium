@@ -3,7 +3,6 @@ title: ADR-0189 제품 목표에 "통과한 것만 운영에 나간다"를 더�
 kind: decision
 status: superseded
 superseded_by: 0192-terrarium-returns-to-its-first-goal.md
-last_verified: 2026-11-12
 enforced_by:
   - DOC093
   - TRACE005

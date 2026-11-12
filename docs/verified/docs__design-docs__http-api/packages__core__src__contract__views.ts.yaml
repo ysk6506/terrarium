@@ -1,0 +1,7 @@
+doc: "docs/design-docs/http-api.md"
+target: "packages/core/src/contract/views.ts"
+hash: "dc9bc27be77b2daf"
+date: "2026-11-12"
+note: "ADR-0183: 한 가지 말(번, 상황, 객체·링크, 넘기기)에 맞춰 인용한 화면 글을 고쳤다"
+text_changed: true
+doc_hash: "00fc9da9073f3730"

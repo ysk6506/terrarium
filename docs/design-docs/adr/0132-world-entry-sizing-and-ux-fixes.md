@@ -2,7 +2,6 @@
 title: ADR-0132 세계 만들기의 크기는 서비스 숫자로 세고, 알아서는 숫자의 규칙 표이며, 빌더 카드는 고른 물체 옆에 붙는다
 kind: decision
 status: active
-last_verified: 2026-11-07
 enforced_by:
   - packages/core/src/world/service-load.test.ts
   - packages/core/src/sources/worldgen/shaped-sizing.test.ts

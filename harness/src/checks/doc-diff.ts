@@ -2,18 +2,22 @@
  * Checks that compare this change with its base (ADR-0180).
  *
  * DOC090 a new ADR does not name the docs it updates, or a named doc is unchanged in the same change
- * DOC097 (notice) docs whose body is unchanged and that were only re-verified
+ * DOC097 (notice) docs whose records in this change say the text is unchanged: re-read, not edited (ADR-0194)
  * DOC098 (notice) the generated decisions table is behind the ADR front matter
+ * DOC099 a generated file was edited by hand (ADR-0194)   DOC102 (notice) the document list in the index is behind
  */
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { git, splitFrontMatter, type Violation, violation } from "../common";
 import { amendEntries } from "./doc-amends";
-import { decisionsStale } from "./doc-decisions";
+import { type DocsConfig, discoverDocs, loadDocsConfig } from "./doc-config";
+import { decisionsStale, decisionsTable } from "./doc-decisions";
+import { freshIndex, indexStale, listBlock } from "./doc-index";
 import { bodyFingerprint } from "./doc-print";
+import { AUDIT_FILE, RECORDS_DIR, readRecordFile, type VerificationRecord } from "./doc-records";
 import { testRowNotes } from "./doc-tests";
-import { type DocsConfig, discoverDocs, loadDocsConfig } from "./docs";
 import { changedFiles } from "./protected";
+import { render as renderQuality, TABLE_FILE } from "./quality";
 
 const REVERIFY_ONLY_CODE = "DOC097";
 
@@ -98,31 +102,91 @@ function checkUpdatesDocs(
   });
 }
 
-/** What a re-verification changes in the front matter: the date and the log (other key edits are not a re-check). */
-const verifiedStamp = (data: Record<string, unknown> | null): unknown[] => [
-  data?.last_verified,
-  data?.verification_log,
-];
+/** The document's text is not the text the record was written for (it was edited after the verification). */
+function editedSince(root: string, record: VerificationRecord): boolean {
+  const full = path.join(root, record.doc);
+  return (
+    existsSync(full) &&
+    bodyFingerprint(splitFrontMatter(readFileSync(full, "utf8")).body) !== record.doc_hash
+  );
+}
 
-/** Non-ADR docs whose body is the same as at the base but whose front matter changed (a bare re-verify). */
-function reverifiedOnly(
+/**
+ * The documents whose verification records this change adds or rewrites, each with whether any of those records says
+ * the document's text changed (ADR-0194). Read from the records, so no git call per document.
+ */
+export function reverifiedDocs(
+  root: string,
+  changes: ReadonlyArray<[string, string]>,
+): Map<string, boolean> {
+  const edited = new Map<string, boolean>();
+  for (const [status, file] of changes) {
+    if (status === "D" || !file.startsWith(`${RECORDS_DIR}/`) || !file.endsWith(".yaml")) continue;
+    if (file.endsWith(`/${AUDIT_FILE}`)) continue;
+    const record = readRecordFile(root, file);
+    if (record)
+      edited.set(
+        record.doc,
+        (edited.get(record.doc) ?? false) || record.text_changed || editedSince(root, record),
+      );
+  }
+  return edited;
+}
+
+/**
+ * DOC099: a generated file that differs from the base and from what the generator makes now was edited by hand.
+ * A file that equals a fresh build is the cleanup run's own work and passes.
+ */
+function generatedEdits(
   root: string,
   config: DocsConfig,
   base: string,
   changed: ReadonlySet<string>,
-): string[] {
-  return discoverDocs(root, config)
-    .filter((file) => changed.has(file) && !file.startsWith(`${config.adr_dir}/`))
-    .filter((file) => {
-      const before = git(root, "show", `${base}:${file}`);
-      if (before === null) return false;
-      const old = splitFrontMatter(before);
-      const now = splitFrontMatter(readFileSync(path.join(root, file), "utf8"));
-      return (
-        bodyFingerprint(old.body) === bodyFingerprint(now.body) &&
-        JSON.stringify(verifiedStamp(old.data)) !== JSON.stringify(verifiedStamp(now.data))
-      );
-    });
+): Violation[] {
+  const indexText = (): string => readFileSync(path.join(root, config.index), "utf8");
+  const artifacts: Array<{
+    file: string;
+    fix: string;
+    fresh: () => string | null;
+    part: (text: string) => string | null;
+  }> = [
+    {
+      file: config.decisions_file ?? `${config.generated_dir}/decisions.md`,
+      fix: "pnpm tsx harness/src/checks/docs.ts decisions",
+      fresh: () => decisionsTable(root, config),
+      part: (text) => text,
+    },
+    {
+      file: TABLE_FILE,
+      fix: "pnpm quality write",
+      fresh: () => renderQuality(root),
+      part: (text) => text,
+    },
+    {
+      file: config.index,
+      fix: "pnpm tsx harness/src/checks/docs.ts generate",
+      fresh: () => {
+        const text = freshIndex(root, config, indexText());
+        return text === null ? null : listBlock(text);
+      },
+      part: listBlock,
+    },
+  ];
+  return artifacts.flatMap(({ file, fix, fresh, part }) => {
+    if (!changed.has(file) || !existsSync(path.join(root, file))) return [];
+    const mine = part(readFileSync(path.join(root, file), "utf8"));
+    const before = git(root, "show", `${base}:${file}`);
+    if (mine === null || (before !== null && part(before) === mine) || fresh() === mine) return [];
+    return [
+      violation(
+        "DOC099",
+        file,
+        1,
+        "a generated file was edited by hand (it matches neither the base nor what the generator makes now)",
+        `Changes do not commit generated files; the cleanup run regenerates them. Restore the base version (git checkout ${base} -- ${file}), or regenerate it: ${fix}`,
+      ),
+    ];
+  });
 }
 
 export function report(
@@ -131,8 +195,8 @@ export function report(
 ): { violations: Violation[]; notes: string[] } {
   const config = loadDocsConfig(root);
   const notes: string[] = [];
-  const stale = decisionsStale(root, config);
-  if (stale) notes.push(stale);
+  for (const stale of [decisionsStale(root, config), indexStale(root, config)])
+    if (stale) notes.push(stale);
   notes.push(
     ...testRowNotes(
       root,
@@ -142,6 +206,9 @@ export function report(
   if (!base) return { violations: [], notes };
   const changes = changedFiles(root, base);
   const changed = new Set(changes.filter(([status]) => status !== "D").map(([, file]) => file));
+  const reread = reverifiedDocs(root, changes);
+  // A document re-verified in this change counts as touched by it (the record changed, the text may not have).
+  for (const doc of reread.keys()) changed.add(doc);
   const violations = changes
     .filter(
       ([status, file]) =>
@@ -149,7 +216,11 @@ export function report(
     )
     .filter(([, file]) => existsSync(path.join(root, file)))
     .flatMap(([, file]) => checkAddedAdr(root, file, changed));
-  const stamped = reverifiedOnly(root, config, base, changed);
+  violations.push(...generatedEdits(root, config, base, changed));
+  const stamped = [...reread]
+    .filter(([, textChanged]) => !textChanged)
+    .map(([doc]) => doc)
+    .sort();
   if (stamped.length > 0)
     notes.push(
       `NOTE docs [${REVERIFY_ONLY_CODE}] 본문은 그대로이고 다시 확인만 된 문서 ${stamped.length}개: ${stamped.join(", ")}. 정말 읽고 맞는지 확인했는지 봐 주세요.`,

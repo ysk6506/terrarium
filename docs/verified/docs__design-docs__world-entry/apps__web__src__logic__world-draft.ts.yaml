@@ -1,0 +1,7 @@
+doc: "docs/design-docs/world-entry.md"
+target: "apps/web/src/logic/world-draft.ts"
+hash: "8eebc723db71adef"
+date: "2026-11-12"
+note: "main을 합친 뒤 공개 범위(ADR-0174 나 단계, ADR-0179)에서 더한 서술을 합쳐진 코드와 대조했고, 바뀐 화면 글(ADR-0183)과 옛 말이 없음을 확인했다"
+text_changed: true
+doc_hash: "baae5bfcb1694b60"

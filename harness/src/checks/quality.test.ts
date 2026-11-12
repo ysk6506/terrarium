@@ -4,6 +4,7 @@ import { afterEach, describe, expect, test } from "vitest";
 import YAML from "yaml";
 import { findRoot } from "../common";
 import { miniRepo } from "../test-support/mini-repo";
+import { writeRecord } from "./doc-records";
 import {
   gradeOf,
   main,
@@ -147,8 +148,22 @@ const item = (id: string, fields: Record<string, unknown> = {}) => ({
   ...fields,
 });
 
-const doc = (verified: string, covers: string[], extra = "kind: guide\nstatus: active") =>
-  `---\ntitle: T\n${extra}\nlast_verified: ${verified}\ncovers:\n${covers.map((c) => `  - ${c}`).join("\n")}\n---\n# T\n`;
+const doc = (_verified: string, covers: string[], extra = "kind: guide\nstatus: active") =>
+  `---\ntitle: T\n${extra}\ncovers:\n${covers.map((c) => `  - ${c}`).join("\n")}\n---\n# T\n`;
+
+/** Verification now lives in records (ADR-0194): one record per document is enough for the date. */
+const stamp = (root: string, dates: Record<string, string>): void => {
+  for (const [file, date] of Object.entries(dates))
+    writeRecord(root, {
+      doc: file,
+      target: "package.json",
+      hash: "h",
+      date,
+      note: "n",
+      text_changed: true,
+      doc_hash: "d",
+    });
+};
 
 const factsOf = (root: string, unit: string) => {
   const found = gatherFacts(root, []).find((f) => f.unit === unit);
@@ -314,13 +329,21 @@ describe("the quality table is generated and kept fresh [REQ-024]", () => {
         "kind: decision\nstatus: active",
       ),
       "docs/design-docs/archived.md": doc("2026-01-02", [MEMBER], "kind: guide\nstatus: archived"),
-      "docs/design-docs/free.md":
-        "---\ntitle: T\nkind: guide\nstatus: active\nlast_verified: 2026-01-03\n---\n# T\n",
+      "docs/design-docs/free.md": "---\ntitle: T\nkind: guide\nstatus: active\n---\n# T\n",
       "docs/generated/ignored.md": doc("2026-01-04", [MEMBER]),
       "docs/design-docs/other.md": doc("2026-09-01", ["apps/server/src/http/index.ts"]),
       "docs/design-docs/outside.md": doc("2026-08-01", ["package.json"]),
       "docs/design-docs/undated.md":
         "---\ntitle: T\nkind: guide\nstatus: active\ncovers:\n  - apps/server/src/main.ts\n---\n# T\n",
+    });
+    stamp(root, {
+      "docs/design-docs/new.md": "2026-11-09",
+      "docs/design-docs/old.md": "2026-10-01",
+      "docs/design-docs/dir.md": "2026-10-15",
+      "docs/design-docs/archived.md": "2026-01-02",
+      "docs/generated/ignored.md": "2026-01-04",
+      "docs/design-docs/other.md": "2026-09-01",
+      "docs/design-docs/outside.md": "2026-08-01",
     });
     expect(factsOf(root, "core.world").oldestDoc).toEqual({
       date: "2026-10-01",

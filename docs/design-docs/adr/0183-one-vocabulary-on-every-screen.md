@@ -2,7 +2,6 @@
 title: ADR-0183 화면의 모든 글은 한 가지 말을 쓰고, 옛 말이 돌아오지 못하게 검사한다
 kind: decision
 status: active
-last_verified: 2026-11-12
 enforced_by:
   - WORD001
   - harness/src/checks/ui-words.test.ts

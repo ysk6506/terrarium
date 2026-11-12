@@ -2,7 +2,6 @@
 title: ADR-0182 고친 결정에는 무엇을 고쳤는지 한 구절을 적는다 — amends의 what, link-amends가 옮겨 적고, 결정 목록이 보인다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - DOC091
   - harness/src/checks/doc-amends.test.ts

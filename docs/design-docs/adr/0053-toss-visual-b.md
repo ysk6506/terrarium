@@ -2,7 +2,6 @@
 title: ADR-0053 화면 모양은 토스의 결(안 B)을 따르고, 새 사업장·땅 사기 여정을 측정에 넣는다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - harness/src/ux/score.test.ts
 touches_protected:

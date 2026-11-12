@@ -2,7 +2,6 @@
 title: ADR-0011 단위 기반 아키텍처 (core / server / web)
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
   - ARCH001
   - ARCH010

@@ -1,0 +1,7 @@
+doc: "docs/design-docs/sdn-network-layer.md"
+target: "packages/core/src/sources/worldgen/shaped-sdn.ts"
+hash: "f32cf688e27c9c98"
+date: "2026-11-12"
+note: "덮는 시나리오 라이브러리에서 정렬 도우미 byId의 자리만 library-kit.ts로 옮김. 동작은 그대로이고 이 문서는 그 이름을 말하지 않는다"
+text_changed: true
+doc_hash: "ae5e2c0df7836671"

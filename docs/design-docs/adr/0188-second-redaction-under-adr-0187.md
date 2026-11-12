@@ -2,7 +2,6 @@
 title: ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기
 kind: decision
 status: active
-last_verified: 2026-11-12
 enforced_by:
   - none
 no_enforcement_reason: 어떤 문장이 내부 사실인지는 기계가 가릴 수 없다(ADR-0187과 같다). 정리 작업의 독립 감사와 사람의 검토로 본다.

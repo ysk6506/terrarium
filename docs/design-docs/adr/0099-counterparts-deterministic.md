@@ -2,7 +2,6 @@
 title: ADR-0099 가상 담당자는 거절하지 않고 코드로 결정론적으로 움직이며, 티켓 툴은 선택이고, 교체 작업은 3D에 보인다 (ADR-0098 보정)
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - packages/core/src/session/escalate.test.ts
   - packages/core/src/topology/partner.test.ts

@@ -2,7 +2,6 @@
 title: 토폴로지 보기 — 무엇에 기대고 있나를 층별로 그리고, 같은 것은 접는다
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - packages/core/src/topology/operation-marks.ts
   - packages/core/src/topology/types.ts
@@ -27,13 +26,6 @@ covers:
   - packages/core/src/topology/replay-words.ts
   - packages/core/src/topology/story.ts
   - apps/web/src/logic/topology/replay.ts
-verification_log:
-  - "2026-11-06: REQ-096 컨테이너 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
-  - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장 절을 더하거나 고쳤고 나머지는 코드와 대조해 그대로 맞다"
-  - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
-  - "2026-11-11: layout.ts headRoom에서 안 쓰는 매개변수만 지움, 문서 내용과 동작은 그대로"
-  - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
-covers_hash: 8786e9f64bcab89b
 ---
 # 토폴로지 보기 (REQ-078, [ADR-0084](adr/0084-topology-view.md))
 

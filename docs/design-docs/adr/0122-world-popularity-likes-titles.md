@@ -2,7 +2,6 @@
 title: ADR-0122 세계 인기 순서·좋아요·칭호, 그리고 계급 모델 — 점수는 서버가 기록에서 세고, 칭호는 한 번 얻으면 안 잃고, 계급은 아직 화면에 없다
 kind: decision
 status: active
-last_verified: 2026-11-06
 enforced_by:
   - packages/core/src/ranking/ranking.test.ts
   - packages/core/src/experiments/community.test.ts

@@ -2,7 +2,6 @@
 title: ADR-0168 실험용 복사본은 운영 세계와 같은 의미로 움직인다 — 전파 엔진은 하나이고, 모든 타입이 실험에 들어간다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-119 예정). 만들 때 enforced_by를 "영향 범위의 답 = 실험의 최종 상태" 시험과 기존 세계의 점수 불변 시험으로 바꾼다.

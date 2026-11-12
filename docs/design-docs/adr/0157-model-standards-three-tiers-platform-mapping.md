@@ -2,7 +2,6 @@
 title: ADR-0157 모델은 층마다 표준에서 뼈대를 빌리고, 종류는 세 층이며, 가상화 플랫폼은 대응 표로 받는다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-115·117 예정). 만들 때 enforced_by를 짝·중립·같은 세계 시험으로 바꾼다.

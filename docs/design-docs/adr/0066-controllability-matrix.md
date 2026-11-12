@@ -2,7 +2,6 @@
 title: ADR-0066 제어 가능한 것은 한 장의 표로 말하고, 표는 월드와 툴에서 거꾸로 검증한다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - tests/spec/controllability.test.ts
 touches_protected:

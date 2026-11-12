@@ -2,7 +2,6 @@
 title: 이끼 — 테라리움 도우미가 문서와 화면으로 답하고 화면을 같이 넘기는 법
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - apps/web/src/moss/bar-offset.ts
   - apps/web/src/moss/ask.tsx
@@ -23,15 +22,6 @@ covers:
   - apps/web/src/ui/moss/Launcher.tsx
   - apps/web/src/logic/models.ts
   - harness/src/checks/moss.ts
-verification_log:
-  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
-  - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
-  - "2026-11-11: 문서 색인이 하네스가 만든 generated 폴더를 건너뛰게 된 것을 적음 (ADR-0180). 코드의 다른 변화는 없음"
-  - "2026-11-12: 이끼가 묻는 사람마다 기본 모델을 정하는 것(defaultFor, ADR-0179)과 합친 main의 변화를 코드와 대조해 한 문장을 더함"
-  - "2026-11-12: ADR-0192: 이끼의 색인에서 보관함(docs/archive)을 뺌. 옮긴 설계를 답의 근거로 쓰지 않는다. 질문 은행을 다시 만듦"
-covers_hash: 54740cac0bc47e07
-verified_body: ca1d4e27134a0cd9
-unchanged_reverifies: 0
 ---
 # 이끼 (REQ-103, [ADR-0124](adr/0124-moss-assistant.md), [ADR-0125](adr/0125-moss-requires-model.md))
 

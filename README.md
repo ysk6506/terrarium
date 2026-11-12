@@ -2,19 +2,9 @@
 title: Terrarium
 kind: guide
 status: active
-last_verified: 2026-11-12
 covers:
   - package.json
   - docs/exec-plans/active/beta-rounds.md
-covers_hash: e4266e425ea428b1
-verification_log:
-  - "2026-11-12: ADR-0196: 덮는 차수 계획의 바뀐 곳은 이슈 47의 표. '호스트는 커널이 아니에요' 한계는 전환 전까지 그대로 맞다"
-  - "2026-11-12: ADR-0197: 덮는 차수 계획의 바뀐 곳은 순서 4. README의 차수 표(2차에 맡겨도 되나 실험)와 맞다"
-  - "2026-11-12: main(ADR-0196)을 합침: 두 변경의 글이 함께 들어감. 다시 대조함"
-  - "2026-11-12: main(ADR-0196)을 합침: 덮는 차수 계획에 두 변경의 글이 함께 들어감. README의 차수 표와 맞다"
-  - "2026-11-12: 덮는 beta-rounds.md는 검사 시간 줄이기 항목의 문장만 내가 바꿨다(ADR-0195). README에는 그 항목이나 CI 작업 구성이 없어 어긋나지 않는다"
-verified_body: d2e57522ca3c5c44
-unchanged_reverifies: 9
 ---
 # Terrarium
 

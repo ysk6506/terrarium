@@ -1,0 +1,7 @@
+doc: "docs/design-docs/vmware-api-conformance.md"
+target: "packages/core/src/facades/vrops.ts"
+hash: "d004ac8030e882ac"
+date: "2026-11-12"
+note: "vcenter.ts, vrops.ts, 스키마, 대조 시험과 다시 맞춰 봄: 표에 리소스 하나와 오류 응답을 더하고, /rest 경로의 범위와 전원 동작을 한계에 적음"
+text_changed: true
+doc_hash: "861b173d35958c65"

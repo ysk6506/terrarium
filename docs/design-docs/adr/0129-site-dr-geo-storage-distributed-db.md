@@ -2,7 +2,6 @@
 title: ADR-0129 마지막 점선 다섯을 실선으로 — 사이트·DR 사다리, 지역 복제, 분산 SQL, 관리형 멀티 AZ
 kind: decision
 status: active
-last_verified: 2026-11-07
 enforced_by:
   - apps/web/src/logic/world-shape/site-cards.test.ts
   - apps/web/src/logic/world-shape/world-shape.test.ts

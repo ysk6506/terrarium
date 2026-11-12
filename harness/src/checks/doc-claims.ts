@@ -122,6 +122,15 @@ export class ClaimContext {
     return this.once(`read:${file}`, () => readFileSync(path.join(this.root, file), "utf8"));
   }
   code = (): string => harnessText(this.root);
+  /** Rule codes the harness defines: written as "CODE" or as [CODE] in its sources. */
+  codes = (): Set<string> =>
+    this.once(
+      "codes",
+      () =>
+        new Set(
+          [...this.code().matchAll(/["[]([A-Z]{2,6}\d{3})["\]]/g)].map((m) => m[1] as string),
+        ),
+    );
   envText = (): string =>
     this.once("env", () =>
       listFiles(
@@ -230,8 +239,7 @@ function checkToken(ctx: ClaimContext, file: string, line: number, token: string
         "Use a script that exists (see the scripts in package.json) or remove the command.",
       ),
     );
-  const known = ctx.code().includes(`"${token}"`) || ctx.code().includes(`[${token}]`);
-  if (CODE_RE.test(token) && !known)
+  if (CODE_RE.test(token) && !ctx.codes().has(token))
     out.push(
       bad(
         file,

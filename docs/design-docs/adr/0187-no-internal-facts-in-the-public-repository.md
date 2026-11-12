@@ -2,7 +2,6 @@
 title: ADR-0187 공개 저장소에는 공개된 자료에서 온 사실만 둔다 — 내부에서 들은 사실은 요구로 바꿔 적고, 이미 들어간 것은 봉인된 기록에서도 걷어낸다
 kind: decision
 status: active
-last_verified: 2026-11-12
 enforced_by:
   - none
 no_enforcement_reason: 어떤 문장이 내부 사실인지는 기계가 가릴 수 없다. 정리 작업의 독립 감사와 사람의 검토로 본다. 이름으로 가릴 수 있는 것이 생기면 금지어 검사에 더한다.

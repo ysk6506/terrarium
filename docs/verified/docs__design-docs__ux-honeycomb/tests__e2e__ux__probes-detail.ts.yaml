@@ -1,0 +1,7 @@
+doc: "docs/design-docs/ux-honeycomb.md"
+target: "tests/e2e/ux/probes-detail.ts"
+hash: "e87c489fa3269c54"
+date: "2026-11-12"
+note: "조각 수를 열로 고침 (ADR-0175)"
+text_changed: true
+doc_hash: "51196257930a18d5"

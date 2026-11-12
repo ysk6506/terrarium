@@ -2,7 +2,6 @@
 title: ADR-0061 스위치는 VLAN·MAC 표·ARP·라우팅을 갖고, 설정이 실제로 길을 바꾼다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - tests/spec/switch-l2l3.test.ts
   - packages/core/src/world/net-model.test.ts

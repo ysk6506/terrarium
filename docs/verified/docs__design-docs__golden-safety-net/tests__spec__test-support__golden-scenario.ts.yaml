@@ -1,0 +1,7 @@
+doc: "docs/design-docs/golden-safety-net.md"
+target: "tests/spec/test-support/golden-scenario.ts"
+hash: "5bf2b996caa1d352"
+date: "2026-11-11"
+note: "ADR-0178: 바뀐 골든 키 세 개와 확장된 불변식 서술을 시험 파일과 대조했다"
+text_changed: true
+doc_hash: "609f9343586f0a2c"

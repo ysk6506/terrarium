@@ -2,7 +2,6 @@
 title: ADR-0127 서비스부터는 질문 셋과 "실험 시작"(클릭 넷), 서비스는 카탈로그에서 고르고 내 카드로 저장·공유한다, 입구 그림은 비운다
 kind: decision
 status: active
-last_verified: 2026-11-07
 enforced_by:
   - apps/web/src/logic/world-shape/short-flow.test.ts
   - apps/web/src/logic/quick-draft.test.ts

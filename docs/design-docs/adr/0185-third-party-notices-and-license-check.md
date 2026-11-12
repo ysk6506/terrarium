@@ -2,7 +2,6 @@
 title: ADR-0185 함께 나가는 제3자 구성요소는 허용 목록 안의 라이선스여야 하고, 고지 파일은 하네스가 만든다
 kind: decision
 status: active
-last_verified: 2026-11-12
 enforced_by:
   - LIC001
   - LIC002

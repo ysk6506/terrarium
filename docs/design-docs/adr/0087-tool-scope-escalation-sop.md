@@ -2,7 +2,6 @@
 title: ADR-0087 툴 범위는 실험 설계자가 정하고, 현실 수준 꼬리표를 달고, 에스컬레이션과 절차서는 실험 변수다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - tests/spec/tool-scope.test.ts
   - tests/spec/escalation.test.ts

@@ -2,7 +2,6 @@
 title: ADR-0049 3D 그림은 기계가 따라가지 못하면 스스로 가벼워진다 — 같은 디자인, 값비싼 효과만 뺀다
 kind: decision
 status: active
-last_verified: 2026-11-03
 enforced_by:
   - apps/web/src/logic/world3d/quality.test.ts
   - apps/web/src/logic/narrow.test.ts

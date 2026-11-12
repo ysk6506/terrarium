@@ -1,0 +1,7 @@
+doc: "docs/design-docs/harness-protocol.md"
+target: "apps/server/src/adapters/harness/http.ts"
+hash: "caed27065a378a79"
+date: "2026-11-11"
+note: "REQ-118 시드당 반복: 실행 키(시드·반복), 시드 단위 통계, 순위 조건(시드 3개), 한도 60, 화면 반영을 코드와 대조해 고쳤다. 이 문서의 나머지는 그대로 맞다"
+text_changed: true
+doc_hash: "1434464d323d5a1e"

@@ -1,0 +1,7 @@
+doc: "docs/design-docs/glossary-data.md"
+target: "docs/design-docs/adr/0192-terrarium-returns-to-its-first-goal.md"
+hash: "e8ffd3820f0a68ff"
+date: "2026-11-12"
+note: "ADR-0192: 테라리움은 처음의 목표로 돌아감. 옮긴 설계의 표지로 새로 씀"
+text_changed: true
+doc_hash: "7f4ec501fbbf2bd8"

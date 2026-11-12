@@ -2,7 +2,6 @@
 title: HTTP API 계약
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - packages/core/src/contract/routes.ts
   - packages/core/src/contract/responses.ts
@@ -16,15 +15,6 @@ covers:
   - packages/core/src/contract/audit.ts
   - packages/core/src/contract/audit-routes.ts
   - packages/core/src/contract/audit-classes.ts
-covers_hash: 5e573ef76fc3f6cc
-verification_log:
-  - "2026-11-11: REQ-118 시드당 반복: 실행 키(시드·반복), 시드 단위 통계, 순위 조건(시드 3개), 한도 60, 화면 반영을 코드와 대조해 고쳤다. 이 문서의 나머지는 그대로 맞다"
-  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
-  - "2026-11-12: ADR-0183: 한 가지 말(번, 상황, 객체·링크, 넘기기)에 맞춰 인용한 화면 글을 고쳤다"
-  - "2026-11-12: ADR-0193: 새 길 셋(감사 목록·내려받기·내 것), 정책 수(signedIn 48, admin 3), 감사 기록 절의 항목 모양·거르기·까닭을 audit.ts, audit-routes.ts, audit-classes.ts, responses.ts와 대어 확인"
-  - "2026-11-12: ADR-0193: 새 행동 audit.limit이 닫힌 목록에 늘었을 뿐 길·정책 수·항목 모양은 그대로 맞다"
-verified_body: 9b3ee21f1197804e
-unchanged_reverifies: 1
 ---
 # HTTP API 계약 (core.contract)
 

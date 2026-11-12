@@ -2,7 +2,6 @@
 title: ADR-0159 관문의 브라우저 설치는 시스템 꾸러미 없이 하고, 다시 해 본다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: CI 작업 흐름의 한 걸음이다. 저장소의 시험으로는 러너의 네트워크 실패를 만들 수 없다. 걸음의 이름에 이 ADR을 적어 지워지지 않게 한다.

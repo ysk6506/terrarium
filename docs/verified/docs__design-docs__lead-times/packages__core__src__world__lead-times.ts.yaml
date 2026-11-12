@@ -1,0 +1,7 @@
+doc: "docs/design-docs/lead-times.md"
+target: "packages/core/src/world/lead-times.ts"
+hash: "4a89d3fe659ac1e9"
+date: "2026-11-07"
+note: "o13 합치기 (GPU·전원·냉방)"
+text_changed: true
+doc_hash: "411b7fb6c0899d61"

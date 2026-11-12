@@ -2,18 +2,8 @@
 title: ARCHITECTURE — 단위와 의존 방향
 kind: reference
 status: active
-last_verified: 2026-11-12
 covers:
   - harness/config/architecture.yaml
-covers_hash: a24a668d39be26ae
-verification_log:
-  - "2026-11-06: LLM API 등록"
-  - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
-  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
-  - "2026-11-10: physics.slots 단위 추가 (architecture.yaml와 맞춤)"
-  - "2026-11-12: architecture.yaml에서 tests.spec이 tests.e2e를 입구(index.ts)로 쓸 수 있게 된 것을 명세 테스트 항목에 적었다. 단위 표와 나머지 규칙은 그대로 맞다 (ADR-0195)"
-verified_body: b25280de644fb1e6
-unchanged_reverifies: 0
 ---
 # 아키텍처
 

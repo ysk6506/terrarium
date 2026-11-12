@@ -6,7 +6,7 @@ import { report as docsDiff } from "./checks/doc-diff";
 import { run as docs } from "./checks/docs";
 import { report as ignores } from "./checks/ignores";
 import { report as licenses } from "./checks/licenses";
-import { run as moss } from "./checks/moss";
+import { run as moss, startProbe } from "./checks/moss";
 import { run as protectedPaths } from "./checks/protected";
 import { report as quality } from "./checks/quality";
 import { run as testguard } from "./checks/testguard";
@@ -79,9 +79,15 @@ export function main(argv: readonly string[], out: (line: string) => void = cons
   const root = findRoot(flag(flags, "root"));
   let failed = 0;
   const notes: string[] = [];
-  for (const [name, run] of checks(root, flag(flags, "base"), flags.has("with-coverage"), notes))
+  const timing: string[] = [];
+  startProbe(root); // the slowest check waits on a child process: let it run beside the others
+  for (const [name, run] of checks(root, flag(flags, "base"), flags.has("with-coverage"), notes)) {
+    const started = performance.now();
     failed += finish(name, run(), out);
+    timing.push(`${name.padEnd(16)} ${((performance.now() - started) / 1000).toFixed(2)}s`);
+  }
   for (const line of notes) out(line);
+  if (flags.has("timing")) for (const line of timing) out(`TIME ${line}`);
   out(failed === 0 ? "\nALL CHECKS PASSED" : `\n${failed} CHECK(S) FAILED`);
   return failed === 0 ? 0 : 1;
 }

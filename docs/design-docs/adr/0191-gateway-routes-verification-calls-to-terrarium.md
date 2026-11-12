@@ -3,7 +3,6 @@ title: ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리�
 kind: decision
 status: superseded
 superseded_by: 0192-terrarium-returns-to-its-first-goal.md
-last_verified: 2026-11-12
 enforced_by:
   - none
 no_enforcement_reason: 아직 만들지 않은 기능(REQ-120 예정)의 설계 결정이다. 만들 때 "검증을 시작하기 전의 시험 호출이 테라리움에 도착하지 않으면 시작하지 않는다"를 시험으로 건다.

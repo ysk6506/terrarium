@@ -2,7 +2,6 @@
 title: ADR-0111 데이터베이스 층과 스토리지 HA 층을 코어 모델로 올리면서 시험 열한 곳의 기대값을 고친다
 kind: decision
 status: active
-last_verified: 2026-11-06
 enforced_by:
   - tests/spec/db-physics.test.ts
   - tests/spec/db-worldgen.test.ts

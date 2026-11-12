@@ -2,7 +2,6 @@
 title: ADR-0028 사용자 식별은 SSO 프록시 헤더, 없으면 스스로 밝힌 이름. 보기는 모두, 바꾸기는 만든 사람
 kind: decision
 status: active
-last_verified: 2026-10-29
 enforced_by:
   - apps/server/src/http/app.test.ts
   - apps/server/src/runtime/platform.test.ts

@@ -2,7 +2,6 @@
 title: 부지 배치 규칙과 동물 반응
 kind: spec
 status: active
-last_verified: 2026-11-07
 covers:
   - apps/web/src/logic/world3d/campus-plan.ts
   - apps/web/src/logic/world3d/campus-parking.ts
@@ -13,10 +12,6 @@ covers:
   - apps/web/src/logic/world3d/animal-sound.ts
   - apps/web/src/ui/world3d/animal-stage.ts
   - apps/web/src/ui/world3d/animal-audio.ts
-covers_hash: 00edb42fb7596be0
-verification_log:
-  - "2026-11-07: 새로 씀: 규칙표와 숫자를 코드와 시험에 맞춰 읽었다"
-  - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
 ---
 # 부지 배치 규칙과 동물 반응 (REQ-105, [ADR-0128](adr/0128-campus-layout-and-animals.md))
 

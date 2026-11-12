@@ -2,7 +2,6 @@
 title: "ADR-0038 묶음 랙: 서버를 개체로 만들지 않고 대수로 세는 랙"
 kind: decision
 status: active
-last_verified: 2026-10-29
 enforced_by:
   - packages/core/src/world/bulk.test.ts
   - packages/core/src/physics/light-rack.test.ts

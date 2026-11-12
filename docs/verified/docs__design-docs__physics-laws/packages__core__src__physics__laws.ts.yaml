@@ -1,0 +1,7 @@
+doc: "docs/design-docs/physics-laws.md"
+target: "packages/core/src/physics/laws.ts"
+hash: "7ef5c87800f8625b"
+date: "2026-11-11"
+note: "고장 날 법칙 시험과 v1 예외 표를 더함"
+text_changed: true
+doc_hash: "1fc10cfd3c032e5f"
