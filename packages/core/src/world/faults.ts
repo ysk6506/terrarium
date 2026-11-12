@@ -359,9 +359,9 @@ export const FAULT_SPECS: readonly FaultSpec[] = [
   {
     type: "firmware_update_failure",
     label: "펌웨어 올리기 실패",
-    description: "서버의 펌웨어 올리기가 끝에서 실패해요. 정해진 횟수만큼 실패한 뒤에는 성공해요",
+    description: "서버의 펌웨어 올리기가 끝에서 실패해요. 정해 둔 만큼 실패한 뒤에는 성공해요",
     targets: ["server"],
-    params: [p("failures", "실패하는 횟수", 1, 3, 1, "번")],
+    params: [p("failures", "실패하는 수", 1, 3, 1, "번")],
     status: "supported",
     domain: "server",
   },

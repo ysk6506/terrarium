@@ -2,13 +2,13 @@
 title: 문서 색인
 kind: reference
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: ADR-0172 링크"
   - "2026-11-11: ADR-0178 링크"
   - "2026-11-11: main을 합친 뒤 다시 대조: ADR-0172와 ADR-0174, 커버리지 시험 추가가 함께 들어감"
   - "2026-11-11: main을 합친 뒤 양쪽 변경을 함께 둠"
   - "2026-11-11: main을 합친 뒤 양쪽 변경을 함께 둠"
+  - "2026-11-12: ADR-0183 링크"
 ---
 # 문서 색인
 
@@ -239,6 +239,7 @@ verification_log:
 - [0181 테라리움의 라이선스는 Apache License 2.0이다](design-docs/adr/0181-license-apache-2.md)
 - [0177 제품 목표의 "현실을 닮은 세계"에 현실의 데이터로 지은 세계를 적고, 맨 위 문서를 목표에 맞춘다](design-docs/adr/0177-goal-text-reality-worlds-and-top-level-docs.md)
 - [0178 제공되는 시나리오는 제품이 만드는 모든 세계 모양에서 정답 풀이가 만점을 받는다](design-docs/adr/0178-offered-scenario-solved-on-every-world-shape.md)
+- [0183 화면의 모든 글은 한 가지 말을 쓰고, 옛 말이 돌아오지 못하게 검사한다](design-docs/adr/0183-one-vocabulary-on-every-screen.md)
 - [0174 권한은 프록시가 넘겨준 신원, 역할 둘, 공개 범위 셋, 감사 기록으로 한다](design-docs/adr/0174-permissions-proxy-identity-three-scopes-audit.md)
 - [0173 문서만 바뀐 변경은 가벼운 CI 경로를 탄다](design-docs/adr/0173-docs-only-changes-take-a-light-ci-path.md)
 - [0172 제공되는 시나리오는 그 세계에서 정답 풀이가 만점을 받는다](design-docs/adr/0172-offered-scenario-means-reference-solution-reaches-full-score.md)

@@ -200,7 +200,7 @@ describe("worldgen limits [REQ-009]", () => {
     } as unknown as WorldgenSpec;
     expect(specProblems(bad)).toEqual([
       "알 수 없는 사업장 'seoul'",
-      "시드는 정수여야 해요",
+      "다시 만들기 번호는 정수여야 해요",
       "건물 수: 1~4 사이의 정수여야 해요 (지금 0)",
       "서버룸당 랙 줄: 1~12 사이의 정수여야 해요 (지금 1.5)",
       "랙 채움 비율: 0.1~0.9 사이여야 해요 (지금 2)",

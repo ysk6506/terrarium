@@ -2,16 +2,16 @@
 title: 품질 하네스 사용법
 kind: guide
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - harness/src/run-all.ts
-covers_hash: 15346c3aa1edc976
+covers_hash: 1fcb32d5b0cdda58
 verification_log:
-  - "2026-11-10: run-all이 예정 요구를 따로 출력하게 된 것을 반영 (ADR-0140)"
   - "2026-11-11: 2026-11-11: UX 검사를 여정(게이트)과 측정(게이트 아님)으로 나눔, REQ-114 (ADR-0141)"
   - "2026-11-11: 검사 끄기 금지(IGN*)와 품질 등급표(QUAL*) 두 검사, pnpm quality write와 ratchet의 끄기 기준선을 적었다 (ADR-0148)"
   - "2026-11-11: 품질 등급표는 낡으면 알림만, 끄기 감소도 알림만 나오는 것으로 고쳐 적었다 (ADR-0148)"
   - "2026-11-11: CI 한 문단에 가벼운 경로(changes, docs-tests, gate의 기대 결과)를 더함 (ADR-0173)"
+  - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
 ---
 # 품질 하네스
 

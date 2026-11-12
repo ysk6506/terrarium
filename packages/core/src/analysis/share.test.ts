@@ -44,7 +44,7 @@ describe("sharing results as text, Markdown and HTML [REQ-038]", () => {
     });
     expect(md.startsWith("# 실험 e1\n")).toBe(true);
     expect(md).toContain("## 채점 항목");
-    expect(md).toContain("| # | 시드 | 상태 | 점수 | 판정 | 종료 | 진단 | 툴 호출 | 진단까지 |");
+    expect(md).toContain("| # | 상황 | 상태 | 점수 | 판정 | 종료 | 진단 | 툴 호출 | 진단까지 |");
     const rows = md.split("\n").filter((l) => /^\| \d+ \|/.test(l));
     expect(rows).toHaveLength(4);
     expect(rows[0]).toContain("| 90.9 | 합격 | 진단 제출 | 정답 |");
@@ -222,7 +222,7 @@ describe("diagnosis records and the modelling brief [REQ-015]", () => {
     expect(brief).toContain("'cooling_unit_failure'는 에이전트 2종에 걸쳐 정답률이 0%에 그쳐요");
     expect(brief).toContain("툴 `get_entity`가 같은 오류를 6번 냈어요");
     expect(brief).toContain("### 평택 P2 가져오기 (`w-kg`)");
-    expect(brief).toContain("- 매핑하지 못한 라벨·관계: Chiller 4개, FEEDS_WATER 9개");
+    expect(brief).toContain("- 매핑하지 못한 라벨·링크: Chiller 4개, FEEDS_WATER 9개");
     expect(brief).toContain("- 가정: 랙 높이를 42U로 가정했어요");
     expect(brief).toContain(
       "'평택 P2 가져오기'를 가져올 때 매핑하지 못한 것: Chiller, FEEDS_WATER",

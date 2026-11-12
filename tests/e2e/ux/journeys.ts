@@ -307,7 +307,7 @@ async function fork(c: Context): Promise<void> {
     );
   const once = page.getByRole("button", { name: "1번", exact: true });
   if ((await once.getAttribute("aria-pressed")) !== "true")
-    throw new Error("포크 만들기가 원본의 반복 횟수(1번)로 시작하지 않는다");
+    throw new Error("포크 만들기가 원본의 몇 번씩(1번)으로 시작하지 않는다");
   await c.d.click(page.getByRole("button", { name: /조건 바꿔 다시 돌리기|실험 시작/ }));
   await expectPath(c, /^\/experiments\/e-/);
   await waitForResult(page);

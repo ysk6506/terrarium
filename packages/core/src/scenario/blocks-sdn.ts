@@ -25,7 +25,7 @@ export const SDN_CONDITION_FIELDS: Readonly<
     health: HEALTH,
     evpn: { label: "EVPN 세션", type: "enum", values: ["established", "down"] },
     cut: bool("세그먼트에서 끊김"),
-    flaps: num("세션 플랩", "회"),
+    flaps: num("세션 플랩", "번"),
   },
   overlay_segment: { health: HEALTH, status: STATUS3 },
   nfv_function: { health: HEALTH, status: STATUS3, latencyMs: num("지연", "ms") },

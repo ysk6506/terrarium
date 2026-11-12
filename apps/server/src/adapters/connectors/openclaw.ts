@@ -231,10 +231,10 @@ export const openClawConnector = defineConnector({
       ...credentialFields("token", "토큰", "OPENCLAW_GATEWAY_TOKEN"),
       {
         key: "maxTurns",
-        label: "최대 대화 횟수",
+        label: "최대 주고받기",
         type: "number",
         default: 40,
-        help: "에이전트와 툴을 주고받는 최대 횟수.",
+        help: "에이전트와 툴을 최대 몇 번 주고받을지 정해요.",
       },
       {
         key: "requestTimeoutSeconds",

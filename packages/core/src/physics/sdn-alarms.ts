@@ -28,7 +28,7 @@ function vtepAlarms(world: World, out: Draft[]): void {
         entityId: e.id,
         code: "evpn_session_down",
         severity: "warning",
-        message: `${e.name}의 EVPN 세션이 내려가 있어요${s.flaps > 0 ? ` (플랩 ${s.flaps}회)` : ""}`,
+        message: `${e.name}의 EVPN 세션이 내려가 있어요${s.flaps > 0 ? ` (플랩 ${s.flaps}번)` : ""}`,
       });
     if (s.cut && s.evpn !== "down")
       out.push({

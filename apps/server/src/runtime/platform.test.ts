@@ -223,7 +223,7 @@ describe("forks, more runs and lineage [REQ-040]", () => {
     await expect(
       p.experiments.addRuns(YEONSU, e.experiment.id, { seeds: [2, 9] }),
     ).rejects.toMatchObject({
-      issues: [{ path: "seeds", message: "시드 2는 이미 있어요" }],
+      issues: [{ path: "seeds", message: "상황 2번은 이미 있어요" }],
     });
     await expect(
       p.experiments.addRuns(JIMIN, e.experiment.id, { count: 1 }),
