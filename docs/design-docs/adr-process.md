@@ -12,13 +12,18 @@ covers:
   - harness/src/checks/doc-amends.ts
   - harness/src/checks/doc-claims.ts
   - harness/src/checks/doc-facts.ts
-covers_hash: 52afbdf61c2193c6
-verified_body: ab5cc4caa825e2e9
-unchanged_reverifies: 1
+  - harness/src/checks/doc-tests.ts
+  - harness/src/checks/doc-audit.ts
+covers_hash: aa9591c1eaac4d74
+verified_body: 1958268fd22c310e
+unchanged_reverifies: 0
 verification_log:
   - "2026-11-11: 새 앞부분 키(updates_docs, amends)와 명령(link-amends, decisions, audit)을 적음 (ADR-0180)"
   - "2026-11-11: 새 검사 모듈(doc-follow, doc-claims, doc-facts, doc-diff, doc-decisions)의 최종 동작과 맞는지 대조: 키·명령·코드 목록이 그대로 맞다 (ADR-0180)"
   - "2026-11-12: amends의 what 항목, link-amends가 구절을 옮기는 것, 새 ADR의 what 필수(DOC091)를 적고 doc-amends.ts를 covers에 더함 (ADR-0182)"
+  - "2026-11-12: 보호 경로 목록에 빠져 있던 .github/와 결정 기록을 더하고 목록 파일을 가리킴. 본문이 말하는 DOC096과 audit 명령의 코드(doc-tests.ts, doc-audit.ts)를 covers에 더함"
+  - "2026-11-12: 감사 — covers 일곱 파일과 docs.ts, test-lock.ts, protected.ts, 보호 경로 목록, 결정 목록에 줄마다 대어 봄. 틀린 주장은 없고 빠진 것 둘(보호 경로 둘, covers 둘)을 채움"
+last_audited: 2026-11-12
 ---
 # ADR (Architecture Decision Record)
 
@@ -27,7 +32,7 @@ verification_log:
 ## 언제 쓰나
 
 - 새 레이어, 새 외부 라이브러리, 의존 규칙 변경
-- 하네스(`harness/`), 설정 파일(`package.json`, `vitest.config.ts` 등), 요구사항, AGENTS.md 변경 (보호 경로)
+- 하네스(`harness/`), 설정 파일(`package.json`, `vitest.config.ts` 등), CI 설정(`.github/`), 결정 기록, 요구사항, AGENTS.md 변경 (보호 경로. 전체 목록은 `harness/config/protected-paths.txt`)
 - 요구사항이 바뀌어 잠긴 테스트를 바꿔야 할 때
 - 설계에서 여러 길 중 하나를 고를 때
 

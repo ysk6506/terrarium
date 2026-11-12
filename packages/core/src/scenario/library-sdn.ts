@@ -20,7 +20,7 @@ import {
   servicesLeaningOn,
   vtepsOfSegment,
 } from "@terrarium/core/world";
-import { agent, allOf, doc, Flow, type ScenarioTemplate, SUBMIT } from "./library-kit";
+import { agent, allOf, byId, doc, Flow, type ScenarioTemplate, SUBMIT } from "./library-kit";
 import type { ActionKind, Condition, Expectation } from "./model";
 
 /** What a sheet is about: the thing the fault is put on, the services that feel it, and the answer the diagnosis names. */
@@ -58,7 +58,6 @@ interface Plan {
   readonly expectedS?: number;
 }
 
-const byId = (a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id);
 const KIND_ORDER = ["stateful", "batch", "request"];
 const kindRank = (e: Entity) => KIND_ORDER.indexOf(String(e.props.serviceKind));
 

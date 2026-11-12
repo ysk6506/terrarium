@@ -24,7 +24,7 @@ import {
   poolOfInstance,
   RESTORE_S,
 } from "@terrarium/core/world";
-import { agent, allOf, doc, Flow, type ScenarioTemplate, SUBMIT } from "./library-kit";
+import { agent, allOf, byId, doc, Flow, type ScenarioTemplate, SUBMIT } from "./library-kit";
 import type { ActionKind, Condition, Expectation } from "./model";
 
 /** The cluster a sheet is about, with the services that lean on it and the equipment the fault lands on. */
@@ -66,8 +66,6 @@ interface Plan {
 const BUDGET = 30;
 const TIME_S = 3600;
 const KIND_ORDER = ["stateful", "batch", "request"];
-
-const byId = (a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id);
 
 const servicesOf = (index: BlueprintIndex, clusterId: string): Entity[] =>
   index
