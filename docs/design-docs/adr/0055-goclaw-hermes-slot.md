@@ -13,12 +13,12 @@ amends_tests:
   - apps/server/src/adapters/connectors/connectors.test.ts::what every connector must be, so the screen and the server need not know it [REQ-051] > each kind is unique and the order is: harness products, generic, own protocol, built in
   - apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > a harness from the config file keeps its settings for display, and ports of any kind are listed
 test_change_reason: 연결 종류가 둘(goclaw, hermes) 늘어서, 종류와 순서를 확인하는 두 시험의 기대 목록에 새 종류를 넣었다. 확인하는 규칙은 그대로다.
-decision_hash: 092302415ad5855e
+decision_hash: 8200e031c74f60df
 ---
 # ADR-0055 GoClaw·Hermes 연결과 고정 도구 주소
 
 ## 맥락
-ADR-0042는 하네스를 연결(connector)로 붙인다고 정했고 OpenCode, LangGraph, OpenClaw의 전용 연결을 만들었다. 사내에서 쓰는 GoClaw와 Hermes Agent는 범용 HTTP/MCP 연결로 붙이면 두 가지가 맞지 않는다.
+ADR-0042는 하네스를 연결(connector)로 붙인다고 정했고 OpenCode, LangGraph, OpenClaw의 전용 연결을 만들었다. GoClaw와 Hermes Agent는 범용 HTTP/MCP 연결로 붙이면 두 가지가 맞지 않는다.
 - **도구를 받는 길이 다르다.** 지금까지 하네스는 실행을 시작할 때 "이 실행의 도구 주소"를 받았다. GoClaw는 관리자가 등록한 MCP 서버만 쓰고, Hermes는 요청마다가 아니라 설정 파일(`mcp_servers`)에서만 읽는다.
 - **멈추는 길이 다르다.** 끝낼 때와 사용자가 중지할 때 하네스에서 무엇을 정리해야 하는지가 하네스마다 다르다.
 
@@ -40,4 +40,4 @@ ADR-0042는 하네스를 연결(connector)로 붙인다고 정했고 OpenCode, L
 
 ## 한계 (솔직하게)
 - 두 연결은 GoClaw·Hermes의 소스와 문서를 읽고 만들었고, 가짜 서버로 시험했다. **실제 GoClaw·Hermes에 붙여 끝까지 돌려 보지는 않았다.** 그 시험은 따로 둔다(하네스 실제 실행 과제).
-- GoClaw는 사설망 주소의 MCP 서버를 기본으로 막는다. 사내에서 쓰려면 GoClaw 쪽 허용 호스트 설정이 필요하다.
+- GoClaw는 사설망 주소의 MCP 서버를 기본으로 막는다. 사설망에서 쓰려면 GoClaw 쪽 허용 호스트 설정이 필요하다.

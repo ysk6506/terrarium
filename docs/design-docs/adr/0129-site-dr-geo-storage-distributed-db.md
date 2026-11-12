@@ -47,12 +47,12 @@ amends_tests:
   - packages/core/src/scenario/scenario.test.ts::scenario palette [REQ-034] > in the sample hall every supported fault can be used, each as its own block
   - tests/spec/calibration.test.ts::=WORLDS
 test_change_reason: 점선 다섯 칩을 코어가 흉내 내는 실선으로 바꿔 점선 개수가 0이 되고, 개체 종류 넷(dr_site·site_link·replication_stream·dr_plan)과 db_node·db_managed·volume이 늘고 고장 열다섯, 툴 열네 개, 세계 명령이 늘고 사다리 칩이 마흔네 개에서 마흔여섯 개가 되었다. 점선을 세던 시험은 점선 0개를 세도록, 개수를 세던 시험(개체·툴·명령 목록, 사다리 칩 수)은 새 개수로, 골든 월드는 세 개를 더하되 기존 값은 그대로 두었다.
-decision_hash: d0dacb8a3c87b6cf
+decision_hash: 614c7e8a6187cc44
 ---
 # ADR-0129 마지막 점선 다섯을 실선으로 — 사이트·DR 사다리, 지역 복제, 분산 SQL, 관리형 멀티 AZ
 
 ## 맥락
-[ADR-0107](0107-world-entry-two-doors-ha-ladders.md) 결정 5와 6은 코어가 모르는 구조를 점선으로 두고 "가까운 칸으로 짓는다"고 했다. 컨테이너·SDN·애플리케이션 층이 차례로 실선이 된 뒤 남은 점선은 다섯이었다: 지역 복제(`sto-geo`), 분산 SQL(`db-distributed-sql`), 관리형 멀티 AZ(`db-managed-multiaz`), DR 웜(`site-dr-warm`), 멀티 사이트(`site-multi-active`). 연수 님 결정(2026-11-07): "점선인 거 없이 현실세계와 모순되지 않게 전부 설계해서 구현해줘."
+[ADR-0107](0107-world-entry-two-doors-ha-ladders.md) 결정 5와 6은 코어가 모르는 구조를 점선으로 두고 "가까운 칸으로 짓는다"고 했다. 컨테이너·SDN·애플리케이션 층이 차례로 실선이 된 뒤 남은 점선은 다섯이었다: 지역 복제(`sto-geo`), 분산 SQL(`db-distributed-sql`), 관리형 멀티 AZ(`db-managed-multiaz`), DR 웜(`site-dr-warm`), 멀티 사이트(`site-multi-active`). 제품 책임자 결정(2026-11-07): "점선인 거 없이 현실세계와 모순되지 않게 전부 설계해서 구현해줘."
 
 ## 결정
 1. **사이트 사다리를 한 줄로 만든다.** 서버룸 하나 → 둘 → 건물 둘 → DR 콜드 → 웜 → 핫 → 멀티 사이트 액티브-액티브. 건물이 둘 이상이어야 둘째 사이트가 생기고, 콜드는 꺼진 서버와 이미지, 웜은 서비스 절반의 대기, 핫은 전부의 동기 대기, 액티브는 두 사이트가 함께 일한다. 약속은 칩과 회선 지연으로 정해진다: 콜드 RTO 4시간·RPO 24시간, 웜 15분·36초, 핫 90초·0, 액티브 30초·0 ([사이트·DR 층](../site-dr-layer.md)).
@@ -74,7 +74,7 @@ decision_hash: d0dacb8a3c87b6cf
 ## 대안과 버린 이유
 - 둘째 사이트를 리전 개체로 모델링: 리전은 애플리케이션 층의 트래픽 단위이고 서버가 없다. 사이트는 서버와 건물이 있어야 전원·냉방 고장과 이어진다.
 - 복구 채점의 시간 창을 사이트 모드마다 늘리기: 모든 시나리오의 점수 의미가 바뀌어 기존 시험이 흔들린다. 한계로 적고 뒤로 미룬다.
-- 점선 두기: 연수 님이 결정했다.
+- 점선 두기: 제품 책임자가 결정했다.
 
 ## 시험
 - 사이트·DR 물리와 도구: `tests/spec/site-dr.test.ts`; 합의·관리형 DB: `tests/spec/site-db.test.ts`; 시나리오: `tests/spec/site-scenarios.test.ts`; 표(도메인·리드타임·툴·MTBF·제어 가능표·골든): `tests/spec/site-tables.test.ts`; 토폴로지: `tests/spec/site-topology.test.ts`; 칩 카드: `apps/web/src/logic/world-shape/site-cards.test.ts`.

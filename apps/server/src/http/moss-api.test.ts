@@ -19,7 +19,7 @@ function setup(answer: (prompt: string) => string) {
     const r = await app.inject({
       method: method as "GET",
       url,
-      headers: { "x-terrarium-user": "yeonsu" },
+      headers: { "x-terrarium-user": "haneul" },
       ...(payload ? { payload } : {}),
     });
     return { status: r.statusCode, body: r.json() };

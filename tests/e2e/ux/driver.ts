@@ -31,7 +31,7 @@ export async function visitor(browser: Browser, options: VisitorOptions = {}): P
     reducedMotion: options.reducedMotion ? "reduce" : "no-preference",
     colorScheme: options.dark ? "dark" : "light",
   });
-  const name = options.name === undefined ? "연수" : options.name;
+  const name = options.name === undefined ? "하늘" : options.name;
   if (name !== null)
     await context.addInitScript((who) => {
       try {

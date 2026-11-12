@@ -32,7 +32,7 @@ async function json(
   method: string,
   url: string,
   payload?: unknown,
-  user = "연수",
+  user = "하늘",
 ) {
   const r = await a.inject({
     method: method as "GET",
@@ -83,7 +83,7 @@ describe("an experiment over HTTP [REQ-030] [REQ-038]", () => {
     });
     expect(created.status).toBe(200);
     const id = (created.body.experiment as { id: string; owner: string }).id;
-    expect((created.body.experiment as { owner: string }).owner).toBe("연수");
+    expect((created.body.experiment as { owner: string }).owner).toBe("하늘");
     await until(
       async () => (await json(a, "GET", `/api/experiments/${id}`)).body.status === "completed",
     );
@@ -126,7 +126,7 @@ describe("an experiment over HTTP [REQ-030] [REQ-038]", () => {
     expect((await a.inject({ url: "/api/twin/diagnoses" })).headers["content-disposition"]).toBe(
       'attachment; filename="terrarium-diagnoses.jsonl"',
     );
-    const list = await json(a, "GET", "/api/experiments?owner=%EC%97%B0%EC%88%98&limit=5");
+    const list = await json(a, "GET", "/api/experiments?owner=%ED%95%98%EB%8A%98&limit=5");
     expect(list.raw.json()).toHaveLength(1);
   });
 
@@ -182,7 +182,7 @@ describe("an experiment over HTTP [REQ-030] [REQ-038]", () => {
       "POST",
       "/api/worlds",
       { name: "홀", blueprint: sampleBlueprint() },
-      "연수",
+      "하늘",
     );
     const w = world.body.world as { id: string; digest: string };
     const other = await json(
@@ -205,18 +205,18 @@ describe("an experiment over HTTP [REQ-030] [REQ-038]", () => {
 describe("live progress as server-sent events [REQ-030]", () => {
   test("a summary first, then runs and tool calls as they happen", async () => {
     const { app: a, platform } = app({ heartbeatSeconds: 0.05 });
-    const world = await platform.worlds.create(person("연수"), {
+    const world = await platform.worlds.create(person("하늘"), {
       name: "홀",
       blueprint: sampleBlueprint(),
     });
-    const { scenario } = await platform.scenarios.create(person("연수"), {
+    const { scenario } = await platform.scenarios.create(person("하늘"), {
       worldId: world.world.id,
       templateId: "cooling-failure",
     });
     await a.listen({ port: 0, host: "127.0.0.1" });
     const base = `http://127.0.0.1:${(a.server.address() as AddressInfo).port}`;
     try {
-      const created = await platform.experiments.create(person("연수"), {
+      const created = await platform.experiments.create(person("하늘"), {
         name: "실시간",
         recipe: {
           worldId: world.world.id,
@@ -278,19 +278,19 @@ describe("who is asking [REQ-033]", () => {
   test("the SSO proxy's header wins and cannot be faked; otherwise the name people typed", () => {
     expect(
       proxyViewer(
-        { ...sealed, "x-forwarded-user": "yeonsu.kim", "x-terrarium-user": "admin" },
+        { ...sealed, "x-forwarded-user": "haneul.kim", "x-terrarium-user": "admin" },
         proxy,
       ),
     ).toEqual({
-      id: "yeonsu.kim",
-      name: "yeonsu.kim",
+      id: "haneul.kim",
+      name: "haneul.kim",
       groups: [],
       roles: ["user"],
       source: "proxy",
     });
     expect(proxyViewer({ ...sealed, "x-terrarium-user": "admin" }, proxy)).toBeUndefined();
-    expect(selfViewer({ "x-terrarium-user": encodeURIComponent(" 김연수 ") }, SELF_ONLY)).toEqual(
-      person("김연수"),
+    expect(selfViewer({ "x-terrarium-user": encodeURIComponent(" 김하늘 ") }, SELF_ONLY)).toEqual(
+      person("김하늘"),
     );
     expect(selfViewer({ "x-terrarium-user": "%E0%A4%A" }, SELF_ONLY)).toMatchObject({
       source: "anonymous",

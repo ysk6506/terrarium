@@ -12,12 +12,12 @@ touches_protected:
 amends_tests:
   - packages/core/src/scenario/actions.test.ts::validating action conditions [REQ-034] > action conditions must name a known action and a real target
 test_change_reason: 시나리오 행동 종류에 콘센트 끄기와 콘센트 켜기가 더해져서 알 수 없는 행동 오류 문구의 가능한 행동 목록이 길어졌다. 시험은 그 문구를 새 목록으로 맞췄을 뿐, 알 수 없는 행동을 거절하고 없는 대상을 거절하는 규칙은 같다.
-decision_hash: df374cfc5a05bb5b
+decision_hash: 44463f92ffd144aa
 ---
 # ADR-0060 랙은 두 규격을 다루고, PDU 콘센트는 하나씩 끌 수 있다
 
 ## 맥락
-요구는 두 가지였다. "PDU, CDU(액체냉각)도 표준 인터페이스 있으면 에뮬레이트하고, 랙은 종류가 엄청 다양한데 지금은 약간 OCP RACK V3를 표준으로 검토 중이야."
+요구는 두 가지였다. "PDU, CDU(액체냉각)도 표준 인터페이스 있으면 에뮬레이트하고, 랙은 종류가 다양하므로 EIA-310과 OCP ORv3 두 규격을 다룬다."
 PDU(Redfish `PowerDistribution`과 `Outlet`)와 CDU(Redfish `CoolingUnit`, BACnet)는 ADR-0057에서 이미 있었다. 빠져 있던 것은 PDU의 **콘센트 제어**와 **ORv3 랙**이다.
 
 ## 결정

@@ -13,12 +13,12 @@ amends_tests:
   - packages/core/src/scenario/scenario.test.ts::scenario blocks [REQ-034] > every condition field exists in the simulated state with the declared type
   - packages/core/src/scenario/scenario.test.ts::scenario palette [REQ-034] > in the sample hall every supported fault can be used, each as its own block
 test_change_reason: REQ-043~046으로 세계에 수랭 랙, CDU, 칠러, 발전기, 부지가 생겼다. 그래서 냉방기 모델이 둘에서 여럿으로 늘고, 엔티티 종류가 17가지에서 21가지로 늘고, 플랜트가 없는 서버룸에서는 쓸 수 없는 장애가 생겼다. 세 테스트는 옛 샘플 서버룸의 개수를 단정하고 있었다. 검증하는 성질(목록은 종류별 id순, 모든 조건 필드가 상태와 맞음, 모든 장애를 쓸 수 있음)은 모든 종류가 있는 캠퍼스 샘플로 옮겨 그대로 확인한다.
-decision_hash: c897cd07188da3bf
+decision_hash: e76ab6cca9d0b3c7
 ---
 # ADR-0035 캠퍼스 세계 모델
 
 ## 맥락
-지금까지 세계는 "서버룸 하나를 닮은 방"을 여러 개 찍은 것이었다. 사용자는 이것이 현실과 너무 다르다고 했다. 현실의 사업장은 부지 위에 건물이
+지금까지 세계는 "서버룸 하나를 닮은 방"을 여러 개 찍은 것이었다. 사용자는 이것이 데이터센터 사업장과 너무 다르다고 했다. 데이터센터 사업장은 부지 위에 건물이
 여러 동 서고, 건물마다 데이터 홀뿐 아니라 전기실·배터리실·통신실·기계실·관제실이 있고, 건물 밖에는 변압기와 발전기와 냉각탑이 있다.
 서버룸은 크기가 제각각이고 컨테인먼트가 수십~수백 개씩 들어가며, 공랭만 쓰는 곳, 공랭과 수랭을 같이 쓰는 곳, 수랭만 쓰는 곳, 액침을 쓰는 곳이 있고,
 장비·설비 제조사도 다양하다. 컨테인먼트 배치도 서버룸마다 다르고 오래된 곳에는 없기도 하다. 사용자는 위에 적은 것은 최소선이고 그 이상의 규모와 디테일로 설계하라고 했다.

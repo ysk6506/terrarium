@@ -113,7 +113,7 @@ const card: EscalationCard = {
   runId: "r1",
   experimentId: "e1",
   experimentName: "냉방 기준선",
-  owner: "yeonsu",
+  owner: "haneul",
   agent: "triage",
   since: "2026-11-06T09:00:00Z",
   request: {

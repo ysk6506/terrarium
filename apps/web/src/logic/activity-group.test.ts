@@ -5,7 +5,7 @@ const worker = (n: number, over: Partial<Worker> = {}): Worker => ({
   runId: `r${n}`,
   who: {
     experimentId: "e-1",
-    owner: "연수",
+    owner: "하늘",
     agent: "운영 (규칙 기반)",
     harness: "내장 기준 에이전트",
     experiment: "IAP 실험용 · 권장 실험",

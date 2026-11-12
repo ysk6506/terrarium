@@ -8,12 +8,13 @@ verification_log:
   - "2026-11-12: ADR-0183: 따라가는 용어집의 새 절(한 가지 말, 조건의 뜻)을 읽고, 이 문서에 옛 말(회·횟수·시드·개체·에스컬레이션)이 없음을 확인했다"
   - "2026-11-12: 따라가는 glossary-data.md에 워크플로 자동화의 말 절이 더해짐(ADR-0189). 이 문서의 말(버전, 브랜치, 병합)과 겹치지 않는다"
   - "2026-11-12: 따라가는 glossary-data.md에 모의 툴과 검증 수준이 더해짐(ADR-0190). 이 문서의 말과 겹치지 않는다(현실 수준 꼬리표와 구별해 적음)"
+  - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
 follows:
   - docs/design-docs/source-management.md
   - docs/design-docs/glossary-data.md
-follows_hash: cdfbbf68685510b4
+follows_hash: 29e7289e3c9d552d
 verified_body: da62c7e8b5aed969
-unchanged_reverifies: 2
+unchanged_reverifies: 3
 ---
 # 파이프라인의 버전과 브랜치 (REQ-115·116 예정, ADR-0166)
 

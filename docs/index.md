@@ -63,7 +63,7 @@ unchanged_reverifies: 4
 - [이끼 — 테라리움 도우미가 문서와 화면으로 답하고 화면을 같이 넘기는 법 (REQ-103)](design-docs/moss.md)
 - [세계 인기·좋아요·칭호와 계급 모델 — 점수 식, 칭호 조건표, 메달·계급 규칙, 한계 (REQ-101)](design-docs/ranking-and-titles.md)
 - [부지 배치 규칙과 동물 반응 — 도로·주차장·차·나무의 순서와 숫자, 고양이·새의 반응과 소리, 한계 (REQ-105)](design-docs/campus-layout.md)
-- [서버 운영 — 설치와 사내 시스템 연결](design-docs/operations.md)
+- [서버 운영 — 설치와 외부 시스템 연결](design-docs/operations.md)
 - [규모 키우기 — 스케일 업과 스케일 아웃](design-docs/scaling.md)
 - [용량 — 한 프로세스가 동시에 몇 개를 들고 있나](design-docs/capacity.md)
 - [설비의 표준 인터페이스 — Redfish, SNMP, BACnet](design-docs/facility-protocols.md)

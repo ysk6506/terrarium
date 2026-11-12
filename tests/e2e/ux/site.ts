@@ -29,7 +29,7 @@ export const record = (t: Tally, ok: boolean): void => {
 
 async function json<T>(base: string, path: string): Promise<T> {
   const response = await fetch(`${base}${path}`, {
-    headers: { "x-terrarium-user": "%EC%97%B0%EC%88%98" },
+    headers: { "x-terrarium-user": "%ED%95%98%EB%8A%98" },
   });
   return (await response.json()) as T;
 }

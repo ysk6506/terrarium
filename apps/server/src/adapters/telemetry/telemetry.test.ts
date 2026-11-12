@@ -27,7 +27,7 @@ const spanRow = (traceId: string, id: string) =>
     StartMs: "1000",
     DurationNs: "2000000000",
     StatusCode: "STATUS_CODE_OK",
-    SpanAttributes: { "gen_ai.request.model": "gauss-2", "gen_ai.usage.input_tokens": "100" },
+    SpanAttributes: { "gen_ai.request.model": "model-a", "gen_ai.usage.input_tokens": "100" },
   });
 
 describe("traces are tied to a run by a key the adapter chooses [REQ-079]", () => {
@@ -100,7 +100,7 @@ const GENERATION = {
   name: "chat",
   startTime: "2026-11-05T09:00:00.000Z",
   endTime: "2026-11-05T09:00:02.500Z",
-  model: "gauss-2",
+  model: "model-a",
   inputUsage: 700,
   outputUsage: 50,
   totalCost: 0.0123,
@@ -145,7 +145,7 @@ describe("Langfuse as a connection's telemetry [REQ-079]", () => {
       llmSeconds: 2.5,
       inputTokens: 700,
       outputTokens: 50,
-      models: ["gauss-2"],
+      models: ["model-a"],
       errors: 1,
     });
     expect(t.spans[0]?.attributes["gen_ai.usage.cost"]).toBe(0.0123);

@@ -108,8 +108,8 @@ const FAB_ROOM_FLOORS = [2, 3, 4];
 /** Floors above the ground of a DSR tower (the 2014 article gives 27). */
 const LAB_FLOORS = 27;
 /**
- * The floors that hold server rooms in each DSR tower, as the owner described them: tower C has two
- * on 3F and tower B one on 5F. Tower A's single room on 4F is a guess.
+ * The floors that hold server rooms in each DSR tower. These are example values, assumed for a plausible
+ * tower; they make no claim about any real building.
  */
 const LAB_ROOM_FLOORS: ReadonlyArray<readonly number[]> = [[4], [5], [3, 3]];
 const LAB_NAMES = "ABC";

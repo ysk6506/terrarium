@@ -121,9 +121,9 @@ describe("a version history reads in words [REQ-053]", () => {
 
   test("versions are changed by the one who connected it, or by anyone when the server's file did", () => {
     expect(canEditVersions({ source: "config" }, undefined)).toBe(true);
-    expect(canEditVersions({ source: "screen", owner: "연수" }, "연수")).toBe(true);
-    expect(canEditVersions({ source: "screen", owner: "연수" }, "민수")).toBe(false);
-    expect(canEditVersions({ source: "screen", owner: "연수" }, undefined)).toBe(false);
-    expect(canEditVersions(undefined, "연수")).toBe(false);
+    expect(canEditVersions({ source: "screen", owner: "하늘" }, "하늘")).toBe(true);
+    expect(canEditVersions({ source: "screen", owner: "하늘" }, "민수")).toBe(false);
+    expect(canEditVersions({ source: "screen", owner: "하늘" }, undefined)).toBe(false);
+    expect(canEditVersions(undefined, "하늘")).toBe(false);
   });
 });

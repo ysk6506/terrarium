@@ -244,7 +244,7 @@ describe("the scoring sheet [REQ-034]", () => {
 const parent: Experiment = {
   id: "e-1",
   name: "기준선",
-  owner: "yeonsu",
+  owner: "haneul",
   createdAt: "2026-10-29T00:00:00Z",
   recipe: {
     worldId: "w-1",

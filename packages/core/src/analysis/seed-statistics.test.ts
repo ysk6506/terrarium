@@ -386,7 +386,7 @@ describe("one run per seed, no shared seed: the numbers are the ones from before
 
   test("a leaderboard whose experiments share no seed pools runs as it did", () => {
     const board = buildLeaderboards([
-      analysed(experimentOf({ id: "y", owner: "yeonsu", runs: [good, partial, wrong] }, snap)),
+      analysed(experimentOf({ id: "y", owner: "haneul", runs: [good, partial, wrong] }, snap)),
       analysed(seededFrom({ id: "j", owner: "jimin", runs: [good, wrong, partial] }, 4)),
       analysed(experimentOf({ id: "d", agentId: "deep", runs: [good, good, partial] }, snap)),
     ]);
@@ -397,7 +397,7 @@ describe("one run per seed, no shared seed: the numbers are the ones from before
 describe("a seed that two experiments share counts once on the leaderboard [REQ-118]", () => {
   const share = (jiminFirstSeed: number) =>
     buildLeaderboards([
-      analysed(experimentOf({ id: "y", owner: "yeonsu", runs: [good, partial, wrong] }, snap)),
+      analysed(experimentOf({ id: "y", owner: "haneul", runs: [good, partial, wrong] }, snap)),
       analysed(
         seededFrom({ id: "j", owner: "jimin", runs: [good, wrong, partial] }, jiminFirstSeed),
       ),
@@ -424,7 +424,7 @@ describe("a seed that two experiments share counts once on the leaderboard [REQ-
 
   test("a configuration with runs on fewer than three different seeds waits unranked, however many runs it has", () => {
     const board = buildLeaderboards([
-      analysed(experimentOf({ id: "y", owner: "yeonsu", runs: [good, good] }, snap)),
+      analysed(experimentOf({ id: "y", owner: "haneul", runs: [good, good] }, snap)),
       analysed(experimentOf({ id: "j", owner: "jimin", runs: [good, good] }, snap)),
       analysed(experimentOf({ id: "k", owner: "kim", runs: [good, good] }, snap)),
       analysed(experimentOf({ id: "d", agentId: "deep", runs: [good, good, good] }, snap)),

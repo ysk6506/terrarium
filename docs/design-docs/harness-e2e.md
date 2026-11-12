@@ -9,13 +9,15 @@ covers:
   - apps/server/src/adapters/connectors/openclaw.ts
   - tests/e2e/harness/*.ts
   - tests/e2e/harness/langgraph-app/*
-covers_hash: e31f5624b570e73c
+covers_hash: c01fd58b1e254205
 verification_log:
-  - "2026-11-05: 처음 씀. 세 하네스를 실제로 설치해 커넥터로 실험을 완주한 기록이다 (REQ-051, ADR-0042)"
   - "2026-11-05: 처음 씀. 커넥터 세 개와 tests/e2e/harness 파일을 실제 실행 결과와 대조했다(버전, 포트, 설정, 점수)"
   - "2026-11-05: opencode.ts의 변경은 inventory(숨긴 도우미·서브에이전트를 이유별로 셈), showHidden, talk 추가뿐이다. 런북이 말하는 연결·실행 절차와 점수는 그대로 맞다"
   - "2026-11-11: REQ-118 시드당 반복: 실행 키(시드·반복), 시드 단위 통계, 순위 조건(시드 3개), 한도 60, 화면 반영을 코드와 대조해 고쳤다. 이 문서의 나머지는 그대로 맞다"
   - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
+  - "2026-11-12: 내부 사실 서술을 요구의 말로 고침 (ADR-0188)"
+verified_body: 4120cfc2eb7dba69
+unchanged_reverifies: 0
 ---
 # 진짜 하네스로 끝까지
 
@@ -89,7 +91,7 @@ pnpm tsx apps/server/src/main.ts          # 설정 파일은 TERRARIUM_CONFIG
 pnpm tsx tests/e2e/harness/drive.ts <연결방식> "<연결 이름>" '<연결 JSON>' [에이전트 id]
 ```
 
-모델 엔드포인트는 사내 OpenAI 호환 서버나 LiteLLM이면 모두 같은 모양이다: **기본 주소(끝이 `/v1`), 키, 모델 이름** 세 가지.
+모델 엔드포인트는 자체 운영하는 OpenAI 호환 서버나 LiteLLM이면 모두 같은 모양이다: **기본 주소(끝이 `/v1`), 키, 모델 이름** 세 가지.
 아래에서 `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`은 그 세 가지를 담은 환경 변수다(이름은 임의).
 함수 호출(툴 호출)을 지원하는 모델이어야 한다. LiteLLM 뒤라면 모델 이름은 LiteLLM에 등록한 이름이다.
 
@@ -104,7 +106,7 @@ export LG_MODEL_BASE_URL=$LLM_BASE_URL LG_MODEL_NAME=$LLM_MODEL LG_MODEL_API_KEY
 
 - `LG_MODEL_BASE_URL`을 비우면 대본 모델로 돈다(이번 실측). 채우면 `graph.py`가 `langchain-openai`의 `ChatOpenAI`를 쓴다.
 - 연결: `drive.ts langgraph "LangGraph" '{"url":"http://<하네스 주소>:2024"}'`. 서버가 키를 요구하면 `apiKey`(또는 `apiKeyEnv`).
-- 사내 배포는 `langgraph build`로 컨테이너를 만들어 같은 그래프를 올리면 된다. 그래프가 `configurable.terrarium_mcp_url`을 읽기만 하면 된다.
+- 배포는 `langgraph build`로 컨테이너를 만들어 같은 그래프를 올리면 된다. 그래프가 `configurable.terrarium_mcp_url`을 읽기만 하면 된다.
 
 ### 2. OpenCode
 
@@ -116,8 +118,8 @@ export LG_MODEL_BASE_URL=$LLM_BASE_URL LG_MODEL_NAME=$LLM_MODEL LG_MODEL_API_KEY
   "provider": {
     "internal": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "사내 모델",
-      "options": { "baseURL": "http://litellm.사내:4000/v1", "apiKey": "<키>" },
+      "name": "내 모델",
+      "options": { "baseURL": "http://litellm.example:4000/v1", "apiKey": "<키>" },
       "models": { "내-모델": { "name": "내 모델", "tool_call": true, "limit": { "context": 128000, "output": 8192 } } }
     }
   },
@@ -159,7 +161,7 @@ npm i openclaw@2026.10.10
     mode: "merge",
     providers: {
       internal: {
-        baseUrl: "http://litellm.사내:4000/v1", apiKey: "${LLM_API_KEY}", api: "openai-completions",
+        baseUrl: "http://litellm.example:4000/v1", apiKey: "${LLM_API_KEY}", api: "openai-completions",
         models: [{ id: "내-모델", name: "내 모델", reasoning: false, input: ["text"], contextWindow: 128000, maxTokens: 8192 }],
       },
     },

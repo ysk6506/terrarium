@@ -3,23 +3,23 @@ import { describe, expect, test } from "vitest";
 import type { ToolGateway } from "./executor";
 import { newTraceparent } from "./executor";
 import {
+  HANEUL,
   recipe,
   ScriptHarness,
   seed,
   settled,
   testPlatform,
   untilStopped,
-  YEONSU,
 } from "./test-support/platform";
 
 async function runWith(harness: ScriptHarness, options: Parameters<typeof testPlatform>[1] = {}) {
   const t = testPlatform([harness], options);
   const { world, scenario } = await seed(t.platform);
-  const e = await t.platform.experiments.create(YEONSU, {
+  const e = await t.platform.experiments.create(HANEUL, {
     name: "실행 하나",
     recipe: recipe(world.id, scenario.id, { harnessId: harness.info.id, agentId: "a", runs: 1 }),
   });
-  const view = await settled(t.platform, YEONSU, e.experiment.id);
+  const view = await settled(t.platform, HANEUL, e.experiment.id);
   const run = await t.store.getRun(view.runs[0]?.id as string);
   return { ...t, view, run: run as NonNullable<typeof run> };
 }
@@ -125,11 +125,11 @@ describe("how a run ends [REQ-030] [REQ-031]", () => {
   test("a run whose harness or world version has gone fails with the reason", async () => {
     const t = testPlatform();
     const { world, scenario } = await seed(t.platform);
-    const e = await t.platform.experiments.create(YEONSU, {
+    const e = await t.platform.experiments.create(HANEUL, {
       name: "x",
       recipe: recipe(world.id, scenario.id, { runs: 1 }),
     });
-    await settled(t.platform, YEONSU, e.experiment.id);
+    await settled(t.platform, HANEUL, e.experiment.id);
     const [first] = await t.store.listRuns(e.experiment.id);
     const gone = { ...e.experiment, recipe: { ...e.experiment.recipe, harnessId: "retired" } };
     const replay = {
@@ -142,7 +142,7 @@ describe("how a run ends [REQ-030] [REQ-031]", () => {
     delete (replay as { finishedAt?: unknown }).finishedAt;
     await t.store.putRun(replay);
     t.platform.dispatcher.enqueue(replay, gone);
-    await settled(t.platform, YEONSU, e.experiment.id);
+    await settled(t.platform, HANEUL, e.experiment.id);
     expect(await t.store.getRun("again")).toMatchObject({
       status: "failed",
       error: "하네스 'retired'가 지금 설정에 없어요",
@@ -150,7 +150,7 @@ describe("how a run ends [REQ-030] [REQ-031]", () => {
     const lost = { ...e.experiment, snapshot: { ...e.experiment.snapshot, worldDigest: "gone" } };
     await t.store.putRun({ ...replay, id: "again2" });
     t.platform.dispatcher.enqueue({ ...replay, id: "again2" }, lost);
-    await settled(t.platform, YEONSU, e.experiment.id);
+    await settled(t.platform, HANEUL, e.experiment.id);
     expect((await t.store.getRun("again2"))?.error).toBe(
       "세션을 열 수 없어요: 실험이 가리키는 세계 버전을 찾을 수 없어요",
     );

@@ -2,7 +2,7 @@
 title: 세계 만들기 입구와 서비스부터 (REQ-094)
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/world/ladder.ts
   - packages/core/src/sources/worldgen/shaped-db.ts
@@ -48,13 +48,15 @@ covers:
   - apps/web/src/ui/pages/quick-harm-panel.tsx
   - apps/server/src/runtime/experiments-quick.ts
   - apps/server/src/runtime/service-cards.ts
-covers_hash: d0f2b723c32136d1
+covers_hash: 4b850a3fc21bce0f
 verification_log:
-  - "2026-11-07: 2026-11-07: REQ-111(ADR-0134): IAP 빼기·내 카드만·③ 숫자 하나·기반 랙·빌더 오른쪽 아래 칩을 코드와 대조해 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: 2026-11-07: REQ-111 covers 정리"
   - "2026-11-07: 2026-11-07: REQ-111 코드 변경 후 다시 대조: 그대로 맞다"
   - "2026-11-11: shape-flow.ts 안 쓰는 변수와 Anchored.tsx 효과 없는 억제 주석만 지움, 문서 내용과 동작은 그대로"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
+  - "2026-11-12: 내부 사실 서술을 요구의 말로 고침 (ADR-0188)"
+verified_body: b635e25ee145d96b
+unchanged_reverifies: 0
 ---
 # 세계 만들기 입구와 서비스부터 (REQ-094, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md), [ADR-0108](adr/0108-world-entry-iap-and-chip-cards.md), [ADR-0109](adr/0109-world-entry-amend-tests.md))
 
@@ -205,7 +207,7 @@ verification_log:
 
 ### 피해 등급
 (REQ-104부터 숫자는 세계 만들기 화면이 아니라 실험의 "바꾸기"에서 고친다. 서비스부터에서는 카드의 기본값이다.)
-시간당 피해는 서비스마다 멈추는 방식마다 따로다(`HarmTier`). IAP는 "컨트롤 플레인 멈춤 · 배포만 막힘 / 에이전트 응답 없음 · 파트원 40명 / 그래프 DB 멈춤 · 전부 멈춤". 코어의 서비스는 지금 `harmPerHourKrw` 하나를 읽으므로 가장 큰 등급을 거기에 넣고 전부를 `harmTiers`에 남겼다. 복구 우선 채점(ADR-0091)이 등급별 값과 "쿠버네티스가 알아서 하는 복구"를 구분하는 일은 **하지 않았다**(2e 이후).
+시간당 피해는 서비스마다 멈추는 방식마다 따로다(`HarmTier`). IAP는 "컨트롤 플레인 멈춤 · 배포만 막힘 / 에이전트 응답 없음 · 사용자 40명 / 그래프 DB 멈춤 · 전부 멈춤". 코어의 서비스는 지금 `harmPerHourKrw` 하나를 읽으므로 가장 큰 등급을 거기에 넣고 전부를 `harmTiers`에 남겼다. 복구 우선 채점(ADR-0091)이 등급별 값과 "쿠버네티스가 알아서 하는 복구"를 구분하는 일은 **하지 않았다**(2e 이후).
 
 ## 템플릿(저장해 두기)
 - 서버의 세계 기록의 출처 `template`. 서비스부터의 구성(`ShapeSpec`)이 `provenance.shape`에 들어 있고, 지은 세계도 함께 저장된다.

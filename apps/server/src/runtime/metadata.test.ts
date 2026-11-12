@@ -2,12 +2,12 @@ import { MetadataBody } from "@terrarium/core/contract";
 import { describe, expect, test } from "vitest";
 import { FakeFetch, json } from "../adapters/test-support/fake-fetch";
 import {
+  HANEUL,
   recipe,
   ScriptHarness,
   seed,
   settled,
   testPlatform,
-  YEONSU,
 } from "./test-support/platform";
 
 const AGENTS = [
@@ -25,7 +25,7 @@ const AGENTS = [
 async function setup() {
   const fake = new FakeFetch().on("GET", /^\/agents$/, () => json({ agents: AGENTS }));
   const built = testPlatform([], { adapters: { connect: { env: {}, fetch: fake.fetch } } });
-  const connection = await built.platform.connections.create(YEONSU, {
+  const connection = await built.platform.connections.create(HANEUL, {
     connector: "http",
     name: "회사 하네스",
     config: { url: "https://harness.test" },
@@ -38,7 +38,7 @@ async function setup() {
 describe("metadata that tells results apart: kept, shown and searched [REQ-052]", () => {
   test("an experiment keeps what its maker attached and who ran it, as they were when it was made", async () => {
     const { platform, connection, world, scenario } = await setup();
-    const made = await platform.experiments.create(YEONSU, {
+    const made = await platform.experiments.create(HANEUL, {
       name: "메타데이터",
       recipe: recipe(world.id, scenario.id, { harnessId: connection.id, agentId: "triage" }),
       metadata: { prompt: "v2" },
@@ -60,12 +60,12 @@ describe("metadata that tells results apart: kept, shown and searched [REQ-052]"
         facts: { graph: "triage" },
       },
     });
-    await platform.connections.remove(YEONSU, connection.id).catch(() => undefined);
+    await platform.connections.remove(HANEUL, connection.id).catch(() => undefined);
   });
 
   test("an agent with nothing to say about itself is still named, and a harness of the config file has no metadata", async () => {
     const { platform, world, scenario } = await setup();
-    const made = await platform.experiments.create(YEONSU, {
+    const made = await platform.experiments.create(HANEUL, {
       name: "내장",
       recipe: recipe(world.id, scenario.id),
     });
@@ -81,17 +81,17 @@ describe("metadata that tells results apart: kept, shown and searched [REQ-052]"
 
   test("a fork keeps its parent's metadata, or replaces it; who runs it is looked up again only when that changed", async () => {
     const { platform, connection, world, scenario } = await setup();
-    const parent = await platform.experiments.create(YEONSU, {
+    const parent = await platform.experiments.create(HANEUL, {
       name: "원본",
       recipe: recipe(world.id, scenario.id, { harnessId: connection.id, agentId: "triage" }),
       metadata: { prompt: "v1", team: "x" },
     });
-    const sameWho = await platform.experiments.fork(YEONSU, parent.experiment.id, {
+    const sameWho = await platform.experiments.fork(HANEUL, parent.experiment.id, {
       change: { seeds: [7, 8] },
     });
     expect(sameWho.experiment.metadata).toEqual({ prompt: "v1", team: "x" });
     expect(sameWho.experiment.subject).toEqual(parent.experiment.subject);
-    const replaced = await platform.experiments.fork(YEONSU, parent.experiment.id, {
+    const replaced = await platform.experiments.fork(HANEUL, parent.experiment.id, {
       change: { agentId: "fixer" },
       metadata: { prompt: "v2" },
     });
@@ -103,7 +103,7 @@ describe("metadata that tells results apart: kept, shown and searched [REQ-052]"
   test("experiments are found by their own metadata or by the connection's, with a value or without", async () => {
     const { platform, connection, world, scenario } = await setup();
     const plain = (name: string, extra: object = {}) =>
-      platform.experiments.create(YEONSU, {
+      platform.experiments.create(HANEUL, {
         name,
         recipe: recipe(world.id, scenario.id, { harnessId: connection.id, agentId: "triage" }),
         ...extra,
@@ -139,11 +139,11 @@ describe("metadata that tells results apart: kept, shown and searched [REQ-052]"
     }));
     const { platform, store } = testPlatform([modeled]);
     const { world, scenario } = await seed(platform);
-    const made = await platform.experiments.create(YEONSU, {
+    const made = await platform.experiments.create(HANEUL, {
       name: "모델 기록",
       recipe: recipe(world.id, scenario.id, { harnessId: "modeled", agentId: "a" }),
     });
-    await settled(platform, YEONSU, made.experiment.id);
+    await settled(platform, HANEUL, made.experiment.id);
     const [run] = await store.listRuns(made.experiment.id);
     expect(run?.harness).toMatchObject({ model: "claude-x", inputTokens: 5, outputTokens: 2 });
   });

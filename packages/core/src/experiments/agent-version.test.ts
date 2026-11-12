@@ -81,13 +81,13 @@ describe("what an agent says about itself, as one flat record [REQ-053]", () => 
 
 describe("a version is written only when the agent differs from the newest [REQ-053]", () => {
   test("the first look writes version 1; the same agent again writes nothing", () => {
-    const first = observe(undefined, KEY, snapshotOf(subject()), DAY1, "yeonsu");
+    const first = observe(undefined, KEY, snapshotOf(subject()), DAY1, "haneul");
     expect(first.created).toBe(true);
     expect(first.version).toMatchObject({
       n: 1,
       at: DAY1,
       source: "auto",
-      by: "yeonsu",
+      by: "haneul",
       attributes: {},
     });
     expect(first.history).toMatchObject({ ...KEY, next: 2 });
@@ -99,7 +99,7 @@ describe("a version is written only when the agent differs from the newest [REQ-
   });
 
   test("a changed agent gets the next number, the date and what changed", () => {
-    const v1 = observe(undefined, KEY, snapshotOf(subject({ model: "m-1" })), DAY1, "yeonsu");
+    const v1 = observe(undefined, KEY, snapshotOf(subject({ model: "m-1" })), DAY1, "haneul");
     const v2 = observe(v1.history, KEY, snapshotOf(subject({ model: "m-2" })), DAY2, "jimin");
     expect(v2.created).toBe(true);
     expect(v2.version).toMatchObject({ n: 2, at: DAY2, by: "jimin" });
@@ -126,7 +126,7 @@ describe("a version is written only when the agent differs from the newest [REQ-
 
 describe("people add, change and delete versions [REQ-053]", () => {
   const start = (): AgentHistory =>
-    observe(undefined, KEY, snapshotOf(subject({ model: "m-1" })), DAY1, "yeonsu").history;
+    observe(undefined, KEY, snapshotOf(subject({ model: "m-1" })), DAY1, "haneul").history;
 
   test("a version a person adds copies the newest snapshot and says what they know; the attributes show up as changes", () => {
     const added = addManual(start(), KEY, {}, DAY2, "jimin", {
@@ -158,11 +158,11 @@ describe("people add, change and delete versions [REQ-053]", () => {
 
   test("the first version can be a person's, and its attributes are the person's alone", () => {
     const snap = snapshotOf(subject());
-    const first = addManual(undefined, KEY, snap, DAY1, "yeonsu", {});
+    const first = addManual(undefined, KEY, snap, DAY1, "haneul", {});
     expect(first.version).toMatchObject({ n: 1, snapshot: snap, attributes: {} });
     expect(first.version.label).toBeUndefined();
-    const second = addManual(first.history, KEY, snap, DAY2, "yeonsu", { attributes: { a: "1" } });
-    const third = addManual(second.history, KEY, snap, DAY3, "yeonsu", {});
+    const second = addManual(first.history, KEY, snap, DAY2, "haneul", { attributes: { a: "1" } });
+    const third = addManual(second.history, KEY, snap, DAY3, "haneul", {});
     expect(third.version.attributes).toEqual({ a: "1" });
   });
 

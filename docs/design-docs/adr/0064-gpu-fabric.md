@@ -7,12 +7,12 @@ enforced_by:
   - tests/spec/gpu-fabric.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
-decision_hash: 6b914cea836c0e16
+decision_hash: 6f5298ed58925788
 ---
 # ADR-0064 GPU 백엔드는 서버마다 NIC 여럿을 rail로 꽂는 세 번째 패브릭이고, rail 하나를 잃으면 느려질 뿐 끊기지 않는다
 
 ## 맥락
-연수 님이 말했다. 사업장 네트워크는 레거시, 클라우드, GPU 세 가지다. 앞의 둘은 ADR-0062가 다뤘다.
+제품 책임자의 요구: 사업장 네트워크는 레거시, 클라우드, GPU 세 가지 구조를 다룬다. 앞의 둘은 ADR-0062가 다뤘다.
 GPU 클러스터의 백엔드 망은 모양이 다르다. 서버 하나에 NIC가 GPU마다 하나씩 8개 있고, 모든 서버의 1번 NIC는 1번 leaf, 2번 NIC는 2번 leaf에 꽂힌다(rail-optimized). leaf는 스파인으로 올라간다. 그래서 고장도 다르게 보인다. 케이블 하나가 끊기거나 leaf 하나가 죽어도 서버는 살아 있고 7개 rail로 통신한다. 그런데 집합 통신(all-reduce)은 가장 느린 NIC에 맞추어 도니까 학습 전체가 느려진다. 알람이 "서버가 끊겼다"면 거짓이고, 아무 알람도 없으면 놓친다.
 
 ## 결정
@@ -22,7 +22,7 @@ GPU 클러스터의 백엔드 망은 모양이 다르다. 서버 하나에 NIC�
 4. **rail을 잃어도 `host_unreachable`을 올리지 않는다.** 그 알람은 서버가 끊겼다는 뜻이다. rail NIC는 설정 오류로 끊겨도 `gpu_rail_degraded`가 말한다.
 5. **알람 `gpu_rail_degraded.<끊긴 rail 번호들>`.** 서버가 켜져 있고 rail이 하나라도 위쪽 스위치에서 `ping`으로 닿지 않으면, 어떤 이유든(케이블, leaf 전원, BGP 이웃 shutdown, VLAN·SVI 설정) 서버당 하나가 오른다. 메시지는 몇 번 rail이 8개 중 몇 개인지 말한다. 전부 끊기면 critical, 아니면 warning이다. 알람은 처음 올랐을 때의 메시지를 간직하므로 끊긴 rail을 코드에 넣었다(`gpu_rail_degraded.2-7`). rail이 더 끊기면 새 코드의 알람으로 바뀐다. 스파인 하나가 사라지면 다른 스파인으로 닿으므로 알람이 없다(스파인을 모두 보는 `ping`).
 6. **카탈로그에 400G 64포트 leaf(`al-rail-64x400g`)와 스파인(`al-rail-spine-64x400g`)을 더한다.** 값은 180백만 원(약 13.4만 달러)이다. 판매가를 찾지 못한 추정이다.
-7. **InfiniBand는 하지 않는다.** 연수 님의 네트워크 장비는 시스코와 아리스타이고, 두 OS는 이미 있다. InfiniBand는 NVIDIA 스위치 OS(MLNX-OS, UFM)를 따로 흉내 내야 한다.
+7. **InfiniBand는 하지 않는다.** 스위치 OS 두 종(EOS, NX-OS)이 이미 있다. InfiniBand는 NVIDIA 스위치 OS(MLNX-OS, UFM)를 따로 흉내 내야 한다.
 8. **요구사항 REQ-067**을 더하고, REQ-065의 "GPU 네트워크는 다음 결정에서" 문장을 "REQ-067이 다룬다"로 바꾼다.
 
 ## 버린 대안

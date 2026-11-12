@@ -49,7 +49,7 @@
 | [ADR-0041 실시간 활동 — 어떤 에이전트가 어느 장비에서 무엇을 하는지 세계에 보인다](../design-docs/adr/0041-live-activity.md) | 유효 |  |
 | [ADR-0042 하네스·에이전트 연결은 커넥터 플러그인과 연결 레지스트리로 한다](../design-docs/adr/0042-connectors.md) | 유효 |  |
 | [ADR-0043 연결의 비밀 값은 봉인해 보관하고, 안 쓰는 연결은 알린 뒤 지우며, 에이전트는 버전으로 관리한다](../design-docs/adr/0043-connection-secrets-retention-versions.md) | 유효 |  |
-| [ADR-0044 사용자 식별은 하나의 자리(Authenticator)로 꽂는다 — 지금은 프록시 헤더와 스스로 밝힌 이름, 나중에 사내 SSO](../design-docs/adr/0044-identity-slot.md) | 유효 | 일부 고침: [0174](../design-docs/adr/0174-permissions-proxy-identity-three-scopes-audit.md) (신원과 권한을 넓힘) |
+| [ADR-0044 사용자 식별은 하나의 자리(Authenticator)로 꽂는다 — 지금은 프록시 헤더와 스스로 밝힌 이름, 나중에 SSO](../design-docs/adr/0044-identity-slot.md) | 유효 | 일부 고침: [0174](../design-docs/adr/0174-permissions-proxy-identity-three-scopes-audit.md) (신원과 권한을 넓힘) |
 | [ADR-0045 캠퍼스 꾸미기 — 도로 격자 블록에 용도별 시설을 채운다](../design-docs/adr/0045-campus-decoration.md) | 유효 |  |
 | [ADR-0046 사업장의 건물 자리는 모두 정해져 있고, 서버룸은 팹·연구동·HPC센터의 현실 구조를 따른다](../design-docs/adr/0046-site-places-and-server-rooms.md) | 유효 |  |
 | [ADR-0047 건물은 지도가 부르는 이름과 자리를 따르고, 월드가 만들지 않는 건물도 그 자리에 선다](../design-docs/adr/0047-site-names-and-places.md) | 유효 |  |
@@ -68,7 +68,7 @@
 | [ADR-0060 랙은 두 규격(EIA-310, OCP ORv3)을 다루고, PDU 콘센트는 하나씩 끌 수 있다](../design-docs/adr/0060-rack-standards-and-outlets.md) | 유효 |  |
 | [ADR-0061 스위치는 VLAN·MAC 표·ARP·라우팅을 갖고, 설정이 실제로 길을 바꾼다](../design-docs/adr/0061-switch-l2-l3.md) | 유효 |  |
 | [ADR-0062 네트워크는 레거시와 클라우드 두 가지로 짓고, 클라우드는 케이블마다 BGP 세션이 선다](../design-docs/adr/0062-network-fabrics.md) | 유효 |  |
-| [ADR-0063 GPU는 칩 이름으로 다루고, 베라 루빈은 도입 예정으로만 둔다](../design-docs/adr/0063-gpu-catalog.md) | 유효 |  |
+| [ADR-0063 GPU는 칩 이름으로 다루고, 아직 출시되지 않은 칩은 예정으로만 둔다](../design-docs/adr/0063-gpu-catalog.md) | 유효 |  |
 | [ADR-0064 GPU 백엔드는 서버마다 NIC 여럿을 rail로 꽂는 세 번째 패브릭이고, rail 하나를 잃으면 느려질 뿐 끊기지 않는다](../design-docs/adr/0064-gpu-fabric.md) | 유효 |  |
 | [ADR-0065 설정 변경은 시나리오 블록이고, 블록은 외워 쓰지 않고 장비가 가진 것에서 고른다](../design-docs/adr/0065-config-scenarios.md) | 유효 |  |
 | [ADR-0066 제어 가능한 것은 한 장의 표로 말하고, 표는 월드와 툴에서 거꾸로 검증한다](../design-docs/adr/0066-controllability-matrix.md) | 유효 |  |
@@ -188,5 +188,6 @@
 | [ADR-0185 함께 나가는 제3자 구성요소는 허용 목록 안의 라이선스여야 하고, 고지 파일은 하네스가 만든다](../design-docs/adr/0185-third-party-notices-and-license-check.md) | 유효 |  |
 | [ADR-0186 요구사항 문서는 제품 설계 한 장을 따라가지 않는다 — 따라가기는 목표에서 설계로 한 방향이다](../design-docs/adr/0186-requirements-do-not-follow-the-design-page.md) | 유효 |  |
 | [ADR-0187 공개 저장소에는 공개된 자료에서 온 사실만 둔다 — 내부에서 들은 사실은 요구로 바꿔 적고, 이미 들어간 것은 봉인된 기록에서도 걷어낸다](../design-docs/adr/0187-no-internal-facts-in-the-public-repository.md) | 유효 |  |
+| [ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기](../design-docs/adr/0188-second-redaction-under-adr-0187.md) | 유효 |  |
 | [ADR-0189 제품 목표에 "통과한 것만 운영에 나간다"를 더한다 — 워크플로는 테라리움이 정하고, 실제 툴은 에이전트가 게이트웨이를 거쳐 부른다](../design-docs/adr/0189-verified-workflows-go-to-operation.md) | 유효 | 일부 고침: [0190](../design-docs/adr/0190-mock-tools-stand-in-for-real-tools-in-verification.md) (실험 세계에서는 액션이 실험의 툴에 매핑된다) |
 | [ADR-0190 검증에서는 실제 툴 자리에 이름과 입력이 같은 모의 툴이 선다 — 에이전트는 건마다 받은 주소에 붙고, 툴마다 검증 수준을 밝힌다](../design-docs/adr/0190-mock-tools-stand-in-for-real-tools-in-verification.md) | 유효 |  |

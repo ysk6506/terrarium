@@ -53,12 +53,12 @@ describe("the API client speaks the contract [REQ-030]", () => {
     const f = fakeFetch((url) =>
       url.includes("/report") ? new Response("<html>") : Response.json({ ok: true }),
     );
-    const api = createApi({ baseUrl: "https://t/", fetch: f.fetch, user: () => "김연수" });
+    const api = createApi({ baseUrl: "https://t/", fetch: f.fetch, user: () => "김하늘" });
     await api.call("getExperiment", { params: { id: "e 1" } });
     expect(f.seen[0]?.url).toBe("https://t/api/experiments/e%201");
     expect(f.seen[0]?.init.method).toBe("GET");
     expect((f.seen[0]?.init.headers as Record<string, string>)["x-terrarium-user"]).toBe(
-      encodeURIComponent("김연수"),
+      encodeURIComponent("김하늘"),
     );
     await api.call("cancelExperiment", { params: { id: "e1" } });
     expect(f.seen[1]?.init).toMatchObject({ method: "POST" });
@@ -236,9 +236,9 @@ describe("the name people give [REQ-033]", () => {
     const kv = new MemoryKV();
     const id = new Identity(kv);
     expect(id.name).toBeUndefined();
-    id.set("  김연수 ");
-    expect(id.name).toBe("김연수");
-    expect(new Identity(kv).name).toBe("김연수");
+    id.set("  김하늘 ");
+    expect(id.name).toBe("김하늘");
+    expect(new Identity(kv).name).toBe("김하늘");
     id.forget();
     expect(new Identity(kv).name).toBeUndefined();
     expect(() => id.set(" ")).toThrow("이름을 적어 주세요");

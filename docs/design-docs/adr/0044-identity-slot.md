@@ -1,5 +1,5 @@
 ---
-title: ADR-0044 사용자 식별은 하나의 자리(Authenticator)로 꽂는다 — 지금은 프록시 헤더와 스스로 밝힌 이름, 나중에 사내 SSO
+title: ADR-0044 사용자 식별은 하나의 자리(Authenticator)로 꽂는다 — 지금은 프록시 헤더와 스스로 밝힌 이름, 나중에 SSO
 kind: decision
 status: active
 last_verified: 2026-10-30
@@ -8,7 +8,7 @@ enforced_by:
   - apps/server/src/http/app.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
-decision_hash: c018fd7bd1b4f378
+decision_hash: c2a81d6c4e7ba545
 amended_by:
   - adr: "0174"
     what: 신원과 권한을 넓힘
@@ -16,7 +16,7 @@ amended_by:
 # ADR-0044 식별 자리
 
 ## 맥락
-ADR-0028은 사내 SSO 프록시의 헤더를 믿거나, 프록시가 없으면 스스로 밝힌 이름을 쓰게 했다. 사용자는 나중에 사내 SSO를 직접 연동해야 할 수도 있으니 **자리를 미리 만들어 두라**고 했다. 지금 실제 SSO를 만들 이유는 없다. 사내 SSO가 OIDC인지 SAML인지, 토큰을 어디서 받는지도 모른다.
+ADR-0028은 SSO 프록시의 헤더를 믿거나, 프록시가 없으면 스스로 밝힌 이름을 쓰게 했다. 사용자는 나중에 SSO를 직접 연동해야 할 수도 있으니 **자리를 미리 만들어 두라**고 했다. 지금 실제 SSO를 만들 이유는 없다. SSO가 OIDC인지 SAML인지, 토큰을 어디서 받는지는 배포마다 다르다.
 
 ## 결정
 1. **모든 경로는 `Authenticator` 하나에게 "누구냐"고 묻는다.** `authenticate(req)`는 `Viewer`를 돌려주거나(비동기 가능), 낯선 사람을 받지 않는 방식이면 `UnauthenticatedError`(401), 인증 제공자에 닿지 못하면 `UnavailableError`(503)를 던진다. 방식이 로그인 경로(콜백·로그아웃)를 가지면 `mount(app)`으로 서버에 한 번 더한다.

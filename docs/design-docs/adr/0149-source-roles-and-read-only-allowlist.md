@@ -6,7 +6,7 @@ last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다. 단계 B에서 커넥터를 만들 때 enforced_by를 읽기 전용 시험(허용 목록 밖 요청이 만들어지지 않는다)으로 바꾼다.
-decision_hash: 4fa969a0ceb8c1fb
+decision_hash: e3d79d60bcb98cfc
 amended_by:
   - adr: "0152"
     what: SPL은 정해 둔 검색만
@@ -14,7 +14,7 @@ amended_by:
 # ADR-0149 소스의 역할은 구성·사건·실측 셋이고, 읽기 전용은 허용 목록과 계정으로 지킨다
 
 ## 맥락
-제품 책임자(연수 님)가 소스로 Zabbix(5.0 이상), Splunk(SPL), Cisco NSO, vROps, CloudVision을 받을 수 있는지 물었다(2026-11-11). 하나씩 따져 보니 ADR-0144에 빈 곳이 둘 있었다.
+제품 책임자의 요구(2026-11-11): Zabbix(5.0 이상), Splunk(SPL), Cisco NSO, vROps, CloudVision 같은 널리 쓰이는 모니터링·구성 소스에서 읽기 전용으로 가져올 수 있어야 한다. 하나씩 따져 보니 ADR-0144에 빈 곳이 둘 있었다.
 
 1. ADR-0144의 시험은 "커넥터가 쓰는 요청을 만들 수 없다"라고만 적었다. 그런데 이 소스들은 읽을 때도 POST를 쓴다. Zabbix는 JSON-RPC이고, Splunk의 검색과 CloudVision의 걸러서 조회도 POST다. HTTP 동사로는 읽기와 쓰기를 가를 수 없다. Splunk의 SPL에는 쓰는 명령이 있고, NSO는 실제 장비의 설정을 바꾸는 도구다. 제품 목표는 "현실 장비를 건드리지 않고"다(ADR-0138).
 2. 소스가 주는 것이 다르다. vROps·CloudVision·NSO는 무엇이 있고 어떻게 이어졌는지를 주고, Splunk는 사건을 준다. 사건만 주는 소스를 이어도 세계는 만들어지지 않는데, 그 구분이 설계에 없었다.

@@ -7,7 +7,7 @@ import { buildApp } from "./app";
 const WHO = {
   experimentId: "e-1",
   experiment: "냉방 점검",
-  owner: "연수",
+  owner: "하늘",
   harness: "하네스",
   agent: "에이전트",
 };
@@ -16,7 +16,7 @@ describe("the live view of a world as server-sent events [REQ-050]", () => {
   test("runs already working come first, then what they do as it happens; a world that is not there is a 404", async () => {
     const t = testPlatform();
     const app = buildApp({ platform: t.platform, heartbeatSeconds: 0.05 });
-    const world = await t.platform.worlds.create(person("연수"), {
+    const world = await t.platform.worlds.create(person("하늘"), {
       name: "홀",
       blueprint: sampleBlueprint(),
     });

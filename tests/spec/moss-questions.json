@@ -4272,6 +4272,48 @@
       "kind": "auto"
     },
     {
+      "q": "ADR-0175 UX 검사를 더 잘게 나눠 돌리고, 점수 파일은 변경마다 커밋하지 않는다의 맥락이 뭐예요?",
+      "expect": [
+        "docs/design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md"
+      ],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0175 UX 검사를 더 잘게 나눠 돌리고, 점수 파일은 변경마다 커밋하지 않는다의 결정이 뭐예요?",
+      "expect": [
+        "docs/design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md"
+      ],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0175 UX 검사를 더 잘게 나눠 돌리고, 점수 파일은 변경마다 커밋하지 않는다의 결정이 뭐예요?",
+      "expect": [
+        "docs/design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md"
+      ],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0175 UX 검사를 더 잘게 나눠 돌리고, 점수 파일은 변경마다 커밋하지 않는다의 이유가 뭐예요?",
+      "expect": [
+        "docs/design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md"
+      ],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0175 UX 검사를 더 잘게 나눠 돌리고, 점수 파일은 변경마다 커밋하지 않는다의 버린 길이 뭐예요?",
+      "expect": [
+        "docs/design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md"
+      ],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0175 UX 검사를 더 잘게 나눠 돌리고, 점수 파일은 변경마다 커밋하지 않는다의 결과가 뭐예요?",
+      "expect": [
+        "docs/design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md"
+      ],
+      "kind": "auto"
+    },
+    {
       "q": "ADR-0177 제품 목표의 \"현실을 닮은 세계\"에 현실의 데이터로 지은 세계를 적고, 맨 위 문서를 목표에 맞춘다의 맥락이 뭐예요?",
       "expect": ["docs/design-docs/adr/0177-goal-text-reality-worlds-and-top-level-docs.md"],
       "kind": "auto"
@@ -4522,6 +4564,66 @@
       "kind": "auto"
     },
     {
+      "q": "ADR-0185 함께 나가는 제3자 구성요소는 허용 목록 안의 라이선스여야 하고, 고지 파일은 하네스가 만든다의 맥락이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0185-third-party-notices-and-license-check.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0185 함께 나가는 제3자 구성요소는 허용 목록 안의 라이선스여야 하고, 고지 파일은 하네스가 만든다의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0185-third-party-notices-and-license-check.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0185 함께 나가는 제3자 구성요소는 허용 목록 안의 라이선스여야 하고, 고지 파일은 하네스가 만든다의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0185-third-party-notices-and-license-check.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0185 함께 나가는 제3자 구성요소는 허용 목록 안의 라이선스여야 하고, 고지 파일은 하네스가 만든다의 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0185-third-party-notices-and-license-check.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0185 함께 나가는 제3자 구성요소는 허용 목록 안의 라이선스여야 하고, 고지 파일은 하네스가 만든다의 버린 길이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0185-third-party-notices-and-license-check.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0185 함께 나가는 제3자 구성요소는 허용 목록 안의 라이선스여야 하고, 고지 파일은 하네스가 만든다의 한계가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0185-third-party-notices-and-license-check.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0186 요구사항 문서는 제품 설계 한 장을 따라가지 않는다 — 따라가기는 목표에서 설계로 한 방향이다의 맥락이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0186-requirements-do-not-follow-the-design-page.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0186 요구사항 문서는 제품 설계 한 장을 따라가지 않는다 — 따라가기는 목표에서 설계로 한 방향이다의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0186-requirements-do-not-follow-the-design-page.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0186 요구사항 문서는 제품 설계 한 장을 따라가지 않는다 — 따라가기는 목표에서 설계로 한 방향이다의 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0186-requirements-do-not-follow-the-design-page.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0186 요구사항 문서는 제품 설계 한 장을 따라가지 않는다 — 따라가기는 목표에서 설계로 한 방향이다의 버린 길이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0186-requirements-do-not-follow-the-design-page.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0186 요구사항 문서는 제품 설계 한 장을 따라가지 않는다 — 따라가기는 목표에서 설계로 한 방향이다의 남은 일이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0186-requirements-do-not-follow-the-design-page.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0186 요구사항 문서는 제품 설계 한 장을 따라가지 않는다 — 따라가기는 목표에서 설계로 한 방향이다의 결과가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0186-requirements-do-not-follow-the-design-page.md"],
+      "kind": "auto"
+    },
+    {
       "q": "ADR-0187 공개 저장소에는 공개된 자료에서 온 사실만 둔다 — 내부에서 들은 사실은 요구로 바꿔 적고, 이미 들어간 것은 봉인된 기록에서도 걷어낸다의 맥락이 뭐예요?",
       "expect": ["docs/design-docs/adr/0187-no-internal-facts-in-the-public-repository.md"],
       "kind": "auto"
@@ -4549,6 +4651,101 @@
     {
       "q": "ADR-0187 공개 저장소에는 공개된 자료에서 온 사실만 둔다 — 내부에서 들은 사실은 요구로 바꿔 적고, 이미 들어간 것은 봉인된 기록에서도 걷어낸다의 결과가 뭐예요?",
       "expect": ["docs/design-docs/adr/0187-no-internal-facts-in-the-public-repository.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기의 맥락이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0188-second-redaction-under-adr-0187.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0188-second-redaction-under-adr-0187.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0188-second-redaction-under-adr-0187.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기의 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0188-second-redaction-under-adr-0187.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기의 버린 길이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0188-second-redaction-under-adr-0187.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기의 남은 일이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0188-second-redaction-under-adr-0187.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기의 결과가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0188-second-redaction-under-adr-0187.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0189 제품 목표에 \"통과한 것만 운영에 나간다\"를 더한다 — 워크플로는 테라리움이 정하고, 실제 툴은 에이전트가 게이트웨이를 거쳐 부른다의 맥락이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0189-verified-workflows-go-to-operation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0189 제품 목표에 \"통과한 것만 운영에 나간다\"를 더한다 — 워크플로는 테라리움이 정하고, 실제 툴은 에이전트가 게이트웨이를 거쳐 부른다의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0189-verified-workflows-go-to-operation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0189 제품 목표에 \"통과한 것만 운영에 나간다\"를 더한다 — 워크플로는 테라리움이 정하고, 실제 툴은 에이전트가 게이트웨이를 거쳐 부른다의 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0189-verified-workflows-go-to-operation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0189 제품 목표에 \"통과한 것만 운영에 나간다\"를 더한다 — 워크플로는 테라리움이 정하고, 실제 툴은 에이전트가 게이트웨이를 거쳐 부른다의 버린 길이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0189-verified-workflows-go-to-operation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0189 제품 목표에 \"통과한 것만 운영에 나간다\"를 더한다 — 워크플로는 테라리움이 정하고, 실제 툴은 에이전트가 게이트웨이를 거쳐 부른다의 남은 일이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0189-verified-workflows-go-to-operation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0189 제품 목표에 \"통과한 것만 운영에 나간다\"를 더한다 — 워크플로는 테라리움이 정하고, 실제 툴은 에이전트가 게이트웨이를 거쳐 부른다의 결과가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0189-verified-workflows-go-to-operation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0190 검증에서는 실제 툴 자리에 이름과 입력이 같은 모의 툴이 선다 — 에이전트는 건마다 받은 주소에 붙고, 툴마다 검증 수준을 밝힌다의 맥락이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0190-mock-tools-stand-in-for-real-tools-in-verification.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0190 검증에서는 실제 툴 자리에 이름과 입력이 같은 모의 툴이 선다 — 에이전트는 건마다 받은 주소에 붙고, 툴마다 검증 수준을 밝힌다의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0190-mock-tools-stand-in-for-real-tools-in-verification.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0190 검증에서는 실제 툴 자리에 이름과 입력이 같은 모의 툴이 선다 — 에이전트는 건마다 받은 주소에 붙고, 툴마다 검증 수준을 밝힌다의 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0190-mock-tools-stand-in-for-real-tools-in-verification.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0190 검증에서는 실제 툴 자리에 이름과 입력이 같은 모의 툴이 선다 — 에이전트는 건마다 받은 주소에 붙고, 툴마다 검증 수준을 밝힌다의 버린 길이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0190-mock-tools-stand-in-for-real-tools-in-verification.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0190 검증에서는 실제 툴 자리에 이름과 입력이 같은 모의 툴이 선다 — 에이전트는 건마다 받은 주소에 붙고, 툴마다 검증 수준을 밝힌다의 남은 일이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0190-mock-tools-stand-in-for-real-tools-in-verification.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0190 검증에서는 실제 툴 자리에 이름과 입력이 같은 모의 툴이 선다 — 에이전트는 건마다 받은 주소에 붙고, 툴마다 검증 수준을 밝힌다의 결과가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0190-mock-tools-stand-in-for-real-tools-in-verification.md"],
       "kind": "auto"
     },
     {
@@ -5377,6 +5574,11 @@
       "kind": "auto"
     },
     {
+      "q": "용어집: 데이터 파이프라인과 온톨로지 매니저의 워크플로 자동화에서 정한 말이 뭐예요?",
+      "expect": ["docs/design-docs/glossary-data.md"],
+      "kind": "auto"
+    },
+    {
       "q": "용어집: 층별 말이 뭐예요?",
       "expect": ["docs/design-docs/glossary-layers.md"],
       "kind": "auto"
@@ -6197,7 +6399,7 @@
       "kind": "auto"
     },
     {
-      "q": "새 실험 3 / 4 · 에이전트가 쓸 도구의 4. 프로세스 비교 — 회사 말 그대로: 단계 · 사람 · 시간이 뭐예요?",
+      "q": "새 실험 3 / 4 · 에이전트가 쓸 도구의 4. 프로세스 비교 — 단계 · 사람 · 시간이 뭐예요?",
       "expect": ["docs/design-docs/mockups/ux-round3-mockup.html"],
       "kind": "auto"
     },
@@ -6592,7 +6794,7 @@
       "kind": "auto"
     },
     {
-      "q": "서버 운영의 사내 시스템을 붙일 때 확인할 것이 뭐예요?",
+      "q": "서버 운영의 외부 시스템을 붙일 때 확인할 것이 뭐예요?",
       "expect": ["docs/design-docs/operations.md"],
       "kind": "auto"
     },
@@ -8364,6 +8566,146 @@
     {
       "q": "웹 화면의 코드 구조가 뭐예요?",
       "expect": ["docs/design-docs/web-ui.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화가 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 0. 한 문장이 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 1. 왜 테라리움이 하나가 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 2. 큰 그림: 정하는 곳, 막는 곳, 하는 곳이 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 게이트웨이에 기대는 것이 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 3. 낱말이 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 4. 워크플로의 모양이 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 단계 하나가 갖는 것이 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 5. 흐름: 조건 분기, 반복, 병렬, 대기가 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 조건은 닫힌 목록이고, 테라리움이 따져요가 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 저장할 때 보는 것이 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 고치는 화면이 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 액션은 모델의 것이에요가 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 툴 매핑은 규칙이에요. 객체를 하나씩 잇지 않아요가 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 7. 에이전트에게 주는 MCP 툴이 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 8. 시작 조건이 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 9. 범위가 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 10. 승인이 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 11. 적용 단계가 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 검증에서는 실제 툴 자리에 모의 툴이 서요가 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 12. 건의 한살이가 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 13. 권한: 툴은 게이트웨이, 워크플로는 테라리움이 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 다루는 권한이 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 실행하는 권한이 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 14. 지켜보기와 알리기가 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 성과는 건마다 저절로 재요가 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 15. 미리 봐 둔 위험이 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "E2E 워크플로 자동화의 16. 순서가 뭐예요?",
+      "expect": ["docs/design-docs/workflow-automation.md"],
       "kind": "auto"
     },
     {

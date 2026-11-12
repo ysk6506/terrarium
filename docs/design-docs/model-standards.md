@@ -4,17 +4,17 @@ kind: spec
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: 세 층을 버리고 모델 하나로 (ADR-0169). 넓히는 완료 조건 다섯"
   - "2026-11-11: 따라가는 reality-data-and-ontology.md와 product-design.md의 바뀐 곳은 목표 글과 4절 표현이라 이 문서의 타입·표준 서술에 영향 없음을 대조"
   - "2026-11-12: 따라가는 product-design.md는 ADR-0171 만드는 중 표시만 지워졌고 이 문서의 말과 상관없다"
   - "2026-11-12: 따라가는 product-design.md의 순서 2와 위험에 범용 도구 실험이 더해짐. 이 문서의 내용과 어긋나지 않는다"
   - "2026-11-12: 따라가는 product-design.md의 바뀐 곳은 목표 문장과 넷째 기둥(ADR-0189). 모델은 하나라는 이 문서의 서술과 어긋나지 않는다"
+  - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
 follows:
   - docs/design-docs/reality-data-and-ontology.md
   - docs/design-docs/product-design.md
-follows_hash: 9b55d380beaf6778
+follows_hash: 990614dec08c4400
 verified_body: 1f0e2fda761b3e23
-unchanged_reverifies: 3
+unchanged_reverifies: 4
 ---
 # 표준 모델 대조 (REQ-115·117 예정, ADR-0157)
 

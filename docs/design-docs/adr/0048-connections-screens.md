@@ -14,7 +14,7 @@ amends_tests:
   - apps/web/src/logic/connections.test.ts::<import:69983d44>
   - apps/web/src/logic/logic.test.ts::every screen has an address [REQ-038] > the rail knows which section a page is in; tabs say where they are
 test_change_reason: 하네스·에이전트를 화면에서 연결하게 되면서 왼쪽 메뉴에 "연결" 항목이 하나 늘었다. 그래서 메뉴 이름을 순서대로 비교하던 시험의 기대값에 "연결"이 끝에 붙는다. 나머지 확인(주소가 화면으로 되돌아오는지, 화면이 속한 메뉴, 탭 제목)은 그대로다. 같은 날 새로 쓴 연결 폼 시험은 린트가 쓰지 않는 타입 가져오기를 지적해 그 가져오기 줄만 고쳤다(확인 내용은 그대로).
-decision_hash: 94ea35133b88b4f8
+decision_hash: bf892c07311ad668
 ---
 # ADR-0048 연결 화면
 
@@ -37,7 +37,7 @@ ADR-0042·0043으로 서버는 하네스와 에이전트를 연결·보관·버�
 7. **화면 로직은 순수 함수로 두고**(`logic/connections.ts`) 화면은 그리기만 한다: 폼의 시작값, 보낼 값, 빠진 것, 남은 기간 문장, 안내 띠 문장.
 
 ## 이유
-- 사내 사용자가 연결하는 대상(OpenClaw, GoClaw, Hermes, OpenCode, LangChain, LangGraph…)은 계속 늘어난다. 화면이 프로토콜을 모르면 커넥터만 더해도 화면이 따라온다.
+- 사용자가 연결하는 대상(OpenClaw, GoClaw, Hermes, OpenCode, LangChain, LangGraph…)은 계속 늘어난다. 화면이 프로토콜을 모르면 커넥터만 더해도 화면이 따라온다.
 - 비밀은 되돌려 받지 못하므로 화면이 "비워 두면 그대로"를 분명히 말해야 사람이 실수로 지우지 않는다.
 - 지우기 전에 안내는 모든 화면에 보여야 한다. 연결 화면에 오지 않는 사람에게도 닿는다.
 

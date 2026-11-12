@@ -8,12 +8,13 @@ verification_log:
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-11: self-declared admin: token, else loopback socket address only; proxy mode unchanged"
   - "2026-11-12: ADR-0183: 따라가는 용어집의 새 절(한 가지 말, 조건의 뜻)을 읽고, 이 문서에 옛 말(회·횟수·시드·개체·에스컬레이션)이 없음을 확인했다"
+  - "2026-11-12: 따라가는 문서나 코드의 내부 사실 서술이 요구의 말로 바뀐 것을 대조했고 이 문서의 내용은 그대로 맞다 (ADR-0188)"
 follows:
   - docs/design-docs/http-api.md
   - docs/design-docs/operations.md
-follows_hash: d4b658eefbdfb824
+follows_hash: 47b67a3b5abf2f98
 verified_body: 98334152a7797862
-unchanged_reverifies: 0
+unchanged_reverifies: 1
 ---
 # 권한 (클로즈 베타 1차, ADR-0174)
 

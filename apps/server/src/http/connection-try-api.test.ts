@@ -12,7 +12,7 @@ const GENERATION = {
   name: "chat",
   startTime: "2026-11-05T09:00:00.000Z",
   endTime: "2026-11-05T09:00:02.000Z",
-  model: "gauss-2",
+  model: "model-a",
   inputUsage: 700,
   outputUsage: 50,
 };
@@ -48,11 +48,11 @@ describe("말 걸어 보기 and the tools for traces over HTTP [REQ-079]", () =>
     const made = await a.inject({
       method: "POST",
       url: "/api/connections",
-      headers: { "x-terrarium-user": "yeonsu" },
+      headers: { "x-terrarium-user": "haneul" },
       payload: { ...goclaw, traces },
     });
     const id = made.json().id as string;
-    // the connection carries yeonsu's secrets: another signed-in person may not talk through it
+    // the connection carries haneul's secrets: another signed-in person may not talk through it
     const stranger = await a.inject({
       method: "POST",
       url: `/api/connections/${id}/try`,
@@ -63,7 +63,7 @@ describe("말 걸어 보기 and the tools for traces over HTTP [REQ-079]", () =>
     const tried = await a.inject({
       method: "POST",
       url: `/api/connections/${id}/try`,
-      headers: { "x-terrarium-user": "yeonsu" },
+      headers: { "x-terrarium-user": "haneul" },
       payload: { agentId: "ops", text: "안녕" },
     });
     expect(tried.statusCode).toBe(200);
@@ -71,7 +71,7 @@ describe("말 걸어 보기 and the tools for traces over HTTP [REQ-079]", () =>
     const empty = await a.inject({
       method: "POST",
       url: `/api/connections/${id}/try`,
-      headers: { "x-terrarium-user": "yeonsu" },
+      headers: { "x-terrarium-user": "haneul" },
       payload: { agentId: "ops", text: " " },
     });
     expect(empty.statusCode).toBe(400);

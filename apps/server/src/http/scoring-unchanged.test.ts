@@ -31,7 +31,7 @@ describe("scoring is unchanged with permissions on [REQ-054] [REQ-039]", () => {
       { PROXY_SECRET_FOR_TESTS: SECRET },
     );
     const app = buildApp({ platform: t.platform, authenticator });
-    const headers = { "x-terrarium-proxy-secret": SECRET, "x-forwarded-user": "yeonsu.kim" };
+    const headers = { "x-terrarium-proxy-secret": SECRET, "x-forwarded-user": "haneul.kim" };
     const call = async (method: string, url: string, payload?: object) => {
       const r = await app.inject({
         method: method as "GET",

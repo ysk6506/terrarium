@@ -2,7 +2,7 @@ import { outlineArea, outlineBounds, rectInOutline } from "@terrarium/core/spati
 import { describe, expect, test } from "vitest";
 import { SITE_PRESETS, sitePreset } from ".";
 
-describe("the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043]", () => {
+describe("the sites drawn from the maps have their fabs where the blue roofs are [REQ-048] [REQ-043]", () => {
   const traced = ["giheung", "hwaseong", "pyeongtaek"] as const;
   const rectOf = (s: { x: number; y: number; w: number; d: number }) => ({
     x: s.x - s.w / 2,
