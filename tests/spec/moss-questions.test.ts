@@ -68,4 +68,9 @@ describe("[REQ-103] 이끼의 문서 찾기", () => {
     expect([...files].some((f) => f.includes("/adr/"))).toBe(true);
     expect([...files].some((f) => f.includes("/mockups/"))).toBe(true);
   });
+
+  test("archived docs are not in the index, so designs the product no longer builds are never cited (ADR-0192)", () => {
+    const files = new Set(index.chunks.map((c) => c.file));
+    expect([...files].some((f) => f.startsWith("docs/archive/"))).toBe(false);
+  });
 });
