@@ -32,7 +32,7 @@ amends_tests:
   - harness/src/ux/check.test.ts::the recorded measurement [REQ-041] > goes stale when the web app changes (UX004)
   - harness/src/ux/groups.test.ts::the CI groups of UX journeys lose none and repeat none [REQ-114] > there are three groups, named as the workflow names them
 test_change_reason: 낡은 측정 기록(UX004)이 실패에서 알림으로 바뀌었고(ADR-0175 결정 3), CI의 여정 묶음이 셋에서 다섯으로 늘었다(결정 2). 두 시험은 옛 동작(낡으면 빨강, 묶음 셋)을 단언했다. 새 동작을 같은 성질의 단언으로 다시 썼고, 기록을 읽지 못함(UX004 실패)·점수 위조(UX005)·하한(UX001~003)의 시험은 그대로다.
-decision_hash: f8e3cf0acb7dd60c
+decision_hash: c8e186fdaac5e542
 ---
 # ADR-0175 UX 검사를 더 잘게 나눠 돌리고, 점수 파일은 변경마다 커밋하지 않는다
 
@@ -42,7 +42,7 @@ decision_hash: f8e3cf0acb7dd60c
 게이트가 아닌 `ux-measure`는 한 작업이 한 서버에서 여정 열넷과 탐침 열셋을 차례로 돌려 812초(약 13분 30초) 걸린다. 웹 화면을 바꾼 변경은 그 작업이 만든 `ux-score.json`을 마지막 커밋으로 올려야 했고(ADR-0141 2번, `UX004`), 그 커밋이 파이프라인 전체를 한 번 더 돌게 한다. 점수 파일은 변경의 내용이 아니라 측정의 기록인데, 변경마다 커밋하게 해서 모든 웹 변경이 두 번 기다린다.
 
 ## 결정
-1. **`ux-measure`를 여러 작업으로 나눠 동시에 돌린다.** 조각은 열이다(`tests/e2e/ux/parts.ts`): 여정 묶음마다 하나(`journeys-flow` `-build` `-small` `-own` `-topology`)와 탐침 다섯(`probes-a`~`e`, 가장 느린 탐침 하나씩 나눔). 탐침은 여정이 남긴 세계·시나리오·실험을 읽으므로, 탐침 조각은 `build` 여정, `flow` 묶음, `small` 묶음을 먼저 돌리되 결과는 기록하지 않는다(그 여정의 결과는 그 묶음의 조각이 기록한다). 세계가 하나일 때와 여럿일 때 새 실험 화면의 주된 버튼 수가 달라서, 세계를 여럿 만드는 `small`까지 돌려야 한 번에 잰 점수와 같아진다. 먼저 돌린 여정이 한 번 실패하면 한 번 더 돌린다. 빈 화면과 오류 화면은 아무것도 돌지 않은 서버에서 봐야 하므로 `journeys-flow` 조각이 맡는다. 각 조각은 자기 필드를 JSON으로 올리고, `ux-measure` 작업이 `pnpm ux merge <폴더>`로 모아 지금과 같은 일곱 면의 점수와 `ux-score.json`을 낸다. 모으기는 여정을 합치고, 깨끗한 화면의 집계를 더하고, 나머지 필드는 쓴 조각 하나에서 가져온다. 필드가 두 조각에 있거나 빠지면 오류다(`harness/src/ux/merge.ts`). 점수의 계산(`score.ts`)은 바꾸지 않는다. 목표는 벽시계 6분 안이다.
+1. **`ux-measure`를 여러 작업으로 나눠 동시에 돌린다.** 조각은 열이다(`tests/e2e/ux/parts.ts`): 여정 묶음마다 하나(`journeys-flow` `-build` `-small` `-own` `-topology`)와 탐침 다섯(`probes-a`~`e`, 가장 느린 탐침 하나씩 나눔). 탐침은 여정이 남긴 세계·시나리오·실험을 읽으므로, 탐침 조각은 `build` 여정, `flow` 묶음, `small` 묶음을 먼저 돌리되 결과는 기록하지 않는다(그 여정의 결과는 그 묶음의 조각이 기록한다). 세계가 하나일 때와 여럿일 때 새 실험 화면의 주된 버튼 수가 달라서, 세계를 여럿 만드는 `small`까지 돌려야 한 번에 잰 점수와 같아진다. 먼저 돌린 여정이 실패하면 최대 두 번 더 돌린다(바쁜 러너에서 클릭이 시간 초과되는 일이 있다). 빈 화면과 오류 화면은 아무것도 돌지 않은 서버에서 봐야 하므로 `journeys-flow` 조각이 맡는다. 각 조각은 자기 필드를 JSON으로 올리고, `ux-measure` 작업이 `pnpm ux merge <폴더>`로 모아 지금과 같은 일곱 면의 점수와 `ux-score.json`을 낸다. 모으기는 여정을 합치고, 깨끗한 화면의 집계를 더하고, 나머지 필드는 쓴 조각 하나에서 가져온다. 필드가 두 조각에 있거나 빠지면 오류다(`harness/src/ux/merge.ts`). 점수의 계산(`score.ts`)은 바꾸지 않는다. 목표는 벽시계 6분 안이다.
 2. **`ux-journeys`의 묶음을 셋에서 다섯으로 늘린다**: `flow`(서로 기대는 아홉 여정은 그대로), `build`, `small`(`site`, `build-small`), `own`(`own-card-only`), `topology`. 묶음 표는 한 곳(`tests/e2e/ux/journeys.ts`의 `JOURNEY_GROUPS`)에서 정하고, `run`이 만든 실험을 `share`와 `fork`가 여는 것처럼 기대는 여정은 같은 묶음에 둔다. 가장 긴 묶음(`flow`)의 여정은 합쳐 90초 안팎이다. 서로 기대지 않는 여정만 갈랐으므로 어느 묶음도 앞 여정의 산출물에 기대지 않는다.
 3. **`docs/generated/ux-score.json`은 변경마다 커밋하지 않는다.** 웹 화면이 바뀌어 기록이 낡았다는 검사(`UX004`)는 실패에서 알림 한 줄로 바뀐다(`QUAL001`과 같다). 기록을 읽을 수 없거나 없는 것(`UX004` 실패), 점수를 손으로 고친 것(`UX005`), 하한을 낮춘 것(`UX003`), 하한 미달(`UX001`, `UX002`)은 그대로 실패다. 기록은 5시간마다 도는 정리 작업이 main에서 `pnpm ux`로 새로 재서 올리고, 하한은 그 정리 작업이 `pnpm ux ratchet`으로 올린다. 변경의 점수는 그 변경의 `ux-measure` 작업 요약과 아티팩트에서 본다. 하한 검사(`UX001`)가 무엇을 재는지 확인했다: `pnpm ux`와 `pnpm ux merge`는 방금 잰 값을 파일에 쓴 뒤 그 파일로 하한을 판정하므로, 변경의 `ux-measure`는 방금 잰 값으로 판정한다. 로컬 `pnpm structure`의 `ux check`는 커밋된 기록으로 하한을 본다.
 4. **브라우저 내려받기는 캐시한다.** 새 합성 액션 `.github/actions/browser`가 Playwright 버전을 키로 `~/.cache/ms-playwright`를 캐시하고, 시스템 꾸러미는 브라우저가 못 뜰 때만 설치한다(ADR-0159 그대로). `ux-journeys`와 `ux-parts`가 함께 쓴다.

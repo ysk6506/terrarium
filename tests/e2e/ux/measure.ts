@@ -182,9 +182,12 @@ try {
     // A slice's prelude journeys only make what the probes look at; their results belong to the slice that records them.
     const kept = recorded.some(([r]) => r === id);
     let outcome = await once();
-    // A prelude journey that failed once on a busy runner is tried again: the probes need what it makes. A recorded
+    // A prelude journey that failed once on a busy runner is tried up to twice more: the probes need what it makes. A recorded
     // journey is never tried twice, its failure is the score.
-    if (!kept && !outcome.ok) outcome = await once();
+    for (let again = 0; !kept && !outcome.ok && again < 2; again++) {
+      await new Promise((r) => setTimeout(r, 3000));
+      outcome = await once();
+    }
     const seconds = Math.round((Date.now() - began) / 100) / 10;
     if (kept) {
       journeys[id] = {
