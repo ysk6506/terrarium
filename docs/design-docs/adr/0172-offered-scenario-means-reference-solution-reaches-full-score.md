@@ -15,6 +15,9 @@ amends_tests:
   - tests/spec/golden-scenario-extra.test.ts::=EXPECTED
 test_change_reason: 골든 안전망이 정답 풀이가 100점을 못 받거나 오류를 내는 짝 21개를 그 값 그대로 못 박아 두었다. 이는 채점이 늘 맞고 같다는 첫째 기둥(ADR-0138)과 REQ-110의 완전성(100이 불가능한 시트는 공식을 낮추지 않고 시나리오를 고친다)에 어긋나므로, 원인을 고친 짝은 100점의 기록으로 바꾸고 세계가 받을 수 없는 짝은 제공 목록에서 빼며 기대 값 여섯 개의 묶음을 고친다.
 decision_hash: 52fd5d0af4ed62dd
+amended_by:
+  - adr: "0178"
+    what: 정답 풀이 불변식은 골든 행렬의 다섯 세계만
 ---
 # ADR-0172 제공되는 시나리오는 그 세계에서 정답 풀이가 만점을 받는다
 

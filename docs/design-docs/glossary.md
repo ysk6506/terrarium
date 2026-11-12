@@ -8,7 +8,9 @@ verification_log:
   - "2026-11-11: 현실 데이터에서 정한 말 (ADR-0150)"
   - "2026-11-11: 현실에서 만든 세계: 화면의 말은 미정 (ADR-0150)"
   - "2026-11-11: 현실 데이터 절: 만든 말을 현업의 말로, glossary-data.md로 옮김 (ADR-0167)"
-  - "2026-11-12: ADR-0183: 한 가지 말(번, 상황, 객체·링크, 넘기기)에 맞춰 인용한 화면 글을 고쳤다"
+follows:
+  - docs/design-docs/glossary-data.md
+follows_hash: 7445bdab2f60c45c
 ---
 # 용어집 (ADR-0071)
 

@@ -9,6 +9,20 @@ no_enforcement_reason: 구현 전 결정 기록이다(REQ-117 예정). 성능 �
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 0c43ebc5aa9e3d45
+amends:
+  - adr: "0154"
+    what: 3초와 저장소에서 되짚기
+  - adr: "0144"
+    what: 관계 표의 끊기면 넘어가나
+amended_by:
+  - adr: "0161"
+    what: 포트의 딸린 줄
+  - adr: "0164"
+    what: 관계 표의 묶음 뜻
+  - adr: "0168"
+    what: 모르는 것은 보고
+  - adr: "0169"
+    what: 포트를 타입에 넣지 않음
 ---
 # ADR-0156 영향 범위는 포트 단위까지 묶음의 뜻으로 계산하고, 메모리의 색인에서 1초·수 초 안에 답한다
 
