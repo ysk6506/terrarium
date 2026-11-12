@@ -42,6 +42,7 @@ amends_tests:
   - tests/spec/deep-os-time-log.test.ts::chronyc and timedatectl tell whether the clock is in step [REQ-098] > a command chronyc has and the fake does not is outside it, as is the interactive prompt
   - tests/spec/deep-os-time-log.test.ts::chronyc and timedatectl tell whether the clock is in step [REQ-098] > timedatectl shows the local and universal time and says the clock is synchronised
   - tests/spec/deep-os-time-log.test.ts::openssl x509 reads the certificate files of the host [REQ-098] > a missing file or input and the parts of openssl the fake does not have are refused
+  - tests/spec/k8s-faults-words.test.ts::kubectl tools refuse what they cannot do, in words [REQ-096] > the kubectl words the fake does not do are listed
   - tests/spec/k8s-shell.test.ts::crictl ps lists the containers on a node, API or not [REQ-096] > a verb other than ps is refused with what it can do
   - tests/spec/k8s-shell.test.ts::kubectl describe node and the things the fake does not do [REQ-096] [REQ-100] > a verb the fake does not have prints what it can do and exits 1
   - tests/spec/mesh-shell.test.ts::istioctl proxy-status shows each sidecar against the control plane [REQ-100] > a world with no mesh says there is no Istio, and a command the fake does not do says which
