@@ -4,16 +4,16 @@ kind: spec
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: REQ-119에 모델은 하나와 왕복 시험을 더함 (ADR-0169)"
   - "2026-11-11: 목표의 글과 맨 위 문서를 맞춤 (ADR-0177)"
   - "2026-11-11: 목표의 글과 맨 위 문서를 맞춤 (ADR-0177)"
   - "2026-11-11: 따라가는 product-design.md의 바뀐 곳(1절 기둥을 목표 세 부분으로, 4절을 생성된 목록으로)이 이 문서의 목표 세 부분과 맞다. REQ 본문은 그대로"
   - "2026-11-12: 따라가는 product-design.md는 ADR-0171 만드는 중 표시만 지워졌고 이 문서의 말과 상관없다"
+  - "2026-11-12: 따라가는 product-design.md의 순서 2와 위험에 범용 도구 실험이 더해짐. 이 문서의 내용과 어긋나지 않는다"
 follows:
   - docs/design-docs/product-design.md
-follows_hash: 43feca0fac89b780
+follows_hash: 086b3df517448599
 verified_body: ee7e8bf13c8d5a46
-unchanged_reverifies: 1
+unchanged_reverifies: 2
 ---
 # 테라리움 요구사항
 
