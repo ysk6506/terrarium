@@ -32,7 +32,7 @@ export const APP_CONDITION_FIELDS: Readonly<
   circuit_breaker: {
     health: HEALTH,
     mode: { label: "상태", type: "enum", values: ["closed", "open", "half-open"] },
-    trips: num("열린 횟수", "회"),
+    trips: num("열린 수", "번"),
   },
   mesh_sidecar: { health: HEALTH, status: STATUS2 },
   mesh_control: {

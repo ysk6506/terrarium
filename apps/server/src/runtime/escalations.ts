@@ -89,7 +89,7 @@ export class Escalations {
   ): Promise<EscalationCard | undefined> {
     const p = this.parked.get(runId);
     if (!p) throw new NotFoundError("이 실행은 지금 사람을 기다리고 있지 않아요");
-    allow(viewer, "answerEscalation", { owner: p.card.owner }, "에스컬레이션에 답하기");
+    allow(viewer, "answerEscalation", { owner: p.card.owner }, "넘긴 일에 답하기");
     if (answer.kind === "act") {
       p.acts.push(await p.session.humanAct(answer.tool, answer.args));
       return this.cardOf(p);

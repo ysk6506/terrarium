@@ -113,7 +113,7 @@ describe("repeats of a seed [REQ-118]", () => {
     // a seed that is already there is still refused, repeats or not
     await expect(
       p.experiments.addRuns(YEONSU, made.experiment.id, { seeds: [1] }),
-    ).rejects.toMatchObject({ issues: [{ path: "seeds", message: "시드 1는 이미 있어요" }] });
+    ).rejects.toMatchObject({ issues: [{ path: "seeds", message: "상황 1번은 이미 있어요" }] });
     expect((await settled(p, YEONSU, made.experiment.id)).progress.completed).toBe(9);
   });
 

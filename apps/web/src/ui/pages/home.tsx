@@ -114,7 +114,7 @@ function Recent() {
     <Section title="최근 실험" aside={<Go to={{ name: "experiments" }}>전부 보기</Go>}>
       {queue && (queue.running > 0 || queue.queued > 0) && (
         <p className="small muted" style={{ marginBottom: 10 }}>
-          지금 {queue.running}회 실행 중, {queue.queued}회 대기.
+          지금 {queue.running}번 실행 중, {queue.queued}번 대기.
           {me && ` ${me}님의 차례도 공평하게 돌아가요.`}
         </p>
       )}

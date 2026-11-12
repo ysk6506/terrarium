@@ -285,13 +285,13 @@ export function OperationInstruction({ draft, set }: Props) {
         min={1}
         max={100000}
         step={100}
-        unit="회"
+        unit="번"
         onChange={(n) =>
           patch({
             budget: n === undefined ? {} : { ...config.budget, maxToolCalls: Math.round(n) },
           })
         }
-        help="넘으면 실행이 멈추고 그 사실이 기록돼요. 비워 두면 5,000회예요."
+        help="넘으면 실행이 멈추고 그 사실이 기록돼요. 비워 두면 5,000번이에요."
       />
     </div>
   );

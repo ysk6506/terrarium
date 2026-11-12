@@ -129,7 +129,7 @@ function MossExplains({ view }: { readonly view: WorldOntologyView }) {
         액션: a.label,
         "푸는 고장 수": a.faults.length,
         누가: DOER_WORDS[use.actions.find((u) => u.id === a.id)?.doer ?? "none"],
-        횟수: use.actions.find((u) => u.id === a.id)?.total ?? 0,
+        한_수: use.actions.find((u) => u.id === a.id)?.total ?? 0,
       })),
       요약: use.line,
     };
@@ -138,7 +138,7 @@ function MossExplains({ view }: { readonly view: WorldOntologyView }) {
         body: {
           screen: "experiment",
           question:
-            "이 세계를 E2E로 가려면 어떤 액션을 승인으로 남기고 어떤 액션을 에이전트에게 맡길지 세 문장으로 설명해 줘요.",
+            "이 세계에서 어떤 액션을 승인으로 남기고 어떤 액션을 에이전트에게 맡길지 세 문장으로 설명해 줘요.",
           state,
           actions: [],
         },

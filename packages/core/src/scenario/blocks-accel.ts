@@ -39,7 +39,7 @@ export const ACCEL_CONDITION_FIELDS: Readonly<
   },
   nvlink_domain: { health: HEALTH, status: STATUS3 },
   ib_fabric: { health: HEALTH, status: STATUS3 },
-  ib_link: { health: HEALTH, status: LINK, flaps: num("끊겼다 붙은 횟수", "번") },
+  ib_link: { health: HEALTH, status: LINK, flaps: num("끊겼다 붙은 수", "번") },
   job_scheduler: {
     health: HEALTH,
     status: STATUS2,
@@ -51,7 +51,7 @@ export const ACCEL_CONDITION_FIELDS: Readonly<
     phase: PHASE,
     step: num("스텝", "스텝"),
     lostSteps: num("다시 해야 했던 스텝", "스텝"),
-    restarts: num("다시 시작한 횟수", "번"),
+    restarts: num("다시 시작한 수", "번"),
   },
   inference_pool: {
     health: HEALTH,
@@ -86,7 +86,7 @@ export const ACCEL_CONDITION_FIELDS: Readonly<
 /** What a rack with a power limit and a server with a cap can be asked (power capping, ADR-0130). */
 export const RACK_CAP_FIELDS: Readonly<Record<string, FieldSpec>> = {
   overS: num("한도를 넘은 시간", "초"),
-  overCount: num("한도를 넘은 횟수", "번"),
+  overCount: num("한도를 넘은 수", "번"),
   lossS: num("캡 때문에 잃은 서버·초", "초"),
   hotAt: num("처음 뜨거워진 시각", "초"),
   stopAt: num("처음 과열로 꺼진 시각", "초"),

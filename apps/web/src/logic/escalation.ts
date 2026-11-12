@@ -134,8 +134,8 @@ export function escalationFigures(human: HumanSummary | undefined): readonly Fig
   const acts = human.acts.length;
   return [
     {
-      label: "에스컬레이션",
-      value: `${human.count}회`,
+      label: "넘긴 일",
+      value: `${human.count}번`,
       hint: `처리 방식: ${ESCALATION_LABELS[human.mode]}`,
     },
     {

@@ -2,19 +2,20 @@
 title: 진짜 하네스로 끝까지 — LangGraph, OpenCode, OpenClaw 실측과 재현 절차
 kind: guide
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - apps/server/src/adapters/connectors/langgraph.ts
   - apps/server/src/adapters/connectors/opencode.ts
   - apps/server/src/adapters/connectors/openclaw.ts
   - tests/e2e/harness/*.ts
   - tests/e2e/harness/langgraph-app/*
-covers_hash: ac7f5f9a5e6b7ea1
+covers_hash: e31f5624b570e73c
 verification_log:
   - "2026-11-05: 처음 씀. 세 하네스를 실제로 설치해 커넥터로 실험을 완주한 기록이다 (REQ-051, ADR-0042)"
   - "2026-11-05: 처음 씀. 커넥터 세 개와 tests/e2e/harness 파일을 실제 실행 결과와 대조했다(버전, 포트, 설정, 점수)"
   - "2026-11-05: opencode.ts의 변경은 inventory(숨긴 도우미·서브에이전트를 이유별로 셈), showHidden, talk 추가뿐이다. 런북이 말하는 연결·실행 절차와 점수는 그대로 맞다"
   - "2026-11-11: REQ-118 시드당 반복: 실행 키(시드·반복), 시드 단위 통계, 순위 조건(시드 3개), 한도 60, 화면 반영을 코드와 대조해 고쳤다. 이 문서의 나머지는 그대로 맞다"
+  - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
 ---
 # 진짜 하네스로 끝까지
 

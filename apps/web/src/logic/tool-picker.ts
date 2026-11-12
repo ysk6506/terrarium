@@ -175,7 +175,7 @@ export function scenarioChoices(
 }
 
 /** The line under a scenario that is out of reach when faults are not limited: a way to measure asking for help. */
-export const OUT_BUT_ALLOWED = "준 툴로는 풀 수 없어요. 에스컬레이션을 재는 실험이 돼요";
+export const OUT_BUT_ALLOWED = "준 툴로는 풀 수 없어요. 넘기기를 재는 실험이 돼요";
 
 // ── the tool-pick check (ADR-0087 item 3) ──────────────────────────────────────────────────
 

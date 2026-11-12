@@ -54,10 +54,10 @@ export const EXPERIMENT_SCREENS = {
       },
       {
         id: "exp-set-runs",
-        label: "돌릴 횟수 정하기",
+        label: "몇 번 돌릴지 정하기",
         kind: "navigate",
         aliases: ["몇 번", "횟수"],
-        saying: "돌릴 횟수를 정할게요",
+        saying: "몇 번 돌릴지 정할게요",
       },
       {
         id: "exp-start",
