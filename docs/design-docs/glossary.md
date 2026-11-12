@@ -4,16 +4,16 @@ kind: guide
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-07: o15 합치기 (2차 피드백 수정)"
   - "2026-11-11: 현실 데이터에서 정한 말 (ADR-0150)"
   - "2026-11-11: 현실에서 만든 세계: 화면의 말은 미정 (ADR-0150)"
   - "2026-11-11: 현실 데이터 절: 만든 말을 현업의 말로, glossary-data.md로 옮김 (ADR-0167)"
   - "2026-11-12: ADR-0183: 따라가는 용어집의 새 절(한 가지 말, 조건의 뜻)을 읽고, 이 문서에 옛 말(회·횟수·시드·개체·에스컬레이션)이 없음을 확인했다"
+  - "2026-11-12: 따라가는 glossary-data.md에 워크플로 자동화의 말 절이 더해짐. 이 문서의 말과 겹치지 않는다(실행·역할·검증과 구별해 적음)"
 follows:
   - docs/design-docs/glossary-data.md
-follows_hash: 85a9b1d96cc7a7b4
+follows_hash: 7807bd0dcc73c9e1
 verified_body: 837e81a4ef58411b
-unchanged_reverifies: 0
+unchanged_reverifies: 1
 ---
 # 용어집 (ADR-0071)
 

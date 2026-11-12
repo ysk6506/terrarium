@@ -4,16 +4,16 @@ kind: reference
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: 권한 문서와 ADR-0174 링크"
-  - "2026-11-11: ADR 목록을 없애고 결정 기록 폴더와 결정 목록을 가리키게 함 (ADR-0180)"
-  - "2026-11-11: ADR 목록을 없애고 결정 기록 폴더와 결정 목록을 가리키게 함. AGENTS.md의 바뀐 곳은 CI 문장이라 색인과 무관 (ADR-0180)"
   - "2026-11-12: 따라가는 문서(AGENTS.md, ADR-0175)가 바뀐 것을 읽음: 이 문서의 서술과 어긋난 곳 없음"
   - "2026-11-12: main을 합침: 따라가는 AGENTS.md의 두 변경(ADR-0175, ADR-0187)은 색인과 무관"
+  - "2026-11-12: main을 합침: E2E 워크플로 자동화(제안) 문서 링크를 더함. 따라가는 AGENTS.md의 변경(ADR-0175, ADR-0187)은 색인과 무관"
+  - "2026-11-12: 따라가는 AGENTS.md의 첫 문장이 바뀜(ADR-0189). 워크플로 자동화 문서의 제목에서 '(제안)'을 뗌"
+  - "2026-11-12: 워크플로 자동화 문서의 제목에서 '(제안)'을 뗌. 따라가는 AGENTS.md의 첫 문장 변경은 색인과 무관 (ADR-0189)"
 follows:
   - AGENTS.md
-follows_hash: ad4466c9731e19dd
-verified_body: 876cbc22d1a37868
-unchanged_reverifies: 3
+follows_hash: 2f4a8998f0da2129
+verified_body: 37582754606e312e
+unchanged_reverifies: 4
 ---
 # 문서 색인
 
@@ -92,6 +92,7 @@ unchanged_reverifies: 3
 - [도메인과 가상 담당자 — 내 도메인 밖의 고장은 넘기고, 기다리는 동안 다른 일을 한다](design-docs/domains-and-counterparts.md)
 - [시나리오 편집기 검토 — 처음 쓰는 사람의 눈으로, 토스의 원칙으로 (세 번째 검토: 질문 셋·문장 채점표)](design-docs/scenario-editor-review.md)
 - [운영 모드 — 끝이 없는 실험, 당겨서 보는 모니터링, 실시간과 빨리 감기](design-docs/operation-mode.md)
+- [E2E 워크플로 자동화 — 검증한 워크플로만 운영에 나가고, 나간 뒤에도 잰다](design-docs/workflow-automation.md)
 - [운영 에이전트 설계 가이드 — 8시간 동안 지켜보는 에이전트를 만드는 법](guides/operation-agent-guide.md)
 - [용어집 — 화면에 쓰는 말은 여기서 정한다](design-docs/glossary.md)
 - [용어집 층별 말 — SDN·컨테이너·애플리케이션·가속기·사이트](design-docs/glossary-layers.md)
