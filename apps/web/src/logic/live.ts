@@ -28,8 +28,13 @@ export function initialLive(runs: readonly RunSummary[], summary?: ExperimentSum
 
 export function applyEvent(state: LiveState, event: ExperimentEvent): LiveState {
   switch (event.type) {
-    case "experiment":
-      return { ...state, summary: event.summary };
+    case "experiment": {
+      // runs that finished before this stream was open send no run event: a summary that is further along than the
+      // page's own says the full view is old
+      const known = state.summary?.progress?.finished ?? 0;
+      const behind = known < (event.summary.progress?.finished ?? 0);
+      return { ...state, summary: event.summary, stale: state.stale || behind };
+    }
     case "run": {
       const known = state.runs.some((r) => r.id === event.run.id);
       const runs = known
