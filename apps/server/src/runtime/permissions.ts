@@ -8,8 +8,10 @@
  * everyone, or is theirs, or is shared with a group they belong to; an admin sees all. Using a connection needs sight.
  */
 import { type Decided, ForbiddenError } from "@terrarium/core/contract";
+import type { AuditReason } from "@terrarium/core/experiments";
 import { type Scope, type Shared, type Sight, scopeOf, seen } from "@terrarium/core/experiments";
 import { NotFoundError, withJosa } from "@terrarium/core/kernel";
+import { noteDenial, noteFound, noteOwner, type Ref } from "./audit-context";
 import type { HarnessDirectory, Viewer } from "./context";
 
 /** What the action is about, as far as the decision needs it. */
@@ -104,12 +106,33 @@ export function may(viewer: Viewer, action: Decided, resource: Resource = {}): D
 export const canSee = (viewer: Viewer, resource: Resource): boolean =>
   may(viewer, "see", resource).ok;
 
+/** Which record a lookup found, as the audit log names it: its kind, its id and the name it has now. */
+export const refOf = (kind: string, record: { id: string; name?: string }): Ref => ({
+  kind,
+  id: record.id,
+  name: record.name,
+});
+
+/** Would a person with no admin role see this? When not, an administrator who does is reading it by virtue of the role. */
+const seenByRole = (viewer: Viewer, resource: Resource): boolean =>
+  isAdmin(viewer) && !sees({ ...viewer, roles: ["user"] }, resource);
+
 /**
  * Something the viewer cannot see answers as if it were not there (no hint that it exists): the same words a missing
- * one gets. `what` is the thing in the person's words, as "세계 w1".
+ * one gets. `what` is the thing in the person's words, as "세계 w1". `ref` says which record it is, for the audit log: a
+ * refusal is noted as `not_visible`, and an administrator's sight of another person's private record is noted as an override.
  */
-export function mustSee(viewer: Viewer, resource: Resource, what: string): void {
-  if (!canSee(viewer, resource)) throw new NotFoundError(`${withJosa(what, "을")} 찾을 수 없어요`);
+export function mustSee(viewer: Viewer, resource: Resource, what: string, ref?: Ref): void {
+  const held = { owner: resource.owner, scope: resource.scope, group: resource.group };
+  if (!canSee(viewer, resource)) {
+    noteDenial({
+      reason: "not_visible",
+      standing: held,
+      ...(ref ? { ref: { ...ref, ...held } } : {}),
+    });
+    throw new NotFoundError(`${withJosa(what, "을")} 찾을 수 없어요`);
+  }
+  if (ref) noteFound({ ...ref, ...held }, seenByRole(viewer, resource));
 }
 
 /** The connection as a resource: who made it and who sees it; the config file's carries neither. */
@@ -127,7 +150,17 @@ export function allowRunOn(
   harnesses: Pick<HarnessDirectory, "standingOf" | "ownerOf">,
   harnessId: string,
 ): void {
-  mustSee(viewer, connectionResource(harnesses, harnessId), `하네스 '${harnessId}'`);
+  mustSee(viewer, connectionResource(harnesses, harnessId), `하네스 '${harnessId}'`, {
+    kind: "connection",
+    id: harnessId,
+  });
+}
+
+/** The word the audit log keeps for a refusal. */
+function reasonOf(viewer: Viewer, action: Decided): AuditReason {
+  if (!isSignedIn(viewer)) return "unauthenticated";
+  if (action === "administer") return "not_admin";
+  return action === "like" || action === "see" || action === "use" ? "not_allowed" : "not_owner";
 }
 
 /** `may`, as an error for the handler to throw: `what` is the thing being refused, in the person's words. */
@@ -138,8 +171,11 @@ export function allow(
   what?: string,
 ): void {
   const verdict = may(viewer, action, resource);
-  if (!verdict.ok)
+  if (!verdict.ok) {
+    noteDenial({ reason: reasonOf(viewer, action), standing: resource });
     throw new ForbiddenError(
       what ? `${withJosa(what, "은")} ${verdict.reason}` : `이 일은 ${verdict.reason}`,
     );
+  }
+  noteOwner(resource.owner);
 }

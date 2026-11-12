@@ -35,12 +35,13 @@ import {
   type WorldSummary,
 } from "@terrarium/core/experiments";
 import type { Blueprint, EntityKind } from "@terrarium/core/world";
+import { AUDIT_SCHEMA, AuditTables } from "./sqlite-audit";
 import { CommunityTables } from "./sqlite-community";
 import { addRepeatColumn, runOf } from "./sqlite-migrate";
 import { RecordTable } from "./sqlite-records";
 import { addScopeColumns, scopeColumns, visibleSql } from "./sqlite-scope";
 
-const SCHEMA_VERSION = 3;
+const SCHEMA_VERSION = 4;
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS worlds (
@@ -129,7 +130,9 @@ export class SqliteStore implements ExperimentStore {
     if (version === 1) addRepeatColumn(this.db);
     // Version 3 (permissions step 나) gave worlds, scenarios and experiments an owner, scope and group column; old rows read as everyone's.
     if (version > 0 && version < 3) addScopeColumns(this.db);
+    // Version 4 (permissions step 다) added the audit table; the schema creates it in a file that lacks it.
     this.db.exec(SCHEMA);
+    this.db.exec(AUDIT_SCHEMA);
     this.db.exec(`PRAGMA user_version = ${SCHEMA_VERSION}`);
   }
 
@@ -472,6 +475,12 @@ export class SqliteStore implements ExperimentStore {
   );
   putCurrentProcess = async (p: CurrentProcessRecord): Promise<void> => this.processes.put(p);
   getCurrentProcess = async (scenarioId: string) => this.processes.get(scenarioId);
+
+  /** The audit log (ADR-0193). A port of its own: whoever holds only the `ExperimentStore` cannot write it. */
+  readonly audit = new AuditTables(
+    (q) => this.sql(q),
+    (q) => this.db.exec(q),
+  );
 
   private readonly community = new CommunityTables((q) => this.sql(q));
   putLike = async (like: WorldLike): Promise<void> => this.community.putLike(like);

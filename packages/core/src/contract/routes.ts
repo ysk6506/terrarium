@@ -5,6 +5,7 @@
  */
 
 import type { z } from "zod";
+import { AUDIT_ROUTES } from "./audit-routes";
 import { COMMUNITY_ROUTES } from "./community-routes";
 import { CONNECTION_ROUTES } from "./connection-routes";
 import { MODEL_ROUTES } from "./model-routes";
@@ -127,6 +128,7 @@ export const ROUTES = {
   ...SERVICE_CARD_ROUTES,
   ...PROCESS_ROUTES,
   ...SHARE_ROUTES,
+  ...AUDIT_ROUTES,
 
   listWorldTemplates: {
     method: "GET",

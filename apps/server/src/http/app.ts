@@ -11,6 +11,7 @@ import {
   type ActivityEvent,
   type ExperimentEvent,
   errorReply,
+  InvalidInputError,
   invalidInput,
   type Produces,
   parseWith,
@@ -20,9 +21,11 @@ import {
   toErrorReply,
   UnauthenticatedError,
 } from "@terrarium/core/contract";
+import { randomToken } from "@terrarium/core/kernel";
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from "fastify";
 import type { McpGateway } from "../mcp";
 import { allow, isSignedIn, NOBODY, type Platform, type Viewer } from "../runtime";
+import { type AuditedCall, auditCall } from "./audit-http";
 import { compressWeb } from "./compress";
 import { HANDLERS, type HandlerInput, type StreamRoute } from "./handlers";
 import { type Authenticator, headerAuthenticator, modeOf } from "./identity";
@@ -98,11 +101,12 @@ function contentTypeFor(name: RouteName, route: RouteSpec, query: unknown): stri
 }
 
 /**
- * Who is asking, and whether the route's policy lets them in (ADR-0174). Said before the request body is looked
- * at, so a caller the server does not know learns nothing from an answer about a field. `{ action }` policies are
- * decided by the handler once it knows what the request is about; here they need only a signed-in person.
+ * Who is asking, and whether the route's policy lets them in (ADR-0174), in two steps (`identify`, `admit`) so that a refusal
+ * of a known person is written as theirs. Said before the request body is looked at, so a caller the server does not know
+ * learns nothing from an answer about a field. `{ action }` policies are decided by the handler once it knows what the
+ * request is about; here they need only a signed-in person.
  */
-async function viewerFor(
+async function identify(
   route: RouteSpec,
   req: FastifyRequest,
   auth: Authenticator,
@@ -112,8 +116,18 @@ async function viewerFor(
   const viewer = await auth.authenticate(req);
   if (route.policy === "open") return viewer;
   if (!isSignedIn(viewer)) throw new UnauthenticatedError("로그인이 필요해요");
-  if (route.policy === "admin") allow(viewer, "administer");
   return viewer;
+}
+
+/** The policy of the route, for a person who is known: an admin-only route stops everyone else here. */
+function admit(route: RouteSpec, viewer: Viewer): void {
+  if (route.policy === "admin") allow(viewer, "administer");
+}
+
+/** The name a downloaded JSON Lines file gets. */
+function jsonlName(name: RouteName, params: Readonly<Record<string, string>>): string {
+  if (name === "exportAudit") return "terrarium-audit.jsonl";
+  return `${name === "twinDiagnoses" ? "terrarium" : params.id}-diagnoses.jsonl`;
 }
 
 function registerRoute(
@@ -127,42 +141,65 @@ function registerRoute(
     method: route.method,
     url: route.path,
     handler: async (req, reply) => {
-      let viewer: Viewer;
-      try {
-        viewer = await viewerFor(route, req, auth);
-      } catch (err) {
-        return sendError(reply, err);
-      }
-      const parsed = parseInput(route, req, reply);
-      if (!parsed) return reply;
-      try {
-        const input = {
-          params: req.params as Record<string, string>,
-          query: parsed.query,
-          body: parsed.body,
-          viewer,
-          baseUrl: baseUrlOf(req, options.publicUrl),
-          identityMode: modeOf(auth),
-        } as HandlerInput<typeof name>;
-        const result = await (HANDLERS[name] as (p: Platform, i: typeof input) => Promise<unknown>)(
-          options.platform,
-          input,
-        );
-        const type = contentTypeFor(name, route, parsed.query);
-        if (type) reply.type(type);
-        if (route.produces === "jsonl")
-          reply.header(
-            "content-disposition",
-            `attachment; filename="${name === "twinDiagnoses" ? "terrarium" : input.params.id}-diagnoses.jsonl"`,
-          );
-        if (route.public)
-          reply.header("cache-control", "private, max-age=60").header("x-robots-tag", "noindex");
-        return reply.send(result);
-      } catch (err) {
-        return sendError(reply, err);
-      }
+      const call = auditCall(options.platform.audit, name, req);
+      reply.header("x-request-id", call.requestId);
+      return call.within(() => handle(call, name, options, auth, req, reply));
     },
   });
+}
+
+/** One request of a route, from sign-in to answer. The audit log hears of it through `call`, and of nothing else. */
+async function handle(
+  call: AuditedCall,
+  name: Exclude<RouteName, StreamRoute>,
+  options: AppOptions,
+  auth: Authenticator,
+  req: FastifyRequest,
+  reply: FastifyReply,
+): Promise<FastifyReply> {
+  const route: RouteSpec = ROUTES[name];
+  const params = req.params as Record<string, string>;
+  let viewer: Viewer = NOBODY;
+  try {
+    viewer = await identify(route, req, auth);
+    admit(route, viewer);
+    // a change is not begun when the log could not record it (permissions.md section 6)
+    await call.ready();
+  } catch (err) {
+    await call.refused(viewer, err, { params }, true);
+    return sendError(reply, err);
+  }
+  const parsed = parseInput(route, req, reply);
+  if (!parsed) {
+    await call.refused(viewer, new InvalidInputError("입력값을 확인해 주세요", []), { params });
+    return reply;
+  }
+  const ended = { params, query: parsed.query, body: parsed.body };
+  try {
+    const input = {
+      params,
+      query: parsed.query,
+      body: parsed.body,
+      viewer,
+      baseUrl: baseUrlOf(req, options.publicUrl),
+      identityMode: modeOf(auth),
+    } as HandlerInput<typeof name>;
+    const result = await (HANDLERS[name] as (p: Platform, i: typeof input) => Promise<unknown>)(
+      options.platform,
+      input,
+    );
+    await call.succeeded(viewer, { ...ended, response: result });
+    const type = contentTypeFor(name, route, parsed.query);
+    if (type) reply.type(type);
+    if (route.produces === "jsonl")
+      reply.header("content-disposition", `attachment; filename="${jsonlName(name, params)}"`);
+    if (route.public)
+      reply.header("cache-control", "private, max-age=60").header("x-robots-tag", "noindex");
+    return reply.send(result);
+  } catch (err) {
+    await call.refused(viewer, err, ended);
+    return sendError(reply, err);
+  }
 }
 
 /** Open a server-sent-event stream on a reply; `write` sends one event, `close` stops the heartbeat. */
@@ -192,21 +229,26 @@ function openStream<E extends { readonly type: string }>(
 function registerEvents(app: FastifyInstance, options: AppOptions, auth: Authenticator): void {
   app.get(ROUTES.experimentEvents.path, async (req, reply) => {
     const id = (req.params as { id: string }).id;
+    const call = auditCall(options.platform.audit, "experimentEvents", req);
+    let viewer: Viewer = NOBODY;
     let first: ExperimentEvent;
-    let viewer: Viewer;
     try {
-      viewer = await viewerFor(ROUTES.experimentEvents, req, auth);
-      const view = await options.platform.experiments.view(viewer, id);
-      first = {
-        type: "experiment",
-        summary: {
-          experiment: view.experiment,
-          status: view.status,
-          progress: view.progress,
-          passRate: view.passRate,
-        },
-      };
+      first = await call.within(async () => {
+        viewer = await identify(ROUTES.experimentEvents, req, auth);
+        const view = await options.platform.experiments.view(viewer, id);
+        await call.succeeded(viewer, { params: { id } });
+        return {
+          type: "experiment",
+          summary: {
+            experiment: view.experiment,
+            status: view.status,
+            progress: view.progress,
+            passRate: view.passRate,
+          },
+        };
+      });
     } catch (err) {
+      await call.refused(viewer, err, { params: { id } }, viewer === NOBODY);
       return sendError(reply, err);
     }
     let off = () => {};
@@ -247,12 +289,17 @@ function inOrder<E>(handle: (e: E) => Promise<unknown>): (e: E) => void {
 function registerActivity(app: FastifyInstance, options: AppOptions, auth: Authenticator): void {
   app.get(ROUTES.worldActivity.path, async (req, reply) => {
     const id = (req.params as { id: string }).id;
-    let viewer: Viewer;
+    const call = auditCall(options.platform.audit, "worldActivity", req);
+    let viewer: Viewer = NOBODY;
     try {
-      viewer = await viewerFor(ROUTES.worldActivity, req, auth);
-      // the activity of a world follows the world's scope: one the person cannot see is a 404
-      await options.platform.gate.world(viewer, id);
+      await call.within(async () => {
+        viewer = await identify(ROUTES.worldActivity, req, auth);
+        // the activity of a world follows the world's scope: one the person cannot see is a 404
+        await options.platform.gate.world(viewer, id);
+        await call.succeeded(viewer, { params: { id } });
+      });
     } catch (err) {
+      await call.refused(viewer, err, { params: { id } }, viewer === NOBODY);
       return sendError(reply, err);
     }
     let off = () => {};
@@ -340,7 +387,12 @@ function registerWeb(app: FastifyInstance, webDist: string | undefined): void {
 }
 
 export function buildApp(options: AppOptions): FastifyInstance {
-  const app = Fastify({ logger: options.logger ?? false, bodyLimit: BODY_LIMIT });
+  const app = Fastify({
+    logger: options.logger ?? false,
+    bodyLimit: BODY_LIMIT,
+    // ties together the entries one request writes to the audit log; unlike a counter, it does not repeat after a restart
+    genReqId: () => randomToken(9),
+  });
   app.setErrorHandler((err: { statusCode?: number; code?: string }, _req, reply) => {
     if (err.code === "FST_ERR_CTP_INVALID_JSON_BODY" || err.code === "FST_ERR_CTP_EMPTY_JSON_BODY")
       return reply

@@ -4839,6 +4839,106 @@
       "kind": "auto"
     },
     {
+      "q": "ADR-0193 감사 기록의 맥락이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0193-audit-log-one-recording-point.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0193 감사 기록의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0193-audit-log-one-recording-point.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0193 감사 기록의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0193-audit-log-one-recording-point.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0193 감사 기록의 이 변경에서 고른 것이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0193-audit-log-one-recording-point.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0193 감사 기록의 이 변경에서 고른 것이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0193-audit-log-one-recording-point.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0193 감사 기록의 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0193-audit-log-one-recording-point.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0193 감사 기록의 대안과 버린 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0193-audit-log-one-recording-point.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0193 감사 기록의 결과가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0193-audit-log-one-recording-point.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0196 셸과 awk는 진짜 구현을 WASM으로 돌려 바꾼다 — 결과를 가르는 한도는 세는 것만 쓰고, sleep은 세계 시간이며, 유틸리티는 따로 시험한다의 맥락이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0196-shell-and-awk-run-as-real-implementations.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0196 셸과 awk는 진짜 구현을 WASM으로 돌려 바꾼다 — 결과를 가르는 한도는 세는 것만 쓰고, sleep은 세계 시간이며, 유틸리티는 따로 시험한다의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0196-shell-and-awk-run-as-real-implementations.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0196 셸과 awk는 진짜 구현을 WASM으로 돌려 바꾼다 — 결과를 가르는 한도는 세는 것만 쓰고, sleep은 세계 시간이며, 유틸리티는 따로 시험한다의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0196-shell-and-awk-run-as-real-implementations.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0196 셸과 awk는 진짜 구현을 WASM으로 돌려 바꾼다 — 결과를 가르는 한도는 세는 것만 쓰고, sleep은 세계 시간이며, 유틸리티는 따로 시험한다의 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0196-shell-and-awk-run-as-real-implementations.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0196 셸과 awk는 진짜 구현을 WASM으로 돌려 바꾼다 — 결과를 가르는 한도는 세는 것만 쓰고, sleep은 세계 시간이며, 유틸리티는 따로 시험한다의 버린 길이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0196-shell-and-awk-run-as-real-implementations.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0196 셸과 awk는 진짜 구현을 WASM으로 돌려 바꾼다 — 결과를 가르는 한도는 세는 것만 쓰고, sleep은 세계 시간이며, 유틸리티는 따로 시험한다의 결과가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0196-shell-and-awk-run-as-real-implementations.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0197 실험은 \"맡겨도 되나\"에 답한다 — 맡기는 범위는 실험 조건, 승인은 규칙, 지킬 것은 점수와 따로, 판정은 업무와 근무 둘의 맥락이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0197-experiments-answer-whether-to-entrust.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0197 실험은 \"맡겨도 되나\"에 답한다 — 맡기는 범위는 실험 조건, 승인은 규칙, 지킬 것은 점수와 따로, 판정은 업무와 근무 둘의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0197-experiments-answer-whether-to-entrust.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0197 실험은 \"맡겨도 되나\"에 답한다 — 맡기는 범위는 실험 조건, 승인은 규칙, 지킬 것은 점수와 따로, 판정은 업무와 근무 둘의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0197-experiments-answer-whether-to-entrust.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0197 실험은 \"맡겨도 되나\"에 답한다 — 맡기는 범위는 실험 조건, 승인은 규칙, 지킬 것은 점수와 따로, 판정은 업무와 근무 둘의 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0197-experiments-answer-whether-to-entrust.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0197 실험은 \"맡겨도 되나\"에 답한다 — 맡기는 범위는 실험 조건, 승인은 규칙, 지킬 것은 점수와 따로, 판정은 업무와 근무 둘의 버린 길이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0197-experiments-answer-whether-to-entrust.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0197 실험은 \"맡겨도 되나\"에 답한다 — 맡기는 범위는 실험 조건, 승인은 규칙, 지킬 것은 점수와 따로, 판정은 업무와 근무 둘의 결과가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0197-experiments-answer-whether-to-entrust.md"],
+      "kind": "auto"
+    },
+    {
       "q": "ADR이 뭐예요?",
       "expect": ["docs/design-docs/adr-process.md"],
       "kind": "auto"
@@ -6179,6 +6279,16 @@
       "kind": "auto"
     },
     {
+      "q": "HTTP API 계약의 감사 기록이 뭐예요?",
+      "expect": ["docs/design-docs/http-api.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "HTTP API 계약의 감사 기록이 뭐예요?",
+      "expect": ["docs/design-docs/http-api.md"],
+      "kind": "auto"
+    },
+    {
       "q": "HTTP API 계약의 연결이 뭐예요?",
       "expect": ["docs/design-docs/http-api.md"],
       "kind": "auto"
@@ -6849,7 +6959,17 @@
       "kind": "auto"
     },
     {
+      "q": "서버 운영의 설정 파일 예가 뭐예요?",
+      "expect": ["docs/design-docs/operations.md"],
+      "kind": "auto"
+    },
+    {
       "q": "서버 운영의 비밀 값과 열쇠가 뭐예요?",
+      "expect": ["docs/design-docs/operations.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "서버 운영의 사용자 식별 자리가 뭐예요?",
       "expect": ["docs/design-docs/operations.md"],
       "kind": "auto"
     },
@@ -6914,6 +7034,11 @@
       "kind": "auto"
     },
     {
+      "q": "권한의 6. 감사 기록이 뭐예요?",
+      "expect": ["docs/design-docs/permissions.md"],
+      "kind": "auto"
+    },
+    {
       "q": "권한의 7. 화면이 뭐예요?",
       "expect": ["docs/design-docs/permissions.md"],
       "kind": "auto"
@@ -6935,6 +7060,11 @@
     },
     {
       "q": "권한의 나 단계에서 만든 것과 알려진 한계가 뭐예요?",
+      "expect": ["docs/design-docs/permissions.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "권한의 다 단계에서 만든 것과 알려진 한계가 뭐예요?",
       "expect": ["docs/design-docs/permissions.md"],
       "kind": "auto"
     },
@@ -8064,6 +8194,101 @@
       "kind": "auto"
     },
     {
+      "q": "맡겨도 되나에 답하는 실험이 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 0. 한 문장이 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 1. 왜가 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 2. 지금 있는 것과 없는 것이 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 3. 맡기는 범위는 실험 조건이에요가 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 권한 수준이 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 4. 승인은 규칙이에요가 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 승인 규칙: 어떤 조치에 승인이 필요한가가 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 요청과 허가가 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 승인하는 상대가 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 5. 규칙: 일을 넘어 지키는 것이 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 6. 운영 실험을 깊게가 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 업무 묶음이 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 판정 기록이 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 순위와 대회가 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 8. 화면이 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 9. 하지 않는 것이 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 10. 순서가 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "맡겨도 되나에 답하는 실험의 시험이 뭐예요?",
+      "expect": ["docs/design-docs/trust-experiments.md"],
+      "kind": "auto"
+    },
+    {
       "q": "UX를 숫자로 재는 법이 뭐예요?",
       "expect": ["docs/design-docs/ux-honeycomb.md"],
       "kind": "auto"
@@ -8670,6 +8895,11 @@
     },
     {
       "q": "테라리움 요구사항의 시뮬레이터가 뭐예요?",
+      "expect": ["docs/product-specs/requirements.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "테라리움 요구사항의 실험 플랫폼이 뭐예요?",
       "expect": ["docs/product-specs/requirements.md"],
       "kind": "auto"
     },

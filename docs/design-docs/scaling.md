@@ -2,18 +2,20 @@
 title: 규모 키우기 — 스케일 업과 스케일 아웃
 kind: guide
 status: active
-last_verified: 2026-11-06
+last_verified: 2026-11-12
 covers:
   - apps/server/src/cluster/protocol.ts
   - apps/server/src/cluster/control-routes.ts
   - apps/server/src/cluster/cluster-host.ts
-covers_hash: e88493d289941b13
+covers_hash: a2927fbb57279bc1
 verification_log:
-  - "2026-10-29: 역할, 지표 이름, 하트비트·비우기 동작을 protocol.ts, control-routes.ts, main.ts와 대조했다"
   - "2026-10-29: 용량 문서 링크 추가"
   - "2026-11-03: 서버·core가 사람에게 돌려주는 안내 문장이 해요체로 바뀐 것만 확인했다. 동작과 본문은 그대로 (ADR-0050)"
   - "2026-11-04: 2026-11-04: 자리 잡기와 재시도, 메모리 약속 설명을 cluster-host.ts, admission.ts와 대조했다 (ADR-0056)"
   - "2026-11-06: cluster/protocol.ts·node-server.ts·remote-host.ts에 사람 응답 경로(/sessions/:id/human)가 생긴 것을 4번 문장에 더했다. 나머지 구조는 그대로 (ADR-0087)"
+  - "2026-11-12: 감사 기록의 지표 둘이 /metrics 끝에 붙는 것(control-routes.ts의 extraMetrics)을 코드와 대어 한 줄 더함. 나머지 표는 그대로 맞다"
+verified_body: 7aeed977f7a9ccba
+unchanged_reverifies: 0
 ---
 # 규모 키우기 (REQ-042, [ADR-0032](adr/0032-scale-out-workers.md))
 
@@ -89,6 +91,8 @@ verification_log:
 | `terrarium_nodes`, `terrarium_nodes_draining` | 살아 있는 노드, 비우는 중인 노드 |
 | `terrarium_session_utilization` | 도는 수 ÷ 자리 (0~1) |
 | `terrarium_nodes_wanted` | **일을 다 담으려면 필요한 워커 수. 이 값으로 늘리고 줄인다.** |
+
+같은 길의 끝에 감사 기록의 지표 둘(`terrarium_audit_entries_total`, `terrarium_audit_write_failures_total`)이 붙는다. 자동 확장은 이것을 쓰지 않는다([서버 운영](operations.md)).
 
 CPU 사용률로 늘리지 마라. 실행이 기다리는 동안 CPU는 한가해서, 줄이 길어도 CPU는 낮다.
 `deploy/k8s/autoscaling-keda.yaml`이 KEDA 예다. VM이면 같은 지표를 클라우드 오토스케일러에 연결한다.

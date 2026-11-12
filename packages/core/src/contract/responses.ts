@@ -1,6 +1,7 @@
 /** The JSON each route answers with (one line per route of the table in routes.ts). */
 
 import type { SlotsView } from "@terrarium/core/physics/slots";
+import type { AuditOwnPageView, AuditPageView } from "./audit";
 import type { LikeView, UserTitlesView, WorldCardView } from "./community";
 import type {
   AgentHistoryView,
@@ -130,5 +131,8 @@ export interface Responses {
   leaderboards: LeaderboardView[];
   twinDiagnoses: string;
   twinBrief: string;
+  listAudit: AuditPageView;
+  exportAudit: string;
+  listAuditMine: AuditOwnPageView;
   sharedReport: string;
 }
