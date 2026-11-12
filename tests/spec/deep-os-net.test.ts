@@ -78,7 +78,7 @@ describe("dig and nslookup print the answer or the NXDOMAIN of the resolver [REQ
     expect(sh("nslookup nope.dc.local 10.20.0.54")).toContain("Server:\t\t10.20.0.54");
     expect(run("srv-a2", "nslookup")).toMatchObject({
       exitCode: 2,
-      outside: ["nslookup (대화형)"],
+      outside: ["nslookup 대화형 모드"],
     });
   });
 });

@@ -119,7 +119,7 @@
 | [ADR-0114 컨테이너 층을 코어 모델로 올리면서 시험의 기대값을 고친다](../design-docs/adr/0114-container-layer-amend-tests.md) | 유효 |  |
 | [ADR-0115 SDN 오버레이와 클라우드 네이티브 네트워크 층을 코어 모델로 올리면서 시험 열다섯 곳의 기대값을 고친다](../design-docs/adr/0115-sdn-network-layer-amend-tests.md) | 유효 |  |
 | [ADR-0116 진짜 호스트 섞기 — 세계의 서버 몇 대는 실제 리눅스가 답한다](../design-docs/adr/0116-real-hosts-in-the-world.md) | 대체됨 | 대체: [0117](../design-docs/adr/0117-deep-os-simulation.md) |
-| [ADR-0117 흉내 OS를 깊게 — 작은 리눅스 흉내가 run_command에 답한다 (0116 대체)](../design-docs/adr/0117-deep-os-simulation.md) | 유효 |  |
+| [ADR-0117 흉내 OS를 깊게 — 작은 리눅스 흉내가 run_command에 답한다 (0116 대체)](../design-docs/adr/0117-deep-os-simulation.md) | 유효 | 일부 고침: [0184](../design-docs/adr/0184-emulation-gap-hints.md) (흉내가 못 하는 것은 command not found나 안 돼요로만 답하고 센다) |
 | [ADR-0118 깊은 OS 흉내를 구현하면서 시험 다섯 곳의 기대값을 고치고 시험을 더한다](../design-docs/adr/0118-deep-os-tests.md) | 유효 |  |
 | [ADR-0119 LLM API 등록 — 워크스페이스 단위 모델 연결, 키는 서버에만, 얇은 클라이언트](../design-docs/adr/0119-llm-api-registration.md) | 유효 |  |
 | [ADR-0120 컨테이너·SDN 층을 깊은 OS 흉내 위에 얹으면서 노드 디스크 압박 시험의 지우는 길을 고친다](../design-docs/adr/0120-container-layer-on-deep-os.md) | 유효 |  |
@@ -143,7 +143,7 @@
 | [ADR-0138 제품 목표를 요구사항 문서 맨 위에 적고 설계 결정의 기준으로 삼는다](../design-docs/adr/0138-product-goal.md) | 유효 |  |
 | [ADR-0139 CCTV는 카메라 개체·보는 자리·배경 자리의 세 자리로 두고, 실험의 그림은 서버가 결정적으로 그린다](../design-docs/adr/0139-camera-view-and-backdrop-slots.md) | 유효 |  |
 | [ADR-0140 CI가 합치기 관문이다 — 테스트는 조각으로 나눠 병렬로, 커버리지는 따로 잰다](../design-docs/adr/0140-ci-shards-and-merge-gate.md) | 유효 |  |
-| [ADR-0141 UX 검사를 게이트인 여정과 게이트 아닌 측정으로 나누고, 러너에서 안 되던 화면을 고친다](../design-docs/adr/0141-ux-journeys-gate-and-measure.md) | 유효 |  |
+| [ADR-0141 UX 검사를 게이트인 여정과 게이트 아닌 측정으로 나누고, 러너에서 안 되던 화면을 고친다](../design-docs/adr/0141-ux-journeys-gate-and-measure.md) | 유효 | 일부 고침: [0175](../design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md) (점수 파일을 변경마다 커밋하고 여정 묶음은 셋) |
 | [ADR-0142 커버리지 하한을 새 단위까지 넓히고, 고장 난 날에도 물리 법칙을 검사한다](../design-docs/adr/0142-coverage-floors-and-fault-law-checks.md) | 유효 |  |
 | [ADR-0143 깊은 OS 흉내를 GNU에 더 가깝게 하고 커버리지 하한을 채운다](../design-docs/adr/0143-shell-fidelity-and-coverage-gate.md) | 유효 |  |
 | [ADR-0144 현실 데이터는 네 단으로 들어오고, 세계는 현실과 실험 두 종류이며, 모델은 핵심을 잠그고 넓힌다](../design-docs/adr/0144-reality-data-pipeline-ontology-manager-world-kinds.md) | 유효 | 일부 고침: [0156](../design-docs/adr/0156-blast-radius-ports-redundancy-groups-in-memory-index.md) (관계 표의 끊기면 넘어가나), [0165](../design-docs/adr/0165-dataset-refine-ontology-link-layers-open-types.md) (정제·링크를 한 단계 안에 접음), [0167](../design-docs/adr/0167-data-pipeline-words-from-practice.md) (순우리말로 지은 이름), [0170](../design-docs/adr/0170-product-design-one-page-six-principles.md) (단계 A~D의 순서) |
@@ -177,10 +177,12 @@
 | [ADR-0172 제공되는 시나리오는 그 세계에서 정답 풀이가 만점을 받는다](../design-docs/adr/0172-offered-scenario-means-reference-solution-reaches-full-score.md) | 유효 | 일부 고침: [0178](../design-docs/adr/0178-offered-scenario-solved-on-every-world-shape.md) (정답 풀이 불변식은 골든 행렬의 다섯 세계만) |
 | [ADR-0173 문서만 바뀐 변경은 가벼운 CI 경로를 탄다](../design-docs/adr/0173-docs-only-changes-take-a-light-ci-path.md) | 유효 |  |
 | [ADR-0174 권한은 프록시가 넘겨준 신원, 역할 둘, 공개 범위 셋, 감사 기록으로 한다](../design-docs/adr/0174-permissions-proxy-identity-three-scopes-audit.md) | 유효 |  |
+| [ADR-0175 UX 검사를 더 잘게 나눠 돌리고, 점수 파일은 변경마다 커밋하지 않는다](../design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md) | 유효 |  |
 | [ADR-0177 제품 목표의 "현실을 닮은 세계"에 현실의 데이터로 지은 세계를 적고, 맨 위 문서를 목표에 맞춘다](../design-docs/adr/0177-goal-text-reality-worlds-and-top-level-docs.md) | 유효 |  |
 | [ADR-0178 제공되는 시나리오는 제품이 만드는 모든 세계 모양에서 정답 풀이가 만점을 받는다](../design-docs/adr/0178-offered-scenario-solved-on-every-world-shape.md) | 유효 |  |
 | [ADR-0180 문서는 코드뿐 아니라 결정도 따라간다 — 결정이 바꾸는 문서를 적고, 고쳐진 결정에 표시를 남기고, 목록은 만들어 낸다](../design-docs/adr/0180-docs-follow-decisions-not-only-code.md) | 유효 | 일부 고침: [0182](../design-docs/adr/0182-amends-says-what-it-changed.md) (amends와 amended_by는 파일 이름만 적음) |
 | [ADR-0181 테라리움의 라이선스는 Apache License 2.0이다](../design-docs/adr/0181-license-apache-2.md) | 유효 |  |
 | [ADR-0182 고친 결정에는 무엇을 고쳤는지 한 구절을 적는다 — amends의 what, link-amends가 옮겨 적고, 결정 목록이 보인다](../design-docs/adr/0182-amends-says-what-it-changed.md) | 유효 |  |
 | [ADR-0183 화면의 모든 글은 한 가지 말을 쓰고, 옛 말이 돌아오지 못하게 검사한다](../design-docs/adr/0183-one-vocabulary-on-every-screen.md) | 유효 |  |
+| [ADR-0184 실험장이 못 해서 틀린 것에만 힌트를 준다 — 흉내 한계(emulation gap)는 한 가지 길로 말하고 기록한다](../design-docs/adr/0184-emulation-gap-hints.md) | 유효 |  |
 | [ADR-0187 공개 저장소에는 공개된 자료에서 온 사실만 둔다 — 내부에서 들은 사실은 요구로 바꿔 적고, 이미 들어간 것은 봉인된 기록에서도 걷어낸다](../design-docs/adr/0187-no-internal-facts-in-the-public-repository.md) | 유효 |  |

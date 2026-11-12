@@ -107,6 +107,7 @@ const runCommand: Handler = (ctx, args) => {
     stdout: result.stdout,
     stderr: result.stderr,
     outside: result.outside,
+    gaps: result.gaps,
   };
 };
 

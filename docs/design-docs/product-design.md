@@ -4,17 +4,17 @@ kind: guide
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: 4절을 생성된 결정 목록 링크와 짧은 설명으로 바꿈 (ADR-0180). 다른 절은 그대로 맞다"
   - "2026-11-11: main을 합친 뒤: requirements.md의 바뀐 곳(목표 첫째 부분)이 1절 기둥과 맞고, ADR-0171이 아직 합쳐지지 않아 '만드는 중'으로 적고, 툴 수를 세어 견주는 표시로 바꿈 (ADR-0180)"
   - "2026-11-12: 따라가는 beta-rounds.md는 ADR-0171/0173의 만드는 중 표시만 지워졌고, requirements.md는 그대로. ADR-0171이 main에 들어와 본문의 만드는 중 표시를 지움"
   - "2026-11-12: 따라가는 beta-rounds.md에 이슈 47 일정 절이 더해짐. 차수의 순서와 내용은 그대로라 이 문서와 어긋나지 않는다"
-  - "2026-11-12: 따라가는 beta-rounds.md의 파워 캐핑 한 줄에서 내부 출처 서술이 빠짐(ADR-0187). 차수의 내용은 그대로라 이 문서와 어긋나지 않는다"
+  - "2026-11-12: 따라가는 requirements.md의 REQ-098 문장(없는 명령과 한계 구분)만 바뀌어 이 문서와 어긋나지 않음을 대조"
+  - "2026-11-12: main을 합침: 따라가는 문서의 바뀐 곳은 내부 출처 서술을 걷어낸 것(ADR-0187)과 REQ-098의 한계 알림 문장(ADR-0184). 이 문서와 어긋나지 않는다"
 follows:
   - docs/product-specs/requirements.md
   - docs/exec-plans/active/beta-rounds.md
-follows_hash: ce87cb416775f20e
+follows_hash: c6de686ce97ed70d
 verified_body: fde6a136c1ff284d
-unchanged_reverifies: 2
+unchanged_reverifies: 3
 ---
 # 제품 설계 한 장 (ADR-0170)
 

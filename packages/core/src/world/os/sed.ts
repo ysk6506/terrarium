@@ -2,9 +2,10 @@
 import { allValues, hasAny, parseArgs } from "./args";
 import { normalize } from "./fs";
 import { errText, readInputs } from "./io";
+import { badFlag } from "./real-options";
 import { posixRegExp } from "./regex";
 import { type Address, parseSed, type SedCmd, SedSyntax } from "./sed-parse";
-import { act, type Cmd, fail, linesOf, type R, unsupported } from "./types";
+import { act, type Cmd, emulationGap, fail, linesOf, type R } from "./types";
 
 interface State {
   pattern: string;
@@ -232,16 +233,24 @@ function compileScript(scripts: readonly string[], extended: boolean): SedCmd[] 
       posixRegExp(src, { extended, ignoreCase }),
     );
   } catch (e) {
-    if (e instanceof SedSyntax)
-      return {
-        out: "",
-        err: `sed: -e expression #1, char 0: ${e.message}`,
-        code: 1,
-        ...(e.outside ? { outside: e.outside } : {}),
-      };
-    throw e;
+    if (!(e instanceof SedSyntax)) throw e;
+    if (!e.gap) return fail(`sed: -e expression #1, char 0: ${e.message}`, 1);
+    return emulationGap(
+      {
+        tool: "sed",
+        feature: e.gap.feature,
+        what: e.gap.what,
+        supported: SED_SUPPORTED,
+        example: SED_EXAMPLE,
+      },
+      1,
+    );
   }
 }
+
+const SED_SUPPORTED =
+  "-n -e -f -E -r -s -z -i[접미사]; 주소(줄 번호, $, /정규식/, 구간, !), 명령 s y p d q = h H g G x a i c { }, s의 g p i N 플래그";
+const SED_EXAMPLE = "sed -n 1p /etc/hosts";
 
 const SED_FLAGS = {
   bool: "nErsiz",
@@ -284,8 +293,15 @@ function oneStream(texts: readonly string[]): string {
 export function sed(c: Cmd): R {
   const { suffix, args } = inPlaceSuffix(c.args);
   const p = parseArgs(args, SED_FLAGS);
-  if (p.bad) return unsupported("sed", p.bad);
-  if (/[*/]/.test(suffix)) return unsupported("sed", `-i 접미사 ${suffix}`);
+  if (p.bad) return badFlag("sed", p, SED_SUPPORTED);
+  if (/[*/]/.test(suffix))
+    return emulationGap({
+      tool: "sed",
+      feature: "flag:-i-suffix",
+      what: `-i 접미사 ${suffix}`,
+      supported: SED_SUPPORTED,
+      example: SED_EXAMPLE,
+    });
   const rest = [...p.rest];
   const scripts = scriptsOf(c, rest);
   if ("code" in scripts) return scripts;

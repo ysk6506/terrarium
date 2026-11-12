@@ -23,6 +23,9 @@ amends_tests:
   - harness/src/ux/run.test.ts::<import:268837c3>
 test_change_reason: 테스트 파일의 import 한 줄에 새로 만든 `journeys`를 더했다. 단언은 하나도 바꾸지 않았고 지우지 않았다. 새 단언([REQ-114])만 더했다.
 decision_hash: db4a5eb7f3dd6698
+amended_by:
+  - adr: "0175"
+    what: 점수 파일을 변경마다 커밋하고 여정 묶음은 셋
 ---
 # ADR-0141 UX 검사를 게이트인 여정과 게이트 아닌 측정으로 나누고, 러너에서 안 되던 화면을 고친다
 

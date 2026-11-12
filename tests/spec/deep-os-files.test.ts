@@ -129,7 +129,11 @@ describe("stat, touch, cp, mv, rm and truncate change and refuse like the real o
     expect(run("srv-a2", "cp /etc/hostname /nope/x").stderr).toBe(
       "cp: cannot create regular file '/nope/x': Permission denied",
     );
-    expect(run("srv-a2", "cp /etc/hostname").outside).toEqual(["cp 인자 두 개만 돼요"]);
+    // ADR-0184: a missing operand is the real cp's own complaint, not a gap
+    expect(run("srv-a2", "cp /etc/hostname")).toMatchObject({
+      stderr: "cp: missing destination file operand after '/etc/hostname'",
+      outside: [],
+    });
   });
 
   test("rm removes files, -v says so, -f keeps quiet about what is missing, a directory and a system file are refused", () => {
@@ -159,9 +163,7 @@ describe("stat, touch, cp, mv, rm and truncate change and refuse like the real o
       stderr: "truncate: you must specify either '--size' or '--reference'",
       exitCode: 1,
     });
-    expect(run("srv-a2", "truncate -s 100 /tmp/_tr").outside).toEqual([
-      "truncate -s 100 (0만 돼요)",
-    ]);
+    expect(run("srv-a2", "truncate -s 100 /tmp/_tr").outside).toEqual(["truncate -s 100"]);
     expect(run("srv-a2", "truncate -s 0 /tmp/_missing")).toMatchObject({
       stderr: "truncate: cannot open '/tmp/_missing' for writing: No such file or directory",
       exitCode: 1,

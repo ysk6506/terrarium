@@ -9,13 +9,14 @@ import { lbHealthReply } from "./cmd-lb";
 import { skewAt } from "./journal";
 import { portOf } from "./layout";
 import { addressOf, IP, pingable, resolveName, resolverAnswers, resolverOf } from "./net-names";
-import { type Cmd, fail, joinLines, ok, type R, unsupported } from "./types";
+import { badFlag } from "./real-options";
+import { type Cmd, emulationGap, fail, joinLines, ok, type R } from "./types";
 
 // ── ping ────────────────────────────────────────────────────────────────────────────────────
 
 export function ping(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "nqA46", val: "cWwisI" });
-  if (p.bad) return unsupported("ping", p.bad);
+  if (p.bad) return badFlag("ping", p);
   const count = Math.min(Number(p.flags.get("c") ?? 4) || 4, 10);
   const target = p.rest[0];
   if (!target) return fail("ping: usage error: Destination address required", 2);
@@ -162,11 +163,19 @@ export function curl(c: Cmd): R {
       "connect-timeout": "val",
     },
   });
-  if (p.bad) return unsupported("curl", p.bad);
+  if (p.bad) return badFlag("curl", p);
   const url = p.rest[0];
   if (!url) return fail("curl: try 'curl --help' for more information", 2);
-  if (p.flags.has("X") || p.flags.has("d") || has(p, "v") || p.flags.has("T"))
-    return unsupported("curl", "POST·-v 같은 옵션");
+  const missing = ["X", "d", "v", "T"].find((f) => p.flags.has(f));
+  if (missing)
+    return emulationGap({
+      tool: "curl",
+      feature: `flag:-${missing}`,
+      what: `-${missing}`,
+      supported:
+        "GET만: -s -S -k -L -I -i -f -g -o 파일 -w 형식 -m 초 -H 헤더 -A 에이전트 -u 사용자, --connect-timeout",
+      example: "curl -s http://localhost/",
+    });
   const host =
     url
       .replace(/^\w+:\/\//, "")
@@ -239,6 +248,22 @@ function query(c: Cmd, name: string, via?: string): DnsAnswer {
     : { server, status: "NXDOMAIN", name: fqdn };
 }
 
+/** Options of the real dig (BIND 9 `dig -h`) the fake lacks: the rest it would refuse itself. */
+function digRefusal(option: string): R {
+  if (!/^-[bcfkmpqrtuvy]/.test(option))
+    return fail(
+      `Invalid option: ${option}\nUsage:  dig [@global-server] [domain] [q-type] [q-class] {q-opt}\n        {global-d-opt} host [@local-server] {local-d-opt}\n        [ host [@local-server] {local-d-opt} [...]]\nUse "dig -h" (or "dig -h | more") for complete list of options`,
+      1,
+    );
+  return emulationGap({
+    tool: "dig",
+    feature: `flag:${option.slice(0, 2)}`,
+    what: option,
+    supported: "[@서버] 이름, +short, -4, -6, -x",
+    example: "dig +short localhost",
+  });
+}
+
 export function dig(c: Cmd): R {
   const words = c.args.filter((a) => !a.startsWith("+"));
   const via = words.find((a) => a.startsWith("@"))?.slice(1);
@@ -247,7 +272,7 @@ export function dig(c: Cmd): R {
       !a.startsWith("@") && !a.startsWith("-") && !/^(A|AAAA|MX|TXT|NS|CNAME|PTR|SOA|ANY)$/.test(a),
   );
   const unknown = c.args.find((a) => a.startsWith("-") && a !== "-4" && a !== "-6" && a !== "-x");
-  if (unknown) return unsupported("dig", unknown);
+  if (unknown) return digRefusal(unknown);
   if (!name) return ok("; <<>> DiG 9.16.23-RH <<>>\n;; global options: +cmd\n");
   const a = query(c, name, via);
   const short = c.args.includes("+short");
@@ -285,7 +310,14 @@ export function dig(c: Cmd): R {
 
 export function nslookup(c: Cmd): R {
   const [name, via] = c.args.filter((a) => !a.startsWith("-"));
-  if (!name) return unsupported("nslookup", "(대화형)");
+  if (!name)
+    return emulationGap({
+      tool: "nslookup",
+      feature: "interactive",
+      what: "대화형 모드",
+      supported: "nslookup 이름 [서버]",
+      example: "nslookup localhost",
+    });
   const a = query(c, name, via);
   if (a.status === "TIMEOUT")
     return { out: ";; connection timed out; no servers could be reached\n\n", code: 1 };

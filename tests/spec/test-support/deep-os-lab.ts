@@ -12,6 +12,7 @@ export interface Shelled {
   readonly output: string;
   readonly exitCode: number;
   readonly outside: string[];
+  readonly gaps: { readonly tool: string; readonly feature: string }[];
 }
 
 export function lab(seconds = 600) {
