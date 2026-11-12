@@ -1,7 +1,7 @@
 /**
- * Power capping, model only (REQ-107, ADR-0130, docs/design-docs/power-capping-reference.md): a cap on a server moves its CPU/GPU
+ * Power capping, model only (REQ-107, ADR-0130, docs/design-docs/power-cooling-ladders.md): a cap on a server moves its CPU/GPU
  * clocks, the clocks move throughput, and power (hence heat) follows. Rack-level distribution has two modes (균등, 부하 비례).
- * Two validated scenarios: keep a rack inside the power it is allotted, and hold servers up while the cooling is short.
+ * Two scenarios: keep a rack inside the power it is allotted, and hold servers up while the cooling is short.
  */
 import { Catalog } from "@terrarium/core/catalog";
 import { distributeCap, Physics, perfUnderCap } from "@terrarium/core/physics";
