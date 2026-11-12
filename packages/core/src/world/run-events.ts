@@ -188,8 +188,22 @@ export interface LinkEvent extends Stamp {
   readonly gapSeconds?: number;
 }
 
+/**
+ * A call hit something the real tool can do and the proving ground cannot (ADR-0184). One event per gap, written right
+ * after the tool event of the call. `tool` and `feature` are stable keys from fixed tables (`awk`, `printf-%c`), never
+ * text the agent typed, so the record carries no command, file name or row.
+ */
+export interface GapEvent extends Stamp {
+  readonly kind: "gap";
+  readonly tool: string;
+  readonly feature: string;
+  /** The `seq` of the tool event this gap belongs to. */
+  readonly call: number;
+}
+
 export type RunEvent =
   | ToolEvent
+  | GapEvent
   | WorldRunEvent
   | ScoreEvent
   | HumanEvent

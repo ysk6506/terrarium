@@ -10,7 +10,8 @@ import { dateAt, sdStamp } from "./clock";
 import { instanceOn } from "./cmd-db";
 import { formatJournal, journalLines } from "./journal";
 import { lastStart, processTable } from "./procs";
-import { act, type Cmd, fail, ok, type R, unsupported } from "./types";
+import { badFlag } from "./real-options";
+import { act, type Cmd, emulationGap, fail, ok, type R } from "./types";
 
 const unitName = (arg: string): string => arg.replace(/\.service$/, "");
 
@@ -208,7 +209,15 @@ interface Call {
 
 const VERB_HANDLERS: Readonly<Record<string, (k: Call) => R>> = {
   status: (k) =>
-    k.names.length ? status(k.c, k.names) : unsupported("systemctl", "status (유닛 이름 없이)"),
+    k.names.length
+      ? status(k.c, k.names)
+      : emulationGap({
+          tool: "systemctl",
+          feature: "status-no-unit",
+          what: "status (유닛 이름 없이)",
+          supported: SYSTEMCTL_SUPPORTED,
+          example: "systemctl list-units --failed",
+        }),
   enable: (k) => toggle(k.c, "enable", k.names),
   disable: (k) => toggle(k.c, "disable", k.names),
   "list-units": (k) =>
@@ -242,13 +251,35 @@ export function systemctl(c: Cmd): R {
       state: "val",
     },
   });
-  if (p.bad) return unsupported("systemctl", p.bad);
+  if (p.bad) return badFlag("systemctl", p);
   const [verb = "list-units", ...rest] = p.rest;
   const names = rest.map(unitName);
   if ((VERBS as readonly string[]).includes(verb) && names.length > 0)
     return change(c, verb, names);
   const handler = VERB_HANDLERS[verb];
-  return handler ? handler({ c, verb, names, p }) : unsupported("systemctl", verb);
+  if ((VERBS as readonly string[]).includes(verb)) return fail("Too few arguments.", 1);
+  return handler ? handler({ c, verb, names, p }) : verbRefusal(verb);
+}
+
+/** Verbs of the real systemctl (`systemctl --help`, systemd 255) the fake has no handler for. */
+const REAL_VERBS = new Set(
+  "list-sockets list-timers list-dependencies list-unit-files list-jobs list-machines start stop reload restart try-restart reload-or-restart try-reload-or-restart kill clean freeze thaw mask unmask link revert add-wants add-requires edit set-property reset-failed is-system-running get-default set-default show-environment set-environment unset-environment import-environment default rescue emergency halt poweroff reboot kexec suspend hibernate hybrid-sleep exit switch-root isolate cancel preset preset-all".split(
+    " ",
+  ),
+);
+
+const SYSTEMCTL_SUPPORTED =
+  "status <유닛>, start|stop|restart|reload <유닛>, enable|disable <유닛>, is-active|is-enabled|is-failed <유닛>, show -p, cat, list-units [--failed] [-a], daemon-reload, 옵션 -a -l -t -p --failed --no-pager --now";
+
+function verbRefusal(verb: string): R {
+  if (!REAL_VERBS.has(verb)) return fail(`Unknown command verb ${verb}.`, 1);
+  return emulationGap({
+    tool: "systemctl",
+    feature: `verb:${verb}`,
+    what: verb,
+    supported: SYSTEMCTL_SUPPORTED,
+    example: "systemctl list-units --failed",
+  });
 }
 
 function catUnit(c: Cmd, name: string): R {

@@ -136,9 +136,7 @@ describe("test and [ [REQ-098]", () => {
     expect(run("srv-a2", "[ -f /nonexistent -o -d /nonexistent ]").exitCode).toBe(1);
     expect(run("srv-a2", "[ -d /tmp -a -e /etc ]").exitCode).toBe(0);
     expect(run("srv-a2", "[ -d /tmp -a -e /nonexistent ]").exitCode).toBe(1);
-    expect(run("srv-a2", "[ -z a -o -q b ]")).toMatchObject({
-      exitCode: 2,
-      outside: ["[ -z a -o -q b"],
-    });
+    // ADR-0184: -q is no test operator, so bash's own complaint (exit 2) and nothing outside
+    expect(run("srv-a2", "[ -z a -o -q b ]")).toMatchObject({ exitCode: 2, outside: [] });
   });
 });

@@ -90,12 +90,15 @@ describe("time and certificates [REQ-098]", () => {
 
   test("[REQ-098] openssl and chronyc without a subcommand are refused and counted outside, as are unknown switches", () => {
     const { run } = lab();
-    expect(run("srv-a2", "openssl")).toMatchObject({ exitCode: 2, outside: ["openssl (대화형)"] });
-    expect(run("srv-a2", "openssl x509 -foo")).toMatchObject({
+    expect(run("srv-a2", "openssl")).toMatchObject({
       exitCode: 2,
-      outside: ["openssl x509 -foo"],
+      outside: ["openssl 대화형 모드"],
     });
-    expect(run("srv-a2", "chronyc")).toMatchObject({ exitCode: 2, outside: ["chronyc (대화형)"] });
+    expect(run("srv-a2", "openssl x509 -foo")).toMatchObject({ exitCode: 1, outside: [] });
+    expect(run("srv-a2", "chronyc")).toMatchObject({
+      exitCode: 2,
+      outside: ["chronyc 대화형 모드"],
+    });
   });
 
   test("[REQ-098] openssl x509 needs a file, says when it cannot open one, and prints an empty field for a line the file lacks", () => {
@@ -137,14 +140,9 @@ describe("time and certificates [REQ-098]", () => {
 describe("ps and top [REQ-098]", () => {
   test("[REQ-098] a sort key the fake does not know is refused and counted outside", () => {
     const { run } = lab();
-    expect(run("srv-a2", "ps --sort=nosuch")).toMatchObject({
-      exitCode: 2,
-      outside: ["ps --sort=nosuch"],
-    });
-    expect(run("srv-a2", "top -b -n 1 -o nosuch")).toMatchObject({
-      exitCode: 2,
-      outside: ["top -o nosuch"],
-    });
+    // ADR-0184: a sort key no ps has is refused by ps itself (no hint, nothing outside); a top field no top has likewise
+    expect(run("srv-a2", "ps --sort=nosuch")).toMatchObject({ exitCode: 1, outside: [] });
+    expect(run("srv-a2", "top -b -n 1 -o nosuch")).toMatchObject({ exitCode: 1, outside: [] });
     expect(run("srv-a2", "top").stderr).toBe("top: failed tty get");
   });
 

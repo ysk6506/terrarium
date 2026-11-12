@@ -1,6 +1,7 @@
 /** The interpreter of the small `awk` (ADR-0117): values, fields, variables, arrays, expressions and statements. */
 import { numToStr, sprintf } from "./awk-fmt";
 import { AwkSyntax } from "./awk-lex";
+import { undefinedFunction } from "./awk-names";
 import type { Expr, Stmt } from "./awk-parse";
 import { posixRegExp } from "./regex";
 
@@ -86,7 +87,7 @@ export class Rt {
 
   set(name: string, v: Val): void {
     if (name === "CONVFMT" || name === "OFMT")
-      throw new AwkSyntax(`${name}는 이 흉내에서 안 돼요 (숫자는 %.6g로 찍어요)`, `awk ${name}`);
+      throw new AwkSyntax(name, { feature: `variable:${name}`, what: `${name} 변수` });
     this.vars.set(name, v);
     if (name === "NF") this.setNF(toNum(v));
   }
@@ -356,7 +357,7 @@ const BUILTINS: Readonly<Record<string, Builtin>> = {
 
 function callBuiltin(rt: Rt, name: string, args: Expr[]): Val {
   const f = BUILTINS[name];
-  if (!f) throw new AwkSyntax(`function ${name} never defined`);
+  if (!f) throw undefinedFunction(name);
   return f(rt, args);
 }
 

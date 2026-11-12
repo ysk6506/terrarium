@@ -119,7 +119,7 @@
 | [ADR-0114 컨테이너 층을 코어 모델로 올리면서 시험의 기대값을 고친다](../design-docs/adr/0114-container-layer-amend-tests.md) | 유효 |  |
 | [ADR-0115 SDN 오버레이와 클라우드 네이티브 네트워크 층을 코어 모델로 올리면서 시험 열다섯 곳의 기대값을 고친다](../design-docs/adr/0115-sdn-network-layer-amend-tests.md) | 유효 |  |
 | [ADR-0116 진짜 호스트 섞기 — 세계의 서버 몇 대는 실제 리눅스가 답한다](../design-docs/adr/0116-real-hosts-in-the-world.md) | 대체됨 | 대체: [0117](../design-docs/adr/0117-deep-os-simulation.md) |
-| [ADR-0117 흉내 OS를 깊게 — 작은 리눅스 흉내가 run_command에 답한다 (0116 대체)](../design-docs/adr/0117-deep-os-simulation.md) | 유효 |  |
+| [ADR-0117 흉내 OS를 깊게 — 작은 리눅스 흉내가 run_command에 답한다 (0116 대체)](../design-docs/adr/0117-deep-os-simulation.md) | 유효 | 일부 고침: [0184](../design-docs/adr/0184-emulation-gap-hints.md) (흉내가 못 하는 것은 command not found나 안 돼요로만 답하고 센다) |
 | [ADR-0118 깊은 OS 흉내를 구현하면서 시험 다섯 곳의 기대값을 고치고 시험을 더한다](../design-docs/adr/0118-deep-os-tests.md) | 유효 |  |
 | [ADR-0119 LLM API 등록 — 워크스페이스 단위 모델 연결, 키는 서버에만, 얇은 클라이언트](../design-docs/adr/0119-llm-api-registration.md) | 유효 |  |
 | [ADR-0120 컨테이너·SDN 층을 깊은 OS 흉내 위에 얹으면서 노드 디스크 압박 시험의 지우는 길을 고친다](../design-docs/adr/0120-container-layer-on-deep-os.md) | 유효 |  |
@@ -184,4 +184,5 @@
 | [ADR-0181 테라리움의 라이선스는 Apache License 2.0이다](../design-docs/adr/0181-license-apache-2.md) | 유효 |  |
 | [ADR-0182 고친 결정에는 무엇을 고쳤는지 한 구절을 적는다 — amends의 what, link-amends가 옮겨 적고, 결정 목록이 보인다](../design-docs/adr/0182-amends-says-what-it-changed.md) | 유효 |  |
 | [ADR-0183 화면의 모든 글은 한 가지 말을 쓰고, 옛 말이 돌아오지 못하게 검사한다](../design-docs/adr/0183-one-vocabulary-on-every-screen.md) | 유효 |  |
+| [ADR-0184 실험장이 못 해서 틀린 것에만 힌트를 준다 — 흉내 한계(emulation gap)는 한 가지 길로 말하고 기록한다](../design-docs/adr/0184-emulation-gap-hints.md) | 유효 |  |
 | [ADR-0187 공개 저장소에는 공개된 자료에서 온 사실만 둔다 — 내부에서 들은 사실은 요구로 바꿔 적고, 이미 들어간 것은 봉인된 기록에서도 걷어낸다](../design-docs/adr/0187-no-internal-facts-in-the-public-repository.md) | 유효 |  |

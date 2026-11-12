@@ -373,7 +373,7 @@ describe("nvidia-smi, ibstat and dcgmi on a node in trouble, and on a host witho
     expect(sh(plain, "dcgmi diag -r 1").output).toContain(
       "Unable to connect to the DCGM host engine",
     );
-    expect(sh(server, "dcgmi discovery -l").output).toContain("아직 못 해요");
+    expect(sh(server, "dcgmi discovery -l").output).toContain("terrarium: dcgmi에서 되는 것: diag");
     expect(sh(plain, "ibstat")).toMatchObject({ exitCode: 1 });
   });
 });

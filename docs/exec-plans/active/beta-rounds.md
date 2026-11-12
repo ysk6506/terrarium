@@ -4,16 +4,16 @@ kind: plan
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: 클로즈 베타를 세 차수로 나눠 여는 순서, 경영진 한 장 홈 뺌, 에이전트 다섯까지"
   - "2026-11-12: 이슈 47의 네 단계 일정을 더함, ADR-0173 표시를 머지된 것으로 고침"
   - "2026-11-11: 따라가는 requirements.md의 바뀐 곳은 목표 글뿐이라 차수 계획과 어긋나지 않음을 대조"
   - "2026-11-12: main을 합친 뒤 양쪽 변경을 함께 둠"
-  - "2026-11-12: 파워 캐핑 한 줄에서 내부 출처 서술을 걷어냄 (ADR-0187)"
+  - "2026-11-12: 따라가는 requirements.md의 REQ-098 문장만 바뀌어 차수 계획과 어긋나지 않음을 대조"
+  - "2026-11-12: main을 합침: 파워 캐핑 한 줄(ADR-0187)과 이 변경이 함께 들어감"
 follows:
   - docs/product-specs/requirements.md
-follows_hash: 0423cd5150982538
+follows_hash: d6401b76af04a80e
 verified_body: 73361f1bcfa2a0ec
-unchanged_reverifies: 0
+unchanged_reverifies: 1
 ---
 # 클로즈 베타 차수 계획
 

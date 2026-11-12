@@ -39,11 +39,30 @@ export function operationEndOf(
     : {};
 }
 
-/** The commands the fake shell could not do in a `run_command` call (ADR-0117 decision 6). */
-export function outsideOf(tool: string, result: ToolResult): { outside?: readonly string[] } {
-  if (tool !== "run_command" || !result.ok) return {};
+/** The emulation gaps a call hit (ADR-0184), read from `run_command` and the switch CLI tools. Only the stable pair is kept. */
+function gapsOf(result: ToolResult): Pick<ToolCallRecord, "gaps"> {
+  if (!result.ok) return {};
+  const gaps = (result.data as { gaps?: unknown } | undefined)?.gaps;
+  if (!Array.isArray(gaps)) return {};
+  const pairs = gaps.flatMap((g: { tool?: unknown; feature?: unknown }) =>
+    typeof g?.tool === "string" && typeof g.feature === "string"
+      ? [{ tool: g.tool, feature: g.feature }]
+      : [],
+  );
+  return pairs.length > 0 ? { gaps: pairs } : {};
+}
+
+/** What the fake could not do in a call: shell commands outside the simulation (ADR-0117 decision 6) and emulation gaps (ADR-0184). */
+export function outsideOf(
+  tool: string,
+  result: ToolResult,
+): Pick<ToolCallRecord, "outside" | "gaps"> {
   const outside = (result.data as { outside?: unknown } | undefined)?.outside;
-  return Array.isArray(outside) && outside.length > 0 ? { outside: outside.map(String) } : {};
+  const listed =
+    tool === "run_command" && result.ok && Array.isArray(outside) && outside.length > 0
+      ? { outside: outside.map(String) }
+      : {};
+  return { ...listed, ...gapsOf(result) };
 }
 
 /** What the fake shell could not do in a run, counted from the calls (ADR-0117 decision 6); undefined when `run_command` was not used. */

@@ -6,7 +6,8 @@
 import { has, hasAny, parseArgs } from "./args";
 import { shown } from "./cmd-fs";
 import { baseName, LINK_LOOP, normalize, parentOf } from "./fs";
-import { act, type Cmd, fail, ok, type R, unsupported } from "./types";
+import { badFlag } from "./real-options";
+import { act, type Cmd, emulationGap, fail, ok, type R } from "./types";
 
 const REFUSED = {
   ro: "Read-only file system",
@@ -52,8 +53,15 @@ function makeDir(
 
 export function mkdir(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "pv", val: "m", long: { parents: "bool", verbose: "bool" } });
-  if (p.bad) return unsupported("mkdir", p.bad);
-  if (has(p, "m")) return unsupported("mkdir", "-m (권한은 정하지 않아요)");
+  if (p.bad) return badFlag("mkdir", p);
+  if (has(p, "m"))
+    return emulationGap({
+      tool: "mkdir",
+      feature: "flag:-m",
+      what: "-m (권한 지정)",
+      supported: "-p -v, 디렉터리 이름 여러 개 (권한은 정하지 않아요)",
+      example: "mkdir -p /tmp/terrarium-demo",
+    });
   if (p.rest.length === 0)
     return fail("mkdir: missing operand\nTry 'mkdir --help' for more information.", 1);
   const parents = hasAny(p, "p", "--parents");
@@ -81,9 +89,15 @@ export function ln(c: Cmd): R {
     bool: "sfnvT",
     long: { symbolic: "bool", force: "bool", verbose: "bool" },
   });
-  if (p.bad) return unsupported("ln", p.bad);
+  if (p.bad) return badFlag("ln", p);
   if (!hasAny(p, "s", "--symbolic"))
-    return unsupported("ln", "하드 링크는 못 만들어요 (-s만 돼요)");
+    return emulationGap({
+      tool: "ln",
+      feature: "hard-link",
+      what: "하드 링크",
+      supported: "ln -s 대상 이름 (심볼릭 링크), -f -n -v -T",
+      example: "ln -s /etc/hosts /tmp/terrarium-link",
+    });
   const [target, name = baseName(p.rest[0] ?? "")] = p.rest;
   if (target === undefined || p.rest.length > 2)
     return fail(target === undefined ? "ln: missing file operand" : "ln: extra operand", 1);
@@ -133,7 +147,7 @@ export function readlink(c: Cmd): R {
       "no-newline": "bool",
     },
   });
-  if (p.bad) return unsupported("readlink", p.bad);
+  if (p.bad) return badFlag("readlink", p);
   if (p.rest.length === 0) return fail("readlink: missing operand", 1);
   const end = hasAny(p, "n", "--no-newline") ? "" : "\n";
   const answers = p.rest.map((name) => readOne(c, canonMode(p), shown(c, name)));

@@ -5,7 +5,7 @@
 import { costOf, type Span, spanKind, type Telemetry, usageOf } from "@terrarium/core/analysis";
 import type { RunView } from "@terrarium/core/contract";
 import type { ScoreItem } from "@terrarium/core/oracle";
-import { formatDuration, simTime } from "../../logic";
+import { emulationGaps, formatDuration, simTime } from "../../logic";
 import { Note } from "../kit";
 
 const VERDICTS: Readonly<Record<ScoreItem["verdict"], { label: string; tone: string }>> = {
@@ -153,6 +153,14 @@ export function CallsTable({ view }: { readonly view: RunView }) {
                   <span className="status status-good">성공</span>
                 ) : (
                   <span className="status status-bad">{c.error ?? "실패"}</span>
+                )}
+                {emulationGaps.gapCount([c]) > 0 && (
+                  <div>
+                    <span className="status status-warn">{emulationGaps.GAP_TAG}</span>
+                    <p className="muted small" style={{ margin: "2px 0 0" }}>
+                      {emulationGaps.GAP_EXPLAIN}
+                    </p>
+                  </div>
                 )}
               </td>
             </tr>
