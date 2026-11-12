@@ -16,6 +16,9 @@ touches_protected:
   - docs/design-docs/adr/0189-verified-workflows-go-to-operation.md
 amends_tests: []
 decision_hash: b7ba3e2b2c89db63
+amended_by:
+  - adr: "0191"
+    what: 검증하는 건에서 에이전트는 테라리움이 내준 주소에만 붙는다
 ---
 # ADR-0190 검증에서는 실제 툴 자리에 이름과 입력이 같은 모의 툴이 선다 — 에이전트는 건마다 받은 주소에 붙고, 툴마다 검증 수준을 밝힌다
 
