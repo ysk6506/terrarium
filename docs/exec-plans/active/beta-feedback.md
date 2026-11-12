@@ -4,16 +4,16 @@ kind: plan
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-12: 따라가는 beta-rounds.md의 지금의 순서에 워크플로 자동화(8번)가 더해짐(ADR-0189). 이 문서와 어긋나지 않는다"
   - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
   - "2026-11-12: ADR-0192: 따라가는 차수 계획에서 워크플로 자동화가 빠지고 스냅샷 한 줄이 들어감. 피드백 장부의 항목과 상관없다"
   - "2026-11-12: 따라가는 차수 계획에서 공개 저장소 정리가 끝으로 적히고 채점 신뢰에 한 줄이 더해짐. 피드백 장부와 상관없다"
   - "2026-11-12: 따라가는 beta-rounds.md는 내가 검사 시간 줄이기 항목의 문장만 바꿨다. 이 문서는 그 항목을 말하지 않아 어긋나지 않는다 (ADR-0195)"
+  - "2026-11-12: 따라가는 beta-rounds.md는 검사 시간 줄이기 항목의 문장만 바뀌었다. 이 문서는 그 항목을 말하지 않아 어긋나지 않는다 (ADR-0195)"
 follows:
   - docs/exec-plans/active/beta-rounds.md
-follows_hash: 16aa1e768d822097
+follows_hash: 51ba25456b82cb2d
 verified_body: f701f42ae283462c
-unchanged_reverifies: 8
+unchanged_reverifies: 9
 ---
 # 클로즈 베타 피드백 장부
 

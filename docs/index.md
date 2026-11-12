@@ -4,16 +4,16 @@ kind: reference
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-12: main 합침: 라이선스 행·링크(ADR-0185)와 내부 사실 줄(ADR-0187)이 함께 있다. 서로 어긋나지 않는다"
   - "2026-11-12: main을 합침: 따라가는 AGENTS.md의 변경은 색인과 무관"
   - "2026-11-12: main을 합침: 워크플로 자동화 문서 링크(ADR-0189)가 들어감. 따라가는 AGENTS.md의 변경은 색인과 무관"
   - "2026-11-12: ADR-0192: 테라리움은 처음의 목표로 돌아감. 옮긴 설계 여섯을 따로 묶어 표지로 가리킴"
   - "2026-11-12: 따라가는 AGENTS.md의 내가 바꾼 곳은 CI 문단과 웹 화면 항목뿐이다. 색인은 문서 위치만 가리키고 CI 구성을 말하지 않아 어긋나지 않는다 (ADR-0195)"
+  - "2026-11-12: 따라가는 AGENTS.md의 바뀐 곳은 CI 문단과 웹 화면 항목뿐이다. 색인은 CI 구성을 말하지 않아 어긋나지 않는다 (ADR-0195)"
 follows:
   - AGENTS.md
-follows_hash: cdf498b15a1ab9b3
+follows_hash: 9b345fd7b57cbfc9
 verified_body: 79a97379bd518f51
-unchanged_reverifies: 5
+unchanged_reverifies: 6
 ---
 # 문서 색인
 

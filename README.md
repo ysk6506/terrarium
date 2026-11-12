@@ -6,15 +6,15 @@ last_verified: 2026-11-12
 covers:
   - package.json
   - docs/exec-plans/active/beta-rounds.md
-covers_hash: 4ec5d933acf4cedb
+covers_hash: 701326260fe5110c
 verification_log:
-  - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
   - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
   - "2026-11-12: ADR-0192: 테라리움은 처음의 목표로 돌아감. 목표 문장, 하지 않는 것 절, 원칙 1과 6, 차수 표, 한계 한 줄을 고침"
   - "2026-11-12: 덮는 차수 계획의 바뀐 곳은 순서 3·5의 글. README의 지금 단계 표와 어긋나지 않는다"
   - "2026-11-12: 덮는 계획 문서(beta-rounds.md)는 검사 시간 줄이기 항목의 문장만 내가 바꿨다(ADR-0195). README에는 그 항목이나 CI 작업 구성을 말하는 곳이 없어 어긋나지 않는다"
+  - "2026-11-12: 덮는 beta-rounds.md는 검사 시간 줄이기 항목의 문장만 바뀌었다(ADR-0195). README에는 그 항목이나 CI 작업 구성이 없어 어긋나지 않는다"
 verified_body: d2e57522ca3c5c44
-unchanged_reverifies: 6
+unchanged_reverifies: 7
 ---
 # Terrarium
 

@@ -35,7 +35,7 @@ pnpm dev          # 서버(:8787) + 웹(:5173)
 pnpm check        # lint + 타입 + 테스트 + 모든 구조 검사. 이게 통과해야 끝난 것.
 ```
 
-CI가 합치기 관문이다 ([ADR-0140](docs/design-docs/adr/0140-ci-shards-and-merge-gate.md)): 전체 테스트는 CI가 조각 12개로 나눠 병렬로 돌리고(커버리지 없이), 게이트 작업이 모두 초록일 때만 main에 합친다. 커버리지는 게이트 조각 밖에서 네 조각으로 따로 재고 게이트가 아니다([ADR-0195](docs/design-docs/adr/0195-coverage-apart-failure-evidence-and-own-diff.md)). 문서(`*.md`)만 바꾼 풀 리퀘스트는 가벼운 경로를 타서 구조 검사와 문서를 읽는 시험만 돌린다. 다른 파일이 하나라도 있거나 main의 push면 전체 경로다. 문서만인지는 풀 리퀘스트 자신의 차이(base와 head의 합류점에서 head까지)로 가른다([ADR-0173](docs/design-docs/adr/0173-docs-only-changes-take-a-light-ci-path.md), ADR-0195). 로컬에서는 바뀐 코드의 관련 테스트만 돌린다.
+CI가 합치기 관문이다 ([ADR-0140](docs/design-docs/adr/0140-ci-shards-and-merge-gate.md)): 전체 테스트는 CI가 조각 12개로 나눠 병렬로 돌리고(커버리지 없이), 게이트 작업이 모두 초록일 때만 main에 합친다. 커버리지는 게이트 조각 밖에서 네 작업으로 따로 재고 게이트가 아니다([ADR-0195](docs/design-docs/adr/0195-coverage-apart-failure-evidence-and-own-diff.md)). 문서(`*.md`)만 바꾼 풀 리퀘스트는 가벼운 경로를 타서 구조 검사와 문서를 읽는 시험만 돌린다. 다른 파일이 하나라도 있거나 main의 push면 전체 경로다. 문서만인지는 풀 리퀘스트 자신의 차이(base와 head의 합류점에서 head까지)로 가른다([ADR-0173](docs/design-docs/adr/0173-docs-only-changes-take-a-light-ci-path.md), ADR-0195). 로컬에서는 바뀐 코드의 관련 테스트만 돌린다.
 
 실패 메시지는 `problem`과 `fix`를 알려준다. 메시지를 믿고 그대로 고친다.
 

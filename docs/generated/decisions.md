@@ -194,4 +194,4 @@
 | [ADR-0190 검증에서는 실제 툴 자리에 이름과 입력이 같은 모의 툴이 선다 — 에이전트는 건마다 받은 주소에 붙고, 툴마다 검증 수준을 밝힌다](../design-docs/adr/0190-mock-tools-stand-in-for-real-tools-in-verification.md) | 대체됨 | 대체: [0192](../design-docs/adr/0192-terrarium-returns-to-its-first-goal.md); 일부 고침: [0191](../design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md) (검증하는 건에서 에이전트는 테라리움이 내준 주소에만 붙는다) |
 | [ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리움으로 보낸다 — 에이전트는 두 세계에서 같은 게이트웨이를 같은 이름으로 부른다](../design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md) | 대체됨 | 대체: [0192](../design-docs/adr/0192-terrarium-returns-to-its-first-goal.md) |
 | [ADR-0192 테라리움은 처음의 목표로 돌아간다 — 현실 세계 만들기와 워크플로 자동화는 다른 프로젝트가 맡고, 둘 사이는 세계 스냅샷과 판정으로만 잇는다](../design-docs/adr/0192-terrarium-returns-to-its-first-goal.md) | 유효 |  |
-| [ADR-0195 커버리지는 게이트 조각 밖에서 네 조각으로 재고, 실패한 여정 단계는 증거를 남기고, 가벼운 경로는 풀 리퀘스트 자신의 차이로 가른다](../design-docs/adr/0195-coverage-apart-failure-evidence-and-own-diff.md) | 유효 |  |
+| [ADR-0195 커버리지는 게이트 조각 밖에서 네 작업으로 재고, 실패한 여정 단계는 증거를 남기고, 가벼운 경로는 풀 리퀘스트 자신의 차이로 가른다](../design-docs/adr/0195-coverage-apart-failure-evidence-and-own-diff.md) | 유효 |  |

@@ -4,17 +4,17 @@ kind: plan
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-12: 따라가는 beta-rounds.md의 지금의 순서에 워크플로 자동화(8번)가 더해짐(ADR-0189). 이 문서와 어긋나지 않는다"
   - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
   - "2026-11-12: ADR-0192: 따라가는 문서의 순서가 바뀜. 이 문서의 단계 3·5(realimport, FalkorDB 완료)는 지난 일의 기록이고, 걷어내는 변경에서 고친다"
   - "2026-11-12: 따라가는 차수 계획의 순서 3·5 글만 바뀜. 이 문서의 단계 기록과 상관없다"
   - "2026-11-12: 따라가는 beta-rounds.md는 내가 검사 시간 줄이기 항목의 문장만 바꿨다. 빌드 계획에는 그 문장이 없어 어긋나지 않는다 (ADR-0195)"
+  - "2026-11-12: 따라가는 beta-rounds.md는 검사 시간 줄이기 항목의 문장만 바뀌었다. 빌드 계획에는 그 문장이 없어 어긋나지 않는다 (ADR-0195)"
 follows:
   - docs/design-docs/product-design.md
   - docs/exec-plans/active/beta-rounds.md
-follows_hash: 930b80ce50d4edf3
+follows_hash: 21cb21e98085d5fe
 verified_body: 9739c793ce36fdd3
-unchanged_reverifies: 9
+unchanged_reverifies: 10
 ---
 # 구현 계획
 

@@ -20,8 +20,6 @@ permissions:
 
 env:
   SHARDS: 12
-  # Coverage runs every spec file once, instrumented, on fewer and longer runners than the test shards (ADR-0195).
-  COVERAGE_SHARDS: 4
   # Spec files that need a runner to themselves (see test-heavy). Space separated.
   HEAVY: tests/spec/calibration.test.ts harness/src/common.test.ts
   # Tests that read the documents themselves at test time (the light path runs these, ADR-0173). Space separated.
@@ -182,7 +180,10 @@ jobs:
 
   # Pass/fail of the tests is decided by the gating shards above. This job measures coverage: instrumented, the
   # simulations take two to three times as long and some tests miss their time limit, so it runs apart from the gating
-  # shards, with a longer timeout, on a few runners (ADR-0195). Every spec file is in exactly one of its shards.
+  # shards, with a longer timeout, on four runners (ADR-0195). The files are cut into the same twelve shards as the test
+  # job (every spec file is in exactly one), and a runner takes three of them one after the other, so each shard is one
+  # process of its own as before and the merged numbers do not move; cutting the files into four shards moved them.
+  # The groups are balanced by the time each shard took instrumented.
   # Non-gating until TD-0002 (due 2026-11-21) is closed: the floors have not been measured since 2026-11-07.
   coverage:
     needs: [changes, lint-types]
@@ -192,15 +193,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4]
+        include:
+          - { group: 1, shards: "3 5 1" }
+          - { group: 2, shards: "7 6 12" }
+          - { group: 3, shards: "4 2 11" }
+          - { group: 4, shards: "9 8 10" }
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - run: pnpm exec vitest run --coverage --shard=${{ matrix.shard }}/${{ env.COVERAGE_SHARDS }} --reporter=blob --testTimeout=300000
-        continue-on-error: true # ADR-0140: an instrumented shard can hit a time limit; the gating test shards decide pass or fail
+      # A shard can miss a time limit instrumented; the gating test shards decide pass or fail (ADR-0140), so the loop goes on.
+      - run: |
+          for s in ${{ matrix.shards }}; do
+            pnpm exec vitest run --coverage --shard=$s/${{ env.SHARDS }} --reporter=blob --testTimeout=300000 \
+              || echo "::notice::ADR-0195: coverage shard $s ended with an error (exit $?); the gating test shards decide pass or fail"
+          done
       - uses: actions/upload-artifact@v4
         with:
-          name: blob-${{ matrix.shard }}
+          name: blob-${{ matrix.group }}
           path: .vitest-reports
           include-hidden-files: true
           if-no-files-found: error
