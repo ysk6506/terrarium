@@ -66,6 +66,39 @@ const UNSUPPORTED_NAMES = new Set([
   "nextfile",
 ]);
 
+/** Functions of GNU awk (and POSIX awk) that this one does not have; awk itself would run them. */
+const REAL_FUNCTIONS = new Set([
+  "gensub",
+  "strftime",
+  "systime",
+  "mktime",
+  "asort",
+  "asorti",
+  "strtonum",
+  "and",
+  "or",
+  "xor",
+  "compl",
+  "lshift",
+  "rshift",
+  "patsplit",
+  "isarray",
+  "typeof",
+]);
+
+/** A keyword or builtin of awk that this one lacks: the real awk runs it, so it is a gap. */
+function missing(name: string): AwkSyntax {
+  const feature = name === "func" ? "function" : name;
+  return new AwkSyntax(name, { feature, what: feature });
+}
+
+/** A call to a name that is no function: awk says so; if GNU awk has the function, this one lacks it. */
+export function undefinedFunction(name: string): AwkSyntax {
+  return REAL_FUNCTIONS.has(name)
+    ? new AwkSyntax(name, { feature: `function:${name}`, what: `${name}()` })
+    : new AwkSyntax(`function ${name} never defined`);
+}
+
 class Parser {
   private i = 0;
   private noGt = false;
@@ -159,7 +192,7 @@ class Parser {
         this.i++;
         return keyword(this);
       }
-      if (UNSUPPORTED_NAMES.has(t.v)) throw new AwkSyntax(`${t.v}는 지원하지 않아요`, `awk ${t.v}`);
+      if (UNSUPPORTED_NAMES.has(t.v)) throw missing(t.v);
     }
     return { t: "expr", e: this.expr() };
   }
@@ -178,7 +211,10 @@ class Parser {
     }
     this.noGt = false;
     if (this.isP(">") || this.isP(">>") || this.isP("|"))
-      throw new AwkSyntax("출력 리다이렉트는 지원하지 않아요", "awk 출력 리다이렉트");
+      throw new AwkSyntax("print > file", {
+        feature: "redirect-output",
+        what: "print의 출력 리다이렉트(> >> |)",
+      });
     const flat =
       parenthesized && args.length === 1 && args[0]?.t === "call" && args[0].name === ""
         ? (args[0] as { args: Expr[] }).args
@@ -420,8 +456,7 @@ class Parser {
   }
 
   private named(name: string): Expr {
-    if (UNSUPPORTED_NAMES.has(name))
-      throw new AwkSyntax(`${name}는 지원하지 않아요`, `awk ${name}`);
+    if (UNSUPPORTED_NAMES.has(name)) throw missing(name);
     if (this.isP("(") && FUNCS.has(name)) {
       this.i++;
       const args: Expr[] = [];
@@ -434,8 +469,7 @@ class Parser {
     }
     if (name === "length") return { t: "call", name, args: [] };
     const written = this.toks[this.i - 1];
-    if (written?.k === "name" && written.call && name !== "in")
-      throw new AwkSyntax(`function ${name} never defined`);
+    if (written?.k === "name" && written.call && name !== "in") throw undefinedFunction(name);
     if (this.isP("[")) return { t: "idx", name, sub: this.subscript() };
     return { t: "var", name };
   }

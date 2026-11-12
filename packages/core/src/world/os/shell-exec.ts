@@ -4,21 +4,24 @@
  * event), and `&&` `||` `;` decide what runs next. Anything the shell can run, runs; what it cannot is
  * `command not found` (127) or "이 흉내에서는 안 돼요", and is listed in `outside` (decision 6).
  */
+import { type EmulationGap, gapOf, gapText } from "../emulation-gap";
 import type { WorldPort } from "../world";
 import { whichCmd } from "./cmd-fs";
 import { COMMANDS } from "./commands";
 import { normalize, VirtualFs } from "./fs";
 import { expandGlob } from "./glob";
 import { type OsHost, osHostOf } from "./host";
+import { realCommandExample } from "./real-commands";
 import {
   type Join,
   parseLine,
   type Redirect,
+  type ShellGap,
   type SimpleCmd,
   type Step,
   type Word,
 } from "./shell-parse";
-import { act, type Cmd, type Handler, type R } from "./types";
+import { act, type Cmd, emulationGap, type Handler, type R } from "./types";
 
 export interface ShellOutcome {
   readonly stdout: string;
@@ -26,6 +29,27 @@ export interface ShellOutcome {
   readonly exitCode: number;
   /** The commands and features the simulation could not do. */
   readonly outside: string[];
+  /** The emulation gaps this line hit, in the order they happened (ADR-0184). */
+  readonly gaps: EmulationGap[];
+}
+
+const SHELL_SUPPORTED =
+  "따옴표('…' \"…\"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)";
+const SHELL_EXAMPLE = "cat /etc/hosts | wc -l";
+
+/** bash syntax the real shell runs and this one does not: bash's own words, then the `terrarium:` lines (ADR-0184). */
+function shellGap(said: string, g: ShellGap): R {
+  return {
+    ...emulationGap({
+      tool: "bash",
+      feature: g.feature,
+      what: g.what,
+      said,
+      supported: SHELL_SUPPORTED,
+      example: SHELL_EXAMPLE,
+    }),
+    outside: `셸 문법 ${g.what}`,
+  };
 }
 
 const extra = new Map<string, Handler>();
@@ -63,6 +87,7 @@ class Run {
   cwd = HOME;
   stderr = "";
   readonly outside: string[] = [];
+  readonly gaps: EmulationGap[] = [];
   private seq = -1;
   private cached: { h: OsHost; fs: VirtualFs } | undefined;
 
@@ -103,16 +128,37 @@ class Run {
     const builtin = this.builtin(name, args);
     if (builtin) return builtin;
     if (KEYWORDS.has(name))
-      return {
-        out: "",
-        err: `bash: ${name}: 셸 문법은 이 흉내에서 안 돼요`,
-        code: 2,
-        outside: `셸 문법 ${name}`,
-      };
+      return shellGap(`bash: ${name}: 셸 문법은 이 흉내에서 안 돼요`, {
+        feature: `keyword:${name}`,
+        what: name,
+      });
     const handler = lookup(name);
-    if (!handler)
-      return { out: "", err: `bash: ${name}: command not found`, code: 127, outside: name };
+    if (!handler) return this.notFound(name);
     return handler(this.context(name, args, stdin));
+  }
+
+  /**
+   * A name with no handler: a real command the fake lacks is a gap (bash's own words, then the `terrarium:` lines, exit
+   * 127 either way); a name no host has is plain `command not found` (ADR-0184).
+   */
+  private notFound(name: string): R {
+    const example = realCommandExample(name);
+    const base: R = { out: "", err: `bash: ${name}: command not found`, code: 127, outside: name };
+    if (example === undefined) return { ...base, err: `${base.err}\n` };
+    const gap = { tool: name, feature: "command" };
+    return {
+      ...base,
+      err: `${gapText({
+        ...gap,
+        what: "명령",
+        said: base.err as string,
+        supported: binNames()
+          .filter((n) => n !== "[")
+          .join(" "),
+        example,
+      })}\n`,
+      gap,
+    };
   }
 
   private sudo(args: readonly string[], stdin: string): R {
@@ -234,6 +280,7 @@ function runStage(run: Run, cmd: SimpleCmd, piped: string): { out: string; code:
   }
   const r = run.exec(expand(run, cmd.words), input.text);
   if (r.outside) run.outside.push(r.outside);
+  if (r.gap) run.gaps.push(gapOf(r.gap));
   const done = applyRedirects(run, cmd.redirs, r);
   run.stderr += done.err;
   return { out: done.out, code: done.failed ? 1 : r.code };
@@ -268,14 +315,19 @@ function runSteps(run: Run, steps: readonly Step[]): { stdout: string; code: num
 /** Run a command line on a host the caller has checked is reachable. */
 export function runLine(world: WorldPort, hostId: string, line: string): ShellOutcome {
   const parsed = parseLine(line);
-  if (!parsed.ok)
+  if (!parsed.ok) {
+    if (!parsed.gap)
+      return { stdout: "", stderr: `${parsed.error}\n`, exitCode: 2, outside: [], gaps: [] };
+    const r = shellGap(parsed.error, parsed.gap);
     return {
       stdout: "",
-      stderr: `${parsed.error}\n`,
+      stderr: r.err ?? "",
       exitCode: 2,
-      outside: parsed.outside ? [parsed.outside] : [],
+      outside: [`셸 문법 ${parsed.gap.what}`],
+      gaps: r.gap ? [r.gap] : [],
     };
+  }
   const run = new Run(world, hostId);
   const { stdout, code } = runSteps(run, parsed.steps);
-  return { stdout, stderr: run.stderr, exitCode: code, outside: run.outside };
+  return { stdout, stderr: run.stderr, exitCode: code, outside: run.outside, gaps: run.gaps };
 }

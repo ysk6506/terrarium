@@ -46,6 +46,22 @@ export function outsideOf(tool: string, result: ToolResult): { outside?: readonl
   return Array.isArray(outside) && outside.length > 0 ? { outside: outside.map(String) } : {};
 }
 
+/**
+ * The emulation gaps a call hit (ADR-0184), read from the result of `run_command` and of the switch CLI tools. Only the
+ * stable pair is kept; anything else in the data is dropped.
+ */
+export function gapsOf(result: ToolResult): Pick<ToolCallRecord, "gaps"> {
+  if (!result.ok) return {};
+  const gaps = (result.data as { gaps?: unknown } | undefined)?.gaps;
+  if (!Array.isArray(gaps)) return {};
+  const pairs = gaps.flatMap((g: { tool?: unknown; feature?: unknown }) =>
+    typeof g?.tool === "string" && typeof g.feature === "string"
+      ? [{ tool: g.tool, feature: g.feature }]
+      : [],
+  );
+  return pairs.length > 0 ? { gaps: pairs } : {};
+}
+
 /** What the fake shell could not do in a run, counted from the calls (ADR-0117 decision 6); undefined when `run_command` was not used. */
 export function shellOutsideOf(calls: readonly ToolCallRecord[]): ShellOutside | undefined {
   const shell = calls.filter((c) => c.tool === "run_command");

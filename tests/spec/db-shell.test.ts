@@ -83,11 +83,11 @@ describe("psql answers the few queries a person asks to see the state [REQ-095] 
     const r = sh("vm-db-1", "psql -c 'select 2'");
     expect(r.exitCode).toBe(2);
     expect(r.output).toContain("이 질의는 아직 못 해요: select 2");
-    expect(r.output).toContain("되는 질의: select pg_is_in_recovery()");
+    expect(r.output).toContain("terrarium: psql에서 되는 것: select pg_is_in_recovery()");
     expect(r.outside).toEqual(['psql 질의 "select 2"']);
     const interactive = sh("vm-db-1", "psql");
     expect(interactive.exitCode).toBe(2);
-    expect(interactive.outside).toEqual(["psql 대화형 접속과 -f"]);
+    expect(interactive.outside).toEqual(["psql 대화형 접속"]);
   });
 
   test("when the instance is down psql cannot connect", () => {

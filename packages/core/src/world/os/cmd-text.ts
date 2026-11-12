@@ -2,16 +2,18 @@
 import { has, hasAny, intOf, parseArgs } from "./args";
 import { normalize } from "./fs";
 import { errText, readInputs } from "./io";
+import { badFlag } from "./real-options";
 import {
   act,
   byteLength,
   type Cmd,
+  emulationGap,
   fail,
   joinLines,
   linesOf,
   ok,
   type R,
-  unsupported,
+  softGap,
 } from "./types";
 
 const ESCAPES: Readonly<Record<string, string>> = {
@@ -54,7 +56,7 @@ const visible = (line: string): string =>
 
 export function cat(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "nAvEsbT" });
-  if (p.bad) return unsupported("cat", p.bad);
+  if (p.bad) return badFlag("cat", p);
   const { inputs, errors } = readInputs(c, p.rest);
   const every = has(p, "A");
   const ends = every || has(p, "E");
@@ -86,7 +88,7 @@ function pick(c: Cmd, from: "head" | "tail"): R {
     digits: true,
     long: { follow: "bool", retry: "bool" },
   });
-  if (p.bad) return unsupported(from, p.bad);
+  if (p.bad) return badFlag(from, p);
   const n = intOf(p, "n", 10);
   if (Number.isNaN(n) && !/^[+-]?\d+$/.test(p.flags.get("n") ?? ""))
     return fail(`${from}: invalid number of lines: '${p.flags.get("n")}'`);
@@ -109,11 +111,14 @@ function pick(c: Cmd, from: "head" | "tail"): R {
     code: errors.length ? 1 : 0,
   };
   return following
-    ? {
-        ...base,
-        err: `${base.err}tail: -f는 이 흉내에서 안 돼요, 지금까지의 마지막 줄만 보여요\n`,
-        outside: "tail -f",
-      }
+    ? softGap(base, {
+        tool: "tail",
+        feature: "flag:-f",
+        what: "-f",
+        said: "tail: -f는 이 흉내에서 안 돼요, 지금까지의 마지막 줄만 보여요",
+        supported: "-n N, -n +N, -c N, -q, -v (파일의 지금까지 내용)",
+        example: "tail -n 20 /var/log/messages",
+      })
     : base;
 }
 
@@ -151,7 +156,7 @@ function wcWidth(rows: ReadonlyArray<{ cols: number[]; bytes: number }>, files: 
 
 export function wc(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "lwcmL" });
-  if (p.bad) return unsupported("wc", p.bad);
+  if (p.bad) return badFlag("wc", p);
   const { inputs, errors } = readInputs(c, p.rest);
   const all = !hasAny(p, "l", "w", "c", "m", "L");
   const rows = inputs.map((i) => {
@@ -232,7 +237,7 @@ function translateChar(
 
 export function tr(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "dsc" });
-  if (p.bad) return unsupported("tr", p.bad);
+  if (p.bad) return badFlag("tr", p);
   if (p.rest.length === 0) return fail("tr: missing operand", 1);
   const from = expandSet(p.rest[0] ?? "");
   const to = expandSet(p.rest[1] ?? "");
@@ -269,7 +274,7 @@ export function cut(c: Cmd): R {
     val: "dfcb",
     long: { "output-delimiter": "val", complement: "bool" },
   });
-  if (p.bad) return unsupported("cut", p.bad);
+  if (p.bad) return badFlag("cut", p);
   const delim = p.flags.get("d") ?? "\t";
   const spec = p.flags.get("f") ?? p.flags.get("c") ?? p.flags.get("b");
   const inRange = spec === undefined ? undefined : rangeTest(spec);
@@ -303,7 +308,7 @@ function comparable(line: string, skip: number, chars: number | undefined, fold:
 
 export function uniq(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "cduiD", val: "fws" });
-  if (p.bad) return unsupported("uniq", p.bad);
+  if (p.bad) return badFlag("uniq", p);
   const { inputs, errors } = readInputs(c, p.rest.slice(0, 1));
   const groups: Array<{ line: string; n: number }> = [];
   const [skip, chars] = [intOf(p, "f", 0), p.flags.has("w") ? intOf(p, "w", 0) : undefined];
@@ -331,16 +336,18 @@ function xargsRuns(p: ReturnType<typeof parseArgs>, items: readonly string[]): s
 
 export function xargs(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "t0r", val: "nIL", long: { "no-run-if-empty": "bool" } });
-  if (p.bad) return unsupported("xargs", p.bad);
+  if (p.bad) return badFlag("xargs", p);
   const items = c.stdin.split(/\s+/).filter(Boolean);
   if (items.length === 0 && (p.flags.has("r") || p.flags.has("--no-run-if-empty"))) return ok("");
   const results = xargsRuns(p, items).map((argv) => c.run(argv, ""));
   const outside = results.find((r) => r.outside)?.outside;
+  const gap = results.find((r) => r.gap)?.gap;
   return {
     out: results.map((r) => r.out).join(""),
     err: results.map((r) => r.err ?? "").join(""),
     code: results.some((r) => r.code !== 0) ? 123 : 0,
     ...(outside ? { outside } : {}),
+    ...(gap ? { gap } : {}),
   };
 }
 
@@ -353,8 +360,47 @@ const chunks = <T>(list: readonly T[], size: number): T[][] =>
 export function testCmd(c: Cmd): R {
   const args = c.name === "[" ? c.args.slice(0, -1) : [...c.args];
   const result = evaluateAll(c, args);
-  if (result === undefined) return unsupported(c.name, args.join(" "));
+  if (result === undefined) return testRefusal(c.name, args);
   return { out: "", code: result ? 0 : 1 };
+}
+
+/** Operators the real `test` has (GNU coreutils manual, "Conditional expressions") that the fake lacks. */
+const REAL_UNARY = new Set([
+  "-b",
+  "-c",
+  "-g",
+  "-G",
+  "-h",
+  "-k",
+  "-L",
+  "-N",
+  "-O",
+  "-p",
+  "-S",
+  "-t",
+  "-u",
+  "-x",
+]);
+const REAL_BINARY = new Set(["-nt", "-ot", "-ef", "<", ">"]);
+
+/** What `test` says when it cannot evaluate: a gap for an operator it has, its own words for a malformed expression. */
+function testRefusal(name: string, args: readonly string[]): R {
+  const bracket = name === "[";
+  const gap = (feature: string, what: string): R =>
+    emulationGap({
+      tool: name,
+      feature,
+      what,
+      supported: "-e -f -d -s -r -w -z -n, = == != -eq -ne -gt -ge -lt -le, ! -a -o",
+      example: bracket ? "[ -f /etc/hosts ]" : "test -f /etc/hosts",
+    });
+  if (args.includes("(") || args.includes(")")) return gap("parentheses", "( ) 묶기");
+  const [x = "", op = ""] = args;
+  if (args.length === 2 && REAL_UNARY.has(x)) return gap(`operator:${x}`, x);
+  if (args.length === 3 && REAL_BINARY.has(op)) return gap(`operator:${op}`, op);
+  if (args.length === 2) return fail(`${name}: ${x}: unary operator expected`, 2);
+  if (args.length === 3) return fail(`${name}: ${op}: binary operator expected`, 2);
+  return fail(`${name}: too many arguments`, 2);
 }
 
 /** `a -o b -a c`: `-a` binds tighter than `-o`, as in `test`. */

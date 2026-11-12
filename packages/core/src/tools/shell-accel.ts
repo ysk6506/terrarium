@@ -3,7 +3,7 @@
  * `ibstat` and `dcgmi diag -r 1`. They are made from the state the physics keeps, in the shape of the real tools.
  */
 import { Accel, type Entity, type WorldPort } from "@terrarium/core/world";
-import type { ShellOut } from "./shell-app";
+import { DCGMI, type ShellOut, subcommandGap } from "./shell-gap";
 
 const NO_DRIVER =
   "NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.";
@@ -90,8 +90,7 @@ export function dcgmi(
 ): ShellOut {
   const id = serverOf(world, host);
   if (!id) return { output: "Error: Unable to connect to the DCGM host engine", exitCode: 1 };
-  if (args[0] !== "diag")
-    return { output: `이 dcgmi 명령은 아직 못 해요: ${args.slice(0, 2).join(" ")}`, exitCode: 1 };
+  if (args[0] !== "diag") return subcommandGap(DCGMI, args[0]);
   const gpus = Accel.gpusOf(world.index, id);
   const lines = gpus.map((g, i) => {
     const s = world.stateAs(g.id, "gpu");

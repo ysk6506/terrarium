@@ -3,7 +3,8 @@ import { has, parseArgs } from "./args";
 import { ctime, dateAt, OS_EPOCH_MS } from "./clock";
 import { blocks1k, human, longLine, modeText } from "./fmt";
 import { baseName, normalize } from "./fs";
-import { act, type Cmd, fail, joinLines, ok, type R, unsupported } from "./types";
+import { badFlag, refuseUnknown } from "./real-options";
+import { act, type Cmd, emulationGap, fail, joinLines, ok, type R } from "./types";
 
 export const shown = (c: Cmd, given: string): string => normalize(c.cwd, given);
 
@@ -24,7 +25,7 @@ function listable(
 
 export function ls(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "lahA1RdtSrFhi" });
-  if (p.bad) return unsupported("ls", p.bad);
+  if (p.bad) return badFlag("ls", p);
   const targets = p.rest.length ? p.rest : ["."];
   const out: string[] = [];
   const errs: string[] = [];
@@ -108,7 +109,7 @@ export function du(c: Cmd): R {
       total: "bool",
     },
   });
-  if (p.bad) return unsupported("du", p.bad);
+  if (p.bad) return badFlag("du", p);
   const unit = duUnit(p);
   const options: DuOptions = { max: duDepth(p), all: has(p, "a"), unit };
   const rows: string[] = [];
@@ -183,7 +184,7 @@ export function stat(c: Cmd): R {
     val: "c",
     long: { format: "val", "file-system": "bool" },
   });
-  if (p.bad) return unsupported("stat", p.bad);
+  if (p.bad) return badFlag("stat", p);
   const fmt = p.flags.get("c") ?? p.flags.get("--format");
   const out: string[] = [];
   const errs: string[] = [];
@@ -261,7 +262,7 @@ export function rm(c: Cmd): R {
       dir: "bool",
     },
   });
-  if (p.bad) return unsupported("rm", p.bad);
+  if (p.bad) return badFlag("rm", p);
   if (p.rest.length === 0) return fail("rm: missing operand", 1);
   const recursive = has(p, "r") || has(p, "R") || has(p, "--recursive");
   const r = removeAll(c, p.rest, recursive, has(p, "f") || has(p, "--force"));
@@ -272,11 +273,22 @@ export function rm(c: Cmd): R {
 
 export function truncate(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "c", val: "s", long: { size: "val" } });
-  if (p.bad) return unsupported("truncate", p.bad);
+  if (p.bad) return badFlag("truncate", p);
   const size = p.flags.get("s") ?? p.flags.get("--size");
   if (size === undefined || p.rest.length === 0)
     return fail("truncate: you must specify either '--size' or '--reference'", 1);
-  if (size !== "0") return unsupported("truncate", `-s ${size} (0만 돼요)`);
+  if (size !== "0") {
+    // the real truncate takes any size (`4096`, `+1K`, `%512`); a word that is no size it refuses itself
+    if (!/^[+\-<>/%]?\d+([KMGTPEZY]|[KMGTPEZY]?iB|[KMGTPEZY]B)?$/.test(size))
+      return fail(`truncate: Invalid number: ‘${size}’`, 1);
+    return emulationGap({
+      tool: "truncate",
+      feature: "size-other-than-zero",
+      what: `-s ${size}`,
+      supported: "-s 0 (파일 비우기), -c",
+      example: "touch /tmp/terrarium-trunc && truncate -s 0 /tmp/terrarium-trunc",
+    });
+  }
   const errs: string[] = [];
   for (const f of p.rest) {
     const path = shown(c, f);
@@ -351,9 +363,31 @@ export function touch(c: Cmd): R {
 }
 
 export function cp(c: Cmd): R {
+  const unknown = refuseUnknown(c.name, c.args);
+  if (unknown) return unknown;
   const args = c.args.filter((a) => !a.startsWith("-"));
   const [from, to] = args;
-  if (!from || !to || args.length !== 2) return unsupported(c.name, "인자 두 개만 돼요");
+  if (!from) return fail(`${c.name}: missing file operand`, 1);
+  if (!to) return fail(`${c.name}: missing destination file operand after '${from}'`, 1);
+  const recursive = c.args.some((a) => /^-[a-zA-Z]*[raR]/.test(a) || a === "--recursive");
+  if (c.name === "cp" && c.fs.isDir(shown(c, from)) && !recursive)
+    return fail(`cp: -r not specified; omitting directory '${from}'`, 1);
+  if (c.fs.isDir(shown(c, from)))
+    return emulationGap({
+      tool: c.name,
+      feature: "directory",
+      what: "디렉터리 통째로",
+      supported: `${c.name} 파일 대상 (파일 하나를 한 곳으로)`,
+      example: "cp /etc/hosts /tmp/hosts.copy",
+    });
+  if (args.length > 2)
+    return emulationGap({
+      tool: c.name,
+      feature: "several-sources",
+      what: "여러 원본을 한 디렉터리로",
+      supported: `${c.name} 원본 대상 (인자 두 개)`,
+      example: "cp /etc/hosts /tmp/hosts.copy",
+    });
   const text = c.fs.read(shown(c, from));
   if (text === undefined)
     return fail(`${c.name}: cannot stat '${from}': No such file or directory`, 1);

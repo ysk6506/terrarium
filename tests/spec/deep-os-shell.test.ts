@@ -53,7 +53,13 @@ describe("the shell reads a line the way bash does [REQ-098]", () => {
       stderr: "bash: kubectl: command not found",
       outside: ["kubectl"],
     });
-    expect(run("srv-a2", "vim /etc/hosts").stderr).toBe("bash: vim: command not found");
+    // ADR-0184: vim is a real command the fake host lacks, so bash's line is followed by the terrarium lines;
+    // a name no host has stays plain
+    expect(run("srv-a2", "vim /etc/hosts").stderr.split("\n")[0]).toBe(
+      "bash: vim: command not found",
+    );
+    expect(run("srv-a2", "vim /etc/hosts").stderr).toContain("terrarium: ");
+    expect(run("srv-a2", "nosuchcmd-xyz").stderr).toBe("bash: nosuchcmd-xyz: command not found");
   });
 
   test("globs are expanded against the file system", () => {

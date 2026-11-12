@@ -13,11 +13,16 @@ import {
   type WorldPort,
   workloadsOfCluster,
 } from "@terrarium/core/world";
+import {
+  CRICTL,
+  KUBECTL,
+  KUBECTL_RESOURCES,
+  layerGap,
+  type ShellOut,
+  subcommandGap,
+} from "./shell-gap";
 
-export interface ShellOut {
-  readonly output: string;
-  readonly exitCode: number;
-}
+export type { ShellOut };
 
 const REFUSED = (host: string): ShellOut => ({
   output: `The connection to the server ${host}:6443 was refused - did you specify the right host or port?`,
@@ -252,11 +257,22 @@ export function podLogs(world: WorldPort, w: Entity, p: PodState, tail: number):
 
 // ── the shell ─────────────────────────────────────────────────────────────────────────────────
 
-const NOT_YET: ShellOut = {
-  output:
-    "이 kubectl 명령은 아직 못 해요. 되는 것: kubectl get nodes|pods|deployments [-n <ns>], kubectl describe node <name>",
-  exitCode: 1,
-};
+/** A resource type: the real kubectl knows it (a gap if the fake lacks it) or no kubectl does (its own error). */
+function resourceGap(verb: string, what: string | undefined, rest?: string): ShellOut {
+  if (what === undefined)
+    return {
+      output: `error: You must specify the type of resource to ${verb}. Use "kubectl api-resources" for a complete list of supported resources.`,
+      exitCode: 1,
+    };
+  if (!KUBECTL_RESOURCES.has(what))
+    return { output: `error: the server doesn't have a resource type "${what}"`, exitCode: 1 };
+  return layerGap(
+    KUBECTL,
+    `${verb}:${rest ?? what}`,
+    `${verb} ${what}`,
+    `kubectl ${verb} ${what}: 이 흉내에서는 안 돼요`,
+  );
+}
 
 const ok = (output: string): ShellOut => ({ output, exitCode: 0 });
 
@@ -268,13 +284,15 @@ function kubectlGet(world: WorldPort, clusterId: string, argv: readonly string[]
   if (what === "nodes" || what === "node") return ok(nodesTable(world, clusterId));
   if (what === "pods" || what === "pod") return ok(podsTable(world, clusterId, ns));
   if (what === "deployments" || what === "deploy") return ok(workloadsTable(world, clusterId));
-  return NOT_YET;
+  return resourceGap("get", what);
 }
 
 /** `kubectl describe node <name>`. */
 function kubectlDescribe(world: WorldPort, clusterId: string, argv: readonly string[]): ShellOut {
   const name = argv[3];
-  if (argv[2] !== "node" || !name) return NOT_YET;
+  const what = argv[2];
+  if (what !== "node" && what !== "nodes" && what !== "no") return resourceGap("describe", what);
+  if (!name) return resourceGap("describe", what, "node-all");
   const n = nodesOfCluster(world.index, clusterId).find((x) => x.name === name || x.id === name);
   return n
     ? ok(describeNode(world, n))
@@ -289,15 +307,16 @@ export function kubectl(world: WorldPort, hostId: string, argv: readonly string[
   if (!world.stateAs(cluster.id, "k8s_cluster").apiUp)
     return REFUSED(world.index.entity(hostId).name);
   if (argv[1] === "get") return kubectlGet(world, cluster.id, argv);
-  return argv[1] === "describe" ? kubectlDescribe(world, cluster.id, argv) : NOT_YET;
+  return argv[1] === "describe"
+    ? kubectlDescribe(world, cluster.id, argv)
+    : subcommandGap(KUBECTL, argv[1]);
 }
 
 /** `crictl ps` on a node: the containers of the pods that stand on it (what the runtime sees, API or not). */
 export function crictl(world: WorldPort, hostId: string, argv: readonly string[]): ShellOut {
   const node = nodeOnHost(world, hostId);
   if (!node) return { output: "bash: crictl: command not found", exitCode: 127 };
-  if (argv[1] !== "ps")
-    return { output: "이 crictl 명령은 아직 못 해요. 되는 것: crictl ps", exitCode: 1 };
+  if (argv[1] !== "ps") return subcommandGap(CRICTL, argv[1]);
   const cluster = clusterOfNode(world, node.id);
   const t = world.time();
   const rows: string[][] = [["CONTAINER", "IMAGE", "CREATED", "STATE", "NAME", "POD"]];

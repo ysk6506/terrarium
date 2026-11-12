@@ -110,8 +110,10 @@ describe("ip shows the address, the link and the route of the host [REQ-098]", (
 
   test("an object the fake does not have is outside it", () => {
     const { run } = lab();
-    for (const obj of ["neigh", "rule", "foo"])
+    // ADR-0184: neigh and rule are real ip objects the fake lacks; foo is no object, and ip says so itself
+    for (const obj of ["neigh", "rule"])
       expect(run("srv-a2", `ip ${obj}`)).toMatchObject({ exitCode: 2, outside: [`ip ${obj}`] });
+    expect(run("srv-a2", "ip foo")).toMatchObject({ exitCode: 1, outside: [] });
   });
 });
 
@@ -132,7 +134,7 @@ describe("lsof lists the open files of the processes [REQ-098]", () => {
       exitCode: 1,
     });
     expect(run("srv-a2", "lsof /etc/hostname")).toMatchObject({ stdout: "", exitCode: 1 });
-    expect(run("srv-a2", "lsof").outside).toEqual(["lsof (인자 없이)"]);
+    expect(run("srv-a2", "lsof").outside).toEqual(["lsof 인자 없이 (모든 열린 파일)"]);
     expect(run("srv-a2", "lsof -iTCP -sTCP:LISTEN").outside).toEqual(["lsof -s"]);
   });
 

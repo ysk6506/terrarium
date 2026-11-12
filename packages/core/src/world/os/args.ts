@@ -12,6 +12,8 @@ export interface FlagSpec {
 }
 
 export interface Parsed {
+  /** The spec the call was parsed with (a refusal lists what it has). */
+  readonly spec: FlagSpec;
   readonly flags: Map<string, string>;
   readonly rest: string[];
   /** The first flag the spec does not know, as typed. */
@@ -71,7 +73,7 @@ export function parseArgs(args: readonly string[], spec: FlagSpec): Parsed {
     else if (arg.length > 1 && arg.startsWith("-")) bad ??= shortFlags(arg, spec, flags, next);
     else rest.push(arg);
   }
-  return { flags, rest, ...(bad ? { bad } : {}) };
+  return { spec, flags, rest, ...(bad ? { bad } : {}) };
 }
 
 export const has = (p: Parsed, flag: string): boolean => p.flags.has(flag);

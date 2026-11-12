@@ -83,7 +83,8 @@ describe("mkdir makes directories as a world event [REQ-098]", () => {
     expect(run("srv-a2", "mkdir -p /tmp/file/sub").stderr).toContain("Not a directory");
     expect(run("srv-a2", "mkdir -p /tmp/file").stderr).toContain("File exists");
     expect(run("srv-a2", "mkdir -m 700 /tmp/m")).toMatchObject({ exitCode: 2 });
-    expect(run("srv-a2", "mkdir -z /tmp/m").outside.join()).toContain("-z");
+    // ADR-0184: -z is no mkdir option, so mkdir's own refusal and nothing outside
+    expect(run("srv-a2", "mkdir -z /tmp/m")).toMatchObject({ exitCode: 1, outside: [] });
     expect(run("srv-a2", "mkdir /tmp/one /tmp/two").exitCode).toBe(0);
     expect(run("srv-a2", "mkdir /tmp/one /tmp/three").exitCode).toBe(1);
     expect(sh("ls /tmp")).toContain("three");
@@ -191,8 +192,8 @@ describe("ln -s and readlink make and read symbolic links [REQ-098]", () => {
     const r = run("srv-a2", "ln /etc/hosts /tmp/hard");
     expect(r.exitCode).toBe(2);
     expect(r.stderr).toContain("이 흉내에서는 안 돼요");
-    expect(r.outside).toEqual(["ln 하드 링크는 못 만들어요 (-s만 돼요)"]);
-    expect(run("srv-a2", "ln -x a b").outside.join()).toContain("-x");
+    expect(r.outside).toEqual(["ln 하드 링크"]);
+    expect(run("srv-a2", "ln -x a b")).toMatchObject({ exitCode: 1, outside: [] });
   });
 
   test("[REQ-098] readlink on a file, a missing path, a loop and a dangling link", () => {

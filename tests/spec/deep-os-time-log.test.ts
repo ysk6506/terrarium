@@ -23,12 +23,14 @@ describe("chronyc and timedatectl tell whether the clock is in step [REQ-098]", 
 
   test("a command chronyc has and the fake does not is outside it, as is the interactive prompt", () => {
     const { run } = lab();
-    for (const verb of ["makestep", "activity", "foo"])
+    // ADR-0184: makestep and activity are chronyc's own; `foo` is no command, and chronyc answers 501 itself
+    for (const verb of ["makestep", "activity"])
       expect(run("srv-a2", `chronyc ${verb}`)).toMatchObject({
         exitCode: 2,
         outside: [`chronyc ${verb}`],
       });
-    expect(run("srv-a2", "chronyc").outside).toEqual(["chronyc (대화형)"]);
+    expect(run("srv-a2", "chronyc foo")).toMatchObject({ exitCode: 1, outside: [] });
+    expect(run("srv-a2", "chronyc").outside).toEqual(["chronyc 대화형 모드"]);
   });
 
   test("timedatectl shows the local and universal time and says the clock is synchronised", () => {
@@ -39,10 +41,12 @@ describe("chronyc and timedatectl tell whether the clock is in step [REQ-098]", 
     expect(status[5]).toBe("              NTP service: active");
     expect(sh("timedatectl status")).toBe(sh("timedatectl"));
     expect(sh("timedatectl show")).toBe("Timezone=UTC\nLocalRTC=no\nNTPSynchronized=yes\nNTP=yes");
-    for (const verb of ["set-ntp true", "timesync-status", "foo"])
+    // ADR-0184: set-ntp and timesync-status are timedatectl's own; `foo` is no verb and timedatectl says so itself
+    for (const verb of ["set-ntp true", "timesync-status"])
       expect(run("srv-a2", `timedatectl ${verb}`).outside).toEqual([
         `timedatectl ${verb.split(" ")[0]}`,
       ]);
+    expect(run("srv-a2", "timedatectl foo").outside).toEqual([]);
   });
 });
 
@@ -71,7 +75,7 @@ describe("openssl x509 reads the certificate files of the host [REQ-098]", () =>
       exitCode: 1,
     });
     expect(run("srv-a2", "openssl x509 -in /etc/ssl/certs/licd.pem -noout -text").outside).toEqual([
-      "openssl x509 -text/-fingerprint",
+      "openssl x509 -text",
     ]);
     for (const verb of ["s_client -connect licd:8701", "version"])
       expect(run("srv-a2", `openssl ${verb}`).outside).toEqual([`openssl ${verb.split(" ")[0]}`]);

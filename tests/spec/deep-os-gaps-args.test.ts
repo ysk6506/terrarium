@@ -31,9 +31,14 @@ describe("the options of a command [REQ-098]", () => {
   test("[REQ-098] a long option the fake does not know is said so, whether or not it carries a value", () => {
     const { sh } = lab();
     sh(DATA);
-    expect(sh("head --bogus /tmp/d 2>&1")).toBe("head: --bogus: 이 흉내에서는 안 돼요");
-    expect(sh("head --lines=1 /tmp/d 2>&1")).toBe("head: --lines=1: 이 흉내에서는 안 돼요");
-    expect(sh("cut --delimiter=, --fields=1 /tmp/d 2>&1")).toBe(
+    // ADR-0184: --bogus is no option of the real head (its own words, no hint); --lines and --delimiter are real ones the fake lacks
+    expect(sh("head --bogus /tmp/d 2>&1")).toBe(
+      "head: unrecognized option '--bogus'\nTry 'head --help' for more information.",
+    );
+    expect(sh("head --lines=1 /tmp/d 2>&1").split("\n")[0]).toBe(
+      "head: --lines=1: 이 흉내에서는 안 돼요",
+    );
+    expect(sh("cut --delimiter=, --fields=1 /tmp/d 2>&1").split("\n")[0]).toBe(
       "cut: --delimiter=,: 이 흉내에서는 안 돼요",
     );
   });

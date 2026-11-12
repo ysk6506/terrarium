@@ -6,7 +6,7 @@
 import type { Entity } from "../blueprint";
 import { controllersOf, poolDef, poolOfInstance } from "../db";
 import { parseArgs } from "./args";
-import { type Cmd, fail, ok, type R, unsupported } from "./types";
+import { type Cmd, emulationGap, fail, ok, type R } from "./types";
 
 /** The database instance that runs on a host, if one does. */
 export function instanceOn(c: Pick<Cmd, "world" | "h">): Entity | undefined {
@@ -74,16 +74,27 @@ export function psql(c: Cmd): R {
   if (!e) return missing("psql");
   const p = parseArgs(c.args, { bool: "tAq", val: "cUdhpf" });
   const sql = p.flags.get("c");
-  if (sql === undefined) return unsupported("psql", "대화형 접속과 -f");
+  if (sql === undefined)
+    return emulationGap({
+      tool: "psql",
+      feature: p.flags.has("f") ? "flag:-f" : "interactive",
+      what: p.flags.has("f") ? "-f 파일" : "대화형 접속",
+      supported: `psql -c '<질의>' (-t -A -q): ${PSQL_QUERIES.join(" · ")}`,
+      example: `psql -c '${PSQL_QUERIES[2]}'`,
+    });
   const s = c.h.world.stateAs(e.id, "db_instance");
   if (s.status === "down") return fail(DOWN, 2);
   const q = sql.replace(/\s+/g, " ").trim().replace(/;$/, "").toLowerCase();
   const a = answerOf(q, s.role, s.lagS);
   if (!a)
-    return {
-      ...unsupported("psql", `질의 "${sql}"`),
-      err: `이 질의는 아직 못 해요: ${sql}\n되는 질의: ${PSQL_QUERIES.join(" · ")}`,
-    };
+    return emulationGap({
+      tool: "psql",
+      feature: "query",
+      what: `질의 "${sql}"`,
+      said: `이 질의는 아직 못 해요: ${sql}`,
+      supported: PSQL_QUERIES.join(" · "),
+      example: `psql -c '${PSQL_QUERIES[2]}'`,
+    });
   return ok(p.flags.has("t") ? `${a.value}\n` : table(a.head, a.value));
 }
 

@@ -30,17 +30,20 @@ describe("find [REQ-098]", () => {
     sh(TREE);
     expect(sh("find /tmp/q -maxdepth 0")).toBe("/tmp/q");
     expect(sh("find /tmp/q -mindepth 1 -maxdepth 1")).toBe("/tmp/q/e\n/tmp/q/f\n/tmp/q/z");
-    expect(sh("find /tmp/q -maxdepth")).toBe("/tmp/q");
+    // ADR-0184: the real find refuses a depth with no number, so the fake no longer takes it as zero
+    expect(sh("find /tmp/q -maxdepth 2>&1")).toBe("find: missing argument to `-maxdepth'");
   });
 
   test("[REQ-098] a test left hanging, or a word that follows a finished test, is turned back with that word", () => {
     const { sh } = lab();
     sh(TREE);
+    // ADR-0184: a dangling operator or a stray word is a mistake the real find refuses in its own words, with no hint
     for (const word of ["-a", "-o", "("])
-      expect(sh(`find /tmp/q -name f ${word === "(" ? "\\(" : word} 2>&1`)).toBe(
-        `find: ${word}: 이 흉내에서는 안 돼요`,
+      expect(sh(`find /tmp/q -name f ${word === "(" ? "\\(" : word} 2>&1`)).not.toContain(
+        "terrarium:",
       );
-    expect(sh("find /tmp/q -name f x 2>&1")).toBe("find: x: 이 흉내에서는 안 돼요");
+    expect(sh("find /tmp/q -name f -a 2>&1")).toBe("find: unknown predicate `-a'");
+    expect(sh("find /tmp/q -name f x 2>&1")).not.toContain("terrarium:");
   });
 
   test("[REQ-098] a command is run on each hit with the name put in, and what it says is what find says", () => {

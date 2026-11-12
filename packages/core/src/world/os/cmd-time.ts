@@ -5,11 +5,30 @@ import { dateAt, OS_EPOCH_MS, sdStamp } from "./clock";
 import { normalize } from "./fs";
 import { skewAt } from "./journal";
 import { NTP_SOURCE } from "./layout";
-import { type Cmd, fail, joinLines, ok, type R, unsupported } from "./types";
+import { genuineOption } from "./real-options";
+import { type Cmd, emulationGap, fail, joinLines, ok, type R } from "./types";
+
+/** Commands of the real timedatectl (systemd man page) other than status and show. */
+const REAL_TIMEDATECTL = new Set(
+  "set-time set-timezone list-timezones set-local-rtc set-ntp timesync-status show-timesync".split(
+    " ",
+  ),
+);
+
+function timedatectlRefusal(verb: string): R {
+  if (!REAL_TIMEDATECTL.has(verb)) return fail(`Unknown command verb '${verb}'.`, 1);
+  return emulationGap({
+    tool: "timedatectl",
+    feature: `command:${verb}`,
+    what: verb,
+    supported: "timedatectl status, timedatectl show",
+    example: "timedatectl status",
+  });
+}
 
 export function timedatectl(c: Cmd): R {
   const verb = c.args.find((a) => !a.startsWith("-")) ?? "status";
-  if (verb !== "status" && verb !== "show") return unsupported("timedatectl", verb);
+  if (verb !== "status" && verb !== "show") return timedatectlRefusal(verb);
   const skew = skewAt(c.h, c.h.t);
   const local = `${sdStamp(dateAt(c.h.t, skew))} UTC`;
   const synced = Math.abs(skew) < 1;
@@ -49,8 +68,23 @@ export function chronyc(c: Cmd): R {
       ]),
     );
   }
-  return unsupported("chronyc", verb ?? "(대화형)");
+  if (verb?.startsWith("-")) return genuineOption("chronyc", verb);
+  if (verb !== undefined && !REAL_CHRONYC.has(verb)) return fail("501 Not implemented", 1);
+  return emulationGap({
+    tool: "chronyc",
+    feature: verb === undefined ? "interactive" : `command:${verb}`,
+    what: verb === undefined ? "대화형 모드" : `chronyc ${verb}`,
+    supported: "chronyc tracking, chronyc sources, chronyc sourcestats",
+    example: "chronyc tracking",
+  });
 }
+
+/** Commands of the real chronyc (chrony 4 manual) other than the three the fake has. */
+const REAL_CHRONYC = new Set(
+  "accheck activity add allow authdata burst clients cmdaccheck cmdallow cmddeny delete deny dns dump keygen local makestep manual maxdelay maxpoll minpoll minstratum ntpdata offline online refresh rekey reselect reselectdist reset retries rtcdata selectdata serverstats settime shutdown smoothing smoothtime sourcename tracking trimrtc waitsync writertc".split(
+    " ",
+  ),
+);
 
 const MONTHS: Readonly<Record<string, number>> = {
   Jan: 0,
@@ -130,12 +164,53 @@ function checkEnd(c: Cmd, notAfter: string, ahead: string): R {
   return { out: `Certificate will ${expires ? "" : "not "}expire\n`, code: expires ? 1 : 0 };
 }
 
+const OPENSSL_SUPPORTED =
+  "openssl x509 -in 파일 -noout -dates|-enddate|-startdate|-subject|-issuer -checkend 초";
+const OPENSSL_EXAMPLE = "openssl x509 -in /etc/pki/tls/certs/server.crt -noout -enddate";
+
+/** Subcommands of the real openssl (`openssl help`, 3.x) other than x509; the fake has only x509. */
+const REAL_OPENSSL = new Set(
+  "asn1parse ca ciphers cms crl crl2pkcs7 dgst dhparam dsa dsaparam ec ecparam enc engine errstr gendsa genpkey genrsa help info list nseq ocsp passwd pkcs12 pkcs7 pkcs8 pkey pkeyparam pkeyutl prime rand rehash req rsa rsautl s_client s_server s_time sess_id smime speed spkac srp storeutl ts verify version".split(
+    " ",
+  ),
+);
+/** Options of `openssl x509` (3.x `openssl x509 -help`) the fake does not read. */
+const REAL_X509 = new Set(
+  "-text -fingerprint -serial -hash -subject_hash -issuer_hash -pubkey -modulus -purpose -ocsp_uri -email -nameopt -certopt -days -out -inform -outform -keyform -passin -sha1 -sha256 -sha384 -sha512 -md5 -signkey -req -CA -CAkey -CAserial -CAcreateserial -x509toreq -set_serial -trustout -clrtrust -addtrust -alias -noout -dates -enddate -startdate -subject -issuer -checkend -in -extfile -extensions -force_pubkey -checkhost -checkemail -checkip -ext -subject_hash_old -issuer_hash_old".split(
+    " ",
+  ),
+);
+
+function opensslCommandRefusal(verb: string | undefined): R {
+  if (verb !== undefined && !REAL_OPENSSL.has(verb))
+    return fail(`Invalid command '${verb}'; type "help" for a list.`, 1);
+  return emulationGap({
+    tool: "openssl",
+    feature: verb === undefined ? "interactive" : `subcommand:${verb}`,
+    what: verb === undefined ? "대화형 모드" : `openssl ${verb}`,
+    supported: OPENSSL_SUPPORTED,
+    example: OPENSSL_EXAMPLE,
+  });
+}
+
+function x509OptionRefusal(option: string): R {
+  if (!REAL_X509.has(option))
+    return fail(`x509: Unknown option: ${option}\nx509: Use -help for summary.`, 1);
+  return emulationGap({
+    tool: "openssl",
+    feature: `x509:${option}`,
+    what: `x509 ${option}`,
+    supported: OPENSSL_SUPPORTED,
+    example: OPENSSL_EXAMPLE,
+  });
+}
+
 export function openssl(c: Cmd): R {
-  if (c.args[0] !== "x509") return unsupported("openssl", c.args[0] ?? "(대화형)");
+  if (c.args[0] !== "x509") return opensslCommandRefusal(c.args[0]);
   const o = x509Options(c.args.slice(1));
-  if (o.bad) return unsupported("openssl x509", o.bad);
-  if (o.on.has("-text") || o.on.has("-fingerprint"))
-    return unsupported("openssl x509", "-text/-fingerprint");
+  if (o.bad) return x509OptionRefusal(o.bad);
+  const unsupported = ["-text", "-fingerprint"].find((f) => o.on.has(f));
+  if (unsupported) return x509OptionRefusal(unsupported);
   const file = o.value.get("-in");
   if (!file) return fail("openssl x509: no input file (-in)", 1);
   const text = c.fs.read(normalize(c.cwd, file));

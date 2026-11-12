@@ -5,9 +5,10 @@ import { human } from "./fmt";
 import { normalize } from "./fs";
 import { skewAt } from "./journal";
 import { GIB, ROOT_BYTES } from "./layout";
+import { badFlag } from "./real-options";
 import { loadAvg, memInfo } from "./sysinfo";
-import { parseTimeSpec } from "./timespec";
-import { act, type Cmd, fail, joinLines, ok, type R, unsupported } from "./types";
+import { looksLikeTime, parseTimeSpec, TIME_FORMS } from "./timespec";
+import { act, type Cmd, emulationGap, fail, joinLines, ok, type R } from "./types";
 
 const nowOf = (c: Cmd): Date => dateAt(c.h.t, skewAt(c.h, c.h.t));
 
@@ -15,7 +16,7 @@ const nowOf = (c: Cmd): Date => dateAt(c.h.t, skewAt(c.h, c.h.t));
 
 export function free(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "mkgbhwtl", val: "s", long: { human: "bool", si: "bool" } });
-  if (p.bad) return unsupported("free", p.bad);
+  if (p.bad) return badFlag("free", p);
   const m = memInfo(c.h);
   const scale = has(p, "g") ? 1 / 1024 : has(p, "b") ? 1024 * 1024 : has(p, "k") ? 1024 : 1;
   const hum = has(p, "h") || has(p, "--human");
@@ -84,7 +85,7 @@ export function df(c: Cmd): R {
     val: "t",
     long: { "human-readable": "bool", "print-type": "bool" },
   });
-  if (p.bad) return unsupported("df", p.bad);
+  if (p.bad) return badFlag("df", p);
   if (has(p, "i")) return ok(inodeTable(c));
   const hum = has(p, "h") || has(p, "--human-readable") || has(p, "H");
   const block = has(p, "m") ? 1024 * 1024 : 1024;
@@ -127,7 +128,7 @@ function inodeTable(c: Cmd): string {
 
 export function uptime(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "ps", long: { pretty: "bool", since: "bool" } });
-  if (p.bad) return unsupported("uptime", p.bad);
+  if (p.bad) return badFlag("uptime", p);
   if (has(p, "p") || has(p, "--pretty"))
     return ok(`up ${uptimeText(c.h.os.uptimeS).replace(/ min$/, " minutes")}\n`);
   if (has(p, "s") || has(p, "--since"))
@@ -194,11 +195,19 @@ export function date(c: Cmd): R {
     val: "d",
     long: { utc: "bool", date: "val", iso: "bool" },
   });
-  if (p.bad) return unsupported("date", p.bad);
+  if (p.bad) return badFlag("date", p);
   let d = nowOf(c);
   const spec = p.flags.get("d") ?? p.flags.get("--date");
   if (spec !== undefined) {
     const t = parseTimeSpec(spec, c.h.t);
+    if (t === undefined && looksLikeTime(spec))
+      return emulationGap({
+        tool: "date",
+        feature: "time-format",
+        what: `-d '${spec}'`,
+        supported: TIME_FORMS,
+        example: "date -d 'yesterday'",
+      });
     if (t === undefined) return fail(`date: invalid date '${spec}'`, 1);
     d = dateAt(t, skewAt(c.h, t));
   }
@@ -211,7 +220,7 @@ export function date(c: Cmd): R {
 
 export function hostname(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "sfiIdA" });
-  if (p.bad) return unsupported("hostname", p.bad);
+  if (p.bad) return badFlag("hostname", p);
   if (has(p, "i") || has(p, "I")) return ok(`${c.h.ip}\n`);
   if (has(p, "f") || has(p, "A")) return ok(`${c.h.name}.dc.local\n`);
   if (has(p, "d")) return ok("dc.local\n");
@@ -223,7 +232,7 @@ export const id = (_c: Cmd): R => ok("uid=1000(ops) gid=1000(ops) groups=1000(op
 
 export function uname(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "asrmnvop" });
-  if (p.bad) return unsupported("uname", p.bad);
+  if (p.bad) return badFlag("uname", p);
   const all =
     "Linux hostname 5.14.0-427.el9.x86_64 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux".replace(
       "hostname",
@@ -249,11 +258,19 @@ export function mountText(c: Cmd): string {
 
 export function mount(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "ar", val: "ot", long: {} });
-  if (p.bad) return unsupported("mount", p.bad);
+  if (p.bad) return badFlag("mount", p);
   const opts = p.flags.get("o");
   if (opts === undefined) return ok(mountText(c));
-  if (opts !== "remount,rw" || !p.rest[0])
-    return unsupported("mount", `-o ${opts} ${p.rest.join(" ")}`.trim());
+  if (opts === "remount,rw" && !p.rest[0])
+    return fail("mount: bad usage\nTry 'mount --help' for more information.", 1);
+  if (opts !== "remount,rw")
+    return emulationGap({
+      tool: "mount",
+      feature: "options",
+      what: "-o 옵션 (remount,rw 말고)",
+      supported: "mount (마운트 목록 보기), mount -o remount,rw <마운트 지점>",
+      example: "mount",
+    });
   act(c, "remount_rw");
   return ok("");
 }
@@ -277,7 +294,7 @@ export function reboot(c: Cmd): R {
 
 export function logrotate(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "fvd", long: {} });
-  if (p.bad) return unsupported("logrotate", p.bad);
+  if (p.bad) return badFlag("logrotate", p);
   const conf = p.rest[0];
   if (!conf) return fail("logrotate 3.18.0 - Copyright (C) 1995-2001 Red Hat, Inc.", 1);
   if (!c.fs.exists(normalize(c.cwd, conf)))

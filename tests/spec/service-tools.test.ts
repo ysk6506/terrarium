@@ -158,7 +158,10 @@ describe("the fake shell prints what the state says, in the shape of Linux [REQ-
     const { call, sh, world, physics } = setup();
     const out = call("run_command", { host: "srv-a1", cmd: "vim /etc/hosts" });
     expect(out).toMatchObject({ exitCode: 127, outside: ["vim"] });
-    expect(out.output).toBe("bash: vim: command not found");
+    // ADR-0184: vim is a real command the fake host lacks, so bash's line comes first and the terrarium lines follow
+    expect(out.output.split("\n")[0]).toBe("bash: vim: command not found");
+    expect(out.output).toContain("terrarium: ");
+    expect(out).toMatchObject({ gaps: [{ tool: "vim", feature: "command" }] });
     expect(sh("srv-a1", "ps aux | grep sshd")).toContain("sshd");
     world.apply({ type: "power.set", target: "srv-a1", on: false }, "scenario");
     physics.run(MINUTE);

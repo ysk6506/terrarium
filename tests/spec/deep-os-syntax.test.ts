@@ -60,11 +60,16 @@ describe("what the shell does not do is refused in its own words and listed as o
   });
 
   test("a command that does not exist is command not found, listed as outside, and exit 127", () => {
+    // ADR-0184: `export` is a real bash builtin the fake shell lacks, so its line is followed by the terrarium lines;
+    // a word no host has is plain command not found
     const r = lab().run(HOST, "export FOO=1");
-    expect(r).toMatchObject({
+    expect(r).toMatchObject({ exitCode: 127, outside: ["export"] });
+    expect(r.stderr.split("\n")[0]).toBe("bash: export: command not found");
+    expect(r.stderr).toContain("terrarium: ");
+    expect(lab().run(HOST, "nosuchcmd-xyz")).toMatchObject({
       exitCode: 127,
-      stderr: "bash: export: command not found",
-      outside: ["export"],
+      stderr: "bash: nosuchcmd-xyz: command not found",
+      outside: ["nosuchcmd-xyz"],
     });
   });
 });

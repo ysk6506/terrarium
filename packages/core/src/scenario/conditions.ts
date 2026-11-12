@@ -27,6 +27,8 @@ export interface ToolCallRecord {
   readonly effects?: readonly AgentAction[];
   /** For `run_command`: what the fake shell could not do in this call (ADR-0117 decision 6). */
   readonly outside?: readonly string[];
+  /** The emulation gaps this call hit (ADR-0184): stable keys, no free text. */
+  readonly gaps?: readonly { readonly tool: string; readonly feature: string }[];
 }
 
 const SIMPLE_ACTIONS: Partial<Record<WorldCommand["type"], ActionKind>> = {

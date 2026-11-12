@@ -66,6 +66,17 @@ export {
   RESTORE_S,
 } from "./db";
 export { backupAgeS, bestCandidate } from "./db-act";
+export {
+  defaultSaid,
+  type EmulationGap,
+  type GapNotice,
+  gapKey,
+  gapLines,
+  gapOf,
+  gapText,
+  hasGapLines,
+  tallyGaps,
+} from "./emulation-gap";
 
 ("./db-health");
 
@@ -276,6 +287,7 @@ export {
 } from "./room-shape";
 export type {
   CounterpartEvent,
+  GapEvent,
   HandedFault,
   HumanEvent,
   RecentCall,
