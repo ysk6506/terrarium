@@ -8,6 +8,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { git, splitFrontMatter, type Violation, violation } from "../common";
+import { amendEntries } from "./doc-amends";
 import { decisionsStale } from "./doc-decisions";
 import { bodyFingerprint } from "./doc-print";
 import { testRowNotes } from "./doc-tests";
@@ -16,9 +17,37 @@ import { changedFiles } from "./protected";
 
 const REVERIFY_ONLY_CODE = "DOC097";
 
+/** DOC091: a new ADR says, for each ADR it amends, in a few words what it changed there. */
+function checkWhat(file: string, data: Record<string, unknown>): Violation[] {
+  if (!Array.isArray(data.amends)) return [];
+  return data.amends.flatMap((item) => {
+    const [entry] = amendEntries([item], []);
+    return entry?.what
+      ? []
+      : [
+          violation(
+            "DOC091",
+            file,
+            1,
+            `amends ${entry?.name ?? String(item)} without saying what it changed`,
+            'Write the entry as { adr: "NNNN", what: "<a short plain phrase for the part that changed>" }.',
+          ),
+        ];
+  });
+}
+
 function checkAddedAdr(root: string, file: string, changed: ReadonlySet<string>): Violation[] {
   const { data } = splitFrontMatter(readFileSync(path.join(root, file), "utf8"));
   if (data === null) return [];
+  return [...checkWhat(file, data), ...checkUpdatesDocs(root, file, data, changed)];
+}
+
+function checkUpdatesDocs(
+  root: string,
+  file: string,
+  data: Record<string, unknown>,
+  changed: ReadonlySet<string>,
+): Violation[] {
   const listed = data.updates_docs;
   if (!Array.isArray(listed)) {
     return [

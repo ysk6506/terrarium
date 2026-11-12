@@ -10,8 +10,10 @@ touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 5531d1a6307ac6ad
 amends:
-  - 0150-reality-worlds-are-a-requirement-decisions-and-proposals.md
-  - 0151-source-sync-schedule-safeguards-pinned-versions.md
+  - adr: "0150"
+    what: 평면 둘·고가용성은 제안
+  - adr: "0151"
+    what: 서버 한 대 전제
 ---
 # ADR-0153 운영 모드의 세계는 고가용으로 설계하고, 오픈 베타에 넣는다
 

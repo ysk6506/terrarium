@@ -10,13 +10,19 @@ touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 0c43ebc5aa9e3d45
 amends:
-  - 0154-reality-scale-tens-of-millions-rows-scopes-measure.md
-  - 0144-reality-data-pipeline-ontology-manager-world-kinds.md
+  - adr: "0154"
+    what: 3초와 저장소에서 되짚기
+  - adr: "0144"
+    what: 관계 표의 끊기면 넘어가나
 amended_by:
-  - 0161-shape-sample-test-fills-the-gaps.md
-  - 0164-ecmp-from-device-config-list-excel-k8s-vdi.md
-  - 0168-experiment-copy-behaves-like-the-operation-world.md
-  - 0169-one-model-for-invented-and-real-worlds.md
+  - adr: "0161"
+    what: 포트의 딸린 줄
+  - adr: "0164"
+    what: 관계 표의 묶음 뜻
+  - adr: "0168"
+    what: 모르는 것은 보고
+  - adr: "0169"
+    what: 포트를 타입에 넣지 않음
 ---
 # ADR-0156 영향 범위는 포트 단위까지 묶음의 뜻으로 계산하고, 메모리의 색인에서 1초·수 초 안에 답한다
 

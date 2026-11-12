@@ -10,10 +10,13 @@ touches_protected:
   - AGENTS.md
 decision_hash: 718d3dc17208798e
 amends:
-  - 0144-reality-data-pipeline-ontology-manager-world-kinds.md
-  - 0167-data-pipeline-words-from-practice.md
+  - adr: "0144"
+    what: 단계 A~D의 순서
+  - adr: "0167"
+    what: 객체·링크와 개체·관계를 나중에 맞춤
 amended_by:
-  - 0180-docs-follow-decisions-not-only-code.md
+  - adr: "0180"
+    what: 4절의 손으로 쓴 결정 목록
 ---
 # ADR-0170 제품의 값과 원칙 여섯을 한 장에 두고, 요구사항은 그 한 장에 대 본 뒤 설계한다
 

@@ -9,7 +9,8 @@ enforced_by:
 touches_protected: []
 decision_hash: 6749f36c53aed5cd
 amended_by:
-  - 0158-repeats-per-seed-and-seed-level-statistics.md
+  - adr: "0158"
+    what: 순위는 실행 3번 이상
 ---
 # ADR-0023 같은 시험지끼리만 줄 세운다
 

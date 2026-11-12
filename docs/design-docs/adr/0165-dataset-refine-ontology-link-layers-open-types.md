@@ -8,10 +8,13 @@ enforced_by:
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-115·117 예정). 만들 때 enforced_by를 층 분리 구조 검사와 사용자 링크 종류의 영향 범위 시험으로 바꾼다.
 decision_hash: 9b1921bbc7eb6554
 amends:
-  - 0144-reality-data-pipeline-ontology-manager-world-kinds.md
-  - 0157-model-standards-three-tiers-platform-mapping.md
+  - adr: "0144"
+    what: 정제·링크를 한 단계 안에 접음
+  - adr: "0157"
+    what: 사용자가 만든 관계는 영향이 안 넘어감
 amended_by:
-  - 0168-experiment-copy-behaves-like-the-operation-world.md
+  - adr: "0168"
+    what: 사용자 타입은 실험에 안 들어감
 ---
 # ADR-0165 데이터셋·정제·온톨로지 매핑·링크 조건을 각자의 층으로 나누고, 객체 종류와 링크 종류는 열려 있다
 

@@ -10,6 +10,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { splitFrontMatter, type Violation, violation } from "../common";
 import { expandGlobs } from "../files";
+import { amendEntries } from "./doc-amends";
 import { followsFingerprint } from "./doc-print";
 import type { DocsConfig } from "./docs";
 
@@ -72,9 +73,11 @@ export function checkAmendLinks(
   adrs: ReadonlyMap<string, Record<string, unknown>>,
 ): Violation[] {
   const out: Violation[] = [];
+  const names = [...adrs.keys()].map((f) => path.posix.basename(f));
+  const entries = (value: unknown): string[] => amendEntries(value, names).map((e) => e.name);
   for (const [file, data] of adrs) {
     const self = path.posix.basename(file);
-    for (const name of strings(data.amends)) {
+    for (const name of entries(data.amends)) {
       const target = adrs.get(`${config.adr_dir}/${name}`);
       if (!target) {
         out.push(
@@ -83,10 +86,10 @@ export function checkAmendLinks(
             file,
             1,
             `amends '${name}', which is not an ADR file`,
-            `Use the file name of an ADR in ${config.adr_dir}/.`,
+            `Use the file name, or { adr: "NNNN", what: "..." } for an ADR in ${config.adr_dir}/.`,
           ),
         );
-      } else if (!strings(target.amended_by).includes(self)) {
+      } else if (!entries(target.amended_by).includes(self)) {
         out.push(
           violation(
             "DOC091",
@@ -98,8 +101,8 @@ export function checkAmendLinks(
         );
       }
     }
-    for (const name of strings(data.amended_by)) {
-      if (!strings(adrs.get(`${config.adr_dir}/${name}`)?.amends).includes(self)) {
+    for (const name of entries(data.amended_by)) {
+      if (!entries(adrs.get(`${config.adr_dir}/${name}`)?.amends).includes(self)) {
         out.push(
           violation(
             "DOC091",

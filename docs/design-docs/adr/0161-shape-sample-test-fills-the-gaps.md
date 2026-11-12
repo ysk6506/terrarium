@@ -8,10 +8,13 @@ enforced_by:
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-115 예정). 만들 때 enforced_by를 견본·합·다듬기·양쪽·묶음의 출처 시험으로 바꾼다.
 decision_hash: fe39d964039dd0a5
 amends:
-  - 0156-blast-radius-ports-redundancy-groups-in-memory-index.md
-  - 0157-model-standards-three-tiers-platform-mapping.md
+  - adr: "0156"
+    what: 포트의 딸린 줄
+  - adr: "0157"
+    what: OpenStack 애그리거트
 amended_by:
-  - 0164-ecmp-from-device-config-list-excel-k8s-vdi.md
+  - adr: "0164"
+    what: ECMP의 출처
 ---
 # ADR-0161 생김새 견본 시험에서 막힌 열아홉 곳을 메운다 — 손질은 여덟 가지, 딸린 요청, 다듬어 견주기, 묶음의 출처
 

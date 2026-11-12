@@ -6,12 +6,12 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { joinFrontMatter, splitFrontMatter } from "../common";
 import { listFiles } from "../files";
+import { adrNumber, amendEntries, backEntry } from "./doc-amends";
 import type { DocsConfig } from "./docs";
 
 /** A notice, not a failure: the committed decisions file is behind the ADR front matter. */
 export const STALE_CODE = "DOC098";
-const strings = (value: unknown): string[] => (Array.isArray(value) ? value.map(String) : []);
-const numberOf = (name: string): string => /^(\d{4})/.exec(name)?.[1] ?? name;
+const numberOf = adrNumber;
 
 interface AdrEntry {
   readonly name: string;
@@ -36,16 +36,20 @@ const linkTo = (config: DocsConfig, name: string): string =>
 
 const cell = (text: string): string => text.replace(/\|/g, "\\|").replace(/\s+/g, " ").trim();
 
-function row(config: DocsConfig, { name, data }: AdrEntry): string {
+function row(config: DocsConfig, adrNames: readonly string[], { name, data }: AdrEntry): string {
   const title = cell(String(data.title ?? name));
   const label = title.startsWith("ADR-") ? title : `ADR-${numberOf(name)} ${title}`;
   const status = data.status === "superseded" ? "대체됨" : "유효";
-  const refs = (names: string[]): string =>
-    names.map((n) => `[${numberOf(n)}](${linkTo(config, n)})`).join(", ");
+  const names = adrNames;
+  const ref = (n: string, what: string | null): string =>
+    `[${numberOf(n)}](${linkTo(config, n)})${what ? ` (${cell(what)})` : ""}`;
   const replaced =
-    typeof data.superseded_by === "string" ? [`대체: ${refs([data.superseded_by])}`] : [];
-  const amended = strings(data.amended_by);
-  const parts = [...replaced, ...(amended.length > 0 ? [`일부 고침: ${refs(amended)}`] : [])];
+    typeof data.superseded_by === "string" ? [`대체: ${ref(data.superseded_by, null)}`] : [];
+  const amended = amendEntries(data.amended_by, names);
+  const parts = [
+    ...replaced,
+    ...(amended.length > 0 ? [`일부 고침: ${amended.map((e) => ref(e.name, e.what)).join(", ")}`] : []),
+  ];
   return `| [${label}](${linkTo(config, name)}) | ${status} | ${parts.join("; ")} |`;
 }
 
@@ -61,7 +65,7 @@ export function decisionsTable(root: string, config: DocsConfig): string {
     "",
     "| 결정 | 상태 | 무엇이 고쳤나 |",
     "|---|---|---|",
-    ...adrs.map((adr) => row(config, adr)),
+    ...adrs.map((adr) => row(config, adrs.map((a) => a.name), adr)),
     "",
   ].join("\n");
 }
@@ -87,14 +91,17 @@ export function linkAmends(root: string, config: DocsConfig, file: string): stri
   if (data === null || data.kind !== "decision") throw new Error(`${file} is not an ADR`);
   const self = path.posix.basename(file);
   const changed: string[] = [];
-  for (const name of strings(data.amends)) {
+  const names = loadAdrs(root, config).map((a) => a.name);
+  for (const { name, what } of amendEntries(data.amends, names)) {
     const target = `${config.adr_dir}/${name}`;
     if (!existsSync(path.join(root, target))) throw new Error(`amends '${name}': no such ADR file`);
     const parsed = splitFrontMatter(readFileSync(path.join(root, target), "utf8"));
     if (parsed.data === null) throw new Error(`${target} has no front matter`);
-    const already = strings(parsed.data.amended_by);
-    if (already.includes(self)) continue;
-    parsed.data.amended_by = [...already, self];
+    const already = Array.isArray(parsed.data.amended_by) ? parsed.data.amended_by : [];
+    const wanted = backEntry(self, what);
+    const at = amendEntries(already, names).findIndex((e) => e.name === self);
+    if (at >= 0 && JSON.stringify(already[at]) === JSON.stringify(wanted)) continue;
+    parsed.data.amended_by = at >= 0 ? already.map((e, i) => (i === at ? wanted : e)) : [...already, wanted];
     writeFileSync(path.join(root, target), joinFrontMatter(parsed.data, parsed.body), "utf8");
     changed.push(target);
   }

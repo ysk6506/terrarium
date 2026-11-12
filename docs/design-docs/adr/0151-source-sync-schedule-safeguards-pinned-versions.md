@@ -10,9 +10,11 @@ touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: ba53a2e9a533ac9e
 amends:
-  - 0150-reality-worlds-are-a-requirement-decisions-and-proposals.md
+  - adr: "0150"
+    what: 계속 동기화는 범위 밖
 amended_by:
-  - 0153-operation-mode-worlds-are-highly-available-open-beta.md
+  - adr: "0153"
+    what: 서버 한 대 전제
 ---
 # ADR-0151 소스는 주기로 동기화하고, 적용은 안전장치를 거치며, 실험은 세계의 판에 묶인다
 

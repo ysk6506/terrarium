@@ -10,7 +10,8 @@ enforced_by:
 touches_protected: []
 decision_hash: f272311558296171
 amended_by:
-  - 0174-permissions-proxy-identity-three-scopes-audit.md
+  - adr: "0174"
+    what: 신원과 권한을 넓힘
 ---
 # ADR-0028 누가 무엇을 할 수 있나
 

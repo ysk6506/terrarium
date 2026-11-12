@@ -16,7 +16,8 @@ touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 7c82ea921010282d
 amended_by:
-  - 0150-reality-worlds-are-a-requirement-decisions-and-proposals.md
+  - adr: "0150"
+    what: 현실 가져오기를 지움
 ---
 # ADR-0084 가져오기를 없애고 토폴로지 보기를 둔다
 

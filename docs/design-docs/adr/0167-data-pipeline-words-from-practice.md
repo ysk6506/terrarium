@@ -8,9 +8,11 @@ enforced_by:
 no_enforcement_reason: 아직 화면이 없다(REQ-115 예정). 화면을 만들 때 글 잣대 시험(world-words.test.ts와 같은 방식)에 "쓰지 않는 말" 목록을 넣고 enforced_by를 그 시험으로 바꾼다.
 decision_hash: f6b72bc9ff37d74d
 amends:
-  - 0144-reality-data-pipeline-ontology-manager-world-kinds.md
+  - adr: "0144"
+    what: 순우리말로 지은 이름
 amended_by:
-  - 0170-product-design-one-page-six-principles.md
+  - adr: "0170"
+    what: 객체·링크와 개체·관계를 나중에 맞춤
 ---
 # ADR-0167 데이터 파이프라인과 온톨로지 매니저의 말은 지어내지 않고 현업에서 쓰는 말을 쓴다
 

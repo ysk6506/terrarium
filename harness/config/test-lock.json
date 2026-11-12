@@ -68334,6 +68334,370 @@
    "added": "2026-10-28",
    "amended_by": null
   },
+  "harness/src/checks/doc-amends.test.ts::<import:1701697f>": {
+   "kind": "support",
+   "hash": "1701697fc183201f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:2112a8ad>": {
+   "kind": "support",
+   "hash": "2112a8ad340ae02c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:328d0a04>": {
+   "kind": "support",
+   "hash": "328d0a0456491a42",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:329d33e4>": {
+   "kind": "support",
+   "hash": "329d33e47796fd67",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:46dc40aa>": {
+   "kind": "support",
+   "hash": "46dc40aa82ca0ed6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:55ef6c18>": {
+   "kind": "support",
+   "hash": "55ef6c18dcec7e3a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:c37b1540>": {
+   "kind": "support",
+   "hash": "c37b1540b586de0f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:f597dc79>": {
+   "kind": "support",
+   "hash": "f597dc7951bc5887",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::=amendProblems": {
+   "kind": "support",
+   "hash": "90596a235b0d5079",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::=index": {
+   "kind": "support",
+   "hash": "a0e0e246a1de0385",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::=NEW": {
+   "kind": "support",
+   "hash": "ecd49f50842f6c7e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::=OLD": {
+   "kind": "support",
+   "hash": "21704bc46b42c58a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::=pair": {
+   "kind": "support",
+   "hash": "ddd256ec4e81cb81",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::=WHAT": {
+   "kind": "support",
+   "hash": "ab434296ac2c3f27",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::a new ADR says what it changed [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::a new ADR says what it changed [REQ-020] > =base": {
+   "kind": "support",
+   "hash": "b4deff33cb88eb66",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::a new ADR says what it changed [REQ-020] > =withAmends": {
+   "kind": "support",
+   "hash": "806183f1daf0abb7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::a new ADR says what it changed [REQ-020] > the file-name form is refused for a new ADR; the rich form passes": {
+   "kind": "test",
+   "hash": "588bbce2f21f7fae",
+   "asserts": 3,
+   "literals": [
+    "\"0001\"",
+    "\"0001\"",
+    "\"0001\"",
+    "\"0001\"",
+    "\"0001-old.md\"",
+    "\"0001-old.md\"",
+    "\"1\"",
+    "\"1\"",
+    "\"amends 0001-old.md without saying what it changed\"",
+    "\"amends 0001-old.md without saying what it changed\"",
+    "\"the file-name form is refused for a new ADR; the rich form passes\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::amends entries come in two forms [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::amends entries come in two forms [REQ-020] > a file name and { adr, what } both read as the ADR they name": {
+   "kind": "test",
+   "hash": "f9ab4091c7c4616b",
+   "asserts": 4,
+   "literals": [
+    "\" 한 구절 \"",
+    "\" 한 구절 \"",
+    "\"0\"",
+    "\"0\"",
+    "\"0001-old.md\"",
+    "\"0001-old.md\"",
+    "\"0001-old.md\"",
+    "\"0001-old.md\"",
+    "\"0001-old.md\"",
+    "\"0002\"",
+    "\"0002\"",
+    "\"0002-new.md\"",
+    "\"0002-new.md\"",
+    "\"0002-new.md\"",
+    "\"0009\"",
+    "\"0009\"",
+    "\"0009\"",
+    "\"0009\"",
+    "\"a file name and { adr, what } both read as the ADR they name\"",
+    "\"nope\"",
+    "\"nope\"",
+    "\"한 구절\"",
+    "\"한 구절\"",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::amends entries come in two forms [REQ-020] > the back entry carries the phrase when there is one": {
+   "kind": "test",
+   "hash": "ccd174ecf3c37967",
+   "asserts": 2,
+   "literals": [
+    "\"0002\"",
+    "\"0002\"",
+    "\"0002-new.md\"",
+    "\"0002-new.md\"",
+    "\"0002-new.md\"",
+    "\"0002-new.md\"",
+    "\"0002-new.md\"",
+    "\"0002-new.md\"",
+    "\"the back entry carries the phrase when there is one\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::DOC091 reads the rich form on both sides [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::DOC091 reads the rich form on both sides [REQ-020] > a rich amends without the other side still fails on the amending ADR": {
+   "kind": "test",
+   "hash": "e4cc7d34ed1de71e",
+   "asserts": 1,
+   "literals": [
+    "\"0001\"",
+    "\"0001\"",
+    "\"a rich amends without the other side still fails on the amending ADR\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::DOC091 reads the rich form on both sides [REQ-020] > rich on both sides passes, and a number that is no ADR fails": {
+   "kind": "test",
+   "hash": "2bf2753646761b51",
+   "asserts": 2,
+   "literals": [
+    "\"0001\"",
+    "\"0002\"",
+    "\"0009\"",
+    "\"0009\"",
+    "\"rich on both sides passes, and a number that is no ADR fails\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::link-amends copies the phrase to the amended ADR [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::link-amends copies the phrase to the amended ADR [REQ-020] > the generated list shows the phrase beside the amending ADR": {
+   "kind": "test",
+   "hash": "03c93402e3c2cb3c",
+   "asserts": 2,
+   "literals": [
+    "\"0001\"",
+    "\"0001-old.md\"",
+    "\"\\n\"",
+    "\"the generated list shows the phrase beside the amending ADR\"",
+    "\"일부 고침: [0002](\"",
+    "\"일부 고침: [0002](\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::link-amends copies the phrase to the amended ADR [REQ-020] > the phrase lands in amended_by, once, and a bare entry is upgraded": {
+   "kind": "test",
+   "hash": "af0abc97a19e57fd",
+   "asserts": 4,
+   "literals": [
+    "\"0001\"",
+    "\"0002\"",
+    "\"0002\"",
+    "\"0002-new.md\"",
+    "\"the phrase lands in amended_by, once, and a bare entry is upgraded\"",
+    "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "harness/src/checks/doc-audit.test.ts::<import:0525def2>": {
    "kind": "support",
    "hash": "0525def2b6b34466",

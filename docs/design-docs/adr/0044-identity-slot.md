@@ -10,7 +10,8 @@ touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: c018fd7bd1b4f378
 amended_by:
-  - 0174-permissions-proxy-identity-three-scopes-audit.md
+  - adr: "0174"
+    what: 신원과 권한을 넓힘
 ---
 # ADR-0044 식별 자리
 

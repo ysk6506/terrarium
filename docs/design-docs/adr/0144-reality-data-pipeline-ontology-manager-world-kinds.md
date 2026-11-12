@@ -10,10 +10,14 @@ touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 1137c5239f2988a5
 amended_by:
-  - 0156-blast-radius-ports-redundancy-groups-in-memory-index.md
-  - 0165-dataset-refine-ontology-link-layers-open-types.md
-  - 0167-data-pipeline-words-from-practice.md
-  - 0170-product-design-one-page-six-principles.md
+  - adr: "0156"
+    what: 관계 표의 끊기면 넘어가나
+  - adr: "0165"
+    what: 정제·링크를 한 단계 안에 접음
+  - adr: "0167"
+    what: 순우리말로 지은 이름
+  - adr: "0170"
+    what: 단계 A~D의 순서
 ---
 # ADR-0144 현실 데이터는 네 단으로 들어오고, 세계는 현실과 실험 두 종류이며, 모델은 핵심을 잠그고 넓힌다
 

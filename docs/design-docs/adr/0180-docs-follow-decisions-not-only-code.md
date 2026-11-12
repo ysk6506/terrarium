@@ -30,7 +30,8 @@ updates_docs:
   - docs/design-docs/core-beliefs.md
   - docs/design-docs/moss.md
 amends:
-  - 0170-product-design-one-page-six-principles.md
+  - adr: "0170"
+    what: 4절의 손으로 쓴 결정 목록
 touches_protected:
   - harness/**
   - docs/product-specs/requirements.md
@@ -63,6 +64,9 @@ amends_tests:
   - harness/src/checks/docs.test.ts::docs check [REQ-020] > broken links and dead path references fail; fenced code and external links are ignored
 test_change_reason: 문서 검사에 follows 필수(DOC092)와 수명 단축(안내 30일)이 들어와, 시험의 가짜 문서에 follows가 필요하고 앞부분 줄이 세 줄 늘고 만료 날짜 경계가 옮겨졌다. 검사하는 규칙은 그대로다.
 decision_hash: 5a89817b918a3415
+amended_by:
+  - adr: "0182"
+    what: amends와 amended_by는 파일 이름만 적음
 ---
 # ADR-0180 문서는 코드뿐 아니라 결정도 따라간다 — 결정이 바꾸는 문서를 적고, 고쳐진 결정에 표시를 남기고, 목록은 만들어 낸다
 

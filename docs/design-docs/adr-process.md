@@ -9,6 +9,7 @@ covers:
   - harness/src/checks/doc-follow.ts
   - harness/src/checks/doc-diff.ts
   - harness/src/checks/doc-decisions.ts
+  - harness/src/checks/doc-amends.ts
   - harness/src/checks/doc-claims.ts
   - harness/src/checks/doc-facts.ts
 covers_hash: 2842e1ef6a6eb66a
@@ -47,10 +48,12 @@ test_change_reason: ""  # amends_tests를 쓸 때: 왜 요구사항이 바뀌었
 updates_docs: [docs/design-docs/product-design.md]  # 이 결정이 바꾸는 문서. 같은 변경에서 실제로 고쳐야 한다 (DOC090)
 # updates_docs: []      # 바꾸는 문서가 없으면 빈 목록과
 # updates_docs_reason: "..."
-amends: [0165-....md]   # 앞선 결정의 일부를 바꿀 때: 그 ADR 파일 이름 (전체를 대체하면 아래 superseded)
+amends:                 # 앞선 결정의 일부를 바꿀 때 (전체를 대체하면 아래 superseded)
+  - adr: "0165"         #   그 ADR 번호
+    what: 사용자 타입은 실험에 안 들어감   #   고친 부분을 20자쯤의 쉬운 말로 (새 ADR은 꼭 적는다)
 ```
 
-4. 앞선 결정의 일부를 바꾸면 `pnpm tsx harness/src/checks/docs.ts link-amends docs/design-docs/adr/NNNN-....md`로 대상 ADR의 앞부분에 `amended_by`를 남긴다 (`DOC091`이 양쪽이 맞는지 본다). 대상 ADR도 보호 경로이므로 이 ADR의 `touches_protected`에 대상 파일을 적는다.
+4. 앞선 결정의 일부를 바꾸면 `pnpm tsx harness/src/checks/docs.ts link-amends docs/design-docs/adr/NNNN-....md`로 대상 ADR의 앞부분에 `amended_by`를 남기고 같은 `what`을 옮겨 적는다. 결정 목록은 이것을 "일부 고침: 0168 (사용자 타입은 실험에 안 들어감)"으로 보인다. `what`은 대상 ADR의 어느 부분이 바뀌었는지를 말한다. 새 ADR이 `what` 없이 `amends`를 쓰면 `DOC091`이 실패하고, 옛 ADR의 파일 이름만 적은 항목은 그대로 읽는다. (`DOC091`은 양쪽이 맞는지도 본다.) 대상 ADR도 보호 경로이므로 이 ADR의 `touches_protected`에 대상 파일을 적는다.
 5. 봉인: `pnpm tsx harness/src/checks/docs.ts seal-adr docs/design-docs/adr/NNNN-....md`
 6. 색인에는 줄을 더하지 않는다. [색인](../index.md)은 결정 기록 폴더를 가리킬 뿐이고, 결정 목록은 하네스가 만든다: `pnpm tsx harness/src/checks/docs.ts decisions`가 [결정 목록](../generated/decisions.md)을 쓴다. 이 파일은 5시간마다 도는 정리 작업이 main에서 새로 만들고, 결정마다 커밋하지 않는다 (낡았으면 `DOC098` 알림만 나온다). [제품 설계 한 장](product-design.md) 4절도 손으로 표를 고치지 않는다. 그 문서를 고쳐야 하는 결정이면 `updates_docs`에 적는다.
 
