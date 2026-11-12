@@ -1,13 +1,13 @@
 import type { ActivityEvent } from "@terrarium/core/contract";
 import { describe, expect, test } from "vitest";
 import {
+  HANEUL,
   recipe,
   ScriptHarness,
   seed,
   settled,
   testPlatform,
   until,
-  YEONSU,
 } from "./test-support/platform";
 
 const AGENTS = [{ id: "a", name: "관제 에이전트", model: "gpt-사내" }];
@@ -20,12 +20,12 @@ async function play(
   const { world, scenario } = await seed(t.platform);
   const seen: ActivityEvent[] = [];
   t.platform.events.subscribeWorld(world.id, (e) => seen.push(e));
-  const created = await t.platform.experiments.create(YEONSU, {
+  const created = await t.platform.experiments.create(HANEUL, {
     name: "냉방 점검",
     recipe: recipe(world.id, scenario.id, { harnessId: harness.info.id, agentId: "a", runs: 1 }),
   });
   await during?.(world.id, seen);
-  await settled(t.platform, YEONSU, created.experiment.id);
+  await settled(t.platform, HANEUL, created.experiment.id);
   return { ...t, world, seen, experimentId: created.experiment.id };
 }
 
@@ -52,7 +52,7 @@ describe("who works where in a world [REQ-050]", () => {
       type: "start",
       who: {
         experiment: "냉방 점검",
-        owner: "yeonsu",
+        owner: "haneul",
         harness: "하네스 h",
         agent: "관제 에이전트",
         model: "gpt-사내",
@@ -84,7 +84,7 @@ describe("who works where in a world [REQ-050]", () => {
     );
     const t = testPlatform([h]);
     const { world, scenario } = await seed(t.platform);
-    const created = await t.platform.experiments.create(YEONSU, {
+    const created = await t.platform.experiments.create(HANEUL, {
       name: "전원",
       recipe: recipe(world.id, scenario.id, { harnessId: "h", agentId: "a", runs: 1 }),
     });
@@ -93,7 +93,7 @@ describe("who works where in a world [REQ-050]", () => {
       if (e.type === "call") calls.push([e.tool, e.effect, e.targets]);
     });
     go();
-    await settled(t.platform, YEONSU, created.experiment.id);
+    await settled(t.platform, HANEUL, created.experiment.id);
     expect(calls).toEqual([["power_server", "act", ["srv-1"]]]);
   });
 
@@ -114,7 +114,7 @@ describe("who works where in a world [REQ-050]", () => {
     const { world, platform } = await (async () => {
       const t = testPlatform([h]);
       const { world, scenario } = await seed(t.platform);
-      await t.platform.experiments.create(YEONSU, {
+      await t.platform.experiments.create(HANEUL, {
         name: "느린 실행",
         recipe: recipe(world.id, scenario.id, { harnessId: "h", agentId: "a", runs: 1 }),
       });

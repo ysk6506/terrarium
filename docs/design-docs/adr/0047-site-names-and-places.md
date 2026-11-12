@@ -22,12 +22,12 @@ amends_tests:
   - packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > the sites with a map have as many fabs as the blue roofs counted on it; the HPC centre is at Hwaseong's south tip
   - apps/web/src/logic/world3d/campus-reserved.test.ts::a half-built Hwaseong keeps every fab place on its map [REQ-056] [REQ-048] > the six fab places and the two DSR places not built are cleared, and decoration keeps off them
 test_change_reason: 사용자가 화성·평택의 배치도와 위성 사진을 주어 건물의 이름과 자리를 정확히 알게 됐다. 화성의 팹은 9곳이 아니라 이름 있는 7곳(12·13라인, S4, 15, 16, 17, S3, V1)이고 나머지 두 곳은 MR2와 UT3라는 지원 건물이었다. 평택은 P3가 빠져 있었고 한 곳은 물류센터였다. 그래서 자리 개수를 세던 시험과 기본 구성의 남은 자리를 세던 시험이 새 개수로 바뀌었고, 예약된 자리에 사무동·유틸리티동 같은 부속 건물이 더해져 비워 둔 자리만 세도록 바뀌었다. 건물이 자리 안에 서고 서로 겹치지 않으며 비워 둔 자리를 덮지 않는 성질은 그대로 확인한다. 같은 날 새로 쓴 자리 시험은 보조 함수의 자료형만 고쳤다(타입 검사가 통과하도록).
-decision_hash: 568b15f89265019e
+decision_hash: bc3ddd843d64831b
 ---
 # ADR-0047 지도가 부르는 이름과 자리
 
 ## 맥락
-사용자가 화성과 평택의 배치도(이름이 적힌 위성 사진, 조감도, 평택 배치도)를 주었다. 이전 자리는 지도의 파란 지붕을 내가 세어 만든 것이라 세 가지가 틀렸다.
+화성과 평택은 이름이 적힌 위성 사진과 조감도를 근거로 다시 읽었다. 이전 자리는 지도의 파란 지붕을 내가 세어 만든 것이라 세 가지가 틀렸다.
 
 - 이름이 없었다. 팹이 `FAB1동`처럼 번호로만 불렸다. 현실에서는 17라인, V1, P3처럼 이름으로 부른다.
 - 팹이 아닌 것이 팹이었다. 화성 아홉 곳 중 둘은 MR2(지원동)와 UT3(유틸리티동)이고, 평택 다섯 곳 중 하나는 물류센터였으며 P3는 빠져 있었다.

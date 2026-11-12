@@ -15,7 +15,7 @@ touches_protected:
   - docs/design-docs/adr/0114-container-layer-amend-tests.md
   - docs/design-docs/adr/0130-gpu-layer-power-cooling-ladders.md
 amends_tests: []
-decision_hash: 59ef5ded047b19c9
+decision_hash: 691be886f029ee02
 ---
 # ADR-0187 공개 저장소에는 공개된 자료에서 온 사실만 둔다 — 내부에서 들은 사실은 요구로 바꿔 적고, 이미 들어간 것은 봉인된 기록에서도 걷어낸다
 
@@ -37,7 +37,7 @@ decision_hash: 59ef5ded047b19c9
 
 ## 버린 길
 - **봉인된 기록은 그대로 두고 새 기록으로 대신하기**: 문장이 남는다.
-- **저장소를 비공개로 돌리기**: 사내에서 내려받아 쓰는 길(ADR-0181)이 막힌다. 제품 책임자가 정할 일이다.
+- **저장소를 비공개로 돌리기**: 조직 안에서 내려받아 쓰는 길(ADR-0181)이 막힌다. 제품 책임자가 정할 일이다.
 
 ## 남은 일
 - 저장소 전체 훑기: 결정 기록의 "맥락" 절과 설계 문서에서 내부 사실로 보이는 문장을 찾아 목록으로 만들고, 제품 책임자의 판단을 받아 걷어낸다.

@@ -6,19 +6,19 @@ last_verified: 2026-11-12
 covers:
   - package.json
   - docs/exec-plans/active/beta-rounds.md
-covers_hash: c4c50943c1e1cf62
+covers_hash: c7ca331abff7b778
 verification_log:
-  - "2026-11-11: NOTICE 링크를 더함 (ADR-0181)"
-  - "2026-11-12: beta-rounds.md에 이슈 47 일정이 더해짐. '지금 단계'의 차수 서술은 그대로 맞다"
   - "2026-11-12: 덮는 beta-rounds.md는 ADR-0171/0173의 만드는 중 표시만 지워졌고 README에 그 표시가 없다"
   - "2026-11-12: 따라가는 beta-rounds.md에 이슈 47 일정 절이 더해짐. 차수의 순서와 내용은 그대로라 이 문서와 어긋나지 않는다"
   - "2026-11-12: 따라가는 beta-rounds.md의 파워 캐핑 한 줄에서 내부 출처 서술이 빠짐(ADR-0187). 차수의 내용은 그대로라 이 문서와 어긋나지 않는다"
-verified_body: 8b0ca42880fa2e30
-unchanged_reverifies: 2
+  - "2026-11-12: 내부 사실 서술을 요구의 말로 고침 (ADR-0188)"
+  - "2026-11-12: 내부 사실 서술을 요구의 말로 고침 (ADR-0188)"
+verified_body: 036d30fe952b86e0
+unchanged_reverifies: 3
 ---
 # Terrarium
 
-**IT 인프라를 운영하는 AI 에이전트와 하네스를, 현실 장비를 건드리지 않고 정확하고 일관되게 평가하는 사내 실험장.**
+**IT 인프라를 운영하는 AI 에이전트와 하네스를, 현실 장비를 건드리지 않고 정확하고 일관되게 평가하는 실험장.**
 
 ## 왜 만들었나
 
@@ -104,9 +104,9 @@ unchanged_reverifies: 2
 | 차수 | 열리는 것 |
 |---|---|
 | 클로즈 베타 1차 | 여러 사람이 쓰기 위한 권한(SSO 로그인, 공개 범위, 관리자, 감사 기록), 다시 설계한 실험 결과 화면 |
-| 클로즈 베타 2차 | 현실의 데이터(엑셀, Splunk)로 세계를 짓고, 그 세계를 복사해 같은 실험을 돌리기 |
+| 클로즈 베타 2차 | 현실의 데이터(엑셀, Splunk 같은 소스)로 세계를 짓고, 그 세계를 복사해 같은 실험을 돌리기 |
 | 클로즈 베타 3차 | 대회 모드와 칭호, 더 자세한 기본 물리 |
-| 오픈 베타 | 운영 세계의 고가용 저장소, 수천만 규모 |
+| 오픈 베타 | 운영 세계의 고가용 저장소, 수천만 개체 규모(목표) |
 
 ## 이 점수가 말해 주지 않는 것
 
@@ -137,7 +137,7 @@ Windows에서도 같은 명령이에요. 브라우저에서 `http://localhost:51
 
 **내 에이전트 붙이기**: 연결 메뉴에서 더해요. OpenCode, LangGraph, OpenClaw, Hermes, GoClaw는 전용 연결이 있고, 그 밖에는 HTTP · A2A · MCP · 명령 가운데 맞는 것으로 붙여요([연결 화면](docs/design-docs/web-ui-connections.md)).
 
-## 사내 서버로 띄우기
+## 서버로 띄우기
 
 ```
 pnpm build

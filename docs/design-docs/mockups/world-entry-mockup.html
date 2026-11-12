@@ -278,7 +278,7 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.01em;margin:0 0 6px}
       <div class="qhead"><h1>무엇을 떠받치는 세계인가요?</h1><span class="step">1 / 3</span></div>
       <p class="sub">클로즈 베타에는 IAP 하나가 들어 있어요. 다른 서비스는 아래에서 더하면 돼요.</p>
       <div class="iap">
-        <div class="iap-head"><div><h4>IAP <small>IT Infra Agent Platform</small></h4><p>VM 위에 직접 만든 쿠버네티스 클러스터에서 도메인 에이전트·오케스트레이터·인프라 토폴로지 그래프가 돌아요. 파트원들이 쓰는 플랫폼이에요.</p></div><span class="picked-badge">고름</span></div>
+        <div class="iap-head"><div><h4>IAP <small>IT Infra Agent Platform</small></h4><p>VM 위에 직접 만든 쿠버네티스 클러스터에서 도메인 에이전트·오케스트레이터·인프라 토폴로지 그래프가 돌아요. 사용자들이 쓰는 플랫폼이에요.</p></div><span class="picked-badge">고름</span></div>
         <div class="iap-grid">
           <div class="iap-col"><b>이렇게 생겼어요</b>
             <div class="stack"><div class="s-row"><span class="s-k">위</span><span>오케스트레이터 · 도메인 에이전트 4 · 토폴로지 그래프 DB · GoClaw 코어</span></div><div class="s-row"><span class="s-k">가운데</span><span>쿠버네티스 — 컨트롤 플레인 VM 3 · 워커 VM 6</span></div><div class="s-row"><span class="s-k">아래</span><span>가상화 호스트 3대 · 공유 스토리지 · 스위치 2</span></div></div></div>
@@ -286,7 +286,7 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.01em;margin:0 0 6px}
             <div class="dmg"><span class="d-k">워커 VM 하나</span><span>파드가 옆으로 옮겨가요 · 잠깐 느림</span></div>
             <div class="dmg"><span class="d-k">컨트롤 플레인</span><span>새 배포·스케줄이 멈춰요 · 돌던 파드는 돌아가요</span></div>
             <div class="dmg"><span class="d-k">호스트 하나</span><span>그 위 VM 3대가 같이 멈춰요 → 에이전트 일부 응답 없음</span></div>
-            <div class="dmg bad"><span class="d-k">그래프 DB·스토리지</span><span>오케스트레이터가 답을 못 해요 · 파트 전체 멈춤</span></div></div>
+            <div class="dmg bad"><span class="d-k">그래프 DB·스토리지</span><span>오케스트레이터가 답을 못 해요 · 사용자 전체 멈춤</span></div></div>
         </div>
         <div class="iap-foot">시나리오 <b>14개</b>가 따라와요 · 멈추면 시간당 피해는 3단계에서 적어요</div>
       </div>
@@ -358,7 +358,7 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.01em;margin:0 0 6px}
         </div>
         <div class="panel"><h4>멈추면</h4>
           <div class="row"><div class="name">IAP<small>컨트롤 플레인 멈춤 · 배포만 막힘</small></div><div class="field">시간당 <b>30</b><small>만 원</small></div></div>
-          <div class="row"><div class="name">&nbsp;<small>에이전트 응답 없음 · 파트원 40명</small></div><div class="field">시간당 <b>200</b><small>만 원</small></div></div>
+          <div class="row"><div class="name">&nbsp;<small>에이전트 응답 없음 · 사용자 40명</small></div><div class="field">시간당 <b>200</b><small>만 원</small></div></div>
           <div class="row"><div class="name">&nbsp;<small>그래프 DB 멈춤 · 전부 멈춤</small></div><div class="field">시간당 <b>500</b><small>만 원</small></div></div>
           <p style="margin:12px 0 0;color:var(--ink-3);font-size:13px">사고 비용 = 멈춘 시간 × 이 값. 결과 화면에 나와요.</p>
         </div>

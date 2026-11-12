@@ -56,7 +56,7 @@ describe("scale out: a control plane with no sessions of its own, and workers th
     const api = async (method: string, url: string, payload?: object) => {
       const res = await fetch(`${control.url}${url}`, {
         method,
-        headers: { "content-type": "application/json", "x-terrarium-user": "yeonsu" },
+        headers: { "content-type": "application/json", "x-terrarium-user": "haneul" },
         ...(payload ? { body: JSON.stringify(payload) } : {}),
       });
       return (await res.json()) as Record<string, any>;

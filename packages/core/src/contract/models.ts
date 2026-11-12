@@ -21,7 +21,7 @@ const HeaderName = z
   .regex(/^[A-Za-z0-9!#$%&'*+.^_`|~-]+$/, "헤더 이름에 쓸 수 없는 글자가 있어요");
 const HeaderValue = z.string().max(2000);
 
-/** 새 모델. 키·기본 모델 이름·헤더는 없어도 돼요(사내 게이트웨이 중에는 키가 없는 곳도 있어요). */
+/** 새 모델. 키·기본 모델 이름·헤더는 없어도 돼요(게이트웨이 중에는 키가 없는 곳도 있어요). */
 export const CreateModelBody = z
   .object({
     kind: Kind,

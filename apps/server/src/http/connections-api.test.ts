@@ -39,19 +39,19 @@ describe("connecting a harness from the screen, over HTTP [REQ-051]", () => {
     };
     const config = { url: "https://harness.test", token: "typed-secret" };
 
-    const specs = await send("yeonsu", "GET", "/api/connectors");
+    const specs = await send("haneul", "GET", "/api/connectors");
     expect(specs.body.map((s: { kind: string }) => s.kind)).toContain("http");
     expect(specs.body.every((s: { toolGuide: string[] }) => s.toolGuide.length > 0)).toBe(true);
 
-    const tried = await send("yeonsu", "POST", "/api/connections/check", {
+    const tried = await send("haneul", "POST", "/api/connections/check", {
       connector: "http",
       config,
       headers: [{ name: "X-Team", value: "ai", secret: false }],
     });
     expect(tried.body).toMatchObject({ ok: true, agents: [{ id: "triage" }] });
-    expect((await send("yeonsu", "GET", "/api/connections")).body).toHaveLength(1);
+    expect((await send("haneul", "GET", "/api/connections")).body).toHaveLength(1);
 
-    const made = await send("yeonsu", "POST", "/api/connections", {
+    const made = await send("haneul", "POST", "/api/connections", {
       connector: "http",
       name: "회사 하네스",
       config,
@@ -60,7 +60,7 @@ describe("connecting a harness from the screen, over HTTP [REQ-051]", () => {
     expect(made.status).toBe(200);
     expect(made.text).not.toContain("typed-secret");
     const id = made.body.id as string;
-    expect(made.body).toMatchObject({ owner: "yeonsu", secrets: ["token"], daysLeft: 30 });
+    expect(made.body).toMatchObject({ owner: "haneul", secrets: ["token"], daysLeft: 30 });
 
     const stranger = await send("jimin", "PUT", `/api/connections/${id}`, {
       name: "가로채기",
@@ -69,13 +69,13 @@ describe("connecting a harness from the screen, over HTTP [REQ-051]", () => {
     expect(stranger.status).toBe(403);
     expect((await send("jimin", "DELETE", `/api/connections/${id}`)).status).toBe(403);
 
-    const changed = await send("yeonsu", "PUT", `/api/connections/${id}`, {
+    const changed = await send("haneul", "PUT", `/api/connections/${id}`, {
       name: "새 이름",
       config: { url: "https://harness.test", token: "" },
     });
     expect(changed.body).toMatchObject({ name: "새 이름", secrets: ["token"] });
     expect(fake.requests.at(-1)?.headers.authorization).toBe("Bearer typed-secret");
-    const bad = await send("yeonsu", "PUT", `/api/connections/${id}`, {
+    const bad = await send("haneul", "PUT", `/api/connections/${id}`, {
       config: { url: "not a url" },
     });
     expect(bad.status).toBe(400);
@@ -83,14 +83,14 @@ describe("connecting a harness from the screen, over HTTP [REQ-051]", () => {
 
     expect((await send("jimin", "POST", `/api/connections/${id}/keep`)).status).toBe(403);
     expect((await send("jimin", "POST", `/api/connections/${id}/check`)).status).toBe(403);
-    expect((await send("yeonsu", "POST", `/api/connections/${id}/keep`)).body.daysLeft).toBe(30);
-    expect((await send("yeonsu", "POST", `/api/connections/${id}/check`)).body.status).toBe("ok");
-    expect((await send("yeonsu", "GET", "/api/meta")).body.expiring).toEqual([]);
+    expect((await send("haneul", "POST", `/api/connections/${id}/keep`)).body.daysLeft).toBe(30);
+    expect((await send("haneul", "POST", `/api/connections/${id}/check`)).body.status).toBe("ok");
+    expect((await send("haneul", "GET", "/api/meta")).body.expiring).toEqual([]);
 
-    expect((await send("yeonsu", "DELETE", `/api/connections/${id}`)).body).toEqual({
+    expect((await send("haneul", "DELETE", `/api/connections/${id}`)).body).toEqual({
       deleted: true,
     });
-    expect((await send("yeonsu", "POST", `/api/connections/${id}/keep`)).status).toBe(404);
+    expect((await send("haneul", "POST", `/api/connections/${id}/keep`)).status).toBe(404);
     await platform.stop();
   });
 });
@@ -108,7 +108,7 @@ describe("what was typed on the screen is still there after a restart [REQ-051]"
       { adapters: { connect: { env: {}, fetch: fake.fetch }, secretBox: box } },
       first,
     );
-    const made = await one.platform.connections.create(person("yeonsu", "proxy"), {
+    const made = await one.platform.connections.create(person("haneul", "proxy"), {
       connector: "http",
       name: "저장",
       config: { url: "https://harness.test", token: "t0ken" },
@@ -120,7 +120,7 @@ describe("what was typed on the screen is still there after a restart [REQ-051]"
       { harnessId: made.id, agentId: "a/b" },
       { name: "x" },
       "2026-10-01T00:00:00.000Z",
-      "yeonsu",
+      "haneul",
     ).history;
     await first.putAgentHistory(history);
     first.close();

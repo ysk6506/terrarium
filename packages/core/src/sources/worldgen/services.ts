@@ -5,6 +5,8 @@
  *   fab (팹)         MES 연동 (request), 설비 로그 수집 (batch)
  *   anything else    사내 포털 (request), 로그 수집 (batch)
  *
+ * These are example services typical of a semiconductor campus, not a claim about any real building.
+ *
  * Each service runs on a VM of the building (or on a server, where there are no VMs) and has a standby on another
  * rack, on another power feed where the building has one. The hourly harm figures are guesses, not measurements;
  * the document service-os-layer.md says so, and every service carries `harmEstimated`.

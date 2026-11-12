@@ -61,8 +61,8 @@ describe("the route table [REQ-030]", () => {
     expect(paramNames(ROUTES.getRun.path)).toEqual(["id"]);
     expect(pathFor("getRun", { id: "r 1/2" })).toBe("/api/runs/r%201%2F2");
     expect(
-      pathFor("listExperiments", {}, { owner: "연수", status: undefined, limit: 20, q: "" }),
-    ).toBe("/api/experiments?owner=%EC%97%B0%EC%88%98&limit=20");
+      pathFor("listExperiments", {}, { owner: "하늘", status: undefined, limit: 20, q: "" }),
+    ).toBe("/api/experiments?owner=%ED%95%98%EB%8A%98&limit=20");
     expect(pathFor("meta")).toBe("/api/meta");
     expect(() => pathFor("getWorld", {})).toThrow("getWorld: 'id' 값이 없어요");
     expect(() => pathFor("getWorld", { id: "" })).toThrow();

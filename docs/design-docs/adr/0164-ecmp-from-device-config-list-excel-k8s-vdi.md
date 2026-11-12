@@ -6,7 +6,7 @@ last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-115·117 예정). 만들 때 enforced_by를 묶음의 출처·같은 세계 시험으로 바꾼다.
-decision_hash: e37a9dab5f24bcb3
+decision_hash: d2f8a21f19923965
 amends:
   - adr: "0161"
     what: ECMP의 출처
@@ -16,11 +16,11 @@ amends:
 # ADR-0164 ECMP는 장비 설정에서 읽고, 위치 엑셀은 목록으로 받고, VMware의 쿠버네티스와 VDI 둘을 대응 표에 넣는다
 
 ## 맥락
-ADR-0161은 세 가지를 제품 책임자에게 묻기로 하고 열어 뒀다. 답(2026-11-12):
+ADR-0161은 세 가지를 제품 책임자에게 묻기로 하고 열어 뒀다. 제품 책임자의 요구(2026-11-12):
 
-1. 위치 엑셀은 한 줄에 장비 하나인 목록이다.
-2. ECMP는 경로표에서 받는 것이 아니라 장비 설정 값 가운데 하나다.
-3. 클라우드는 VMware와 OpenStack 둘뿐이다. 쿠버네티스는 VMware의 쿠버네티스도 쓴다. VDI 서비스는 Citrix와 VMware Horizon이다.
+1. 위치 엑셀은 한 줄에 장비 하나인 목록 형식도 받는다.
+2. ECMP는 경로표에서 받는 것이 아니라 장비 설정 값에서 읽는다.
+3. 클라우드 대응 표는 VMware와 OpenStack으로 하고, 쿠버네티스는 VMware의 쿠버네티스도 받으며, VDI 서비스(Citrix, VMware Horizon)를 포함한다.
 
 ## 결정
 1. **실장도 격자를 읽는 기능은 만들지 않는다.** 위치 엑셀은 목록으로 받는다. 격자 모양의 시트가 오면 화면이 알아보고 목록 양식을 안내하는 것(ADR-0161 2번)까지만 한다.

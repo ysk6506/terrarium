@@ -8,12 +8,12 @@ enforced_by:
   - packages/core/src/session/escalate.test.ts
   - packages/core/src/session/handoff.test.ts
   - packages/core/src/session/domain-calibration.test.ts
-decision_hash: 757c729355ea638b
+decision_hash: 03a190e3a92e578d
 ---
 # ADR-0100 에스컬레이트는 도메인 하나만 받는다
 
 ## 맥락
-ADR-0098·0099는 구조화된 요청 종류와 카탈로그를 두었다. 연수 님: "어느 도메인에 넘길지만 파라미터로 받고, 내부적으로는 일정 시간 뒤 그 도메인에 생긴 문제가 전부 사라지게 하면 된다." 에이전트가 재야 할 것은 어느 팀에 넘겨야 하는지와 그동안 무엇을 하는지이지, 요청 양식을 맞게 채우는 것이 아니다.
+ADR-0098·0099는 구조화된 요청 종류와 카탈로그를 두었다. 제품 책임자: "어느 도메인에 넘길지만 파라미터로 받고, 내부적으로는 일정 시간 뒤 그 도메인에 생긴 문제가 전부 사라지게 하면 된다." 에이전트가 재야 할 것은 어느 팀에 넘겨야 하는지와 그동안 무엇을 하는지이지, 요청 양식을 맞게 채우는 것이 아니다.
 
 ## 결정
 1. `escalate(domain, note?)`. `domain`은 서비스/OS·가상화·서버·네트워크·스토리지·데이터센터 인프라 중 하나, `note`는 기록만.

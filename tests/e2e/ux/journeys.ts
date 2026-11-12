@@ -396,7 +396,7 @@ const FIRST_PICTURE_MS = 3 * SECOND;
 
 const HWASEONG = "화성 사업장 실제 그대로 연습";
 
-const asViewer = { "content-type": "application/json", "x-terrarium-user": "%EC%97%B0%EC%88%98" };
+const asViewer = { "content-type": "application/json", "x-terrarium-user": "%ED%95%98%EB%8A%98" };
 
 /** Hwaseong as it really is, made the way a person who had built it earlier would have it: it is in the list. */
 async function makeHwaseong(c: Context): Promise<string> {

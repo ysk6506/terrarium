@@ -36,8 +36,8 @@ const signedIn = (login: string, extra: Record<string, string> = {}) => ({
 });
 
 const urlOf = (r: RouteSpec) => r.path.replace(/:[A-Za-z]+/g, "x");
-const NFC = "김연수".normalize("NFC");
-const NFD = "김연수".normalize("NFD");
+const NFC = "김하늘".normalize("NFC");
+const NFD = "김하늘".normalize("NFD");
 
 describe("behind the proxy, only the proxy is believed [REQ-054]", () => {
   test("[REQ-054] without the right secret every route that is not public answers 401, whatever the other headers say", async () => {
@@ -118,15 +118,15 @@ describe("behind the proxy, only the proxy is believed [REQ-054]", () => {
     const reply = await app.inject({
       method: "GET",
       url: "/api/meta",
-      headers: signedIn("yeonsu.kim", {
-        "x-forwarded-name": "김연수",
+      headers: signedIn("haneul.kim", {
+        "x-forwarded-name": "김하늘",
         "x-forwarded-groups": " ai-platform , infra,, ai-platform ",
       }),
     });
     expect(reply.statusCode).toBe(200);
     expect(reply.json().user).toEqual({
-      id: "yeonsu.kim",
-      name: "김연수",
+      id: "haneul.kim",
+      name: "김하늘",
       groups: ["ai-platform", "infra"],
       roles: ["user"],
       source: "proxy",
@@ -147,13 +147,13 @@ describe("behind the proxy, only the proxy is believed [REQ-054]", () => {
 
   test("[REQ-054] UTF-8 sent raw by the proxy (read as Latin-1 by Node) is put back together", async () => {
     const { app } = serve();
-    const latin1 = Buffer.from("김연수", "utf8").toString("latin1");
+    const latin1 = Buffer.from("김하늘", "utf8").toString("latin1");
     const reply = await app.inject({
       method: "GET",
       url: "/api/meta",
       headers: signedIn("kim", { "x-forwarded-name": latin1 }),
     });
-    expect(reply.json().user.name).toBe("김연수");
+    expect(reply.json().user.name).toBe("김하늘");
   });
 });
 
@@ -280,22 +280,22 @@ describe("typed names are for one person on their own machine [REQ-054]", () => 
     (await app.inject({ method: "GET", url: "/api/meta", headers })).json();
 
   test("[REQ-054] meta says which mode is on, so the screen can say there is no protection", async () => {
-    expect((await meta(self().app, typed("연수"))).identity).toEqual({ mode: "self-declared" });
+    expect((await meta(self().app, typed("하늘"))).identity).toEqual({ mode: "self-declared" });
     expect((await meta(serve().app, signedIn("kim"))).identity).toEqual({ mode: "proxy" });
   });
 
   test("[REQ-054] nobody is an admin without the token, and a name on the list does not make one", async () => {
     const { app } = self({
       adminTokenEnv: "TERRARIUM_TEST_ADMIN_TOKEN",
-      admins: ["연수"],
+      admins: ["하늘"],
       adminGroup: "g",
     });
-    expect((await meta(app, typed("연수"))).user.roles).toEqual(["user"]);
+    expect((await meta(app, typed("하늘"))).user.roles).toEqual(["user"]);
     expect(
-      (await meta(app, typed("연수", { "x-terrarium-admin-token": "wrong" }))).user.roles,
+      (await meta(app, typed("하늘", { "x-terrarium-admin-token": "wrong" }))).user.roles,
     ).toEqual(["user"]);
     expect(
-      (await meta(app, typed("연수", { "x-terrarium-admin-token": ADMIN_TOKEN }))).user.roles,
+      (await meta(app, typed("하늘", { "x-terrarium-admin-token": ADMIN_TOKEN }))).user.roles,
     ).toEqual(["user", "admin"]);
   });
 
@@ -303,9 +303,9 @@ describe("typed names are for one person on their own machine [REQ-054]", () => 
     const { app } = self({});
     const from = (headers: Record<string, string>) =>
       app.inject({ method: "GET", url: "/api/meta", headers, remoteAddress: "10.1.2.3" });
-    const sent = typed("연수", { "x-terrarium-admin-token": ADMIN_TOKEN });
+    const sent = typed("하늘", { "x-terrarium-admin-token": ADMIN_TOKEN });
     expect((await from(sent)).json().user.roles).toEqual(["user"]);
-    const blank = typed("연수", { "x-terrarium-admin-token": "" });
+    const blank = typed("하늘", { "x-terrarium-admin-token": "" });
     expect((await from(blank)).json().user.roles).toEqual(["user"]);
   });
 
@@ -318,11 +318,11 @@ describe("typed names are for one person on their own machine [REQ-054]", () => 
         headers,
         payload: { source: "sample" },
       });
-    expect((await post(typed("연수"))).statusCode).toBe(403);
-    expect((await post(typed("연수", { "x-terrarium-admin-token": "wrong" }))).statusCode).toBe(
+    expect((await post(typed("하늘"))).statusCode).toBe(403);
+    expect((await post(typed("하늘", { "x-terrarium-admin-token": "wrong" }))).statusCode).toBe(
       403,
     );
-    expect((await post(typed("연수", { "x-terrarium-admin-token": ADMIN_TOKEN }))).statusCode).toBe(
+    expect((await post(typed("하늘", { "x-terrarium-admin-token": ADMIN_TOKEN }))).statusCode).toBe(
       200,
     );
   });
@@ -346,8 +346,8 @@ describe("typed names are for one person on their own machine [REQ-054]", () => 
 
   test("[REQ-054] the old behaviour for one developer stays: a typed name works, no name is the shared anonymous user", async () => {
     const { app } = self();
-    expect((await meta(app, typed("연수"))).user).toMatchObject({
-      id: "연수",
+    expect((await meta(app, typed("하늘"))).user).toMatchObject({
+      id: "하늘",
       source: "self",
       roles: ["user"],
     });

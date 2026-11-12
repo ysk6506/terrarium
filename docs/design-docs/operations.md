@@ -1,5 +1,5 @@
 ---
-title: 서버 운영 — 설치와 사내 시스템 연결
+title: 서버 운영 — 설치와 외부 시스템 연결
 kind: guide
 status: active
 last_verified: 2026-11-11
@@ -21,7 +21,7 @@ verification_log:
 
 ## 한 문장으로
 
-**설정 파일 하나(`TERRARIUM_CONFIG`)에 사내 시스템의 주소를 적으면, 가짜 대신 진짜가 붙는다.** 코드는 바꾸지 않는다.
+**설정 파일 하나(`TERRARIUM_CONFIG`)에 외부 시스템의 주소를 적으면, 가짜 대신 진짜가 붙는다.** 코드는 바꾸지 않는다.
 설정이 없어도 서버는 뜬다 — 내장 기준 에이전트와 가상의 샘플 그래프만으로 실험 전체를 해 볼 수 있다.
 
 ## 띄우기
@@ -49,7 +49,7 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
   "identity": {
     "header": "x-forwarded-user", "proxySecretEnv": "TERRARIUM_PROXY_SECRET",
     "nameHeader": "x-forwarded-name", "groupsHeader": "x-forwarded-groups",
-    "admins": ["yeonsu.kim"], "adminGroup": "terrarium-admins"
+    "admins": ["haneul.kim"], "adminGroup": "terrarium-admins"
   },
   "limits": { "maxRunning": 200, "perUser": 50, "perHarness": 100 },
   "harnesses": [
@@ -73,7 +73,7 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 | 항목 | 무엇 | 없으면 |
 |---|---|---|
 | `publicUrl` | 사람과 하네스가 이 서버에 닿는 주소. 공유 링크와 실행별 MCP 주소가 이것으로 만들어진다 | 요청의 Host 헤더(로컬 개발용) |
-| `identity.header` | 사내 SSO 프록시가 넣는 로그인 ID 헤더. 있으면 **프록시 모드**: 프록시의 비밀 값이 맞는 요청만 믿는다([ADR-0174](adr/0174-permissions-proxy-identity-three-scopes-audit.md)) | 웹에서 이름을 한 번 입력(혼자 개발할 때만) |
+| `identity.header` | SSO 프록시가 넣는 로그인 ID 헤더. 있으면 **프록시 모드**: 프록시의 비밀 값이 맞는 요청만 믿는다([ADR-0174](adr/0174-permissions-proxy-identity-three-scopes-audit.md)) | 웹에서 이름을 한 번 입력(혼자 개발할 때만) |
 | `identity.proxySecretEnv` | 프록시가 모든 요청에 실어 보내는 비밀 값이 든 **환경 변수 이름**. 프록시 모드에서는 꼭 있어야 한다 | 프록시 모드면 서버가 안 뜬다 |
 | `identity.secretHeader` | 그 비밀 값을 싣는 헤더 | `x-terrarium-proxy-secret` |
 | `identity.nameHeader` / `groupsHeader` | 보여 줄 이름 / SSO 그룹(쉼표로 구분) 헤더. 이름이 없으면 로그인 ID를 보여 준다. 그룹이 없으면 그룹 없음 | 없음 |
@@ -96,9 +96,9 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 
 ## 사용자 식별 자리
 
-두 방식이 있고, 시작할 때 하나로 정해진다. 사내 SSO를 서버가 직접 확인해야 하게 되면 식별 방식 하나(`Authenticator`)를 더하면 된다 — [ADR-0044](adr/0044-identity-slot.md). 실제 SSO(OIDC·SAML)는 만들지 않았다. 자세한 규칙은 [권한](permissions.md).
+두 방식이 있고, 시작할 때 하나로 정해진다. SSO를 서버가 직접 확인해야 하게 되면 식별 방식 하나(`Authenticator`)를 더하면 된다 — [ADR-0044](adr/0044-identity-slot.md). 실제 SSO(OIDC·SAML)는 만들지 않았다. 자세한 규칙은 [권한](permissions.md).
 
-**프록시 모드 (`identity.header`가 있을 때. 사내 배포는 이것이다)**
+**프록시 모드 (`identity.header`가 있을 때. 여럿이 쓰는 배포는 이것이다)**
 
 - 사용자 → 프록시(SSO 로그인을 맡음) → 테라리움. 프록시가 로그인 ID·이름·그룹을 헤더로 넘기고, 프록시만 아는 **비밀 값**(`secretHeader`)을 모든 요청에 싣는다.
 - 비밀 값이 없거나 틀렸거나(일정한 시간으로 견준다) 로그인 헤더가 없으면 공개가 아닌 모든 길과 두 실시간 스트림이 **401**이다. "anonymous"로 통과시키지 않는다. 헤더에 무엇을 더 적어도 같다.
@@ -114,7 +114,7 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 - 웹이 묻는 이름을 헤더(`x-terrarium-user`)로 보낸다. **누구나 남의 이름을 적을 수 있으니 보호가 아니다.** `GET /api/meta`의 `identity.mode`가 `self-declared`라고 말해, 화면이 그렇게 알릴 수 있다. 이름이 없는 요청은 하나의 "anonymous" 사용자로 지나간다(예전과 같다). 이 말을 이름으로 적으면 이름이 없는 것으로 친다.
 - 관리자는 **관리자 토큰**이 있어야 한다: `adminTokenEnv`가 가리키는 환경 변수의 값을 `adminTokenHeader`에 실은 요청만 관리자다. 토큰을 정하지 않으면 **이 기계 자신(127.0.0.1·::1)에서 온 요청만** 관리자다. 주소는 소켓에서 읽고 `X-Forwarded-For` 같은 헤더는 보지 않는다(`trustProxy`는 꺼져 있다). 다른 주소에서 온 요청은 관리자가 못 된다. 그래서 `pnpm dev`(웹 :5173이 서버로 넘겨 줌)로 혼자 쓰면 화면에서 기본 모델 정하기와 세계 가져오기가 된다. 같은 기계의 역방향 프록시 뒤에서는 모든 요청이 루프백으로 보이니 프록시 모드나 토큰을 쓴다. 토큰을 정했으면 루프백만으로는 관리자가 아니다. 토큰 환경 변수를 적었는데 비어 있으면 서버가 시작하지 않는다. `admins`와 `adminGroup`은 이 방식에서 쓰이지 않는다(이름으로는 누구인지 증명할 수 없으므로).
 
-## 사내 시스템을 붙일 때 확인할 것
+## 외부 시스템을 붙일 때 확인할 것
 
 1. **하네스**: 화면의 "연결"에서 하네스(또는 에이전트)를 연결한다. 방식마다 필요한 칸과 도구가 가는 길이 화면에 안내된다. 우리 프로토콜로 붙인다면 [하네스 프로토콜](harness-protocol.md)의 엔드포인트 넷을 하네스 앞에 둔다. 어느 쪽이든 하네스가 `publicUrl`의 `/mcp/runs/…`에 닿아야 한다.
    하네스의 OpenTelemetry 루트 스팬 부모로 받은 `traceparent`를 쓰면 ClickStack 분석이 자동으로 붙는다.

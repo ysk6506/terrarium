@@ -284,7 +284,7 @@
   },
   "apps/server/src/adapters/adapters.test.ts::harness telemetry from ClickStack [REQ-037] > spans and logs of one trace, with numbers restored and the trace id as a parameter": {
    "kind": "test",
-   "hash": "954cea0e6607cecb",
+   "hash": "be69b06ce8600bfd",
    "asserts": 7,
    "literals": [
     "\"\"",
@@ -342,15 +342,15 @@
     "\"chat\"",
     "\"error\"",
     "\"error\"",
-    "\"gauss-2\"",
-    "\"gauss-2\"",
-    "\"gauss-2\"",
     "\"gen_ai.request.model\"",
     "\"gen_ai.request.model\"",
     "\"gen_ai.request.model\"",
     "\"gen_ai.usage.input_tokens\"",
     "\"gen_ai.usage.input_tokens\"",
     "\"gen_ai.usage.input_tokens\"",
+    "\"model-a\"",
+    "\"model-a\"",
+    "\"model-a\"",
     "\"ok\"",
     "\"ok\"",
     "\"otel_traces\"",
@@ -375,8 +375,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/adapters/adapters.test.ts::server configuration [REQ-031] [REQ-037] > <suite>": {
    "kind": "support",
@@ -5433,7 +5433,7 @@
   },
   "apps/server/src/adapters/sqlite-community.test.ts::hearts, marks and awards on SQLite [REQ-101] > [REQ-101] a heart is one per person per world and survives asking twice": {
    "kind": "test",
-   "hash": "1fd0ca1dcfab1ce9",
+   "hash": "e335545eb667658f",
    "asserts": 4,
    "literals": [
     "\"1\"",
@@ -5458,17 +5458,17 @@
     "\"w\"",
     "\"w\"",
     "\"w\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
     "\"지민\"",
     "\"지민\"",
     "\"지민\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
     "false",
     "false",
     "true",
@@ -5476,12 +5476,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/adapters/sqlite-community.test.ts::hearts, marks and awards on SQLite [REQ-101] > [REQ-101] awards keep the first time; marks keep the latest per scenario version": {
    "kind": "test",
-   "hash": "b7c204186f2ffc76",
+   "hash": "e12623eb67e85283",
    "asserts": 2,
    "literals": [
     "\"2026-11-01T00:00:00.000Z\"",
@@ -5506,10 +5506,10 @@
     "\"s\"",
     "\"s\"",
     "\"s\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
     "false",
     "true",
     "true",
@@ -5517,8 +5517,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/adapters/sqlite-community.test.ts::hearts, marks and awards on SQLite [REQ-101] > <suite>": {
    "kind": "support",
@@ -6028,13 +6028,13 @@
   },
   "apps/server/src/adapters/telemetry/telemetry.test.ts::=GENERATION": {
    "kind": "support",
-   "hash": "7bee59d0e23d250b",
+   "hash": "e8360a1bf3dc2978",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/adapters/telemetry/telemetry.test.ts::=lf": {
    "kind": "support",
@@ -6058,13 +6058,13 @@
   },
   "apps/server/src/adapters/telemetry/telemetry.test.ts::=spanRow": {
    "kind": "support",
-   "hash": "ceac23ee51c594e0",
+   "hash": "9064d08008c45766",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/adapters/telemetry/telemetry.test.ts::=TOOL": {
    "kind": "support",
@@ -6157,7 +6157,7 @@
   },
   "apps/server/src/adapters/telemetry/telemetry.test.ts::Langfuse as a connection's telemetry [REQ-079] > a session's observations become spans with the model, tokens, cost and the time it took": {
    "kind": "test",
-   "hash": "37b2e9becc57feb0",
+   "hash": "6124766b75708596",
    "asserts": 7,
    "literals": [
     "\"0\"",
@@ -6187,12 +6187,12 @@
     "\"base64\"",
     "\"error\"",
     "\"error\"",
-    "\"gauss-2\"",
-    "\"gauss-2\"",
     "\"gen_ai.usage.cost\"",
     "\"gen_ai.usage.cost\"",
     "\"llm\"",
     "\"llm\"",
+    "\"model-a\"",
+    "\"model-a\"",
     "\"o1\"",
     "\"o1\"",
     "\"pk-1:sk-1\"",
@@ -6211,8 +6211,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/adapters/telemetry/telemetry.test.ts::Langfuse as a connection's telemetry [REQ-079] > pages are followed by cursor; when the session has nothing, the trace id and then metadata are tried": {
    "kind": "test",
@@ -7752,13 +7752,13 @@
   },
   "apps/server/src/http/activity-stream.test.ts::=WHO": {
    "kind": "support",
-   "hash": "32cdf2e74c6e056e",
+   "hash": "3ae330f669927344",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/activity-stream.test.ts::the live view of a world as server-sent events [REQ-050] > <suite>": {
    "kind": "support",
@@ -7772,7 +7772,7 @@
   },
   "apps/server/src/http/activity-stream.test.ts::the live view of a world as server-sent events [REQ-050] > runs already working come first, then what they do as it happens; a world that is not there is a 404": {
    "kind": "test",
-   "hash": "af75b199cd7e1cd1",
+   "hash": "43d4d4af89ac64aa",
    "asserts": 4,
    "literals": [
     "\"\"",
@@ -7800,7 +7800,7 @@
     "\"start\"",
     "\"text/event-stream; charset=utf-8\"",
     "\"text/event-stream; charset=utf-8\"",
-    "\"연수\"",
+    "\"하늘\"",
     "\"홀\"",
     "true",
     "true",
@@ -7808,8 +7808,18 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
+  },
+  "apps/server/src/http/agent-versions-api.test.ts::<import:3186e2b6>": {
+   "kind": "support",
+   "hash": "3186e2b6504e2e10",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
   },
   "apps/server/src/http/agent-versions-api.test.ts::<import:9428df5f>": {
    "kind": "support",
@@ -7841,16 +7851,6 @@
    "added": "2026-10-30",
    "amended_by": null
   },
-  "apps/server/src/http/agent-versions-api.test.ts::<import:f3449f0e>": {
-   "kind": "support",
-   "hash": "f3449f0e77a8e490",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
-  },
   "apps/server/src/http/agent-versions-api.test.ts::the versions of an agent over HTTP [REQ-053] > <suite>": {
    "kind": "support",
    "hash": "edb4bbfe0a867169",
@@ -7863,7 +7863,7 @@
   },
   "apps/server/src/http/agent-versions-api.test.ts::the versions of an agent over HTTP [REQ-053] > list, add, edit and delete by address; an agent with a slash in its id works": {
    "kind": "test",
-   "hash": "20854147125c8231",
+   "hash": "071981a4b6b70a2c",
    "asserts": 10,
    "literals": [
     "\"\"",
@@ -7917,6 +7917,7 @@
     "\"a\"",
     "\"a\"",
     "\"a\"",
+    "\"haneul\"",
     "\"http\"",
     "\"https://harness.test\"",
     "\"jimin\"",
@@ -7929,7 +7930,6 @@
     "\"team/ops\"",
     "\"v3\"",
     "\"x-terrarium-user\"",
-    "\"yeonsu\"",
     "\"메모\"",
     "\"메모\"",
     "\"메모\"",
@@ -7942,8 +7942,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/app.test.ts::<hook:afterAll>": {
    "kind": "support",
@@ -8117,13 +8117,13 @@
   },
   "apps/server/src/http/app.test.ts::=json": {
    "kind": "support",
-   "hash": "1932b2dbe03a190e",
+   "hash": "730d0a7c1fba2783",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/app.test.ts::an experiment over HTTP [REQ-030] [REQ-038] > <suite>": {
    "kind": "support",
@@ -8208,7 +8208,7 @@
   },
   "apps/server/src/http/app.test.ts::an experiment over HTTP [REQ-030] [REQ-038] > changing someone else's things is refused; a server fault hides its internals": {
    "kind": "test",
-   "hash": "e09bfb9b1c1cfada",
+   "hash": "34e132e803e03861",
    "asserts": 3,
    "literals": [
     "\"/api/worlds\"",
@@ -8227,22 +8227,22 @@
     "\"forbidden\"",
     "\"forbidden\"",
     "\"남의 것\"",
-    "\"연수\"",
     "\"지민\"",
+    "\"하늘\"",
     "\"홀\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/app.test.ts::an experiment over HTTP [REQ-030] [REQ-038] > world, scenario, experiment, result, report and a share link that opens without the app": {
    "kind": "test",
-   "hash": "66bdf13b2010ee32",
+   "hash": "98ed344ee978474f",
    "asserts": 21,
    "literals": [
     "\"/api/experiments\"",
-    "\"/api/experiments?owner=%EC%97%B0%EC%88%98&limit=5\"",
+    "\"/api/experiments?owner=%ED%95%98%EB%8A%98&limit=5\"",
     "\"/api/leaderboards?minRuns=1\"",
     "\"/api/scenarios\"",
     "\"/api/twin/brief\"",
@@ -8319,8 +8319,8 @@
     "\"world, scenario, experiment, result, report and a share link that opens without the app\"",
     "\"x-robots-tag\"",
     "\"x-robots-tag\"",
-    "\"연수\"",
-    "\"연수\"",
+    "\"하늘\"",
+    "\"하늘\"",
     "\"홀\"",
     "false",
     "false",
@@ -8333,8 +8333,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/app.test.ts::every route of the contract is served [REQ-030] > <suite>": {
    "kind": "support",
@@ -8378,7 +8378,7 @@
   },
   "apps/server/src/http/app.test.ts::live progress as server-sent events [REQ-030] > a summary first, then runs and tool calls as they happen": {
    "kind": "test",
-   "hash": "aeb42294e24f4a8a",
+   "hash": "4886c315f3527107",
    "asserts": 3,
    "literals": [
     "\"\"",
@@ -8401,17 +8401,17 @@
     "\"text/event-stream; charset=utf-8\"",
     "\"text/event-stream; charset=utf-8\"",
     "\"실시간\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
     "\"홀\"",
     "true",
     "true"
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/app.test.ts::the web app is served from the same place [REQ-006] > <suite>": {
    "kind": "support",
@@ -8497,11 +8497,11 @@
   },
   "apps/server/src/http/app.test.ts::who is asking [REQ-033] > the SSO proxy's header wins and cannot be faked; otherwise the name people typed": {
    "kind": "test",
-   "hash": "c76da4f863034657",
+   "hash": "b270986f3b73d0ca",
    "asserts": 8,
    "literals": [
-    "\" 김연수 \"",
-    "\" 김연수 \"",
+    "\" 김하늘 \"",
+    "\" 김하늘 \"",
     "\"%E0%A4%A\"",
     "\"%E0%A4%A\"",
     "\"41\"",
@@ -8518,6 +8518,12 @@
     "\"anonymous\"",
     "\"anonymous\"",
     "\"anonymous\"",
+    "\"haneul.kim\"",
+    "\"haneul.kim\"",
+    "\"haneul.kim\"",
+    "\"haneul.kim\"",
+    "\"haneul.kim\"",
+    "\"haneul.kim\"",
     "\"proxy\"",
     "\"proxy\"",
     "\"the SSO proxy's header wins and cannot be faked; otherwise the name people typed\"",
@@ -8541,14 +8547,8 @@
     "\"x-terrarium-user\"",
     "\"x-terrarium-user\"",
     "\"x-terrarium-user\"",
-    "\"yeonsu.kim\"",
-    "\"yeonsu.kim\"",
-    "\"yeonsu.kim\"",
-    "\"yeonsu.kim\"",
-    "\"yeonsu.kim\"",
-    "\"yeonsu.kim\"",
-    "\"김연수\"",
-    "\"김연수\"",
+    "\"김하늘\"",
+    "\"김하늘\"",
     "\"둘째\"",
     "\"둘째\"",
     "\"첫째\"",
@@ -8558,8 +8558,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/calibrate.test.ts::<import:436dd109>": {
    "kind": "support",
@@ -8603,13 +8603,13 @@
   },
   "apps/server/src/http/calibrate.test.ts::=headers": {
    "kind": "support",
-   "hash": "7d932790731d843d",
+   "hash": "58df3ed2a883edfd",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-04",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/calibrate.test.ts::checking the exam paper from the API [REQ-070] [REQ-033] > <suite>": {
    "kind": "support",
@@ -9002,13 +9002,13 @@
   },
   "apps/server/src/http/connection-try-api.test.ts::=GENERATION": {
    "kind": "support",
-   "hash": "5533aa4f3eeff9fc",
+   "hash": "e12b6d04f0e6751c",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/connection-try-api.test.ts::=goclaw": {
    "kind": "support",
@@ -9052,7 +9052,7 @@
   },
   "apps/server/src/http/connection-try-api.test.ts::말 걸어 보기 and the tools for traces over HTTP [REQ-079] > over HTTP: the route runs the turn, and the tools for traces are listed": {
    "kind": "test",
-   "hash": "859514f80ce057c6",
+   "hash": "3daca7d7df0ba835",
    "asserts": 7,
    "literals": [
     "\" \"",
@@ -9081,6 +9081,9 @@
     "\"b\"",
     "\"clickstack\"",
     "\"clickstack\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"jimin\"",
     "\"jimin\"",
     "\"jimin\"",
@@ -9098,9 +9101,6 @@
     "\"x-terrarium-user\"",
     "\"x-terrarium-user\"",
     "\"x-terrarium-user\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"안녕\"",
     "\"안녕\"",
     "\"안녕하세요\"",
@@ -9110,8 +9110,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/connections-api.test.ts::<hook:afterAll>": {
    "kind": "support",
@@ -9255,7 +9255,7 @@
   },
   "apps/server/src/http/connections-api.test.ts::connecting a harness from the screen, over HTTP [REQ-051] > try, save, change, keep, re-check and remove; strangers may not change it": {
    "kind": "test",
-   "hash": "b462027256da5a4d",
+   "hash": "35bd3aaab954a763",
    "asserts": 20,
    "literals": [
     "\"\"",
@@ -9322,6 +9322,25 @@
     "\"X-Team\"",
     "\"ai\"",
     "\"ai\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"http\"",
     "\"http\"",
     "\"http\"",
@@ -9351,25 +9370,6 @@
     "\"typed-secret\"",
     "\"url\"",
     "\"url\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"가로채기\"",
     "\"새 이름\"",
     "\"새 이름\"",
@@ -9385,8 +9385,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/connections-api.test.ts::what was typed on the screen is still there after a restart [REQ-051] > <suite>": {
    "kind": "support",
@@ -9400,7 +9400,7 @@
   },
   "apps/server/src/http/connections-api.test.ts::what was typed on the screen is still there after a restart [REQ-051] > the SQLite store keeps the sealed secrets, headers, metadata and agent versions": {
    "kind": "test",
-   "hash": "d8beaf7f3ec2a215",
+   "hash": "d58b9df8e175ff1e",
    "asserts": 9,
    "literals": [
     "\"0\"",
@@ -9424,6 +9424,8 @@
     "\"ai\"",
     "\"ai\"",
     "\"ai\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"http\"",
     "\"https://harness.test\"",
     "\"ok\"",
@@ -9443,8 +9445,6 @@
     "\"x\"",
     "\"x-k\"",
     "\"x-k\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"저장\"",
     "true",
     "true",
@@ -9452,8 +9452,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/identity-loopback.test.ts::<import:13263dda>": {
    "kind": "support",
@@ -9577,13 +9577,13 @@
   },
   "apps/server/src/http/identity-loopback.test.ts::=typed": {
    "kind": "support",
-   "hash": "4fe906e693bbf252",
+   "hash": "d80c8948ed966c93",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/identity-loopback.test.ts::alone on one's own machine, the loopback address is the administrator [REQ-054] > [REQ-054] a forwarded header cannot make a stranger look like loopback": {
    "kind": "test",
@@ -9878,23 +9878,23 @@
   },
   "apps/server/src/http/identity-proxy.test.ts::=NFC": {
    "kind": "support",
-   "hash": "c46508c590d828cc",
+   "hash": "5b08b689925103a3",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/identity-proxy.test.ts::=NFD": {
    "kind": "support",
-   "hash": "642dbdb3d0d2bdd7",
+   "hash": "caed7b47934a519f",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/identity-proxy.test.ts::=PROXY": {
    "kind": "support",
@@ -10331,7 +10331,7 @@
   },
   "apps/server/src/http/identity-proxy.test.ts::behind the proxy, only the proxy is believed [REQ-054] > [REQ-054] UTF-8 sent raw by the proxy (read as Latin-1 by Node) is put back together": {
    "kind": "test",
-   "hash": "cf2413f66471abb6",
+   "hash": "b502561c7facb7a8",
    "asserts": 1,
    "literals": [
     "\"/api/meta\"",
@@ -10341,18 +10341,18 @@
     "\"latin1\"",
     "\"utf8\"",
     "\"x-forwarded-name\"",
-    "\"김연수\"",
-    "\"김연수\"",
-    "\"김연수\""
+    "\"김하늘\"",
+    "\"김하늘\"",
+    "\"김하늘\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/identity-proxy.test.ts::behind the proxy, only the proxy is believed [REQ-054] > [REQ-054] who the proxy says is who is asked: login id, display name, groups and roles": {
    "kind": "test",
-   "hash": "42f7f3211a80bcd8",
+   "hash": "e20829a21c4cdb3a",
    "asserts": 4,
    "literals": [
     "\" ai-platform , infra,, ai-platform \"",
@@ -10363,6 +10363,9 @@
     "\"[REQ-054] who the proxy says is who is asked: login id, display name, groups and roles\"",
     "\"ai-platform\"",
     "\"ai-platform\"",
+    "\"haneul.kim\"",
+    "\"haneul.kim\"",
+    "\"haneul.kim\"",
     "\"infra\"",
     "\"infra\"",
     "\"proxy\"",
@@ -10373,17 +10376,14 @@
     "\"user\"",
     "\"x-forwarded-groups\"",
     "\"x-forwarded-name\"",
-    "\"yeonsu.kim\"",
-    "\"yeonsu.kim\"",
-    "\"yeonsu.kim\"",
-    "\"김연수\"",
-    "\"김연수\"",
-    "\"김연수\""
+    "\"김하늘\"",
+    "\"김하늘\"",
+    "\"김하늘\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/identity-proxy.test.ts::behind the proxy, only the proxy is believed [REQ-054] > [REQ-054] without the right secret every route that is not public answers 401, whatever the other headers say": {
    "kind": "test",
@@ -10479,7 +10479,7 @@
   },
   "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > [REQ-054] meta says which mode is on, so the screen can say there is no protection": {
    "kind": "test",
-   "hash": "c56d287c0e885c87",
+   "hash": "5ce833149cfa23bb",
    "asserts": 2,
    "literals": [
     "\"[REQ-054] meta says which mode is on, so the screen can say there is no protection\"",
@@ -10489,17 +10489,17 @@
     "\"proxy\"",
     "\"self-declared\"",
     "\"self-declared\"",
-    "\"연수\"",
-    "\"연수\""
+    "\"하늘\"",
+    "\"하늘\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > [REQ-054] nobody is an admin without the token, and a name on the list does not make one": {
    "kind": "test",
-   "hash": "c8e3bf9afa37daef",
+   "hash": "92f9c69fde030ec9",
    "asserts": 3,
    "literals": [
     "\"TERRARIUM_TEST_ADMIN_TOKEN\"",
@@ -10519,22 +10519,22 @@
     "\"x-terrarium-admin-token\"",
     "\"x-terrarium-admin-token\"",
     "\"x-terrarium-admin-token\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\""
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > [REQ-054] the admin token gates the admin routes in this mode": {
    "kind": "test",
-   "hash": "7a0825e9890dd41f",
+   "hash": "3d09404773b9e866",
    "asserts": 3,
    "literals": [
     "\"/api/worlds/import\"",
@@ -10553,21 +10553,21 @@
     "\"x-terrarium-admin-token\"",
     "\"x-terrarium-admin-token\"",
     "\"x-terrarium-admin-token\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\""
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > [REQ-054] the old behaviour for one developer stays: a typed name works, no name is the shared anonymous user": {
    "kind": "test",
-   "hash": "f7e791bdbb498c5b",
+   "hash": "5ce1fc4606d74e6e",
    "asserts": 2,
    "literals": [
     "\"[REQ-054] the old behaviour for one developer stays: a typed name works, no name is the shared anonymous user\"",
@@ -10579,15 +10579,15 @@
     "\"self\"",
     "\"user\"",
     "\"user\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\""
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > [REQ-054] the word anonymous, typed in any case, is not a name: such a request is nobody's, as if no name was typed": {
    "kind": "test",
@@ -10624,7 +10624,7 @@
   },
   "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > [REQ-054] with no token configured, a request from another address is no admin, whatever is sent": {
    "kind": "test",
-   "hash": "875c18c26a9c1927",
+   "hash": "c9e3272206cc2ffc",
    "asserts": 2,
    "literals": [
     "\"\"",
@@ -10638,13 +10638,13 @@
     "\"user\"",
     "\"x-terrarium-admin-token\"",
     "\"x-terrarium-admin-token\"",
-    "\"연수\"",
-    "\"연수\""
+    "\"하늘\"",
+    "\"하늘\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/identity-proxy.test.ts::typed names are for one person on their own machine [REQ-054] > <suite>": {
    "kind": "support",
@@ -10798,7 +10798,7 @@
   },
   "apps/server/src/http/identity.test.ts::who is asking is one slot an SSO can fill [REQ-054] > a method that refuses strangers answers 401 on routes and on live streams, but not on shared links": {
    "kind": "test",
-   "hash": "5259569448a24518",
+   "hash": "d2b55c333adeaa5d",
    "asserts": 5,
    "literals": [
     "\"/api/experiments/e1/events\"",
@@ -10818,7 +10818,7 @@
     "\"GET\"",
     "\"GET\"",
     "\"a method that refuses strangers answers 401 on routes and on live streams, but not on shared links\"",
-    "\"s.yeonsu\"",
+    "\"s.haneul\"",
     "\"tok-1\"",
     "\"tok-1\"",
     "\"unauthenticated\"",
@@ -10829,12 +10829,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/identity.test.ts::who is asking is one slot an SSO can fill [REQ-054] > a sign-in the server checks itself decides the viewer, and a typed name cannot pretend otherwise": {
    "kind": "test",
-   "hash": "d656399f7096bfaa",
+   "hash": "c76e31b30c421f3e",
    "asserts": 2,
    "literals": [
     "\"/api/meta\"",
@@ -10846,11 +10846,11 @@
     "\"anonymous\"",
     "\"anonymous\"",
     "\"anonymous\"",
-    "\"s.yeonsu\"",
-    "\"s.yeonsu\"",
-    "\"s.yeonsu\"",
-    "\"s.yeonsu\"",
-    "\"s.yeonsu\"",
+    "\"s.haneul\"",
+    "\"s.haneul\"",
+    "\"s.haneul\"",
+    "\"s.haneul\"",
+    "\"s.haneul\"",
     "\"sso\"",
     "\"sso\"",
     "\"tok-1\"",
@@ -10862,8 +10862,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/identity.test.ts::who is asking is one slot an SSO can fill [REQ-054] > the method may add the routes of its own sign-in flow": {
    "kind": "test",
@@ -10885,7 +10885,7 @@
   },
   "apps/server/src/http/identity.test.ts::who is asking is one slot an SSO can fill [REQ-054] > without an SSO the settings give the proxy header, else a typed name": {
    "kind": "test",
-   "hash": "a38bfe5b328c2d11",
+   "hash": "2dc765412791a344",
    "asserts": 4,
    "literals": [
     "\"PROXY_SECRET\"",
@@ -10910,15 +10910,15 @@
     "\"x-terrarium-proxy-secret\"",
     "\"x-terrarium-user\"",
     "\"x-terrarium-user\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\""
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/mcp-slots.test.ts::<hook:afterAll>": {
    "kind": "support",
@@ -11206,13 +11206,13 @@
   },
   "apps/server/src/http/models-api.test.ts::=setup": {
    "kind": "support",
-   "hash": "080ebaacc308c62c",
+   "hash": "700238e73bffd916",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/models-api.test.ts::=upstream": {
    "kind": "support",
@@ -11327,7 +11327,7 @@
   },
   "apps/server/src/http/models-api.test.ts::registering model APIs: add, list, change, delete [REQ-099] > an empty workspace lists nothing; the first one registered is the default; the key is only its last four letters": {
    "kind": "test",
-   "hash": "6bc62db19ab623af",
+   "hash": "0d8443727770024e",
    "asserts": 5,
    "literals": [
     "\"/api/models\"",
@@ -11349,12 +11349,12 @@
     "\"X-Gateway-Token\"",
     "\"an empty workspace lists nothing; the first one registered is the default; the key is only its last four letters\"",
     "\"anthropic\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"https://llm.corp.test\"",
     "\"https://llm.corp.test\"",
     "\"openai\"",
     "\"openai\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"…ab12\"",
     "\"…ab12\"",
     "\"사내 GPT\"",
@@ -11370,8 +11370,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/models-api.test.ts::registering model APIs: add, list, change, delete [REQ-099] > changing: an empty key keeps the old one, a header without a value keeps its value, clearKey removes the key": {
    "kind": "test",
@@ -11480,7 +11480,7 @@
   },
   "apps/server/src/http/models-api.test.ts::registering model APIs: add, list, change, delete [REQ-099] > only whoever registered it changes, deletes or checks it; only an admin chooses the default": {
    "kind": "test",
-   "hash": "cfd2f06237d913f6",
+   "hash": "6a27c3c765d2fa4c",
    "asserts": 9,
    "literals": [
     "\"/api/models\"",
@@ -11529,6 +11529,11 @@
     "\"admin-kim\"",
     "\"admin-kim\"",
     "\"admin-kim\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"jimin\"",
     "\"jimin\"",
     "\"jimin\"",
@@ -11541,17 +11546,12 @@
     "\"jimin\"",
     "\"only whoever registered it changes, deletes or checks it; only an admin chooses the default\"",
     "\"x\"",
-    "\"x\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\""
+    "\"x\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/models-api.test.ts::registering model APIs: add, list, change, delete [REQ-099] > the same name twice is a conflict": {
    "kind": "test",
@@ -11605,7 +11605,7 @@
   },
   "apps/server/src/http/models-api.test.ts::registrations survive a restart, sealed [REQ-099] > the SQLite file keeps them, the key is not readable in it, and the same secret box opens it again": {
    "kind": "test",
-   "hash": "3399325a9a810a49",
+   "hash": "f565ebadd18c9cac",
    "asserts": 4,
    "literals": [
     "\"/v1/models\"",
@@ -11615,6 +11615,8 @@
     "\"2\"",
     "\"a\"",
     "\"b\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"https://llm.corp.test\"",
     "\"openai\"",
     "\"proxy\"",
@@ -11622,8 +11624,6 @@
     "\"terrarium-llm-\"",
     "\"terrarium.db\"",
     "\"the SQLite file keeps them, the key is not readable in it, and the same secret box opens it again\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"…ab12\"",
     "\"…ab12\"",
     "\"저장\"",
@@ -11636,8 +11636,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/models-api.test.ts::the key stays out of the logs [REQ-099] > <hook:afterEach>": {
    "kind": "support",
@@ -11906,13 +11906,13 @@
   },
   "apps/server/src/http/moss-api.test.ts::=setup": {
    "kind": "support",
-   "hash": "a43a831c2c96c648",
+   "hash": "a7f776bac6be3f9b",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/moss-api.test.ts::POST /api/moss/ask answers from the docs and the screen state [REQ-103] > <suite>": {
    "kind": "support",
@@ -12590,14 +12590,14 @@
    "added": "2026-11-11",
    "amended_by": null
   },
-  "apps/server/src/http/physics-api.test.ts::<import:4eea0d07>": {
+  "apps/server/src/http/physics-api.test.ts::<import:22f597b6>": {
    "kind": "support",
-   "hash": "4eea0d07ab4c98af",
+   "hash": "22f597b6f532ef01",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/http/physics-api.test.ts::<import:741f635d>": {
@@ -12652,13 +12652,13 @@
   },
   "apps/server/src/http/physics-api.test.ts::=setup": {
    "kind": "support",
-   "hash": "a2a4a06759f7ed5d",
+   "hash": "dea19f4cc2356f2b",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/physics-api.test.ts::the physics slots and a world's physics profile over HTTP [REQ-113] > <suite>": {
    "kind": "support",
@@ -12672,7 +12672,7 @@
   },
   "apps/server/src/http/physics-api.test.ts::the physics slots and a world's physics profile over HTTP [REQ-113] > a profile that cannot be used is refused with every problem in Korean; a stale version and a stranger are refused too": {
    "kind": "test",
-   "hash": "27f6f83a7d8258dc",
+   "hash": "786216c004ebd69b",
    "asserts": 6,
    "literals": [
     "\"/api/worlds/w-404/physics\"",
@@ -12705,12 +12705,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/physics-api.test.ts::the physics slots and a world's physics profile over HTTP [REQ-113] > a world starts on the default physics, v1": {
    "kind": "test",
-   "hash": "e8039dc02c42a87c",
+   "hash": "d38891ff57dd9d90",
    "asserts": 2,
    "literals": [
     "\"200\"",
@@ -12725,12 +12725,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/physics-api.test.ts::the physics slots and a world's physics profile over HTTP [REQ-113] > an experiment keeps the fingerprint of the physics it ran on, and the run result says it too": {
    "kind": "test",
-   "hash": "77a1cc94fdbc2094",
+   "hash": "f7e7908cb7608be8",
    "asserts": 4,
    "literals": [
     "\"1\"",
@@ -12746,8 +12746,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/physics-api.test.ts::the physics slots and a world's physics profile over HTTP [REQ-113] > GET /api/physics/slots lists the slots with their numbers, units, defaults and ranges": {
    "kind": "test",
@@ -12788,7 +12788,7 @@
   },
   "apps/server/src/http/physics-api.test.ts::the physics slots and a world's physics profile over HTTP [REQ-113] > saving a profile makes a new version of the world with another fingerprint; saving the default puts it back": {
    "kind": "test",
-   "hash": "a7bd52f46475bc8d",
+   "hash": "efd6aa748c54feec",
    "asserts": 8,
    "literals": [
     "\"200\"",
@@ -12811,8 +12811,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/presets-api.test.ts::<import:88b11dba>": {
    "kind": "support",
@@ -12856,21 +12856,21 @@
   },
   "apps/server/src/http/presets-api.test.ts::saved instructions, tool sets and runbooks over HTTP [REQ-090] [REQ-080] [REQ-082] > a deleted one is kept for seven days and then forgotten": {
    "kind": "test",
-   "hash": "acecce85bf639298",
+   "hash": "3baecb890971ad07",
    "asserts": 2,
    "literals": [
     "\"2026-09-01T00:00:00Z\"",
     "\"2026-10-01T00:00:00Z\"",
     "\"2026-10-28T12:00:00Z\"",
     "\"a deleted one is kept for seven days and then forgotten\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"instruction\"",
     "\"p-new\"",
     "\"p-old\"",
     "\"p-old\"",
     "\"p-old\"",
     "\"x\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"어제\"",
     "\"어제\"",
     "\"어제\"",
@@ -12878,12 +12878,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/presets-api.test.ts::saved instructions, tool sets and runbooks over HTTP [REQ-090] [REQ-080] [REQ-082] > save, list, rename, delete and bring back; the same name changes the one it names": {
    "kind": "test",
-   "hash": "f0d297a5570964c3",
+   "hash": "bba0e32393dfb7dc",
    "asserts": 11,
    "literals": [
     "\"/api/presets\"",
@@ -12916,6 +12916,7 @@
     "\"PUT\"",
     "\"PUT\"",
     "\"[\\\"wait\\\"]\"",
+    "\"haneul\"",
     "\"instruction\"",
     "\"instruction\"",
     "\"instruction\"",
@@ -12925,7 +12926,6 @@
     "\"toolset\"",
     "\"x\"",
     "\"x-terrarium-user\"",
-    "\"yeonsu\"",
     "\"권장\"",
     "\"권장\"",
     "\"권장\"",
@@ -12948,12 +12948,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/presets-api.test.ts::saved instructions, tool sets and runbooks over HTTP [REQ-090] [REQ-080] [REQ-082] > they are the person's own; a body that does not fit its kind is refused": {
    "kind": "test",
-   "hash": "a3bf86f87502ff88",
+   "hash": "d5482369f97a15cf",
    "asserts": 5,
    "literals": [
     "\"/api/presets\"",
@@ -12986,6 +12986,7 @@
     "\"POST\"",
     "\"POST\"",
     "\"[]\"",
+    "\"haneul\"",
     "\"jimin\"",
     "\"jimin\"",
     "\"jimin\"",
@@ -13001,7 +13002,6 @@
     "\"x\"",
     "\"x\"",
     "\"x-terrarium-user\"",
-    "\"yeonsu\"",
     "\"{not json\"",
     "\"{not json\"",
     "\"{}\"",
@@ -13016,12 +13016,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/presets-api.test.ts::saved instructions, tool sets and runbooks over HTTP [REQ-090] [REQ-080] [REQ-082] > what an older browser kept is taken once, skipping names already there": {
    "kind": "test",
-   "hash": "f8d5a3a347f6a842",
+   "hash": "e8963d8393aacc1b",
    "asserts": 3,
    "literals": [
     "\"/api/presets/import\"",
@@ -13033,12 +13033,12 @@
     "\"POST\"",
     "\"[\\\"wait\\\"]\"",
     "\"[]\"",
+    "\"haneul\"",
     "\"instruction\"",
     "\"runbook\"",
     "\"toolset\"",
     "\"what an older browser kept is taken once, skipping names already there\"",
     "\"x-terrarium-user\"",
-    "\"yeonsu\"",
     "\"권장\"",
     "\"권장\"",
     "\"권장\"",
@@ -13052,8 +13052,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/process-api.test.ts::<import:05f9b251>": {
    "kind": "support",
@@ -13117,13 +13117,13 @@
   },
   "apps/server/src/http/process-api.test.ts::=setup": {
    "kind": "support",
-   "hash": "2a386e83a0f4bcc0",
+   "hash": "3cb871d6d7931933",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/process-api.test.ts::=STEPS": {
    "kind": "support",
@@ -13311,7 +13311,7 @@
   },
   "apps/server/src/http/process-api.test.ts::지금 하는 방식 표 [REQ-112] > [REQ-112] 안 적은 시나리오는 비어 있고, 적으면 단계·사람·시간이 더해져 돌아온다": {
    "kind": "test",
-   "hash": "cd01087567a8f4ae",
+   "hash": "751a9f9b99c76c9d",
    "asserts": 5,
    "literals": [
     "\"150\"",
@@ -13331,8 +13331,8 @@
     "\"GET\"",
     "\"PUT\"",
     "\"[REQ-112] 안 적은 시나리오는 비어 있고, 적으면 단계·사람·시간이 더해져 돌아온다\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "false",
     "false",
     "true",
@@ -13344,8 +13344,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/process-api.test.ts::지금 하는 방식 표 [REQ-112] > <suite>": {
    "kind": "support",
@@ -13409,13 +13409,13 @@
   },
   "apps/server/src/http/routes.test.ts::=headers": {
    "kind": "support",
-   "hash": "7d932790731d843d",
+   "hash": "58df3ed2a883edfd",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/routes.test.ts::the rest of the API, route by route [REQ-030] [REQ-033] [REQ-040] > <suite>": {
    "kind": "support",
@@ -13623,7 +13623,7 @@
   },
   "apps/server/src/http/scoring-unchanged.test.ts::scoring is unchanged with permissions on [REQ-054] [REQ-039] > [REQ-054] [REQ-039] an experiment run behind the proxy has the score breakdown it had before permissions": {
    "kind": "test",
-   "hash": "3b529de72bac7d0e",
+   "hash": "5a8ab97b92d81844",
    "asserts": 3,
    "literals": [
     "\"/api/experiments\"",
@@ -13646,17 +13646,17 @@
     "\"[REQ-054] [REQ-039] an experiment run behind the proxy has the score breakdown it had before permissions\"",
     "\"cooling-failure\"",
     "\"guess\"",
+    "\"haneul.kim\"",
     "\"triage\"",
     "\"x-forwarded-user\"",
     "\"x-forwarded-user\"",
     "\"x-terrarium-proxy-secret\"",
-    "\"yeonsu.kim\"",
     "\"홀\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/scoring-unchanged.test.ts::scoring is unchanged with permissions on [REQ-054] [REQ-039] > <suite>": {
    "kind": "support",
@@ -13698,19 +13698,19 @@
    "added": "2026-11-07",
    "amended_by": null
   },
-  "apps/server/src/http/service-cards-api.test.ts::<import:886f13ce>": {
+  "apps/server/src/http/service-cards-api.test.ts::<import:86758596>": {
    "kind": "support",
-   "hash": "886f13ce4c0a8070",
+   "hash": "867585968d1bbe36",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
+   "added": "2026-11-12",
    "amended_by": null
   },
-  "apps/server/src/http/service-cards-api.test.ts::<import:b8568d3b>": {
+  "apps/server/src/http/service-cards-api.test.ts::<import:886f13ce>": {
    "kind": "support",
-   "hash": "b8568d3be9926b77",
+   "hash": "886f13ce4c0a8070",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -13760,17 +13760,17 @@
   },
   "apps/server/src/http/service-cards-api.test.ts::=setup": {
    "kind": "support",
-   "hash": "3efe5225821d5aeb",
+   "hash": "954d3858a9b004ca",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/service-cards-api.test.ts::빠른 실험 [REQ-104] > [REQ-104] 다음 번에는 방금 쓴 에이전트를 고른다": {
    "kind": "test",
-   "hash": "c1c7878cfc8383fb",
+   "hash": "3304942942cfe26d",
    "asserts": 1,
    "literals": [
     "\"POST\"",
@@ -13782,12 +13782,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/service-cards-api.test.ts::빠른 실험 [REQ-104] > [REQ-104] 한 번의 요청으로 시나리오 세트 운영 실험이 5번 만들어지고 내장 operator를 쓴다": {
    "kind": "test",
-   "hash": "1089b7fc6ee7f160",
+   "hash": "eff6f03373b88c8a",
    "asserts": 6,
    "literals": [
     "\"0\"",
@@ -13823,12 +13823,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/service-cards-api.test.ts::빠른 실험 [REQ-104] > [REQ-104] 화면이 고른 시나리오만 쓰고, 하나도 없으면 막는다": {
    "kind": "test",
-   "hash": "63669e9e657f924e",
+   "hash": "2361a28fc71c56c0",
    "asserts": 2,
    "literals": [
     "\"1\"",
@@ -13844,8 +13844,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/service-cards-api.test.ts::빠른 실험 [REQ-104] > <suite>": {
    "kind": "support",
@@ -13889,7 +13889,7 @@
   },
   "apps/server/src/http/service-cards-api.test.ts::서비스 카드 [REQ-104] > [REQ-104] 처음엔 잠김·공유 안 함이고, 남에게는 공유한 뒤에만 보인다": {
    "kind": "test",
-   "hash": "8309b2d2f7b60403",
+   "hash": "89944312a603fb23",
    "asserts": 7,
    "literals": [
     "\"/api/service-cards\"",
@@ -13915,15 +13915,15 @@
     "\"POST\"",
     "\"[REQ-104] 처음엔 잠김·공유 안 함이고, 남에게는 공유한 뒤에만 보인다\"",
     "\"cache\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"jimin\"",
     "\"jimin\"",
     "\"jimin\"",
     "\"locked\"",
     "\"locked\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"내 캐시\"",
     "false",
     "false",
@@ -13935,8 +13935,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": "0131-baseline-dr-and-expected-recovery-window.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/service-cards-api.test.ts::서비스 카드 [REQ-104] > [REQ-108] 남의 공유 카드는 복사해서 내 카드로 쓴다: 복사본은 복사한 사람의 것이고 공유하지 않은 채 시작한다": {
    "kind": "test",
@@ -14081,7 +14081,7 @@
   },
   "apps/server/src/http/service-cards-api.test.ts::서비스 카드 저장 [REQ-104] > [REQ-104] SQLite에 저장하고 다시 열어도 카드가 남고, 지우면 사라진다": {
    "kind": "test",
-   "hash": "9e0a6261fe16f570",
+   "hash": "efdfca269bcdde2e",
    "asserts": 2,
    "literals": [
     "\"[REQ-104] SQLite에 저장하고 다시 열어도 카드가 남고, 지우면 사라진다\"",
@@ -14095,8 +14095,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": "0131-baseline-dr-and-expected-recovery-window.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/service-cards-api.test.ts::서비스 카드 저장 [REQ-104] > <suite>": {
    "kind": "support",
@@ -14356,16 +14356,6 @@
    "added": "2026-11-03",
    "amended_by": "0050-toss-ux-principles.md"
   },
-  "apps/server/src/http/world-community-api.test.ts::<import:450f2251>": {
-   "kind": "support",
-   "hash": "450f2251a4a9e107",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
-  },
   "apps/server/src/http/world-community-api.test.ts::<import:64623614>": {
    "kind": "support",
    "hash": "646236140b68cf66",
@@ -14394,6 +14384,16 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-07",
+   "amended_by": null
+  },
+  "apps/server/src/http/world-community-api.test.ts::<import:ca2f5199>": {
+   "kind": "support",
+   "hash": "ca2f519951a2f54a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/http/world-community-api.test.ts::<import:ce214579>": {
@@ -14468,13 +14468,13 @@
   },
   "apps/server/src/http/world-community-api.test.ts::=setup": {
    "kind": "support",
-   "hash": "ad6410975356c045",
+   "hash": "902d9b48996d5283",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/world-community-api.test.ts::=THIS_MONTH": {
    "kind": "support",
@@ -14488,17 +14488,17 @@
   },
   "apps/server/src/http/world-community-api.test.ts::=world": {
    "kind": "support",
-   "hash": "744d72b2e77b2f7f",
+   "hash": "d611300127abbac0",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/world-community-api.test.ts::세계 인기 순서와 근거 [REQ-101] > [REQ-101] 같은 점수는 만든 때로 가르고, 몇 번을 읽어도 같은 순서다": {
    "kind": "test",
-   "hash": "26af39b2fcdd4163",
+   "hash": "ffbcb8344c4dbd6e",
    "asserts": 2,
    "literals": [
     "\"/api/worlds\"",
@@ -14515,12 +14515,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/world-community-api.test.ts::세계 인기 순서와 근거 [REQ-101] > [REQ-101] 인기는 최근 30일 실험 + 좋아요 + 남이 시작한 수이고, 카드가 근거를 싣고 온다": {
    "kind": "test",
-   "hash": "439cd69172f1ad97",
+   "hash": "8bb266856d26eb90",
    "asserts": 6,
    "literals": [
     "\"/api/worlds\"",
@@ -14561,6 +14561,9 @@
     "\"POST\"",
     "\"POST\"",
     "\"[REQ-101] 인기는 최근 30일 실험 + 좋아요 + 남이 시작한 수이고, 카드가 근거를 싣고 온다\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"jimin\"",
     "\"jimin\"",
     "\"jimin\"",
@@ -14568,9 +14571,6 @@
     "\"s\"",
     "\"s\"",
     "\"s\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"가\"",
     "\"나\"",
     "\"다\"",
@@ -14579,12 +14579,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/world-community-api.test.ts::세계 인기 순서와 근거 [REQ-101] > [REQ-101] 정렬은 넷: 인기·요즘 활발·새로 생김·내 세계, 비슷하면 나중에 생긴 것이 앞이다": {
    "kind": "test",
-   "hash": "1cbed420767dfd89",
+   "hash": "bc769419d95ea2ac",
    "asserts": 7,
    "literals": [
     "\"\"",
@@ -14600,6 +14600,10 @@
     "\"[REQ-101] 정렬은 넷: 인기·요즘 활발·새로 생김·내 세계, 비슷하면 나중에 생긴 것이 앞이다\"",
     "\"active\"",
     "\"active\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"jimin\"",
     "\"jimin\"",
     "\"mine\"",
@@ -14613,22 +14617,18 @@
     "\"s\"",
     "\"s\"",
     "\"s\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"가\"",
     "\"나\"",
     "\"다\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/world-community-api.test.ts::세계 인기 순서와 근거 [REQ-101] > [REQ-101] 템플릿이나 세계로 시작한 세계는 그 출처를 기록하고, 남이 시작한 것만 점수에 든다": {
    "kind": "test",
-   "hash": "563adbd9d3c5d60f",
+   "hash": "89f6310922556a0c",
    "asserts": 7,
    "literals": [
     "\"/api/worlds\"",
@@ -14650,8 +14650,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/world-community-api.test.ts::세계 인기 순서와 근거 [REQ-101] > <suite>": {
    "kind": "support",
@@ -14665,7 +14665,7 @@
   },
   "apps/server/src/http/world-community-api.test.ts::좋아요 [REQ-101] > [REQ-101] 사람마다 세계마다 하나, 다시 눌러도 하나, 취소하면 줄고, 목록에 개수와 내 것이 실린다": {
    "kind": "test",
-   "hash": "cdb4e7757f5b8257",
+   "hash": "ed0af376948be131",
    "asserts": 7,
    "literals": [
     "\"/api/worlds\"",
@@ -14720,12 +14720,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/world-community-api.test.ts::좋아요 [REQ-101] > [REQ-101] 없는 세계는 404, 이름이 없는 사람은 403이고 아무것도 남지 않는다": {
    "kind": "test",
-   "hash": "67478cc320d0ed12",
+   "hash": "487f8242342e3732",
    "asserts": 3,
    "literals": [
     "\"/api/worlds\"",
@@ -14750,8 +14750,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/world-community-api.test.ts::좋아요 [REQ-101] > <suite>": {
    "kind": "support",
@@ -14765,7 +14765,7 @@
   },
   "apps/server/src/http/world-community-api.test.ts::칭호 [REQ-101] > [REQ-101] 남이 쓰는 세계와 남이 쓰는 시나리오는 다른 사람의 실험 10번부터, 내 실험은 세지 않는다": {
    "kind": "test",
-   "hash": "659140f1e4d65d8d",
+   "hash": "3f7a84362e1bd8ac",
    "asserts": 2,
    "literals": [
     "\"0\"",
@@ -14776,13 +14776,13 @@
     "\"9\"",
     "\"[REQ-101] 남이 쓰는 세계와 남이 쓰는 시나리오는 다른 사람의 실험 10번부터, 내 실험은 세지 않는다\"",
     "\"cooling-failure\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"jimin\"",
     "\"minho\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"가\"",
     "\"깨우기\"",
     "\"남이 쓰는 세계\"",
@@ -14797,12 +14797,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/world-community-api.test.ts::칭호 [REQ-101] > [REQ-101] 만든 사람의 칭호가 세계 카드와 실험 목록에 같이 온다": {
    "kind": "test",
-   "hash": "b7d4c6585c6c8422",
+   "hash": "515edf3976ca82c6",
    "asserts": 2,
    "literals": [
     "\"/api/experiments\"",
@@ -14814,8 +14814,8 @@
     "\"GET\"",
     "\"GET\"",
     "\"[REQ-101] 만든 사람의 칭호가 세계 카드와 실험 목록에 같이 온다\"",
+    "\"haneul\"",
     "\"s\"",
-    "\"yeonsu\"",
     "\"가\"",
     "\"첫 세계\"",
     "\"첫 세계\"",
@@ -14824,12 +14824,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/world-community-api.test.ts::칭호 [REQ-101] > [REQ-101] 변별력 점검: 점검하면 기록이 남고, 고칠 곳이 없던 시나리오 5개가 꼼꼼한 출제자다": {
    "kind": "test",
-   "hash": "61aa3f608af3a55c",
+   "hash": "19aeedc5499f6e25",
    "asserts": 4,
    "literals": [
     "\"0\"",
@@ -14855,27 +14855,27 @@
     "\"cooling-failure\"",
     "\"d\"",
     "\"d\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"가\"",
     "\"깨우기\"",
     "true"
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/world-community-api.test.ts::칭호 [REQ-101] > [REQ-101] 세계를 만들면 첫 세계, 아무것도 안 한 사람은 칭호가 없다": {
    "kind": "test",
-   "hash": "3e0c8d52fb471d85",
+   "hash": "38e2105bad8af449",
    "asserts": 3,
    "literals": [
     "\"0\"",
     "\"0\"",
     "\"[REQ-101] 세계를 만들면 첫 세계, 아무것도 안 한 사람은 칭호가 없다\"",
-    "\"yeonsu\"",
+    "\"haneul\"",
     "\"가\"",
     "\"아무개\"",
     "\"아무개\"",
@@ -14884,12 +14884,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/world-community-api.test.ts::칭호 [REQ-101] > [REQ-101] 실험 100번·1,000번은 만든 실험 수이고, 얻은 때는 그 번째 실험을 만든 때다": {
    "kind": "test",
-   "hash": "33e0f4772ede7429",
+   "hash": "a1595a290775a755",
    "asserts": 3,
    "literals": [
     "\"0\"",
@@ -14912,20 +14912,20 @@
     "\"가\"",
     "\"실험 100번\"",
     "\"실험 100번\"",
-    "\"연수\"",
-    "\"연수\"",
     "\"지민\"",
     "\"지민\"",
-    "\"지민\""
+    "\"지민\"",
+    "\"하늘\"",
+    "\"하늘\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/world-community-api.test.ts::칭호 [REQ-101] > [REQ-101] 좋아요 10은 다른 사람이 누른 것만 세고, 한 번 얻은 칭호는 세계를 지워도 남는다": {
    "kind": "test",
-   "hash": "375ca6a4841299fb",
+   "hash": "89f1c48f6190852e",
    "asserts": 3,
    "literals": [
     "\"0\"",
@@ -14937,13 +14937,13 @@
     "\"[REQ-101] 좋아요 10은 다른 사람이 누른 것만 세고, 한 번 얻은 칭호는 세계를 지워도 남는다\"",
     "\"first-world\"",
     "\"first-world\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"가\"",
     "\"사람9\"",
     "\"좋아요 10\"",
@@ -14957,12 +14957,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/world-community-api.test.ts::칭호 [REQ-101] > [REQ-101] 첫 복구는 에이전트가 내 시나리오를 처음 통과했을 때, 떨어진 것은 안 센다": {
    "kind": "test",
-   "hash": "1ecc4e7f7409b14f",
+   "hash": "d60b8c213b051e24",
    "asserts": 2,
    "literals": [
     "\"2026-10-12T09:00:00.000Z\"",
@@ -14975,11 +14975,11 @@
     "\"first-recovery\"",
     "\"first-world\"",
     "\"first-world\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"jimin\"",
     "\"jimin\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"가\"",
     "\"깨우기\"",
     "false",
@@ -14987,24 +14987,24 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/world-community-api.test.ts::칭호 [REQ-101] > [REQ-101] 템플릿과 예시 세계는 첫 세계로 세지 않는다": {
    "kind": "test",
-   "hash": "6b823e1ee88991ea",
+   "hash": "84dc10bcc33d3ece",
    "asserts": 1,
    "literals": [
     "\"24\"",
     "\"[REQ-101] 템플릿과 예시 세계는 첫 세계로 세지 않는다\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "true"
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/http/world-community-api.test.ts::칭호 [REQ-101] > <suite>": {
    "kind": "support",
@@ -15266,7 +15266,7 @@
   },
   "apps/server/src/main.test.ts::starting and stopping the server [REQ-030] > a config file is all it takes; data lives next to it and survives a restart": {
    "kind": "test",
-   "hash": "2647437e8169574e",
+   "hash": "618a1d33aaf947c5",
    "asserts": 4,
    "literals": [
     "\"./state\"",
@@ -15282,13 +15282,13 @@
     "\"builtin\"",
     "\"builtin\"",
     "\"content-type\"",
+    "\"haneul\"",
     "\"invented-admin-token\"",
     "\"invented-admin-token\"",
     "\"sample\"",
     "\"terrarium.json\"",
     "\"x-terrarium-admin-token\"",
     "\"x-terrarium-user\"",
-    "\"yeonsu\"",
     "\"남는 세계\"",
     "\"남는 세계\"",
     "\"남는 세계\"",
@@ -15297,8 +15297,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/mcp/gateway-slot.test.ts::<hook:afterAll>": {
    "kind": "support",
@@ -16099,6 +16099,16 @@
    "added": "2026-10-30",
    "amended_by": null
   },
+  "apps/server/src/runtime/agent-versions.test.ts::<import:29a4010a>": {
+   "kind": "support",
+   "hash": "29a4010a635d8232",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "apps/server/src/runtime/agent-versions.test.ts::<import:8f931061>": {
    "kind": "support",
    "hash": "8f93106141746ac1",
@@ -16129,16 +16139,6 @@
    "added": "2026-10-30",
    "amended_by": null
   },
-  "apps/server/src/runtime/agent-versions.test.ts::<import:b0dd44bd>": {
-   "kind": "support",
-   "hash": "b0dd44bd514ca318",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
-  },
   "apps/server/src/runtime/agent-versions.test.ts::<import:e71fddbd>": {
    "kind": "support",
    "hash": "e71fddbddd356cf0",
@@ -16161,13 +16161,13 @@
   },
   "apps/server/src/runtime/agent-versions.test.ts::=setup": {
    "kind": "support",
-   "hash": "3e140a0d9bc565d0",
+   "hash": "1b58cbc35e77b800",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/agent-versions.test.ts::=T0": {
    "kind": "support",
@@ -16191,7 +16191,7 @@
   },
   "apps/server/src/runtime/agent-versions.test.ts::an agent that changed gets a new version when an experiment is made [REQ-053] > a fork looks at the agent again; a fork that is refused changes nothing": {
    "kind": "test",
-   "hash": "0994769cab66078f",
+   "hash": "a17b94babe6cbf6d",
    "asserts": 6,
    "literals": [
     "\"0\"",
@@ -16217,8 +16217,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/agent-versions.test.ts::an agent that changed gets a new version when an experiment is made [REQ-053] > a harness that cannot be reached says so, and the versions are still there": {
    "kind": "test",
@@ -16305,7 +16305,7 @@
   },
   "apps/server/src/runtime/agent-versions.test.ts::an agent that changed gets a new version when an experiment is made [REQ-053] > the same agent keeps its version; a changed one gets the next, with the date and what differs": {
    "kind": "test",
-   "hash": "a459f2ead9648ea7",
+   "hash": "3b4a20acd3562bed",
    "asserts": 9,
    "literals": [
     "\"0\"",
@@ -16352,6 +16352,8 @@
     "\"fixer\"",
     "\"fixer\"",
     "\"fixer\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"m-1\"",
     "\"m-1\"",
     "\"m-2\"",
@@ -16363,8 +16365,6 @@
     "\"triage\"",
     "\"triage\"",
     "\"v1\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"모델\"",
     "\"모델\"",
     "\"분류\"",
@@ -16373,8 +16373,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > <suite>": {
    "kind": "support",
@@ -16388,7 +16388,7 @@
   },
   "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > a deleted version is gone and its number is not used again": {
    "kind": "test",
-   "hash": "9e9c1259a92f8204",
+   "hash": "7b7c7041e8ca7be7",
    "asserts": 4,
    "literals": [
     "\"0\"",
@@ -16415,12 +16415,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > adding one, naming it, and the next look compares with what people said": {
    "kind": "test",
-   "hash": "6e98b20d6ab2e3a2",
+   "hash": "1dcd2aa7cad735e1",
    "asserts": 5,
    "literals": [
     "\"0\"",
@@ -16444,6 +16444,8 @@
     "\"adding one, naming it, and the next look compares with what people said\"",
     "\"attr.prompt\"",
     "\"attr.prompt\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"manual\"",
     "\"manual\"",
     "\"triage\"",
@@ -16456,8 +16458,6 @@
     "\"v2b\"",
     "\"v2b\"",
     "\"v2b\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"규칙 추가\"",
     "\"규칙 추가\"",
     "\"규칙 추가\"",
@@ -16471,8 +16471,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > only whoever connected it may change its versions; the config file's connection is for admins": {
    "kind": "test",
@@ -16516,7 +16516,7 @@
   },
   "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > the first version may be a person's, then it is the agent as it is now": {
    "kind": "test",
-   "hash": "49934a054489f112",
+   "hash": "57c993798ed7f7b8",
    "asserts": 3,
    "literals": [
     "\"0\"",
@@ -16536,12 +16536,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > the versions go away with the connection; a different agent's stay": {
    "kind": "test",
-   "hash": "88baf63afc4ef74b",
+   "hash": "6c9a6c762dfbf0db",
    "asserts": 2,
    "literals": [
     "\"1\"",
@@ -16554,8 +16554,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/alarm-wake.test.ts::<import:50862f67>": {
    "kind": "support",
@@ -16666,14 +16666,14 @@
    "added": "2026-11-06",
    "amended_by": null
   },
-  "apps/server/src/runtime/connection-secrets.test.ts::<import:11dddb1f>": {
+  "apps/server/src/runtime/connection-secrets.test.ts::<import:2070e6e0>": {
    "kind": "support",
-   "hash": "11dddb1f1860651e",
+   "hash": "2070e6e0616265d1",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/runtime/connection-secrets.test.ts::<import:9428df5f>": {
@@ -16818,7 +16818,7 @@
   },
   "apps/server/src/runtime/connection-secrets.test.ts::a connection nobody uses for a month is removed, after a warning [REQ-051] > an experiment made on it counts as use; the config file's connections never expire": {
    "kind": "test",
-   "hash": "b304c80547f412c2",
+   "hash": "d016850d0aacf94b",
    "asserts": 4,
    "literals": [
     "\"20\"",
@@ -16831,12 +16831,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::a connection nobody uses for a month is removed, after a warning [REQ-051] > its owner is told a week before, and keeping it starts the month again": {
    "kind": "test",
-   "hash": "6cba9bf37a4efc15",
+   "hash": "a08503037fc6bf29",
    "asserts": 9,
    "literals": [
     "\"10\"",
@@ -16858,12 +16858,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::a connection nobody uses for a month is removed, after a warning [REQ-051] > runs still going keep a connection from being removed, and removal can be switched off": {
    "kind": "test",
-   "hash": "8aaa4c5fa4fb8ac0",
+   "hash": "416b81f1263121bf",
    "asserts": 4,
    "literals": [
     "\"0\"",
@@ -16876,12 +16876,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::a connection nobody uses for a month is removed, after a warning [REQ-051] > the sweep also runs when the server starts": {
    "kind": "test",
-   "hash": "ffabd740653f023c",
+   "hash": "842b600b73a341ff",
    "asserts": 2,
    "literals": [
     "\"40\"",
@@ -16889,8 +16889,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::a harness that cannot reach Terrarium's tools is told so when it is tried [REQ-051] > <suite>": {
    "kind": "support",
@@ -16904,7 +16904,7 @@
   },
   "apps/server/src/runtime/connection-secrets.test.ts::a harness that cannot reach Terrarium's tools is told so when it is tried [REQ-051] > only when Terrarium is on this very computer and the harness is on another": {
    "kind": "test",
-   "hash": "551926aaf9f75485",
+   "hash": "ddc35b0128ace161",
    "asserts": 4,
    "literals": [
     "\" \"",
@@ -16922,8 +16922,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::a token typed on the screen is used, kept sealed and never shown again [REQ-051] > <suite>": {
    "kind": "support",
@@ -16937,7 +16937,7 @@
   },
   "apps/server/src/runtime/connection-secrets.test.ts::a token typed on the screen is used, kept sealed and never shown again [REQ-051] > after a restart it still opens; with another key it says what happened": {
    "kind": "test",
-   "hash": "4e54402a5a494609",
+   "hash": "fc74acde30d8be3a",
    "asserts": 5,
    "literals": [
     "\"Bearer kept\"",
@@ -16957,12 +16957,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-04",
-   "amended_by": "0073-app-words-amend-tests.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::a token typed on the screen is used, kept sealed and never shown again [REQ-051] > it is sent to the harness, but not found in the view, the meta, the store or any answer": {
    "kind": "test",
-   "hash": "262ae080b7fddef6",
+   "hash": "8f8e97caed66ad4d",
    "asserts": 5,
    "literals": [
     "\"0\"",
@@ -16977,12 +16977,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::a token typed on the screen is used, kept sealed and never shown again [REQ-051] > typing it and naming a server variable for it is one too many": {
    "kind": "test",
-   "hash": "6e24236503029b16",
+   "hash": "52f42ad0112de857",
    "asserts": 2,
    "literals": [
     "\"0\"",
@@ -17003,8 +17003,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::changing a connection keeps its secrets unless told otherwise [REQ-051] > <suite>": {
    "kind": "support",
@@ -17018,17 +17018,17 @@
   },
   "apps/server/src/runtime/connection-secrets.test.ts::changing a connection keeps its secrets unless told otherwise [REQ-051] > =made": {
    "kind": "support",
-   "hash": "50ec3bde52ddd611",
+   "hash": "e0abc1b37f535606",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::changing a connection keeps its secrets unless told otherwise [REQ-051] > leaving the headers out keeps them; naming a server variable replaces a typed token": {
    "kind": "test",
-   "hash": "88be3462f6c8688b",
+   "hash": "40a205443204b75e",
    "asserts": 3,
    "literals": [
     "\"\"",
@@ -17043,12 +17043,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::changing a connection keeps its secrets unless told otherwise [REQ-051] > only its owner may change it or try a change; a change that does not build changes nothing": {
    "kind": "test",
-   "hash": "32900f10e29712f0",
+   "hash": "70c06399218d586a",
    "asserts": 7,
    "literals": [
     "\"Bearer old-token\"",
@@ -17068,12 +17068,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::changing a connection keeps its secrets unless told otherwise [REQ-051] > what is left blank stays, what is typed replaces, null removes": {
    "kind": "test",
-   "hash": "7e257bb7002853c8",
+   "hash": "e0ee5f8b3b0e6815",
    "asserts": 8,
    "literals": [
     "\"\"",
@@ -17109,8 +17109,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::custom headers go with every request [REQ-051] > <suite>": {
    "kind": "support",
@@ -17124,7 +17124,7 @@
   },
   "apps/server/src/runtime/connection-secrets.test.ts::custom headers go with every request [REQ-051] > a header without the value it needs is said by position": {
    "kind": "test",
-   "hash": "602d633eba443687",
+   "hash": "37d42159bf78d23d",
    "asserts": 1,
    "literals": [
     "\"A\"",
@@ -17143,12 +17143,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::custom headers go with every request [REQ-051] > a plain one is shown, a secret one only by name, and both are sent": {
    "kind": "test",
-   "hash": "574500ec187643af",
+   "hash": "1cb4b2ebeb36c4fe",
    "asserts": 5,
    "literals": [
     "\"X-Gateway-Key\"",
@@ -17183,12 +17183,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-secrets.test.ts::custom headers go with every request [REQ-051] > what a person typed beats the connector's own default, and trying it uses them too": {
    "kind": "test",
-   "hash": "35d9bba7dcea55f0",
+   "hash": "8bffcb4bc7f55ac6",
    "asserts": 2,
    "literals": [
     "\"Authorization\"",
@@ -17204,18 +17204,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
-  },
-  "apps/server/src/runtime/connection-traces.test.ts::<import:68f3a5c2>": {
-   "kind": "support",
-   "hash": "68f3a5c210b14962",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::<import:9428df5f>": {
    "kind": "support",
@@ -17257,6 +17247,16 @@
    "added": "2026-11-05",
    "amended_by": null
   },
+  "apps/server/src/runtime/connection-traces.test.ts::<import:e810df6f>": {
+   "kind": "support",
+   "hash": "e810df6f20d42326",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "apps/server/src/runtime/connection-traces.test.ts::<import:fd94f20e>": {
    "kind": "support",
    "hash": "fd94f20e46a9255c",
@@ -17269,13 +17269,13 @@
   },
   "apps/server/src/runtime/connection-traces.test.ts::=GENERATION": {
    "kind": "support",
-   "hash": "5533aa4f3eeff9fc",
+   "hash": "e12b6d04f0e6751c",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::=goclaw": {
    "kind": "support",
@@ -17401,7 +17401,7 @@
   },
   "apps/server/src/runtime/connection-traces.test.ts::a run carries what its connection's telemetry asks, and is read back from there [REQ-079] > with default chosen, the server's own telemetry is the tool": {
    "kind": "test",
-   "hash": "b6d44cc746023670",
+   "hash": "c10ea1cf933e05bd",
    "asserts": 2,
    "literals": [
     "\"0\"",
@@ -17423,12 +17423,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::a run carries what its connection's telemetry asks, and is read back from there [REQ-079] > with Langfuse chosen, the harness gets the run's name and the page reads Langfuse": {
    "kind": "test",
-   "hash": "7ef9e45c2cdbb39f",
+   "hash": "0c9f7a2df021bad2",
    "asserts": 8,
    "literals": [
     "\"-\"",
@@ -17461,12 +17461,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::a run carries what its connection's telemetry asks, and is read back from there [REQ-079] > with none chosen, the server's default is not used even for a harness that says it emits traces": {
    "kind": "test",
-   "hash": "89c1955323671f66",
+   "hash": "b07315a9021963bb",
    "asserts": 2,
    "literals": [
     "\"0\"",
@@ -17484,8 +17484,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::strangers may talk but not choose [REQ-079] > <suite>": {
    "kind": "support",
@@ -17499,7 +17499,7 @@
   },
   "apps/server/src/runtime/connection-traces.test.ts::strangers may talk but not choose [REQ-079] > anyone can talk to a connection; only its owner changes where its traces go": {
    "kind": "test",
-   "hash": "08cbdbafd0a7217a",
+   "hash": "dfc81641328b08a2",
    "asserts": 2,
    "literals": [
     "\"anyone can talk to a connection; only its owner changes where its traces go\"",
@@ -17517,8 +17517,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::where a connection's traces pile up is chosen per connection [REQ-079] > <suite>": {
    "kind": "support",
@@ -17532,7 +17532,7 @@
   },
   "apps/server/src/runtime/connection-traces.test.ts::where a connection's traces pile up is chosen per connection [REQ-079] > a wrong choice is refused at the field that is wrong": {
    "kind": "test",
-   "hash": "61e8cecdad0df028",
+   "hash": "de5677c538368e1f",
    "asserts": 3,
    "literals": [
     "\"X\"",
@@ -17565,12 +17565,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::where a connection's traces pile up is chosen per connection [REQ-079] > changing a connection keeps the key unless a new one is typed; leaving traces out keeps the choice": {
    "kind": "test",
-   "hash": "7b59032ce98e6e34",
+   "hash": "6fe044dac8314bdc",
    "asserts": 3,
    "literals": [
     "\"\"",
@@ -17594,12 +17594,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::where a connection's traces pile up is chosen per connection [REQ-079] > checking a connection also says when the tool for its traces does not answer": {
    "kind": "test",
-   "hash": "83fdfb0c923bf115",
+   "hash": "6123d651e301766f",
    "asserts": 3,
    "literals": [
     "\" \"",
@@ -17621,12 +17621,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-05",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::where a connection's traces pile up is chosen per connection [REQ-079] > the choice is saved with its key sealed, shown without it, and used to read": {
    "kind": "test",
-   "hash": "6418e6a82c3715f8",
+   "hash": "aaeb3f6719b07146",
    "asserts": 4,
    "literals": [
     "\"/api/public/v2/observations\"",
@@ -17659,8 +17659,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::말 걸어 보기: one question, no tools, and whether the traces came along [REQ-079] > <suite>": {
    "kind": "support",
@@ -17674,7 +17674,7 @@
   },
   "apps/server/src/runtime/connection-traces.test.ts::말 걸어 보기: one question, no tools, and whether the traces came along [REQ-079] > a connection that cannot talk says so instead of failing": {
    "kind": "test",
-   "hash": "2a55aaf40714ad80",
+   "hash": "4bbffdbcdeb7f028",
    "asserts": 2,
    "literals": [
     "\"a connection that cannot talk says so instead of failing\"",
@@ -17690,12 +17690,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::말 걸어 보기: one question, no tools, and whether the traces came along [REQ-079] > a connection with no place for traces has nothing to check": {
    "kind": "test",
-   "hash": "cfb0293238e8a589",
+   "hash": "c08694987a3cd463",
    "asserts": 1,
    "literals": [
     "\"0\"",
@@ -17707,12 +17707,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::말 걸어 보기: one question, no tools, and whether the traces came along [REQ-079] > a refusal is told with its status and what to do, not as a bare failure": {
    "kind": "test",
-   "hash": "ba7bc16c3dc45b8f",
+   "hash": "9feca8cf1f124974",
    "asserts": 2,
    "literals": [
     "\"401 — 토큰이 거절됐어요. 받은 말: 채팅 요청에 401로 답했어요: invalid token\"",
@@ -17727,12 +17727,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::말 걸어 보기: one question, no tools, and whether the traces came along [REQ-079] > the answer, how long it took, no tool calls, and traces that arrived": {
    "kind": "test",
-   "hash": "47d6307b52e1ef9b",
+   "hash": "f71958dfb075954b",
    "asserts": 6,
    "literals": [
     "\"/observations\"",
@@ -17769,12 +17769,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connection-traces.test.ts::말 걸어 보기: one question, no tools, and whether the traces came along [REQ-079] > traces that do not come say so, and what to look at": {
    "kind": "test",
-   "hash": "8764c55bca358378",
+   "hash": "3921e4337d4cc3f1",
    "asserts": 3,
    "literals": [
     "\"0\"",
@@ -17794,17 +17794,17 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
-  "apps/server/src/runtime/connections.test.ts::<import:2d409afc>": {
+  "apps/server/src/runtime/connections.test.ts::<import:869ea03e>": {
    "kind": "support",
-   "hash": "2d409afce985a15e",
+   "hash": "869ea03e3d03388e",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/runtime/connections.test.ts::<import:9428df5f>": {
@@ -17909,7 +17909,7 @@
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > a cloud's credentials address is refused; a server can allow only some hosts": {
    "kind": "test",
-   "hash": "d1fad030581431c7",
+   "hash": "14b12ec1762239c2",
    "asserts": 6,
    "literals": [
     "\"*.corp.example\"",
@@ -17948,8 +17948,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > a fresh server lists the built-in agent as a read-only connection": {
    "kind": "test",
@@ -18026,7 +18026,7 @@
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > a harness that answers badly, or finds nothing, is told apart from a wrong form": {
    "kind": "test",
-   "hash": "9cdfdca97a455a7f",
+   "hash": "d41b0b6662240632",
    "asserts": 2,
    "literals": [
     "\"502\"",
@@ -18049,12 +18049,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > a harness that reads its tools from its own config shows the fixed tool address; others show none [REQ-051]": {
    "kind": "test",
-   "hash": "47b242d8ecfd3837",
+   "hash": "8472853aee0ce302",
    "asserts": 2,
    "literals": [
     "\"GET\"",
@@ -18068,12 +18068,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-04",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > a secret is only ever the name of a variable the server has": {
    "kind": "test",
-   "hash": "cacc454d51baf8b6",
+   "hash": "97359b09d9f8a9b5",
    "asserts": 3,
    "literals": [
     "\"1\"",
@@ -18094,8 +18094,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > addresses are judged on their own: shape, scheme, host rules": {
    "kind": "test",
@@ -18135,7 +18135,7 @@
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > an id comes from the name, a taken one gets a number, a chosen one that is taken is refused": {
    "kind": "test",
-   "hash": "97c0e9e1adff89b2",
+   "hash": "3dae76b21e9ef5e9",
    "asserts": 4,
    "literals": [
     "\"My Harness\"",
@@ -18160,12 +18160,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > asking again sees a harness's new agents without waiting for the cache": {
    "kind": "test",
-   "hash": "71ff6fe6fc222e72",
+   "hash": "e7a16b8fae52831e",
    "asserts": 3,
    "literals": [
     "\"0\"",
@@ -18180,12 +18180,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > connecting a harness finds its agents, and they can be chosen in an experiment": {
    "kind": "test",
-   "hash": "2929a9760ce37ddd",
+   "hash": "a177269622037e80",
    "asserts": 5,
    "literals": [
     "\"2\"",
@@ -18196,6 +18196,8 @@
     "\"fixer\"",
     "\"fixer\"",
     "\"fixer\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"harness\"",
     "\"harness\"",
     "\"http\"",
@@ -18206,8 +18208,6 @@
     "\"screen\"",
     "\"triage\"",
     "\"triage\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"연결한 하네스\"",
     "\"연결한 하네스\"",
     "\"연결한 하네스\"",
@@ -18216,12 +18216,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > one that never answers is given up on, and shows as unreachable": {
    "kind": "test",
-   "hash": "961017d2848c1f0d",
+   "hash": "2507cc2826b1024f",
    "asserts": 3,
    "literals": [
     "\"0초 안에 답이 없어요\"",
@@ -18234,12 +18234,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > only whoever connected it can remove it, and not while runs are on it": {
    "kind": "test",
-   "hash": "c8e14009f961d90c",
+   "hash": "21fce50fae49a6aa",
    "asserts": 7,
    "literals": [
     "\"builtin\"",
@@ -18261,12 +18261,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > the command connector is for the config file only": {
    "kind": "test",
-   "hash": "84b3c4e310be2ba4",
+   "hash": "0c08aab2d4f3070f",
    "asserts": 1,
    "literals": [
     "\"agent.sh\"",
@@ -18280,12 +18280,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > trying a connection reports the agents it found and the time it took, and saves nothing": {
    "kind": "test",
-   "hash": "30c0ab80de610f5f",
+   "hash": "5ea85f88115daf51",
    "asserts": 4,
    "literals": [
     "\"0\"",
@@ -18301,12 +18301,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > what is wrong with the form is said by field": {
    "kind": "test",
-   "hash": "68fd4a081e435d0a",
+   "hash": "a466b85fcdd9c50c",
    "asserts": 5,
    "literals": [
     "\"\"",
@@ -18328,17 +18328,19 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/connections.test.ts::the connections people register, and the ones the config file names [REQ-051] > what people connected is still there after a restart; one that no longer builds is shown, not lost": {
    "kind": "test",
-   "hash": "898e2c22b683e7a4",
+   "hash": "99f743cdbf8b36cb",
    "asserts": 6,
    "literals": [
     "\"2\"",
     "\"2\"",
     "\"HARNESS_TOKEN\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"ok\"",
     "\"ok\"",
     "\"screen\"",
@@ -18348,15 +18350,13 @@
     "\"unreachable\"",
     "\"unreachable\"",
     "\"what people connected is still there after a restart; one that no longer builds is shown, not lost\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"서버에는 'HARNESS_TOKEN'라는 환경 변수가 없어요\"",
     "\"서버에는 'HARNESS_TOKEN'라는 환경 변수가 없어요\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/escalation.test.ts::<import:552de795>": {
    "kind": "support",
@@ -18368,14 +18368,14 @@
    "added": "2026-11-06",
    "amended_by": null
   },
-  "apps/server/src/runtime/escalation.test.ts::<import:8e8150af>": {
+  "apps/server/src/runtime/escalation.test.ts::<import:6b061108>": {
    "kind": "support",
-   "hash": "8e8150af82750565",
+   "hash": "6b0611082472bd81",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/runtime/escalation.test.ts::<import:e71fddbd>": {
@@ -18420,23 +18420,23 @@
   },
   "apps/server/src/runtime/escalation.test.ts::=resultOf": {
    "kind": "support",
-   "hash": "b56dedf7670c72d2",
+   "hash": "3fd7dca03a546c1a",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/escalation.test.ts::=waiting": {
    "kind": "support",
-   "hash": "aebd911c4500b402",
+   "hash": "6a28f73dc9d160a6",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/escalation.test.ts::a draft runbook from the best run [REQ-082] > <suite>": {
    "kind": "support",
@@ -18450,7 +18450,7 @@
   },
   "apps/server/src/runtime/escalation.test.ts::a draft runbook from the best run [REQ-082] > it is made from the calls of the run with the highest score, and says which run": {
    "kind": "test",
-   "hash": "87f5abd448b104a1",
+   "hash": "f5e34306eb49a4a5",
    "asserts": 4,
    "literals": [
     "\"17\"",
@@ -18483,8 +18483,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/escalation.test.ts::a run that waits for a person [REQ-081] > <suite>": {
    "kind": "support",
@@ -18498,7 +18498,7 @@
   },
   "apps/server/src/runtime/escalation.test.ts::a run that waits for a person [REQ-081] > a person acts first; the run waits on, then the work goes back as a summary": {
    "kind": "test",
-   "hash": "48ddcee0d92b8456",
+   "hash": "4f654999d3690241",
    "asserts": 5,
    "literals": [
     "\"0\"",
@@ -18528,12 +18528,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/escalation.test.ts::a run that waits for a person [REQ-081] > a person can end the run": {
    "kind": "test",
-   "hash": "d3fa637d019365cf",
+   "hash": "137c34a45f702673",
    "asserts": 1,
    "literals": [
     "\"0\"",
@@ -18545,12 +18545,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/escalation.test.ts::a run that waits for a person [REQ-081] > handing over tools gives the agent more tools": {
    "kind": "test",
-   "hash": "5f28fe635af5a3f3",
+   "hash": "9d9d842ed5f531d1",
    "asserts": 1,
    "literals": [
     "\"0\"",
@@ -18563,12 +18563,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/escalation.test.ts::a run that waits for a person [REQ-081] > only the one who ran the experiment answers": {
    "kind": "test",
-   "hash": "10bf1346f058fb73",
+   "hash": "d6e444ffd340a773",
    "asserts": 2,
    "literals": [
     "\"0\"",
@@ -18586,12 +18586,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/escalation.test.ts::a run that waits for a person [REQ-081] > stopping the experiment while it waits ends the wait": {
    "kind": "test",
-   "hash": "375eba79cb794cb1",
+   "hash": "3ef3dee7a26cbaa3",
    "asserts": 1,
    "literals": [
     "\"0\"",
@@ -18602,12 +18602,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/escalation.test.ts::a run that waits for a person [REQ-081] > the card shows the request and the last calls, and a reply goes back as the tool result": {
    "kind": "test",
-   "hash": "1cbfd42baef17491",
+   "hash": "65b5fc193a8692b3",
    "asserts": 9,
    "literals": [
     "\"0\"",
@@ -18623,6 +18623,8 @@
     "\"ask_human\"",
     "\"get_impact\"",
     "\"get_impact\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"human\"",
     "\"human\"",
     "\"list_alarms\"",
@@ -18631,8 +18633,6 @@
     "\"the card shows the request and the last calls, and a reply goes back as the tool result\"",
     "\"wait\"",
     "\"wait\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"곧 가요\"",
     "\"곧 가요\"",
     "\"곧 가요\"",
@@ -18643,8 +18643,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/escalation.test.ts::the settings of an experiment [REQ-080] [REQ-081] [REQ-082] > <suite>": {
    "kind": "support",
@@ -18658,7 +18658,7 @@
   },
   "apps/server/src/runtime/escalation.test.ts::the settings of an experiment [REQ-080] [REQ-081] [REQ-082] > faults limited to the given tools refuse a scenario those tools cannot solve, naming the tool": {
    "kind": "test",
-   "hash": "0ab4db6b5ad930a3",
+   "hash": "6f4f3f4fa5be32b3",
    "asserts": 2,
    "literals": [
     "\"faults limited to the given tools refuse a scenario those tools cannot solve, naming the tool\"",
@@ -18681,12 +18681,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/escalation.test.ts::the settings of an experiment [REQ-080] [REQ-081] [REQ-082] > finding the runbook is a tool the agent needs, so choosing it gives the tool": {
    "kind": "test",
-   "hash": "ba0aa0724cdbfa14",
+   "hash": "c149c1d477553a53",
    "asserts": 2,
    "literals": [
     "\"finding the runbook is a tool the agent needs, so choosing it gives the tool\"",
@@ -18703,12 +18703,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/escalation.test.ts::the settings of an experiment [REQ-080] [REQ-081] [REQ-082] > they are kept with the recipe, shown in a fork's changes and checked": {
    "kind": "test",
-   "hash": "002ae46011b8275b",
+   "hash": "f3536633005b8191",
    "asserts": 3,
    "literals": [
     "\"auto\"",
@@ -18727,8 +18727,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/escalation.test.ts::the setup answers for the person [REQ-081] > <suite>": {
    "kind": "support",
@@ -18781,19 +18781,19 @@
    "added": "2026-11-06",
    "amended_by": null
   },
-  "apps/server/src/runtime/executor-activity.test.ts::<import:e71fddbd>": {
+  "apps/server/src/runtime/executor-activity.test.ts::<import:bc4b612d>": {
    "kind": "support",
-   "hash": "e71fddbddd356cf0",
+   "hash": "bc4b612de4043b34",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
+   "added": "2026-11-12",
    "amended_by": null
   },
-  "apps/server/src/runtime/executor-activity.test.ts::<import:f7d767d7>": {
+  "apps/server/src/runtime/executor-activity.test.ts::<import:e71fddbd>": {
    "kind": "support",
-   "hash": "f7d767d717661772",
+   "hash": "e71fddbddd356cf0",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -18823,13 +18823,13 @@
   },
   "apps/server/src/runtime/executor-activity.test.ts::=play": {
    "kind": "support",
-   "hash": "e36b97f8fcd2a23a",
+   "hash": "3a088ebee0ad74e0",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/executor-activity.test.ts::who works where in a world [REQ-050] > <suite>": {
    "kind": "support",
@@ -18870,7 +18870,7 @@
   },
   "apps/server/src/runtime/executor-activity.test.ts::who works where in a world [REQ-050] > a run announces itself, then each call with the equipment it names and what it does, then its end": {
    "kind": "test",
-   "hash": "36ff565bce8c6c0b",
+   "hash": "b1ffb1720011796e",
    "asserts": 3,
    "literals": [
     "\"1\"",
@@ -18904,6 +18904,8 @@
     "\"gpt-사내\"",
     "\"gpt-사내\"",
     "\"h\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"observe\"",
     "\"observe\"",
     "\"set_cooling_setpoint\"",
@@ -18919,8 +18921,6 @@
     "\"wait\"",
     "\"wait\"",
     "\"wait\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"관제 에이전트\"",
     "\"관제 에이전트\"",
     "\"냉방 점검\"",
@@ -18931,12 +18931,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/executor-activity.test.ts::who works where in a world [REQ-050] > someone who arrives while a run is working is told who is working, and nobody once it is over": {
    "kind": "test",
-   "hash": "bf28b95fa150a2fc",
+   "hash": "d962a55a704fa6d0",
    "asserts": 1,
    "literals": [
     "\"0\"",
@@ -18960,12 +18960,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/executor-activity.test.ts::who works where in a world [REQ-050] > the experiment's own stream carries the same equipment and effect": {
    "kind": "test",
-   "hash": "fae34c544ecea660",
+   "hash": "1793c45c0337f454",
    "asserts": 1,
    "literals": [
     "\"1\"",
@@ -18988,22 +18988,22 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
+  },
+  "apps/server/src/runtime/executor.test.ts::<import:423d37de>": {
+   "kind": "support",
+   "hash": "423d37dec51c54c3",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/runtime/executor.test.ts::<import:9686d477>": {
    "kind": "support",
    "hash": "9686d4774090ae8e",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
-  },
-  "apps/server/src/runtime/executor.test.ts::<import:a6bcd901>": {
-   "kind": "support",
-   "hash": "a6bcd9019eb4711e",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -19043,13 +19043,13 @@
   },
   "apps/server/src/runtime/executor.test.ts::=runWith": {
    "kind": "support",
-   "hash": "e1bd846ba4439313",
+   "hash": "28937b1b3a71281c",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/executor.test.ts::=submit": {
    "kind": "support",
@@ -19098,7 +19098,7 @@
   },
   "apps/server/src/runtime/executor.test.ts::how a run ends [REQ-030] [REQ-031] > a run whose harness or world version has gone fails with the reason": {
    "kind": "test",
-   "hash": "5852bbbe3b23958a",
+   "hash": "693a18f5da38b9ae",
    "asserts": 2,
    "literals": [
     "\"1\"",
@@ -19123,8 +19123,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/executor.test.ts::how a run ends [REQ-030] [REQ-031] > after the diagnosis the harness gets a grace period, then is stopped; the run is scored": {
    "kind": "test",
@@ -19484,16 +19484,6 @@
    "added": "2026-11-03",
    "amended_by": "0050-toss-ux-principles.md"
   },
-  "apps/server/src/runtime/meta-slot.test.ts::<import:88d2955a>": {
-   "kind": "support",
-   "hash": "88d2955ae7b62fc3",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
-  },
   "apps/server/src/runtime/meta-slot.test.ts::<import:9428df5f>": {
    "kind": "support",
    "hash": "9428df5f77306cf0",
@@ -19502,6 +19492,16 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/meta-slot.test.ts::<import:b95fbde8>": {
+   "kind": "support",
+   "hash": "b95fbde8fc6d5bef",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/runtime/meta-slot.test.ts::<import:e71fddbd>": {
@@ -19536,7 +19536,7 @@
   },
   "apps/server/src/runtime/meta-slot.test.ts::the new-experiment screen is told which harness has a fixed tool address [REQ-051] > the meta of a harness with a slot names it, and a plain harness has none": {
    "kind": "test",
-   "hash": "0e87e7b226f4adf4",
+   "hash": "5212418c5757dc55",
    "asserts": 2,
    "literals": [
     "\"GET\"",
@@ -19555,18 +19555,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
-  },
-  "apps/server/src/runtime/metadata.test.ts::<import:1b1baf5b>": {
-   "kind": "support",
-   "hash": "1b1baf5b5682cf3e",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/metadata.test.ts::<import:22bfe5f9>": {
    "kind": "support",
@@ -19586,6 +19576,16 @@
    "precision": [],
    "skips": 0,
    "added": "2026-10-30",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/metadata.test.ts::<import:e5b6340c>": {
+   "kind": "support",
+   "hash": "e5b6340cf905f536",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/runtime/metadata.test.ts::<import:e71fddbd>": {
@@ -19610,13 +19610,13 @@
   },
   "apps/server/src/runtime/metadata.test.ts::=setup": {
    "kind": "support",
-   "hash": "3221f2eea1a0c2a2",
+   "hash": "4e5e04c6210b0cd6",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/metadata.test.ts::metadata that tells results apart: kept, shown and searched [REQ-052] > <suite>": {
    "kind": "support",
@@ -19630,7 +19630,7 @@
   },
   "apps/server/src/runtime/metadata.test.ts::metadata that tells results apart: kept, shown and searched [REQ-052] > a fork keeps its parent's metadata, or replaces it; who runs it is looked up again only when that changed": {
    "kind": "test",
-   "hash": "7dce2a95edf5b814",
+   "hash": "3a95ae847cd65dde",
    "asserts": 5,
    "literals": [
     "\"7\"",
@@ -19655,12 +19655,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/metadata.test.ts::metadata that tells results apart: kept, shown and searched [REQ-052] > an agent with nothing to say about itself is still named, and a harness of the config file has no metadata": {
    "kind": "test",
-   "hash": "2c5767f7130f08e3",
+   "hash": "d8fb397939b7e4a5",
    "asserts": 3,
    "literals": [
     "\"an agent with nothing to say about itself is still named, and a harness of the config file has no metadata\"",
@@ -19678,12 +19678,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/metadata.test.ts::metadata that tells results apart: kept, shown and searched [REQ-052] > an experiment keeps what its maker attached and who ran it, as they were when it was made": {
    "kind": "test",
-   "hash": "8a96c6adfa727a46",
+   "hash": "db8418db79a7ea13",
    "asserts": 2,
    "literals": [
     "\"1.4\"",
@@ -19715,12 +19715,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/metadata.test.ts::metadata that tells results apart: kept, shown and searched [REQ-052] > experiments are found by their own metadata or by the connection's, with a value or without": {
    "kind": "test",
-   "hash": "ddfc717b2dfa3da3",
+   "hash": "bfdc1759583c6c0b",
    "asserts": 7,
    "literals": [
     "\"3\"",
@@ -19765,8 +19765,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/metadata.test.ts::metadata that tells results apart: kept, shown and searched [REQ-052] > metadata is few, short and plain": {
    "kind": "test",
@@ -19818,7 +19818,7 @@
   },
   "apps/server/src/runtime/metadata.test.ts::metadata that tells results apart: kept, shown and searched [REQ-052] > the model that really answered, and the tokens, are kept with the run": {
    "kind": "test",
-   "hash": "3468a101bd96b051",
+   "hash": "68849314aeb95dd6",
    "asserts": 1,
    "literals": [
     "\"2\"",
@@ -19839,17 +19839,17 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
-  "apps/server/src/runtime/models-sealed.test.ts::<import:88d2955a>": {
+  "apps/server/src/runtime/models-sealed.test.ts::<import:b95fbde8>": {
    "kind": "support",
-   "hash": "88d2955ae7b62fc3",
+   "hash": "b95fbde8fc6d5bef",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/runtime/models-sealed.test.ts::<import:e71fddbd>": {
@@ -19874,7 +19874,7 @@
   },
   "apps/server/src/runtime/models-sealed.test.ts::a registered model whose sealed key cannot be opened says so instead of failing [REQ-099] > the check answers not ok with a reason in words, and keeps that on the record": {
    "kind": "test",
-   "hash": "4696762cd8eedd73",
+   "hash": "c233f61628435035",
    "asserts": 2,
    "literals": [
     "\"200\"",
@@ -19896,8 +19896,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/moss.test.ts::<import:007beb93>": {
    "kind": "support",
@@ -20755,19 +20755,19 @@
    "added": "2026-11-06",
    "amended_by": null
   },
-  "apps/server/src/runtime/operation-resume.test.ts::<import:6c61099e>": {
+  "apps/server/src/runtime/operation-resume.test.ts::<import:4655c842>": {
    "kind": "support",
-   "hash": "6c61099efd055b25",
+   "hash": "4655c842cee46cff",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
+   "added": "2026-11-12",
    "amended_by": null
   },
-  "apps/server/src/runtime/operation-resume.test.ts::<import:a5114600>": {
+  "apps/server/src/runtime/operation-resume.test.ts::<import:6c61099e>": {
    "kind": "support",
-   "hash": "a51146004a928c69",
+   "hash": "6c61099efd055b25",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -20817,13 +20817,13 @@
   },
   "apps/server/src/runtime/operation-resume.test.ts::=begin": {
    "kind": "support",
-   "hash": "a0a939b44f4a9fe5",
+   "hash": "02440d5aa6d8f670",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/operation-resume.test.ts::=FAKE": {
    "kind": "support",
@@ -20837,13 +20837,13 @@
   },
   "apps/server/src/runtime/operation-resume.test.ts::=finished": {
    "kind": "support",
-   "hash": "5527565f0cd779f3",
+   "hash": "8b0928df36dc3d9a",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/operation-resume.test.ts::=resident": {
    "kind": "support",
@@ -20928,7 +20928,7 @@
   },
   "apps/server/src/runtime/operation-resume.test.ts::an operation goes on after the server restarts [REQ-090] > the stopped run is built again from its journal, records the gap and ends with the hours used": {
    "kind": "test",
-   "hash": "711da5390bc5b42a",
+   "hash": "c2bc61f14410f093",
    "asserts": 16,
    "literals": [
     "\"0\"",
@@ -20976,8 +20976,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/operation-run.test.ts::<hook:afterEach>": {
    "kind": "support",
@@ -21009,19 +21009,19 @@
    "added": "2026-11-06",
    "amended_by": null
   },
-  "apps/server/src/runtime/operation-run.test.ts::<import:6c61099e>": {
+  "apps/server/src/runtime/operation-run.test.ts::<import:4655c842>": {
    "kind": "support",
-   "hash": "6c61099efd055b25",
+   "hash": "4655c842cee46cff",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
+   "added": "2026-11-12",
    "amended_by": null
   },
-  "apps/server/src/runtime/operation-run.test.ts::<import:a5114600>": {
+  "apps/server/src/runtime/operation-run.test.ts::<import:6c61099e>": {
    "kind": "support",
-   "hash": "a51146004a928c69",
+   "hash": "6c61099efd055b25",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -21061,23 +21061,23 @@
   },
   "apps/server/src/runtime/operation-run.test.ts::=finished": {
    "kind": "support",
-   "hash": "61ea0777ce20d70f",
+   "hash": "0e0f5a414304c32a",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/operation-run.test.ts::=operate": {
    "kind": "support",
-   "hash": "d95ef407b92efa60",
+   "hash": "4429de778eb35e24",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/operation-run.test.ts::an operation experiment runs the resident operator for its hours [REQ-090] > <suite>": {
    "kind": "support",
@@ -21134,7 +21134,7 @@
   },
   "apps/server/src/runtime/operation-run.test.ts::an operation experiment runs the resident operator for its hours [REQ-090] > an operation without events_since is refused, with the way out": {
    "kind": "test",
-   "hash": "ac95d1c5293c3268",
+   "hash": "4000eb43b5cfe719",
    "asserts": 1,
    "literals": [
     "\"an operation without events_since is refused, with the way out\"",
@@ -21149,8 +21149,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/operation-run.test.ts::an operation experiment runs the resident operator for its hours [REQ-090] > another pace is another benchmark set; the instruction is not part of the key": {
    "kind": "test",
@@ -21202,7 +21202,7 @@
   },
   "apps/server/src/runtime/operation-run.test.ts::an operation experiment runs the resident operator for its hours [REQ-090] > waking on every alarm needs a harness that can take it; the built-in one can, others say why not": {
    "kind": "test",
-   "hash": "3cbf9ffdaa7a6132",
+   "hash": "42f4ed2c9935ad6f",
    "asserts": 1,
    "literals": [
     "\"a\"",
@@ -21222,8 +21222,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/operator-agent.test.ts::<import:2cd2a7ce>": {
    "kind": "support",
@@ -21245,14 +21245,14 @@
    "added": "2026-11-06",
    "amended_by": null
   },
-  "apps/server/src/runtime/operator-agent.test.ts::<import:e3c333fe>": {
+  "apps/server/src/runtime/operator-agent.test.ts::<import:e5f05df0>": {
    "kind": "support",
-   "hash": "e3c333fefb0b200a",
+   "hash": "e5f05df0d4c1684d",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/runtime/operator-agent.test.ts::<import:e71fddbd>": {
@@ -21287,13 +21287,13 @@
   },
   "apps/server/src/runtime/operator-agent.test.ts::=play": {
    "kind": "support",
-   "hash": "db3a0e7473b3b976",
+   "hash": "86043075b08a4f75",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/operator-agent.test.ts::the built-in operator keeps services alive, hands the cause to its team and puts back what it moved [REQ-093] > <suite>": {
    "kind": "support",
@@ -21382,14 +21382,14 @@
    "added": "2026-11-06",
    "amended_by": null
   },
-  "apps/server/src/runtime/partner-activity.test.ts::<import:ced811c2>": {
+  "apps/server/src/runtime/partner-activity.test.ts::<import:7b413ce4>": {
    "kind": "support",
-   "hash": "ced811c212e82e1e",
+   "hash": "7b413ce44b92ec3f",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/runtime/partner-activity.test.ts::<import:e71fddbd>": {
@@ -21444,13 +21444,13 @@
   },
   "apps/server/src/runtime/partner-activity.test.ts::=play": {
    "kind": "support",
-   "hash": "56b9e09c521cd84b",
+   "hash": "5e957305dbe1fe6a",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/partner-activity.test.ts::another team's work reaches the world's live view, and the experiment keeps its domains [REQ-093] > <suite>": {
    "kind": "support",
@@ -21520,16 +21520,6 @@
    "added": "2026-11-06",
    "amended_by": null
   },
-  "apps/server/src/runtime/permissions.test.ts::<import:06cc7d3d>": {
-   "kind": "support",
-   "hash": "06cc7d3d200343ff",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
-  },
   "apps/server/src/runtime/permissions.test.ts::<import:1bf08ac9>": {
    "kind": "support",
    "hash": "1bf08ac9bbeed1f6",
@@ -21570,6 +21560,16 @@
    "added": "2026-11-11",
    "amended_by": null
   },
+  "apps/server/src/runtime/permissions.test.ts::<import:fa1e40bc>": {
+   "kind": "support",
+   "hash": "fa1e40bc00a78579",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "apps/server/src/runtime/permissions.test.ts::=MAKER_OR_ADMIN": {
    "kind": "support",
    "hash": "db3d19e1d5fbe27d",
@@ -21582,17 +21582,17 @@
   },
   "apps/server/src/runtime/permissions.test.ts::=mine": {
    "kind": "support",
-   "hash": "a9a79d1414a57b17",
+   "hash": "e4ac38dec653ad46",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > [REQ-054] %s is for the maker and an admin, not another signed-in person": {
    "kind": "test",
-   "hash": "fe8f56602df5c522",
+   "hash": "3d6d4af801cf6a4f",
    "asserts": 4,
    "literals": [
     "\"[REQ-054] %s is for the maker and an admin, not another signed-in person\"",
@@ -21605,8 +21605,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > [REQ-054] a caller with no role is refused everything, and an admin of one thing is not an owner of another": {
    "kind": "test",
@@ -21639,7 +21639,7 @@
   },
   "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > [REQ-054] a refusal reaches the caller as a 403 that names the thing": {
    "kind": "test",
-   "hash": "e77d6aa46e6713c7",
+   "hash": "236e9ac6c7bd8927",
    "asserts": 3,
    "literals": [
     "\"[REQ-054] a refusal reaches the caller as a 403 that names the thing\"",
@@ -21660,12 +21660,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > [REQ-054] a share link may be taken back by its maker, the experiment's maker or an admin": {
    "kind": "test",
-   "hash": "981c40bc10d9f34f",
+   "hash": "d1d3606df130fea0",
    "asserts": 4,
    "literals": [
     "\"[REQ-054] a share link may be taken back by its maker, the experiment's maker or an admin\"",
@@ -21688,12 +21688,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > [REQ-054] a thing nobody made (the config file's) is changed by admins only": {
    "kind": "test",
-   "hash": "b9e0dd17d119b2ad",
+   "hash": "feb8dffbd305b03d",
    "asserts": 4,
    "literals": [
     "\"[REQ-054] a thing nobody made (the config file's) is changed by admins only\"",
@@ -21716,12 +21716,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > [REQ-054] administering is for admins; liking is for anyone who has said who they are": {
    "kind": "test",
-   "hash": "b8d5eef17d47a271",
+   "hash": "3dbb188dcac39840",
    "asserts": 4,
    "literals": [
     "\"[REQ-054] administering is for admins; liking is for anyone who has said who they are\"",
@@ -21744,12 +21744,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > [REQ-054] the same person under another display name is the same owner: ownership is the login id": {
    "kind": "test",
-   "hash": "4fe914fecc6b9bdb",
+   "hash": "da0a353f177e0a77",
    "asserts": 2,
    "literals": [
     "\"[REQ-054] the same person under another display name is the same owner: ownership is the login id\"",
@@ -21757,7 +21757,7 @@
     "\"change\"",
     "\"change\"",
     "\"change\"",
-    "\"김연수\"",
+    "\"김하늘\"",
     "false",
     "false",
     "true",
@@ -21765,12 +21765,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > [REQ-054] using a connection: anyone signed in for the config file's, the maker and admins for one made on the screen": {
    "kind": "test",
-   "hash": "0867692516110ca1",
+   "hash": "a130d18a061442fe",
    "asserts": 4,
    "literals": [
     "\"[REQ-054] using a connection: anyone signed in for the config file's, the maker and admins for one made on the screen\"",
@@ -21793,8 +21793,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/permissions.test.ts::the one place that decides who may do what [REQ-054] > <suite>": {
    "kind": "support",
@@ -21866,14 +21866,14 @@
    "added": "2026-11-04",
    "amended_by": null
   },
-  "apps/server/src/runtime/platform.test.ts::<import:9b1d0a69>": {
+  "apps/server/src/runtime/platform.test.ts::<import:dc0613ee>": {
    "kind": "support",
-   "hash": "9b1d0a691576a8ce",
+   "hash": "dc0613ee6a6c5b8a",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/runtime/platform.test.ts::<import:e71fddbd>": {
@@ -21898,7 +21898,7 @@
   },
   "apps/server/src/runtime/platform.test.ts::an experiment from creation to result [REQ-030] [REQ-037] > a recipe is checked against what really exists before anything is queued": {
    "kind": "test",
-   "hash": "594c8350af716e04",
+   "hash": "cfba5d163b23bab3",
    "asserts": 9,
    "literals": [
     "\"a recipe is checked against what really exists before anything is queued\"",
@@ -21934,12 +21934,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/platform.test.ts::an experiment from creation to result [REQ-030] [REQ-037] > the built-in triage agent solves the cooling failure three times out of three": {
    "kind": "test",
-   "hash": "0469a65e449057e2",
+   "hash": "529aca2e4817984d",
    "asserts": 12,
    "literals": [
     "\"1\"",
@@ -21978,6 +21978,9 @@
     "\"completed\"",
     "\"experiment\"",
     "\"experiment\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"lockstep\"",
     "\"lockstep\"",
     "\"run\"",
@@ -21985,9 +21988,6 @@
     "\"running\"",
     "\"running\"",
     "\"the built-in triage agent solves the cooling failure three times out of three\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"기준선\"",
     "\"기준선\"",
     "\"냉방 기준선\"",
@@ -22004,8 +22004,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-04",
-   "amended_by": "0076-operation-scoring-amend-tests.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/platform.test.ts::cancelling and the queue [REQ-030] [REQ-032] > <suite>": {
    "kind": "support",
@@ -22019,7 +22019,7 @@
   },
   "apps/server/src/runtime/platform.test.ts::cancelling and the queue [REQ-030] [REQ-032] > a restarted server fails what was mid-flight and runs what was waiting": {
    "kind": "test",
-   "hash": "ff70d1d440d993b8",
+   "hash": "19887f0e6ae5c261",
    "asserts": 2,
    "literals": [
     "\"0\"",
@@ -22046,12 +22046,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/platform.test.ts::cancelling and the queue [REQ-030] [REQ-032] > queued runs wait their turn; cancelling stops the running one and drops the rest": {
    "kind": "test",
-   "hash": "98fee6715817146c",
+   "hash": "1034893f4a4e5dc8",
    "asserts": 9,
    "literals": [
     "\"1\"",
@@ -22091,12 +22091,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/platform.test.ts::cancelling and the queue [REQ-030] [REQ-032] > stopping the server ends running runs as failed, with the reason": {
    "kind": "test",
-   "hash": "c5559c45c09cb3a4",
+   "hash": "db4aad482239a6a1",
    "asserts": 1,
    "literals": [
     "\"1\"",
@@ -22113,8 +22113,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/platform.test.ts::forks, more runs and lineage [REQ-040] > <suite>": {
    "kind": "support",
@@ -22128,7 +22128,7 @@
   },
   "apps/server/src/runtime/platform.test.ts::forks, more runs and lineage [REQ-040] > a fork changes one condition, keeps the parent's versions and shows the difference": {
    "kind": "test",
-   "hash": "c86a1bbc67621b99",
+   "hash": "570227aeb5d96ab5",
    "asserts": 7,
    "literals": [
     "\"3\"",
@@ -22157,12 +22157,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/platform.test.ts::forks, more runs and lineage [REQ-040] > more runs continue the seeds; repeating a seed or someone else's experiment is refused": {
    "kind": "test",
-   "hash": "91fbd78adbdca439",
+   "hash": "ea36370e99c1d0a9",
    "asserts": 5,
    "literals": [
     "\"0\"",
@@ -22210,7 +22210,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0183-one-vocabulary-on-every-screen.md"
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/platform.test.ts::what the server says about itself [REQ-031] [REQ-033] > <suite>": {
    "kind": "support",
@@ -22288,7 +22288,7 @@
   },
   "apps/server/src/runtime/platform.test.ts::worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034] > a dry run shows what the scenario does to the world, with no agent": {
    "kind": "test",
-   "hash": "9ec0b9f780bbe748",
+   "hash": "55b693d233d9259c",
    "asserts": 7,
    "literals": [
     "\"0\"",
@@ -22313,16 +22313,18 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/platform.test.ts::worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034] > saves check the blueprint, refuse stale versions and let only the owner change things": {
    "kind": "test",
-   "hash": "a1461c3501fcfd22",
+   "hash": "6022aa886541e7ca",
    "asserts": 9,
    "literals": [
     "\"builder\"",
     "\"builder\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"nowhere\"",
     "\"old\"",
     "\"old\"",
@@ -22349,8 +22351,6 @@
     "\"x\"",
     "\"x\"",
     "\"x\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"깨짐\"",
     "\"깨짐\"",
     "\"새 이름\"",
@@ -22368,18 +22368,20 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/platform.test.ts::worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034] > scenarios: drafts may have problems, templates must fit the world, saves are versioned": {
    "kind": "test",
-   "hash": "41c8ab9b922efe63",
+   "hash": "253a631d48059cf3",
    "asserts": 11,
    "literals": [
     "\"cooling-failure\"",
     "\"cooling-failure\"",
     "\"error\"",
     "\"error\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"nope\"",
     "\"nope\"",
     "\"scenarios: drafts may have problems, templates must fit the world, saves are versioned\"",
@@ -22387,8 +22389,6 @@
     "\"x\"",
     "\"y\"",
     "\"y\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"복사본\"",
     "\"복사본\"",
     "\"복사본\"",
@@ -22405,12 +22405,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/platform.test.ts::worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034] > worlds come from presets and from reality, with what was assumed": {
    "kind": "test",
-   "hash": "92cf710a8cd93db2",
+   "hash": "c171d2834091985d",
    "asserts": 7,
    "literals": [
     "\"0\"",
@@ -22457,17 +22457,17 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
-  "apps/server/src/runtime/repeats.test.ts::<import:b30b4a92>": {
+  "apps/server/src/runtime/repeats.test.ts::<import:3b9a1496>": {
    "kind": "support",
-   "hash": "b30b4a92b77e7011",
+   "hash": "3b9a14966a149d01",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/runtime/repeats.test.ts::<import:e4802544>": {
@@ -22522,7 +22522,7 @@
   },
   "apps/server/src/runtime/repeats.test.ts::repeats of a seed [REQ-118] > a built-in agent repeated on a seed does the same thing to the byte; the seed decides the world": {
    "kind": "test",
-   "hash": "18c719346be034ae",
+   "hash": "c1c7ebe777f8f6cf",
    "asserts": 4,
    "literals": [
     "\"1\"",
@@ -22548,12 +22548,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/repeats.test.ts::repeats of a seed [REQ-118] > adding a repeat gives every seed one more run; adding seeds gives them the repeats it has now": {
    "kind": "test",
-   "hash": "216fcd33ba1c3496",
+   "hash": "8476f6ecf262754b",
    "asserts": 6,
    "literals": [
     "\"1\"",
@@ -22623,11 +22623,11 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0183-one-vocabulary-on-every-screen.md"
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/repeats.test.ts::repeats of a seed [REQ-118] > an experiment makes its runs a round at a time, and says how it was made": {
    "kind": "test",
-   "hash": "203c05e90461e16d",
+   "hash": "c0a550c183021030",
    "asserts": 4,
    "literals": [
     "\"0\"",
@@ -22684,12 +22684,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/repeats.test.ts::repeats of a seed [REQ-118] > the harness is told which run of the seed it is, and the seed stays the same": {
    "kind": "test",
-   "hash": "76c811bafbb22249",
+   "hash": "129f1bafaa9a6dab",
    "asserts": 1,
    "literals": [
     "\"1\"",
@@ -22716,12 +22716,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/repeats.test.ts::repeats of a seed [REQ-118] > the runs of an experiment, seeds times repeats, have a limit that is said before anything is queued": {
    "kind": "test",
-   "hash": "03e0f6e43659c8ef",
+   "hash": "1451512431d176e8",
    "asserts": 4,
    "literals": [
     "\"1\"",
@@ -22743,22 +22743,22 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0158-repeats-per-seed-and-seed-level-statistics.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
-  "apps/server/src/runtime/results-world.test.ts::<import:8f931061>": {
+  "apps/server/src/runtime/results-world.test.ts::<import:1091ac06>": {
    "kind": "support",
-   "hash": "8f93106141746ac1",
+   "hash": "1091ac06aeaf37a1",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
+   "added": "2026-11-12",
    "amended_by": null
   },
-  "apps/server/src/runtime/results-world.test.ts::<import:d06fb2a2>": {
+  "apps/server/src/runtime/results-world.test.ts::<import:8f931061>": {
    "kind": "support",
-   "hash": "d06fb2a2b1d9e141",
+   "hash": "8f93106141746ac1",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -22788,7 +22788,7 @@
   },
   "apps/server/src/runtime/results-world.test.ts::a run shows the world as it was when the experiment was made [REQ-037] > the world view carries the version the experiment recorded, with the name and digest, and a run that is not there is not found": {
    "kind": "test",
-   "hash": "612d2e6399bf4ff4",
+   "hash": "a309eb34531ff4d8",
    "asserts": 5,
    "literals": [
     "\"0\"",
@@ -22802,7 +22802,17 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
+  },
+  "apps/server/src/runtime/results.test.ts::<import:2a517f8c>": {
+   "kind": "support",
+   "hash": "2a517f8ca0cebb0f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/runtime/results.test.ts::<import:57bd3980>": {
@@ -22845,16 +22855,6 @@
    "added": "2026-10-29",
    "amended_by": null
   },
-  "apps/server/src/runtime/results.test.ts::<import:b2f7d3c1>": {
-   "kind": "support",
-   "hash": "b2f7d3c195b15b70",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
-  },
   "apps/server/src/runtime/results.test.ts::<import:c65ba5f8>": {
    "kind": "support",
    "hash": "c65ba5f873752328",
@@ -22877,13 +22877,13 @@
   },
   "apps/server/src/runtime/results.test.ts::=trace": {
    "kind": "support",
-   "hash": "5cca5ef6b22d0435",
+   "hash": "925cf3e3283fe42f",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/results.test.ts::=withTelemetry": {
    "kind": "support",
@@ -22907,7 +22907,7 @@
   },
   "apps/server/src/runtime/results.test.ts::benchmarks and the digital twin [REQ-039] [REQ-015] > diagnosis records export as JSON Lines; the brief names what imported worlds lack": {
    "kind": "test",
-   "hash": "259c4255212f20e1",
+   "hash": "f1995964311bf5db",
    "asserts": 8,
    "literals": [
     "\"# 시뮬레이터 모델링 브리프\"",
@@ -22931,11 +22931,11 @@
     "\"guess\"",
     "\"guess\"",
     "\"guess\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"sample\"",
     "\"triage\"",
     "\"triage\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"가져온 세계 실험\"",
     "\"가져온 홀\"",
     "\"가져온 홀\"",
@@ -22943,12 +22943,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/results.test.ts::benchmarks and the digital twin [REQ-039] [REQ-015] > leaderboards rank configurations within one benchmark set": {
    "kind": "test",
-   "hash": "a8169ed3ec9aca4b",
+   "hash": "81763e4e3b210b32",
    "asserts": 3,
    "literals": [
     "\"0\"",
@@ -22977,8 +22977,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/results.test.ts::one run in depth, with the harness's telemetry [REQ-037] > <suite>": {
    "kind": "support",
@@ -22992,7 +22992,7 @@
   },
   "apps/server/src/runtime/results.test.ts::one run in depth, with the harness's telemetry [REQ-037] > a ClickStack that is down does not break the result page, only the raw trace": {
    "kind": "test",
-   "hash": "f27abd2c00d4cfb3",
+   "hash": "221f95c9a501635c",
    "asserts": 2,
    "literals": [
     "\"0\"",
@@ -23005,12 +23005,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/results.test.ts::one run in depth, with the harness's telemetry [REQ-037] > the run view folds in tokens from ClickStack; the raw trace is there too": {
    "kind": "test",
-   "hash": "3666a958b82f1235",
+   "hash": "375f79595bbececa",
    "asserts": 7,
    "literals": [
     "\"# 추적\"",
@@ -23040,12 +23040,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/results.test.ts::one run in depth, with the harness's telemetry [REQ-037] > without telemetry configured there is simply nothing extra": {
    "kind": "test",
-   "hash": "7c9068ae1c5f2115",
+   "hash": "28a2eba9ba9ba9b1",
    "asserts": 2,
    "literals": [
     "\"0\"",
@@ -23060,8 +23060,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/results.test.ts::sharing results [REQ-038] > <suite>": {
    "kind": "support",
@@ -23075,7 +23075,7 @@
   },
   "apps/server/src/runtime/results.test.ts::sharing results [REQ-038] > reports in three formats, and links that open without the app until taken back or expired": {
    "kind": "test",
-   "hash": "70705a9446886804",
+   "hash": "4c6927d3219400a7",
    "asserts": 15,
    "literals": [
     "\"1\"",
@@ -23125,18 +23125,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
-  },
-  "apps/server/src/runtime/run-events.test.ts::<import:1b1baf5b>": {
-   "kind": "support",
-   "hash": "1b1baf5b5682cf3e",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/run-events.test.ts::<import:8f931061>": {
    "kind": "support",
@@ -23146,6 +23136,16 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-06",
+   "amended_by": null
+  },
+  "apps/server/src/runtime/run-events.test.ts::<import:e5b6340c>": {
+   "kind": "support",
+   "hash": "e5b6340cf905f536",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/runtime/run-events.test.ts::<import:e71fddbd>": {
@@ -23180,7 +23180,7 @@
   },
   "apps/server/src/runtime/run-events.test.ts::a run's record is served as events with two clocks [REQ-083] > a finished run gives its events, the wall clock on every one, and a window cuts them": {
    "kind": "test",
-   "hash": "77a9d790e56ec32a",
+   "hash": "616f61d8f303c53a",
    "asserts": 11,
    "literals": [
     "\"0\"",
@@ -23221,12 +23221,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/run-events.test.ts::a run's record is served as events with two clocks [REQ-083] > while the run goes, the live record has what happened so far; afterwards it is forgotten": {
    "kind": "test",
-   "hash": "c3556d5c40aeb2cf",
+   "hash": "49567780b25f96c3",
    "asserts": 5,
    "literals": [
     "\"1\"",
@@ -23257,8 +23257,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/runtime-gaps.test.ts::<import:09835585>": {
    "kind": "support",
@@ -23657,6 +23657,16 @@
    "added": "2026-11-11",
    "amended_by": null
   },
+  "apps/server/src/runtime/test-support/platform.ts::=HANEUL": {
+   "kind": "support",
+   "hash": "be8ad7767afa33ba",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "apps/server/src/runtime/test-support/platform.ts::=JIMIN": {
    "kind": "support",
    "hash": "6d13b80bcb8a1244",
@@ -23699,13 +23709,13 @@
   },
   "apps/server/src/runtime/test-support/platform.ts::=seed": {
    "kind": "support",
-   "hash": "1a13307592dc180a",
+   "hash": "77809ec5b11d2c8e",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/test-support/platform.ts::=settled": {
    "kind": "support",
@@ -23766,16 +23776,6 @@
    "skips": 0,
    "added": "2026-10-29",
    "amended_by": null
-  },
-  "apps/server/src/runtime/test-support/platform.ts::=YEONSU": {
-   "kind": "support",
-   "hash": "08c61be2277987b9",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0174-permissions-proxy-identity-three-scopes-audit.md"
   },
   "apps/server/src/runtime/test-support/stamps.ts::<import:4f697ee0>": {
    "kind": "support",
@@ -24774,14 +24774,14 @@
    "added": "2026-11-04",
    "amended_by": null
   },
-  "apps/server/src/runtime/world-templates.test.ts::<import:88d2955a>": {
+  "apps/server/src/runtime/world-templates.test.ts::<import:b95fbde8>": {
    "kind": "support",
-   "hash": "88d2955ae7b62fc3",
+   "hash": "b95fbde8fc6d5bef",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
+   "added": "2026-11-12",
    "amended_by": null
   },
   "apps/server/src/runtime/world-templates.test.ts::<import:c7201240>": {
@@ -24816,7 +24816,7 @@
   },
   "apps/server/src/runtime/world-templates.test.ts::서비스부터 만든 세계와 템플릿 [REQ-094] > 모양으로 세계를 만들고, 서비스·일감이 세계에 저장된다": {
    "kind": "test",
-   "hash": "85a848e9076230ba",
+   "hash": "930b799bf6f45f12",
    "asserts": 5,
    "literals": [
     "\"1\"",
@@ -24833,12 +24833,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/runtime/world-templates.test.ts::서비스부터 만든 세계와 템플릿 [REQ-094] > 템플릿은 세계 목록에 끼지 않고 따로 나열되며, 구성을 그대로 담는다": {
    "kind": "test",
-   "hash": "085afd26cf0856d6",
+   "hash": "3a29672917bc38b1",
    "asserts": 4,
    "literals": [
     "\"0\"",
@@ -24859,8 +24859,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/server/src/scale-out.test.ts::<hook:afterAll>": {
    "kind": "support",
@@ -25248,7 +25248,7 @@
   },
   "apps/server/src/scale-out.test.ts::scale out: a control plane with no sessions of its own, and workers that join it [REQ-042] > queued runs wait for capacity, start when a worker joins, and the worker leaves politely": {
    "kind": "test",
-   "hash": "e0f1a558986ba1cc",
+   "hash": "206747fb9952aded",
    "asserts": 6,
    "literals": [
     "\"/api/experiments\"",
@@ -25283,6 +25283,7 @@
     "\"control\"",
     "\"fan-failure-throttle\"",
     "\"guess\"",
+    "\"haneul\"",
     "\"queued runs wait for capacity, start when a worker joins, and the worker leaves politely\"",
     "\"terrarium_runs_queued 3\"",
     "\"terrarium_session_capacity 0\"",
@@ -25295,7 +25296,6 @@
     "\"worker\"",
     "\"worker\"",
     "\"x-terrarium-user\"",
-    "\"yeonsu\"",
     "\"스케일 아웃\"",
     "\"홀\"",
     "false",
@@ -25307,8 +25307,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/web/src/logic/activity-group.test.ts::<import:45a1261f>": {
    "kind": "support",
@@ -25332,13 +25332,13 @@
   },
   "apps/web/src/logic/activity-group.test.ts::=worker": {
    "kind": "support",
-   "hash": "b537649039869849",
+   "hash": "1cb905d9567b57b5",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/web/src/logic/activity-group.test.ts::지금 일하는 에이전트 [REQ-111] > [REQ-111] 다른 일을 하는 에이전트는 따로 남고, 눌렀을 때 갈 곳은 장비를 말한 가장 최근 런이다": {
    "kind": "test",
@@ -25483,13 +25483,13 @@
   },
   "apps/web/src/logic/activity.test.ts::=who": {
    "kind": "support",
-   "hash": "5e8f36df9e7f62a5",
+   "hash": "e9b3d942e71f06a0",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/web/src/logic/activity.test.ts::who is working in a world, folded from the activity events [REQ-050] > <suite>": {
    "kind": "support",
@@ -26127,7 +26127,7 @@
   },
   "apps/web/src/logic/agent-versions.test.ts::a version history reads in words [REQ-053] > versions are changed by the one who connected it, or by anyone when the server's file did": {
    "kind": "test",
-   "hash": "fc403de3fedba95d",
+   "hash": "9d14ce3add55af74",
    "asserts": 5,
    "literals": [
     "\"config\"",
@@ -26141,16 +26141,16 @@
     "\"versions are changed by the one who connected it, or by anyone when the server's file did\"",
     "\"민수\"",
     "\"민수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
     "false",
     "false",
     "false",
@@ -26164,8 +26164,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/web/src/logic/agent-versions.test.ts::what a person fills in to add or annotate a version [REQ-053] > <suite>": {
    "kind": "support",
@@ -37885,13 +37885,13 @@
   },
   "apps/web/src/logic/editors.test.ts::=parent": {
    "kind": "support",
-   "hash": "9ce5fa8daff7f7de",
+   "hash": "677628afdc183a90",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/web/src/logic/editors.test.ts::=template": {
    "kind": "support",
@@ -38844,13 +38844,13 @@
   },
   "apps/web/src/logic/experiment-fork-counts.test.ts::=base": {
    "kind": "support",
-   "hash": "5d55e52bbb328827",
+   "hash": "395a980802869e20",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/web/src/logic/experiment-fork-counts.test.ts::a fork keeps how many situations and how many repeats the original ran [REQ-118] > <suite>": {
    "kind": "support",
@@ -38932,13 +38932,13 @@
   },
   "apps/web/src/logic/experiment-metadata.test.ts::=parent": {
    "kind": "support",
-   "hash": "f10c8b98d1d80a4f",
+   "hash": "664134cd37bd1857",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/web/src/logic/experiment-metadata.test.ts::=ready": {
    "kind": "support",
@@ -40287,13 +40287,13 @@
   },
   "apps/web/src/logic/human-talk.test.ts::=card": {
    "kind": "support",
-   "hash": "9511d75a21970f05",
+   "hash": "a7d1e279bc5bec68",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/web/src/logic/human-talk.test.ts::editing a runbook [REQ-082] > <suite>": {
    "kind": "support",
@@ -41248,7 +41248,7 @@
   },
   "apps/web/src/logic/logic.test.ts::the API client speaks the contract [REQ-030] > paths, methods, the viewer's name, JSON bodies and document responses": {
    "kind": "test",
-   "hash": "ae297662532f571e",
+   "hash": "8fa518895b20bfc1",
    "asserts": 11,
    "literals": [
     "\"/api/meta\"",
@@ -41315,15 +41315,15 @@
     "\"x-terrarium-user\"",
     "\"{\\\"expiresInDays\\\":7}\"",
     "\"{\\\"expiresInDays\\\":7}\"",
-    "\"김연수\"",
-    "\"김연수\"",
-    "\"김연수\"",
+    "\"김하늘\"",
+    "\"김하늘\"",
+    "\"김하늘\"",
     "true"
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/web/src/logic/logic.test.ts::the name people give [REQ-033] > <suite>": {
    "kind": "support",
@@ -41337,10 +41337,10 @@
   },
   "apps/web/src/logic/logic.test.ts::the name people give [REQ-033] > kept in the browser, checked, forgotten on request": {
    "kind": "test",
-   "hash": "013b8276c11c405a",
+   "hash": "2e1785e9ba4f805d",
    "asserts": 8,
    "literals": [
-    "\"  김연수 \"",
+    "\"  김하늘 \"",
     "\" \"",
     "\" \"",
     "\"40자 이하로 적어 주세요\"",
@@ -41354,10 +41354,10 @@
     "\"terrarium.user\"",
     "\"x\"",
     "\"x\"",
-    "\"김연수\"",
-    "\"김연수\"",
-    "\"김연수\"",
-    "\"김연수\"",
+    "\"김하늘\"",
+    "\"김하늘\"",
+    "\"김하늘\"",
+    "\"김하늘\"",
     "\"이름을 적어 주세요\"",
     "\"이름을 적어 주세요\"",
     "\"줄바꿈이나 제어 문자는 쓸 수 없어요\"",
@@ -41365,8 +41365,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/web/src/logic/logic.test.ts::the name people give [REQ-033] > without working storage the name lasts the visit": {
    "kind": "test",
@@ -41428,13 +41428,13 @@
   },
   "apps/web/src/logic/models.test.ts::=view": {
    "kind": "support",
-   "hash": "599d4c6fa67447bc",
+   "hash": "651a4cc89060403c",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/web/src/logic/models.test.ts::the model form turns typing into requests [REQ-099] > <suite>": {
    "kind": "support",
@@ -48376,13 +48376,13 @@
   },
   "apps/web/src/logic/tool-picker.test.ts::=record": {
    "kind": "support",
-   "hash": "53741fe5f8368a6b",
+   "hash": "42bfd8b92ac8b2b2",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/web/src/logic/tool-picker.test.ts::the tool cards [REQ-080] > <suite>": {
    "kind": "support",
@@ -61066,13 +61066,13 @@
   },
   "apps/web/src/logic/world3d/markers.test.ts::=worker": {
    "kind": "support",
-   "hash": "d4f166b5c787a4c5",
+   "hash": "4aa2b98c48eadf83",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "apps/web/src/logic/world3d/markers.test.ts::what the 3D view draws for the runs at work [REQ-050] > <suite>": {
    "kind": "support",
@@ -78716,13 +78716,13 @@
   },
   "packages/core/src/analysis/analysis.test.ts::=trace": {
    "kind": "support",
-   "hash": "ef467e796984e3d1",
+   "hash": "9b62b217a990d7c9",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/analysis/analysis.test.ts::a fork against its parent [REQ-040] > <suite>": {
    "kind": "support",
@@ -78939,7 +78939,7 @@
   },
   "packages/core/src/analysis/analysis.test.ts::benchmark leaderboards [REQ-039] > configurations are pooled across people and ranked; small samples wait unranked": {
    "kind": "test",
-   "hash": "f2f52cb8d57c16cd",
+   "hash": "8bf5fdd4f3af0510",
    "asserts": 7,
    "literals": [
     "\"0\"",
@@ -78984,6 +78984,9 @@
     "\"h-react\"",
     "\"h-react\"",
     "\"h-react\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"jimin\"",
     "\"jimin\"",
     "\"jimin\"",
@@ -78991,16 +78994,13 @@
     "\"triage\"",
     "\"triage\"",
     "\"triage\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "\"샘플 세계 · cooling-failure\"",
     "\"샘플 세계 · cooling-failure\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0158-repeats-per-seed-and-seed-level-statistics.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/analysis/analysis.test.ts::benchmark leaderboards [REQ-039] > only like is ranked with like: another time policy is another board": {
    "kind": "test",
@@ -79189,7 +79189,7 @@
   },
   "packages/core/src/analysis/analysis.test.ts::one run, analysed [REQ-037] > the harness's trace adds model calls and tokens; what the harness reported wins": {
    "kind": "test",
-   "hash": "e174282a0b2dd55b",
+   "hash": "2efd8b5a202b2bf5",
    "asserts": 9,
    "literals": [
     "\"0\"",
@@ -79244,12 +79244,12 @@
     "\"e1\"",
     "\"e1\"",
     "\"e1\"",
-    "\"gauss-2\"",
-    "\"gauss-2\"",
     "\"llm\"",
     "\"llm\"",
     "\"llm\"",
     "\"llm\"",
+    "\"model-a\"",
+    "\"model-a\"",
     "\"other\"",
     "\"other\"",
     "\"t1\"",
@@ -79262,8 +79262,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/analysis/analysis.test.ts::small statistics [REQ-037] > <suite>": {
    "kind": "support",
@@ -80663,17 +80663,17 @@
   },
   "packages/core/src/analysis/seed-statistics.test.ts::a seed that two experiments share counts once on the leaderboard [REQ-118] > =share": {
    "kind": "support",
-   "hash": "65a1933af3815e23",
+   "hash": "8b39f87f482ee5e0",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/analysis/seed-statistics.test.ts::a seed that two experiments share counts once on the leaderboard [REQ-118] > a configuration with runs on fewer than three different seeds waits unranked, however many runs it has": {
    "kind": "test",
-   "hash": "40f1fae1d649db8e",
+   "hash": "0d454d665665f807",
    "asserts": 2,
    "literals": [
     "\"0\"",
@@ -80693,19 +80693,19 @@
     "\"deep\"",
     "\"deep\"",
     "\"deep\"",
+    "\"haneul\"",
     "\"j\"",
     "\"jimin\"",
     "\"k\"",
     "\"kim\"",
     "\"triage\"",
     "\"triage\"",
-    "\"y\"",
-    "\"yeonsu\""
+    "\"y\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/analysis/seed-statistics.test.ts::a seed that two experiments share counts once on the leaderboard [REQ-118] > before: six runs read as six samples. after: three seeds, a wider interval": {
    "kind": "test",
@@ -80803,22 +80803,22 @@
   },
   "packages/core/src/analysis/seed-statistics.test.ts::one run per seed, no shared seed: the numbers are the ones from before [REQ-118] > a leaderboard whose experiments share no seed pools runs as it did": {
    "kind": "test",
-   "hash": "7702a38d25813e22",
+   "hash": "7ca9cea45329671c",
    "asserts": 1,
    "literals": [
     "\"4\"",
     "\"a leaderboard whose experiments share no seed pools runs as it did\"",
     "\"d\"",
     "\"deep\"",
+    "\"haneul\"",
     "\"j\"",
     "\"jimin\"",
-    "\"y\"",
-    "\"yeonsu\""
+    "\"y\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/analysis/seed-statistics.test.ts::one run per seed, no shared seed: the numbers are the ones from before [REQ-118] > a mixed experiment: score interval, rates, efficiency, criteria and findings": {
    "kind": "test",
@@ -81711,13 +81711,13 @@
   },
   "packages/core/src/analysis/test-support/runs.ts::=experimentOf": {
    "kind": "support",
-   "hash": "a51d6daac74e7575",
+   "hash": "01effec947278784",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/analysis/test-support/runs.ts::=ExperimentSpec": {
    "kind": "support",
@@ -82734,15 +82734,15 @@
   },
   "packages/core/src/contract/contract.test.ts::the route table [REQ-030] > paths are filled in and encoded; a missing parameter is an error, not a broken link": {
    "kind": "test",
-   "hash": "b711b88cbb72cd57",
+   "hash": "7221a531e863c065",
    "asserts": 6,
    "literals": [
     "\"\"",
     "\"\"",
     "\"\"",
     "\"\"",
-    "\"/api/experiments?owner=%EC%97%B0%EC%88%98&limit=20\"",
-    "\"/api/experiments?owner=%EC%97%B0%EC%88%98&limit=20\"",
+    "\"/api/experiments?owner=%ED%95%98%EB%8A%98&limit=20\"",
+    "\"/api/experiments?owner=%ED%95%98%EB%8A%98&limit=20\"",
     "\"/api/meta\"",
     "\"/api/meta\"",
     "\"/api/runs/r%201%2F2\"",
@@ -82766,13 +82766,13 @@
     "\"paths are filled in and encoded; a missing parameter is an error, not a broken link\"",
     "\"r 1/2\"",
     "\"r 1/2\"",
-    "\"연수\"",
-    "\"연수\""
+    "\"하늘\"",
+    "\"하늘\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-03",
-   "amended_by": "0050-toss-ux-principles.md"
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/contract/contract.test.ts::worlds cross the wire intact [REQ-001] [REQ-009] > <suite>": {
    "kind": "support",
@@ -83293,7 +83293,7 @@
   },
   "packages/core/src/experiments/agent-version.test.ts::a version is written only when the agent differs from the newest [REQ-053] > a changed agent gets the next number, the date and what changed": {
    "kind": "test",
-   "hash": "bd340e223d173374",
+   "hash": "27db3fdb51333314",
    "asserts": 6,
    "literals": [
     "\"2\"",
@@ -83305,6 +83305,7 @@
     "\"3\"",
     "\"3\"",
     "\"a changed agent gets the next number, the date and what changed\"",
+    "\"haneul\"",
     "\"jimin\"",
     "\"jimin\"",
     "\"jimin\"",
@@ -83317,7 +83318,6 @@
     "\"m-2\"",
     "\"model\"",
     "\"model\"",
-    "\"yeonsu\"",
     "\"모델\"",
     "\"모델\"",
     "true",
@@ -83325,8 +83325,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/experiments/agent-version.test.ts::a version is written only when the agent differs from the newest [REQ-053] > looking without writing: what the next experiment would add": {
    "kind": "test",
@@ -83359,7 +83359,7 @@
   },
   "packages/core/src/experiments/agent-version.test.ts::a version is written only when the agent differs from the newest [REQ-053] > the first look writes version 1; the same agent again writes nothing": {
    "kind": "test",
-   "hash": "2f5229b5524f4bb0",
+   "hash": "4ab8b594ce175b37",
    "asserts": 7,
    "literals": [
     "\"1\"",
@@ -83372,11 +83372,11 @@
     "\"2\"",
     "\"auto\"",
     "\"auto\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
     "\"jimin\"",
     "\"the first look writes version 1; the same agent again writes nothing\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
     "false",
     "false",
     "true",
@@ -83384,8 +83384,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/experiments/agent-version.test.ts::people add, change and delete versions [REQ-053] > <suite>": {
    "kind": "support",
@@ -83399,13 +83399,13 @@
   },
   "packages/core/src/experiments/agent-version.test.ts::people add, change and delete versions [REQ-053] > =start": {
    "kind": "support",
-   "hash": "aa7234e04a25e74e",
+   "hash": "c0f5026f8cbacd1d",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/experiments/agent-version.test.ts::people add, change and delete versions [REQ-053] > a deleted version leaves its number unused, and the next one is compared with what is left": {
    "kind": "test",
@@ -83536,7 +83536,7 @@
   },
   "packages/core/src/experiments/agent-version.test.ts::people add, change and delete versions [REQ-053] > the first version can be a person's, and its attributes are the person's alone": {
    "kind": "test",
-   "hash": "80d8a0973ad43388",
+   "hash": "1997a04398154c81",
    "asserts": 3,
    "literals": [
     "\"1\"",
@@ -83544,15 +83544,15 @@
     "\"1\"",
     "\"1\"",
     "\"1\"",
-    "\"the first version can be a person's, and its attributes are the person's alone\"",
-    "\"yeonsu\"",
-    "\"yeonsu\"",
-    "\"yeonsu\""
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"haneul\"",
+    "\"the first version can be a person's, and its attributes are the person's alone\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/experiments/agent-version.test.ts::what an agent says about itself, as one flat record [REQ-053] > <suite>": {
    "kind": "support",
@@ -83738,7 +83738,7 @@
   },
   "packages/core/src/experiments/community.test.ts::competitions [REQ-101] > [REQ-101] a person is ranked once, on their best agent": {
    "kind": "test",
-   "hash": "ec932df45d6dc78e",
+   "hash": "c8569e7d6a01249c",
    "asserts": 2,
    "literals": [
     "\"1\"",
@@ -83755,19 +83755,19 @@
     "\"c1\"",
     "\"gold\"",
     "\"gold\"",
-    "\"연수\"",
-    "\"연수\"",
     "\"지민\"",
-    "\"지민\""
+    "\"지민\"",
+    "\"하늘\"",
+    "\"하늘\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/experiments/community.test.ts::competitions [REQ-101] > [REQ-101] medals add up across competitions and give a tier": {
    "kind": "test",
-   "hash": "68735fd75de9a4af",
+   "hash": "a43e2b7759b2d779",
    "asserts": 5,
    "literals": [
     "\"0\"",
@@ -83794,15 +83794,15 @@
     "\"sprout\"",
     "\"아무개\"",
     "\"아무개\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\""
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/experiments/community.test.ts::competitions [REQ-101] > <suite>": {
    "kind": "support",
@@ -83836,7 +83836,7 @@
   },
   "packages/core/src/experiments/community.test.ts::hearts, marks and awards in the memory store [REQ-101] > [REQ-101] awards are kept as first written": {
    "kind": "test",
-   "hash": "c92c37462c668401",
+   "hash": "f8031add2723b9ff",
    "asserts": 2,
    "literals": [
     "\"1\"",
@@ -83853,20 +83853,20 @@
     "\"first-world\"",
     "\"first-world\"",
     "\"s\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
     "true"
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/experiments/community.test.ts::hearts, marks and awards in the memory store [REQ-101] > [REQ-101] one heart per person per world; taking it back removes it": {
    "kind": "test",
-   "hash": "ae24a95696d2e861",
+   "hash": "52a58c40f52d797b",
    "asserts": 4,
    "literals": [
     "\"1\"",
@@ -83882,19 +83882,19 @@
     "\"a\"",
     "\"a\"",
     "\"a\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
     "\"지민\"",
     "\"지민\"",
     "\"지민\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
     "false",
     "false",
     "true",
@@ -83902,8 +83902,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/experiments/community.test.ts::hearts, marks and awards in the memory store [REQ-101] > <suite>": {
    "kind": "support",
@@ -83917,7 +83917,7 @@
   },
   "packages/core/src/experiments/community.test.ts::world popularity [REQ-101] > [REQ-101] a started-from that points nowhere counts for nothing": {
    "kind": "test",
-   "hash": "9cf60ad180390a3d",
+   "hash": "d4a9703c00c9fa5f",
    "asserts": 1,
    "literals": [
     "\"0\"",
@@ -83928,16 +83928,16 @@
     "\"a\"",
     "\"a\"",
     "\"gone\"",
-    "\"연수\""
+    "\"하늘\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/experiments/community.test.ts::world popularity [REQ-101] > [REQ-101] score = experiments in 30 days + hearts + worlds others started from it": {
    "kind": "test",
-   "hash": "40c16f4ad912493b",
+   "hash": "a52645d3d6bb6665",
    "asserts": 1,
    "literals": [
     "\"1\"",
@@ -83971,16 +83971,16 @@
     "\"e\"",
     "\"x\"",
     "\"민호\"",
-    "\"연수\""
+    "\"하늘\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/experiments/community.test.ts::world popularity [REQ-101] > [REQ-101] sorts by score and breaks ties by the newer world, then id": {
    "kind": "test",
-   "hash": "0cd840744dbaf8d3",
+   "hash": "c66a68d0113e08e5",
    "asserts": 2,
    "literals": [
     "\"1\"",
@@ -84008,18 +84008,18 @@
     "\"popular\"",
     "\"popular\"",
     "\"popular\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\""
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/experiments/community.test.ts::world popularity [REQ-101] > [REQ-101] week counts what happened in the last 7 days: experiments, hearts, starts": {
    "kind": "test",
@@ -84050,7 +84050,7 @@
   },
   "packages/core/src/experiments/community.test.ts::world popularity [REQ-101] > [REQ-101] 새로 생김 is newest first; 내 세계 keeps only mine, last edited first": {
    "kind": "test",
-   "hash": "9bff490c2779f0c2",
+   "hash": "d308b8b3083e9c43",
    "asserts": 2,
    "literals": [
     "\"1\"",
@@ -84076,18 +84076,18 @@
     "\"mine\"",
     "\"new\"",
     "\"new\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"연수\"",
-    "\"지민\""
+    "\"지민\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\"",
+    "\"하늘\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/experiments/community.test.ts::world popularity [REQ-101] > <suite>": {
    "kind": "support",
@@ -84101,13 +84101,13 @@
   },
   "packages/core/src/experiments/community.test.ts::world popularity [REQ-101] > =worlds": {
    "kind": "support",
-   "hash": "e5dbf9a8562a8e1a",
+   "hash": "6ddf89ceef30bb5b",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-07",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/experiments/experiments.test.ts::<import:0892ab63>": {
    "kind": "support",
@@ -84161,13 +84161,13 @@
   },
   "packages/core/src/experiments/experiments.test.ts::=experiment": {
    "kind": "support",
-   "hash": "8754ba6d672d617e",
+   "hash": "d89611fada99b9c6",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/experiments/experiments.test.ts::=fakeResult": {
    "kind": "support",
@@ -84633,13 +84633,13 @@
   },
   "packages/core/src/experiments/experiments.test.ts::memory store [REQ-030] [REQ-033] > =world": {
    "kind": "support",
-   "hash": "c5817fd23a1e66e2",
+   "hash": "96fab6c58890e4d9",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/experiments/experiments.test.ts::memory store [REQ-030] [REQ-033] > editing a world keeps earlier versions for the experiments that used them": {
    "kind": "test",
@@ -108609,37 +108609,37 @@
    "added": "2026-10-30",
    "amended_by": null
   },
-  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > <suite>": {
+  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > <suite>": {
    "kind": "support",
    "hash": "edb4bbfe0a867169",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
+   "added": "2026-11-12",
    "amended_by": null
   },
-  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > =rectOf": {
+  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > =rectOf": {
    "kind": "support",
    "hash": "36c709c29c2a5267",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
+   "added": "2026-11-12",
    "amended_by": null
   },
-  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > =traced": {
+  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > =traced": {
    "kind": "support",
    "hash": "792481627410057a",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
+   "added": "2026-11-12",
    "amended_by": null
   },
-  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > every fab and data-centre place lies inside its site, and no two of them overlap": {
+  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > every fab and data-centre place lies inside its site, and no two of them overlap": {
    "kind": "test",
    "hash": "7bf1b72bff05e281",
    "asserts": 3,
@@ -108655,10 +108655,10 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": "0047-site-names-and-places.md"
+   "added": "2026-11-12",
+   "amended_by": null
   },
-  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > every place for a building has a size, and only the three mapped sites have fab places": {
+  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > every place for a building has a size, and only the three mapped sites have fab places": {
    "kind": "test",
    "hash": "20b7b8f337a6580c",
    "asserts": 3,
@@ -108678,10 +108678,10 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": "0046-site-places-and-server-rooms.md"
+   "added": "2026-11-12",
+   "amended_by": null
   },
-  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > sites without a map to read have no fixed places: their buildings are spread over the land": {
+  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > sites without a map to read have no fixed places: their buildings are spread over the land": {
    "kind": "test",
    "hash": "98f587ae514c9b89",
    "asserts": 3,
@@ -108693,10 +108693,10 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": "0046-site-places-and-server-rooms.md"
+   "added": "2026-11-12",
+   "amended_by": null
   },
-  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > the sites with a map have as many fabs as the blue roofs counted on it; the HPC centre is at Hwaseong's south tip": {
+  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > the sites with a map have as many fabs as the blue roofs counted on it; the HPC centre is at Hwaseong's south tip": {
    "kind": "test",
    "hash": "fe2174bff4000683",
    "asserts": 6,
@@ -108725,10 +108725,10 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
-   "amended_by": "0047-site-names-and-places.md"
+   "added": "2026-11-12",
+   "amended_by": null
   },
-  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > the traced outlines keep the proportions of the maps: Pyeongtaek twice the land of Hwaseong, Giheung the smallest of the three": {
+  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > the traced outlines keep the proportions of the maps: Pyeongtaek twice the land of Hwaseong, Giheung the smallest of the three": {
    "kind": "test",
    "hash": "371778feb203eea4",
    "asserts": 6,
@@ -108766,7 +108766,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-30",
+   "added": "2026-11-12",
    "amended_by": null
   },
   "packages/core/src/sources/worldgen/sites.test.ts::<import:661ed3a8>": {
@@ -166551,13 +166551,13 @@
   },
   "tests/spec/remote-harness.test.ts::=api": {
    "kind": "support",
-   "hash": "513584a92aa19524",
+   "hash": "4b70e30725a93e8a",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "tests/spec/remote-harness.test.ts::=base": {
    "kind": "support",
@@ -174959,23 +174959,23 @@
   },
   "tests/spec/store.test.ts::=experiment": {
    "kind": "support",
-   "hash": "fabbf4c216555096",
+   "hash": "70015de89919ccce",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "tests/spec/store.test.ts::=scenario": {
    "kind": "support",
-   "hash": "f00bbe607b149387",
+   "hash": "9c6a0e59575f1d08",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "tests/spec/store.test.ts::=stores": {
    "kind": "support",
@@ -174989,13 +174989,13 @@
   },
   "tests/spec/store.test.ts::=world": {
    "kind": "support",
-   "hash": "d512cef68e78acda",
+   "hash": "3a6a945f1c7f515a",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "tests/spec/store.test.ts::the %s store [REQ-030] [REQ-033] [REQ-040] > <suite>": {
    "kind": "support",
@@ -179534,6 +179534,7 @@
   "apps/server/src/adapters/harness.test.ts::an OpenAI-compatible model as a harness [REQ-031] > tool replies are JSON the model can read, cut when huge": "0042-connectors.md",
   "apps/server/src/adapters/test-support/fake-fetch.ts::<import:28b66704>": "0042-connectors.md",
   "apps/server/src/http/activity-stream.test.ts::<import:436dd109>": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/http/agent-versions-api.test.ts::<import:f3449f0e>": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/http/app.test.ts::<import:05f9b251>": "0174-permissions-proxy-identity-three-scopes-audit.md",
   "apps/server/src/http/app.test.ts::<import:d7b9cf00>": "0174-permissions-proxy-identity-three-scopes-audit.md",
   "apps/server/src/http/connections-api.test.ts::<import:436dd109>": "0174-permissions-proxy-identity-three-scopes-audit.md",
@@ -179543,16 +179544,41 @@
   "apps/server/src/http/models-api.test.ts::<import:436dd109>": "0174-permissions-proxy-identity-three-scopes-audit.md",
   "apps/server/src/http/models-api.test.ts::registering model APIs: add, list, change, delete [REQ-099] > only whoever registered it changes or deletes it; anyone else can still check and choose the default": "0174-permissions-proxy-identity-three-scopes-audit.md",
   "apps/server/src/http/moss-api.test.ts::POST /api/moss/ask answers from the docs and the screen state [REQ-103] > without a default model it is 503 with the way out, and nothing is guessed": "0125-moss-requires-model.md",
+  "apps/server/src/http/physics-api.test.ts::<import:4eea0d07>": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/http/presets-api.test.ts::<import:436dd109>": "0174-permissions-proxy-identity-three-scopes-audit.md",
   "apps/server/src/http/process-api.test.ts::지금 하는 방식 표 [REQ-112] > [REQ-112] 비거나 틀린 표는 받지 않고, 처음 적은 사람만 고친다": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/http/service-cards-api.test.ts::<import:b8568d3b>": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/http/service-cards-api.test.ts::서비스 카드 [REQ-104] > [REQ-104] 잠긴 카드는 만든 사람만 고치고 지운다. 잠금을 풀면 이름만 남도 고친다": "0131-baseline-dr-and-expected-recovery-window.md",
+  "apps/server/src/http/world-community-api.test.ts::<import:450f2251>": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/runtime/agent-versions.test.ts::<import:11dddb1f>": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/runtime/agent-versions.test.ts::<import:b0dd44bd>": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/runtime/agent-versions.test.ts::people add, change and delete versions [REQ-053] > only whoever connected it may change its versions; the config file's connection is open to everyone": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/runtime/connection-secrets.test.ts::<import:11dddb1f>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/connection-traces.test.ts::<import:68f3a5c2>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/connections.test.ts::<import:2d409afc>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/escalation.test.ts::<import:8e8150af>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/executor-activity.test.ts::<import:f7d767d7>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/executor.test.ts::<import:a6bcd901>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/meta-slot.test.ts::<import:88d2955a>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/metadata.test.ts::<import:1b1baf5b>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/models-sealed.test.ts::<import:88d2955a>": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/runtime/moss.test.ts::<import:c34bd671>": "0125-moss-requires-model.md",
   "apps/server/src/runtime/moss.test.ts::<import:d2d0b133>": "0125-moss-requires-model.md",
   "apps/server/src/runtime/moss.test.ts::이끼 asks the default model and never acts [REQ-103] > with no default model it says so (503) instead of guessing": "0125-moss-requires-model.md",
+  "apps/server/src/runtime/operation-resume.test.ts::<import:a5114600>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/operation-run.test.ts::<import:a5114600>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/operator-agent.test.ts::<import:e3c333fe>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/partner-activity.test.ts::<import:ced811c2>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/permissions.test.ts::<import:06cc7d3d>": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/runtime/platform.test.ts::<import:1e94ff58>": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/runtime/platform.test.ts::<import:9b1d0a69>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/repeats.test.ts::<import:b30b4a92>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/results-world.test.ts::<import:d06fb2a2>": "0188-second-redaction-under-adr-0187.md",
   "apps/server/src/runtime/results.test.ts::<import:68f3a5c2>": "0174-permissions-proxy-identity-three-scopes-audit.md",
+  "apps/server/src/runtime/results.test.ts::<import:b2f7d3c1>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/run-events.test.ts::<import:1b1baf5b>": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/test-support/platform.ts::=YEONSU": "0188-second-redaction-under-adr-0187.md",
+  "apps/server/src/runtime/world-templates.test.ts::<import:88d2955a>": "0188-second-redaction-under-adr-0187.md",
   "apps/web/src/logic/app-words.test.ts::<import:3c3e2cad>": "0077-airflow-words-amend-tests.md",
   "apps/web/src/logic/connections.test.ts::<import:69983d44>": "0048-connections-screens.md",
   "apps/web/src/logic/crew-words.test.ts::the lines of the people in the server room [REQ-074] > there are 3 to 5 for each of the six situations": "0106-domains-escalate-amend-tests.md",
@@ -179584,6 +179610,14 @@
   "packages/core/src/sources/worldgen/shaped-per-service.test.ts::서비스마다 다른 모양 [REQ-094] > 흉내 낼 수 없는 칸을 고르면 어느 서비스가 가까운 모양으로 지어졌는지 알린다": "0129-site-dr-geo-storage-distributed-db.md",
   "packages/core/src/sources/worldgen/shaped.test.ts::서비스부터 세계 생성 [REQ-094] > 흉내 낼 수 없는 칸은 가까운 칸 모양으로 짓고 같은 결과를 낸다": "0129-site-dr-geo-storage-distributed-db.md",
   "packages/core/src/sources/worldgen/site-places.test.ts::<import:57cc2e2a>": "0047-site-names-and-places.md",
+  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > <suite>": "0188-second-redaction-under-adr-0187.md",
+  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > =rectOf": "0188-second-redaction-under-adr-0187.md",
+  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > =traced": "0188-second-redaction-under-adr-0187.md",
+  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > every fab and data-centre place lies inside its site, and no two of them overlap": "0188-second-redaction-under-adr-0187.md",
+  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > every place for a building has a size, and only the three mapped sites have fab places": "0188-second-redaction-under-adr-0187.md",
+  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > sites without a map to read have no fixed places: their buildings are spread over the land": "0188-second-redaction-under-adr-0187.md",
+  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > the sites with a map have as many fabs as the blue roofs counted on it; the HPC centre is at Hwaseong's south tip": "0188-second-redaction-under-adr-0187.md",
+  "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > the traced outlines keep the proportions of the maps: Pyeongtaek twice the land of Hwaseong, Giheung the smallest of the three": "0188-second-redaction-under-adr-0187.md",
   "packages/core/src/world/construction.test.ts::<import:31561bdf>": "0051-real-world-prices.md",
   "packages/core/src/world/construction.test.ts::what equipment costs [REQ-059] > a GPU server costs 30~80 million won per GPU, as 8-GPU HGX servers do (about 22,000~60,000 dollars each)": "0063-gpu-catalog.md",
   "packages/core/src/world/construction.test.ts::what land costs where it lies [REQ-059] > every campus has its own market, and an unknown place falls back to ordinary factory land": "0051-real-world-prices.md",

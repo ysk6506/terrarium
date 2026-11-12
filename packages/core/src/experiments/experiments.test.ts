@@ -49,7 +49,7 @@ const snapshot: Snapshot = {
 const experiment = (id: string, extra: Partial<Experiment> = {}): Experiment => ({
   id,
   name: `실험 ${id}`,
-  owner: "yeonsu",
+  owner: "haneul",
   createdAt: `2026-10-29T00:00:0${id.length % 10}Z`,
   recipe: recipe(),
   snapshot,
@@ -387,7 +387,7 @@ describe("memory store [REQ-030] [REQ-033]", () => {
   const world = (digest: string, name = "홀") => ({
     id: "w1",
     name,
-    owner: "yeonsu",
+    owner: "haneul",
     origin: "sample" as const,
     blueprint: { ...sampleBlueprint(), name },
     digest,

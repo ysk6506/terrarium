@@ -17,7 +17,7 @@ import {
 const who = (n: number): ActivityWho => ({
   experimentId: `e-${n}`,
   experiment: `실험 ${n}`,
-  owner: "연수",
+  owner: "하늘",
   harness: "하네스",
   agent: `에이전트 ${n}`,
   model: "gpt-사내",

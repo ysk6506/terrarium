@@ -4,15 +4,15 @@ kind: reference
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: 골든 안전망 링크를 더함"
   - "2026-11-11: 권한 문서와 ADR-0174 링크"
   - "2026-11-11: ADR 목록을 없애고 결정 기록 폴더와 결정 목록을 가리키게 함 (ADR-0180)"
   - "2026-11-11: ADR 목록을 없애고 결정 기록 폴더와 결정 목록을 가리키게 함. AGENTS.md의 바뀐 곳은 CI 문장이라 색인과 무관 (ADR-0180)"
   - "2026-11-12: 따라가는 AGENTS.md에 내부 사실을 적지 않는다는 줄이 더해짐(ADR-0187). 색인과 무관. 지운 참고 문서는 색인에 없었다"
+  - "2026-11-12: 내부 사실 서술을 요구의 말로 고침 (ADR-0188)"
 follows:
   - AGENTS.md
-follows_hash: 7bea53a6b8bb4599
-verified_body: 876cbc22d1a37868
+follows_hash: a0c8026522a1abda
+verified_body: c89cb397779c0db1
 unchanged_reverifies: 2
 ---
 # 문서 색인
@@ -63,7 +63,7 @@ unchanged_reverifies: 2
 - [이끼 — 테라리움 도우미가 문서와 화면으로 답하고 화면을 같이 넘기는 법 (REQ-103)](design-docs/moss.md)
 - [세계 인기·좋아요·칭호와 계급 모델 — 점수 식, 칭호 조건표, 메달·계급 규칙, 한계 (REQ-101)](design-docs/ranking-and-titles.md)
 - [부지 배치 규칙과 동물 반응 — 도로·주차장·차·나무의 순서와 숫자, 고양이·새의 반응과 소리, 한계 (REQ-105)](design-docs/campus-layout.md)
-- [서버 운영 — 설치와 사내 시스템 연결](design-docs/operations.md)
+- [서버 운영 — 설치와 외부 시스템 연결](design-docs/operations.md)
 - [규모 키우기 — 스케일 업과 스케일 아웃](design-docs/scaling.md)
 - [용량 — 한 프로세스가 동시에 몇 개를 들고 있나](design-docs/capacity.md)
 - [설비의 표준 인터페이스 — Redfish, SNMP, BACnet](design-docs/facility-protocols.md)

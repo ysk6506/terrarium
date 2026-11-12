@@ -6,6 +6,7 @@ import { describe, expect, test } from "vitest";
 import { buildAdapters, parseConfig } from "../adapters";
 import {
   ADMIN,
+  HANEUL,
   JIMIN,
   person,
   recipe,
@@ -13,7 +14,6 @@ import {
   seed,
   settled,
   testPlatform,
-  YEONSU,
 } from "./test-support/platform";
 
 const trace = (traceId: string): Telemetry => ({
@@ -26,7 +26,7 @@ const trace = (traceId: string): Telemetry => ({
       end: 2000,
       status: "ok",
       attributes: {
-        "gen_ai.request.model": "gauss-2",
+        "gen_ai.request.model": "model-a",
         "gen_ai.usage.input_tokens": 700,
         "gen_ai.usage.output_tokens": 50,
       },
@@ -59,11 +59,11 @@ describe("one run in depth, with the harness's telemetry [REQ-037]", () => {
   test("the run view folds in tokens from ClickStack; the raw trace is there too", async () => {
     const { platform: p } = withTelemetry({ trace: async (id) => trace(id) });
     const { world, scenario } = await seed(p);
-    const e = await p.experiments.create(YEONSU, {
+    const e = await p.experiments.create(HANEUL, {
       name: "추적",
       recipe: recipe(world.id, scenario.id, { harnessId: "traced", agentId: "a", runs: 1 }),
     });
-    const done = await settled(p, YEONSU, e.experiment.id);
+    const done = await settled(p, HANEUL, e.experiment.id);
     const view = await p.results.run(done.runs[0]?.id as string);
     expect(view.hasTelemetry).toBe(true);
     expect(view.analysis.efficiency).toMatchObject({
@@ -87,11 +87,11 @@ describe("one run in depth, with the harness's telemetry [REQ-037]", () => {
       },
     });
     const { world, scenario } = await seed(p);
-    const e = await p.experiments.create(YEONSU, {
+    const e = await p.experiments.create(HANEUL, {
       name: "끊김",
       recipe: recipe(world.id, scenario.id, { harnessId: "traced", agentId: "a", runs: 1 }),
     });
-    const done = await settled(p, YEONSU, e.experiment.id);
+    const done = await settled(p, HANEUL, e.experiment.id);
     const runId = done.runs[0]?.id as string;
     expect((await p.results.run(runId)).analysis.efficiency.inputTokens).toBeUndefined();
     await expect(p.results.telemetry(runId)).rejects.toBeInstanceOf(UnavailableError);
@@ -100,11 +100,11 @@ describe("one run in depth, with the harness's telemetry [REQ-037]", () => {
   test("without telemetry configured there is simply nothing extra", async () => {
     const { platform: p } = testPlatform();
     const { world, scenario } = await seed(p);
-    const e = await p.experiments.create(YEONSU, {
+    const e = await p.experiments.create(HANEUL, {
       name: "기본",
       recipe: recipe(world.id, scenario.id, { runs: 1 }),
     });
-    const done = await settled(p, YEONSU, e.experiment.id);
+    const done = await settled(p, HANEUL, e.experiment.id);
     expect((await p.results.run(done.runs[0]?.id as string)).hasTelemetry).toBe(false);
     expect(await p.results.telemetry(done.runs[0]?.id as string)).toEqual({
       spans: [],
@@ -118,11 +118,11 @@ describe("sharing results [REQ-038]", () => {
   test("reports in three formats, and links that open without the app until taken back or expired", async () => {
     const { platform: p } = testPlatform();
     const { world, scenario } = await seed(p);
-    const e = await p.experiments.create(YEONSU, {
+    const e = await p.experiments.create(HANEUL, {
       name: "공유할 실험",
       recipe: recipe(world.id, scenario.id, { runs: 2 }),
     });
-    await settled(p, YEONSU, e.experiment.id);
+    await settled(p, HANEUL, e.experiment.id);
     const id = e.experiment.id;
     const html = await p.results.report(id, "html", "https://t/e/1");
     expect(html).toContain("<title>공유할 실험 — 테라리움</title>");
@@ -133,7 +133,7 @@ describe("sharing results [REQ-038]", () => {
     await expect(
       p.results.createShare(JIMIN, id, {}, "https://terrarium.internal/"),
     ).rejects.toBeInstanceOf(ForbiddenError);
-    const share = await p.results.createShare(YEONSU, id, {}, "https://terrarium.internal/");
+    const share = await p.results.createShare(HANEUL, id, {}, "https://terrarium.internal/");
     // no number given: thirty days, not for ever
     expect(Date.parse(share.expiresAt as string) - Date.parse(share.createdAt)).toBe(
       30 * 86_400_000,
@@ -144,16 +144,16 @@ describe("sharing results [REQ-038]", () => {
     await expect(p.results.deleteShare(person("other"), share.token)).rejects.toBeInstanceOf(
       ForbiddenError,
     );
-    expect(await p.results.deleteShare(YEONSU, share.token)).toEqual({ deleted: true });
+    expect(await p.results.deleteShare(HANEUL, share.token)).toEqual({ deleted: true });
     await expect(p.results.shared(share.token, "html", "x")).rejects.toThrow(
       "공유 링크가 없거나 만료됐어요",
     );
-    const expiring = await p.results.createShare(YEONSU, id, { expiresInDays: 1 }, "https://t");
+    const expiring = await p.results.createShare(HANEUL, id, { expiresInDays: 1 }, "https://t");
     expect(Date.parse(expiring.expiresAt as string) - Date.parse(expiring.createdAt)).toBe(
       86_400_000,
     );
-    expect(await p.results.deleteShare(YEONSU, expiring.token)).toEqual({ deleted: true });
-    await expect(p.results.createShare(YEONSU, "e-404", {}, "x")).rejects.toBeInstanceOf(
+    expect(await p.results.deleteShare(HANEUL, expiring.token)).toEqual({ deleted: true });
+    await expect(p.results.createShare(HANEUL, "e-404", {}, "x")).rejects.toBeInstanceOf(
       NotFoundError,
     );
   });
@@ -164,11 +164,11 @@ describe("benchmarks and the digital twin [REQ-039] [REQ-015]", () => {
     const { platform: p } = testPlatform();
     const { world, scenario } = await seed(p);
     for (const agentId of ["triage", "guess", "idle"]) {
-      const e = await p.experiments.create(YEONSU, {
+      const e = await p.experiments.create(HANEUL, {
         name: agentId,
         recipe: recipe(world.id, scenario.id, { agentId, runs: 3 }),
       });
-      await settled(p, YEONSU, e.experiment.id);
+      await settled(p, HANEUL, e.experiment.id);
     }
     const [board] = await p.results.leaderboards({});
     expect(board?.rows.map((r) => [r.agentId, r.rank])).toEqual([
@@ -185,15 +185,15 @@ describe("benchmarks and the digital twin [REQ-039] [REQ-015]", () => {
     const imported = await p.worlds.import(ADMIN, { source: "sample", name: "가져온 홀" });
     const room = imported.world.blueprint.entities.find((x) => x.kind === "cooling_unit");
     expect(room).toBeDefined();
-    const { scenario } = await p.scenarios.create(YEONSU, {
+    const { scenario } = await p.scenarios.create(HANEUL, {
       worldId: imported.world.id,
       templateId: "cooling-failure",
     });
-    const e = await p.experiments.create(YEONSU, {
+    const e = await p.experiments.create(HANEUL, {
       name: "가져온 세계 실험",
       recipe: recipe(imported.world.id, scenario.id, { agentId: "guess", runs: 2 }),
     });
-    await settled(p, YEONSU, e.experiment.id);
+    await settled(p, HANEUL, e.experiment.id);
     const records = fromJsonl(await p.results.diagnoses(e.experiment.id));
     expect(records).toHaveLength(2);
     expect(records[0]).toMatchObject({
@@ -202,7 +202,7 @@ describe("benchmarks and the digital twin [REQ-039] [REQ-015]", () => {
       world: { name: "가져온 홀" },
     });
     expect(await p.results.twinRecords({ agentId: "triage" })).toEqual([]);
-    expect(await p.results.twinRecords({ harnessId: "builtin", owner: "yeonsu" })).toHaveLength(2);
+    expect(await p.results.twinRecords({ harnessId: "builtin", owner: "haneul" })).toHaveLength(2);
     const brief = await p.results.twinBrief({});
     expect(brief).toContain("# 시뮬레이터 모델링 브리프");
     expect(brief).toContain("### 가져온 홀");

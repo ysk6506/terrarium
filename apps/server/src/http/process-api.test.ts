@@ -7,7 +7,7 @@ import { buildApp } from "./app";
 function setup() {
   const { platform } = testPlatform();
   const app = buildApp({ platform });
-  const send = async (method: string, url: string, payload?: object, who = "yeonsu") => {
+  const send = async (method: string, url: string, payload?: object, who = "haneul") => {
     const r = await app.inject({
       method: method as "GET",
       url,
@@ -45,7 +45,7 @@ describe("지금 하는 방식 표 [REQ-112]", () => {
       steps: STEPS,
     });
     expect(saved.status).toBe(200);
-    expect(saved.body).toMatchObject({ written: true, owner: "yeonsu", canEdit: true });
+    expect(saved.body).toMatchObject({ written: true, owner: "haneul", canEdit: true });
     expect(saved.body.summary).toEqual({ steps: 3, people: 2, seconds: 150 * 60 });
     expect(
       (await send("GET", `/api/scenarios/${scenarioId}/current-process`)).body.steps,

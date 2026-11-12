@@ -3,7 +3,7 @@ import { TOOL_SPECS, toolsForDomains } from "@terrarium/core/tools";
 import type { Domain } from "@terrarium/core/world";
 import { describe, expect, test } from "vitest";
 import { serviceLab } from "../../../../packages/core/src/world/test-support/service-lab";
-import { recipe, ScriptHarness, settled, testPlatform, YEONSU } from "./test-support/platform";
+import { HANEUL, recipe, ScriptHarness, settled, testPlatform } from "./test-support/platform";
 
 const AGENTS = [{ id: "a", name: "운영 에이전트" }];
 const MINE: Domain[] = ["service_os", "virtualization"];
@@ -25,17 +25,17 @@ async function play(extra: Record<string, unknown>) {
     AGENTS,
   );
   const t = testPlatform([harness]);
-  const { world } = await t.platform.worlds.create(YEONSU, {
+  const { world } = await t.platform.worlds.create(HANEUL, {
     name: "서비스 홀",
     blueprint: serviceLab(),
   });
-  const { scenario } = await t.platform.scenarios.create(YEONSU, {
+  const { scenario } = await t.platform.scenarios.create(HANEUL, {
     worldId: world.id,
     templateId: "domain-memory-vendor",
   });
   const seen: ActivityEvent[] = [];
   t.platform.events.subscribeWorld(world.id, (e) => seen.push(e));
-  const created = await t.platform.experiments.create(YEONSU, {
+  const created = await t.platform.experiments.create(HANEUL, {
     name: "메모리 불량",
     recipe: recipe(world.id, scenario.id, {
       harnessId: "h",
@@ -46,7 +46,7 @@ async function play(extra: Record<string, unknown>) {
       ...extra,
     }),
   });
-  const view = await settled(t.platform, YEONSU, created.experiment.id);
+  const view = await settled(t.platform, HANEUL, created.experiment.id);
   return { t, seen, view, created };
 }
 

@@ -4,7 +4,7 @@ import { sampleBlueprint } from "../../../../packages/core/src/world/test-suppor
 import { testPlatform, until } from "../runtime/test-support/platform";
 import { buildApp } from "./app";
 
-const headers = { "x-terrarium-user": "yeonsu" };
+const headers = { "x-terrarium-user": "haneul" };
 
 describe("the rest of the API, route by route [REQ-030] [REQ-033] [REQ-040]", () => {
   test("worlds, scenarios, dry runs, forks, more runs, cancelling and telemetry", async () => {

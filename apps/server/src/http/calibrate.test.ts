@@ -3,7 +3,7 @@ import { sampleBlueprint } from "../../../../packages/core/src/world/test-suppor
 import { testPlatform } from "../runtime/test-support/platform";
 import { buildApp } from "./app";
 
-const headers = { "x-terrarium-user": "yeonsu" };
+const headers = { "x-terrarium-user": "haneul" };
 
 /** The editor's "시험지 점검" (REQ-070): three agents with no model score the saved scenario. */
 describe("checking the exam paper from the API [REQ-070] [REQ-033]", () => {

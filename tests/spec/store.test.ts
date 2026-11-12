@@ -19,7 +19,7 @@ import { sampleBlueprint } from "../../packages/core/src/world/test-support/samp
 const world = (digest: string, name: string, updatedAt = "2026-10-29T00:00:00Z"): WorldRecord => ({
   id: "w1",
   name,
-  owner: "yeonsu",
+  owner: "haneul",
   origin: "sample",
   blueprint: { ...sampleBlueprint(), name },
   digest,
@@ -36,7 +36,7 @@ const scenario = (
   id,
   worldId,
   name: `시나리오 ${id}`,
-  owner: "yeonsu",
+  owner: "haneul",
   doc: emptyScenario(id, worldId),
   digest,
   createdAt: updatedAt,
@@ -46,7 +46,7 @@ const scenario = (
 const experiment = (id: string, extra: Partial<Experiment> = {}): Experiment => ({
   id,
   name: `실험 ${id}`,
-  owner: "yeonsu",
+  owner: "haneul",
   createdAt: `2026-10-29T00:00:0${id.slice(-1)}Z`,
   recipe: {
     worldId: "w1",

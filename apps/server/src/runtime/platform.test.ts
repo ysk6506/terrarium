@@ -7,6 +7,7 @@ import { describe, expect, test } from "vitest";
 import { sampleBlueprint } from "../../../../packages/core/src/world/test-support/sample";
 import {
   ADMIN,
+  HANEUL,
   JIMIN,
   recipe,
   ScriptHarness,
@@ -15,7 +16,6 @@ import {
   testPlatform,
   until,
   untilStopped,
-  YEONSU,
 } from "./test-support/platform";
 
 describe("an experiment from creation to result [REQ-030] [REQ-037]", () => {
@@ -23,13 +23,13 @@ describe("an experiment from creation to result [REQ-030] [REQ-037]", () => {
     const { platform: p } = testPlatform();
     const { world, scenario } = await seed(p);
     const seen: string[] = [];
-    const created = await p.experiments.create(YEONSU, {
+    const created = await p.experiments.create(HANEUL, {
       name: "냉방 기준선",
       recipe: recipe(world.id, scenario.id, { runs: 3 }),
     });
     const off = p.events.subscribe(created.experiment.id, (e) => seen.push(e.type));
     expect(created.experiment).toMatchObject({
-      owner: "yeonsu",
+      owner: "haneul",
       recipe: { seeds: [1, 2, 3], time: { kind: "lockstep", secondsPerCall: 30 } },
       snapshot: {
         worldName: "샘플 홀",
@@ -38,7 +38,7 @@ describe("an experiment from creation to result [REQ-030] [REQ-037]", () => {
         oracle: ORACLE_VERSION,
       },
     });
-    const done = await settled(p, YEONSU, created.experiment.id);
+    const done = await settled(p, HANEUL, created.experiment.id);
     off();
     expect(done.status).toBe("completed");
     expect(done.analysis.passRate).toBe(1);
@@ -52,7 +52,7 @@ describe("an experiment from creation to result [REQ-030] [REQ-037]", () => {
     expect(seen).toContain("call");
     expect(seen).toContain("run");
     expect(seen).toContain("experiment");
-    const listed = await p.experiments.list({ owner: "yeonsu", status: "completed" });
+    const listed = await p.experiments.list({ owner: "haneul", status: "completed" });
     expect(listed.map((s) => s.experiment.id)).toEqual([created.experiment.id]);
     expect(await p.experiments.list({ status: "running" })).toEqual([]);
     expect(await p.experiments.list({ q: "기준선", limit: 1 })).toHaveLength(1);
@@ -66,7 +66,7 @@ describe("an experiment from creation to result [REQ-030] [REQ-037]", () => {
     const { platform: p, store } = testPlatform([down]);
     const { world, scenario } = await seed(p);
     const make = (extra: Record<string, unknown>) =>
-      p.experiments.create(YEONSU, { name: "x", recipe: recipe(world.id, scenario.id, extra) });
+      p.experiments.create(HANEUL, { name: "x", recipe: recipe(world.id, scenario.id, extra) });
     await expect(make({ agentId: "chef" })).rejects.toMatchObject({
       issues: [{ path: "recipe", message: "하네스에 'chef' 에이전트가 없어요" }],
     });
@@ -79,9 +79,9 @@ describe("an experiment from creation to result [REQ-030] [REQ-037]", () => {
       UnavailableError,
     );
     await expect(make({ worldId: "w-404" })).rejects.toBeInstanceOf(NotFoundError);
-    const other = await p.worlds.create(YEONSU, { name: "다른 홀", blueprint: sampleBlueprint() });
+    const other = await p.worlds.create(HANEUL, { name: "다른 홀", blueprint: sampleBlueprint() });
     await expect(make({ worldId: other.world.id })).rejects.toThrow("다른 세계");
-    const broken = await p.scenarios.create(YEONSU, { worldId: world.id, name: "빈 시나리오" });
+    const broken = await p.scenarios.create(HANEUL, { worldId: world.id, name: "빈 시나리오" });
     await expect(make({ scenarioId: broken.scenario.id })).rejects.toThrow(
       "고칠 곳이 있어 실행할 수 없어요",
     );
@@ -94,20 +94,20 @@ describe("cancelling and the queue [REQ-030] [REQ-032]", () => {
     const slow = new ScriptHarness("slow", untilStopped);
     const { platform: p } = testPlatform([slow], { limits: { maxRunning: 1 } });
     const { world, scenario } = await seed(p);
-    const e = await p.experiments.create(YEONSU, {
+    const e = await p.experiments.create(HANEUL, {
       name: "느린 에이전트",
       recipe: recipe(world.id, scenario.id, { harnessId: "slow", agentId: "a", runs: 3 }),
     });
     await until(() => slow.requests.length === 1);
-    const live = await p.experiments.view(YEONSU, e.experiment.id);
+    const live = await p.experiments.view(HANEUL, e.experiment.id);
     expect(live.status).toBe("running");
     expect(live.canCancel).toBe(true);
     expect(live.runs.map((r) => r.queuePosition)).toEqual([undefined, 1, 2]);
-    expect((await p.meta(YEONSU)).queue).toEqual({ running: 1, queued: 2 });
+    expect((await p.meta(HANEUL)).queue).toEqual({ running: 1, queued: 2 });
     await expect(p.experiments.cancel(JIMIN, e.experiment.id)).rejects.toBeInstanceOf(
       ForbiddenError,
     );
-    const after = await p.experiments.cancel(YEONSU, e.experiment.id);
+    const after = await p.experiments.cancel(HANEUL, e.experiment.id);
     expect(after.runs.map((r) => r.status)).toEqual(["cancelled", "cancelled", "cancelled"]);
     expect(after.status).toBe("cancelled");
     expect(slow.requests).toHaveLength(1);
@@ -118,7 +118,7 @@ describe("cancelling and the queue [REQ-030] [REQ-032]", () => {
     const slow = new ScriptHarness("slow", untilStopped);
     const first = testPlatform([slow], { limits: { maxRunning: 1 } });
     const { world, scenario } = await seed(first.platform);
-    const e = await first.platform.experiments.create(YEONSU, {
+    const e = await first.platform.experiments.create(HANEUL, {
       name: "재시작",
       recipe: recipe(world.id, scenario.id, { harnessId: "slow", agentId: "a", runs: 2 }),
     });
@@ -148,7 +148,7 @@ describe("cancelling and the queue [REQ-030] [REQ-032]", () => {
     const slow = new ScriptHarness("slow", untilStopped);
     const { platform: p, store } = testPlatform([slow]);
     const { world, scenario } = await seed(p);
-    const e = await p.experiments.create(YEONSU, {
+    const e = await p.experiments.create(HANEUL, {
       name: "정지",
       recipe: recipe(world.id, scenario.id, { harnessId: "slow", agentId: "a", runs: 1 }),
     });
@@ -163,14 +163,14 @@ describe("forks, more runs and lineage [REQ-040]", () => {
   test("a fork changes one condition, keeps the parent's versions and shows the difference", async () => {
     const { platform: p } = testPlatform();
     const { world, scenario } = await seed(p);
-    const parent = await p.experiments.create(YEONSU, {
+    const parent = await p.experiments.create(HANEUL, {
       name: "원본",
       recipe: recipe(world.id, scenario.id, { agentId: "guess", runs: 3 }),
     });
-    await settled(p, YEONSU, parent.experiment.id);
+    await settled(p, HANEUL, parent.experiment.id);
     // The world changes after the parent ran; the fork still runs the parent's version.
     const current = await p.worlds.get(world.id);
-    await p.worlds.update(YEONSU, world.id, { baseDigest: current.digest, name: "고친 홀" });
+    await p.worlds.update(HANEUL, world.id, { baseDigest: current.digest, name: "고친 홀" });
     const fork = await p.experiments.fork(JIMIN, parent.experiment.id, {
       change: { agentId: "triage" },
     });
@@ -186,7 +186,7 @@ describe("forks, more runs and lineage [REQ-040]", () => {
       { field: "agentId", label: "에이전트", before: "guess", after: "triage" },
     ]);
     expect(done.ancestors.map((a) => a.experiment.id)).toEqual([parent.experiment.id]);
-    const parentView = await p.experiments.view(YEONSU, parent.experiment.id);
+    const parentView = await p.experiments.view(HANEUL, parent.experiment.id);
     expect(parentView.forks.map((f) => f.experiment.id)).toEqual([fork.experiment.id]);
     await expect(
       p.experiments.fork(JIMIN, parent.experiment.id, { change: {} }),
@@ -194,7 +194,7 @@ describe("forks, more runs and lineage [REQ-040]", () => {
     const moved = await p.experiments.fork(JIMIN, parent.experiment.id, {
       change: {
         scenarioId: (
-          await p.scenarios.create(YEONSU, { worldId: world.id, templateId: "sensor-drift" })
+          await p.scenarios.create(HANEUL, { worldId: world.id, templateId: "sensor-drift" })
         ).scenario.id,
       },
       name: "드리프트로",
@@ -207,12 +207,12 @@ describe("forks, more runs and lineage [REQ-040]", () => {
   test("more runs continue the seeds; repeating a seed or someone else's experiment is refused", async () => {
     const { platform: p } = testPlatform();
     const { world, scenario } = await seed(p);
-    const e = await p.experiments.create(YEONSU, {
+    const e = await p.experiments.create(HANEUL, {
       name: "추가",
       recipe: recipe(world.id, scenario.id, { seeds: [1, 2] }),
     });
-    await settled(p, YEONSU, e.experiment.id);
-    const more = await p.experiments.addRuns(YEONSU, e.experiment.id, { count: 2 });
+    await settled(p, HANEUL, e.experiment.id);
+    const more = await p.experiments.addRuns(HANEUL, e.experiment.id, { count: 2 });
     expect(more.runs.map((r) => [r.index, r.seed])).toEqual([
       [0, 1],
       [1, 2],
@@ -221,24 +221,24 @@ describe("forks, more runs and lineage [REQ-040]", () => {
     ]);
     expect(more.experiment.recipe.seeds).toEqual([1, 2, 3, 4]);
     await expect(
-      p.experiments.addRuns(YEONSU, e.experiment.id, { seeds: [2, 9] }),
+      p.experiments.addRuns(HANEUL, e.experiment.id, { seeds: [2, 9] }),
     ).rejects.toMatchObject({
       issues: [{ path: "seeds", message: "상황 2번은 이미 있어요" }],
     });
     await expect(
       p.experiments.addRuns(JIMIN, e.experiment.id, { count: 1 }),
     ).rejects.toBeInstanceOf(ForbiddenError);
-    expect((await settled(p, YEONSU, e.experiment.id)).progress.completed).toBe(4);
+    expect((await settled(p, HANEUL, e.experiment.id)).progress.completed).toBe(4);
   });
 });
 
 describe("worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034]", () => {
   test("saves check the blueprint, refuse stale versions and let only the owner change things", async () => {
     const { platform: p } = testPlatform();
-    const saved = await p.worlds.create(YEONSU, { name: "홀", blueprint: sampleBlueprint() });
+    const saved = await p.worlds.create(HANEUL, { name: "홀", blueprint: sampleBlueprint() });
     expect(saved.world).toMatchObject({
       id: "w-1",
-      owner: "yeonsu",
+      owner: "haneul",
       origin: "builder",
       blueprint: { id: "w-1", name: "홀" },
     });
@@ -248,30 +248,30 @@ describe("worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034]", 
       entities: bad.entities.map((e) => (e.id === "srv-a1" ? { ...e, parentId: "nowhere" } : e)),
     };
     await expect(
-      p.worlds.create(YEONSU, { name: "깨짐", blueprint: broken }),
+      p.worlds.create(HANEUL, { name: "깨짐", blueprint: broken }),
     ).rejects.toMatchObject({
       issues: [expect.objectContaining({ path: "srv-a1" })],
     });
     await expect(
-      p.worlds.update(YEONSU, "w-1", { baseDigest: "old", name: "x" }),
+      p.worlds.update(HANEUL, "w-1", { baseDigest: "old", name: "x" }),
     ).rejects.toBeInstanceOf(ConflictError);
     await expect(
       p.worlds.update(JIMIN, "w-1", { baseDigest: saved.world.digest, name: "x" }),
     ).rejects.toBeInstanceOf(ForbiddenError);
-    const renamed = await p.worlds.update(YEONSU, "w-1", {
+    const renamed = await p.worlds.update(HANEUL, "w-1", {
       baseDigest: saved.world.digest,
       name: "새 이름",
     });
     expect(renamed.world.blueprint.name).toBe("새 이름");
     expect((await p.worlds.list()).map((w) => w.name)).toEqual(["새 이름"]);
     await expect(p.worlds.delete(JIMIN, "w-1")).rejects.toBeInstanceOf(ForbiddenError);
-    expect(await p.worlds.delete(YEONSU, "w-1")).toEqual({ deleted: true });
+    expect(await p.worlds.delete(HANEUL, "w-1")).toEqual({ deleted: true });
     await expect(p.worlds.get("w-1")).rejects.toThrow("세계 w-1을 찾을 수 없어요");
   });
 
   test("worlds come from presets and from reality, with what was assumed", async () => {
     const { platform: p } = testPlatform();
-    const generated = await p.worlds.generate(YEONSU, {
+    const generated = await p.worlds.generate(HANEUL, {
       spec: {
         site: "onyang",
         seed: 1,
@@ -291,7 +291,7 @@ describe("worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034]", 
     expect(generated.world).toMatchObject({ name: "온양사업장 생성 세계", origin: "worldgen" });
     expect(generated.stats.rack).toBe(8);
     // reading the company's systems with the server's account is for admins
-    await expect(p.worlds.import(YEONSU, { source: "sample" })).rejects.toThrow("관리자만");
+    await expect(p.worlds.import(HANEUL, { source: "sample" })).rejects.toThrow("관리자만");
     const imported = await p.worlds.import(ADMIN, { source: "sample" });
     expect(imported.world).toMatchObject({
       name: "샘플 그래프 (가상)에서 가져온 세계",
@@ -310,39 +310,39 @@ describe("worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034]", 
     const { platform: p } = testPlatform();
     const { world, scenario } = await seed(p);
     expect(scenario).toMatchObject({
-      owner: "yeonsu",
+      owner: "haneul",
       worldId: world.id,
       doc: { id: scenario.id, worldId: world.id },
     });
-    const draft = await p.scenarios.create(YEONSU, { worldId: world.id });
+    const draft = await p.scenarios.create(HANEUL, { worldId: world.id });
     expect(draft.issues.some((i) => i.severity === "error")).toBe(true);
-    const fromDoc = await p.scenarios.create(YEONSU, {
+    const fromDoc = await p.scenarios.create(HANEUL, {
       worldId: world.id,
       doc: scenario.doc,
       name: "복사본",
     });
     expect(fromDoc.scenario.name).toBe("복사본");
     expect(fromDoc.scenario.digest).toBe(scenario.digest);
-    const empty = await p.worlds.create(YEONSU, {
+    const empty = await p.worlds.create(HANEUL, {
       name: "빈 땅",
       blueprint: { ...sampleBlueprint(), entities: [], links: [] },
     });
     await expect(
-      p.scenarios.create(YEONSU, { worldId: empty.world.id, templateId: "cooling-failure" }),
+      p.scenarios.create(HANEUL, { worldId: empty.world.id, templateId: "cooling-failure" }),
     ).rejects.toThrow("이 세계에서는");
     await expect(
-      p.scenarios.create(YEONSU, { worldId: world.id, templateId: "nope" }),
+      p.scenarios.create(HANEUL, { worldId: world.id, templateId: "nope" }),
     ).rejects.toBeInstanceOf(NotFoundError);
     await expect(
-      p.scenarios.update(YEONSU, scenario.id, { baseDigest: "x", name: "y" }),
+      p.scenarios.update(HANEUL, scenario.id, { baseDigest: "x", name: "y" }),
     ).rejects.toBeInstanceOf(ConflictError);
-    const renamed = await p.scenarios.update(YEONSU, scenario.id, {
+    const renamed = await p.scenarios.update(HANEUL, scenario.id, {
       baseDigest: scenario.digest,
       name: "이름만",
     });
     expect(renamed.scenario.doc.name).toBe("이름만");
     await expect(p.scenarios.delete(JIMIN, scenario.id)).rejects.toBeInstanceOf(ForbiddenError);
-    expect(await p.scenarios.delete(YEONSU, scenario.id)).toEqual({ deleted: true });
+    expect(await p.scenarios.delete(HANEUL, scenario.id)).toEqual({ deleted: true });
     expect((await p.scenarios.list(world.id)).map((s) => s.id)).not.toContain(scenario.id);
   });
 
@@ -355,7 +355,7 @@ describe("worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034]", 
     expect(dry.timeline.some((t) => t.source === "scenario")).toBe(true);
     expect(dry.timeline.some((t) => t.source === "alarm")).toBe(true);
     expect(dry.series.length).toBeGreaterThan(0);
-    const draft = await p.scenarios.create(YEONSU, { worldId: world.id });
+    const draft = await p.scenarios.create(HANEUL, { worldId: world.id });
     const nothing = await p.scenarios.dryRun(draft.scenario.id, 1);
     expect(nothing.timeline).toEqual([]);
     expect(nothing.issues.length).toBeGreaterThan(0);

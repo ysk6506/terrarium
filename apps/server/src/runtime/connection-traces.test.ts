@@ -4,13 +4,13 @@ import { describe, expect, test } from "vitest";
 import { SecretBox } from "../adapters";
 import { FakeFetch, json } from "../adapters/test-support/fake-fetch";
 import {
+  HANEUL,
   JIMIN,
   recipe,
   ScriptHarness,
   seed,
   settled,
   testPlatform,
-  YEONSU,
 } from "./test-support/platform";
 
 const GENERATION = {
@@ -20,7 +20,7 @@ const GENERATION = {
   name: "chat",
   startTime: "2026-11-05T09:00:00.000Z",
   endTime: "2026-11-05T09:00:02.000Z",
-  model: "gauss-2",
+  model: "model-a",
   inputUsage: 700,
   outputUsage: 50,
 };
@@ -58,7 +58,7 @@ const traces = { kind: "langfuse", config: LANGFUSE };
 describe("where a connection's traces pile up is chosen per connection [REQ-079]", () => {
   test("the choice is saved with its key sealed, shown without it, and used to read", async () => {
     const { platform, fake } = world({ traced: true });
-    const view = await platform.connections.create(YEONSU, { ...goclaw, traces });
+    const view = await platform.connections.create(HANEUL, { ...goclaw, traces });
     expect(view.traces).toEqual({
       kind: "langfuse",
       name: "Langfuse",
@@ -66,7 +66,7 @@ describe("where a connection's traces pile up is chosen per connection [REQ-079]
       secrets: ["secretKey"],
     });
     expect(JSON.stringify(view)).not.toContain("sk-typed-secret");
-    const stored = await platform.connections.talk(YEONSU, view.id, {
+    const stored = await platform.connections.talk(HANEUL, view.id, {
       agentId: "ops",
       text: "안녕",
     });
@@ -79,24 +79,24 @@ describe("where a connection's traces pile up is chosen per connection [REQ-079]
 
   test("changing a connection keeps the key unless a new one is typed; leaving traces out keeps the choice", async () => {
     const { platform, fake } = world({ traced: true });
-    const view = await platform.connections.create(YEONSU, { ...goclaw, traces });
-    await platform.connections.update(YEONSU, view.id, { config: goclaw.config });
+    const view = await platform.connections.create(HANEUL, { ...goclaw, traces });
+    await platform.connections.update(HANEUL, view.id, { config: goclaw.config });
     expect((await platform.connections.views()).find((v) => v.id === view.id)?.traces.kind).toBe(
       "langfuse",
     );
-    await platform.connections.update(YEONSU, view.id, {
+    await platform.connections.update(HANEUL, view.id, {
       config: goclaw.config,
       traces: {
         kind: "langfuse",
         config: { host: "http://lf.test", publicKey: "pk-2", secretKey: "" },
       },
     });
-    await platform.connections.talk(YEONSU, view.id, { agentId: "ops", text: "안녕" });
+    await platform.connections.talk(HANEUL, view.id, { agentId: "ops", text: "안녕" });
     const read = fake.requests.findLast((r) => r.url.includes("/observations"));
     expect(read?.headers.authorization).toBe(
       `Basic ${Buffer.from("pk-2:sk-typed-secret").toString("base64")}`,
     );
-    const none = await platform.connections.update(YEONSU, view.id, {
+    const none = await platform.connections.update(HANEUL, view.id, {
       config: goclaw.config,
       traces: { kind: "none", config: {} },
     });
@@ -107,7 +107,7 @@ describe("where a connection's traces pile up is chosen per connection [REQ-079]
     const { platform } = world();
     const bad = async (t: object) =>
       platform.connections
-        .create(YEONSU, { ...goclaw, traces: t as never })
+        .create(HANEUL, { ...goclaw, traces: t as never })
         .catch((e: InvalidInputError) => e.issues);
     expect(await bad({ kind: "grafana", config: {} })).toEqual([
       { path: "traces.kind", message: "트레이스를 쌓는 곳 'grafana'을 몰라요" },
@@ -128,7 +128,7 @@ describe("where a connection's traces pile up is chosen per connection [REQ-079]
       .on("GET", /^\/v1\/agents$/, () => json({ agents: [{ agent_key: "ops", status: "active" }] }))
       .on("GET", /observations$/, () => new Response("no key", { status: 401 }));
     const p = testPlatform([], { adapters: { connect: { env: {}, fetch: down.fetch } } }).platform;
-    const check = await p.connections.check(YEONSU, {
+    const check = await p.connections.check(HANEUL, {
       connector: "goclaw",
       config: goclaw.config,
       traces,
@@ -142,8 +142,8 @@ describe("where a connection's traces pile up is chosen per connection [REQ-079]
 describe("말 걸어 보기: one question, no tools, and whether the traces came along [REQ-079]", () => {
   test("the answer, how long it took, no tool calls, and traces that arrived", async () => {
     const { platform, fake } = world({ traced: true });
-    const view = await platform.connections.create(YEONSU, { ...goclaw, traces });
-    const r = await platform.connections.talk(YEONSU, view.id, {
+    const view = await platform.connections.create(HANEUL, { ...goclaw, traces });
+    const r = await platform.connections.talk(HANEUL, view.id, {
       agentId: "ops",
       text: "무엇을 할 수 있나요",
     });
@@ -169,8 +169,8 @@ describe("말 걸어 보기: one question, no tools, and whether the traces came
 
   test("traces that do not come say so, and what to look at", async () => {
     const { platform } = world({ traced: false });
-    const view = await platform.connections.create(YEONSU, { ...goclaw, traces });
-    const r = await platform.connections.talk(YEONSU, view.id, { agentId: "ops", text: "안녕" });
+    const view = await platform.connections.create(HANEUL, { ...goclaw, traces });
+    const r = await platform.connections.talk(HANEUL, view.id, { agentId: "ops", text: "안녕" });
     expect(r.ok).toBe(true);
     expect(r.trace).toMatchObject({ name: "Langfuse", linked: false, spans: 0 });
     expect(r.trace.note).toContain("run_id 태그가 안 보여요");
@@ -178,18 +178,18 @@ describe("말 걸어 보기: one question, no tools, and whether the traces came
 
   test("a connection with no place for traces has nothing to check", async () => {
     const { platform } = world();
-    const view = await platform.connections.create(YEONSU, {
+    const view = await platform.connections.create(HANEUL, {
       ...goclaw,
       traces: { kind: "none", config: {} },
     });
-    const r = await platform.connections.talk(YEONSU, view.id, { agentId: "ops", text: "안녕" });
+    const r = await platform.connections.talk(HANEUL, view.id, { agentId: "ops", text: "안녕" });
     expect(r.trace).toEqual({ spans: 0 });
   });
 
   test("a refusal is told with its status and what to do, not as a bare failure", async () => {
     const { platform } = world({ chat: () => new Response("invalid token", { status: 401 }) });
-    const view = await platform.connections.create(YEONSU, goclaw);
-    const r = await platform.connections.talk(YEONSU, view.id, { agentId: "ops", text: "안녕" });
+    const view = await platform.connections.create(HANEUL, goclaw);
+    const r = await platform.connections.talk(HANEUL, view.id, { agentId: "ops", text: "안녕" });
     expect(r.ok).toBe(false);
     expect(r.error).toBe(
       "401 — 토큰이 거절됐어요. 받은 말: 채팅 요청에 401로 답했어요: invalid token",
@@ -198,7 +198,7 @@ describe("말 걸어 보기: one question, no tools, and whether the traces came
 
   test("a connection that cannot talk says so instead of failing", async () => {
     const { platform } = world();
-    const r = await platform.connections.talk(YEONSU, "builtin", {
+    const r = await platform.connections.talk(HANEUL, "builtin", {
       agentId: "triage",
       text: "안녕",
     });
@@ -252,11 +252,11 @@ describe("a run carries what its connection's telemetry asks, and is read back f
       config: { host: "http://lf.test", publicKey: "pk" },
     });
     const { world: w, scenario } = await seed(platform);
-    const e = await platform.experiments.create(YEONSU, {
+    const e = await platform.experiments.create(HANEUL, {
       name: "추적",
       recipe: recipe(w.id, scenario.id, { harnessId: "traced", agentId: "a", runs: 1 }),
     });
-    const done = await settled(platform, YEONSU, e.experiment.id);
+    const done = await settled(platform, HANEUL, e.experiment.id);
     const run = done.runs[0];
     const sent = traced.requests[0];
     expect(sent?.telemetry?.tags).toMatchObject({ run_id: run?.id });
@@ -277,11 +277,11 @@ describe("a run carries what its connection's telemetry asks, and is read back f
   test("with none chosen, the server's default is not used even for a harness that says it emits traces", async () => {
     const { platform, traced } = setup({ kind: "none" });
     const { world: w, scenario } = await seed(platform);
-    const e = await platform.experiments.create(YEONSU, {
+    const e = await platform.experiments.create(HANEUL, {
       name: "없음",
       recipe: recipe(w.id, scenario.id, { harnessId: "traced", agentId: "a", runs: 1 }),
     });
-    const done = await settled(platform, YEONSU, e.experiment.id);
+    const done = await settled(platform, HANEUL, e.experiment.id);
     expect(traced.requests[0]?.telemetry).toBeUndefined();
     expect((await platform.results.run(done.runs[0]?.id as string)).hasTelemetry).toBe(false);
   });
@@ -289,11 +289,11 @@ describe("a run carries what its connection's telemetry asks, and is read back f
   test("with default chosen, the server's own telemetry is the tool", async () => {
     const { platform, traced } = setup({ kind: "default" });
     const { world: w, scenario } = await seed(platform);
-    const e = await platform.experiments.create(YEONSU, {
+    const e = await platform.experiments.create(HANEUL, {
       name: "기본",
       recipe: recipe(w.id, scenario.id, { harnessId: "traced", agentId: "a", runs: 1 }),
     });
-    const done = await settled(platform, YEONSU, e.experiment.id);
+    const done = await settled(platform, HANEUL, e.experiment.id);
     expect(traced.requests[0]?.telemetry?.tags.run_id).toBe(done.runs[0]?.id);
     expect(await platform.results.run(done.runs[0]?.id as string)).toMatchObject({
       hasTelemetry: true,
@@ -344,9 +344,9 @@ describe("a run carries what its connection's telemetry asks, and is read back f
 describe("strangers may talk but not choose [REQ-079]", () => {
   test("anyone can talk to a connection; only its owner changes where its traces go", async () => {
     const { platform } = world({ traced: true });
-    const view = await platform.connections.create(YEONSU, { ...goclaw, traces });
+    const view = await platform.connections.create(HANEUL, { ...goclaw, traces });
     expect(
-      (await platform.connections.talk(YEONSU, view.id, { agentId: "ops", text: "안녕" })).ok,
+      (await platform.connections.talk(HANEUL, view.id, { agentId: "ops", text: "안녕" })).ok,
     ).toBe(true);
     await expect(
       platform.connections.update(JIMIN, view.id, {

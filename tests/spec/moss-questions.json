@@ -4497,6 +4497,41 @@
       "kind": "auto"
     },
     {
+      "q": "ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기의 맥락이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0188-second-redaction-under-adr-0187.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0188-second-redaction-under-adr-0187.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0188-second-redaction-under-adr-0187.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기의 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0188-second-redaction-under-adr-0187.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기의 버린 길이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0188-second-redaction-under-adr-0187.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기의 남은 일이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0188-second-redaction-under-adr-0187.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기의 결과가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0188-second-redaction-under-adr-0187.md"],
+      "kind": "auto"
+    },
+    {
       "q": "ADR이 뭐예요?",
       "expect": ["docs/design-docs/adr-process.md"],
       "kind": "auto"
@@ -6142,7 +6177,7 @@
       "kind": "auto"
     },
     {
-      "q": "새 실험 3 / 4 · 에이전트가 쓸 도구의 4. 프로세스 비교 — 회사 말 그대로: 단계 · 사람 · 시간이 뭐예요?",
+      "q": "새 실험 3 / 4 · 에이전트가 쓸 도구의 4. 프로세스 비교 — 단계 · 사람 · 시간이 뭐예요?",
       "expect": ["docs/design-docs/mockups/ux-round3-mockup.html"],
       "kind": "auto"
     },
@@ -6537,7 +6572,7 @@
       "kind": "auto"
     },
     {
-      "q": "서버 운영의 사내 시스템을 붙일 때 확인할 것이 뭐예요?",
+      "q": "서버 운영의 외부 시스템을 붙일 때 확인할 것이 뭐예요?",
       "expect": ["docs/design-docs/operations.md"],
       "kind": "auto"
     },

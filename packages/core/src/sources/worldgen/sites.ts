@@ -1,8 +1,7 @@
 /**
  * The six sites as shapes (REQ-048, REQ-057). Giheung, Hwaseong and Pyeongtaek were traced from the
- * outlines the owner drew on satellite maps (corners in metres at the maps' scale bar, rounded to 5 m).
- * Where each building stands, and what it is called, is read from the maps and layout pictures the
- * owner gave: Hwaseong's lines (12/13, S4, 15, 16, 17, S3, V1), the offices between them, the utility
+ * outlines drawn on satellite maps (corners in metres at the maps' scale bar, rounded to 5 m).
+ * Where each building stands, and what it is called, is read from the maps and layout pictures: Hwaseong's lines (12/13, S4, 15, 16, 17, S3, V1), the offices between them, the utility
  * building UT3, the substation, the HPC centre on its lawn and the DSR towers in the north-east corner;
  * Pyeongtaek's P1 to P6 with the complex buildings, offices, green buildings, water works, the logistics
  * centre and the 154 kV substation. All of it is approximate (centres to about 20 m, sizes to about 15 %).
@@ -129,8 +128,8 @@ export const SITE_SHAPES: Readonly<Record<SiteId, SiteShape>> = {
     ],
     map: { x: 50, y: 38 },
     power: { mw: 108, estimated: false },
-    // Read off the Newsroom render, the satellite picture with the line names and the owner's marks; the
-    // slots are the blue roofs of the owner's map. The order is the order a campus builds them.
+    // Read off the Newsroom render, the satellite picture with the line names; the
+    // slots are the blue roofs of the map. The order is the order a campus builds them.
     fabs: [
       { x: 1077, y: 1176, w: 230, d: 157, name: "17라인" },
       { x: 1160, y: 1420, w: 314, d: 146, name: "V1" },
@@ -180,7 +179,7 @@ export const SITE_SHAPES: Readonly<Record<SiteId, SiteShape>> = {
     ],
     map: { x: 44, y: 62 },
     power: { mw: 120, estimated: true },
-    // Read off the layout drawing (배치도) and the owner's map: the east block runs P1 to P4 from north to
+    // Read off the layout drawing (배치도) and the satellite map: the east block runs P1 to P4 from north to
     // south with the complex buildings between, the west block is P6 and P5 (not built yet), the water and
     // power works line the south edge. The order is the order a campus builds them.
     fabs: [

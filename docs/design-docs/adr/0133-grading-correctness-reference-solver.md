@@ -35,12 +35,12 @@ amends_tests:
   - tests/spec/site-scenarios.test.ts::every sheet is valid and cannot be passed by not knowing [REQ-106] > <stmt:b6ed7022>
   - tests/spec/site-scenarios.test.ts::recovery first beats cause first beats doing nothing [REQ-106] [REQ-088] > <stmt:944dd9d2>
 test_change_reason: 손대지 않는 것이 정답인 시트(자동 전환, 컨트롤러 쌍, 회선 끊김, 복제본 오류, 핫 사이트, 풀 재구성)에서 옛 공식은 세 축을 0으로 두어 만점이 불가능했다. 공식을 보정했고(보고가 가득 차고 끝 상태가 유지될 때만), 창이 모자란 세 시트의 expectedRecoveryS를 세계의 물리 시간 + 5분으로 고쳤다. 그래서 30이던 기대는 100으로, 창 값은 새 값으로 옮겼다. 범위를 느슨하게 한 곳은 없고, 시험이 잡은 `guess` 버그는 코드를 고쳤다. 항목별 옛 기대와 새 기대는 본문 표에 있다.
-decision_hash: 65c445d20e12968a
+decision_hash: 0fc0002491fe93fd
 ---
 # ADR-0133 채점 정확성 보증: 정답 풀이·결정성·변이 검사
 
 ## 맥락
-연수 님: "operator가 100점이 아니면 안 되지 않나? 100점이 아닌 층이 있으면 안 되지." 처음에는 `operator`를 100점짜리로 키우자는 요청이었다. 그런데 `operator`가 100점이 되려면 주입한 고장을 알아야 하고, 그러면 에이전트가 아니라 정답지다. 요구를 고쳤다. **채점기(`packages/core/src/oracle/*`)가 늘 맞고 같게 채점해야 에이전트·하네스 구조를 견줄 수 있다.** 그 보증은 사람이 아니라 시험이 서야 한다.
+제품 책임자: "operator가 100점이 아니면 안 되지 않나? 100점이 아닌 층이 있으면 안 되지." 처음에는 `operator`를 100점짜리로 키우자는 요청이었다. 그런데 `operator`가 100점이 되려면 주입한 고장을 알아야 하고, 그러면 에이전트가 아니라 정답지다. 요구를 고쳤다. **채점기(`packages/core/src/oracle/*`)가 늘 맞고 같게 채점해야 에이전트·하네스 구조를 견줄 수 있다.** 그 보증은 사람이 아니라 시험이 서야 한다.
 
 - 만점이 불가능한 시트(풀 수 없거나, 풀어도 100이 안 나오는 시트)가 있어도 아무도 몰랐다. 내장 에이전트는 많은 층에서 0점이었고 그것이 에이전트의 한계인지 시트의 결함인지 가를 수 없었다.
 - 같은 행동이 같은 점수를 내는지, LLM이 느리면 점수가 달라지는지를 막아 둔 시험이 없었다.

@@ -50,7 +50,7 @@ verification_log:
 | `litellm` | LiteLLM | `GET /v1/models`, 그 경로가 없으면(404) `GET /model/info` | openai와 같다 | openai와 같다 |
 | `anthropic` | Claude 호환 | `GET /v1/models?limit=1000` | `POST /v1/messages` (`system`은 따로, `max_tokens` 필수, 없으면 1024) | `x-api-key: 키`, `anthropic-version: 2023-06-01` |
 
-주소 끝에 `/v1`이 있어도 없어도 된다(`joinUrl`이 겹치지 않게 잇는다). 추가 헤더는 기본 헤더보다 앞선다. 키가 없는 사내 게이트웨이를 위해 키는 선택이다.
+주소 끝에 `/v1`이 있어도 없어도 된다(`joinUrl`이 겹치지 않게 잇는다). 추가 헤더는 기본 헤더보다 앞선다. 키가 없는 게이트웨이를 위해 키는 선택이다.
 
 ## 연결 확인이 하는 일
 

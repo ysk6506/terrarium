@@ -33,12 +33,12 @@ amends_tests:
   - apps/server/src/adapters/harness.test.ts::an OpenAI-compatible model as a harness [REQ-031] > tool replies are JSON the model can read, cut when huge
   - apps/server/src/adapters/test-support/fake-fetch.ts::<import:28b66704>
 test_change_reason: OpenAI 호환 내장 루프를 없애서 그 테스트와 도우미(openaiConfig, reply, toolCall)가 사라졌고, 설정 파일 시험은 openai 대신 새 커넥터 종류를 쓰게 바뀌었다. FakeFetch와 testPlatform은 커넥터와 연결 시험을 위해 넓혔다. 하네스 프로토콜의 요청·상태·취소 성질과 설정에서 어댑터가 만들어지는 성질은 커넥터 시험(connectors.test.ts, a2a.test.ts 등)과 연결 시험으로 옮겨 그대로 확인한다.
-decision_hash: 6cf4ed88e4b8518f
+decision_hash: 56efaad1ceadb396
 ---
 # ADR-0042 커넥터와 연결 레지스트리
 
 ## 맥락
-ADR-0026은 연결 방식을 세 가지(내장, OpenAI 호환, 하네스 프로토콜)로 못 박았다. 사용자는 이것이 설계가 아니라 구현이라고 지적했다. 회사에서 쓰는 하네스와 에이전트는 많고 계속 바뀐다
+ADR-0026은 연결 방식을 세 가지(내장, OpenAI 호환, 하네스 프로토콜)로 못 박았다. 사용자는 이것이 설계가 아니라 구현이라고 지적했다. 하네스와 에이전트는 많고 계속 바뀐다
 (OpenClaw, GoClaw, Hermes, OpenCode, LangChain, LangGraph …). 새 하네스마다 테라리움 코드를 고쳐야 하고, 설정 파일을 손으로 고쳐 서버를 다시 띄워야 연결되는 구조는 맞지 않다.
 사용자가 원한 것은 둘이다.
 1. **하네스를 테라리움에 연결하면** 그 하네스의 에이전트를 실험에서 고를 수 있다.
@@ -73,7 +73,7 @@ ADR-0026은 연결 방식을 세 가지(내장, OpenAI 호환, 하네스 프로�
 8. **OpenAI 호환 내장 루프(`openai`)를 없앤다.** 테라리움 안에서 에이전트를 만드는 것은 테라리움의 일이 아니다. 모델을 직접 비교하고 싶으면 그 모델을 쓰는 하네스를 연결한다.
 
 ## 이유
-- 사람이 연결을 직접 더하고 확인할 수 있어야 한다. 파일을 고치고 서버를 다시 띄우는 길은 사내 플랫폼으로는 느리다.
+- 사람이 연결을 직접 더하고 확인할 수 있어야 한다. 파일을 고치고 서버를 다시 띄우는 길은 여럿이 쓰는 플랫폼으로는 느리다.
 - 프로토콜이 계속 늘어난다. 늘어나는 곳이 커넥터 하나로 한정되면 나머지는 그대로다(열려 있고 닫혀 있는 구조).
 - MCP 주소 하나로 "과제와 도구"를 건네는 공통 약속 덕에, 에이전트는 테라리움을 몰라도 된다.
 - `command`를 설정 파일에만 둔 이유는 원격 코드 실행을 막기 위해서다.
@@ -81,12 +81,12 @@ ADR-0026은 연결 방식을 세 가지(내장, OpenAI 호환, 하네스 프로�
 ## 버린 대안
 - **프로토콜마다 전용 화면**: 새 프로토콜마다 웹을 고쳐야 한다.
 - **연결을 설정 파일에만 두기**: 사용자가 못 더하고, 확인할 길이 없다.
-- **A2A 하나로 통일**: 회사의 하네스가 모두 A2A를 말하지 않는다.
+- **A2A 하나로 통일**: 하네스가 모두 A2A를 말하지 않는다.
 - **내장 루프 유지**: 테라리움이 에이전트를 만드는 일은 범위 밖이고, 비교 결과가 실제 하네스를 대변하지 못한다.
 
 ## 결과
 - 한계: A2A 1.0 쪽은 규격 문서에서 메서드 이름과 필드를 확인했고, 0.3 쪽은 알려진 이름을 따랐다. 둘 다 규격대로 만든 가짜 서버로만 검증했고 실제 A2A 에이전트로는 확인하지 못했다.
-- 한계: 사내 하네스(OpenClaw, GoClaw, Hermes 등)의 실제 API는 확인하지 못했다. 일반 HTTP 템플릿이나 명령 커넥터로 붙일 수 있는지는 각각 써 보아야 안다.
+- 한계: 이 하네스들(OpenClaw, GoClaw, Hermes 등)의 실제 API는 확인하지 못했다. 일반 HTTP 템플릿이나 명령 커넥터로 붙일 수 있는지는 각각 써 보아야 안다.
 - 한계: A2A에는 툴을 건네는 표준이 없어 MCP 주소를 메시지에 실어 보낸다. 에이전트가 그것을 읽어 쓰도록 만들어져 있어야 한다.
 - ADR-0026은 이 결정으로 대체된다. 내장 루프를 지우면서 그 테스트도 함께 정리한다(`amends_tests`).
 - 커넥터 `mcp-agent`는 MCP 클라이언트가 필요해 `server.adapters`가 MCP SDK를 쓴다. 그래서 `harness/config/architecture.yaml`의 `@modelcontextprotocol/sdk` 허용 단위에 `server.adapters`를 더했다(`server.mcp`는 그대로).

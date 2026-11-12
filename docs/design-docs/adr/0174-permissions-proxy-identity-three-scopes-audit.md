@@ -61,9 +61,9 @@ amends_tests:
   - apps/server/src/runtime/results.test.ts::benchmarks and the digital twin [REQ-039] [REQ-015] > diagnosis records export as JSON Lines; the brief names what imported worlds lack
   - apps/server/src/runtime/results.test.ts::sharing results [REQ-038] > reports in three formats, and links that open without the app until taken back or expired
   - apps/server/src/runtime/test-support/platform.ts::=JIMIN
-  - apps/server/src/runtime/test-support/platform.ts::=YEONSU
+  - apps/server/src/runtime/test-support/platform.ts::=HANEUL
 test_change_reason: 가 단계(신원 굳히기, 판정 한 곳, 열려 있던 길 막기)로 요구가 바뀌었다. 남의 연결·모델 확인과 기본 모델 정하기, 설정 파일 연결의 버전, 현재 업무 표, 공유 링크, 소스에서 가져오기가 누구에게나 열려 있다는 옛 기대와, 보는 사람이 이름 하나라는 모양을 바꾼다.
-decision_hash: 1184204dc2af12c6
+decision_hash: cff27803add3ce6f
 amends:
   - adr: "0028"
     what: 신원과 권한을 넓힘
@@ -73,7 +73,7 @@ amends:
 # ADR-0174 권한은 프록시가 넘겨준 신원, 역할 둘, 공개 범위 셋, 감사 기록으로 한다
 
 ## 맥락
-클로즈 베타는 초대한 사내 사용자가 쓴다. 사용자가 둘 이상이면 누구의 세계와 실험인지가 먼저 서야 한다(차수 계획). 제품 책임자의 조건: 사내에 SSO가 여럿 있고 그중에 Keycloak과 GitHub가 있다.
+클로즈 베타는 초대한 사용자가 쓴다. 사용자가 둘 이상이면 누구의 세계와 실험인지가 먼저 서야 한다(차수 계획). 제품 책임자의 조건: 여러 SSO(예: OIDC를 말하는 Keycloak, GitHub)를 프록시 뒤에서 받을 수 있어야 하고, 특정 SSO에 묶이지 않는다.
 
 현황 조사에서 드러난 것: 신원은 이름 문자열 하나다. 프록시 헤더가 어디서 왔는지 확인하지 않고, 헤더가 없으면 "anonymous"로 통과한다. 직접 적는 이름으로는 남의 것을 바꾸고 지울 수 있다. 남이 만든 연결의 봉인된 자격 증명을 누구나 대화와 실험에 빌려 쓴다. 누구나 기본 모델을 바꿔 모든 사용자의 도우미 질문을 다른 곳으로 보낼 수 있다. 공유 링크는 누구나 남의 실험에 만들고 만료가 없다. 관리자, 그룹, 감사 기록은 없다. 읽기는 거의 전부 열려 있다.
 
@@ -94,7 +94,7 @@ amends:
 12. 만드는 순서와 화면, 시험은 `docs/design-docs/permissions.md`에 있다. ADR-0028(모두 보고 만든 사람만 바꾼다)과 ADR-0044(신원의 자리 하나)를 넓힌다. ADR-0152의 관리자가 이 역할이다.
 
 ## 이유
-- 사내 SSO가 여럿이면 테라리움이 그중 하나에 묶이지 않는 쪽이 싸다. 로그인 절차와 토큰·세션을 직접 다루지 않으니 보안의 표면도 작다.
+- SSO가 여럿일 수 있으니 테라리움이 그중 하나에 묶이지 않는 쪽이 싸다. 로그인 절차와 토큰·세션을 직접 다루지 않으니 보안의 표면도 작다.
 - 범위를 셋으로 두면 화면의 물음이 하나("누가 볼 수 있나요")로 끝난다. 사람 이름을 적는 접근 목록은 관리할 것이 늘고 클로즈 베타에 과하다.
 - 세계·시나리오·실험을 처음에 모두로 두는 것은 서로 견주는 것이 이 제품의 쓸모이기 때문이다. 자격 증명이 딸린 것만 닫아 둔다.
 
@@ -104,7 +104,7 @@ amends:
 - **사람마다의 접근 목록**: 위와 같다.
 
 ## 못 하는 것 (정직하게)
-- 사내 Keycloak에 테라리움을 등록하는 일(클라이언트 발급, 돌아올 주소)은 배포하는 쪽이 한다. 테라리움은 프록시 설정의 예와 절차서를 낸다.
+- Keycloak 같은 SSO에 테라리움을 등록하는 일(클라이언트 발급, 돌아올 주소)은 배포하는 쪽이 한다. 테라리움은 프록시 설정의 예와 절차서를 낸다.
 - 프록시를 거치지 않고 테라리움에 닿는 길을 망에서 막는 것도 배포의 일이다. 테라리움은 비밀 값으로 한 겹을 더할 뿐이다.
 
 ## 결과

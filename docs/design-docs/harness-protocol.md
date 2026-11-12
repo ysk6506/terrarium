@@ -40,7 +40,7 @@ verification_log:
 
 ### `GET /agents`
 ```json
-{ "agents": [{ "id": "react-gpt", "name": "ReAct + 사내 모델", "description": "...", "model": "gauss-2" }] }
+{ "agents": [{ "id": "react-gpt", "name": "ReAct + 모델 A", "description": "...", "model": "model-a" }] }
 ```
 
 ### `POST /runs` — 실행 시작

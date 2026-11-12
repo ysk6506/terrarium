@@ -33,11 +33,11 @@ const trace: Telemetry = {
     span("agent", { "gen_ai.operation.name": "invoke_agent" }, { start: 0, end: 10_000 }),
     span("llm-1", {
       "gen_ai.operation.name": "chat",
-      "gen_ai.request.model": "gauss-2",
+      "gen_ai.request.model": "model-a",
       "gen_ai.usage.input_tokens": 1200,
       "gen_ai.usage.output_tokens": 300,
     }),
-    span("llm-2", { "gen_ai.request.model": "gauss-2", "gen_ai.usage.input_tokens": "800" }),
+    span("llm-2", { "gen_ai.request.model": "model-a", "gen_ai.usage.input_tokens": "800" }),
     span("tool", { "gen_ai.tool.name": "list_alarms" }, { status: "error" }),
     span("http", { "http.method": "GET" }),
   ],
@@ -95,7 +95,7 @@ describe("one run, analysed [REQ-037]", () => {
       llmSeconds: 4,
       inputTokens: 2000,
       outputTokens: 300,
-      models: ["gauss-2"],
+      models: ["model-a"],
       errors: 1,
       wallSeconds: 10,
       errorLogs: 1,
@@ -227,7 +227,7 @@ describe("benchmark leaderboards [REQ-039]", () => {
     analyzeExperiment(experimentOf(spec, snap));
 
   test("configurations are pooled across people and ranked; small samples wait unranked", () => {
-    // jimin's run is on seed 3: seeds 1 and 2 are yeonsu's, and a seed both of them ran would count once (ADR-0158)
+    // jimin's run is on seed 3: seeds 1 and 2 are haneul's, and a seed both of them ran would count once (ADR-0158)
     const jimin = experimentOf({
       id: "a2",
       owner: "jimin",
@@ -235,7 +235,7 @@ describe("benchmark leaderboards [REQ-039]", () => {
       runs: [SCRIPTS.good],
     });
     const boards = buildLeaderboards([
-      analysed({ id: "a1", owner: "yeonsu", runs: [SCRIPTS.good, SCRIPTS.good] }),
+      analysed({ id: "a1", owner: "haneul", runs: [SCRIPTS.good, SCRIPTS.good] }),
       analyzeExperiment({
         experiment: { ...jimin.experiment, recipe: { ...jimin.experiment.recipe, seeds: [3] } },
         runs: jimin.runs.map((r) => ({ ...r, seed: 3 })),
@@ -256,7 +256,7 @@ describe("benchmark leaderboards [REQ-039]", () => {
       ["h-react", "triage", undefined],
     ]);
     const top = board.rows[0] as (typeof board.rows)[number];
-    expect(top).toMatchObject({ runs: 3, passRate: 1, owners: ["jimin", "yeonsu"], latest: "a2" });
+    expect(top).toMatchObject({ runs: 3, passRate: 1, owners: ["haneul", "jimin"], latest: "a2" });
     expect(top.experimentIds).toEqual(["a1", "a2"]);
     expect(top).toMatchObject({ seeds: 3 });
     expect(MIN_SEEDS_TO_RANK).toBe(3);

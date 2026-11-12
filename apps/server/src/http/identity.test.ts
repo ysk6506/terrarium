@@ -35,13 +35,13 @@ const bearer = (token: string) => ({ authorization: `Bearer ${token}` });
 
 describe("who is asking is one slot an SSO can fill [REQ-054]", () => {
   test("a sign-in the server checks itself decides the viewer, and a typed name cannot pretend otherwise", async () => {
-    const app = serve(sso({ "tok-1": "s.yeonsu" }));
+    const app = serve(sso({ "tok-1": "s.haneul" }));
     const signedIn = await app.inject({
       method: "GET",
       url: "/api/meta",
       headers: { ...bearer("tok-1"), "x-terrarium-user": encodeURIComponent("사칭") },
     });
-    expect(signedIn.json().user).toMatchObject({ id: "s.yeonsu", name: "s.yeonsu", source: "sso" });
+    expect(signedIn.json().user).toMatchObject({ id: "s.haneul", name: "s.haneul", source: "sso" });
     const stranger = await app.inject({
       method: "GET",
       url: "/api/meta",
@@ -51,7 +51,7 @@ describe("who is asking is one slot an SSO can fill [REQ-054]", () => {
   });
 
   test("a method that refuses strangers answers 401 on routes and on live streams, but not on shared links", async () => {
-    const app = serve(sso({ "tok-1": "s.yeonsu" }, true));
+    const app = serve(sso({ "tok-1": "s.haneul" }, true));
     const refused = await app.inject({ method: "GET", url: "/api/meta" });
     expect(refused.statusCode).toBe(401);
     expect(refused.json().error).toEqual({ code: "unauthenticated", message: "로그인이 필요해요" });
@@ -86,8 +86,8 @@ describe("who is asking is one slot an SSO can fill [REQ-054]", () => {
     ).toEqual(person("kim", "proxy"));
     expect(
       authenticatorOf(identity({}), env).authenticate({
-        headers: { "x-terrarium-user": encodeURIComponent("연수") },
+        headers: { "x-terrarium-user": encodeURIComponent("하늘") },
       }),
-    ).toEqual(person("연수"));
+    ).toEqual(person("하늘"));
   });
 });

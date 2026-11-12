@@ -6,13 +6,13 @@ last_verified: 2026-10-29
 enforced_by:
   - tests/spec/store.test.ts
 touches_protected: []
-decision_hash: 5bc44729fd8092bb
+decision_hash: 056fc36ee013242c
 ---
 # ADR-0025 저장소는 Node 내장 SQLite
 
 ## 맥락
-세계·시나리오(버전 포함)·실험·실행·공유 링크를 서버가 다시 시작해도 잃지 않아야 한다(REQ-030, REQ-040). 서버는 사내 장비 한 대
-(8 vCPU / 64 GB)에서 돈다. 따로 운영할 DB 서버를 늘리는 것은 사내 도입의 걸림돌이다.
+세계·시나리오(버전 포함)·실험·실행·공유 링크를 서버가 다시 시작해도 잃지 않아야 한다(REQ-030, REQ-040). 서버는 장비 한 대
+(8 vCPU / 64 GB를 가정한다)에서 돈다. 따로 운영할 DB 서버를 늘리는 것은 도입의 걸림돌이다.
 
 ## 결정
 - Node 22에 들어 있는 `node:sqlite`(`DatabaseSync`)를 쓴다. 파일 하나(`<dataDir>/terrarium.db`), WAL 모드.
@@ -28,7 +28,7 @@ decision_hash: 5bc44729fd8092bb
 
 ## 버린 대안
 - **PostgreSQL**: 강력하지만 운영할 서버가 하나 늘어난다. 지금 규모(실험 수천, 실행 수만)에 필요 없다. 포트 뒤에 있으므로 나중에 바꿀 수 있다.
-- **better-sqlite3**: 네이티브 빌드가 필요하고, 사내망에서 바이너리 받기가 막힐 수 있다.
+- **better-sqlite3**: 네이티브 빌드가 필요하고, 닫힌 망에서 바이너리 받기가 막힐 수 있다.
 - **JSON 파일들**: 동시 쓰기와 부분 실패에 약하다.
 
 ## 결과

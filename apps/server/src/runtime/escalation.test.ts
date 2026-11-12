@@ -2,6 +2,7 @@ import { ForbiddenError, InvalidInputError } from "@terrarium/core/contract";
 import type { RunResult } from "@terrarium/core/session";
 import { describe, expect, test } from "vitest";
 import {
+  HANEUL,
   JIMIN,
   recipe,
   ScriptHarness,
@@ -9,7 +10,6 @@ import {
   settled,
   testPlatform,
   until,
-  YEONSU,
 } from "./test-support/platform";
 
 const ASK = { request: "냉방기가 멈췄어요. 현장에서 봐 주실 수 있나요?" };
@@ -32,7 +32,7 @@ async function waiting(escalation: Record<string, unknown> = { mode: "wait" }) {
   const told: unknown[] = [];
   const { platform: p } = testPlatform([asker(told)]);
   const { world, scenario } = await seed(p);
-  const created = await p.experiments.create(YEONSU, {
+  const created = await p.experiments.create(HANEUL, {
     name: "사람에게 묻기",
     recipe: recipe(world.id, scenario.id, {
       harnessId: "asker",
@@ -46,7 +46,7 @@ async function waiting(escalation: Record<string, unknown> = { mode: "wait" }) {
 }
 
 const resultOf = async (p: Awaited<ReturnType<typeof waiting>>["p"], id: string) => {
-  const done = await settled(p, YEONSU, id);
+  const done = await settled(p, HANEUL, id);
   const run = await p.results.run(done.runs[0]?.id as string);
   return run.run.result as RunResult;
 };
@@ -59,14 +59,14 @@ describe("a run that waits for a person [REQ-081]", () => {
     expect(card).toMatchObject({
       experimentId: id,
       experimentName: "사람에게 묻기",
-      owner: "yeonsu",
+      owner: "haneul",
       request: { request: ASK.request },
     });
     expect(card?.request.recent.map((c) => c.tool)).toEqual(["list_alarms"]);
     expect(card?.tools).toContain("ask_human");
     expect(card?.grantable.map((t) => t.name)).toContain("get_impact");
     expect(told).toEqual([]);
-    await p.escalations.answer(YEONSU, card?.runId as string, { kind: "reply", text: "곧 가요" });
+    await p.escalations.answer(HANEUL, card?.runId as string, { kind: "reply", text: "곧 가요" });
     const result = await resultOf(p, id);
     expect(told[0]).toMatchObject({ ok: true, data: { reply: "곧 가요", from: "human" } });
     expect(result.human).toMatchObject({ mode: "wait", count: 1 });
@@ -78,7 +78,7 @@ describe("a run that waits for a person [REQ-081]", () => {
     const { p, told, id } = await waiting();
     await until(() => p.escalations.size === 1);
     const runId = p.escalations.list()[0]?.runId as string;
-    const after = await p.escalations.answer(YEONSU, runId, {
+    const after = await p.escalations.answer(HANEUL, runId, {
       kind: "act",
       tool: "set_cooling_setpoint",
       args: { unitId: "crah-2", celsius: 17 },
@@ -86,7 +86,7 @@ describe("a run that waits for a person [REQ-081]", () => {
     expect(after?.acts).toHaveLength(1);
     expect(after?.acts[0]?.summary).toContain("냉방 설정 변경");
     expect(p.escalations.size).toBe(1);
-    await p.escalations.answer(YEONSU, runId, { kind: "acted" });
+    await p.escalations.answer(HANEUL, runId, { kind: "acted" });
     const result = await resultOf(p, id);
     expect(told[0]).toMatchObject({ data: { from: "human", changes: [after?.acts[0]?.summary] } });
     expect(result.human?.acts).toHaveLength(1);
@@ -96,14 +96,14 @@ describe("a run that waits for a person [REQ-081]", () => {
     const { p, id } = await waiting();
     await until(() => p.escalations.size === 1);
     const runId = p.escalations.list()[0]?.runId as string;
-    await p.escalations.answer(YEONSU, runId, { kind: "more_tools", tools: ["get_impact"] });
+    await p.escalations.answer(HANEUL, runId, { kind: "more_tools", tools: ["get_impact"] });
     expect((await resultOf(p, id)).human?.granted).toEqual(["get_impact"]);
   });
 
   test("a person can end the run", async () => {
     const { p, id } = await waiting();
     await until(() => p.escalations.size === 1);
-    await p.escalations.answer(YEONSU, p.escalations.list()[0]?.runId as string, { kind: "end" });
+    await p.escalations.answer(HANEUL, p.escalations.list()[0]?.runId as string, { kind: "end" });
     expect((await resultOf(p, id)).endReason).toBe("escalated");
   });
 
@@ -114,9 +114,9 @@ describe("a run that waits for a person [REQ-081]", () => {
     await expect(
       p.escalations.answer(JIMIN, runId, { kind: "reply", text: "x" }),
     ).rejects.toBeInstanceOf(ForbiddenError);
-    await p.escalations.answer(YEONSU, runId, { kind: "end" });
-    await settled(p, YEONSU, id);
-    await expect(p.escalations.answer(YEONSU, runId, { kind: "end" })).rejects.toThrow(
+    await p.escalations.answer(HANEUL, runId, { kind: "end" });
+    await settled(p, HANEUL, id);
+    await expect(p.escalations.answer(HANEUL, runId, { kind: "end" })).rejects.toThrow(
       "사람을 기다리고 있지 않아요",
     );
   });
@@ -124,9 +124,9 @@ describe("a run that waits for a person [REQ-081]", () => {
   test("stopping the experiment while it waits ends the wait", async () => {
     const { p, id } = await waiting();
     await until(() => p.escalations.size === 1);
-    await p.experiments.cancel(YEONSU, id);
+    await p.experiments.cancel(HANEUL, id);
     await until(() => p.escalations.size === 0);
-    const done = await settled(p, YEONSU, id);
+    const done = await settled(p, HANEUL, id);
     expect(done.status).toBe("cancelled");
   });
 });
@@ -150,7 +150,7 @@ describe("the settings of an experiment [REQ-080] [REQ-081] [REQ-082]", () => {
     const { p, id } = await waiting({ mode: "auto" });
     const parent = await p.experiments.get(id);
     expect(parent.recipe.escalation).toEqual({ mode: "auto" });
-    const fork = await p.experiments.fork(YEONSU, id, {
+    const fork = await p.experiments.fork(HANEUL, id, {
       change: { escalation: { mode: "fail" }, faultScope: "inside", sop: "none" },
     });
     expect(fork.experiment.recipe).toMatchObject({
@@ -165,7 +165,7 @@ describe("the settings of an experiment [REQ-080] [REQ-081] [REQ-082]", () => {
     const { platform: p } = testPlatform();
     const { world, scenario } = await seed(p);
     await expect(
-      p.experiments.create(YEONSU, {
+      p.experiments.create(HANEUL, {
         name: "범위 밖",
         recipe: recipe(world.id, scenario.id, {
           tools: ["list_alarms", "get_entity"],
@@ -177,7 +177,7 @@ describe("the settings of an experiment [REQ-080] [REQ-081] [REQ-082]", () => {
         { path: "recipe.faultScope", message: expect.stringContaining("set_cooling_setpoint") },
       ],
     });
-    const ok = await p.experiments.create(YEONSU, {
+    const ok = await p.experiments.create(HANEUL, {
       name: "범위 안",
       recipe: recipe(world.id, scenario.id, { faultScope: "inside" }),
     });
@@ -187,13 +187,13 @@ describe("the settings of an experiment [REQ-080] [REQ-081] [REQ-082]", () => {
   test("finding the runbook is a tool the agent needs, so choosing it gives the tool", async () => {
     const { platform: p } = testPlatform();
     const { world, scenario } = await seed(p);
-    const made = await p.experiments.create(YEONSU, {
+    const made = await p.experiments.create(HANEUL, {
       name: "찾게 함",
       recipe: recipe(world.id, scenario.id, { sop: "search" }),
     });
     expect(made.experiment.recipe.tools).toContain("search_runbooks");
     await expect(
-      p.experiments.create(YEONSU, {
+      p.experiments.create(HANEUL, {
         name: "도구만",
         recipe: recipe(world.id, scenario.id, { tools: ["list_alarms", "search_runbooks"] }),
       }),
@@ -217,11 +217,11 @@ describe("a draft runbook from the best run [REQ-082]", () => {
     const { platform: p } = testPlatform([walker]);
     const { world, scenario } = await seed(p);
     expect(await p.scenarios.runbookDraft(scenario.id)).toEqual({});
-    const made = await p.experiments.create(YEONSU, {
+    const made = await p.experiments.create(HANEUL, {
       name: "기준선",
       recipe: recipe(world.id, scenario.id, { harnessId: "walker", agentId: "a", runs: 2 }),
     });
-    await settled(p, YEONSU, made.experiment.id);
+    await settled(p, HANEUL, made.experiment.id);
     const draft = await p.scenarios.runbookDraft(scenario.id);
     expect(draft.from).toMatchObject({ experimentName: "기준선" });
     expect(draft.from?.score).toBeGreaterThan(50);

@@ -13,12 +13,12 @@ amends_tests:
   - apps/server/src/runtime/platform.test.ts::an experiment from creation to result [REQ-030] [REQ-037] > the built-in triage agent solves the cooling failure three times out of three
   - "packages/core/src/analysis/share.test.ts::sharing results as text, Markdown and HTML [REQ-038] > text to paste: what ran, the key numbers, findings and the link"
 test_change_reason: 채점 규칙이 바뀌어 채점 버전이 1에서 2로 올랐고, 엉터리 답을 빨리 낸 실행이 시간·효율 점수를 받지 않게 되어 섞인 실행의 평균이 72.0에서 62.7로 내려갔다. 세 시험이 지키는 성질(실행 기록에 채점 버전이 남는다, 실험 스냅샷이 채점 버전을 적는다, 공유 글에 평균이 나온다)은 그대로이고 기대한 숫자만 새 규칙에 맞게 바꿨다. 버전은 상수를 따르게 했다.
-decision_hash: 3d1763963f8ebf02
+decision_hash: 4cce34d05adff8f8
 ---
 # ADR-0067 효율 점수는 과제를 푼 만큼만 주고, 시험지는 기준선 에이전트로 점검한다
 
 ## 맥락
-연수 님이 말했다. 테라리움의 목적은 LLM, 에이전트 구조, 툴의 조합을 시험해 최적의 조합을 찾는 것이고, 실험이 제대로 측정되고 평가되는지가 보장되어야 한다.
+제품 책임자가 말했다. 테라리움의 목적은 LLM, 에이전트 구조, 툴의 조합을 시험해 최적의 조합을 찾는 것이고, 실험이 제대로 측정되고 평가되는지가 보장되어야 한다.
 분석 층은 이미 튼튼하다. 같은 시험지(세계, 시나리오, 채점 버전, 시간 정책)끼리만 순위를 내고, 95% 구간이 겹치면 차이를 말하지 않고, 완료된 실행이 3번 미만이면 순위를 주지 않는다. 빠져 있던 것은 **시험지 자체가 변별력이 있는지** 아는 방법이다. 모델 없이 세 기준선을 돌려 내장 시나리오를 재 봤더니 결함이 나왔다.
 - 일반 시나리오 8개 중 6개에서 **엉터리 답을 바로 내기만 해도 30~40점**을 받았다. 시간 점수와 툴 효율 점수가 답이 맞았는지와 무관하게, 제출만 하면 주어졌기 때문이다. 빨리 찍는 에이전트가 느려도 맞히는 에이전트에 가까워지면 조합 비교가 흐려진다.
 - 일반 시나리오 8개 중 7개에서 **정답만 말하면 만점**이다. 조치를 평가하지 않는 시험지라 진단 능력만 재고 운영 능력은 못 잰다. 자율 운영을 보려는 목적에는 알고 써야 하는 사실이다.

@@ -2,18 +2,18 @@ import { TOOL_SPECS, toolsForDomains } from "@terrarium/core/tools";
 import type { Domain } from "@terrarium/core/world";
 import { describe, expect, test } from "vitest";
 import { serviceLab } from "../../../../packages/core/src/world/test-support/service-lab";
-import { recipe, settled, testPlatform, YEONSU } from "./test-support/platform";
+import { HANEUL, recipe, settled, testPlatform } from "./test-support/platform";
 
 const MINE: Domain[] = ["service_os", "virtualization"];
 
 async function play(templateId: string) {
   const t = testPlatform();
-  const { world } = await t.platform.worlds.create(YEONSU, {
+  const { world } = await t.platform.worlds.create(HANEUL, {
     name: "서비스 홀",
     blueprint: serviceLab(),
   });
-  const { scenario } = await t.platform.scenarios.create(YEONSU, { worldId: world.id, templateId });
-  const created = await t.platform.experiments.create(YEONSU, {
+  const { scenario } = await t.platform.scenarios.create(HANEUL, { worldId: world.id, templateId });
+  const created = await t.platform.experiments.create(HANEUL, {
     name: "운영 기준 에이전트",
     recipe: recipe(world.id, scenario.id, {
       agentId: "operator",
@@ -22,7 +22,7 @@ async function play(templateId: string) {
       domains: MINE,
     }),
   });
-  const view = await settled(t.platform, YEONSU, created.experiment.id);
+  const view = await settled(t.platform, HANEUL, created.experiment.id);
   const run = await t.platform.results.run(view.runs[0]?.id as string);
   return run.run.result;
 }
