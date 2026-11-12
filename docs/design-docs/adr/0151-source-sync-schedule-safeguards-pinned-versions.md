@@ -1,7 +1,8 @@
 ---
 title: ADR-0151 소스는 주기로 동기화하고, 적용은 안전장치를 거치며, 실험은 세계의 판에 묶인다
 kind: decision
-status: active
+status: superseded
+superseded_by: 0192-terrarium-returns-to-its-first-goal.md
 last_verified: 2026-11-11
 enforced_by:
   - none

@@ -4774,6 +4774,71 @@
       "kind": "auto"
     },
     {
+      "q": "ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리움으로 보낸다 — 에이전트는 두 세계에서 같은 게이트웨이를 같은 이름으로 부른다의 맥락이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리움으로 보낸다 — 에이전트는 두 세계에서 같은 게이트웨이를 같은 이름으로 부른다의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리움으로 보낸다 — 에이전트는 두 세계에서 같은 게이트웨이를 같은 이름으로 부른다의 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리움으로 보낸다 — 에이전트는 두 세계에서 같은 게이트웨이를 같은 이름으로 부른다의 버린 길이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리움으로 보낸다 — 에이전트는 두 세계에서 같은 게이트웨이를 같은 이름으로 부른다의 남은 일이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리움으로 보낸다 — 에이전트는 두 세계에서 같은 게이트웨이를 같은 이름으로 부른다의 결과가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0192 테라리움은 처음의 목표로 돌아간다 — 현실 세계 만들기와 워크플로 자동화는 다른 프로젝트가 맡고, 둘 사이는 세계 스냅샷과 판정으로만 잇는다의 맥락이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0192-terrarium-returns-to-its-first-goal.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0192 테라리움은 처음의 목표로 돌아간다 — 현실 세계 만들기와 워크플로 자동화는 다른 프로젝트가 맡고, 둘 사이는 세계 스냅샷과 판정으로만 잇는다의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0192-terrarium-returns-to-its-first-goal.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0192 테라리움은 처음의 목표로 돌아간다 — 현실 세계 만들기와 워크플로 자동화는 다른 프로젝트가 맡고, 둘 사이는 세계 스냅샷과 판정으로만 잇는다의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0192-terrarium-returns-to-its-first-goal.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0192 테라리움은 처음의 목표로 돌아간다 — 현실 세계 만들기와 워크플로 자동화는 다른 프로젝트가 맡고, 둘 사이는 세계 스냅샷과 판정으로만 잇는다의 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0192-terrarium-returns-to-its-first-goal.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0192 테라리움은 처음의 목표로 돌아간다 — 현실 세계 만들기와 워크플로 자동화는 다른 프로젝트가 맡고, 둘 사이는 세계 스냅샷과 판정으로만 잇는다의 버린 길이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0192-terrarium-returns-to-its-first-goal.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0192 테라리움은 처음의 목표로 돌아간다 — 현실 세계 만들기와 워크플로 자동화는 다른 프로젝트가 맡고, 둘 사이는 세계 스냅샷과 판정으로만 잇는다의 남은 일이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0192-terrarium-returns-to-its-first-goal.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0192 테라리움은 처음의 목표로 돌아간다 — 현실 세계 만들기와 워크플로 자동화는 다른 프로젝트가 맡고, 둘 사이는 세계 스냅샷과 판정으로만 잇는다의 결과가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0192-terrarium-returns-to-its-first-goal.md"],
+      "kind": "auto"
+    },
+    {
       "q": "ADR이 뭐예요?",
       "expect": ["docs/design-docs/adr-process.md"],
       "kind": "auto"
@@ -5564,47 +5629,7 @@
       "kind": "auto"
     },
     {
-      "q": "용어집: 데이터 파이프라인과 온톨로지 매니저가 뭐예요?",
-      "expect": ["docs/design-docs/glossary-data.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "용어집: 데이터 파이프라인과 온톨로지 매니저의 층과 데이터가 뭐예요?",
-      "expect": ["docs/design-docs/glossary-data.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "용어집: 데이터 파이프라인과 온톨로지 매니저의 정제 연산 8가지가 뭐예요?",
-      "expect": ["docs/design-docs/glossary-data.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "용어집: 데이터 파이프라인과 온톨로지 매니저의 객체 매핑이 뭐예요?",
-      "expect": ["docs/design-docs/glossary-data.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "용어집: 데이터 파이프라인과 온톨로지 매니저의 링크 정의가 뭐예요?",
-      "expect": ["docs/design-docs/glossary-data.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "용어집: 데이터 파이프라인과 온톨로지 매니저의 버전과 브랜치가 뭐예요?",
-      "expect": ["docs/design-docs/glossary-data.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "용어집: 데이터 파이프라인과 온톨로지 매니저의 그 밖에가 뭐예요?",
-      "expect": ["docs/design-docs/glossary-data.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "용어집: 데이터 파이프라인과 온톨로지 매니저의 시뮬레이션 단계가 뭐예요?",
-      "expect": ["docs/design-docs/glossary-data.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "용어집: 데이터 파이프라인과 온톨로지 매니저의 워크플로 자동화에서 정한 말이 뭐예요?",
+      "q": "용어집이 뭐예요?",
       "expect": ["docs/design-docs/glossary-data.md"],
       "kind": "auto"
     },
@@ -5699,7 +5724,7 @@
       "kind": "auto"
     },
     {
-      "q": "용어집의 현실 데이터에서 정한 말이 뭐예요?",
+      "q": "용어집의 받은 세계와 모델에서 정한 말이 뭐예요?",
       "expect": ["docs/design-docs/glossary.md"],
       "kind": "auto"
     },
@@ -7074,56 +7099,6 @@
       "kind": "auto"
     },
     {
-      "q": "파이프라인의 버전과 브랜치의 한 줄로가 뭐예요?",
-      "expect": ["docs/design-docs/pipeline-versions-and-branches.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "파이프라인의 버전과 브랜치의 1. 버전을 매기는 것은 셋이에요가 뭐예요?",
-      "expect": ["docs/design-docs/pipeline-versions-and-branches.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "파이프라인의 버전과 브랜치의 2. 브랜치: 운영에 영향 없이 고쳐 봐요가 뭐예요?",
-      "expect": ["docs/design-docs/pipeline-versions-and-branches.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "파이프라인의 버전과 브랜치의 3. 비교: 병합 전에 차이를 둘로 봐요가 뭐예요?",
-      "expect": ["docs/design-docs/pipeline-versions-and-branches.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "파이프라인의 버전과 브랜치의 4. 병합과 충돌이 뭐예요?",
-      "expect": ["docs/design-docs/pipeline-versions-and-branches.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "파이프라인의 버전과 브랜치의 5. 되돌리기가 뭐예요?",
-      "expect": ["docs/design-docs/pipeline-versions-and-branches.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "파이프라인의 버전과 브랜치의 6. 쌓이는 운영 데이터가 뭐예요?",
-      "expect": ["docs/design-docs/pipeline-versions-and-branches.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "파이프라인의 버전과 브랜치의 7. 순서가 뭐예요?",
-      "expect": ["docs/design-docs/pipeline-versions-and-branches.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "파이프라인의 버전과 브랜치의 하지 않는 것이 뭐예요?",
-      "expect": ["docs/design-docs/pipeline-versions-and-branches.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "파이프라인의 버전과 브랜치의 시험이 뭐예요?",
-      "expect": ["docs/design-docs/pipeline-versions-and-branches.md"],
-      "kind": "auto"
-    },
-    {
       "q": "전원·냉방 사다리 확장이 뭐예요?",
       "expect": ["docs/design-docs/power-cooling-ladders.md"],
       "kind": "auto"
@@ -7374,212 +7349,7 @@
       "kind": "auto"
     },
     {
-      "q": "현실 데이터와 모델의 한 줄로가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 전제가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 1. 세계는 두 종류, 만들 때 정해져요가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 2. 평면 둘, 서로 닿지 않아요가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 3. 데이터가 들어오는 길은 네 단이에요가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 매핑: 데이터셋의 컬럼을 객체의 속성에가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 현실에서 만들 때는 순서가 거꾸로예요가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 4. 커넥터: 많이 만들지 않아요가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 전용 커넥터가 푸는 것과 못 푸는 것이 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 소스의 역할은 셋이에요가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 읽기 전용은 세 겹으로 지켜요가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 어떤 모양으로 들어오든, 들어온 뒤의 모양은 하나로 좁혀요가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 입구는 나누고, 뒤는 같이 써요가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 링크는 사람이 긋지 않고 링크 정의가 만들어요가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 5. 모델 관리가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 무엇이 모델인가가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 핵심은 잠그고, 넓히는 길은 셋이 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 링크 타입은 표 하나에서 나와요가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 버전과 내보내기가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 프로세스 어휘가 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 6. 저장소와 고가용성: 기대는 만큼만이 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 7. 만드는 순서와 문이 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 하지 않는 것이 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 지금 지켜 둘 것이 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "현실 데이터와 모델의 시험이 뭐예요?",
-      "expect": ["docs/design-docs/reality-data-and-ontology.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "샘플 검증이 뭐예요?",
-      "expect": ["docs/design-docs/reality-shape-samples.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "샘플 검증의 한 줄로가 뭐예요?",
-      "expect": ["docs/design-docs/reality-shape-samples.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "샘플 검증의 어떻게 했나가 뭐예요?",
-      "expect": ["docs/design-docs/reality-shape-samples.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "샘플 검증의 1. 엑셀 랙 위치 대장이 뭐예요?",
-      "expect": ["docs/design-docs/reality-shape-samples.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "샘플 검증의 2. 엑셀 전원 계통이 뭐예요?",
-      "expect": ["docs/design-docs/reality-shape-samples.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "샘플 검증의 3. 엑셀 냉방 계통이 뭐예요?",
-      "expect": ["docs/design-docs/reality-shape-samples.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "샘플 검증의 4. Splunk의 SPL 결과가 뭐예요?",
-      "expect": ["docs/design-docs/reality-shape-samples.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "샘플 검증의 5. vROps의 자원과 링크가 뭐예요?",
-      "expect": ["docs/design-docs/reality-shape-samples.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "샘플 검증의 6. VMware vCenter의 목록 API가 뭐예요?",
-      "expect": ["docs/design-docs/reality-shape-samples.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "샘플 검증의 7. OpenStack이 뭐예요?",
-      "expect": ["docs/design-docs/reality-shape-samples.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "샘플 검증의 8. 스위치의 포트·포트 그룹·이웃·세션이 뭐예요?",
-      "expect": ["docs/design-docs/reality-shape-samples.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "샘플 검증의 막힌 곳과 고친 것이 뭐예요?",
-      "expect": ["docs/design-docs/reality-shape-samples.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "샘플 검증의 막힌 곳과 고친 것이 뭐예요?",
-      "expect": ["docs/design-docs/reality-shape-samples.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "샘플 검증의 정제 연산은 여덟 가지예요가 뭐예요?",
-      "expect": ["docs/design-docs/reality-shape-samples.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "샘플 검증의 설계가 버틴 곳이 뭐예요?",
-      "expect": ["docs/design-docs/reality-shape-samples.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "샘플 검증의 못 받는 모양과 나가는 길이 뭐예요?",
-      "expect": ["docs/design-docs/reality-shape-samples.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "샘플 검증의 만들 때의 시험이 뭐예요?",
+      "q": "생김새 견본 시험이 뭐예요?",
       "expect": ["docs/design-docs/reality-shape-samples.md"],
       "kind": "auto"
     },
@@ -8069,101 +7839,6 @@
       "kind": "auto"
     },
     {
-      "q": "소스 관리의 한 줄로가 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 1. 동기화 주기는 소스마다 정해요가 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 2. 동기화 한 번은 기록 하나예요가 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 3. 자동으로 적용하기 전에 거치는 안전장치가 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 4. 신선도를 숨기지 않아요가 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 5. 세계의 버전과 실험이 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 6. 연결 자체의 관리가 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 7. 관리자만 해요가 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 8. 실험용 복사본으로 실험해요가 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 9. 엑셀: 위치·전원·냉방이 들어오는 주된 길이 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 10. Splunk: SPL로 가져와요가 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 11. 관측성: 수집이 잘 도는지 밖에서도 보여요가 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 지표를 내보내요가 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 데이터가 평소와 다른지 봐요가 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 기록과 추적이 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 화면이 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 12. 한눈에 보는 화면이 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 하지 않는 것이 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "소스 관리의 시험이 뭐예요?",
-      "expect": ["docs/design-docs/source-management.md"],
-      "kind": "auto"
-    },
-    {
       "q": "스위치의 VLAN·MAC 표·ARP·라우팅의 한 줄로가 뭐예요?",
       "expect": ["docs/design-docs/switch-l2l3.md"],
       "kind": "auto"
@@ -8644,141 +8319,6 @@
       "kind": "auto"
     },
     {
-      "q": "E2E 워크플로 자동화의 0. 한 문장이 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 1. 왜 테라리움이 하나가 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 2. 큰 그림: 정하는 곳, 막는 곳, 하는 곳이 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 게이트웨이에 기대는 것이 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 3. 낱말이 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 4. 워크플로의 모양이 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 단계 하나가 갖는 것이 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 5. 흐름: 조건 분기, 반복, 병렬, 대기가 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 조건은 닫힌 목록이고, 테라리움이 따져요가 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 저장할 때 보는 것이 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 고치는 화면이 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 액션은 모델의 것이에요가 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 툴 매핑은 규칙이에요. 객체를 하나씩 잇지 않아요가 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 7. 에이전트에게 주는 MCP 툴이 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 8. 시작 조건이 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 9. 범위가 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 10. 승인이 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 11. 적용 단계가 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 검증에서는 실제 툴 자리에 모의 툴이 서요가 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 12. 건의 한살이가 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 13. 권한: 툴은 게이트웨이, 워크플로는 테라리움이 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 다루는 권한이 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 실행하는 권한이 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 14. 지켜보기와 알리기가 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 성과는 건마다 저절로 재요가 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 15. 미리 봐 둔 위험이 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "E2E 워크플로 자동화의 16. 순서가 뭐예요?",
-      "expect": ["docs/design-docs/workflow-automation.md"],
-      "kind": "auto"
-    },
-    {
       "q": "세계 만들기 검토의 왜 다시 보나가 뭐예요?",
       "expect": ["docs/design-docs/world-builder-review.md"],
       "kind": "auto"
@@ -9104,7 +8644,7 @@
       "kind": "auto"
     },
     {
-      "q": "문서 색인의 설계와 결정이 뭐예요?",
+      "q": "문서 색인의 다른 프로젝트로 옮긴 설계가 뭐예요?",
       "expect": ["docs/index.md"],
       "kind": "auto"
     },
@@ -9130,11 +8670,6 @@
     },
     {
       "q": "테라리움 요구사항의 시뮬레이터가 뭐예요?",
-      "expect": ["docs/product-specs/requirements.md"],
-      "kind": "auto"
-    },
-    {
-      "q": "테라리움 요구사항의 실험 플랫폼이 뭐예요?",
       "expect": ["docs/product-specs/requirements.md"],
       "kind": "auto"
     },

@@ -159408,6 +159408,22 @@
    "added": "2026-11-07",
    "amended_by": null
   },
+  "tests/spec/moss-questions.test.ts::[REQ-103] 이끼의 문서 찾기 > archived docs are not in the index, so designs the product no longer builds are never cited (ADR-0192)": {
+   "kind": "test",
+   "hash": "05dd21864def1710",
+   "asserts": 1,
+   "literals": [
+    "\"archived docs are not in the index, so designs the product no longer builds are never cited (ADR-0192)\"",
+    "\"docs/archive/\"",
+    "\"docs/archive/\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "tests/spec/moss-questions.test.ts::[REQ-103] 이끼의 문서 찾기 > every hand-written 왜 question about a score finds its scoring doc in the top three (the scoring boost, ADR-0125)": {
    "kind": "test",
    "hash": "eb5d66148eb8288d",

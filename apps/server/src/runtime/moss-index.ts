@@ -1,5 +1,5 @@
 /**
- * 이끼의 리포 문서 색인 (REQ-103, ADR-0124). `docs/**` 의 마크다운(`exec-plans` 제외)을 제목(`#`/`##`/`###`) 단위
+ * 이끼의 리포 문서 색인 (REQ-103, ADR-0124). `docs/**` 의 마크다운(`exec-plans`·`generated`·`archive` 제외)을 제목(`#`/`##`/`###`) 단위
  * 조각으로 나누고, 한국어·영어 토큰의 BM25 점수로 찾는다. 임베딩도 네트워크도 없다: 서버가 시작할 때 파일을 읽어
  * 메모리에 올릴 뿐이다.
  */
@@ -350,7 +350,8 @@ export class MossIndex {
   }
 }
 
-const SKIPPED_DIRS: ReadonlySet<string> = new Set(["exec-plans", "generated"]);
+/** `archive` holds designs the product no longer builds (ADR-0192): the assistant must not answer from them. */
+const SKIPPED_DIRS: ReadonlySet<string> = new Set(["exec-plans", "generated", "archive"]);
 
 /** `docsDir`(보통 리포의 `docs`) 아래 마크다운을 모두 읽어 색인한다. 파일 이름은 `repoRoot` 기준으로 적는다. */
 export function buildMossIndex(docsDir: string, repoRoot = path.dirname(docsDir)): MossIndex {

@@ -1,7 +1,8 @@
 ---
 title: ADR-0166 파이프라인은 버전으로 남기고, 브랜치에서 고쳐 미리보기 세계로 확인한 뒤 운영에 병합한다
 kind: decision
-status: active
+status: superseded
+superseded_by: 0192-terrarium-returns-to-its-first-goal.md
 last_verified: 2026-11-11
 enforced_by:
   - none

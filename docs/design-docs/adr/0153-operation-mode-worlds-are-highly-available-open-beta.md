@@ -1,7 +1,8 @@
 ---
 title: ADR-0153 운영 모드의 세계는 고가용으로 설계하고, 오픈 베타에 넣는다
 kind: decision
-status: active
+status: superseded
+superseded_by: 0192-terrarium-returns-to-its-first-goal.md
 last_verified: 2026-11-11
 enforced_by:
   - none

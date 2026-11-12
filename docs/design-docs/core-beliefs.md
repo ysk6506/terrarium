@@ -6,15 +6,15 @@ last_verified: 2026-11-12
 follows:
   - docs/design-docs/adr-process.md
   - AGENTS.md
-follows_hash: 485c869dbdcb15ea
+follows_hash: dcb7a60e776035a6
 verified_body: 670d77e72298eecc
-unchanged_reverifies: 10
+unchanged_reverifies: 11
 verification_log:
-  - "2026-11-12: main 합침: 라이선스 행·링크(ADR-0185)와 내부 사실 줄(ADR-0187)이 함께 있다. 서로 어긋나지 않는다"
   - "2026-11-12: main을 합침: 따라가는 AGENTS.md와 adr-process.md의 변경(ADR-0175, 0185, 0186, 0187)은 5번 서술과 어긋나지 않는다"
   - "2026-11-12: main을 합침: 따라가는 AGENTS.md의 변경(ADR-0185, 0189)은 5번 서술과 어긋나지 않는다"
   - "2026-11-12: main을 합침: 따라가는 adr-process.md의 보호 경로 보탬(.github/, 결정 기록)과 AGENTS.md의 라이선스 행(ADR-0185)을 읽음. 5번 서술은 그대로 맞다"
-  - "2026-11-12: 따라가는 AGENTS.md의 바뀐 곳은 CI 문단과 웹 화면 항목뿐이다. 이 문서의 믿음 목록은 CI 구성을 말하지 않아 어긋나지 않는다 (ADR-0195)"
+  - "2026-11-12: ADR-0192: 따라가는 AGENTS.md의 바뀐 곳은 목표 문장(처음의 것으로 되돌림). 이 문서의 믿음과 어긋나지 않는다"
+  - "2026-11-12: 따라가는 AGENTS.md의 내가 바꾼 곳은 CI 문단과 웹 화면 항목뿐이다. 이 문서의 믿음 목록은 CI 구성을 말하지 않아 어긋나지 않는다 (ADR-0195)"
 ---
 # 핵심 신념 (Golden Principles)
 

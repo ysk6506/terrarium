@@ -1,7 +1,8 @@
 ---
 title: ADR-0150 현실 데이터로 세계 만들기는 요구사항이고, 그 설계를 결정과 제안으로 나눈다
 kind: decision
-status: active
+status: superseded
+superseded_by: 0192-terrarium-returns-to-its-first-goal.md
 last_verified: 2026-11-11
 enforced_by:
   - tests/spec/realimport.test.ts
