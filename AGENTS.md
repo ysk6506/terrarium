@@ -2,20 +2,19 @@
 title: AGENTS.md — 에이전트 진입점
 kind: guide
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - package.json
   - harness/config/architecture.yaml
   - harness/config/protected-paths.txt
 covers_hash: 92c76fe9a7d17245
 verification_log:
-  - "2026-11-10: CI가 합치기 관문이 되었다는 한 줄을 더함 (ADR-0140). 명령 목록과 보호 경로 표는 그대로 맞다"
-  - "2026-11-11: 검사 끄기 금지(IGN*)·품질 등급표(QUAL001) 행과 정리 작업 안내를 더했다. package.json은 quality 스크립트와 ratchet만 바뀌었다 (ADR-0148)"
   - "2026-11-11: 정리 작업의 첫 단계를 pnpm quality write로 정하고, 등급표 낡음(QUAL001)과 끄기 감소(IGN006)를 빨강이 아닌 알림으로 고쳐 적었다 (ADR-0148)"
   - "2026-11-11: CI 문장에 문서만 바뀐 변경의 가벼운 경로를 더함 (ADR-0173). 명령 목록과 보호 경로 표는 그대로 맞다"
   - "2026-11-11: 첫 단락을 목표 문장으로 맞추고 새 결정·정리 작업 절차와 DOC090~DOC095 행을 적음 (ADR-0180)"
   - "2026-11-11: package.json에 license 표기만 더해짐. 명령과 안내는 그대로 맞다 (ADR-0181)"
-verified_body: 9c891c415c2f6a5a
+  - "2026-11-12: 절대 규칙 표에 라이선스 행(LIC001, LIC002)을 더함. 명령과 보호 경로는 그대로 맞다 (ADR-0185)"
+verified_body: 2565c763cdacf5a5
 unchanged_reverifies: 0
 ---
 # Terrarium — 코딩 에이전트 안내서
@@ -51,6 +50,7 @@ CI가 합치기 관문이다 ([ADR-0140](docs/design-docs/adr/0140-ci-shards-and
 | `harness/`, 설정 파일, ADR, 이 파일 수정 | 보호 경로 (`PROT001`) — 같은 변경에 봉인된 ADR 필요 |
 | 검사 끄기 주석(`biome-ignore` 등)·건너뛴 테스트·CI `continue-on-error`를 이유와 근거 없이 두기, 그 수를 늘리기 | `IGN001`~`IGN007` — 같은 줄이나 윗줄에 이유와 `TD-NNNN`(열린 부채) 또는 `ADR-NNNN`을 적는다. 수는 늘 수 없다. 원인을 고치는 쪽이 먼저다 ([ADR-0148](docs/design-docs/adr/0148-no-silent-ignores-and-quality-grades.md)) |
 | 품질 등급표를 손으로 고치기 | 등급표는 하네스가 만든다. 낡으면 알림 한 줄(`QUAL001`)만 나오고 빨강은 아니다. 정리 작업이 `pnpm quality write`로 새로 만든다 |
+| 허용 목록 밖의 라이선스를 가진 의존성·자료를 함께 내보내기, 고지 파일을 손으로 고치기 | `LIC001`, `LIC002` — 의존성을 들이기 전에 라이선스를 본다. 고지 파일은 `pnpm tsx harness/src/checks/licenses.ts write`가 만든다 ([ADR-0185](docs/design-docs/adr/0185-third-party-notices-and-license-check.md)) |
 | 추적 없는 `TODO` | `TODO(TD-NNNN)` + [부채 장부](docs/exec-plans/tech-debt.yaml) (`DEBT001`) |
 | `Date.now()`, `Math.random()` 직접 사용 | `kernel`의 `Clock`/`Rng`를 주입받는다 (`ARCH052`) |
 | 새 쪽·버튼·문서를 이끼에게 알리지 않기 | `MOSS001`~`MOSS004` — 라우트는 `apps/web/src/moss/registry.ts`에 칸을, 쪽의 버튼은 `data-moss-action`(또는 이유를 적은 `data-moss-skip`)을, 점수·지표 타일은 `MossAsk`를 (REQ-103) |

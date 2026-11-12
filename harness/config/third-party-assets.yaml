@@ -1,0 +1,17 @@
+# Third-party material that is not an npm package and ships in the repository. harness/src/checks/licenses.ts
+# reads this to write THIRD_PARTY_NOTICES.md. Add an entry when material from outside is copied in (ADR-0185).
+# Fields: id, name, version, license (SPDX), source (URL), where (what the notice says it is used for),
+# paths (files in this repository), license_file (a copy of the license text in this repository), copyright.
+assets:
+  - id: dmtf-redfish-schemas
+    name: DMTF Redfish JSON schemas
+    version: Redfish-Publications commit fa6d23d9709a, 2026-10-13
+    license: BSD-3-Clause
+    source: https://github.com/DMTF/Redfish-Publications
+    where: 시험용 스키마 묶음 (tests/spec/redfish-schemas)
+    paths:
+      - tests/spec/redfish-schemas/dmtf-schemas.json.gz
+    license_file: tests/spec/redfish-schemas/LICENSE-DMTF.md
+    copyright: >-
+      Copyright 2014-2026 DMTF. For the full DMTF copyright policy, see
+      http://www.dmtf.org/about/policies/copyright

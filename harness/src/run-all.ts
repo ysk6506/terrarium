@@ -5,6 +5,7 @@ import { run as debt } from "./checks/debt";
 import { report as docsDiff } from "./checks/doc-diff";
 import { run as docs } from "./checks/docs";
 import { report as ignores } from "./checks/ignores";
+import { report as licenses } from "./checks/licenses";
 import { run as moss } from "./checks/moss";
 import { run as protectedPaths } from "./checks/protected";
 import { report as quality } from "./checks/quality";
@@ -36,6 +37,14 @@ export function checks(
       () => {
         const { violations, notes: lowered } = ignores(root, base);
         notes.push(...lowered);
+        return violations;
+      },
+    ],
+    [
+      "licenses",
+      () => {
+        const { violations, notes: lic } = licenses(root);
+        notes.push(...lic);
         return violations;
       },
     ],

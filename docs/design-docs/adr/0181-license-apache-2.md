@@ -14,6 +14,9 @@ touches_protected:
   - harness/package.json
   - AGENTS.md
 decision_hash: 2018ecb30a2d4c19
+amended_by:
+  - adr: "0185"
+    what: 묶을 수 있는 라이선스 목록에 MPL-2.0을 수정 안 한 것만 더함
 ---
 # ADR-0181 테라리움의 라이선스는 Apache License 2.0이다
 

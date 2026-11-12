@@ -2,18 +2,18 @@
 title: 문서 색인
 kind: reference
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: 골든 안전망 문서 링크"
   - "2026-11-11: 골든 안전망 링크를 더함"
   - "2026-11-11: 권한 문서와 ADR-0174 링크"
   - "2026-11-11: ADR 목록을 없애고 결정 기록 폴더와 결정 목록을 가리키게 함 (ADR-0180)"
   - "2026-11-11: ADR 목록을 없애고 결정 기록 폴더와 결정 목록을 가리키게 함. AGENTS.md의 바뀐 곳은 CI 문장이라 색인과 무관 (ADR-0180)"
+  - "2026-11-12: 따라가는 AGENTS.md의 바뀐 곳은 절대 규칙 표의 라이선스 행(ADR-0185)이고, 색인은 문서 위치만 가리켜 어긋나지 않는다"
 follows:
   - AGENTS.md
-follows_hash: 16931b02d052cef8
+follows_hash: 26879b85e10eb615
 verified_body: 876cbc22d1a37868
-unchanged_reverifies: 1
+unchanged_reverifies: 2
 ---
 # 문서 색인
 
