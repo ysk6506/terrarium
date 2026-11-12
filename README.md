@@ -6,12 +6,15 @@ last_verified: 2026-11-12
 covers:
   - package.json
   - docs/exec-plans/active/beta-rounds.md
-covers_hash: 15fee01e0ecc80e5
 verification_log:
+covers_hash: 080a07a1dd71d43c
+verification_log:
+  - "2026-11-11: 제품의 값·기능·철학·한계를 요구사항 전체(REQ-001~119)와 physics-laws·measurement·ADR-0117의 한계에 대조해 다시 씀"
   - "2026-11-11: 제품의 값·기능·철학·한계를 요구사항 전체(REQ-001~119)와 physics-laws·measurement·ADR-0117·product-design의 원칙 여섯에 대조해 다시 씀"
   - "2026-11-11: 따라가는 beta-rounds.md는 앞부분(follows)만 바뀌었고 본문은 같다. requirements.md의 바뀐 곳(목표 첫째 부분)은 이 문서 첫 단락과 맞다 (ADR-0177)"
   - "2026-11-11: 라이선스 절(Apache-2.0)을 더함. package.json에 license 표기가 들어감 (ADR-0181)"
   - "2026-11-11: NOTICE 링크를 더함 (ADR-0181)"
+  - "2026-11-12: beta-rounds.md에 이슈 47 일정이 더해짐. '지금 단계'의 차수 서술은 그대로 맞다"
   - "2026-11-12: 덮는 beta-rounds.md는 ADR-0171/0173의 만드는 중 표시만 지워졌고 README에 그 표시가 없다"
 verified_body: 8b0ca42880fa2e30
 unchanged_reverifies: 0
