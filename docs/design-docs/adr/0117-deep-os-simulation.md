@@ -12,6 +12,9 @@ enforced_by:
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 933b30a723d6756d
+amended_by:
+  - adr: "0184"
+    what: 흉내가 못 하는 것은 command not found나 안 돼요로만 답하고 센다
 ---
 # ADR-0117 흉내 OS를 깊게 — 작은 리눅스 흉내가 run_command에 답한다
 

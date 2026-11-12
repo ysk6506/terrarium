@@ -23,6 +23,7 @@ const TAKES_ANY = new Set([
   "touch",
   "test",
   "[",
+  "nslookup",
   "whoami",
   "id",
 ]);
@@ -35,12 +36,14 @@ const COMMAND_NAMES =
 
 describe("an option the fake does not have is named and sent outside the simulation [REQ-098]", () => {
   const names = COMMAND_NAMES.filter((n) => !TAKES_ANY.has(n));
+  // ADR-0184: an option no real tool has is refused with what the real tool says, with no hint and no gap
   test.each(names)("%s refuses -Z and --no-such-option", (name) => {
-    for (const option of ["-Z", "--no-such-option"]) {
+    for (const option of ["-@", "--no-such-option"]) {
       const r = lab().run("srv-a2", `${name} ${option}`);
-      expect(r.exitCode, `${name} ${option}`).toBe(2);
-      expect(r.outside, `${name} ${option}`).toHaveLength(1);
-      expect(r.outside[0]).toMatch(new RegExp(`^(${name}|grep) `));
+      expect(r.exitCode, `${name} ${option}`).toBeGreaterThan(0);
+      expect(r.outside, `${name} ${option}`).toEqual([]);
+      expect(r.stderr, `${name} ${option}`).not.toContain("terrarium:");
+      expect(r.stderr, `${name} ${option}`).not.toBe("");
     }
   });
 });

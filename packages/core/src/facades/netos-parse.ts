@@ -8,6 +8,18 @@ import type { Os } from "./netos-model";
 /** A command word: a keyword, or a value (`{ arg }`; `rest` takes the rest of the line). */
 export type Word = string | { readonly arg: string; readonly rest?: true };
 
+/** `show {IF} <port> status` → words; `<x>` is a value, `<x...>` takes the rest of the line. */
+export function wordsOf(text: string, os: Os): Word[] {
+  return text
+    .replace("{IF}", os === "nxos" ? "interface" : "interfaces")
+    .split(" ")
+    .map((w) => {
+      if (!w.startsWith("<")) return w;
+      const rest = w.endsWith("...>");
+      return rest ? { arg: w.slice(1, -4), rest: true as const } : { arg: w.slice(1, -1) };
+    });
+}
+
 export interface Token {
   readonly text: string;
   readonly start: number;

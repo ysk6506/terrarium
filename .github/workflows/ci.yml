@@ -32,6 +32,7 @@ jobs:
     timeout-minutes: 5
     outputs:
       docs_only: ${{ steps.scope.outputs.docs_only }}
+      web: ${{ steps.scope.outputs.web }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -43,10 +44,13 @@ jobs:
           BASE_REF: ${{ github.base_ref }}
         run: |
           docs_only=false
+          web=true
           reason="not a pull request"
           if [ "$EVENT" = "pull_request" ]; then
             if files=$(git -c core.quotepath=off diff --name-only --no-renames "origin/$BASE_REF...HEAD") && [ -n "$files" ]; then
               others=""
+              # Does the change touch the web app or the UX measurement? Then ux-measure runs (it is a record, not a gate).
+              if printf '%s\n' "$files" | grep -qE '^(apps/web/|tests/e2e/ux/|harness/src/ux/|\.github/)'; then web=true; else web=false; fi
               while IFS= read -r f; do
                 case "$f" in
                   docs/generated/*) others="$others$f"$'\n' ;;
@@ -67,6 +71,7 @@ jobs:
             fi
           fi
           echo "docs_only=$docs_only" >> "$GITHUB_OUTPUT"
+          echo "web=$web" >> "$GITHUB_OUTPUT"
           {
             echo "### Path: $([ "$docs_only" = true ] && echo light || echo full)"
             echo "$reason"
@@ -294,107 +299,98 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        group: [flow, build, own]
+        group: [flow, build, small, own, topology]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - name: Install the browser without system packages when it can start without them (ADR-0159)
-        run: |
-          # The browser comes from the Playwright download host. The runner image already has the libraries, and the
-          # app ships its own font, so the system packages (apt) are only a fallback when the browser cannot start.
-          for i in 1 2 3; do
-            pnpm exec playwright install chromium && break
-            echo "browser download attempt $i failed"; sleep $((i * 20))
-          done
-          if node -e "require('playwright').chromium.launch().then((b) => b.close())"; then exit 0; fi
-          echo "the browser did not start without system packages; installing them"
-          for i in 1 2 3; do
-            pnpm exec playwright install-deps chromium && exit 0
-            echo "system package attempt $i failed"; sleep $((i * 20))
-          done
-          exit 1
-        shell: bash
-      - name: Journeys of the group (15 minute limit inside)
-        run: pnpm ux journeys --group ${{ matrix.group }} 2>&1 | tee ux-journeys-${{ matrix.group }}.log
+      - uses: ./.github/actions/browser
+      - name: Journeys of the group (15 minute limit inside; the log is the job log, so no artifact is uploaded, ADR-0175)
+        run: pnpm ux journeys --group ${{ matrix.group }}
         env:
           TERRARIUM_UX_ECHO: "1"
         shell: bash
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ux-journeys-${{ matrix.group }}
-          path: ux-journeys-${{ matrix.group }}.log
 
   # The Honeycomb score: timings, sizes, accessibility, wording, and the journeys again for their hand counts. Non-gating
-  # until TD-0004 is closed: it runs on every push to main and on pull requests that touch the web app, and uploads the
-  # log and ux-score.json. The CI artifact is the record; the file in the repository is refreshed from it (ADR-0141).
-  ux-measure:
+  # until TD-0004 is closed. It runs on every push to main and on pull requests that touch the web app. The browser half
+  # is cut into slices that run side by side (tests/e2e/ux/parts.ts, ADR-0175); `ux-measure` puts them together into the
+  # same scores a single run gives and prints the record. The record is not committed with each change: the cleanup job
+  # measures main and commits docs/generated/ux-score.json. A change reads its own scores in this job's summary.
+  ux-parts:
     needs: changes
-    if: needs.changes.outputs.docs_only != 'true'
+    if: needs.changes.outputs.web == 'true' && needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        part:
+          - journeys-flow
+          - journeys-build
+          - journeys-small
+          - journeys-own
+          - journeys-topology
+          - probes-a
+          - probes-b
+          - probes-c
+          - probes-d
+          - probes-e
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/browser
+      - name: One slice of the measurement
+        env:
+          TERRARIUM_UX_ECHO: "1"
+        run: |
+          mkdir -p ux-parts
+          node_modules/.bin/tsx tests/e2e/ux/measure.ts --part ${{ matrix.part }} --out ux-parts/${{ matrix.part }}.json
+        shell: bash
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ux-part-${{ matrix.part }}
+          path: ux-parts/${{ matrix.part }}.json
+          if-no-files-found: error
+
+  ux-measure:
+    needs: [changes, ux-parts]
+    if: always() && needs.changes.result == 'success' && needs.changes.outputs.web == 'true' && needs.changes.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     continue-on-error: true # TD-0004: the UX score misses its floor on the runner, so it is a record until that is closed
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
         with:
-          fetch-depth: 0
-      - name: Does this change touch the web app?
-        id: scope
+          pattern: ux-part-*
+          path: ux-parts
+          merge-multiple: true
+      - name: Put the slices together and score them
         run: |
-          run=true
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            if git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -qE '^(apps/web/|tests/e2e/ux/|harness/src/ux/)'; then run=true; else run=false; fi
-          fi
-          echo "run=$run" >> "$GITHUB_OUTPUT"
-      - if: steps.scope.outputs.run == 'true'
-        uses: ./.github/actions/setup
-      - if: steps.scope.outputs.run == 'true'
-        run: |
-          # The browser comes from the Playwright download host. The runner image already has the libraries, and the
-          # app ships its own font, so the system packages (apt) are only a fallback when the browser cannot start.
-          for i in 1 2 3; do
-            pnpm exec playwright install chromium && break
-            echo "browser download attempt $i failed"; sleep $((i * 20))
-          done
-          if node -e "require('playwright').chromium.launch().then((b) => b.close())"; then exit 0; fi
-          echo "the browser did not start without system packages; installing them"
-          for i in 1 2 3; do
-            pnpm exec playwright install-deps chromium && exit 0
-            echo "system package attempt $i failed"; sleep $((i * 20))
-          done
-          exit 1
+          set -o pipefail
+          pnpm ux merge ux-parts 2>&1 | tee ux.log
         shell: bash
-      - name: Is the recorded score file in the repository still fresh? (reports only, ADR-0141)
-        if: steps.scope.outputs.run == 'true'
-        run: |
-          set -o pipefail
-          pnpm ux check 2>&1 | tee ux-record.log || echo "::warning::docs/generated/ux-score.json is stale or below a floor; commit the ux-score.json of this job's artifact (ADR-0141)"
-      - name: UX measurement (40 minute limit)
-        if: steps.scope.outputs.run == 'true'
-        env:
-          TERRARIUM_UX_ECHO: "1"
-        run: |
-          set -o pipefail
-          node_modules/.bin/tsx -e "import {main,runChild} from './harness/src/ux/run.ts'; main(['measure'],console.log,(c,a,o)=>runChild(c,a,{...o,timeoutMs:40*60_000})).then(c=>process.exit(c))" 2>&1 | tee ux.log
-      # The artifact needs a sign-in to download; the log does not. The record is printed whole so it can be copied.
+      # The artifact needs a sign-in to download; the log and the summary do not. The record is printed whole so it
+      # can be copied.
       - name: Print the record (docs/generated/ux-score.json)
-        if: always() && steps.scope.outputs.run == 'true'
+        if: always()
         run: |
           echo "::group::ux-score.json"
           cat docs/generated/ux-score.json
           echo "::endgroup::"
-      - name: Do the fresh scores meet the floors? (what still misses)
-        if: always() && steps.scope.outputs.run == 'true'
-        run: |
-          set -o pipefail
-          pnpm ux check 2>&1 | tee -a ux.log
-      - if: always() && steps.scope.outputs.run == 'true'
+          {
+            echo "### UX score of this change"
+            echo '```'
+            sed -n '1,60p' ux.log
+            echo '```'
+            echo "The record is not committed with the change (ADR-0175); the cleanup job commits it from main."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ux-measure
           path: |
             ux.log
-            ux-record.log
             docs/generated/ux-score.json
 
   # The one required check. It always runs. Full path: every gating job succeeded, exactly as before. Light path:

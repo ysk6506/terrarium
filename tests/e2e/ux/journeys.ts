@@ -581,7 +581,8 @@ export async function seedWorld(base: string, ids: readonly JourneyId[]): Promis
 /**
  * Runs of journeys that depend on what the earlier ones of the run made (the experiment `run` finishes is the one
  * `share` and `fork` open; the scenario `design` saves is the one `process-compare` writes on). Each group starts on
- * a fresh server, so CI can run the groups side by side (ADR-0141). Every journey is in exactly one group.
+ * a fresh server, so CI can run the groups side by side (ADR-0141). Every journey is in exactly one group. The groups that
+ * depend on nothing are cut small (ADR-0175) so that no group takes much more than a minute and a half of journeys.
  */
 export const JOURNEY_GROUPS: Readonly<Record<string, readonly JourneyId[]>> = {
   flow: [
@@ -595,8 +596,10 @@ export const JOURNEY_GROUPS: Readonly<Record<string, readonly JourneyId[]>> = {
     "compare",
     "author",
   ],
-  build: ["build", "site", "build-small"],
-  own: ["own-card-only", "topology"],
+  build: ["build"],
+  small: ["site", "build-small"],
+  own: ["own-card-only"],
+  topology: ["topology"],
 };
 
 export async function perform(

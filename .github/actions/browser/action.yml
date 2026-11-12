@@ -1,0 +1,31 @@
+name: browser
+description: Install the Playwright browser, keeping the download between runs (ADR-0175), and fall back to the system packages only when it cannot start.
+runs:
+  using: composite
+  steps:
+    - name: Which Playwright version
+      id: version
+      run: echo "playwright=$(pnpm exec playwright --version | awk '{print $NF}')" >> "$GITHUB_OUTPUT"
+      shell: bash
+    - name: The browser download from an earlier run
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ steps.version.outputs.playwright }}
+    - name: Install the browser without system packages when it can start without them (ADR-0159)
+      run: |
+        # The browser comes from the Playwright download host (a cache hit makes this a no-op). The runner image already
+        # has the libraries, and the app ships its own font, so the system packages (apt) are only a fallback when the
+        # browser cannot start.
+        for i in 1 2 3; do
+          pnpm exec playwright install chromium && break
+          echo "browser download attempt $i failed"; sleep $((i * 20))
+        done
+        if node -e "require('playwright').chromium.launch().then((b) => b.close())"; then exit 0; fi
+        echo "the browser did not start without system packages; installing them"
+        for i in 1 2 3; do
+          pnpm exec playwright install-deps chromium && exit 0
+          echo "system package attempt $i failed"; sleep $((i * 20))
+        done
+        exit 1
+      shell: bash

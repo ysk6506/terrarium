@@ -18,13 +18,15 @@ covers:
   - packages/core/src/world/incidents.ts
   - apps/server/src/runtime/executor-operation.ts
   - packages/core/src/session/run-events.ts
-covers_hash: a7040818b6eca855
+covers_hash: 5d299079750cfbf0
 verification_log:
-  - "2026-11-11: 상황 문구, 점수 차이 출처 문단(spreadFindings)을 코드와 대조"
   - "2026-11-11: 상황 문구, 시험 이름표, 둘째 질문 단추와 상황별 구역 머리를 코드와 대조"
   - "2026-11-11: 단계 문구와 한 실행뿐일 때의 조언 절반을 코드와 대조"
   - "2026-11-11: ADR-0163: 실험 상태 규칙(멈춤이 하나라도 있으면 멈춤) 한 줄을 더하고 experimentStatus, 순위표와 통계의 완료 실행 기준을 코드와 대조했다. 나머지는 그대로 맞다"
   - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
+  - "2026-11-12: ADR-0184: main을 합친 뒤 한계 힌트 변경과 이 문서의 서술이 어긋나지 않음을 대조"
+verified_body: fdbf06c310d3bdac
+unchanged_reverifies: 0
 ---
 # 실험과 결과 분석 (REQ-015, REQ-030~033, REQ-037~040)
 

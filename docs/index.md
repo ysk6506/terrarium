@@ -4,16 +4,16 @@ kind: reference
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: ADR 목록을 없애고 결정 기록 폴더와 결정 목록을 가리키게 함 (ADR-0180)"
   - "2026-11-11: ADR 목록을 없애고 결정 기록 폴더와 결정 목록을 가리키게 함. AGENTS.md의 바뀐 곳은 CI 문장이라 색인과 무관 (ADR-0180)"
   - "2026-11-12: 따라가는 AGENTS.md에 내부 사실을 적지 않는다는 줄이 더해짐(ADR-0187). 색인과 무관. 지운 참고 문서는 색인에 없었다"
   - "2026-11-12: 따라가는 AGENTS.md의 바뀐 곳은 절대 규칙 표의 라이선스 행(ADR-0185)이고, 색인은 문서 위치만 가리켜 어긋나지 않는다"
   - "2026-11-12: main 합침: 라이선스 행·링크(ADR-0185)와 내부 사실 줄(ADR-0187)이 함께 있다. 서로 어긋나지 않는다"
+  - "2026-11-12: main을 합침: 따라가는 AGENTS.md의 변경은 색인과 무관"
 follows:
   - AGENTS.md
-follows_hash: 76577030fa525acd
+follows_hash: 0b71d88ccb75df3e
 verified_body: 876cbc22d1a37868
-unchanged_reverifies: 3
+unchanged_reverifies: 4
 ---
 # 문서 색인
 

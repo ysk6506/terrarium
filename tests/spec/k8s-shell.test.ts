@@ -96,10 +96,18 @@ describe("kubectl describe node and the things the fake does not do [REQ-096] [R
 
   test("a verb the fake does not have prints what it can do and exits 1", () => {
     const { sh } = lab();
-    for (const cmd of ["kubectl", "kubectl logs x", "kubectl get svc", "kubectl describe"]) {
+    // ADR-0184: logs and a get of services are real kubectl the fake lacks (the terrarium lines say so);
+    // a bare kubectl or a describe with no type is the real client's own complaint
+    for (const cmd of ["kubectl logs x", "kubectl get svc"]) {
       const r = sh(W1, cmd);
       expect(r.exitCode, cmd).toBe(1);
-      expect(r.output, cmd).toContain("이 kubectl 명령은 아직 못 해요");
+      expect(r.output, cmd).toContain("terrarium: 이 실험장은 kubectl의");
+      expect(r.output, cmd).toContain("terrarium: kubectl에서 되는 것: get nodes|pods|deployments");
+    }
+    for (const cmd of ["kubectl", "kubectl describe", "kubectl foo"]) {
+      const r = sh(W1, cmd);
+      expect(r.exitCode, cmd).toBe(1);
+      expect(r.output, cmd).not.toContain("terrarium:");
     }
   });
 
@@ -136,9 +144,11 @@ describe("crictl ps lists the containers on a node, API or not [REQ-096]", () =>
   test("a verb other than ps is refused with what it can do", () => {
     const { sh } = lab();
     expect(sh(W1, "crictl images")).toMatchObject({
-      output: "이 crictl 명령은 아직 못 해요. 되는 것: crictl ps",
+      output:
+        "terrarium: 이 실험장은 crictl의 images 기능을 지원하지 않아요. 실제 crictl에는 있어요.\nterrarium: crictl에서 되는 것: ps\nterrarium: 대신 이 명령은 돼요: crictl ps",
       exitCode: 1,
     });
+    expect(sh(W1, "crictl foo").output).toBe('Error: unknown command "foo" for "crictl"');
   });
 
   test("a crashing pod is Exited on its node while the API says CrashLoopBackOff", () => {

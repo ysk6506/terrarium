@@ -49,7 +49,8 @@ describe("df, free, uptime and mount read the host's numbers [REQ-098]", () => {
     );
     expect(sh("uptime -p")).toBe("up 14 days, 7:01");
     expect(sh("uptime -s")).toBe("2025-12-17 17:08:10");
-    expect(run("srv-a2", "uptime -x").outside).toEqual(["uptime -x"]);
+    // ADR-0184: -x is no uptime option, so uptime refuses it itself and nothing is outside
+    expect(run("srv-a2", "uptime -x")).toMatchObject({ exitCode: 1, outside: [] });
   });
 
   test("mount lists the mounts, remounting read-write is allowed, anything else is outside the fake", () => {
@@ -58,7 +59,7 @@ describe("df, free, uptime and mount read the host's numbers [REQ-098]", () => {
       "/dev/sda2 on / type ext4 (rw,relatime,seclabel,errors=remount-ro)",
     );
     expect(run("srv-a2", "mount -o remount,rw /").exitCode).toBe(0);
-    expect(run("srv-a2", "mount -o ro /x").outside).toEqual(["mount -o ro /x"]);
+    expect(run("srv-a2", "mount -o ro /x").outside).toEqual(["mount -o 옵션 (remount,rw 말고)"]);
     expect(sh("lsblk").split("\n")[2]).toBe("├─sda1   8:1    0     1G  0 part /boot");
   });
 
@@ -87,7 +88,8 @@ describe("df, free, uptime and mount read the host's numbers [REQ-098]", () => {
       stdout: "",
       exitCode: 0,
     });
-    expect(run("srv-a2", "logrotate -z").outside).toEqual(["logrotate -z"]);
+    // ADR-0184: -z is no logrotate option; logrotate refuses it itself and nothing is outside
+    expect(run("srv-a2", "logrotate -z").outside).toEqual([]);
   });
 });
 

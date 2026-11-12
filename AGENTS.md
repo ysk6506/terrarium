@@ -9,12 +9,12 @@ covers:
   - harness/config/protected-paths.txt
 covers_hash: 92c76fe9a7d17245
 verification_log:
-  - "2026-11-11: 첫 단락을 목표 문장으로 맞추고 새 결정·정리 작업 절차와 DOC090~DOC095 행을 적음 (ADR-0180)"
   - "2026-11-11: package.json에 license 표기만 더해짐. 명령과 안내는 그대로 맞다 (ADR-0181)"
   - "2026-11-12: 하지 말 것 표에 내부 사실을 적지 않는다는 줄을 더함 (ADR-0187)"
   - "2026-11-12: 절대 규칙 표에 라이선스 행(LIC001, LIC002)을 더함. 명령과 보호 경로는 그대로 맞다 (ADR-0185)"
   - "2026-11-12: main 합침: 라이선스 행·링크(ADR-0185)와 내부 사실 줄(ADR-0187)이 함께 있다. 서로 어긋나지 않는다"
-verified_body: 1217d85397dfa278
+  - "2026-11-12: main을 합침: 라이선스 검사 줄(ADR-0185)과 main의 변경(ADR-0175, ADR-0187)이 함께 들어감"
+verified_body: 6b1393c004a3631e
 unchanged_reverifies: 0
 ---
 # Terrarium — 코딩 에이전트 안내서
@@ -64,8 +64,8 @@ CI가 합치기 관문이다 ([ADR-0140](docs/design-docs/adr/0140-ci-shards-and
 - **새 결정** → [ADR 작성 절차](docs/design-docs/adr-process.md). `enforced_by`로 강제 장치에 연결하고, `updates_docs`에 바꾸는 문서를 적어 같은 변경에서 고친다. 앞선 결정의 일부를 바꾸면 `amends`를 적고 `docs.ts link-amends <ADR>`를 돌린다. 색인과 제품 설계 한 장의 표에는 줄을 더하지 않는다.
 - **부채를 남겨야 함** → 장부에 항목 등록 후 `TODO(TD-NNNN)`. 기한과 예산이 있다.
 - **커버리지를 올렸다** → `pnpm ratchet`으로 하한을 고정. 끄기를 없앴으면 `IGN006` 알림이 나오고 기준선은 정리 작업이 `pnpm ratchet`으로 내린다.
-- **정리 작업(5시간마다)** → 첫 단계는 `pnpm quality write`로 [품질 등급표](docs/generated/quality.md)를 새로 만들고, 등급이 가장 낮은 단위부터 고른다. 한 줄의 "이유" 칸이 무엇을 고치면 등급이 오르는지 알려 준다. 고친 뒤 `pnpm ratchet`으로 끄기 기준선을 내리고 등급표를 다시 만들어 올린다. 일반 변경은 등급표를 건드리지 않아도 된다(변경마다의 등급은 CI 요약에 나온다). 이어서 `pnpm tsx harness/src/checks/docs.ts decisions`로 [결정 목록](docs/generated/decisions.md)을 새로 만든다. 그다음 `pnpm tsx harness/src/checks/docs.ts audit-queue`의 앞 셋을 골라, 각 문서를 그것이 `covers`·`follows`하는 코드와 결정에 대어 독립된 눈으로 읽는다. 틀린 곳은 고치고, 맞으면 `docs.ts audit <문서> --note "한 줄로 본 것"`으로 `last_audited`를 남긴다.
-- **웹 화면을 바꿨다** → 여정은 CI의 `ux-journeys`(게이트)가 돌린다. 측정은 CI의 `ux-measure`(게이트 아님)가 돌리니 그 `ux-score.json`(아티팩트 또는 작업 로그)을 마지막 커밋으로 올린다(`pnpm ux`로 로컬에서 재도 된다. 낡으면 `UX004`). 점수가 올랐으면 `pnpm ux ratchet`으로 하한을 고정한다. 읽는 법은 [UX 측정](docs/design-docs/ux-honeycomb.md).
+- **정리 작업(5시간마다)** → 첫 단계는 `pnpm quality write`로 [품질 등급표](docs/generated/quality.md)를 새로 만들고, 등급이 가장 낮은 단위부터 고른다. 한 줄의 "이유" 칸이 무엇을 고치면 등급이 오르는지 알려 준다. 고친 뒤 `pnpm ratchet`으로 끄기 기준선을 내리고 등급표를 다시 만들어 올린다. 일반 변경은 등급표를 건드리지 않아도 된다(변경마다의 등급은 CI 요약에 나온다). 웹 화면이 바뀌었으면 `pnpm ux`로 `ux-score.json`을 새로 재서 올리고, 오른 점수는 `pnpm ux ratchet`으로 하한에 반영한다(ADR-0175). 이어서 `pnpm tsx harness/src/checks/docs.ts decisions`로 [결정 목록](docs/generated/decisions.md)을 새로 만든다. 그다음 `pnpm tsx harness/src/checks/docs.ts audit-queue`의 앞 셋을 골라, 각 문서를 그것이 `covers`·`follows`하는 코드와 결정에 대어 독립된 눈으로 읽는다. 틀린 곳은 고치고, 맞으면 `docs.ts audit <문서> --note "한 줄로 본 것"`으로 `last_audited`를 남긴다.
+- **웹 화면을 바꿨다** → 여정은 CI의 `ux-journeys`(게이트)가 돌린다. 측정은 CI의 `ux-measure`(게이트 아님)가 조각으로 나눠 돌리고, 이 변경의 점수는 그 작업 요약에 나온다. `ux-score.json`은 변경마다 커밋하지 않는다: 낡으면 알림 한 줄(`UX004`)만 나오고, 정리 작업이 main에서 새로 재서 올린다(`pnpm ux`로 로컬에서 재도 된다). 읽는 법은 [UX 측정](docs/design-docs/ux-honeycomb.md) ([ADR-0175](docs/design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md)).
 
 ## 철학
 

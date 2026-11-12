@@ -2,7 +2,7 @@
 title: 애플리케이션 층 — 로드 밸런서·세션·서킷 브레이커·메시·리전과 서비스 호출 그래프
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/world/app.ts
   - packages/core/src/world/app-act.ts
@@ -22,12 +22,14 @@ covers:
   - packages/core/src/topology/impact-app.ts
   - packages/core/src/world/ladder.ts
 verification_log:
-  - "2026-11-07: 점선 다섯의 서술을 REQ-106(사이트·DR 층)으로 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장이 이 문서의 내용을 바꾸지 않는지 대조했다(층 수·툴 수·칩 수를 세는 문장을 찾아 고쳤고, 나머지는 그대로 맞다)"
   - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
   - "2026-11-11: tools·world/os: 닿지 않는 분기 정리와 시험 추가; 동작은 같음(TD-0002), awk는 이름 바로 뒤 '(' 호출과 srand 반환값"
   - "2026-11-11: ADR-0178: 만들어지는 모든 모양에서 제공되는 시나리오가 100점이라는 서술(사이드카·정전·CDU·냉방기·콜드 DR 대기 쪽·메모리 규칙)을 코드와 대조해 더했다"
-covers_hash: 531393d68d5ebf60
+  - "2026-11-12: ADR-0184: 흉내의 한계 힌트 변경 뒤에도 내용이 맞는지 다시 봤어요"
+covers_hash: 42145cae28fb186d
+verified_body: 363d4fdb2cb10420
+unchanged_reverifies: 0
 ---
 # 애플리케이션 층 (REQ-100, [ADR-0121](adr/0121-application-layer-and-calls.md), [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6)
 

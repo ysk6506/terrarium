@@ -2,7 +2,7 @@
 title: 스위치의 운영 체제 — 아리스타 EOS, 시스코 NX-OS·IOS XE
 kind: spec
 status: active
-last_verified: 2026-11-04
+last_verified: 2026-11-12
 covers:
   - packages/core/src/facades/netos-model.ts
   - packages/core/src/facades/netos-parse.ts
@@ -14,12 +14,14 @@ covers:
   - packages/core/src/facades/snmp-if.ts
   - packages/core/src/profiles/profiles.ts
 verification_log:
-  - "2026-11-04: 처음 썼다: OS 프로파일, CLI 모드·줄임말·오류 문구, eAPI·NX-API, shutdown 월드 효과를 코드와 대조"
-  - "2026-11-04: 분리한 함수(portState, peerPortOf, nxapiInput)와 월드 validate 분리를 다시 대조. 동작은 같다"
   - "2026-11-04: CLI 명령 목록, 모드, 파이프, 오류 문구를 netos-cli/netos-parse와 다시 대조했다. 출력 모양 테스트(network-os-outputs)를 확인 목록에 추가"
   - "2026-11-04: VLAN·MAC 표·라우팅이 없다던 줄을 새 문서(switch-l2l3)로 바꾸고, 명령 목록에 2·3계층 명령을 더했다. netos-cli/show/iface/model의 L2/L3 변경과 대조"
   - "2026-11-04: netos-cli의 모드 확장(config-bgp, config-bgp-nbr), configure 호출 종료 규칙(network.ts), 새 명령 목록을 확인해 명령줄 절에 더했다 (REQ-065)"
-covers_hash: 4c393d3ddccd05c7
+  - "2026-11-12: ADR-0184: 흉내의 한계 힌트 변경 뒤에도 내용이 맞는지 다시 봤어요"
+  - "2026-11-12: ADR-0184: 한계 출력 모양 변경(terrarium 줄만)이 이 문서 내용과 어긋나지 않음을 대조"
+covers_hash: 99419d9b3abf574b
+verified_body: 0e1745b3026d9e81
+unchanged_reverifies: 1
 ---
 # 스위치의 운영 체제 (REQ-062, ADR-0059)
 

@@ -8,13 +8,18 @@
 import { TerrariumError } from "@terrarium/core/kernel";
 import type { ProfileRegistry } from "@terrarium/core/profiles";
 import {
+  type EmulationGap,
   type Entity,
+  type GapNotice,
+  gapOf,
+  gapText,
   type NetChange,
   type NetModel,
   netModelOf,
   type WorldPort,
 } from "@terrarium/core/world";
 import { bgpConfigSpecs, bgpShowSpecs, stpShowSpecs } from "./netos-bgp-config";
+import { cliGap } from "./netos-gaps";
 import { interfaceDescription, interfaceDetail, interfaceStatus } from "./netos-iface";
 import { macRows, showMacTable, showTrunk, showVlan } from "./netos-l2";
 import { arpRows, showIpArp, showIpInterfaceBrief } from "./netos-l3";
@@ -40,6 +45,7 @@ import {
   type Token,
   tokenize,
   type Word,
+  wordsOf,
 } from "./netos-parse";
 import { runPing, runTraceroute } from "./netos-ping";
 import { showIpRoute } from "./netos-routes";
@@ -61,6 +67,17 @@ export class CliFailure extends Error {
     readonly at: number,
   ) {
     super(kind);
+  }
+}
+
+/** A line the real OS reads and the fake does not (ADR-0184): the OS's own failure for it, plus the gap. */
+class CliGapFailure extends CliFailure {
+  constructor(
+    kind: FailKind,
+    at: number,
+    readonly gap: GapNotice,
+  ) {
+    super(kind, at);
   }
 }
 
@@ -87,6 +104,14 @@ export interface Step {
   readonly result?: Result;
   /** Why the line failed. */
   readonly failure?: string;
+  /** Set when the real OS reads the line and the fake does not (ADR-0184). */
+  readonly gap?: EmulationGap;
+}
+
+/** The emulation gap a failed line stands for, if it is one (also through `do`). */
+function gapOfError(error: unknown): EmulationGap | undefined {
+  if (error instanceof CliGapFailure) return gapOf(error.gap);
+  return error instanceof NestedFailure ? error.gap : undefined;
 }
 
 const CONFIG: readonly Mode[] = [
@@ -98,18 +123,6 @@ const CONFIG: readonly Mode[] = [
 ];
 const PRIV_UP: readonly Mode[] = ["priv", ...CONFIG];
 const ALL: readonly Mode[] = ["user", ...PRIV_UP];
-
-/** `show {IF} <port> status` → words; `<x>` is a value, `<x...>` takes the rest of the line. */
-function wordsOf(text: string, os: Os): Word[] {
-  return text
-    .replace("{IF}", os === "nxos" ? "interface" : "interfaces")
-    .split(" ")
-    .map((w) => {
-      if (!w.startsWith("<")) return w;
-      const rest = w.endsWith("...>");
-      return rest ? { arg: w.slice(1, -4), rest: true as const } : { arg: w.slice(1, -1) };
-    });
-}
 
 export type Maker = (text: string, modes: readonly Mode[], run: Spec["run"]) => Spec;
 
@@ -269,11 +282,20 @@ const PROMPT_TAIL: Readonly<Record<Mode, string>> = {
 class PrivilegeError extends Error {}
 
 /** A line run through `do` that failed; its message is what the OS printed. */
-class NestedFailure extends Error {}
+class NestedFailure extends Error {
+  constructor(
+    message: string,
+    readonly gap?: EmulationGap,
+  ) {
+    super(message);
+  }
+}
 
 export class CliSession {
   mode: Mode;
   closed = false;
+  /** The emulation gaps the lines of this session hit, in order (ADR-0184). */
+  readonly gaps: EmulationGap[] = [];
   /** The port `interface` selected (0 when none, or when a VLAN interface is selected). */
   port = 0;
   /** The VLAN interface `interface vlan` selected (0 when none). */
@@ -351,7 +373,7 @@ export class CliSession {
     this.mode = "priv";
     try {
       const step = this.exec(line);
-      if (!step.ok) throw new NestedFailure(step.output);
+      if (!step.ok) throw new NestedFailure(step.output, step.gap);
       return step.output;
     } finally {
       this.mode = saved;
@@ -370,7 +392,17 @@ export class CliSession {
       return { command: line, prompt, output, ok: true, ...(result ? { result } : {}) };
     } catch (error) {
       const failure = this.explain(v, error, command, tokens, prompt);
-      return { command: line, prompt, output: failure, ok: false, failure };
+      const gap = gapOfError(error);
+      // a gap met inside `do` was already counted by the inner line
+      if (gap && !(error instanceof NestedFailure)) this.gaps.push(gap);
+      return {
+        command: line,
+        prompt,
+        output: failure,
+        ok: false,
+        failure,
+        ...(gap ? { gap } : {}),
+      };
     }
   }
 
@@ -389,6 +421,8 @@ export class CliSession {
       !isFailure(matchCommand(this.specs("priv", v.os), tokens))
     )
       throw new PrivilegeError();
+    const gap = cliGap(v.os, this.mode, tokens, this.specs(this.mode, v.os));
+    if (gap) throw new CliGapFailure(found.kind, found.at, gap);
     throw new CliFailure(found.kind, found.at);
   }
 
@@ -418,6 +452,7 @@ export class CliSession {
   ): string {
     if (error instanceof PrivilegeError) return "% Invalid input (privileged mode required)";
     if (error instanceof NestedFailure) return error.message;
+    if (error instanceof CliGapFailure) return gapText(error.gap);
     if (error instanceof CliFailure)
       return failureText(v.os, { kind: error.kind, at: error.at }, tokens, prompt, command.trim());
     if (error instanceof TerrariumError) return `% ${error.message}`;

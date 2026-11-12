@@ -3,8 +3,9 @@ import { has, parseArgs } from "./args";
 import { dateAt, etime, hms, monthName, p2, uptimeText } from "./clock";
 import { skewAt } from "./journal";
 import { type Proc, processTable } from "./procs";
+import { badFlag } from "./real-options";
 import { loadAvg, memInfo } from "./sysinfo";
-import { act, type Cmd, fail, joinLines, ok, type R, unsupported } from "./types";
+import { act, type Cmd, emulationGap, fail, joinLines, ok, type R } from "./types";
 
 const stateText = (p: Proc): string =>
   p.state === "Z"
@@ -149,6 +150,43 @@ function formatOf(format: string): { cols: string[]; heads: (string | undefined)
   };
 }
 
+/** The format keywords of the real ps (`ps L`, procps-ng 4); the fake knows only some of them. */
+const REAL_PS_KEYS = new Set(
+  "%cpu %mem ag_id ag_nice args atime blocked bsdstart bsdtime c caught cgname cgroup cgroupns class cls cmd comm command context cp cpuid cputime cputimes cuc cuu drs dsiz egid egroup eip esp etime etimes euid euser exe f fgid fgroup flag flags fname fsgid fsgroup fsuid fsuser fuid fuser gid group ignored intpri ipcns label lastcpu lim longtname lsession lstart luid lwp lxc m_drs m_size m_trs machine maj_flt majflt min_flt minflt mntns ni nice nlwp numa oom oomadj opri ouid pagein pcpu pending pgid pgrp pid pidns pmem policy ppid pri priority psr pss rbytes rchars rgid rgroup rops rss rssize rsz rtprio ruid ruser s sched seat sess session sgi_p sgi_rss sgid sgroup sid sig sig_block sig_catch sig_ignore sig_pend sigcatch sigignore sigmask size slice spid stackp start start_stack start_time stat state stime suid supgid supgrp suser svgid svgroup svuid svuser sz tgid thcount tid time timens times tname tpgid trs trss tsig tsiz tt tty ucmd ucomm uid uname unit user userns uss util utsns uunit vsize vsz wbytes wcbytes wchan wchars wname wops zone".split(
+    " ",
+  ),
+);
+const PS_SUPPORTED =
+  "-e -A -a -x -f -u -l -w -h -p PID -C 이름 -U 사용자 -o 열(pid ppid user uid comm args stat %cpu %mem rss vsz start etime time ni nlwp tty), --sort=pid|%cpu|%mem|rss|vsz|start|time, aux";
+
+function psSortRefusal(spec: string): R {
+  const key = spec.replace(/^[-+]/, "");
+  if (!REAL_PS_KEYS.has(key))
+    return fail(
+      "error: unknown sort specifier\n\nUsage:\n ps [options]\n\n Try 'ps --help <simple|list|output|threads|misc|all>'\n  or 'ps --help <s|l|o|t|m|a>'\n for additional help text.\n\nFor more details see ps(1).",
+      1,
+    );
+  return emulationGap({
+    tool: "ps",
+    feature: `sort:${key}`,
+    what: `--sort=${spec}`,
+    supported: PS_SUPPORTED,
+    example: "ps aux --sort=-%cpu",
+  });
+}
+
+function psFormatRefusal(key: string): R {
+  if (!REAL_PS_KEYS.has(key))
+    return fail(`error: unknown user-defined format specifier "${key}"`, 1);
+  return emulationGap({
+    tool: "ps",
+    feature: `format:${key}`,
+    what: `-o ${key}`,
+    supported: PS_SUPPORTED,
+    example: "ps -eo pid,comm,%cpu",
+  });
+}
+
 export function ps(c: Cmd): R {
   const args = c.args.map((a, i) => (i === 0 && /^[aux]+$/.test(a) ? `-${a}` : a));
   const p = parseArgs(args, {
@@ -156,18 +194,16 @@ export function ps(c: Cmd): R {
     val: "oOpCU",
     long: { sort: "val", "no-headers": "bool", forest: "bool", pid: "val", user: "val" },
   });
-  if (p.bad) return unsupported("ps", p.bad);
+  if (p.bad) return badFlag("ps", p);
   const rows = psRows(c, p);
   const order = sorted(c, rows, p.flags.get("--sort"));
-  if (!order) return unsupported("ps", `--sort=${p.flags.get("--sort")}`);
+  if (!order) return psSortRefusal(p.flags.get("--sort") as string);
   const header = !has(p, "h") && !has(p, "--no-headers");
   const format = p.flags.get("o") ?? p.flags.get("O");
   if (format !== undefined) {
     const { cols, heads } = formatOf(format);
     const bad = cols.find((k) => !COLUMNS[k]);
-    return bad
-      ? fail(`error: unknown user-defined format specifier "${bad}"`, 1)
-      : ok(render(c, order, cols, header, heads));
+    return bad ? psFormatRefusal(bad) : ok(render(c, order, cols, header, heads));
   }
   if (has(p, "f")) return ok(fullFormat(c, order, header));
   return ok(render(c, order, has(p, "u") ? BSD : ["pid", "tty", "time", "comm"], header));
@@ -188,9 +224,28 @@ function fullFormat(c: Cmd, rows: readonly Proc[], header: boolean): string {
 
 const virt = (p: Proc): string => String(p.vszKb);
 
+/** The field names of the real top (`top` field management, procps-ng 4). */
+const REAL_TOP_FIELDS = new Set(
+  "PID PPID PGRP UID USER GROUP TTY TPGID SID PR NI NU NTH P TIME SWAP CODE DATA NMAJ NMIN NDRT USED %CPU %MEM VIRT RES SHR S COMMAND WCHAN FLAGS CGROUPS SUPGIDS SUPGRPS TGID OOMA OOMS ENVIRON VMJ VMN TIME+ CGNAME".split(
+    " ",
+  ),
+);
+
+function topFieldRefusal(field: string): R {
+  const name = field.replace(/^[-+]/, "").toUpperCase();
+  if (!REAL_TOP_FIELDS.has(name)) return fail(`top: unrecognized field name '${field}'`, 1);
+  return emulationGap({
+    tool: "top",
+    feature: `sort:${name.toLowerCase()}`,
+    what: `-o ${field}`,
+    supported: "-b -n N -d 초 -p PID -H -S -i, -o PID|%CPU|%MEM (정렬 열)",
+    example: "top -b -n 1 -o %MEM",
+  });
+}
+
 export function top(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "bHSi", val: "ndoNpw", long: {} });
-  if (p.bad) return unsupported("top", p.bad);
+  if (p.bad) return badFlag("top", p);
   if (!has(p, "b")) return fail("top: failed tty get", 1);
   const field = p.flags.get("o");
   const sortKey = field ? `-${field.replace(/^[-+]/, "").toLowerCase()}` : "-%cpu";
@@ -200,7 +255,7 @@ export function top(c: Cmd): R {
     processTable(c.h).filter((r) => !picked || picked.includes(r.pid)),
     sortKey,
   );
-  if (!rows) return unsupported("top", `-o ${field}`);
+  if (!rows) return topFieldRefusal(field as string);
   rows = rows.slice(0, 600);
   return ok(joinLines([...topHeader(c), ...topRows(c, rows)]));
 }
