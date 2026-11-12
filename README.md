@@ -6,15 +6,15 @@ last_verified: 2026-11-12
 covers:
   - package.json
   - docs/exec-plans/active/beta-rounds.md
-covers_hash: 2a5daea4993050a0
+covers_hash: 8003a5031438f6c0
 verification_log:
-  - "2026-11-12: main을 합침: 넓힌 목표 문장과 설계 단계 절(ADR-0189), 라이선스 절의 고지 파일 링크(ADR-0185)가 함께 들어감"
   - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
   - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
   - "2026-11-12: ADR-0192: 테라리움은 처음의 목표로 돌아감. 목표 문장, 하지 않는 것 절, 원칙 1과 6, 차수 표, 한계 한 줄을 고침"
   - "2026-11-12: 덮는 차수 계획의 바뀐 곳은 순서 3·5의 글. README의 지금 단계 표와 어긋나지 않는다"
+  - "2026-11-12: ADR-0196: 덮는 차수 계획의 바뀐 곳은 이슈 47의 표. '호스트는 커널이 아니에요' 한계는 전환 전까지 그대로 맞다"
 verified_body: d2e57522ca3c5c44
-unchanged_reverifies: 5
+unchanged_reverifies: 6
 ---
 # Terrarium
 
