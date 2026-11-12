@@ -7,12 +7,13 @@ verification_log:
   - "2026-11-11: 처음 씀 (ADR-0166). source-management.md 3·5절의 안전장치·세계 버전, ADR-0154의 행 저장과 대조"
   - "2026-11-12: ADR-0183: 따라가는 용어집의 새 절(한 가지 말, 조건의 뜻)을 읽고, 이 문서에 옛 말(회·횟수·시드·개체·에스컬레이션)이 없음을 확인했다"
   - "2026-11-12: 따라가는 glossary-data.md에 워크플로 자동화의 말 절이 더해짐(ADR-0189). 이 문서의 말(버전, 브랜치, 병합)과 겹치지 않는다"
+  - "2026-11-12: 따라가는 glossary-data.md에 모의 툴과 검증 수준이 더해짐(ADR-0190). 이 문서의 말과 겹치지 않는다(현실 수준 꼬리표와 구별해 적음)"
 follows:
   - docs/design-docs/source-management.md
   - docs/design-docs/glossary-data.md
-follows_hash: e04aa215c121dfae
+follows_hash: cdfbbf68685510b4
 verified_body: da62c7e8b5aed969
-unchanged_reverifies: 1
+unchanged_reverifies: 2
 ---
 # 파이프라인의 버전과 브랜치 (REQ-115·116 예정, ADR-0166)
 
