@@ -220,18 +220,37 @@ const cduFailure: ScenarioTemplate = {
   },
 };
 
-/** The upstream a transfer switch takes utility power from, followed to its root (the switch itself when none). */
+/**
+ * The upstream a transfer switch takes utility power from, followed to the last panel on the way (the switch itself when
+ * none): a utility outage can only be put on a panel, so a substation standing above it is not the place.
+ */
 function utilityRoot(index: BlueprintIndex, start: Entity): Entity {
   let node = start;
+  let panel = start;
   for (let hops = 0; hops < 12; hops++) {
     const up = index
       .outgoing(node.id, "power")
       .map((l) => index.entity(l.to))
       .find((e) => e.kind !== "generator");
-    if (!up) return node;
+    if (!up) return panel;
     node = up;
+    if (up.kind === "power_panel") panel = up;
   }
-  return node;
+  return panel;
+}
+
+/**
+ * The most servers an operator can switch off inside the sheet: the tools switch one server off per call and every call takes
+ * half a minute of the run, so the budget (25 calls) less the reads, the caps on the kept servers and the answer (7) is what
+ * is left for switching off. More servers than that behind the UPS cannot be shed before the battery is gone.
+ */
+const MAX_SHEDS = 18;
+
+/** Why the world cannot hold this sheet: too many servers behind the UPS to switch off one by one in the time that is left. */
+function tooManyBehind(index: BlueprintIndex): string | undefined {
+  const held = protectedLoad(index);
+  if (!held || held.shed <= MAX_SHEDS) return undefined;
+  return `UPS 뒤에 서버가 ${held.shed + held.servers.length}대나 있어요. 서버를 한 대씩 꺼서는 배터리가 닿는 동안 부하를 줄일 수 없어요`;
 }
 
 /** The UPS a device draws its power through, following the power cables upstream (undefined when none stands in the way). */
@@ -286,14 +305,19 @@ function serversByUps(index: BlueprintIndex, servers: readonly Entity[]) {
  * The UPS the outage is about and the servers it must keep fed: the UPS behind the liquid-cooled and immersion
  * servers (the ones that cannot ride out a dead battery), or the one behind the most servers when the world has none.
  */
-function protectedLoad(index: BlueprintIndex): { ups: Entity; servers: Entity[] } | undefined {
+function protectedLoad(
+  index: BlueprintIndex,
+): { ups: Entity; servers: Entity[]; shed: number } | undefined {
   const all = index.ofKind("server");
   const best =
     serversByUps(
       index,
       all.filter((s) => isLiquidCooled(index, s)),
     )[0] ?? serversByUps(index, all)[0];
-  return best && { ups: best.ups, servers: best.servers.slice(0, WATCHED_SERVERS) };
+  const kept = best?.servers.slice(0, WATCHED_SERVERS) ?? [];
+  return (
+    best && { ups: best.ups, servers: kept, shed: Math.max(0, best.servers.length - kept.length) }
+  );
 }
 
 /**
@@ -340,7 +364,7 @@ const generatorFailure: ScenarioTemplate = {
   summary: "수전이 끊기고 발전기가 기동하지 못해요. UPS 배터리가 바닥나기 전에 원인을 찾아야 해요.",
   difficulty: "어려움",
   faultTypes: ["utility_outage", "generator_start_failure"],
-  unavailable: (index) => needs(index, ["generator", "ups", "server"]),
+  unavailable: (index) => needs(index, ["generator", "ups", "server"]) ?? tooManyBehind(index),
   build(index, worldId, catalog) {
     const gen = byLinks(index, "generator", (g) => index.incoming(g.id, "power").length) as Entity;
     const switches = index

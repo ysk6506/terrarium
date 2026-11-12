@@ -22,12 +22,12 @@ covers:
   - packages/core/src/topology/impact-app.ts
   - packages/core/src/world/ladder.ts
 verification_log:
-  - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
   - "2026-11-07: 점선 다섯의 서술을 REQ-106(사이트·DR 층)으로 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장이 이 문서의 내용을 바꾸지 않는지 대조했다(층 수·툴 수·칩 수를 세는 문장을 찾아 고쳤고, 나머지는 그대로 맞다)"
   - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
   - "2026-11-11: tools·world/os: 닿지 않는 분기 정리와 시험 추가; 동작은 같음(TD-0002), awk는 이름 바로 뒤 '(' 호출과 srand 반환값"
-covers_hash: d152018a95a2beae
+  - "2026-11-11: ADR-0178: 만들어지는 모든 모양에서 제공되는 시나리오가 100점이라는 서술(사이드카·정전·CDU·냉방기·콜드 DR 대기 쪽·메모리 규칙)을 코드와 대조해 더했다"
+covers_hash: 531393d68d5ebf60
 ---
 # 애플리케이션 층 (REQ-100, [ADR-0121](adr/0121-application-layer-and-calls.md), [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6)
 
@@ -180,7 +180,7 @@ covers_hash: d152018a95a2beae
 | 세션 저장소가 멈췄어요 | `session_store_down` | 그 호스트에서 `redis-server`를 다시 시작 |
 | 서킷 브레이커가 열린 채 굳었어요 | `circuit_breaker_stuck_open` | `breaker_reset` |
 | 재시도 폭주가 호출을 불려요 | `retry_storm` | `mesh_rollback` |
-| 사이드카가 죽었어요 | `sidecar_crash` | 호스트마다 `envoy`를 다시 시작 |
+| 사이드카가 죽었어요 | `sidecar_crash` | 호스트마다 `envoy`를 다시 시작. 여러 리전에 걸친 서비스는 리전이 로테이션에서 빠졌다 돌아오는 시간 때문에 2분 안에 살릴 수 없어서, 그런 서비스만 있는 세계에서는 제공하지 않고 이유를 말한다(ADR-0178) |
 | 컨트롤 플레인이 멈춘 채 설정이 잘못 퍼졌어요 | `mesh_control_down` + `retry_storm` | `istiod`를 살린 뒤 `mesh_rollback` (컨트롤 플레인이 멈춘 동안은 되돌릴 수 없다) |
 | 리전이 통째로 멈췄어요 | `region_down` | `region_failover`. 기다리면 5분 뒤 알아서 넘어가지만 그동안 요청이 실패한다 |
 
