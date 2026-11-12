@@ -10,6 +10,9 @@ touches_protected:
   - docs/product-specs/requirements.md
   - AGENTS.md
 decision_hash: 9b6349418779e485
+amended_by:
+  - adr: "0189"
+    what: 목표의 문장은 그대로다
 ---
 # ADR-0177 제품 목표의 "현실을 닮은 세계"에 현실의 데이터로 지은 세계를 적고, 맨 위 문서를 목표에 맞춘다
 
