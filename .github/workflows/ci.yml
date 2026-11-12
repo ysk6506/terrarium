@@ -2,7 +2,8 @@
 # Gating: lint-types, test (shards), test-heavy + test-summary, structure, ux-journeys. The `gate` job is the one required check.
 # A pull request whose changed files are all documents takes the light path (ADR-0173): `changes` decides, the heavy jobs are
 # skipped, and structure + docs-tests run instead. Anything else, and every push to main, takes the full path.
-# Non-gating, with a debt item each: coverage (TD-0002), ux-measure (TD-0004).
+# Non-gating, with a debt item each: coverage + coverage-floors (TD-0002), ux-measure (TD-0004). Coverage is not collected by
+# the gating test shards: instrumented, the longest shard took more than twice as long and tests hit their time limit (ADR-0195).
 name: ci
 on:
   pull_request:
@@ -18,6 +19,8 @@ permissions:
 
 env:
   SHARDS: 12
+  # Coverage runs every spec file once, instrumented, on fewer and longer runners than the test shards (ADR-0195).
+  COVERAGE_SHARDS: 4
   # Spec files that need a runner to themselves (see test-heavy). Space separated.
   HEAVY: tests/spec/calibration.test.ts harness/src/common.test.ts
   # Tests that read the documents themselves at test time (the light path runs these, ADR-0173). Space separated.
@@ -176,9 +179,10 @@ jobs:
           name: test-list
       - run: pnpm tsx harness/src/ci/shard-sum.ts list.json shards/shard-*.json
 
-  # Pass/fail of the tests is decided by the gating shards above. This job measures coverage with a
-  # longer timeout (instrumented simulations are slow) and checks the floors. Non-gating until TD-0002
-  # (due 2026-11-21) is closed: the floors have not been measured since 2026-11-07.
+  # Pass/fail of the tests is decided by the gating shards above. This job measures coverage: instrumented, the
+  # simulations take two to three times as long and some tests miss their time limit, so it runs apart from the gating
+  # shards, with a longer timeout, on a few runners (ADR-0195). Every spec file is in exactly one of its shards.
+  # Non-gating until TD-0002 (due 2026-11-21) is closed: the floors have not been measured since 2026-11-07.
   coverage:
     needs: changes
     if: needs.changes.outputs.docs_only != 'true'
@@ -187,11 +191,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - run: pnpm exec vitest run --coverage --shard=${{ matrix.shard }}/${{ env.SHARDS }} --reporter=blob --testTimeout=300000
+      - run: pnpm exec vitest run --coverage --shard=${{ matrix.shard }}/${{ env.COVERAGE_SHARDS }} --reporter=blob --testTimeout=300000
         continue-on-error: true # ADR-0140: an instrumented shard can hit a time limit; the gating test shards decide pass or fail
       - uses: actions/upload-artifact@v4
         with:
@@ -219,8 +223,8 @@ jobs:
       # Instrumented, one calibration test needs more than its own 180 s limit, so the merged report can
       # carry that one failure. Whether tests pass is decided by the gating jobs; this step only needs the
       # coverage numbers.
-      - run: pnpm exec vitest --merge-reports --coverage
-        continue-on-error: true # ADR-0140: the merged report can carry one instrumented timeout; only the coverage numbers are needed
+      - run: |
+          pnpm exec vitest --merge-reports --coverage || echo "::notice::ADR-0195: the merged report carries instrumented timeouts (exit $?); only the coverage numbers are used here"
       - name: Coverage per unit against the floors
         run: |
           base=""
@@ -246,71 +250,6 @@ jobs:
             coverage-gaps.txt
             docs/generated/coverage-record.json
             coverage/coverage-summary.json
-
-  # TEMPORARY (ADR-0195 measurement, removed before the change is reported): the same shard run twice on one runner,
-  # first as the gating job runs it, then with coverage and the same 20 s limit, to see what coverage costs and breaks.
-  trial:
-    needs: changes
-    if: needs.changes.outputs.docs_only != 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, heavy]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-      - name: Plain, then with coverage
-        run: |
-          set +e
-          if [ "${{ matrix.shard }}" = heavy ]; then
-            sel="$HEAVY --no-file-parallelism --dangerouslyIgnoreUnhandledErrors"
-          else
-            for f in $HEAVY; do exclude="$exclude --exclude=$f"; done
-            sel="--shard=${{ matrix.shard }}/${{ env.SHARDS }} $exclude"
-          fi
-          t0=$(date +%s)
-          pnpm exec vitest run $sel --reporter=json --outputFile.json=plain.json > plain.log 2>&1
-          rc1=$?
-          t1=$(date +%s)
-          pnpm exec vitest run $sel --coverage --reporter=json --reporter=blob --outputFile.json=cov.json > cov.log 2>&1
-          rc2=$?
-          t2=$(date +%s)
-          echo "TRIAL shard=${{ matrix.shard }} plain=$((t1-t0))s exit=$rc1 coverage=$((t2-t1))s exit=$rc2" | tee -a "$GITHUB_STEP_SUMMARY"
-          for k in plain cov; do
-            echo "== $k: failed tests"
-            jq -r '.testResults[] | .name as $n | .assertionResults[] | select(.status=="failed") | "\($n | sub(".*/terrarium/"; "")) :: \(.fullName)"' $k.json | head -20
-            echo "== $k: slowest files (ms)"
-            jq -r '.testResults[] | "\((.endTime-.startTime)|floor) \(.name | sub(".*/terrarium/"; ""))"' $k.json | sort -rn | head -6
-          done
-          grep -E "Unhandled|Timeout|timed out" cov.log plain.log | head -10
-          exit 0
-      - uses: actions/upload-artifact@v4
-        with:
-          name: trial-blob-${{ matrix.shard }}
-          path: .vitest-reports
-          include-hidden-files: true
-          if-no-files-found: error
-
-  trial-merge:
-    needs: [changes, trial]
-    if: always() && needs.changes.result == 'success' && needs.changes.outputs.docs_only != 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: ./.github/actions/setup
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: trial-blob-*
-          path: .vitest-reports
-          merge-multiple: true
-      - run: pnpm exec vitest --merge-reports --coverage 2>&1 | tail -15
-      - run: pnpm tsx harness/src/checks/coverage.ts | head -20 || true
-      - run: pnpm tsx harness/src/checks/quality.ts record
 
   # The light path (ADR-0173): the tests that read the documents, since the full test run is skipped. First it checks
   # again, with a different pattern than `changes`, that the diff holds nothing but documents.
