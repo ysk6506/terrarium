@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { SecretBox, SqliteStore } from "../adapters";
-import { ADMIN, person, testPlatform } from "../runtime/test-support/platform";
+import { person, testPlatform } from "../runtime/test-support/platform";
 import { buildApp } from "./app";
 import { headerAuthenticator } from "./identity";
 import { SELF_ONLY } from "./viewer";
@@ -190,16 +190,16 @@ describe("registering model APIs: add, list, change, delete [REQ-099]", () => {
     await platform.stop();
   });
 
-  test("only whoever registered it changes, deletes or checks it; only an admin chooses the default", async () => {
+  test("only whoever registered it changes or deletes it; its maker or an admin chooses the default", async () => {
     const { send, platform } = setup({ "/v1/models": models("a") });
-    const made = await send("POST", "/api/models", mine, "yeonsu");
+    const made = await send("POST", "/api/models", { ...mine, scope: "everyone" }, "yeonsu");
     expect(
       (await send("PATCH", `/api/models/${made.body.id}`, { name: "x" }, "jimin")).status,
     ).toBe(403);
     expect((await send("DELETE", `/api/models/${made.body.id}`, undefined, "jimin")).status).toBe(
       403,
     );
-    // the first one registered is the default, and the default is usable by everyone whatever its scope (ADR-0174)
+    // made for everyone, so anyone who is signed in may check it (ADR-0174)
     expect(
       (await send("POST", `/api/models/${made.body.id}/check`, undefined, "jimin")).status,
     ).toBe(200);
@@ -211,7 +211,7 @@ describe("registering model APIs: add, list, change, delete [REQ-099]", () => {
     ).toBe(200);
     expect(
       (await send("POST", `/api/models/${made.body.id}/default`, undefined, "yeonsu")).status,
-    ).toBe(403);
+    ).toBe(200);
     expect(
       (await send("POST", `/api/models/${made.body.id}/default`, undefined, "jimin")).status,
     ).toBe(403);
@@ -231,9 +231,10 @@ describe("registering model APIs: add, list, change, delete [REQ-099]", () => {
 
   test("only one is the default; deleting the default hands it to the one registered first", async () => {
     const { send, platform } = setup();
-    const a = await send("POST", "/api/models", { ...mine, name: "A" });
-    const b = await send("POST", "/api/models", { ...mine, name: "B" });
-    const c = await send("POST", "/api/models", { ...mine, name: "C" });
+    const shared = { ...mine, scope: "everyone" };
+    const a = await send("POST", "/api/models", { ...shared, name: "A" });
+    const b = await send("POST", "/api/models", { ...shared, name: "B" });
+    const c = await send("POST", "/api/models", { ...shared, name: "C" });
     await send("POST", `/api/models/${c.body.id}/default`, undefined, "admin-kim");
     const flags = async () =>
       ((await send("GET", "/api/models")).body as { name: string; isDefault: boolean }[]).map(
@@ -402,7 +403,7 @@ describe("registrations survive a restart, sealed [REQ-099]", () => {
       { adapters: { secretBox: box }, llm: { fetch: up.fetch } },
       second,
     );
-    const [again] = await two.platform.models.list(ADMIN);
+    const [again] = await two.platform.models.list(person("yeonsu", "proxy"));
     expect(again).toMatchObject({ id: made.id, keyHint: "…ab12", isDefault: true });
     const checked = await two.platform.models.check(person("yeonsu", "proxy"), made.id);
     expect(checked.lastCheck).toMatchObject({ ok: true, modelCount: 2 });

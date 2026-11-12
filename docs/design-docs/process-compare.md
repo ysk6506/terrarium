@@ -2,7 +2,7 @@
 title: 프로세스 비교 — 지금 하는 방식과 에이전트가 하는 방식을 단계·사람·시간으로 견주기 (REQ-112)
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/contract/process.ts
   - packages/core/src/contract/process-routes.ts
@@ -18,13 +18,13 @@ covers:
   - apps/web/src/ui/pages/process-table.tsx
   - apps/web/src/ui/pages/process-compare.tsx
   - apps/web/src/ui/pages/process-ontology.tsx
-covers_hash: 2499814887eea38e
+covers_hash: c0d04a3d6210c8e7
 verification_log:
-  - "2026-11-10: 파일 이름 규칙을 fileName 그대로(한글 유지)로 되돌려 대조했다"
-  - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
   - "2026-11-11: 2026-11-11: 이끼 동작 셋을 코드와 대조해 맞음 (ADR-0141)"
+  - "2026-11-11: result page split into tabs (ADR-0171); checked against covered code"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
-  - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
+  - "2026-11-11: merged main; result page tabs (ADR-0171) checked against covered code"
+  - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
 ---
 # 프로세스 비교 (REQ-112, [ADR-0135](adr/0135-process-compare.md))
 

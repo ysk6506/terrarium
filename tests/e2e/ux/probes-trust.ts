@@ -158,7 +158,7 @@ export async function progress(site: Site, notes: string[]): Promise<Tally> {
       await stop.click({ timeout: 3_000 }).catch(() => undefined);
       await page
         .getByRole("dialog")
-        .getByRole("button", { name: /회 멈추기$/ })
+        .getByRole("button", { name: /번 멈추기$/ })
         .click({ timeout: 3_000 })
         .catch(() => undefined);
     }
@@ -195,7 +195,8 @@ export async function provenance(site: Site, notes: string[]): Promise<Tally> {
         if (!said) notes.push(`provenance: ${path} "${label}"가 무엇인지 글로 밝히지 않았다`);
       }
     }
-    await open(v.page, site.base, `/experiments/${site.ids.experiment}`);
+    // what was tested, and whether it can be run again the same, are on the 실행 tab (ADR-0171)
+    await open(v.page, site.base, `/experiments/${site.ids.experiment}?tab=runs`);
     const text = await mainText(v.page);
     const stated = /재현됨|재현되지 않음/.test(text);
     record(t, stated);
@@ -214,14 +215,14 @@ export async function value(site: Site, notes: string[]): Promise<Tally> {
   await asVisitor(site, {}, async (v) => {
     const { page } = v;
     await open(page, site.base, `/experiments/${site.ids.experiment}`);
-    // Where things are on the page, not how fast they arrive: wait for the figures to be drawn.
+    // Where things are on the page, not how fast they arrive: wait for the first answer to be drawn.
     await page
-      .locator(".figure-value", { hasText: /\d/ })
+      .locator(".res-headline", { hasText: /\d/ })
       .first()
       .waitFor({ timeout: 60_000 })
       .catch(() => undefined);
-    const drawn = await inFirstScreen(page, ".figure");
-    check("합격률이 첫 화면에 없다", drawn);
+    const drawn = await inFirstScreen(page, ".res-headline");
+    check("몇 번 중 몇 번 합격했는지가 첫 화면에 없다", drawn);
     // Say what the page showed instead, so a miss can be told from a slow page.
     if (!drawn) notes.push(`value: ${page.url()}: ${(await mainText(page)).slice(0, 160)}`);
     check(
@@ -229,7 +230,7 @@ export async function value(site: Site, notes: string[]): Promise<Tally> {
       await inFirstScreen(page, "a:has-text('조건 바꿔 다시 돌리기')"),
     );
     const text = await mainText(page);
-    check("몇 번 돌린 결과인지 말하지 않는다", /\d+\s*회|\d+\s*\/\s*\d+/.test(text));
+    check("몇 번 돌린 결과인지 말하지 않는다", /\d+\s*[회번]|\d+\s*\/\s*\d+/.test(text));
     check("오차나 믿을 만한 정도를 말하지 않는다", /오차|신뢰|±|표본|실행이 적/.test(text));
     await open(page, site.base, `/experiments/${site.ids.fork}`);
     check("원본과 견준 결과가 첫 두 화면에 없다", await twoScreens(page, "text=원본과 견주면"));

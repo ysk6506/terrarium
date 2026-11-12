@@ -53,7 +53,6 @@ export const UpdateModelBody = z
       .array(z.object({ name: HeaderName, value: HeaderValue.optional() }).strict())
       .max(MODEL_HEADERS_MAX)
       .optional(),
-    ...ScopeFields,
   })
   .strict();
 

@@ -2,7 +2,7 @@
 title: 모델 등록 — LLM API를 워크스페이스에 등록하고 연결 확인까지
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/llm/types.ts
   - packages/core/src/llm/http.ts
@@ -15,13 +15,13 @@ covers:
   - apps/web/src/logic/models.ts
   - apps/web/src/ui/pages/model-section.tsx
   - apps/web/src/ui/pages/model-dialog.tsx
-covers_hash: 0a0fff619055e0a8
+covers_hash: d5915c2c54561b82
 verification_log:
-  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
   - "2026-11-07: ADR-0125: 이끼는 기본 모델이 있어야만 켜진다(꺼지면 알약만, 409 no_model), 점수 질문 찾기 규칙을 문서에 반영하고 코드와 대조함"
   - "2026-11-11: model-section.tsx에서 안 쓰는 useAction 호출만 지움, 문서 내용과 동작은 그대로"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
+  - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
 ---
 # 모델 등록 (REQ-099, [ADR-0119](adr/0119-llm-api-registration.md))
 
@@ -77,6 +77,6 @@ verification_log:
 
 ## 공개 범위 (ADR-0174 나 단계)
 
-- 등록한 모델은 처음에 **나만**이에요(`scope`, `group`을 만들 때·고칠 때 적어요). 목록에는 기본 모델과 내게 보이는 것만 나오고, 보이지 않는 것을 확인·고치기·지우기 하면 404예요. 응답의 `sharing`에 범위와 내가 바꿀 수 있는지가 있어요.
-- **관리자가 정한 기본 모델은 범위와 상관없이 로그인한 누구나 써요**(확인 포함). 모든 사용자의 도우미 질문이 그 모델로 가기 때문이에요. 처음 등록한 모델이 자동으로 기본이 되는 예전 동작도 그대로라서, 그 모델이 "나만"이어도 모두가 쓰게 돼요.
+- 등록한 모델은 처음에 **나만**이에요(`scope`, `group`을 만들 때 적고, 바꿀 때는 `PUT /api/models/:id/scope`예요). 목록에는 내게 보이는 것만 나오고, 보이지 않는 것을 확인·고치기·지우기 하면 404예요. 응답의 `sharing`에 범위와 내가 바꿀 수 있는지가 있어요.
+- **모두의 기본 모델은 범위가 "모두"인 모델만 될 수 있어요**(관리자와 그 모델의 주인이 `POST /api/models/:id/default`로 정해요). "나만"·"우리 파트" 모델은 기본으로 정할 수 없고, 기본의 범위를 좁히는 것도 거절해요. 저절로 기본이 되는 건 "모두" 모델이 처음 생길 때뿐이고, 기본을 지우면 먼저 등록된 "모두" 모델로 넘어가요. 한 사람에게 보이는 기본은 모두의 기본, 없으면 그 사람이 볼 수 있는 모델 중 먼저 등록된 것이라 모델 하나를 혼자 쓰는 개발 모드는 그대로예요. 이끼는 이 함수(`defaultFor`)로 모델을 골라요.
 - 범위가 없는 예전 등록은 "모두"로 읽어요. 자세한 규칙은 [권한](permissions.md).

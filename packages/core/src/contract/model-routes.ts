@@ -46,8 +46,9 @@ export const MODEL_ROUTES = {
   setDefaultModel: {
     method: "POST",
     path: "/api/models/:id/default",
-    summary: "기본 모델로 정하기 (관리자만. 나중에 쓰는 기능은 기본 모델을 써요)",
+    summary:
+      "모두의 기본 모델로 정하기 (관리자와 그 모델의 주인만. 범위가 모두인 모델만 될 수 있어요)",
     produces: json,
-    policy: "admin",
+    policy: { action: "change" },
   },
 } as const satisfies Record<string, RouteSpec>;

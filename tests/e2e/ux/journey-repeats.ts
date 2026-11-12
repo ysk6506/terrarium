@@ -44,48 +44,67 @@ export async function repeatsInTheForm(c: Context): Promise<void> {
     .waitFor({ timeout: 5 * SECOND });
 }
 
-/** On the finished result of a fork that ran each of five seeds three times: the shaking, the seed rows, both widths. */
+/** On the finished result of five seeds run three times: the situations table and its sentence, both widths. */
 export async function shakingInTheResult(c: Context): Promise<void> {
   const { page } = c.v;
-  // every dot has settled: five seeds, three dots each, none still waiting
+  // every cell has settled: five situations, three cells each, none still waiting
   try {
     await page.waitForFunction(
       () =>
-        document.querySelectorAll(".seed-dot").length === 15 &&
-        document.querySelectorAll('.seed-dot[data-state="waiting"]').length === 0,
+        document.querySelectorAll(".res-situations .res-cell").length === 15 &&
+        document.querySelectorAll('.res-situations .res-cell[data-state="waiting"]').length === 0,
       undefined,
       { timeout: 90 * SECOND },
     );
   } catch {
-    const dots = await page.locator(".seed-dot").count();
-    const waiting = await page.locator('.seed-dot[data-state="waiting"]').count();
+    const cells = await page.locator(".res-situations .res-cell").count();
     const body = (await page.locator("body").innerText()).replace(/\s+/g, " ");
-    throw new Error(
-      `점이 15개로 채워지지 않는다 (점 ${dots}개, 기다리는 것 ${waiting}개): ${body.slice(0, 400)}`,
-    );
+    throw new Error(`칸이 15개로 채워지지 않는다 (칸 ${cells}개): ${body.slice(0, 400)}`);
   }
   await page
-    .getByText(/^상황 5개 × 3번씩$/)
-    .first()
+    .getByText(
+      /^같은 상황을 3번씩 돌렸어요\. (5개 중 \d+개에서 결과가 갈렸어요|5개 모두 결과가 같았어요)\.$/,
+    )
     .waitFor({ timeout: 10 * SECOND });
-  await page.getByText(/^같은 상황에서 ±[\d.]+점 흔들려요$/).waitFor({ timeout: 10 * SECOND });
-  await page.getByText(/^상황 5개 중 \d+개에서 결과가 갈렸어요$/).waitFor({ timeout: 10 * SECOND });
-  // the two lines are the head of the 상황별 section, above the dots they come from
-  const head = await page.locator("section", { has: page.locator(".seed-rows") }).first();
-  const text = (await head.innerText()).replace(/\s+/g, " ");
-  if (!/상황별로 .*같은 상황에서 ±.*결과가 갈렸어요 .*상황 1/.test(text))
-    throw new Error(`흔들림 두 줄이 상황별 구역의 머리에 없다: ${text.slice(0, 160)}`);
-  const rows = await page.locator(".seed-row").count();
-  if (rows !== 5) throw new Error(`상황별 줄이 ${rows}개다 (5개여야 한다)`);
-  // a dot is told by its mark and its words, not by its colour alone
-  const dot = page.locator(".seed-dot").first();
-  const label = await dot.getAttribute("aria-label");
-  const mark = (await dot.innerText()).trim();
-  if (!label || !/합격|불합격/.test(label) || !/[✓✕]/.test(mark))
-    throw new Error(`점이 모양이나 글자로 구분되지 않는다: ${label} / ${mark}`);
+  const rows = await page.locator(".res-situations tbody tr").count();
+  if (rows !== 5) throw new Error(`상황 줄이 ${rows}개다 (5개여야 한다)`);
+  // a cell is told by its words (합격, 불합격) and its outline, not by its colour alone
+  const cell = (await page.locator(".res-situations .res-cell").first().innerText()).replace(
+    /\s+/g,
+    " ",
+  );
+  if (!/합격|불합격/.test(cell)) throw new Error(`칸이 글자로 구분되지 않는다: ${cell}`);
+  const plot = await page.locator(".res-plot-area").getAttribute("aria-label");
+  if (!plot || !/합격 \d+번, 불합격 \d+번/.test(plot))
+    throw new Error(`점 그림이 개수를 말하지 않는다: ${plot}`);
   const layout = await layoutAtWidths(page, "반복 결과");
   if (layout) throw new Error(layout);
+  await summaryFitsOnAPhone(page);
   await runsFitOnAPhone(page);
+}
+
+/** At 390px the 요약 tab does not scroll sideways: the page, the dot plot and the situations table fit the window. */
+async function summaryFitsOnAPhone(page: Page): Promise<void> {
+  const before = page.viewportSize() ?? { width: 1440, height: 900 };
+  await page.setViewportSize({ width: 390, height: 844 });
+  try {
+    await page.waitForTimeout(600);
+    const seen = await page.evaluate(() => ({
+      page: document.documentElement.scrollWidth - window.innerWidth,
+      main:
+        (document.querySelector(".main")?.scrollWidth ?? 0) -
+        (document.querySelector(".main")?.clientWidth ?? 0),
+      plot:
+        (document.querySelector(".res-plot")?.getBoundingClientRect().right ?? 0) -
+        window.innerWidth,
+    }));
+    if (seen.page > 1 || seen.main > 1)
+      throw new Error(`390px 요약이 옆으로 ${Math.max(seen.page, seen.main)}px 밀려나 있다`);
+    if (seen.plot > 0) throw new Error("390px 점 그림이 화면 밖으로 나간다");
+  } finally {
+    await page.setViewportSize(before);
+    await page.waitForTimeout(300);
+  }
 }
 
 /**
@@ -96,6 +115,8 @@ async function runsFitOnAPhone(page: Page): Promise<void> {
   const before = page.viewportSize() ?? { width: 1440, height: 900 };
   await page.setViewportSize({ width: 390, height: 844 });
   try {
+    // a look at the 실행 tab, not a step of the person's task, so it is not counted as a hand
+    await page.getByRole("link", { name: /^실행 \d+번$/ }).click();
     await page.waitForTimeout(600);
     const table = page.locator("table.runs-table");
     const seen = await table.evaluate((t) => {

@@ -4,7 +4,22 @@ import { ScopeBody } from "./scope";
 
 const json = "json" as const;
 
+/** The one route that changes who can see a thing: the same shape for all five kinds, and no other route does it. */
+const scopeRoute = (path: string, what: string) =>
+  ({
+    method: "PUT",
+    path,
+    summary: `${what}을 누가 볼 수 있는지 바꾸기 (만든 사람과 관리자). 이름·내용은 건드리지 않아요`,
+    body: ScopeBody,
+    produces: json,
+    policy: { action: "changeScope" },
+  }) as const;
+
 export const SHARE_ROUTES = {
+  setWorldScope: scopeRoute("/api/worlds/:id/scope", "세계"),
+  setScenarioScope: scopeRoute("/api/scenarios/:id/scope", "시나리오"),
+  setConnectionScope: scopeRoute("/api/connections/:id/scope", "연결"),
+  setModelScope: scopeRoute("/api/models/:id/scope", "모델 등록"),
   setExperimentScope: {
     method: "PUT",
     path: "/api/experiments/:id/scope",

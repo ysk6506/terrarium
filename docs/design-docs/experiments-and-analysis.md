@@ -2,7 +2,7 @@
 title: 실험과 결과 분석
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/experiments/agent-version.ts
   - packages/core/src/experiments/recipe.ts
@@ -20,11 +20,11 @@ covers:
   - packages/core/src/session/run-events.ts
 covers_hash: 70b99311adde9a72
 verification_log:
-  - "2026-11-11: 상황 문구, 점수 차이 출처 문단(spreadFindings)을 코드와 대조"
   - "2026-11-11: 상황 문구, 시험 이름표, 둘째 질문 단추와 상황별 구역 머리를 코드와 대조"
   - "2026-11-11: 단계 문구와 한 실행뿐일 때의 조언 절반을 코드와 대조"
   - "2026-11-11: ADR-0163: 실험 상태 규칙(멈춤이 하나라도 있으면 멈춤) 한 줄을 더하고 experimentStatus, 순위표와 통계의 완료 실행 기준을 코드와 대조했다. 나머지는 그대로 맞다"
   - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
+  - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
 ---
 # 실험과 결과 분석 (REQ-015, REQ-030~033, REQ-037~040)
 

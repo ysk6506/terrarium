@@ -2,7 +2,7 @@
 title: 이끼 — 테라리움 도우미가 문서와 화면으로 답하고 화면을 같이 넘기는 법
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - apps/web/src/moss/bar-offset.ts
   - apps/web/src/moss/ask.tsx
@@ -24,12 +24,12 @@ covers:
   - apps/web/src/logic/models.ts
   - harness/src/checks/moss.ts
 verification_log:
-  - "2026-11-07: 프로세스 비교 화면은 읽기만 등록하고 동작은 없다고 적었다"
   - "2026-11-11: main(process-compare 9cf2ce8) 합친 뒤 코드와 대조; own-card-only·process-compare 여정과 ADR-0134 내용 모두 유지"
   - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
   - "2026-11-11: ADR-0146: 이끼 알약이 떠 있지 않고 홈에서만 흐름 안, 키보드 도움말은 3D 탭 첫 한 번, 좁은 폭 제목 줄 나눔을 코드와 대조해 맞춤"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
-covers_hash: ed429098e5e6ec06
+  - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
+covers_hash: 7d66f526402e0ec2
 ---
 # 이끼 (REQ-103, [ADR-0124](adr/0124-moss-assistant.md), [ADR-0125](adr/0125-moss-requires-model.md))
 

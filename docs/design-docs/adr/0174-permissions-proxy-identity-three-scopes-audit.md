@@ -102,7 +102,16 @@ amends_tests:
   - "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] a config-file connection's agent versions are managed by admins; a screen-made one's by its maker"
   - "apps/server/src/http/permissions-api.test.ts::what was open to every signed-in person is for its maker and admins [REQ-054] > [REQ-054] an experiment on someone's screen-made connection, created or forked, is for that person and admins; the config file's is open"
   - "apps/server/src/http/scope-use.test.ts::[REQ-054] using needs sight > [REQ-054] a private connection's credentials are not spent by another person"
-test_change_reason: "가 단계(신원 굳히기, 판정 한 곳, 열려 있던 길 막기)로 요구가 바뀌었다. 남의 연결·모델 확인과 기본 모델 정하기, 설정 파일 연결의 버전, 현재 업무 표, 공유 링크, 소스에서 가져오기가 누구에게나 열려 있다는 옛 기대와, 보는 사람이 이름 하나라는 모양을 바꾼다. 나 단계(공개 범위)로 또 바뀐다: 남의 \"나만\"인 연결·모델은 이제 보이지 않으므로(없는 것처럼 404) 403을 기대하던 시험이 404를, 처음 등록해 기본이 된 모델은 모두가 쓰므로 남이 확인하면 200을 기대한다. 읽기 목록과 판정 함수가 보는 사람(Viewer)을 받으므로 그 호출 모양이 바뀌고, 존재하지 않는 실행의 활동 사건은 보이지 않으므로 활동 스트림 시험은 실제 실행을 쓴다."
+  - "apps/server/src/http/scope-use.test.ts::[REQ-054] who may change a scope > =change"
+  - "apps/server/src/http/scope-use.test.ts::[REQ-054] who may change a scope > [REQ-054] a group scope is refused with a reason when the person has no group, or names one that is not theirs"
+  - "apps/server/src/http/scope-use.test.ts::[REQ-054] who may change a scope > [REQ-054] narrowing a world keeps other people's experiments, which stay readable to their owners"
+  - "apps/server/src/http/test-support/scoped-app.ts::=scopedApp"
+  - "apps/server/src/http/test-support/scoped-app.ts::=makeAll"
+  - "packages/core/src/contract/policies.test.ts::every route says who may call it [REQ-054] > [REQ-054] what the survey found open before is now guarded by a named policy"
+  - "apps/server/src/http/models-api.test.ts::<import:d7c7e1a6>"
+  - "apps/server/src/http/scope-use.test.ts::[REQ-054] using needs sight > [REQ-054] checking a model needs sight of it, and the default model is usable by everyone"
+  - "apps/server/src/http/scope-use.test.ts::[REQ-054] who may change a scope > [REQ-054] only the maker and an admin change it, through the update routes and the experiment's own"
+test_change_reason: "가 단계(신원 굳히기, 판정 한 곳, 열려 있던 길 막기)로 요구가 바뀌었다. 남의 연결·모델 확인과 기본 모델 정하기, 설정 파일 연결의 버전, 현재 업무 표, 공유 링크, 소스에서 가져오기가 누구에게나 열려 있다는 옛 기대와, 보는 사람이 이름 하나라는 모양을 바꾼다. 나 단계(공개 범위)로 또 바뀐다: 남의 \"나만\"인 연결·모델은 이제 보이지 않으므로(없는 것처럼 404) 403을 기대하던 시험이 404를, 처음 등록한 모델이 저절로 기본이 되어 모두가 쓰던 동작은 사라지므로(기본은 범위가 \"모두\"인 모델만, ADR-0179) 기본 모델 시험은 \"모두\" 모델을 쓰고, 남의 \"나만\" 모델을 확인하면 404를 기대한다. 읽기 목록과 판정 함수가 보는 사람(Viewer)을 받으므로 그 호출 모양이 바뀌고, 존재하지 않는 실행의 활동 사건은 보이지 않으므로 활동 스트림 시험은 실제 실행을 쓴다."
 decision_hash: 1184204dc2af12c6
 ---
 # ADR-0174 권한은 프록시가 넘겨준 신원, 역할 둘, 공개 범위 셋, 감사 기록으로 한다

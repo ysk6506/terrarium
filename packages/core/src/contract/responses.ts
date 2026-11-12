@@ -116,6 +116,10 @@ export interface Responses {
   deleteShare: { readonly deleted: boolean };
   listShares: ShareListItem[];
   setExperimentScope: ExperimentView;
+  setWorldScope: WorldWithScope;
+  setScenarioScope: ScenarioWithScope;
+  setConnectionScope: ConnectionView;
+  setModelScope: LlmModelView;
   getRun: RunView;
   runbookDraft: RunbookDraftView;
   listEscalations: EscalationCard[];

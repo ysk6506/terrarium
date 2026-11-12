@@ -2,7 +2,7 @@
 title: 세계 인기·좋아요·칭호와 계급 모델
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/experiments/popularity.ts
   - packages/core/src/experiments/community.ts
@@ -20,11 +20,11 @@ covers:
   - apps/web/src/ui/pages/world-board.tsx
   - apps/web/src/ui/pages/world-card.tsx
 verification_log:
-  - "2026-11-07: REQ-109: 코드와 대조했다"
   - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
   - "2026-11-11: 2026-11-11: 좋아요 수의 title을 더한 것을 코드와 대조해 맞음 (ADR-0141)"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
+  - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
 covers_hash: 4e5c3f13610bc471
 ---
 # 세계 인기·좋아요·칭호와 계급 모델 (REQ-101, [ADR-0122](adr/0122-world-popularity-likes-titles.md))

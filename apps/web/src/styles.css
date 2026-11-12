@@ -324,10 +324,6 @@ p {
   padding: 48px 32px 72px;
 }
 
-.page-full {
-  max-width: none;
-}
-
 .expiry-banner {
   max-width: var(--page);
   margin: 0 auto;
@@ -760,11 +756,10 @@ p {
 }
 
 /*
- * The other two tables on a phone, the same way: a row is a few short lines, nothing past the right edge.
+ * The experiments table on a phone, the same way: a row is a few short lines, nothing past the right edge.
  * Their header rows stay for screen readers, so a value that is only a number says what it is in its own words.
  */
 @media (max-width: 640px) {
-  .criteria-table thead,
   .experiments-table thead {
     position: absolute;
     width: 1px;
@@ -773,14 +768,11 @@ p {
     clip: rect(0 0 0 0);
   }
 
-  .criteria-table,
-  .criteria-table tbody,
   .experiments-table,
   .experiments-table tbody {
     display: block;
   }
 
-  .criteria-table tr,
   .experiments-table tr {
     display: flex;
     flex-wrap: wrap;
@@ -791,24 +783,13 @@ p {
     border-bottom: 1px solid var(--fill);
   }
 
-  .criteria-table tr:last-child,
   .experiments-table tr:last-child {
     border-bottom: 0;
   }
 
-  .criteria-table td,
   .experiments-table td {
     padding: 0;
     border-bottom: 0;
-  }
-
-  .criteria-table .criteria-label {
-    flex: 1 1 100%;
-  }
-
-  .criteria-table .criteria-rate {
-    flex: 1 1 0;
-    min-width: 0;
   }
 
   .experiments-table .exp-name {
@@ -6281,82 +6262,474 @@ ol.uu li {
   }
 }
 
-/* ── seeds and repeats (ADR-0158) ──────────────────────────────────────────── */
+/* ── a result answers three questions (ADR-0171) ───────────────────────────── */
 
-.steadiness {
-  margin: 0 0 12px;
-  font-size: 15px;
-}
-
-.seed-rows {
-  display: grid;
-  gap: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  border-radius: var(--radius-panel);
-  background: var(--surface);
-}
-
-.seed-row {
+.res-tabs {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 14px;
+  gap: 4px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.res-tab {
+  margin-bottom: -1px;
   padding: 12px 16px;
-  box-shadow: inset 0 -1px var(--fill);
+  border-bottom: 3px solid transparent;
+  color: var(--ink-2);
+  font-size: 16px;
 }
 
-.seed-name {
-  min-width: 64px;
-  font-weight: 600;
+.res-tab[aria-current="page"] {
+  border-bottom-color: var(--ink);
+  color: var(--ink);
+  font-weight: 700;
 }
 
-.seed-dots {
-  display: inline-flex;
+.res-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.res-flow .section {
+  margin-top: 0;
+}
+
+.res-pair {
+  display: flex;
   flex-wrap: wrap;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.res-card {
+  min-width: 0;
+  padding: 32px;
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.res-card h2 {
+  font-size: 22px;
+}
+
+.res-card-head {
+  display: flex;
+  flex-direction: column;
   gap: 6px;
 }
 
-/* A passed run is a round dot with a tick, a failed one a square with a cross: the shape and the mark say it, the colour agrees. */
-.seed-dot {
-  display: inline-grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--ink-2);
+.res-sentence {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 16px;
+}
+
+.res-quiet {
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.res-verdict {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 32px 48px;
+}
+
+.res-verdict-text {
+  flex: 1 1 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.res-card .res-headline {
+  font-size: 40px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.res-line {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 17px;
+}
+
+/* the dot plot: a column of dots for each score, the pass line dashed across */
+.res-plot {
+  flex: 1 1 440px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.res-plot-area {
+  padding: 0 12px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.res-plot-track {
+  position: relative;
+  height: calc(var(--rows) * (var(--dot) + 4px) + 44px);
+}
+
+.res-pass-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 2px dashed var(--ink-3);
+}
+
+.res-pass-label {
+  position: absolute;
+  top: 0;
+  padding-left: 8px;
+  color: var(--ink-2);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.res-stack {
+  position: absolute;
+  bottom: 6px;
+  display: flex;
+  flex-direction: column-reverse;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-height: calc(16 * (var(--dot) + 4px));
+  transform: translateX(-50%);
+}
+
+.res-dot {
+  display: block;
+  box-sizing: border-box;
+  width: var(--dot, 12px);
+  height: var(--dot, 12px);
+}
+
+/* a passed run is a filled circle, a failed one a hollow square: shape and lightness say it, not hue alone */
+.res-dot[data-kind="pass"] {
   border-radius: 50%;
+  background: var(--cobalt);
+}
+
+.res-dot[data-kind="fail"] {
+  border: 2px solid var(--ink-2);
+  background: var(--surface);
+}
+
+.res-axis {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 4px;
   color: var(--ink-2);
   font-size: 13px;
+}
+
+.res-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.res-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.res-dot-key {
+  --dot: 12px;
+}
+
+/* where the points went: a track as long as the points, filled by what was earned */
+.res-bars {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.res-bar-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 260px) minmax(0, 1fr) 96px;
+  gap: 14px 20px;
+  align-items: center;
+}
+
+.res-bar-label {
+  font-weight: 500;
+}
+
+.res-bar-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.res-track {
+  display: block;
+  flex: none;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--fill-hover);
+}
+
+.res-fill {
+  display: block;
+  height: 100%;
+  border-radius: 6px;
+  background: var(--cobalt);
+}
+
+.res-bar-note {
+  color: var(--warn);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.res-bar-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* the situations: rows are situations, columns the times each ran */
+.res-situations {
+  flex: 999 1 560px;
+}
+
+.res-scroll {
+  overflow-x: auto;
+}
+
+.res-table {
+  width: 100%;
+  min-width: 0;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.res-table thead th {
+  padding: 0 8px 4px 4px;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.res-table tbody th {
+  padding-right: 8px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.res-table td {
+  padding: 0 4px;
+}
+
+.res-seed {
+  display: block;
   font-weight: 700;
-  line-height: 1;
 }
 
-.seed-dot[data-state="pass"] {
-  border-color: var(--good);
-  background: var(--good-soft);
-  color: var(--good);
-}
-
-.seed-dot[data-state="fail"] {
-  border-color: var(--bad);
-  border-radius: 4px;
-  background: var(--bad-soft);
-  color: var(--bad);
-}
-
-.seed-dot[data-state="broken"],
-.seed-dot[data-state="stopped"] {
-  border-style: dashed;
-  border-radius: 4px;
-}
-
-.seed-range {
-  margin-inline-start: auto;
+.res-tag {
+  display: inline-block;
+  margin-top: 2px;
   color: var(--ink-2);
-}
-
-.seed-split {
   font-size: 13px;
+  font-weight: 500;
+}
+
+.res-tag[data-tag="split"] {
+  color: var(--warn);
+}
+
+.res-cell {
+  display: block;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 2px solid var(--ink-2);
+  border-radius: 12px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.res-cell[data-state="pass"] {
+  border-color: var(--cobalt-soft);
+  background: var(--cobalt-soft);
+  color: var(--cobalt);
+  font-weight: 700;
+}
+
+.res-cell[data-state="waiting"],
+.res-cell[data-state="stopped"],
+.res-cell[data-state="broken"] {
+  border-style: dashed;
   color: var(--ink-2);
+}
+
+a.res-cell:hover {
+  border-color: var(--cobalt);
+}
+
+.res-cell-empty {
+  color: var(--ink-3);
+}
+
+/* what to do next */
+.res-next {
+  flex: 1 1 300px;
+  gap: 16px;
+}
+
+.res-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.res-suggestion {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border-radius: var(--radius-control);
+  background: var(--fill);
+  color: var(--ink);
+}
+
+.res-suggestion[data-first="yes"] {
+  background: var(--cobalt-soft);
+}
+
+.res-suggestion-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.res-suggestion[data-first="yes"] .res-suggestion-title {
+  color: var(--cobalt);
+}
+
+.res-suggestion-why {
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+/* the export dialog: one question, the answers as cards */
+.exp-sub {
+  margin: -8px 0 14px;
+}
+
+.exp-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.exp-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+
+.exp-choice[data-chosen="yes"] {
+  border-color: var(--cobalt);
+  background: var(--cobalt-soft);
+}
+
+.exp-choice input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 3px 0 0;
+}
+
+.exp-choice-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.exp-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.exp-lines {
+  min-height: 3lh;
+  margin: 0;
+  padding: 12px 14px;
+  overflow-x: auto;
+  border-radius: 12px;
+  background: var(--fill);
+  font-size: 13px;
+  white-space: pre;
+}
+
+@media (max-width: 640px) {
+  .res-tab {
+    padding: 10px 12px;
+    font-size: 15px;
+  }
+
+  .res-card {
+    padding: 20px 16px;
+  }
+
+  .res-card .res-headline {
+    font-size: 30px;
+  }
+
+  .res-verdict {
+    gap: 20px;
+  }
+
+  .res-bar-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 12px;
+  }
+
+  .res-bar-cell {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .res-cell {
+    padding: 8px 6px;
+    font-size: 14px;
+  }
+
+  .res-table td {
+    padding: 0 2px;
+  }
 }

@@ -12,6 +12,7 @@ import {
   InvalidInputError,
   type PutPhysicsRequest,
   type SavedWorld,
+  type ScopeRequest,
   UnavailableError,
   type UpdateWorldRequest,
   type WorldPhysicsView,
@@ -212,14 +213,15 @@ export class Worlds {
       throw new ConflictError(
         "그사이 이 세계가 바뀌었어요. 새로고침해서 바뀐 내용을 본 뒤 다시 저장해 주세요",
       );
-    const scoped = changeScope(viewer, current, req, "세계 공개 범위 바꾸기");
-    if (req.name === undefined && req.blueprint === undefined) {
-      // only who sees it changed: the blueprint is not looked at again
-      await this.ctx.store.putWorld(scoped);
-      return { world: scoped, issues: [] };
-    }
-    const { blueprint, digest: _digest, updatedAt: _updatedAt, ...base } = scoped;
+    const { blueprint, digest: _digest, updatedAt: _updatedAt, ...base } = current;
     return this.save({ ...base, name: req.name ?? current.name }, req.blueprint ?? blueprint);
+  }
+
+  /** Who can see a world (ADR-0174): the one place its scope changes; the blueprint is not looked at again. */
+  async setScope(viewer: Viewer, id: string, req: ScopeRequest): Promise<WorldWithScope> {
+    const scoped = changeScope(viewer, await this.get(id), req, "세계 공개 범위 바꾸기");
+    await this.ctx.store.putWorld(scoped);
+    return this.seenBy(viewer, scoped);
   }
 
   /** The physics profile of a world (REQ-113): what was changed from the default physics, and the fingerprint of it. */

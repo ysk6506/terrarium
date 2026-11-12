@@ -10,6 +10,7 @@ import type {
   RunbookDraftView,
   SavedScenario,
   ScenarioWithScope,
+  ScopeRequest,
   UpdateScenarioRequest,
 } from "@terrarium/core/contract";
 import {
@@ -154,11 +155,17 @@ export class Scenarios {
       throw new ConflictError(
         "그사이 이 시나리오가 바뀌었어요. 새로고침해서 바뀐 내용을 본 뒤 다시 저장해 주세요",
       );
-    const scoped = changeScope(viewer, current, req, "시나리오 공개 범위 바꾸기");
     const name = req.name ?? current.name;
     const doc = { ...(req.doc ?? current.doc), id, worldId: current.worldId, name };
-    const { digest: _d, updatedAt: _u, ...rest } = scoped;
+    const { digest: _d, updatedAt: _u, ...rest } = current;
     return this.save({ ...rest, name, doc });
+  }
+
+  /** Who can see a scenario (ADR-0174): the one place its scope changes. */
+  async setScope(viewer: Viewer, id: string, req: ScopeRequest): Promise<ScenarioWithScope> {
+    const scoped = changeScope(viewer, await this.get(id), req, "시나리오 공개 범위 바꾸기");
+    const { digest: _d, updatedAt: _u, ...rest } = scoped;
+    return this.seenBy(viewer, (await this.save(rest)).scenario);
   }
 
   async delete(viewer: Viewer, id: string): Promise<{ deleted: boolean }> {

@@ -12,6 +12,7 @@ import {
   type ConnectorSpec,
   type CreateConnectionRequest,
   InvalidInputError,
+  type ScopeRequest,
   type TelemetryAdapterList,
   type TryConnectionRequest,
   type TryResult,
@@ -356,7 +357,7 @@ export class Connections implements HarnessDirectory {
     input: UpdateConnectionRequest,
   ): Promise<ConnectionView> {
     const kept = this.ownedScreenEntry(viewer, id, "연결 고치기").record as ConnectionRecord;
-    const base = changeScope(viewer, kept, input, "연결 공개 범위 바꾸기");
+    const base = kept;
     const connector = this.connectorFor(base.connector);
     const record = recordOf(
       base,
@@ -371,6 +372,17 @@ export class Connections implements HarnessDirectory {
     const port = this.portOf(record);
     await this.options.store.putConnection(record);
     return this.forViewer(viewer, await this.fresh(this.entryOf(record, port)));
+  }
+
+  /** Who can see a connection (ADR-0174): the one place its scope changes; nothing else about it is rebuilt. */
+  async setScope(viewer: Viewer, id: string, req: ScopeRequest): Promise<ConnectionView> {
+    const what = "연결 공개 범위 바꾸기";
+    const entry = this.ownedScreenEntry(viewer, id, what);
+    const record = changeScope(viewer, entry.record as ConnectionRecord, req, what);
+    await this.options.store.putConnection(record);
+    const next: Entry = { ...entry, record };
+    this.added.set(id, next);
+    return this.forViewer(viewer, await this.fresh(next));
   }
 
   private entryOf(record: ConnectionRecord, port: HarnessPort): Entry {

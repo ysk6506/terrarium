@@ -2,16 +2,24 @@
  * LLM API 등록 (REQ-099, ADR-0119): the model APIs the workspace registered for later (reading results, guiding).
  * Nothing calls them yet except "연결 확인". Keys and header values are sealed with the server's secret box and
  * never leave it: the views carry the last four letters of the key and the names of headers, nothing else.
- * Anyone can register, check and choose the default; changing or deleting is for whoever registered it.
+ * Anyone can register and check what they may see; changing or deleting is for whoever registered it. The one model
+ * every user's helper answers with (the default) is a model made for everyone, so no one's private key is spent for
+ * another person (ADR-0174, ADR-0179).
  */
 import type {
   CreateModelRequest,
   LlmModelView,
   ModelCheckView,
+  ScopeRequest,
   UpdateModelRequest,
 } from "@terrarium/core/contract";
 import { InvalidInputError } from "@terrarium/core/contract";
-import { type LlmCheckRecord, type LlmModelRecord, scopeOf } from "@terrarium/core/experiments";
+import {
+  type LlmCheckRecord,
+  type LlmModelRecord,
+  scopeOf,
+  seen,
+} from "@terrarium/core/experiments";
 import { ConflictError } from "@terrarium/core/kernel";
 import {
   checkLlm,
@@ -25,7 +33,7 @@ import {
 import type { SecretBox } from "../adapters";
 import { addressProblem, problem } from "./connection-form";
 import { must, type PlatformContext, type Viewer } from "./context";
-import { allow, canSee, mustSee, standing } from "./permissions";
+import { allow, mustSee, sightOf, standing } from "./permissions";
 import { canChangeScope, changeScope, startingScope } from "./scoping";
 
 export interface ModelsOptions {
@@ -56,7 +64,11 @@ const checkView = (c: LlmCheckRecord): ModelCheckView => ({
   ...(c.error ? { error: c.error } : {}),
 });
 
-export const modelView = (m: LlmModelRecord, viewer: Viewer): LlmModelView => ({
+export const modelView = (
+  m: LlmModelRecord,
+  viewer: Viewer,
+  isDefault = m.isDefault,
+): LlmModelView => ({
   id: m.id,
   name: m.name,
   kind: m.kind as LlmKind,
@@ -65,7 +77,7 @@ export const modelView = (m: LlmModelRecord, viewer: Viewer): LlmModelView => ({
   hasKey: m.sealedKey !== undefined,
   ...(m.keyTail ? { keyHint: `…${m.keyTail}` } : {}),
   headers: m.headers.map((h) => h.name),
-  isDefault: m.isDefault,
+  isDefault,
   owner: m.owner,
   sharing: {
     scope: scopeOf(m),
@@ -76,6 +88,33 @@ export const modelView = (m: LlmModelRecord, viewer: Viewer): LlmModelView => ({
   ...(m.updatedAt ? { updatedAt: m.updatedAt } : {}),
   ...(m.lastCheck ? { lastCheck: checkView(m.lastCheck) } : {}),
 });
+
+const DEFAULT_IS_EVERYONES = "기본 모델은 모두가 써요. 먼저 다른 모델을 기본으로 정해 주세요";
+const DEFAULT_NEEDS_EVERYONE =
+  "기본 모델은 모두가 쓰니까 범위가 '모두'인 모델만 될 수 있어요. 이 모델의 범위를 먼저 '모두'로 바꿔 주세요";
+
+const refuse = (path: string, message: string): never => {
+  throw new InvalidInputError(message, [problem(path, message)]);
+};
+
+/** The model everyone's helper uses: a registration chosen as the default, which is always made for everyone. */
+const everyonesDefault = (all: readonly LlmModelRecord[]): LlmModelRecord | undefined =>
+  all.find((m) => m.isDefault && scopeOf(m) === "everyone");
+
+/**
+ * The default one person gets (ADR-0179): everyone's default if there is one, else the first registered of the models that
+ * person may see. An admin's fallback counts only what an admin would see as an ordinary user: another person's private
+ * key is not spent just because the one asking can read the list.
+ */
+export function defaultFor(
+  viewer: Viewer | undefined,
+  all: readonly LlmModelRecord[],
+): LlmModelRecord | undefined {
+  const shared = everyonesDefault(all);
+  if (shared || viewer === undefined) return shared;
+  const sight = { id: viewer.id, groups: viewer.groups, admin: false };
+  return all.find((m) => seen(sight, m));
+}
 
 function addressIssue(baseUrl: string, allowed: readonly string[] | undefined): void {
   const why = addressProblem(baseUrl, allowed);
@@ -99,21 +138,24 @@ export class Models {
     private readonly options: ModelsOptions,
   ) {}
 
-  /** What the person sees of a registration: their own, what is shared with them, and the default model (everyone uses it). */
-  private seeable(viewer: Viewer, m: LlmModelRecord): boolean {
-    return m.isDefault || canSee(viewer, standing(m));
+  /** One registration as the person sees it: "default" is the default they get, not only everyone's. */
+  private async viewFor(viewer: Viewer, m: LlmModelRecord): Promise<LlmModelView> {
+    const mine = defaultFor(viewer, await this.ctx.store.listModels());
+    return modelView(m, viewer, m.id === mine?.id);
   }
 
   async list(viewer: Viewer): Promise<LlmModelView[]> {
-    return (await this.ctx.store.listModels())
-      .filter((m) => this.seeable(viewer, m))
-      .map((m) => modelView(m, viewer));
+    const all = await this.ctx.store.listModels();
+    const mine = defaultFor(viewer, all);
+    return all
+      .filter((m) => seen(sightOf(viewer), m))
+      .map((m) => modelView(m, viewer, m.id === mine?.id));
   }
 
   /** A registration, if the person can see it; one they cannot answers as one that is not there. */
   private async find(viewer: Viewer, id: string): Promise<LlmModelRecord> {
     const found = must(await this.ctx.store.getModel(id), "등록한 모델");
-    mustSee(viewer, found.isDefault ? {} : standing(found), "등록한 모델");
+    mustSee(viewer, standing(found), "등록한 모델");
     return found;
   }
 
@@ -126,6 +168,8 @@ export class Models {
     if (await this.nameTaken(input.name)) throw new ConflictError(NAME_TAKEN);
     const key = input.apiKey ?? "";
     const tail = tailOf(key);
+    const all = await this.ctx.store.listModels();
+    const scoped = startingScope(viewer, input, "private");
     const record: LlmModelRecord = {
       id: this.ctx.stamps.id("llm"),
       owner: viewer.id,
@@ -136,14 +180,14 @@ export class Models {
       ...(key ? { sealedKey: this.options.box.seal(key) } : {}),
       ...(tail ? { keyTail: tail } : {}),
       headers: input.headers.map((h) => ({ name: h.name, sealed: this.options.box.seal(h.value) })),
-      // the first one registered is the default until someone chooses another
-      isDefault: (await this.ctx.store.listModels()).length === 0,
+      // the first one made for everyone is the default until someone chooses another; a private one never is
+      isDefault: scopeOf(scoped) === "everyone" && everyonesDefault(all) === undefined,
       createdAt: this.ctx.stamps.now(),
       // a registration carries its maker's key: private until they say otherwise
-      ...startingScope(viewer, input, "private"),
+      ...scoped,
     };
     await this.ctx.store.putModel(record);
-    return modelView(record, viewer);
+    return this.viewFor(viewer, record);
   }
 
   /** The headers after an edit: a row with a value is sealed anew, a row without one keeps the value it had. */
@@ -182,7 +226,7 @@ export class Models {
   async update(viewer: Viewer, id: string, input: UpdateModelRequest): Promise<LlmModelView> {
     const found = await this.find(viewer, id);
     allow(viewer, "change", { owner: found.owner }, "고치기");
-    const old = changeScope(viewer, found, input, "모델 공개 범위 바꾸기");
+    const old = found;
     if (input.baseUrl !== undefined) addressIssue(input.baseUrl, this.options.allowedHosts);
     if (input.name !== undefined && (await this.nameTaken(input.name, id)))
       throw new ConflictError(NAME_TAKEN);
@@ -201,7 +245,7 @@ export class Models {
       updatedAt: this.ctx.stamps.now(),
     };
     await this.ctx.store.putModel(saved);
-    return modelView(saved, viewer);
+    return this.viewFor(viewer, saved);
   }
 
   async remove(viewer: Viewer, id: string): Promise<{ readonly deleted: boolean }> {
@@ -209,29 +253,40 @@ export class Models {
     allow(viewer, "remove", { owner: old.owner }, "지우기");
     await this.ctx.store.deleteModel(id);
     if (old.isDefault) {
-      const [next] = await this.ctx.store.listModels();
+      // the default passes to the first one registered for everyone; with none, there is no default for everyone
+      const next = (await this.ctx.store.listModels()).find((m) => scopeOf(m) === "everyone");
       if (next) await this.ctx.store.putModel({ ...next, isDefault: true });
     }
     return { deleted: true };
   }
 
+  /** Who can see a registration (ADR-0174): the one place its scope changes. The default model cannot be narrowed. */
+  async setScope(viewer: Viewer, id: string, req: ScopeRequest): Promise<LlmModelView> {
+    const found = await this.find(viewer, id);
+    allow(viewer, "changeScope", { owner: found.owner }, "모델 공개 범위 바꾸기");
+    if (found.isDefault && req.scope !== "everyone") refuse("scope", DEFAULT_IS_EVERYONES);
+    const saved = changeScope(viewer, found, req, "모델 공개 범위 바꾸기");
+    await this.ctx.store.putModel(saved);
+    return this.viewFor(viewer, saved);
+  }
+
+  /** Choose the model everyone's helper uses: an admin or the model's own maker may, and only a model made for everyone can be it. */
   async setDefault(viewer: Viewer, id: string): Promise<LlmModelView> {
-    // Every user's helper questions go to this model, so choosing it is for administrators.
-    allow(viewer, "administer", {}, "기본 모델 정하기");
     const chosen = await this.find(viewer, id);
+    allow(viewer, "change", { owner: chosen.owner }, "기본 모델 정하기");
+    if (scopeOf(chosen) !== "everyone") refuse("scope", DEFAULT_NEEDS_EVERYONE);
     for (const m of await this.ctx.store.listModels())
       if (m.isDefault && m.id !== id) await this.ctx.store.putModel({ ...m, isDefault: false });
     const saved = { ...chosen, isDefault: true };
     await this.ctx.store.putModel(saved);
-    return modelView(saved, viewer);
+    return this.viewFor(viewer, saved);
   }
 
   /** Read the list, else one short completion; keep what came back on the record. */
   async check(viewer: Viewer, id: string): Promise<LlmModelView> {
     const model = await this.find(viewer, id);
-    // A check opens the sealed key and calls out with it: whoever can see the registration may ask for one, and the
-    // default model is everyone's whatever its scope says.
-    allow(viewer, "use", model.isDefault ? {} : standing(model), "연결 확인");
+    // A check opens the sealed key and calls out with it: whoever can see the registration may ask for one.
+    allow(viewer, "use", standing(model), "연결 확인");
     const result = await this.run(model);
     const lastCheck: LlmCheckRecord = {
       at: this.ctx.stamps.now(),
@@ -247,7 +302,7 @@ export class Models {
     const current = (await this.ctx.store.getModel(id)) ?? model;
     const saved = { ...current, lastCheck };
     await this.ctx.store.putModel(saved);
-    return modelView(saved, viewer);
+    return this.viewFor(viewer, saved);
   }
 
   /** The client for a registered model; throws when its sealed key cannot be opened. */
@@ -263,11 +318,16 @@ export class Models {
     });
   }
 
-  /** The default model's client and name, for the features that use "the" model (이끼, REQ-103); none if nothing is registered. */
-  async defaultClient(): Promise<
+  /**
+   * The model "the" features use (이끼, REQ-103) for one person: everyone's default, else the first model that person may see;
+   * none if there is nothing for them. Without a viewer only everyone's default counts.
+   */
+  async defaultClient(
+    viewer?: Viewer,
+  ): Promise<
     { readonly client: LlmClient; readonly name: string; readonly model?: string } | undefined
   > {
-    const record = (await this.ctx.store.listModels()).find((m) => m.isDefault);
+    const record = defaultFor(viewer, await this.ctx.store.listModels());
     if (!record) return undefined;
     const client = this.clientOf(record);
     // 모델 이름이 등록에 없으면 마지막 연결 확인이 본 첫 이름, 그것도 없으면 API에 물어 첫 이름을 쓴다.

@@ -1,5 +1,5 @@
 /**
- * Sharing one experiment (REQ-038, ADR-0174): the menu on the result page, and the dialog where the link's life is chosen
+ * Sharing one experiment (REQ-038, ADR-0174): the dialog where the link's life is chosen
  * (30 days unless said otherwise) and the experiment's links are listed and taken back.
  */
 
@@ -8,7 +8,7 @@ import { useState } from "react";
 import { dateText } from "../../logic";
 import { useAction, useApp, useAsync } from "../context";
 import { SelectField } from "../fields";
-import { Button, Dialog, Failure, Loading, MenuButton } from "../kit";
+import { Button, Dialog, Failure, Loading } from "../kit";
 
 /** How long a new link opens, in days; the server's own default is the first (30). */
 const LIFETIMES = [
@@ -19,13 +19,13 @@ const LIFETIMES = [
   { days: 365, label: "1년" },
 ] as const;
 
-const DEFAULT_DAYS = 30;
+export const DEFAULT_DAYS = 30;
 
 /** The link taken, then its words: what was copied and until when. */
-const copiedWords = (days: number) =>
+export const copiedWords = (days: number) =>
   `링크를 복사했어요. 받은 사람은 로그인 없이 보고서를 볼 수 있고, ${days}일 뒤에 닫혀요`;
 
-function useCopy() {
+export function useCopy() {
   const { toast } = useApp();
   return async (text: string, done: string) => {
     try {
@@ -97,7 +97,7 @@ function Links({ id, version }: { readonly id: string; readonly version: number 
   );
 }
 
-function ShareDialog({
+export function ShareDialog({
   view,
   onClose,
 }: {
@@ -153,69 +153,5 @@ function ShareDialog({
         <p className="small">링크는 이 실험을 만든 사람과 관리자만 만들고 끊을 수 있어요.</p>
       )}
     </Dialog>
-  );
-}
-
-export function ShareMenu({ view }: { readonly view: ExperimentView }) {
-  const { api, toast } = useApp();
-  const copy = useCopy();
-  const [managing, setManaging] = useState(false);
-  const id = view.experiment.id;
-  const shareLink = async () => {
-    try {
-      const share = await api.call("createShare", {
-        params: { id },
-        body: { expiresInDays: DEFAULT_DAYS },
-      });
-      await copy(share.url, copiedWords(DEFAULT_DAYS));
-    } catch (err) {
-      toast(err instanceof Error ? err.message : String(err), "bad");
-    }
-  };
-  const copyText = async () => {
-    try {
-      await copy(
-        await api.call("experimentReport", { params: { id }, query: { format: "text" } }),
-        "보고서 글을 복사했어요",
-      );
-    } catch (err) {
-      toast(err instanceof Error ? err.message : String(err), "bad");
-    }
-  };
-  return (
-    <>
-      <MenuButton
-        label="공유"
-        icon="share"
-        items={[
-          {
-            label: "링크 복사",
-            hint: "30일 동안 로그인 없이 보고서가 열려요",
-            onSelect: () => void shareLink(),
-          },
-          {
-            label: "링크 기간과 목록",
-            hint: "기간을 고르고, 열어 둔 링크를 끊어요",
-            onSelect: () => setManaging(true),
-          },
-          {
-            label: "HTML 보고서 열기",
-            hint: "한 파일로 저장해 메일에 붙일 수 있어요",
-            onSelect: () =>
-              window.open(
-                api.url("experimentReport", { id }, { format: "html" }),
-                "_blank",
-                "noopener",
-              ),
-          },
-          {
-            label: "글로 복사",
-            hint: "메신저에 붙여 넣기 좋아요",
-            onSelect: () => void copyText(),
-          },
-        ]}
-      />
-      {managing && <ShareDialog view={view} onClose={() => setManaging(false)} />}
-    </>
   );
 }

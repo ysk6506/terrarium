@@ -2,7 +2,7 @@
 title: 서버 운영 — 설치와 사내 시스템 연결
 kind: guide
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - apps/server/src/adapters/config.ts
   - apps/server/src/adapters/identity-config.ts
@@ -11,11 +11,11 @@ covers:
   - apps/server/src/main.ts
 covers_hash: 1a1eaa19042e97e1
 verification_log:
-  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
   - "2026-11-11: main.ts의 시작 실패 보고를 console.error에서 process.stderr.write로 바꿨다(ADR-0148). 본문 서술과 어긋난 곳 없음"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-11: self-declared admin: token, else loopback socket address only; proxy mode unchanged"
   - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
+  - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
 ---
 # 서버 운영
 

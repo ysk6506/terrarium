@@ -82,10 +82,11 @@ describe("[REQ-054] using needs sight", () => {
     await s.close();
   });
 
-  test("[REQ-054] checking a model needs sight of it, and the default model is usable by everyone", async () => {
+  test("[REQ-054] checking a model needs sight of it; a model made for everyone is checked by anyone", async () => {
     const { s, made } = await privateSetup();
     expect((await s.send(OMAR, "POST", `/api/models/${made.model.id}/check`)).status).toBe(404);
     expect((await s.send(OLIVIA, "POST", `/api/models/${made.model.id}/check`)).status).toBe(200);
+    // the admin's model from the setup is made for everyone, so it is the default and anyone may check it
     const list = (await s.send(OMAR, "GET", "/api/models")).body as unknown as {
       id: string;
       isDefault: boolean;
@@ -122,49 +123,61 @@ describe("[REQ-054] using needs sight", () => {
 });
 
 describe("[REQ-054] who may change a scope", () => {
-  const change = (s: ScopedApp, who: typeof OLIVIA, url: string, body: object, method = "PUT") =>
-    s.send(who, method, url, body);
+  const change = (s: ScopedApp, who: typeof OLIVIA, url: string, body: object) =>
+    s.send(who, "PUT", url, body);
 
-  test("[REQ-054] only the maker and an admin change it, through the update routes and the experiment's own", async () => {
+  test("[REQ-054] only the maker and an admin change it, through the one scope route all five kinds share", async () => {
     const { s, made } = await privateSetup();
-    // each update route takes its own starting point beside the scope: a world and a scenario their version, a connection its address
-    const targets: readonly [string, string, string, object][] = [
-      ["world", `/api/worlds/${made.world.id}`, "PUT", { baseDigest: made.world.digest }],
-      [
-        "scenario",
-        `/api/scenarios/${made.scenario.id}`,
-        "PUT",
-        { baseDigest: made.scenario.digest },
-      ],
-      [
-        "connection",
-        `/api/connections/${made.connection.id}`,
-        "PUT",
-        { config: { url: "https://harness.test" } },
-      ],
-      ["model", `/api/models/${made.model.id}`, "PATCH", {}],
-      ["experiment", `/api/experiments/${made.experiment.id}/scope`, "PUT", {}],
+    // the same route for all five kinds, and nothing but the scope in its body
+    const targets: readonly [string, string][] = [
+      ["world", `/api/worlds/${made.world.id}/scope`],
+      ["scenario", `/api/scenarios/${made.scenario.id}/scope`],
+      ["connection", `/api/connections/${made.connection.id}/scope`],
+      ["model", `/api/models/${made.model.id}/scope`],
+      ["experiment", `/api/experiments/${made.experiment.id}/scope`],
     ];
-    for (const [what, url, method, base] of targets) {
+    for (const [what, url] of targets) {
       const to = (scope: string, group?: string) => ({
-        ...base,
         scope,
         ...(group ? { group } : {}),
       });
       // someone who cannot see it is told it is not there; someone who can see it but did not make it is told no
-      expect((await change(s, OMAR, url, to("everyone"), method)).status, what).toBe(404);
-      expect((await change(s, OLIVIA, url, to("group", "part-a"), method)).status, what).toBe(200);
-      expect((await change(s, MINA, url, to("everyone"), method)).status, what).toBe(403);
-      expect((await change(s, BOSS, url, to("private"), method)).status, what).toBe(200);
+      expect((await change(s, OMAR, url, to("everyone"))).status, what).toBe(404);
+      expect((await change(s, OLIVIA, url, to("group", "part-a"))).status, what).toBe(200);
+      expect((await change(s, MINA, url, to("everyone"))).status, what).toBe(403);
+      expect((await change(s, BOSS, url, to("private"))).status, what).toBe(200);
     }
+    await s.close();
+  });
+
+  test("[REQ-054] the update routes no longer change a scope, and a scope change needs nothing else in its body", async () => {
+    const { s, made } = await privateSetup();
+    const world = await s.send(OLIVIA, "PUT", `/api/worlds/${made.world.id}`, {
+      baseDigest: made.world.digest,
+      scope: "everyone",
+    });
+    expect(world.status).toBe(400);
+    const model = await s.send(OLIVIA, "PATCH", `/api/models/${made.model.id}`, {
+      scope: "everyone",
+    });
+    expect(model.status).toBe(400);
+    const connection = await s.send(OLIVIA, "PUT", `/api/connections/${made.connection.id}/scope`, {
+      scope: "group",
+      group: "part-a",
+    });
+    expect(connection.status).toBe(200);
+    expect(connection.body.sharing).toMatchObject({
+      scope: "group",
+      group: "part-a",
+      canChange: true,
+    });
     await s.close();
   });
 
   test("[REQ-054] a group scope is refused with a reason when the person has no group, or names one that is not theirs", async () => {
     const s = scopedApp();
     const made = await makeAll(s, LONE, { scope: "everyone" });
-    const r = await s.send(LONE, "PUT", `/api/worlds/${made.world.id}`, {
-      baseDigest: made.world.digest,
+    const r = await s.send(LONE, "PUT", `/api/worlds/${made.world.id}/scope`, {
       scope: "group",
     });
     expect(r.status).toBe(400);
@@ -172,8 +185,7 @@ describe("[REQ-054] who may change a scope", () => {
     await s.close();
     const t = scopedApp();
     const mine = await makeAll(t, OLIVIA, { scope: "everyone" });
-    const other = await t.send(OLIVIA, "PUT", `/api/worlds/${mine.world.id}`, {
-      baseDigest: mine.world.digest,
+    const other = await t.send(OLIVIA, "PUT", `/api/worlds/${mine.world.id}/scope`, {
       scope: "group",
       group: "part-b",
     });
@@ -206,8 +218,7 @@ describe("[REQ-054] who may change a scope", () => {
     expect(theirs).toBeDefined();
     expect(
       (
-        await s.send(OLIVIA, "PUT", `/api/worlds/${made.world.id}`, {
-          baseDigest: made.world.digest,
+        await s.send(OLIVIA, "PUT", `/api/worlds/${made.world.id}/scope`, {
           scope: "private",
         })
       ).status,

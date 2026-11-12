@@ -107,7 +107,7 @@ function pageView(page: Page): ReactNode {
     case "newExperiment":
       return <NewExperimentPage />;
     case "experiment":
-      return <ExperimentPage id={page.id} />;
+      return <ExperimentPage id={page.id} tab={page.tab} />;
     case "run":
       return <RunPage id={page.id} />;
     default:

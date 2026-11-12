@@ -2,7 +2,7 @@
 title: 세계 만들기 입구와 서비스부터 (REQ-094)
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/world/ladder.ts
   - packages/core/src/sources/worldgen/shaped-db.ts
@@ -50,11 +50,11 @@ covers:
   - apps/server/src/runtime/service-cards.ts
 covers_hash: 7fa55e1d5cd7cb55
 verification_log:
-  - "2026-11-07: 2026-11-07: REQ-111 covers 정리"
   - "2026-11-07: 2026-11-07: REQ-111 코드 변경 후 다시 대조: 그대로 맞다"
   - "2026-11-11: shape-flow.ts 안 쓰는 변수와 Anchored.tsx 효과 없는 억제 주석만 지움, 문서 내용과 동작은 그대로"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
+  - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
 ---
 # 세계 만들기 입구와 서비스부터 (REQ-094, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md), [ADR-0108](adr/0108-world-entry-iap-and-chip-cards.md), [ADR-0109](adr/0109-world-entry-amend-tests.md))
 

@@ -44,9 +44,16 @@ export function scopedApp() {
   const fake = new FakeFetch().on("GET", /^\/agents$/, () =>
     json({ agents: [{ id: "triage", name: "분류" }] }),
   );
+  const llmCalls: string[] = [];
   const t = testPlatform([], {
     adapters: { connect: { env: {}, fetch: fake.fetch }, secretBox: SecretBox.ephemeral() },
-    llm: { fetch: async () => new Response(JSON.stringify({ data: [{ id: "m" }] })) },
+    llm: {
+      fetch: async (_url, init) => {
+        // what every call to a model carries (the key rides in a header), so a test can see whose key went out
+        llmCalls.push(JSON.stringify(init?.headers ?? {}));
+        return new Response(JSON.stringify({ data: [{ id: "m" }] }));
+      },
+    },
   });
   const app = buildApp({
     platform: t.platform,
@@ -71,7 +78,7 @@ export function scopedApp() {
     }
     return { status: r.statusCode, body, text: r.body };
   };
-  return { ...t, app, send, close: () => t.platform.stop() };
+  return { ...t, app, send, llmCalls, close: () => t.platform.stop() };
 }
 
 export type ScopedApp = ReturnType<typeof scopedApp>;
@@ -92,6 +99,7 @@ export async function makeAll(s: ScopedApp, as: Person, scoping: Scoping) {
       kind: "openai",
       baseUrl: "https://llm.test/v1",
       apiKey: "sk-boss-0001",
+      scope: "everyone",
     });
   const world = (
     await send(as, "POST", "/api/worlds", {

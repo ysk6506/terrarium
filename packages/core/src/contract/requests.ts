@@ -82,10 +82,9 @@ export const UpdateWorldBody = z
     baseDigest: z.string().min(1).max(64),
     name: NameSchema.optional(),
     blueprint: BlueprintSchema.optional(),
-    ...ScopeFields,
   })
   .strict()
-  .refine((b) => b.name !== undefined || b.blueprint !== undefined || b.scope !== undefined, {
+  .refine((b) => b.name !== undefined || b.blueprint !== undefined, {
     message: "바꿀 이름이나 세계가 없어요",
   });
 
@@ -118,10 +117,9 @@ export const UpdateScenarioBody = z
     baseDigest: z.string().min(1).max(64),
     name: NameSchema.optional(),
     doc: ScenarioDocSchema.optional(),
-    ...ScopeFields,
   })
   .strict()
-  .refine((b) => b.name !== undefined || b.doc !== undefined || b.scope !== undefined, {
+  .refine((b) => b.name !== undefined || b.doc !== undefined, {
     message: "바꿀 이름이나 시나리오가 없어요",
   });
 
@@ -412,7 +410,6 @@ export const UpdateConnectionBody = z
     headers: HeadersBody.optional(),
     metadata: MetadataBody.optional(),
     traces: TracesBody.optional(),
-    ...ScopeFields,
   })
   .strict();
 

@@ -118,15 +118,18 @@ describe("what was open to every signed-in person is for its maker and admins [R
     ).toBe(200);
   });
 
-  test("[REQ-054] checking a model opens its sealed key, so it is for whoever registered it; choosing the default is for admins", async () => {
+  test("[REQ-054] checking a model opens its sealed key, so it is for those who may see it; choosing the default is for its maker and admins", async () => {
     const { send } = setup();
     const { model } = await alices(send);
-    // alice registered the first model, which is the default, and the default is usable by everyone whatever its scope
-    expect((await send("bob", "POST", `/api/models/${model.id}/check`)).status).toBe(200);
+    // made on the screen it is alice's alone: bob is told it is not there, and it cannot be everyone's default
+    expect((await send("bob", "POST", `/api/models/${model.id}/check`)).status).toBe(404);
     expect((await send("alice", "POST", `/api/models/${model.id}/check`)).status).toBe(200);
-    // even the one who registered it does not choose what every user's helper answers with
-    expect((await send("alice", "POST", `/api/models/${model.id}/default`)).status).toBe(403);
+    expect((await send("alice", "POST", `/api/models/${model.id}/default`)).status).toBe(400);
+    // made for everyone, bob may check it but still does not choose what every user's helper answers with
+    await send("alice", "PUT", `/api/models/${model.id}/scope`, { scope: "everyone" });
+    expect((await send("bob", "POST", `/api/models/${model.id}/check`)).status).toBe(200);
     expect((await send("bob", "POST", `/api/models/${model.id}/default`)).status).toBe(403);
+    expect((await send("alice", "POST", `/api/models/${model.id}/default`)).status).toBe(200);
     expect((await send("admin-kim", "POST", `/api/models/${model.id}/default`)).status).toBe(200);
   });
 

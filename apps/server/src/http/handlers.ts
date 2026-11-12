@@ -50,6 +50,7 @@ export const HANDLERS: Handlers = {
   checkConnection: (p, i) => p.connections.check(i.viewer, i.body, i.baseUrl),
   createConnection: (p, i) => p.connections.create(i.viewer, i.body),
   updateConnection: (p, i) => p.connections.update(i.viewer, id(i), i.body),
+  setConnectionScope: (p, i) => p.connections.setScope(i.viewer, id(i), i.body),
   keepConnection: (p, i) => p.connections.keep(i.viewer, id(i)),
   recheckConnection: (p, i) => p.connections.recheck(i.viewer, id(i)),
   deleteConnection: (p, i) => p.connections.remove(i.viewer, id(i)),
@@ -69,10 +70,11 @@ export const HANDLERS: Handlers = {
   listModels: (p, i) => p.models.list(i.viewer),
   createModel: (p, i) => p.models.create(i.viewer, i.body),
   updateModel: (p, i) => p.models.update(i.viewer, id(i), i.body),
+  setModelScope: (p, i) => p.models.setScope(i.viewer, id(i), i.body),
   deleteModel: (p, i) => p.models.remove(i.viewer, id(i)),
   checkModel: (p, i) => p.models.check(i.viewer, id(i)),
   setDefaultModel: (p, i) => p.models.setDefault(i.viewer, id(i)),
-  askMoss: (p, i) => p.moss.ask(i.body),
+  askMoss: (p, i) => p.moss.ask(i.body, i.viewer),
   listServiceCards: (p, i) => p.serviceCards.list(i.viewer),
   createServiceCard: (p, i) => p.serviceCards.create(i.viewer, i.body),
   updateServiceCard: (p, i) => p.serviceCards.update(i.viewer, id(i), i.body),
@@ -97,6 +99,10 @@ export const HANDLERS: Handlers = {
     await p.gate.world(i.viewer, id(i));
     return p.worlds.update(i.viewer, id(i), i.body);
   },
+  setWorldScope: async (p, i) => {
+    await p.gate.world(i.viewer, id(i));
+    return p.worlds.setScope(i.viewer, id(i), i.body);
+  },
   deleteWorld: async (p, i) => {
     await p.gate.world(i.viewer, id(i));
     return p.worlds.delete(i.viewer, id(i));
@@ -118,6 +124,10 @@ export const HANDLERS: Handlers = {
   updateScenario: async (p, i) => {
     await p.gate.scenario(i.viewer, id(i));
     return p.scenarios.update(i.viewer, id(i), i.body);
+  },
+  setScenarioScope: async (p, i) => {
+    await p.gate.scenario(i.viewer, id(i));
+    return p.scenarios.setScope(i.viewer, id(i), i.body);
   },
   deleteScenario: async (p, i) => {
     await p.gate.scenario(i.viewer, id(i));
