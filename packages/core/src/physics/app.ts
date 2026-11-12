@@ -28,26 +28,15 @@ import {
   type WorldEvent,
 } from "@terrarium/core/world";
 import {
+  back,
   hostGone,
+  note,
   updateBreakers,
   updateMesh,
   updateRegion,
   updateSidecar,
   updateStore,
 } from "./app-calls";
-import { CLUSTER_CAUSE } from "./db";
-
-function note(world: World, events: WorldEvent[], text: string): void {
-  events.push(world.apply({ type: "note", text }, CLUSTER_CAUSE));
-}
-
-/**
- * Something coming back after what was wrong is gone. It is not the system's recovery (the oracle credits the cluster only
- * for what it did by itself to end the trouble), so it does not carry the cluster's cause.
- */
-function back(world: World, events: WorldEvent[], text: string): void {
-  events.push(world.apply({ type: "note", text }, "physics"));
-}
 
 // ── replicas ───────────────────────────────────────────────────────────────────────────────
 

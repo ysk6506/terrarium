@@ -22,14 +22,15 @@ covers:
   - packages/core/src/topology/impact-app.ts
   - packages/core/src/world/ladder.ts
 verification_log:
-  - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
-  - "2026-11-11: tools·world/os: 닿지 않는 분기 정리와 시험 추가; 동작은 같음(TD-0002), awk는 이름 바로 뒤 '(' 호출과 srand 반환값"
-  - "2026-11-11: ADR-0178: 만들어지는 모든 모양에서 제공되는 시나리오가 100점이라는 서술(사이드카·정전·CDU·냉방기·콜드 DR 대기 쪽·메모리 규칙)을 코드와 대조해 더했다"
   - "2026-11-12: ADR-0184: 흉내의 한계 힌트 변경 뒤에도 내용이 맞는지 다시 봤어요"
   - "2026-11-12: 덮는 시나리오 라이브러리에서 정렬 도우미 byId의 자리만 library-kit.ts로 옮김. 동작은 그대로이고 이 문서는 그 이름을 말하지 않는다"
-covers_hash: b8a11132274e0115
-verified_body: 363d4fdb2cb10420
+  - "2026-11-12: 감사에서 틀린 곳 넷을 고침: 로드 밸런서와 lb_backend_flapping은 app-lb-sticky가 아니라 app-stateless부터 생긴다(ladder.ts, shaped-app.ts), 되돌아오는 사건(다시 넣기·닫힘)의 원인은 cluster가 아니라 physics다(physics/app.ts, app-calls.ts), 시나리오 시험이 재는 것은 shellReach가 아니라 commonReach다, 점선 다섯 칩은 지금 실선이다"
+  - "2026-11-12: 감사 — 덮는 코드 17개와 ladder·service-health·lead-times·controls·시험에 줄마다 대어 봄. 상수·툴·고장 표는 맞고, 4곳이 틀려 고침(LB 칩, 사건 원인, commonReach, 점선 칩)"
+  - "2026-11-12: 덮는 physics/app.ts와 app-calls.ts가 똑같이 두 번 쓰던 사건 도우미(note, back)를 app-calls.ts 한 곳에 둠. 동작과 사건의 원인은 그대로이고 '알아서 하는 일' 표와 대조해 맞다"
+covers_hash: 3032f96324df036d
+verified_body: 24096d703cb84a51
 unchanged_reverifies: 1
+last_audited: 2026-11-12
 ---
 # 애플리케이션 층 (REQ-100, [ADR-0121](adr/0121-application-layer-and-calls.md), [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6)
 
@@ -70,7 +71,7 @@ unchanged_reverifies: 1
 | 느려짐 | — | 느려짐 (응답을 기다려요) |
 | 정상 | 열림 또는 반열림 (호출을 막고 있음, 굳었을 때도 같다) | 느려짐 (대체 응답만 가요) |
 
-서킷 브레이커가 있는 길은 상대가 돌아오면 브레이커가 반열림으로 한 번 시험한 뒤 **알아서 닫히고**, 부르는 서비스도 알아서 돌아온다(원인 `cluster`, 아래 표).
+서킷 브레이커가 있는 길은 상대가 돌아오면 브레이커가 반열림으로 한 번 시험한 뒤 **알아서 닫히고**, 부르는 서비스도 알아서 돌아온다(아래 표. 닫히는 사건의 원인은 `physics`다).
 
 ### 네트워크 정책이 이제 호출을 따라간다
 
@@ -113,7 +114,7 @@ unchanged_reverifies: 1
 
 | 고장 | 대상 | 서비스 | 푸는 길 | 리드타임(원격) | 최소 칩 |
 |---|---|---|---|---|---|
-| `lb_backend_flapping` | 앱 인스턴스 | 느려짐 (백엔드가 오르락내리락) | `lb_drain(backend)`로 빼기 (완화) | 15분 / 30분 / 2시간 | 로드 밸런서 |
+| `lb_backend_flapping` | 앱 인스턴스 | 느려짐 (백엔드가 오르락내리락) | `lb_drain(backend)`로 빼기 (완화) | 15분 / 30분 / 2시간 | 상태 없는 앱 |
 | `session_store_down` | 세션 저장소 | 느려짐 (로그인 풀림) | 호스트에서 `systemctl restart redis-server` | 15분 / 30분 / 2시간 | 상태 없는 앱 |
 | `circuit_breaker_stuck_open` | 서킷 브레이커 | 느려짐 (대체 응답만) | `breaker_reset(link)` | 15분 / 30분 / 2시간 | 마이크로서비스 |
 | `retry_storm` | 메시 컨트롤 플레인 | 느려짐 (불린 서비스와 부르는 서비스) | `mesh_rollback` | 15분 / 45분 / 2시간 | 서비스 메시 |
@@ -124,17 +125,17 @@ unchanged_reverifies: 1
 
 ## 알아서 하는 일 (원인 `cluster`)
 
-물리가 매 스텝 돌린다(`physics/app.ts`, `app-calls.ts`). 사람이 한 일이 아니라 사건에 원인 `cluster`로 남고, 세션은 이것을 에이전트의 조치로 세지 않는다.
+물리가 매 스텝 돌린다(`physics/app.ts`, `app-calls.ts`). 사람이 한 일이 아니라, 층이 문제를 끝내려고 스스로 한 일(빼기, 열기, 반열림 시험)은 사건에 원인 `cluster`로 남고, 세션은 이것을 에이전트의 조치로 세지 않는다. 잘못된 것이 사라진 뒤 되돌아오는 일(다시 넣기, 닫힘)은 층의 복구가 아니라서 원인 `physics`로 남는다.
 
-| 규칙 | 시간 | 사건으로 남는가 |
+| 규칙 | 시간 | 사건으로 남는가 (원인) |
 |---|---|---|
-| 로드 밸런서가 헬스 체크 3번 실패한 백엔드를 로테이션에서 뺌 | 3 × 5초 | 예 |
-| 로드 밸런서가 2번 통과한 백엔드를 로테이션에 다시 넣음 (직접 뺀 `drained`는 안 넣음) | 2 × 5초 | 예 |
-| 서킷 브레이커가 연속 실패 5번에 열림 | 5초 | 예 |
-| 열린 브레이커가 30초 뒤 반열림으로 한 번 시험함 | 30초 | 예 |
-| 반열림에서 상대가 정상이면 닫힘, 아직 멈춰 있으면 다시 열림 | 바로 | 예 (닫힘) |
-| 글로벌 로드 밸런서가 멈춘 리전을 로테이션에서 뺌 | 300초 (`detectS`) | 예 |
-| 글로벌 로드 밸런서가 돌아온 리전을 로테이션에 다시 넣음 | 60초 | 예 |
+| 로드 밸런서가 헬스 체크 3번 실패한 백엔드를 로테이션에서 뺌 | 3 × 5초 | 예 (`cluster`) |
+| 로드 밸런서가 2번 통과한 백엔드를 로테이션에 다시 넣음 (직접 뺀 `drained`는 안 넣음) | 2 × 5초 | 예 (`physics`) |
+| 서킷 브레이커가 연속 실패 5번에 열림 | 5초 | 예 (`cluster`) |
+| 열린 브레이커가 30초 뒤 반열림으로 한 번 시험함 | 30초 | 예 (`cluster`) |
+| 반열림에서 상대가 정상이면 닫힘, 아직 멈춰 있으면 다시 열림 | 바로 | 닫힘만 예 (`physics`) |
+| 글로벌 로드 밸런서가 멈춘 리전을 로테이션에서 뺌 | 300초 (`detectS`) | 예 (`cluster`) |
+| 글로벌 로드 밸런서가 돌아온 리전을 로테이션에 다시 넣음 | 60초 | 예 (`physics`) |
 | 리전이 빠지면 그 리전의 세션이 사라져 사용자가 다시 로그인함 | 120초 | 아니오 (느려짐으로 보임) |
 
 굳은 브레이커(`circuit_breaker_stuck_open`)는 시간이 지나도 반열림으로 가지 않는다. `breaker_reset`만 푼다.
@@ -160,12 +161,12 @@ unchanged_reverifies: 1
 
 ## 사다리와 세계 생성
 
-`world/ladder.ts`에서 앱 칸의 네 칩(`app-stateless`, `app-microservices`, `app-mesh`, `app-multiregion`)이 `modeled: true`와 `build.app`을 가진다. 점선은 아홉에서 다섯(`sto-geo`, `db-distributed-sql`, `db-managed-multiaz`, `site-dr-warm`, `site-multi-active`)이 된다.
+`world/ladder.ts`에서 앱 칸의 네 칩(`app-stateless`, `app-microservices`, `app-mesh`, `app-multiregion`)이 실선(`modeled`)이고 `build.app`을 가진다. 이 층을 만들 때 점선은 아홉에서 다섯(`sto-geo`, `db-distributed-sql`, `db-managed-multiaz`, `site-dr-warm`, `site-multi-active`)이 됐고, 그 다섯도 지금은 실선이다(아래 '하지 않은 것').
 
 | 칩 | 짓는 것 (앞 칩의 것을 모두 포함) | 새로 느려지는 고장 |
 |---|---|---|
-| 로드 밸런서·스티키 (`app-lb-sticky`, 이미 실선) | 요청 서비스마다 로드 밸런서, 서비스가 도는 곳마다 앱 인스턴스 | `lb_backend_flapping` |
-| 상태 없는 앱 | 외부 세션 저장소 | `session_store_down` |
+| 로드 밸런서·스티키 (`app-lb-sticky`, 이미 실선) | 이 층의 개체는 짓지 않는다(`build.app`이 없다) | — |
+| 상태 없는 앱 | 배치가 아닌 서비스마다 로드 밸런서, 서비스가 도는 곳마다 앱 인스턴스, 요청 서비스마다 외부 세션 저장소 | `lb_backend_flapping`, `session_store_down` |
 | 마이크로서비스 | `calls` 링크마다 서킷 브레이커 | `circuit_breaker_stuck_open` |
 | 서비스 메시 | 인스턴스마다 사이드카, 그 위에 메시 컨트롤 플레인 | `retry_storm`, `sidecar_crash`, `mesh_control_down` |
 | 멀티 리전 | 리전 둘(호스트 두 배), 글로벌 로드 밸런서 | `region_down`, `replication_lag_high` |
@@ -174,7 +175,7 @@ unchanged_reverifies: 1
 
 ## 시나리오 일곱
 
-`scenario/library-app.ts`, 모두 복구 우선 채점이다. 같은 조치를 일찍 하면 높고, 오래 살핀 뒤에 하면 낮고, 아무것도 안 하면 0점이다(시험). 정답만 아는 에이전트는 30점이고 모두 60점 미만이다. 아무것도 안 함과 찍기는 0점이다. 흔한 툴(`list_alarms`·`list_services`)에서 두 번 만에 원인 장비에 닿는다(`shellReach`).
+`scenario/library-app.ts`, 모두 복구 우선 채점이다. 같은 조치를 일찍 하면 높고, 오래 살핀 뒤에 하면 낮고, 아무것도 안 하면 0점이다(시험). 정답만 아는 에이전트는 30점이고 모두 60점 미만이다. 아무것도 안 함과 찍기는 0점이다. 흔한 툴만으로 `list_alarms`·`list_services`에서 출발해 원인 장비에 닿는다(`commonReach`, 시험).
 
 | 시나리오 | 고장 | 정답 |
 |---|---|---|
