@@ -12,6 +12,7 @@ verification_log:
   - "2026-11-11: 처음 씀. 골든 시험 열두 파일과 도우미 네 파일을 코드와 대조 (product-design.md 6절의 위험 첫 줄)"
   - "2026-11-11: 처음 씀: 시험 파일과 도우미를 대조"
   - "2026-11-11: ADR-0172: 정답 풀이 골든의 개수(264)와 세계 밖 여덟 템플릿, 100이 아니던 짝의 표를 코드·시험 파일과 대조해 고쳤다"
+  - "2026-11-11: ADR-0178: 바뀐 골든 키 세 개와 확장된 불변식 서술을 시험 파일과 대조했다"
 covers_hash: 12f569ec613ee392
 ---
 # 골든 안전망
@@ -73,6 +74,8 @@ covers_hash: 12f569ec613ee392
 | `db-primary-down` (`campus`) | 오류 | 100 | 클러스터가 스스로 넘기는 세계의 길이 없었어요. 읽고, 원인을 말하고, 기다려요 |
 | `db-replication-broken`, `db-shared-path-cut`, `session-store-down`, `mesh-control-stuck`, `k8s-worker-down`, `k8s-etcd-quorum`, `replication-broken` (`campus`) | 30 | 100 | `srv-t1`의 서비스 프로세스 열 개가 메모리 100%를 채워, 서버를 건드리면 월간 리포트가 느려지고 포털이 정상이 되지 못했어요. 프로세스당 몫을 나눠 메모리가 85%를 넘지 않게 했어요. |
 | `k8s-pending`, `k8s-disk-pressure`, `site-power-loss`, `dr-failover-stuck` (`campus`) | 오류 또는 30 | 제공 안 함 | 이 세계로는 정답 풀이도 복구하지 못해요(배치 작업 없음, 파드가 들어갈 자리 없음, 복구 사이트에 서버 없음). `unavailable()`이 이유를 말해요. 뒤의 둘은 정답 풀이 시험의 사이트 세계에서 한 번씩 못 박아요(`extra`, 새 키 넷) |
+
+같은 불변식을 골든 행렬 밖의 모양(기본 세계, 사다리 칩 하나씩, 세계 생성기와 캠퍼스 생성기의 사업장 프리셋)에도 건 [ADR-0178](adr/0178-offered-scenario-solved-on-every-world-shape.md)이 풀이를 더 고치면서 골든 기대 값 세 개를 더 바꿨어요: `domain-port-network@campus`의 점수와 세계, `power-cap-cooling-short@train`의 세계. 점수는 100 그대로이고 풀이가 그 세계에서 한 일(대기 쪽으로 넘김, 더 낮은 전력 캡)이 달라 세계 지문만 바뀌었어요. 그 밖의 키는 글자까지 그대로예요.
 
 ## 시간과 결정성
 
