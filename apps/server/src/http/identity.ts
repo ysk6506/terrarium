@@ -12,11 +12,12 @@
  */
 import type { IncomingHttpHeaders } from "node:http";
 import { UnauthenticatedError } from "@terrarium/core/contract";
+import type { AuditReason } from "@terrarium/core/experiments";
 import { InvalidValueError, josa } from "@terrarium/core/kernel";
 import type { FastifyInstance } from "fastify";
 import type { IdentityConfig } from "../adapters";
 import type { Viewer } from "../runtime";
-import { type IdentitySettings, proxyViewer, selfViewer } from "./viewer";
+import { type IdentitySettings, proxyRefusal, proxyViewer, selfViewer } from "./viewer";
 
 /** What an authenticator may look at. Headers carry cookies and bearer tokens alike. */
 export interface AuthRequest {
@@ -26,6 +27,19 @@ export interface AuthRequest {
 }
 
 export type IdentityMode = "proxy" | "self-declared";
+
+/**
+ * A 401 that knows why, for the audit log. The person is told the same words for every reason; only the log keeps which
+ * part of the proxy check failed.
+ */
+export class SignInRefused extends UnauthenticatedError {
+  constructor(
+    message: string,
+    readonly why: AuditReason,
+  ) {
+    super(message);
+  }
+}
 
 export interface Authenticator {
   /** Names the method in logs and settings. */
@@ -60,7 +74,8 @@ export function headerAuthenticator(settings: IdentitySettings): Authenticator {
     authenticate(req) {
       const viewer = proxyViewer(req.headers, settings);
       // The same words for every reason: a caller learns nothing about which part was wrong.
-      if (!viewer) throw new UnauthenticatedError("로그인이 필요해요");
+      if (!viewer)
+        throw new SignInRefused("로그인이 필요해요", proxyRefusal(req.headers, settings));
       return viewer;
     },
   };

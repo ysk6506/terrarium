@@ -4774,6 +4774,41 @@
       "kind": "auto"
     },
     {
+      "q": "ADR-0193 감사 기록의 맥락이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0193-audit-log-one-recording-point.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0193 감사 기록의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0193-audit-log-one-recording-point.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0193 감사 기록의 이 변경에서 고른 것이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0193-audit-log-one-recording-point.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0193 감사 기록의 이 변경에서 고른 것이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0193-audit-log-one-recording-point.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0193 감사 기록의 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0193-audit-log-one-recording-point.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0193 감사 기록의 대안과 버린 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0193-audit-log-one-recording-point.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0193 감사 기록의 결과가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0193-audit-log-one-recording-point.md"],
+      "kind": "auto"
+    },
+    {
       "q": "ADR이 뭐예요?",
       "expect": ["docs/design-docs/adr-process.md"],
       "kind": "auto"
@@ -6154,6 +6189,16 @@
       "kind": "auto"
     },
     {
+      "q": "HTTP API 계약의 감사 기록이 뭐예요?",
+      "expect": ["docs/design-docs/http-api.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "HTTP API 계약의 감사 기록이 뭐예요?",
+      "expect": ["docs/design-docs/http-api.md"],
+      "kind": "auto"
+    },
+    {
       "q": "HTTP API 계약의 연결이 뭐예요?",
       "expect": ["docs/design-docs/http-api.md"],
       "kind": "auto"
@@ -6824,6 +6869,11 @@
       "kind": "auto"
     },
     {
+      "q": "서버 운영의 설정 파일 예가 뭐예요?",
+      "expect": ["docs/design-docs/operations.md"],
+      "kind": "auto"
+    },
+    {
       "q": "서버 운영의 비밀 값과 열쇠가 뭐예요?",
       "expect": ["docs/design-docs/operations.md"],
       "kind": "auto"
@@ -6889,6 +6939,11 @@
       "kind": "auto"
     },
     {
+      "q": "권한의 6. 감사 기록이 뭐예요?",
+      "expect": ["docs/design-docs/permissions.md"],
+      "kind": "auto"
+    },
+    {
       "q": "권한의 7. 화면이 뭐예요?",
       "expect": ["docs/design-docs/permissions.md"],
       "kind": "auto"
@@ -6910,6 +6965,11 @@
     },
     {
       "q": "권한의 나 단계에서 만든 것과 알려진 한계가 뭐예요?",
+      "expect": ["docs/design-docs/permissions.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "권한의 다 단계에서 만든 것과 알려진 한계가 뭐예요?",
       "expect": ["docs/design-docs/permissions.md"],
       "kind": "auto"
     },

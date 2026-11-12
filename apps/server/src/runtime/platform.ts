@@ -4,9 +4,16 @@
  */
 import { Catalog } from "@terrarium/core/catalog";
 import type { ConnectionView, HarnessView, MetaView } from "@terrarium/core/contract";
-import { DEFAULT_LIMITS, MAX_SEEDS, type SchedulerLimits } from "@terrarium/core/experiments";
+import {
+  DEFAULT_LIMITS,
+  MAX_SEEDS,
+  MemoryAuditStore,
+  type SchedulerLimits,
+} from "@terrarium/core/experiments";
 import { type Adapters, adapterOfPort, SecretBox } from "../adapters";
 import { AgentVersions } from "./agent-versions";
+import { type AuditLogLine, Auditor } from "./audit";
+import { AuditLog } from "./audit-log";
 import { BlueprintCache } from "./blueprint-cache";
 import type { TryOptions } from "./connection-try";
 import { Connections } from "./connections";
@@ -43,6 +50,8 @@ export interface PlatformOptions {
         | "secretBox"
         | "retention"
         | "telemetryDefault"
+        | "audit"
+        | "auditRetentionDays"
       >
     >;
   readonly host: SessionHost;
@@ -51,6 +60,8 @@ export interface PlatformOptions {
   /** Sessions the hosts can run at once, now. When given, it (not a fixed number) caps how many runs start. */
   readonly capacity?: () => number;
   readonly stamps?: Stamps;
+  /** Where the server's own log hears of an audit entry that could not be written: its action and outcome, nothing more. */
+  readonly auditLine?: AuditLogLine;
   readonly version?: string;
   /** Wall-clock limit per agent run, and the grace after the session ends (tests shorten these). */
   readonly wallLimitMs?: number;
@@ -166,6 +177,10 @@ export class Platform {
   readonly board: WorldBoard;
   /** What people earned (REQ-101, ADR-0122). */
   readonly titles: Titles;
+  /** The one writer of the audit log (ADR-0193). */
+  readonly audit: Auditor;
+  /** Reading the audit log: administrators' listing and file, and a person's view of their own things. */
+  readonly auditLog: AuditLog;
   private readonly ctx: PlatformContext;
 
   constructor(private readonly options: PlatformOptions) {
@@ -209,6 +224,9 @@ export class Platform {
         : { ...DEFAULT_LIMITS, ...options.limits },
       (id) => void this.announce(id),
     );
+    const auditStore = options.adapters.audit ?? new MemoryAuditStore();
+    this.audit = new Auditor(auditStore, () => stamps.now(), options.auditLine);
+    this.auditLog = new AuditLog(auditStore);
     this.gate = new Gate(this.ctx);
     this.titles = new Titles(this.ctx, watched.version);
     this.worlds = new Worlds(this.ctx);
@@ -273,6 +291,11 @@ export class Platform {
   /** Remove connections nobody has used for too long (REQ-051). Run when the server starts and then now and then. */
   sweepConnections(): Promise<string[]> {
     return this.connections.sweep();
+  }
+
+  /** Remove audit entries older than the retention setting, and write that it was done. */
+  sweepAudit(): Promise<number> {
+    return this.audit.sweep(this.options.adapters.auditRetentionDays ?? 0);
   }
 
   /** Pick up runs left from before a restart. */

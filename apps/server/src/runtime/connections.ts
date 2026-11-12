@@ -243,7 +243,7 @@ export class Connections implements HarnessDirectory {
   private usable(viewer: Viewer, id: string): Entry {
     const entry = must(this.fixed.get(id) ?? this.added.get(id), `연결 '${id}'`);
     // using needs sight; a connection the person cannot see answers as one that is not there
-    mustSee(viewer, this.standingOf(id) ?? {}, `연결 '${id}'`);
+    mustSee(viewer, this.standingOf(id) ?? {}, `연결 '${id}'`, { kind: "connection", id });
     return entry;
   }
 
@@ -253,7 +253,7 @@ export class Connections implements HarnessDirectory {
         problem("id", "설정 파일에서 고친 뒤 서버를 다시 시작해 주세요"),
       ]);
     const entry = must(this.added.get(id), `연결 '${id}'`);
-    mustSee(viewer, this.standingOf(id) ?? {}, `연결 '${id}'`);
+    mustSee(viewer, this.standingOf(id) ?? {}, `연결 '${id}'`, { kind: "connection", id });
     return entry;
   }
 

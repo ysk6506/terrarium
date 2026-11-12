@@ -257,9 +257,19 @@ export class Experiments {
   ): Promise<void> {
     allowRunOn(viewer, this.ctx.harnesses, recipe.harnessId);
     const world = await this.ctx.store.getWorld(recipe.worldId);
-    if (world) mustSee(viewer, standing(world), `세계 ${recipe.worldId}`);
+    if (world)
+      mustSee(viewer, standing(world), `세계 ${recipe.worldId}`, {
+        kind: "world",
+        id: world.id,
+        name: world.name,
+      });
     const scenario = await this.ctx.store.getScenario(recipe.scenarioId);
-    if (scenario) mustSee(viewer, standing(scenario), `시나리오 ${recipe.scenarioId}`);
+    if (scenario)
+      mustSee(viewer, standing(scenario), `시나리오 ${recipe.scenarioId}`, {
+        kind: "scenario",
+        id: scenario.id,
+        name: scenario.name,
+      });
   }
 
   async create(viewer: Viewer, req: CreateExperimentRequest): Promise<ExperimentView> {

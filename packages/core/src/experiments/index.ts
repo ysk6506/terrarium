@@ -20,6 +20,32 @@ export {
   snapshotOf,
   type VersionPatch,
 } from "./agent-version";
+export {
+  AUDIT_ACTIONS,
+  AUDIT_OUTCOMES,
+  AUDIT_REASONS,
+  type AuditAction,
+  type AuditEntry,
+  type AuditFilter,
+  type AuditOutcome,
+  type AuditPage,
+  type AuditReason,
+  type AuditResource,
+  type AuditStore,
+  type AuditSubject,
+  auditMatches,
+  isResourceKind,
+  type NewAuditEntry,
+  pageOf,
+  registerResourceKind,
+  resourceKinds,
+  SUBJECT_KINDS,
+  type SubjectKind,
+  VALUE_FIELDS,
+  type ValueChange,
+  type ValueField,
+} from "./audit";
+export { MemoryAuditStore } from "./audit-memory";
 export type { CalibrationMark, TitleAward, WorldLike } from "./community";
 export {
   type Competition,

@@ -20,19 +20,27 @@ export class Gate {
 
   async world(viewer: Viewer, id: string): Promise<WorldRecord> {
     const world = must(await this.ctx.store.getWorld(id), `세계 ${id}`);
-    mustSee(viewer, standing(world), `세계 ${id}`);
+    mustSee(viewer, standing(world), `세계 ${id}`, { kind: "world", id, name: world.name });
     return world;
   }
 
   async scenario(viewer: Viewer, id: string): Promise<ScenarioRecord> {
     const scenario = must(await this.ctx.store.getScenario(id), `시나리오 ${id}`);
-    mustSee(viewer, standing(scenario), `시나리오 ${id}`);
+    mustSee(viewer, standing(scenario), `시나리오 ${id}`, {
+      kind: "scenario",
+      id,
+      name: scenario.name,
+    });
     return scenario;
   }
 
   async experiment(viewer: Viewer, id: string): Promise<Experiment> {
     const experiment = must(await this.ctx.store.getExperiment(id), `실험 ${id}`);
-    mustSee(viewer, standing(experiment), `실험 ${id}`);
+    mustSee(viewer, standing(experiment), `실험 ${id}`, {
+      kind: "experiment",
+      id,
+      name: experiment.name,
+    });
     return experiment;
   }
 

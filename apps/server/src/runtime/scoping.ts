@@ -1,9 +1,10 @@
 /**
  * Choosing who can see a record (ADR-0174, permissions.md section 3): the scope a new record starts with, and the one
- * function every change of scope goes through, so that step 다 can write the audit line in one place.
+ * function every change of scope goes through, and the one place the audit log learns the before and after of a scope (ADR-0193).
  */
 import { InvalidInputError } from "@terrarium/core/contract";
-import { type Scope, type Shared, scopeProblem } from "@terrarium/core/experiments";
+import { type Scope, type Shared, scopeOf, scopeProblem } from "@terrarium/core/experiments";
+import { noteChange } from "./audit-context";
 import type { Viewer } from "./context";
 import { allow, may } from "./permissions";
 
@@ -52,7 +53,12 @@ export function changeScope<T extends Shared & { readonly owner: string }>(
   allow(viewer, "changeScope", { owner: record.owner }, what);
   const { scope: _s, group: _g, ...rest } = record;
   if (choice.scope === undefined) return record;
-  return { ...rest, ...checked(viewer, choice.scope, choice.group, record.group) } as T;
+  const next = { ...rest, ...checked(viewer, choice.scope, choice.group, record.group) } as T;
+  // the audit log keeps the before and after of these two fields, and of nothing else the change touches
+  noteChange({ field: "scope", before: scopeOf(record), after: scopeOf(next) });
+  if ((record.group ?? null) !== (next.group ?? null))
+    noteChange({ field: "group", before: record.group ?? null, after: next.group ?? null });
+  return next;
 }
 
 /** Whether the person asking may change who sees it (for the views). */

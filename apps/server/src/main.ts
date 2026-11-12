@@ -11,11 +11,19 @@ import { buildAdapters, type Config, loadConfig, secret } from "./adapters";
 import { ClusterHost, Heartbeat, NodeRegistry, NodeServer, registerControl } from "./cluster";
 import { authenticatorOf, buildApp } from "./http";
 import { McpGateway } from "./mcp";
-import { Platform, type SessionHost, WorkerHost } from "./runtime";
+import {
+  type AuditLogLine,
+  auditMetricsText,
+  Platform,
+  type SessionHost,
+  WorkerHost,
+} from "./runtime";
 
 const VERSION = process.env.npm_package_version ?? "dev";
 /** How often connections nobody uses are looked for. */
 const CONNECTION_SWEEP_MS = 6 * 60 * 60 * 1000;
+/** How often audit entries past the retention setting are looked for (ADR-0193). */
+const AUDIT_SWEEP_MS = 6 * 60 * 60 * 1000;
 const WEB_DIST = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../web/dist");
 
 export interface Running {
@@ -98,8 +106,11 @@ async function runControl(
     VERSION,
     (slot) => adapters.secretBox.derive(`slot:${slot}`),
   );
+  // the audit log tells the server's log only an action and an outcome; the log exists once the app does
+  let auditLine: AuditLogLine = () => undefined;
   const platform = new Platform({
     adapters,
+    auditLine: (line) => auditLine(line),
     host: placement.sessions,
     gateway,
     limits: config.limits,
@@ -116,6 +127,8 @@ async function runControl(
     webDist: WEB_DIST,
     logger,
   });
+  auditLine = (line) =>
+    app.log.warn({ action: line.action, outcome: line.outcome }, "감사 기록을 쓰지 못했어요");
   const { registry } = placement;
   if (registry && token)
     registerControl(app, {
@@ -123,6 +136,7 @@ async function runControl(
       token,
       counts: () => platform.dispatcher.counts,
       localSlots: placement.localSlots,
+      extraMetrics: () => auditMetricsText(platform.audit.counts()),
       slotsPerWorker: () =>
         registry.averageSlots() ??
         c.nodeSlots ??
@@ -134,6 +148,11 @@ async function runControl(
   // Connections nobody has used for a month are removed (REQ-051); once at start, then every few hours.
   const unused = setInterval(() => void platform.sweepConnections(), CONNECTION_SWEEP_MS);
   unused.unref();
+  // Audit entries older than the retention setting go in one sweep, once at start and then every few hours; the sweep writes an entry.
+  const sweepAudit = () => void platform.sweepAudit().catch(() => undefined);
+  const auditSweep = setInterval(sweepAudit, AUDIT_SWEEP_MS);
+  auditSweep.unref();
+  sweepAudit();
   const url = await app.listen({ port: config.port, host: config.host });
   app.log.info(
     {
@@ -149,6 +168,7 @@ async function runControl(
     async stop() {
       if (sweep) clearInterval(sweep);
       clearInterval(unused);
+      clearInterval(auditSweep);
       await app.close();
       await platform.stop();
       await placement.sessions.close();

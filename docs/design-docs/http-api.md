@@ -13,13 +13,18 @@ covers:
   - packages/core/src/contract/model-routes.ts
   - packages/core/src/contract/community.ts
   - packages/core/src/contract/community-routes.ts
-covers_hash: eb2ac775fe9ac774
+  - packages/core/src/contract/audit.ts
+  - packages/core/src/contract/audit-routes.ts
+  - packages/core/src/contract/audit-classes.ts
+covers_hash: 512628c0963c403b
 verification_log:
-  - "2026-11-07: REQ-112의 경로 넷을 표에 더했다"
   - "2026-11-11: main 합치기 뒤 다시 읽음: 물리 프로필(REQ-113) 반영 문단과 라우트 행이 main의 새 내용과 함께 맞다"
   - "2026-11-11: REQ-118 시드당 반복: 실행 키(시드·반복), 시드 단위 통계, 순위 조건(시드 3개), 한도 60, 화면 반영을 코드와 대조해 고쳤다. 이 문서의 나머지는 그대로 맞다"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-12: ADR-0183: 한 가지 말(번, 상황, 객체·링크, 넘기기)에 맞춰 인용한 화면 글을 고쳤다"
+  - "2026-11-12: ADR-0193: 새 길 셋(감사 목록·내려받기·내 것), 정책 수(signedIn 48, admin 3), 감사 기록 절의 항목 모양·거르기·까닭을 audit.ts, audit-routes.ts, audit-classes.ts, responses.ts와 대어 확인"
+verified_body: 9b3ee21f1197804e
+unchanged_reverifies: 0
 ---
 # HTTP API 계약 (core.contract)
 
@@ -127,6 +132,9 @@ verification_log:
 | `GET /api/twin/diagnoses` | 모든 진단 기록 (JSON Lines) | |
 | `GET /api/twin/brief` | 시뮬레이터 모델링 브리프 (Markdown) | |
 | `GET /r/:token` | 공유된 보고서 (앱 없이 열림) | 공개 |
+| `GET /api/audit` | 감사 기록 목록 (관리자만, ADR-0193). 새것부터, 쪽 나눔. 거르기: `from`·`to`·`subject`·`action`·`resourceKind`·`resourceId`·`outcome`. 아래 "감사 기록" | |
+| `GET /api/audit/export` | 같은 거르기로 JSON Lines 파일 내려받기 (관리자만) | |
+| `GET /api/audit/mine` | 내가 만든 것에 있던 일: 누가·언제·무엇을·어떻게 끝났나만 (로그인한 누구나) | |
 
 ## 누가 부를 수 있나 (ADR-0174, [권한](permissions.md))
 
@@ -136,8 +144,8 @@ verification_log:
 |---|---|---|
 | `public` | 주소 안의 토큰이 비밀. 로그인 밖 (`GET /r/:token`) | 1 |
 | `open` | 신원 방식이 들여보낸 누구나. 누구인지 알려 주는 `meta` 하나 | 1 |
-| `signedIn` | 로그인한 누구나. 읽기, 만들기, 내 것만 보이는 저장해 둔 것 | 47 |
-| `admin` | 관리자만, 앱이 핸들러 앞에서 막는다 (소스에서 세계 가져오기) | 1 |
+| `signedIn` | 로그인한 누구나. 읽기, 만들기, 내 것만 보이는 저장해 둔 것, 내 것에 있던 일(`/api/audit/mine`) | 48 |
+| `admin` | 관리자만, 앱이 핸들러 앞에서 막는다 (소스에서 세계 가져오기, 감사 기록 목록과 내려받기) | 3 |
 | `{ action }` | 무엇에 하는 일인지 안 뒤 핸들러가 `may(viewer, action, resource)`로 정한다 | 38 |
 
 `{ action }`의 열네 가지 말(열다섯째 `administer`는 `admin` 정책이 쓴다): `change`·`remove`·`cancel`·`addRuns`·`answerEscalation`·`calibrate`·`editProcess`·`createShare`·`listShares`·`changeScope`는 만든 사람과 관리자, `editAgentVersions`는 만든 사람과 관리자(설정 파일의 연결은 관리자), `use`(연결·모델 쓰기, 그 연결로 실험 만들기·복제)는 **그것이 내게 보이는 사람**(설정 파일의 연결과 관리자가 정한 기본 모델은 로그인한 누구나), `deleteShare`는 링크를 만든 사람·실험을 만든 사람·관리자, `like`는 이름이 있는 사람. 소유는 로그인 ID로 견준다. 판정은 `apps/server/src/runtime/permissions.ts`의 `may` 한 곳이다.
@@ -149,6 +157,16 @@ verification_log:
 - 볼 수 없는 것은 **목록에 없고 하나를 물으면 404**다(이미 있는 것과 같은 말). 보이지만 내 것이 아니면 바꾸기는 403이다. 딸린 길(실행·보고서·진단·사건·세계·텔레메트리·넘기기 카드·두 스트림·내보내기)은 세계나 실험의 범위를 따른다. 순위표와 세계 인기·좋아요·칭호는 `everyone`만 센다.
 - 응답: 세계·시나리오·실험은 `scope`·`group`과 `canChangeScope`(내가 바꿀 수 있나)를 싣고, 연결·모델은 `sharing: { scope, group?, canChange }`를 싣는다(연결의 `scope`는 "harness|agent"라는 다른 뜻이라 따로 뒀다).
 - `GET /api/experiments/:id/shares`: 그 실험의 링크 목록(만든 사람과 관리자만, 기간이 지난 링크 제외). 항목은 링크 보기에 `createdBy`를 더한 것이다.
+
+### 감사 기록 (ADR-0193, [권한](permissions.md#6-감사-기록))
+
+- **기록하는 곳은 하나**예요: 모든 길은 앱의 한 등록 함수를 지나고, 그 함수가 길의 `AUDIT_CLASSES`(`packages/core/src/contract/audit-classes.ts`)를 읽어 요청이 끝날 때 적어요. 길마다 `records: change | read-override | none`이 있고 `none`은 이유를 적어야 해요. 길을 더하고 이 표에 줄을 안 더하면 타입 검사와 시험이 실패해요.
+- 모든 응답에 `x-request-id`가 있고, 기록의 `requestId`가 같은 값이에요.
+- **목록** `GET /api/audit`은 `{ entries, next? }`이고 `next`를 `cursor`로 보내면 다음 쪽이에요(`limit` 기본 50, 최대 200). 항목: `id`, `at`, `subject`(`kind` person·agent·system, `id`, `name`, `source`, `admin`), `onBehalfOf?`, `caseId?`, `action`, `labelKey`, `label`, `outcome`(allowed·denied·failed), `reason?`·`reasonLabel?`, `route?`, `resource`(`kind`, `id?`, `name?`(그때의 이름), `owner?`, `scope?`, `group?`), `fields?`(보낸 칸의 이름뿐), `changes?`(범위·그룹·역할·주인·공유 칸의 `before`·`after`), `remoteAddress?`(로그인 실패에만), `detail?`.
+- **내려받기** `GET /api/audit/export`는 같은 거르기에 쪽 나눔 없이 새것부터 최대 5만 줄을 JSON Lines(`terrarium-audit.jsonl`)로 줘요.
+- **내 것** `GET /api/audit/mine`은 `{ entries, next? }`이고 항목은 `id`, `at`, `who`(`id`, `name`), `action`, `labelKey`, `label`, `outcome`, `resource`(`kind`, `id?`, `name?`)뿐이에요. 거르기는 `subject`를 뺀 나머지예요.
+- **행동의 말**은 닫힌 목록이에요(`AUDIT_ACTIONS`). `world.create`처럼 `종류.일`이고, 관리자가 남의 것을 연 일은 `…read`, 로그인 실패는 `auth.sign_in`, 길을 알 수 없는 막힘은 `access.denied`예요. **까닭의 말**도 닫힌 목록이에요: 막힘은 `unauthenticated`·`proxy_secret_missing`·`proxy_secret_wrong`·`proxy_login_missing`·`not_admin`·`not_owner`·`not_allowed`·`not_visible`, 실패는 `invalid_input`·`not_found`·`conflict`·`unavailable`·`error`. 로그인 실패의 까닭은 기록에만 있고 호출한 사람에게는 모두 같은 401이에요.
+- **쓰기가 막히면**(저장소가 못 받을 때) 바꾸는 길은 하지 않고 503 `audit_unavailable`과 "감사 기록을 남길 수 없어서 이 일을 하지 않았어요…"를 줘요. 읽기는 그대로 답해요. 자세한 것은 [권한](permissions.md#6-감사-기록)과 [서버 운영](operations.md).
 
 ### 연결 (REQ-051, REQ-053)
 

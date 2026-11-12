@@ -156,7 +156,7 @@ export class Models {
   /** A registration, if the person can see it; one they cannot answers as one that is not there. */
   private async find(viewer: Viewer, id: string): Promise<LlmModelRecord> {
     const found = must(await this.ctx.store.getModel(id), "등록한 모델");
-    mustSee(viewer, standing(found), "등록한 모델");
+    mustSee(viewer, standing(found), "등록한 모델", { kind: "model", id, name: found.name });
     return found;
   }
 

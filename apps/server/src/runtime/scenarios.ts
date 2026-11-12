@@ -133,7 +133,11 @@ export class Scenarios {
   async create(viewer: Viewer, req: CreateScenarioRequest): Promise<SavedScenario> {
     const world = must(await this.ctx.store.getWorld(req.worldId), `세계 ${req.worldId}`);
     // a scenario is written on a world, so the world has to be one the person can see
-    mustSee(viewer, standing(world), `세계 ${req.worldId}`);
+    mustSee(viewer, standing(world), `세계 ${req.worldId}`, {
+      kind: "world",
+      id: world.id,
+      name: world.name,
+    });
     const id = this.ctx.stamps.id("s");
     const start = await this.startingDoc(id, req);
     const name = req.name ?? start.name;

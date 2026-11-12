@@ -192,3 +192,4 @@
 | [ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기](../design-docs/adr/0188-second-redaction-under-adr-0187.md) | 유효 |  |
 | [ADR-0189 제품 목표에 "통과한 것만 운영에 나간다"를 더한다 — 워크플로는 테라리움이 정하고, 실제 툴은 에이전트가 게이트웨이를 거쳐 부른다](../design-docs/adr/0189-verified-workflows-go-to-operation.md) | 유효 | 일부 고침: [0190](../design-docs/adr/0190-mock-tools-stand-in-for-real-tools-in-verification.md) (실험 세계에서는 액션이 실험의 툴에 매핑된다) |
 | [ADR-0190 검증에서는 실제 툴 자리에 이름과 입력이 같은 모의 툴이 선다 — 에이전트는 건마다 받은 주소에 붙고, 툴마다 검증 수준을 밝힌다](../design-docs/adr/0190-mock-tools-stand-in-for-real-tools-in-verification.md) | 유효 |  |
+| [ADR-0193 감사 기록 — 덧붙이기만 하고, 기록하는 곳은 하나이고, 못 쓰면 바꾸는 일을 하지 않는다](../design-docs/adr/0193-audit-log-one-recording-point.md) | 유효 |  |

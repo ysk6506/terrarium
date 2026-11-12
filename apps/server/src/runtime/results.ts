@@ -49,6 +49,7 @@ import {
 } from "@terrarium/core/session";
 import type { ImportReport } from "@terrarium/core/sources/realimport";
 import { spanOf } from "@terrarium/core/topology";
+import { noteChange } from "./audit-context";
 import { must, type PlatformContext, type Viewer } from "./context";
 import { whoIs } from "./executor";
 import type { Experiments } from "./experiments";
@@ -227,6 +228,7 @@ export class Results {
   ): Promise<ShareView> {
     const experiment = await this.experiments.get(id);
     allow(viewer, "createShare", { owner: experiment.owner }, "공유 링크 만들기");
+    noteChange({ field: "sharing", before: null, after: "link" });
     const createdAt = this.ctx.stamps.now();
     // A link without an end is a door nobody remembers to close: no answer means the usual thirty days.
     const days = req.expiresInDays ?? DEFAULT_SHARE_DAYS;
@@ -271,6 +273,7 @@ export class Results {
       { owner: experiment.owner, creator: share.createdBy },
       "공유 링크 끊기",
     );
+    noteChange({ field: "sharing", before: "link", after: null });
     return { deleted: await this.ctx.store.deleteShare(token) };
   }
 

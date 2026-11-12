@@ -5,7 +5,12 @@
 import path from "node:path";
 import type { TelemetryAdapter, TelemetryPort } from "@terrarium/core/analysis";
 import type { SourceView } from "@terrarium/core/contract";
-import type { ExperimentStore, HarnessPort } from "@terrarium/core/experiments";
+import {
+  type AuditStore,
+  type ExperimentStore,
+  type HarnessPort,
+  MemoryAuditStore,
+} from "@terrarium/core/experiments";
 import { MemorySource, type RealitySource, sampleGraph } from "@terrarium/core/sources/realimport";
 import type { Config, HarnessConfig } from "./config";
 import { secret } from "./config";
@@ -25,6 +30,10 @@ export interface SourceEntry {
 
 export interface Adapters {
   readonly store: ExperimentStore;
+  /** The audit log: written only by the recorder (ADR-0193). */
+  readonly audit: AuditStore;
+  /** Days an audit entry is kept; 0 keeps them all. */
+  readonly auditRetentionDays: number;
   readonly harnesses: readonly HarnessPort[];
   /** What the config file says about each of those harnesses, to show them (settings only name variables, never hold secrets). */
   readonly harnessConfigs: readonly HarnessConfig[];
@@ -49,6 +58,8 @@ export interface AdapterOptions {
   readonly fetch?: FetchLike;
   /** A store to use instead of the SQLite file (tests, or running without a disk). */
   readonly store?: ExperimentStore;
+  /** An audit store to use instead of the SQLite file's (tests). */
+  readonly audit?: AuditStore;
 }
 
 /** The port a config entry describes, built by the connector of its kind. */
@@ -111,6 +122,8 @@ export function buildAdapters(config: Config, options: AdapterOptions = {}): Ada
     : new SqliteStore(path.join(config.dataDir, "terrarium.db"));
   return {
     store: options.store ?? (ownStore as SqliteStore),
+    audit: options.audit ?? ownStore?.audit ?? new MemoryAuditStore(),
+    auditRetentionDays: config.audit.retentionDays,
     harnesses,
     harnessConfigs: config.harnesses,
     connect: { env, fetch: fetchImpl },

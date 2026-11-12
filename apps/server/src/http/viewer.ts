@@ -13,6 +13,7 @@
  */
 import { createHash, timingSafeEqual } from "node:crypto";
 import type { IncomingHttpHeaders } from "node:http";
+import type { AuditReason } from "@terrarium/core/experiments";
 import { ANONYMOUS, type Role, type Viewer } from "../runtime";
 
 /** Header the web sends with the name a person typed (URL-encoded, so Korean names survive). */
@@ -120,6 +121,19 @@ export function proxyViewer(headers: IncomingHttpHeaders, s: IdentitySettings): 
     (s.adminGroup !== undefined && groups.includes(s.adminGroup.normalize("NFC")));
   const name = (s.nameHeader ? cleanName(rawText(headers[s.nameHeader])) : undefined) ?? id;
   return { id, name, groups, roles: rolesOf(admin), source: "proxy" };
+}
+
+/**
+ * Why the proxy check refused a request, for the audit log only (the person is told the same words whatever went wrong):
+ * no secret at all, a wrong one, or the right one with no usable login.
+ */
+export function proxyRefusal(
+  headers: IncomingHttpHeaders,
+  s: IdentitySettings,
+): Extract<AuditReason, `proxy_${string}`> {
+  const given = firstOf(headers[s.secretHeader]);
+  if (given === undefined) return "proxy_secret_missing";
+  return sameSecret(given, s.secret) ? "proxy_login_missing" : "proxy_secret_wrong";
 }
 
 /** A typed name (nobody when there is none), and an administrator only with the right token. */

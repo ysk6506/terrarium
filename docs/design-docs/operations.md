@@ -9,13 +9,15 @@ covers:
   - apps/server/src/http/identity.ts
   - apps/server/src/http/viewer.ts
   - apps/server/src/main.ts
-covers_hash: 1a1eaa19042e97e1
+covers_hash: 66e66d7126e1139f
 verification_log:
-  - "2026-11-11: main.ts의 시작 실패 보고를 console.error에서 process.stderr.write로 바꿨다(ADR-0148). 본문 서술과 어긋난 곳 없음"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-11: self-declared admin: token, else loopback socket address only; proxy mode unchanged"
   - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
   - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
+  - "2026-11-12: ADR-0193: audit.retentionDays(기본 365, 0은 영구), 스키마 4판, 쓰기 실패 때의 동작, 지표 둘을 config.ts, sqlite-store.ts, sqlite-audit.ts, main.ts, control-routes.ts와 대어 확인"
+verified_body: 6fa3d195ecf31a4f
+unchanged_reverifies: 0
 ---
 # 서버 운영
 
@@ -83,6 +85,7 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 | `connections.allowedHosts` | 화면에서 연결할 수 있는 호스트(`*.internal`처럼). 클라우드 메타데이터 주소는 항상 막는다 | 메타데이터 주소만 막음 |
 | `connections.retentionDays` | 화면에서 만든 연결이 실험에 안 쓰이면 지우는 날 수. 0이면 지우지 않는다 | 30 |
 | `connections.warnDays` | 지우기 며칠 전부터 만든 사람에게 알리는가 | 7 |
+| `audit.retentionDays` | 감사 기록을 며칠 둘지(ADR-0193). 서버가 뜰 때와 6시간마다 한 번의 정리가 이보다 오래된 기록을 지우고, 정리했다는 기록을 하나 남긴다. 0이면 지우지 않는다. 0~36500 | 365 |
 | `sources` | 세계를 가져올 현실. FalkorDB는 `GRAPH.RO_QUERY`로만 읽는다(REQ-011) | 샘플 그래프만 |
 | `telemetry` | 하네스가 남긴 trace·log를 읽을 ClickStack의 **기본값**. 읽기 전용 계정을 쓴다. 연결이 "서버 기본값"을 고르면 이것을 읽는다 | 토큰·모델 시간 칸이 비고 나머지 분석은 그대로 |
 | 하네스의 `traces` | 그 하네스의 트레이스가 쌓이는 곳: `{"kind": "none"}`, `{"kind": "default"}`, `{"kind": "clickstack", "url": …}`, `{"kind": "langfuse", "host": …, "publicKey": …, "secretKeyEnv": …}`. 화면에서는 연결 폼의 "이 하네스의 트레이스는 어디에 쌓이나요?"로 고른다 | 옛 규칙: 하네스가 `telemetry: "clickstack"`이면 서버 기본값 |
@@ -98,7 +101,12 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 
 두 방식이 있고, 시작할 때 하나로 정해진다. SSO를 서버가 직접 확인해야 하게 되면 식별 방식 하나(`Authenticator`)를 더하면 된다 — [ADR-0044](adr/0044-identity-slot.md). 실제 SSO(OIDC·SAML)는 만들지 않았다. 자세한 규칙은 [권한](permissions.md).
 
-**공개 범위와 예전 기록 (ADR-0174 나 단계).** SQLite 스키마는 3판이다. 열 때 2판 이하 파일에 `scope`·`grp` 열(세계·시나리오는 `owner`도, 저장된 기록의 `owner`에서 채운다)을 더하고 `PRAGMA user_version`을 올린다. 범위가 없는 예전 기록은 세계·시나리오·실험·연결·모델 등록 모두 **`everyone`으로 읽는다**(새 연결·모델 등록의 처음 값이 "나만"이어도 예전 것을 갑자기 숨기지 않는다). "모두"인 새 기록도 범위를 적지 않아 예전 기록과 바이트까지 같다. 소유자가 없는 예전 기록은 범위가 없으면 로그인한 누구나 본다.
+**공개 범위와 예전 기록 (ADR-0174 나 단계).** SQLite 스키마 3판은 이렇다. 열 때 2판 이하 파일에 `scope`·`grp` 열(세계·시나리오는 `owner`도, 저장된 기록의 `owner`에서 채운다)을 더하고 `PRAGMA user_version`을 올린다. 범위가 없는 예전 기록은 세계·시나리오·실험·연결·모델 등록 모두 **`everyone`으로 읽는다**(새 연결·모델 등록의 처음 값이 "나만"이어도 예전 것을 갑자기 숨기지 않는다). "모두"인 새 기록도 범위를 적지 않아 예전 기록과 바이트까지 같다. 소유자가 없는 예전 기록은 범위가 없으면 로그인한 누구나 본다.
+
+**감사 기록 (ADR-0193 다 단계, [권한](permissions.md#6-감사-기록)).** SQLite 스키마는 이제 4판이다. 4판은 같은 파일에 `audit_log` 표를 더한다(시각·누가·무엇에·주인으로 찾는 색인 넷). 3판 파일은 열 때 표가 더해지고 다른 표는 그대로다. 표에는 기록자만 쓰고, 지우는 길은 위의 정리 하나다. 설정이 없으면 메모리에 두어 서버를 끄면 사라진다.
+
+- **쓰기가 안 될 때.** 바꾸는 요청은 하기 전에 기록을 쓸 수 있는지 확인하고(SQLite는 쓰기 잠금을 잡았다 놓는다), 안 되면 **하지 않고** 503과 "감사 기록을 남길 수 없어서 이 일을 하지 않았어요. 잠시 뒤에 다시 해 보시고, 계속되면 관리자에게 알려 주세요"를 준다. 확인한 뒤 쓰는 사이에 깨지면 일은 끝났는데 기록이 없다. 이때는 503과 "일은 끝났지만 감사 기록을 남기지 못했어요. 관리자에게 알려 주세요"를 주고 실패를 세어 로그에 남긴다. 읽기와 막힌 시도는 기록이 안 써져도 그대로 답하고, 실패만 세고 로그에 남긴다.
+- **지표.** `terrarium_audit_entries_total{action,outcome}`(쓴 기록 수)와 `terrarium_audit_write_failures_total`(못 쓴 수)을 `/metrics` 끝에 붙인다. `/metrics`는 클러스터 토큰(`cluster.tokenEnv`)이 있을 때만 열려서, 토큰이 없는 한 대짜리 서버에는 지표 길이 없다. 서버 로그에는 못 쓴 기록의 행동 이름과 결과만 한 줄 남고 기록의 내용은 나오지 않는다.
 
 **프록시 모드 (`identity.header`가 있을 때. 여럿이 쓰는 배포는 이것이다)**
 
