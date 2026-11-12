@@ -1,0 +1,7 @@
+doc: "docs/index.md"
+target: "harness/src/checks/doc-index.ts"
+hash: "73dcd8983b0fab92"
+date: "2026-11-12"
+note: "ADR-0194: 문서 목록이 생성되는 것과 doc-index.ts를 대조"
+text_changed: true
+doc_hash: "4264bc104471da0c"

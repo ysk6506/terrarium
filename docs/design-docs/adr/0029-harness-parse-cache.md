@@ -2,7 +2,6 @@
 title: ADR-0029 하네스는 파싱한 파일을 다시 쓴다
 kind: decision
 status: active
-last_verified: 2026-10-29
 enforced_by:
   - harness/src/common.test.ts
 touches_protected:

@@ -2,7 +2,6 @@
 title: 전원·냉방 사다리 확장 — N+1 UPS·랙 배터리·자체 변전소, 리어도어·액냉·침지, 그리고 파워 캐핑(모델만)
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - packages/core/src/world/ladder-power-cooling.ts
   - packages/core/src/world/faults-accel.ts
@@ -14,14 +13,6 @@ covers:
   - packages/core/src/sources/worldgen/cool-plant.ts
   - packages/core/src/sources/worldgen/dense.ts
   - packages/core/src/scenario/library-power.ts
-covers_hash: 4fe52bb236c636f6
-verification_log:
-  - "2026-11-07: 새 문서. 코드와 대조해 전원·냉방 칩과 파워 캐핑 표, 측정한 숫자(시나리오 둘)를 맞춰 썼다"
-  - "2026-11-07: REQ-108: 코드와 대조했고 필요한 서술(기대 복구 시간, 서비스 카드 복사, 숫자 보정)을 고쳤다. 나머지는 그대로 맞다"
-  - "2026-11-10: 물리 상수를 슬롯 표로 옮김(REQ-113). v1 동작은 physics-golden이 비트까지 같음을 확인, 문서 내용 변화 없음"
-  - "2026-11-12: 파워 캐핑 절에서 내부 출처 서술을 걷어내고 일반 기법의 설명으로 고침. 모델·툴·시나리오 표는 코드와 그대로 맞다 (ADR-0187)"
-verified_body: 8552e4433ac72ea9
-unchanged_reverifies: 0
 ---
 # 전원·냉방 사다리 확장 (REQ-107, ADR-0130)
 

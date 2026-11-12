@@ -2,7 +2,6 @@
 title: ADR-0044 사용자 식별은 하나의 자리(Authenticator)로 꽂는다 — 지금은 프록시 헤더와 스스로 밝힌 이름, 나중에 SSO
 kind: decision
 status: active
-last_verified: 2026-10-30
 enforced_by:
   - apps/server/src/http/identity.test.ts
   - apps/server/src/http/app.test.ts

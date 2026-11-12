@@ -2,7 +2,6 @@
 title: ADR-0062 네트워크는 레거시와 클라우드 두 가지로 짓고, 클라우드는 케이블마다 BGP 세션이 선다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - tests/spec/network-fabrics.test.ts
   - tests/spec/switch-l2l3.test.ts

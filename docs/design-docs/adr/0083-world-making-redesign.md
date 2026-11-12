@@ -2,7 +2,6 @@
 title: ADR-0083 세계 만들기는 결과를 고르고, 빌더는 고른 것 하나에 할 일 하나다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - apps/web/src/logic/next-step.test.ts
   - apps/web/src/logic/worldgen-scale.test.ts

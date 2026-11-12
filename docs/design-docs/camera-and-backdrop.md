@@ -2,18 +2,8 @@
 title: CCTV 자리 — 카메라 개체, 보는 자리, 배경 자리
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - docs/design-docs/physics-laws.md
-covers_hash: 023ab35ad194927a
-verification_log:
-  - "2026-11-10: CCTV 자리 설계 (ADR-0139)"
-  - "2026-11-10: SUNAPI 커넥터 절 추가"
-  - "2026-11-11: 물리 설계 문서에 구현 상태 문장만 추가됨 — CCTV 설계와 충돌 없음 확인"
-  - "2026-11-11: 물리 법칙 문서에 고장 날 시험과 v1 예외 표만 더해짐 — CCTV 설계와 충돌 없음 확인"
-  - "2026-11-12: 내부 사실 서술을 요구의 말로 고침 (ADR-0188)"
-verified_body: 6655974e30844e1b
-unchanged_reverifies: 0
 ---
 # CCTV 자리 — 카메라 개체, 보는 자리, 배경 자리
 

@@ -1,0 +1,7 @@
+doc: "docs/design-docs/harness-e2e.md"
+target: "apps/server/src/adapters/connectors/langgraph.ts"
+hash: "57e5f03eca65f4f3"
+date: "2026-11-12"
+note: "내부 사실 서술을 요구의 말로 고침 (ADR-0188)"
+text_changed: true
+doc_hash: "4120cfc2eb7dba69"

@@ -2,9 +2,10 @@ import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
 import YAML from "yaml";
-import { findRoot, splitFrontMatter } from "../common";
+import { findRoot } from "../common";
+import { verifyDefaults } from "../test-support/docs-repo";
 import { miniRepo } from "../test-support/mini-repo";
-import { followsFingerprint } from "./doc-print";
+import { recordPath } from "./doc-records";
 import { reverify, run, sealAdr } from "./docs";
 
 const TODAY = "2026-10-28";
@@ -13,23 +14,19 @@ const MODULE =
 const realConfig = readFileSync(path.join(findRoot(), "harness/config/docs.yaml"), "utf8");
 
 // Every fixture doc follows package.json so that DOC092 (a doc must cover or follow something) stays quiet (ADR-0180).
-const FOLLOW_HASH = followsFingerprint(miniRepo({}, { "package.json": "{}\n" }), ["package.json"]);
-
 function front(fields: Record<string, unknown> = {}): string {
   const data = {
     title: "T",
     kind: "guide",
     status: "active",
-    last_verified: TODAY,
     follows: ["package.json"],
-    follows_hash: FOLLOW_HASH,
     ...fields,
   };
   return `---\n${YAML.stringify(data)}---\n`;
 }
 
 function docsRepo(files: Record<string, string> = {}): string {
-  return miniRepo(
+  const root = miniRepo(
     {
       "harness/config/docs.yaml": realConfig,
       "harness/src/rules.ts": 'export const RULE = "ARCH010";\n',
@@ -40,6 +37,8 @@ function docsRepo(files: Record<string, string> = {}): string {
     },
     { "package.json": "{}\n" },
   );
+  verifyDefaults(root, TODAY);
+  return root;
 }
 
 const codes = (root: string, now = TODAY): string[] =>
@@ -103,16 +102,17 @@ describe("docs check [REQ-020]", () => {
     expect(codes(root)).toEqual(["DOC010"]);
   });
 
-  test("reverify clears staleness, logs the note and keeps the last five notes", () => {
+  test("reverify clears staleness and keeps the note of the verification in the record", () => {
     const root = docsRepo();
     verifiedGuide(root);
     edit(root, "src/mod.ts", "a + b", "a * b");
-    for (let index = 0; index < 7; index++)
+    expect(codes(root)).toEqual(["DOC010"]);
+    for (let index = 0; index < 3; index++)
       reverify(root, "docs/guide.md", `checked ${index}`, TODAY);
     expect(run(root, TODAY)).toEqual([]);
-    const { data } = splitFrontMatter(readFileSync(path.join(root, "docs/guide.md"), "utf8"));
-    expect(data?.verification_log).toHaveLength(5);
-    expect(String((data?.verification_log as string[])[4])).toContain("checked 6");
+    const record = readFileSync(path.join(root, recordPath("docs/guide.md", "src/mod.ts")), "utf8");
+    expect(record).toContain("checked 2");
+    expect(readFileSync(path.join(root, "docs/guide.md"), "utf8")).not.toContain("checked");
   });
 
   test("reverify needs a note and front matter", () => {
@@ -126,28 +126,35 @@ describe("docs check [REQ-020]", () => {
       "DOC011",
     ]);
     expect(
-      codes(docsRepo({ "docs/guide.md": `${front({ covers: ["nothing/*.ts"] })}x\n` })),
+      codes(
+        docsRepo({
+          "docs/guide.md": `${front({ covers: ["nothing/*.ts"], follows: undefined })}x\n`,
+        }),
+      ),
     ).toEqual(["DOC012"]);
   });
 
   test("docs expire by kind, decisions never do", () => {
-    expect(
-      codes(docsRepo({ "docs/guide.md": `${front({ last_verified: "2026-09-27" })}x\n` })),
-    ).toEqual(["DOC020"]);
-    expect(
-      codes(docsRepo({ "docs/guide.md": `${front({ last_verified: "2026-09-28" })}x\n` })),
-    ).toEqual([]);
-    const adr = adrRepo({ last_verified: "2020-01-01" });
-    expect(codes(adr)).not.toContain("DOC020");
+    const aged = (date: string): string => {
+      const root = docsRepo();
+      reverify(root, "docs/guide.md", "old", date);
+      return root;
+    };
+    expect(codes(aged("2026-09-27"))).toEqual(["DOC020"]);
+    expect(codes(aged("2026-09-28"))).toEqual([]);
+    expect(codes(adrRepo())).not.toContain("DOC020");
   });
 
-  test("future or malformed dates fail", () => {
-    expect(
-      codes(docsRepo({ "docs/guide.md": `${front({ last_verified: "2026-11-01" })}x\n` })),
-    ).toEqual(["DOC021"]);
-    expect(
-      codes(docsRepo({ "docs/guide.md": `${front({ last_verified: "2026-02-30" })}x\n` })),
-    ).toEqual(["DOC001"]);
+  test("a record dated in the future, or one that cannot be read, fails", () => {
+    const future = docsRepo();
+    reverify(future, "docs/guide.md", "from tomorrow", "2026-11-01");
+    expect(codes(future)).toEqual(["DOC021"]);
+    const broken = docsRepo();
+    const file = path.join(broken, recordPath("docs/guide.md", "package.json"));
+    writeFileSync(file, 'date: "2026-02-30"\n');
+    expect(codes(broken)).toEqual(["DOC010", "DOC101"]);
+    writeFileSync(file, "<<<<<<< ours\ndoc: x\n=======\ndoc: y\n>>>>>>> theirs\n");
+    expect(codes(broken)).toEqual(["DOC010", "DOC101"]);
   });
 
   test("broken links and dead path references fail; fenced code and external links are ignored", () => {
@@ -155,8 +162,8 @@ describe("docs check [REQ-020]", () => {
       "# G\n[gone](missing.md)\nSee `packages/nope.ts` and `docs/index.md`.\n```\n[x](missing2.md) `packages/nope2.ts`\n```\n[ext](https://example.com) [anchor](#top)\n";
     const found = run(docsRepo({ "docs/guide.md": front() + body }), TODAY);
     expect(found.map((v) => [v.code, v.line])).toEqual([
-      ["DOC030", 11],
-      ["DOC031", 12],
+      ["DOC030", 9],
+      ["DOC031", 10],
     ]);
   });
 

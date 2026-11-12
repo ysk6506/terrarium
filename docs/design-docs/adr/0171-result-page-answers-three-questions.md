@@ -2,7 +2,6 @@
 title: ADR-0171 실험 결과의 첫 화면은 세 물음에 답하고, 나머지는 탭 뒤로 간다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - apps/web/src/logic/result-words.test.ts
   - apps/web/src/logic/result-dots.test.ts

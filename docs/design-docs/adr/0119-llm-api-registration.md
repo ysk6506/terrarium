@@ -2,7 +2,6 @@
 title: ADR-0119 LLM API 등록 — 워크스페이스 단위 모델 연결, 키는 서버에만, 얇은 클라이언트
 kind: decision
 status: active
-last_verified: 2026-11-06
 enforced_by:
   - packages/core/src/llm/llm.test.ts
   - apps/server/src/http/models-api.test.ts

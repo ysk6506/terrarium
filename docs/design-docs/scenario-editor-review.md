@@ -2,7 +2,6 @@
 title: 시나리오 편집기 검토 — 처음 쓰는 사람의 눈으로, 토스의 원칙으로
 kind: spec
 status: active
-last_verified: 2026-11-11
 covers:
   - apps/web/src/ui/scenario/ScenarioEditorPage.tsx
   - apps/web/src/ui/scenario/Palette.tsx
@@ -12,13 +11,6 @@ covers:
   - apps/web/src/logic/scenario/edit.ts
   - apps/web/src/logic/scenario/questions.ts
   - apps/web/src/logic/scenario/sentences.ts
-covers_hash: 2f7d6226cafb5f21
-verification_log:
-  - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
-  - "2026-11-07: o7 합치기 (사다리·직접 짓기·시운전)"
-  - "2026-11-07: REQ-108: 코드와 대조했고 필요한 서술(기대 복구 시간, 서비스 카드 복사, 숫자 보정)을 고쳤다. 나머지는 그대로 맞다"
-  - "2026-11-07: 목록의 지금 방식 링크를 적었다"
-  - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
 ---
 # 시나리오 편집기 검토 (REQ-071, ADR-0070)
 

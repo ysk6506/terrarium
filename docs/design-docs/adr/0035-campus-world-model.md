@@ -2,7 +2,6 @@
 title: "ADR-0035 캠퍼스 세계: 용도별 방, 수랭 사슬, 전원 사슬, 제조사 다양성"
 kind: decision
 status: active
-last_verified: 2026-10-29
 enforced_by:
   - tests/spec/campus.test.ts
   - packages/core/src/sources/worldgen/campus.test.ts

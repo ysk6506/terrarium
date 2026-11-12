@@ -1,0 +1,7 @@
+doc: "docs/exec-plans/active/build-plan.md"
+target: "docs/design-docs/product-design.md"
+hash: "c1ca5b1605c7930f"
+date: "2026-11-12"
+note: "main(ADR-0196)을 합침: 두 변경의 글이 함께 들어감. 다시 대조함"
+text_changed: false
+doc_hash: "9739c793ce36fdd3"

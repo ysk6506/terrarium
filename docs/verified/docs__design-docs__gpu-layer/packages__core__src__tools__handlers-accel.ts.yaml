@@ -1,0 +1,7 @@
+doc: "docs/design-docs/gpu-layer.md"
+target: "packages/core/src/tools/handlers-accel.ts"
+hash: "2e39530ef2b88fc3"
+date: "2026-11-12"
+note: "ADR-0184: 흉내의 한계 힌트 변경 뒤에도 내용이 맞는지 다시 봤어요"
+text_changed: true
+doc_hash: "320003d8f6949027"

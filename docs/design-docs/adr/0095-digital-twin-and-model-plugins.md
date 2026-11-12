@@ -2,7 +2,6 @@
 title: ADR-0095 현실의 쌍둥이는 네 단계로 가고, 세계의 모델은 플러그인으로 바꿀 수 있다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다. 구현 작업이 끝나면 frontmatter의 enforced_by를 그 작업의 시험으로 바꾼다.

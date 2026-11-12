@@ -2,7 +2,6 @@
 title: ADR-0014 근거가 충분할 때만 커버리지 하한을 올린다
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
   - COV001
   - COV003

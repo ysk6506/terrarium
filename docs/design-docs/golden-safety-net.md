@@ -2,18 +2,11 @@
 title: 골든 안전망 — 모델을 옮기기 전에 못 박아 둔 것, 읽는 법, 바꿀 때의 절차
 kind: spec
 status: active
-last_verified: 2026-11-11
 covers:
   - tests/spec/test-support/golden-matrix.ts
   - tests/spec/test-support/golden-impact.ts
   - tests/spec/test-support/golden-facade.ts
   - tests/spec/test-support/golden-scenario.ts
-verification_log:
-  - "2026-11-11: 처음 씀. 골든 시험 열두 파일과 도우미 네 파일을 코드와 대조 (product-design.md 6절의 위험 첫 줄)"
-  - "2026-11-11: 처음 씀: 시험 파일과 도우미를 대조"
-  - "2026-11-11: ADR-0172: 정답 풀이 골든의 개수(264)와 세계 밖 여덟 템플릿, 100이 아니던 짝의 표를 코드·시험 파일과 대조해 고쳤다"
-  - "2026-11-11: ADR-0178: 바뀐 골든 키 세 개와 확장된 불변식 서술을 시험 파일과 대조했다"
-covers_hash: 12f569ec613ee392
 ---
 # 골든 안전망
 

@@ -2,7 +2,6 @@
 title: ADR-0084 가져오기를 없애고 토폴로지 보기를 둔다 — 같은 것은 접고 다른 것만 편다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - packages/core/src/topology/fold.test.ts
   - packages/core/src/topology/impact.test.ts

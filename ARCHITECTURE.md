@@ -2,16 +2,8 @@
 title: ARCHITECTURE — 단위와 의존 방향
 kind: reference
 status: active
-last_verified: 2026-11-10
 covers:
   - harness/config/architecture.yaml
-covers_hash: a181742e9b8230d5
-verification_log:
-  - "2026-11-05: architecture.yaml에 core.topology 단위(kernel, catalog, world, physics)가 늘었다. 단위 표와 그림에 한 줄씩 더했다"
-  - "2026-11-06: LLM API 등록"
-  - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
-  - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
-  - "2026-11-10: physics.slots 단위 추가 (architecture.yaml와 맞춤)"
 ---
 # 아키텍처
 

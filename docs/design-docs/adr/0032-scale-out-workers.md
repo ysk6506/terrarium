@@ -2,7 +2,6 @@
 title: ADR-0032 스케일 아웃은 워커 노드를 붙이는 것, 스케일 업은 스레드를 늘리는 것
 kind: decision
 status: active
-last_verified: 2026-10-29
 enforced_by:
   - apps/server/src/cluster/cluster.test.ts
   - apps/server/src/scale-out.test.ts

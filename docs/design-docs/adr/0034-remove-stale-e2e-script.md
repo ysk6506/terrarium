@@ -2,7 +2,6 @@
 title: ADR-0034 쓰지 않는 e2e 스크립트를 없앤다
 kind: decision
 status: active
-last_verified: 2026-10-29
 enforced_by:
   - PROT001
 touches_protected:

@@ -1,0 +1,7 @@
+doc: "docs/design-docs/web-ui.md"
+target: "apps/web/src/ui/builder/BuilderBar.tsx"
+hash: "a31ee3934cf1a594"
+date: "2026-11-12"
+note: "ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
+text_changed: true
+doc_hash: "d93d2f531126f5b2"

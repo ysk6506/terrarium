@@ -1,0 +1,7 @@
+doc: "docs/design-docs/core-beliefs.md"
+target: "AGENTS.md"
+hash: "f85435f179a2e14d"
+date: "2026-11-12"
+note: "main을 합침: main에서 ADR-0192·0196·0197로 이미 대조한 문서다. 대상이 바뀐 옛 기록을 지금의 대상으로 다시 씀"
+text_changed: false
+doc_hash: "670d77e72298eecc"

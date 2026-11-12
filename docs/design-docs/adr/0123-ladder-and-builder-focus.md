@@ -2,7 +2,6 @@
 title: ADR-0123 사다리 화면과 직접 짓기를 주인공 하나로 다시 그리고, 칩에 전제 규칙을 두고, 돌려 보기를 시운전으로 부른다
 kind: decision
 status: active
-last_verified: 2026-11-07
 enforced_by:
   - packages/core/src/world/ladder-rules.test.ts
   - apps/web/src/logic/world-shape/prerequisites.test.ts

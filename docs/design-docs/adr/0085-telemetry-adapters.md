@@ -2,7 +2,6 @@
 title: ADR-0085 텔레메트리는 연결마다 어댑터로 붙이고, 묶는 열쇠는 어댑터가 정한다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - apps/server/src/adapters/telemetry/telemetry.test.ts
   - apps/server/src/adapters/connectors/honest-agents.test.ts

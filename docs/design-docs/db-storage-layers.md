@@ -2,7 +2,6 @@
 title: 데이터베이스 층과 스토리지 HA 층 — 서비스가 기대는 두 겹
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - packages/core/src/world/db.ts
   - packages/core/src/world/db-act.ts
@@ -18,15 +17,6 @@ covers:
   - packages/core/src/sources/worldgen/shaped-db.ts
   - packages/core/src/topology/layer-network.ts
   - packages/core/src/oracle/recovery.ts
-covers_hash: c7d54df7523d11b2
-verification_log:
-  - "2026-11-07: ADR-0133 변경 후 코드와 대조: 점수표, 기대 복구 시간, 손대지 않는 것이 정답인 시트"
-  - "2026-11-11: 죽은 clusterSummary를 지움(호출처 없음); 풀·인스턴스에 직접 기대는 서비스 시험 추가"
-  - "2026-11-12: ADR-0184: 흉내의 한계 힌트 변경 뒤에도 내용이 맞는지 다시 봤어요"
-  - "2026-11-12: ADR-0184: 한계 출력 모양 변경(terrarium 줄만)이 이 문서 내용과 어긋나지 않음을 대조"
-  - "2026-11-12: 덮는 시나리오 라이브러리에서 정렬 도우미 byId의 자리만 library-kit.ts로 옮김. 동작은 그대로이고 이 문서는 그 이름을 말하지 않는다"
-verified_body: f540a37f6f091612
-unchanged_reverifies: 2
 ---
 # 데이터베이스 층과 스토리지 HA 층 (REQ-095, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0111](adr/0111-db-storage-layers-amend-tests.md))
 

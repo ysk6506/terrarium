@@ -1,0 +1,7 @@
+doc: "docs/guides/operation-agent-guide.md"
+target: "apps/server/src/adapters/harness/scripted-operator.ts"
+hash: "3f7bd05e97ab4065"
+date: "2026-11-12"
+note: "ADR-0183: 숫자 카드 이름을 넘긴 일로 맞췄다"
+text_changed: true
+doc_hash: "67db6735f1e42e9d"

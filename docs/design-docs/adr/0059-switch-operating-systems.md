@@ -2,7 +2,6 @@
 title: ADR-0059 스위치는 운영 체제의 말로 답한다 — 아리스타 EOS, 시스코 NX-OS·IOS XE의 명령줄과 eAPI·NX-API, 포트 shutdown은 월드를 바꾼다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - tests/spec/network-os.test.ts
   - tests/spec/facility-protocols.test.ts

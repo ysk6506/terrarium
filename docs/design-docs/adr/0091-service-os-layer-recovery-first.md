@@ -2,7 +2,6 @@
 title: ADR-0091 세계에 서비스·OS 층을 올리고, 채점은 복구 우선이다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - packages/core/src/physics/service-os.test.ts
   - tests/spec/service-tools.test.ts

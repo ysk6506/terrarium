@@ -3,7 +3,6 @@ title: ADR-0154 현실 데이터는 수천만 개체까지 본다 — 줄로 저
 kind: decision
 status: superseded
 superseded_by: 0192-terrarium-returns-to-its-first-goal.md
-last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-117 예정). 성능 견본 시험을 만들면 enforced_by를 그 시험으로 바꾼다.

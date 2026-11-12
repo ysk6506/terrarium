@@ -2,7 +2,6 @@
 title: ADR-0071 화면의 말은 용어집 하나로 정하고, 글 전체를 한 번 점검한다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - none
 no_enforcement_reason: 말이 자연스러운지는 기계가 재지 못한다. 용어집의 "쓰지 않는 말"이 화면 글에 없는지만 editor-words 시험이 볼 수 있고, 그 시험은 글 점검이 끝난 뒤 enforced_by에 더한다.

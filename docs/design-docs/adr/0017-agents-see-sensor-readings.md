@@ -2,7 +2,6 @@
 title: ADR-0017 에이전트는 센서가 보고하는 값을 보고, 진실은 오라클만 본다
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
   - packages/core/src/tools/tools.test.ts
   - tests/spec/scenarios.test.ts

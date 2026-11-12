@@ -2,7 +2,6 @@
 title: ADR-0024 실행 스케줄링 — 가장 적게 돌리고 있는 사람부터
 kind: decision
 status: active
-last_verified: 2026-10-29
 enforced_by:
   - packages/core/src/experiments/experiments.test.ts
 touches_protected: []

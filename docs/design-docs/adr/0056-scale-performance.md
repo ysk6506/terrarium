@@ -2,7 +2,6 @@
 title: ADR-0056 규모는 TypeScript 그대로, 재서 고친다 — 월드를 한 번만 준비하고, 물리는 배열로 읽고, 메모리로 입장시킨다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - tests/spec/physics-golden.test.ts
   - packages/core/src/world/prepared.test.ts

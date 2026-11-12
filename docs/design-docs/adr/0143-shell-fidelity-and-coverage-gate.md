@@ -2,7 +2,6 @@
 title: ADR-0143 깊은 OS 흉내를 GNU에 더 가깝게 하고 커버리지 하한을 채운다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - tests/spec/deep-os-links.test.ts
   - tests/spec/deep-os-text-gnu.test.ts

@@ -2,7 +2,6 @@
 title: ADR-0193 감사 기록 — 덧붙이기만 하고, 기록하는 곳은 하나이고, 못 쓰면 바꾸는 일을 하지 않는다
 kind: decision
 status: active
-last_verified: 2026-11-12
 enforced_by:
   - packages/core/src/contract/audit-classes.test.ts
   - apps/server/src/http/audit-changes.test.ts

@@ -1,0 +1,7 @@
+doc: "docs/design-docs/ranking-and-titles.md"
+target: "apps/server/src/runtime/world-board.ts"
+hash: "9b584f546b4550de"
+date: "2026-11-12"
+note: "runtime/world-board.ts의 바뀐 곳은 mustSee 호출에 감사용 대상 이름을 넘기는 것뿐이고 순위·칭호 서술은 그대로 맞다 (ADR-0193)"
+text_changed: false
+doc_hash: "b43aee3516432e40"

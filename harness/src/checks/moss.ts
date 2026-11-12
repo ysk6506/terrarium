@@ -7,8 +7,9 @@
  * MOSS003 the docs index does not build, or a doc chunk cannot be found again by its own title
  * MOSS004 a score / metric / ladder / setting tile does not wrap its label in `MossAsk`
  */
-import { execFileSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { execFileSync, spawn } from "node:child_process";
+import { closeSync, existsSync, openSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import {
@@ -176,23 +177,75 @@ for (const c of index.chunks) {
 console.log(JSON.stringify({ size: index.size, bad }));
 `;
 
-function indexRules(root: string, v: Violation[]): void {
-  if (!existsSync(path.join(root, INDEX)) || !existsSync(path.join(root, "docs"))) return;
+/** The probe's command line (it runs from `root`; the harness itself imports no product code). */
+function probeArgs(root: string): string[] {
+  const tsxLoader = pathToFileURL(path.join(root, "node_modules/tsx/dist/esm/index.mjs")).href;
+  return [
+    "--import",
+    tsxLoader,
+    "--input-type=module",
+    "-e",
+    PROBE,
+    pathToFileURL(path.join(root, INDEX)).href,
+    path.join(root, "docs"),
+  ];
+}
+
+const canProbe = (root: string): boolean =>
+  existsSync(path.join(root, INDEX)) && existsSync(path.join(root, "docs"));
+
+/** Probes started early, by repository: the file the child writes its answer to. */
+const started = new Map<string, string>();
+
+/**
+ * Start the probe now so that it runs beside the checks that come before this one (it takes seconds and needs no
+ * answer until `indexRules`). `run-all` calls this first; without it `indexRules` runs the probe itself.
+ */
+export function startProbe(root: string): void {
+  if (!canProbe(root) || started.has(root)) return;
+  const file = path.join(tmpdir(), `terrarium-moss-${process.pid}-${started.size}.out`);
+  const fd = openSync(file, "w");
   try {
-    const tsxLoader = pathToFileURL(path.join(root, "node_modules/tsx/dist/esm/index.mjs")).href;
-    const out = execFileSync(
-      process.execPath,
-      [
-        "--import",
-        tsxLoader,
-        "--input-type=module",
-        "-e",
-        PROBE,
-        pathToFileURL(path.join(root, INDEX)).href,
-        path.join(root, "docs"),
-      ],
-      { cwd: root, encoding: "utf8", maxBuffer: 8_000_000, stdio: ["ignore", "pipe", "pipe"] },
-    );
+    spawn(process.execPath, probeArgs(root), {
+      cwd: root,
+      stdio: ["ignore", fd, "ignore"],
+    }).unref();
+    started.set(root, file);
+  } finally {
+    closeSync(fd);
+  }
+}
+
+/** The answer of a probe started early, waiting for it if it is still running; null when there is none. */
+function startedAnswer(root: string): string | null {
+  const file = started.get(root);
+  if (file === undefined) return null;
+  started.delete(root);
+  const sleep = new Int32Array(new SharedArrayBuffer(4));
+  const deadline = Date.now() + 120_000;
+  try {
+    for (;;) {
+      const text = readFileSync(file, "utf8");
+      if (text.endsWith("\n")) return text;
+      if (Date.now() > deadline) return null;
+      Atomics.wait(sleep, 0, 0, 25);
+    }
+  } finally {
+    rmSync(file, { force: true });
+  }
+}
+
+function indexRules(root: string, v: Violation[]): void {
+  if (!canProbe(root)) return;
+  try {
+    const out =
+      startedAnswer(root) ??
+      execFileSync(process.execPath, probeArgs(root), {
+        cwd: root,
+        encoding: "utf8",
+        maxBuffer: 8_000_000,
+        stdio: ["ignore", "pipe", "pipe"],
+      });
     const result = JSON.parse(out.trim().split("\n").at(-1) ?? "{}") as {
       size: number;
       bad: string[];

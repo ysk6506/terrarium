@@ -2,7 +2,6 @@
 title: ADR-0012 웹 커버리지는 로직은 단위 테스트, 화면은 e2e로
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
   - TCFG003
 touches_protected: []

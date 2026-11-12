@@ -2,7 +2,6 @@
 title: ADR-0064 GPU 백엔드는 서버마다 NIC 여럿을 rail로 꽂는 세 번째 패브릭이고, rail 하나를 잃으면 느려질 뿐 끊기지 않는다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - tests/spec/gpu-fabric.test.ts
 touches_protected:

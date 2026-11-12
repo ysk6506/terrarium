@@ -2,17 +2,9 @@
 title: 연결 화면 — 내 연결·하네스 종류·기준 에이전트
 kind: spec
 status: active
-last_verified: 2026-11-12
 follows:
   - docs/design-docs/web-ui.md
   - docs/design-docs/harness-protocol.md
-follows_hash: c3be8ba28a774453
-verified_body: c0d42d0969fa29ff
-unchanged_reverifies: 2
-verification_log:
-  - "2026-11-12: 따라가는 문서의 바뀐 곳은 ADR-0171 결과 화면의 말(glossary 결과 표, web-ui 결과 절)이고 이 문서가 다루는 화면과 상관없다"
-  - "2026-11-12: ADR-0183: 따라가는 용어집의 새 절(한 가지 말, 조건의 뜻)을 읽고, 이 문서에 옛 말(회·횟수·시드·개체·에스컬레이션)이 없음을 확인했다"
-  - "2026-11-12: 따라가는 문서나 코드의 내부 사실 서술이 요구의 말로 바뀐 것을 대조했고 이 문서의 내용은 그대로 맞다 (ADR-0188)"
 ---
 # 연결 화면 (REQ-051~053, ADR-0048)
 

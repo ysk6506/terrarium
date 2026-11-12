@@ -2,7 +2,6 @@
 title: ADR-0097 토폴로지 보기 ①이 건드리는 보호 경로 — 새 코어 단위, UX 여정, 두 문서의 앞부분
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - packages/core/src/topology/fold.test.ts
   - packages/core/src/topology/impact.test.ts

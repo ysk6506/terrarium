@@ -2,7 +2,6 @@
 title: ADR-0100 에스컬레이트는 도메인 하나만 받는다 — 그 시점의 그 도메인 고장이 고장 종류별 리드타임 뒤에 사라진다 (ADR-0098·0099 단순화)
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - packages/core/src/world/domains.test.ts
   - packages/core/src/session/escalate.test.ts

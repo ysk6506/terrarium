@@ -2,7 +2,6 @@
 title: ADR-0069 홈 첫 문구는 테라리움을 처음 보는 사람 기준으로 쓴다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - apps/web/src/logic/home-copy.test.ts
 touches_protected:

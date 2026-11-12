@@ -2,7 +2,6 @@
 title: ADR-0008 독립 공간 모듈과 소스 격리
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
 - ARCH010
 - ARCH012

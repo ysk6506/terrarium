@@ -2,7 +2,6 @@
 title: ADR-0051 가격은 현실의 값을 따르고, 확인한 값과 추정한 값을 나누어 밝힌다
 kind: decision
 status: active
-last_verified: 2026-11-03
 enforced_by:
   - packages/core/src/world/construction.test.ts
   - apps/web/src/logic/builder/prices.test.ts

@@ -2,7 +2,6 @@
 title: ADR-0186 요구사항 문서는 제품 설계 한 장을 따라가지 않는다 — 따라가기는 목표에서 설계로 한 방향이다
 kind: decision
 status: active
-last_verified: 2026-11-12
 enforced_by:
   - DOC010
   - PROT001

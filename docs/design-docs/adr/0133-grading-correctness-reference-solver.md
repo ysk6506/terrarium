@@ -2,7 +2,6 @@
 title: "ADR-0133 채점 정확성 보증: 정답 풀이·결정성·변이 검사"
 kind: decision
 status: active
-last_verified: 2026-11-07
 enforced_by:
   - tests/spec/reference-coverage.test.ts
   - tests/spec/reference-solutions.test.ts

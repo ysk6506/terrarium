@@ -1,0 +1,7 @@
+doc: "docs/design-docs/campus-layout.md"
+target: "apps/web/src/ui/world3d/animal-audio.ts"
+hash: "829e725083be68af"
+date: "2026-11-07"
+note: "REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
+text_changed: true
+doc_hash: "36673ad0e3c4eb14"

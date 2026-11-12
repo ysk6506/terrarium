@@ -2,7 +2,6 @@
 title: ADR-0120 컨테이너·SDN 층을 깊은 OS 흉내 위에 얹으면서 노드 디스크 압박 시험의 지우는 길을 고친다
 kind: decision
 status: active
-last_verified: 2026-11-06
 enforced_by:
   - tests/spec/k8s-physics.test.ts
   - tests/spec/k8s-scenarios.test.ts

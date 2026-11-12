@@ -2,7 +2,6 @@
 title: ADR-0065 설정 변경은 시나리오 블록이고, 블록은 외워 쓰지 않고 장비가 가진 것에서 고른다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - tests/spec/config-scenarios.test.ts
 touches_protected:

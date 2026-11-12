@@ -2,7 +2,6 @@
 title: ADR-0103 토폴로지 보기 ②가 건드리는 보호 경로 — ADR-0084의 강제 장치에 새 시험을 잇는다
 kind: decision
 status: active
-last_verified: 2026-11-06
 enforced_by:
   - tests/spec/run-replay.test.ts
   - packages/core/src/session/run-events.test.ts

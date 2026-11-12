@@ -2,7 +2,6 @@
 title: ADR-0196 셸과 awk는 진짜 구현을 WASM으로 돌려 바꾼다 — 결과를 가르는 한도는 세는 것만 쓰고, sleep은 세계 시간이며, 유틸리티는 따로 시험한다
 kind: decision
 status: active
-last_verified: 2026-11-12
 enforced_by:
   - none
 no_enforcement_reason: 아직 만들지 않은 전환의 결정이다. 전환하는 변경이 2번의 조건마다 시험을 건다(같은 줄은 어느 기계에서나 같은 곳에서 멈춘다, 한도에 걸린 줄은 0으로 끝나지 않는다, 내보낸 .wasm과 다시 만든 .wasm의 해시가 같다, 웹 번들에 들어가지 않는다).

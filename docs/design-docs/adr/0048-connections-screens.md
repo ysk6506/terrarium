@@ -2,7 +2,6 @@
 title: ADR-0048 하네스·에이전트 연결은 화면에서 한다 — 메뉴의 "연결", 폼은 커넥터가 그린다, 버전은 한 화면에서 본다
 kind: decision
 status: active
-last_verified: 2026-10-30
 enforced_by:
   - apps/web/src/logic/connections.test.ts
   - apps/web/src/logic/agent-versions.test.ts

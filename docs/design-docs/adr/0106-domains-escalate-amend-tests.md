@@ -2,7 +2,6 @@
 title: ADR-0106 도메인·넘기기를 구현하면서 시험 두 개의 기대값을 고친다 — 에이전트 투입의 제한 시간 상한, 서버룸 사람의 말 묶음
 kind: decision
 status: active
-last_verified: 2026-11-06
 enforced_by:
   - packages/core/src/world/domains.test.ts
   - packages/core/src/tools/domains.test.ts

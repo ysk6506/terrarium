@@ -2,7 +2,6 @@
 title: ADR-0005 보호 경로
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
 - PROT001
 - PROT002

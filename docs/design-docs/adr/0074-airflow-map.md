@@ -2,7 +2,6 @@
 title: ADR-0074 온도·공기 흐름은 3D 장면 위에 겹치고, 위에서 본 지도는 같은 장면의 정사영이다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - apps/web/src/logic/world3d/airflow.test.ts
 touches_protected:

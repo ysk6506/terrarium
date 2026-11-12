@@ -2,7 +2,6 @@
 title: ADR-0022 실험·분석·계약 단위는 세션(과 세계 소스)을 쓸 수 있다
 kind: decision
 status: active
-last_verified: 2026-10-29
 enforced_by:
   - ARCH010
 touches_protected:

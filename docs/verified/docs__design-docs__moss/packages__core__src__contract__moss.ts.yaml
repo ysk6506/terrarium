@@ -1,0 +1,7 @@
+doc: "docs/design-docs/moss.md"
+target: "packages/core/src/contract/moss.ts"
+hash: "9375884ee481ee75"
+date: "2026-11-12"
+note: "이끼가 묻는 사람마다 기본 모델을 정하는 것(defaultFor, ADR-0179)과 합친 main의 변화를 코드와 대조해 한 문장을 더함"
+text_changed: true
+doc_hash: "3be83a9ee1e0432f"

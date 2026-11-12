@@ -2,17 +2,19 @@
 title: ADR-0002 문서 신선도 장치
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
-- DOC010
-- DOC020
-- DOC030
-- DOC031
-- DOC040
-- DOC050
-- DOC070
+  - DOC010
+  - DOC020
+  - DOC030
+  - DOC031
+  - DOC040
+  - DOC050
+  - DOC070
 touches_protected: []
 decision_hash: 4e62f13af724c1cb
+amended_by:
+  - adr: "0194"
+    what: 문서의 확인 날짜는 앞부분이 아니라 확인 기록에 둔다
 ---
 # ADR-0002 문서 신선도 장치
 

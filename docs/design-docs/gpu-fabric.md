@@ -2,7 +2,6 @@
 title: GPU 백엔드 네트워크 — 서버마다 NIC 8개가 rail로 꽂히고, rail 하나를 잃으면 느려진다
 kind: spec
 status: active
-last_verified: 2026-11-04
 covers:
   - packages/core/src/world/net-topology.ts
   - packages/core/src/world/net-design.ts
@@ -12,12 +11,6 @@ covers:
   - packages/core/src/physics/net-alarms.ts
   - packages/core/src/facades/netos-bgp.ts
   - packages/core/src/world/test-support/gpu-lab.ts
-verification_log:
-  - "2026-11-04: 처음 썼다: fabric gpu, 케이블에서 알아내는 규칙, NIC별 호스트 계획, gpu_rail_degraded 알람, EVPN·VXLAN 숨김, 한계를 코드와 대조 (REQ-067, ADR-0064)"
-  - "2026-11-04: net-topology·net-design·net-reach·net-alarms·netos-bgp·gpu-lab과 대조"
-  - "2026-11-04: net-design의 함수 분리(동작 동일)를 확인"
-  - "2026-11-04: 2026-11-04: ADR-0073. 알람 문장 표를 해요체(끊겼어요, 느려져요, 통신할 수 없어요)로 고쳤다. 계획과 알람 규칙은 그대로"
-covers_hash: cb1f22fd6b7f7c31
 ---
 # GPU 백엔드 네트워크 (REQ-067, ADR-0064)
 

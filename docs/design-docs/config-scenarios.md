@@ -2,7 +2,6 @@
 title: 설정 변경 시나리오 — 누군가 바꾼 설정으로 사고를 만들고, 블록은 장비가 가진 것에서 고른다
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - packages/core/src/scenario/blocks-net.ts
   - packages/core/src/scenario/net-blocks.ts
@@ -10,13 +9,6 @@ covers:
   - packages/core/src/scenario/library-firmware.ts
   - apps/web/src/logic/scenario/fields.ts
   - apps/web/src/logic/scenario/flow.ts
-verification_log:
-  - "2026-11-06: 2026-11-06: ADR-0091(결정 1·2)·ADR-0102 구현: 서비스 층·OS 층 1차를 코드와 대조해 해당 절을 더하거나 고쳤다. 이 문서가 말하는 나머지 구조는 그대로다"
-  - "2026-11-06: 2f: flow.ts에 블록 이름을 읽는 titleOf를 더했고 캔버스 변환은 그대로다. 블록·fields·템플릿 규칙은 바뀌지 않았음을 확인했다"
-  - "2026-11-06: blocks-net.ts의 policy_set 블록과 network_policy_deny 실수 이름만 더해졌다. 나머지 설정 실수는 그대로 맞다 (REQ-097)"
-  - "2026-11-06: net-blocks.ts의 정리(네 갈래를 한 함수로 뺌)는 동작이 같다. 문서의 설정 실수 설명은 그대로 맞다 (REQ-097)"
-  - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
-covers_hash: 7e3ec195c93335e1
 ---
 # 설정 변경 시나리오 (REQ-068, ADR-0065)
 

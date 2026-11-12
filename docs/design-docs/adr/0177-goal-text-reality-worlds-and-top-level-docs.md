@@ -2,7 +2,6 @@
 title: ADR-0177 제품 목표의 "현실을 닮은 세계"에 현실의 데이터로 지은 세계를 적고, 맨 위 문서를 목표에 맞춘다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 문서의 글을 맞추는 결정이다. README는 covers로 낡음을 알린다(DOC010). 목표 문장이 README·AGENTS에 그대로 있는지 보는 검사는 이어지는 변경에서 하네스에 더한다.

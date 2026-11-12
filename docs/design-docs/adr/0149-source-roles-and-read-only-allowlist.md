@@ -3,7 +3,6 @@ title: ADR-0149 소스의 역할은 구성·사건·실측 셋이고, 읽기 전
 kind: decision
 status: superseded
 superseded_by: 0192-terrarium-returns-to-its-first-goal.md
-last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다. 단계 B에서 커넥터를 만들 때 enforced_by를 읽기 전용 시험(허용 목록 밖 요청이 만들어지지 않는다)으로 바꾼다.

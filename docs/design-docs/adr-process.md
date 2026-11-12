@@ -2,7 +2,6 @@
 title: ADR 작성 절차
 kind: guide
 status: active
-last_verified: 2026-11-12
 covers:
   - harness/config/docs.yaml
   - harness/src/checks/doc-adr.ts
@@ -14,16 +13,11 @@ covers:
   - harness/src/checks/doc-facts.ts
   - harness/src/checks/doc-tests.ts
   - harness/src/checks/doc-audit.ts
-covers_hash: aa9591c1eaac4d74
-verified_body: cecd620aefbe52e9
-unchanged_reverifies: 0
-verification_log:
-  - "2026-11-12: follows를 고르는 기준과 한 방향 규칙 한 줄을 더함 (ADR-0186)"
-  - "2026-11-12: 보호 경로 목록에 빠져 있던 .github/와 결정 기록을 더하고 목록 파일을 가리킴. 본문이 말하는 DOC096과 audit 명령의 코드(doc-tests.ts, doc-audit.ts)를 covers에 더함"
-  - "2026-11-12: 감사 — covers 일곱 파일과 docs.ts, test-lock.ts, protected.ts, 보호 경로 목록, 결정 목록에 줄마다 대어 봄. 틀린 주장은 없고 빠진 것 둘(보호 경로 둘, covers 둘)을 채움"
-  - "2026-11-12: main을 합침: ADR-0186의 follows 기준 한 줄과 이 변경의 보호 경로·covers 보탬이 함께 들어감"
-  - "2026-11-12: 감사 — main을 합친 뒤 다시 봄: 새 follows 기준 한 줄은 ADR-0186을 가리키는 약속이고 기계 강제를 주장하지 않는다. 나머지는 앞의 감사 그대로"
-last_audited: 2026-11-12
+  - harness/src/checks/doc-records.ts
+  - harness/src/checks/doc-freshness.ts
+  - harness/src/checks/doc-targets.ts
+  - harness/src/checks/doc-legacy.ts
+  - harness/src/checks/doc-index.ts
 ---
 # ADR (Architecture Decision Record)
 
@@ -46,7 +40,6 @@ last_audited: 2026-11-12
 title: ...
 kind: decision
 status: active          # active | superseded
-last_verified: 2026-10-28
 enforced_by: [ARCH010]  # 규칙 코드 또는 테스트 경로. 못 하면 [none] + no_enforcement_reason
 touches_protected: []   # 이 ADR로 바꾸는 보호 경로 (harness/**, package.json ...)
 amends_tests: []        # 요구사항 변경으로 바꾸는 잠긴 테스트 키
@@ -61,7 +54,7 @@ amends:                 # 앞선 결정의 일부를 바꿀 때 (전체를 대�
 
 4. 앞선 결정의 일부를 바꾸면 `pnpm tsx harness/src/checks/docs.ts link-amends docs/design-docs/adr/NNNN-....md`로 대상 ADR의 앞부분에 `amended_by`를 남기고 같은 `what`을 옮겨 적는다. 결정 목록은 이것을 "일부 고침: 0168 (사용자 타입은 실험에 안 들어감)"으로 보인다. `what`은 대상 ADR의 어느 부분이 바뀌었는지를 말한다. 새 ADR이 `what` 없이 `amends`를 쓰면 `DOC091`이 실패하고, 옛 ADR의 파일 이름만 적은 항목은 그대로 읽는다. (`DOC091`은 양쪽이 맞는지도 본다.) 대상 ADR도 보호 경로이므로 이 ADR의 `touches_protected`에 대상 파일을 적는다.
 5. 봉인: `pnpm tsx harness/src/checks/docs.ts seal-adr docs/design-docs/adr/NNNN-....md`
-6. 색인에는 줄을 더하지 않는다. [색인](../index.md)은 결정 기록 폴더를 가리킬 뿐이고, 결정 목록은 하네스가 만든다: `pnpm tsx harness/src/checks/docs.ts decisions`가 [결정 목록](../generated/decisions.md)을 쓴다. 이 파일은 5시간마다 도는 정리 작업이 main에서 새로 만들고, 결정마다 커밋하지 않는다 (낡았으면 `DOC098` 알림만 나온다). [제품 설계 한 장](product-design.md) 4절도 손으로 표를 고치지 않는다. 그 문서를 고쳐야 하는 결정이면 `updates_docs`에 적는다.
+6. 색인에는 줄을 더하지 않는다. [색인](../index.md)의 문서 목록은 하네스가 문서의 `title`에서 만들고(`docs.ts generate`), 결정 기록은 폴더를 가리킬 뿐이다. 결정 목록도 하네스가 만든다: `pnpm tsx harness/src/checks/docs.ts decisions`가 [결정 목록](../generated/decisions.md)을 쓴다. 이 파일들은 5시간마다 도는 정리 작업이 main에서 새로 만들고, 변경은 커밋하지 않는다 (낡았으면 `DOC098`, `DOC102` 알림만 나오고, 손으로 고치면 `DOC099`로 실패한다, ADR-0194). [제품 설계 한 장](product-design.md) 4절도 손으로 표를 고치지 않는다. 그 문서를 고쳐야 하는 결정이면 `updates_docs`에 적는다.
 
 ## 봉인된 ADR은 수정 금지
 
@@ -80,5 +73,7 @@ amends:                 # 앞선 결정의 일부를 바꿀 때 (전체를 대�
 - 문서가 가리키는 것은 있어야 한다 (`DOC094`): `TERRARIUM_` 환경 변수, `pnpm` 명령, `METHOD /api/...` 길, 검사 코드, `파일.ts`의 `이름`, `ADR-NNNN`, `REQ-NNN`.
 - 코드에서 셀 수 있는 숫자는 `<!-- fact:tools -->96<!-- /fact -->`처럼 적으면 세어서 견준다 (`DOC095`). `reverify`로는 못 고친다. 숫자를 고친다.
 - 시험을 말하는 표는 `시험 파일` 칸에 시험 경로를 적는다 (`DOC096`, 알림). 아직 없으면 '예정'.
-- 본문은 그대로이고 `reverify`만 된 문서는 구조 검사 요약에 알림(`DOC097`)으로 나오고, `docs.ts audit-queue`가 다른 눈이 읽을 차례를 보여 준다. 읽은 뒤 `docs.ts audit <문서> --note "한 줄"`.
+- 확인 상태는 문서 앞부분에 없다(ADR-0194). 문서와 그것이 `covers`·`follows`하는 파일 하나마다 `docs/verified/` 아래에 확인 기록 파일 하나가 있고, 파일의 내용 지문과 날짜와 메모가 들어 있다. 글롭은 맞는 파일마다 대상 하나다. 대상 하나가 바뀌면 그 대상의 기록만 낡는다 (`DOC010`). `reverify <문서> --note "…"`는 낡은 대상 모두에 기록을 쓰고, `--target <경로>`는 하나만 쓴다. 두 변경이 서로 다른 대상에 대해 같은 문서를 다시 확인하면 다른 파일을 건드리니 충돌하지 않는다. 같은 대상이면 기록이 충돌하고, 그 충돌은 진짜다: 한쪽을 고른 뒤 다시 읽고 `reverify`.
+- 본문이 그대로인 채 `reverify`만 된 문서는 기록의 `text_changed: false`로 알 수 있다. 구조 검사 요약에 알림(`DOC097`)으로 나오고, `docs.ts audit-queue`가 다른 눈이 읽을 차례를 보여 준다. 읽은 뒤 `docs.ts audit <문서> --note "한 줄"`(문서 폴더의 `_audit.yaml`에 날짜가 남는다).
+- 옛 형식(앞부분에 `last_verified` 등)이 남아 있으면 `DOC100`이 한 번 실패하고 `pnpm tsx harness/src/checks/docs.ts migrate`를 알려 준다(여러 번 돌려도 같다). main을 합친 뒤 앞부분이 충돌하면 main의 앞부분을 고르고 `migrate`를 돌린다.
 - 제품 목표 문장은 `requirements.md`의 "제품 목표" 아래 굵은 한 줄이 원본이다. README.md와 AGENTS.md 첫 단락에 그대로 있어야 한다 (`DOC093`).

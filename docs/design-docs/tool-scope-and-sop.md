@@ -2,7 +2,6 @@
 title: 툴 범위, 에스컬레이션, 절차서 — 실험 설계자가 정하는 세 가지 변수
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - packages/core/src/tools/docs.ts
   - packages/core/src/tools/runbook.ts
@@ -12,15 +11,6 @@ covers:
   - packages/core/src/session/human-line.ts
   - packages/core/src/session/tool-pick.ts
   - apps/server/src/runtime/escalations.ts
-verification_log:
-  - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
-  - "2026-11-07: REQ-108: 코드와 대조했고 필요한 서술(기대 복구 시간, 서비스 카드 복사, 숫자 보정)을 고쳤다. 나머지는 그대로 맞다"
-  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
-  - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
-  - "2026-11-12: ADR-0184: main을 합친 뒤 한계 힌트 변경과 이 문서의 서술이 어긋나지 않음을 대조"
-covers_hash: 8ecf0742e6b96bb0
-verified_body: ec75e3306485bcb8
-unchanged_reverifies: 0
 ---
 # 툴 범위, 에스컬레이션, 절차서 (REQ-080~082, ADR-0087, ADR-0105)
 

@@ -1,0 +1,7 @@
+doc: "docs/design-docs/network-fabrics.md"
+target: "packages/core/src/facades/netos-stp.ts"
+hash: "41bcb5a1df85c74a"
+date: "2026-11-06"
+note: "리프-스파인 설계는 그대로이고 그 위에 오버레이가 얹힌다는 한 줄만 더했다 (REQ-097)"
+text_changed: true
+doc_hash: "f8204c99ac3575a8"

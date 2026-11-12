@@ -2,19 +2,9 @@
 title: 핵심 신념
 kind: guide
 status: active
-last_verified: 2026-11-12
 follows:
   - docs/design-docs/adr-process.md
   - AGENTS.md
-follows_hash: f910629a405140aa
-verified_body: 670d77e72298eecc
-unchanged_reverifies: 10
-verification_log:
-  - "2026-11-12: main 합침: 라이선스 행·링크(ADR-0185)와 내부 사실 줄(ADR-0187)이 함께 있다. 서로 어긋나지 않는다"
-  - "2026-11-12: main을 합침: 따라가는 AGENTS.md와 adr-process.md의 변경(ADR-0175, 0185, 0186, 0187)은 5번 서술과 어긋나지 않는다"
-  - "2026-11-12: main을 합침: 따라가는 AGENTS.md의 변경(ADR-0185, 0189)은 5번 서술과 어긋나지 않는다"
-  - "2026-11-12: main을 합침: 따라가는 adr-process.md의 보호 경로 보탬(.github/, 결정 기록)과 AGENTS.md의 라이선스 행(ADR-0185)을 읽음. 5번 서술은 그대로 맞다"
-  - "2026-11-12: ADR-0192: 따라가는 AGENTS.md의 바뀐 곳은 목표 문장(처음의 것으로 되돌림). 이 문서의 믿음과 어긋나지 않는다"
 ---
 # 핵심 신념 (Golden Principles)
 

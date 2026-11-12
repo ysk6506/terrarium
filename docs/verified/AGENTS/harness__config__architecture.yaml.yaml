@@ -1,0 +1,7 @@
+doc: "AGENTS.md"
+target: "harness/config/architecture.yaml"
+hash: "5f0b714acd6b440a"
+date: "2026-11-12"
+note: "main을 합침: 넓힌 목표 문장(ADR-0189)과 라이선스 검사 줄(ADR-0185)이 함께 들어감"
+text_changed: true
+doc_hash: "22db52a5965ed3f9"

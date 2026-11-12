@@ -2,7 +2,6 @@
 title: ADR-0162 포크 여정은 포크만 재고, 반복은 자기 여정을 가진다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - harness/src/ux/groups.test.ts
   - apps/web/src/logic/experiment-fork-counts.test.ts

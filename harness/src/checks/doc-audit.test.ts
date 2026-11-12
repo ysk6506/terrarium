@@ -1,27 +1,31 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
-import { splitFrontMatter } from "../common";
 import { docsRepo, front } from "../test-support/docs-repo";
-import { audit, auditQueue, formatQueue } from "./doc-audit";
+import { audit, auditQueue, formatQueue, reverify } from "./doc-audit";
+import { auditPath } from "./doc-records";
 import { testRowNotes } from "./doc-tests";
-import { reverify } from "./docs";
 
 const docs = ["docs/guide.md", "docs/index.md"];
 
 describe("audit queue [REQ-020]", () => {
   test("a re-verify that leaves the body alone puts the doc in the queue; an edit does not", () => {
     const root = docsRepo({});
-    reverify(root, "docs/guide.md", "first", "2026-11-11");
     expect(auditQueue(root, docs)).toEqual([]);
     reverify(root, "docs/guide.md", "again", "2026-11-12");
     expect(auditQueue(root, docs).map((e) => [e.file, e.unchanged])).toEqual([
       ["docs/guide.md", 1],
     ]);
     expect(formatQueue(auditQueue(root, docs))).toContain("last_audited=never");
+    writeFileSync(
+      path.join(root, "docs/index.md"),
+      `${front()}# Index\n[guide](guide.md)\nedited\n`,
+    );
+    reverify(root, "docs/index.md", "after an edit", "2026-11-12");
+    expect(auditQueue(root, docs).map((e) => e.file)).toEqual(["docs/guide.md"]);
   });
 
-  test("audit records last_audited, clears the count and needs a note; the longest unaudited comes first", () => {
+  test("audit records the date in the document's audit record and needs a note; the longest unaudited comes first", () => {
     const root = docsRepo({});
     for (const file of docs) {
       reverify(root, file, "a", "2026-11-10");
@@ -32,8 +36,9 @@ describe("audit queue [REQ-020]", () => {
     reverify(root, "docs/index.md", "c", "2026-11-13");
     reverify(root, "docs/index.md", "d", "2026-11-14");
     expect(auditQueue(root, docs).map((e) => e.file)).toEqual(["docs/guide.md", "docs/index.md"]);
-    const data = splitFrontMatter(readFileSync(path.join(root, "docs/index.md"), "utf8")).data;
-    expect(data?.last_audited).toBe("2026-11-12");
+    expect(readFileSync(path.join(root, auditPath("docs/index.md")), "utf8")).toContain(
+      "2026-11-12",
+    );
     expect(() => audit(root, "docs/index.md", " ")).toThrow(/--note/);
   });
 });

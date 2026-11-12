@@ -2,15 +2,12 @@
 title: ADR-0096 파워 캐핑 — 전기요금을 아끼면서 서비스를 지키는 줄다리기를 잰다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - tests/spec/power-capping.test.ts
 partially_implemented_by: 0130-gpu-layer-power-cooling-ladders.md
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: b2300ab6161ffca6
-verification_log:
-  - "2026-11-07: 일부 구현 — ADR-0130이 결정 2(캡 → 성능·발열)와 시나리오 둘(전력 한도 안에서 배분, 냉방 부족 때 캡으로 버티기)을 모델로 옮겼다. 결정 1(Redfish 파사드)·3(전기요금 모델)·4의 첫째 시나리오는 아직 남았다."
 ---
 # ADR-0096 파워 캐핑 — 전기요금을 아끼면서 서비스를 지키는 줄다리기를 잰다
 

@@ -2,7 +2,6 @@
 title: ADR-0139 CCTV는 카메라 개체·보는 자리·배경 자리의 세 자리로 두고, 실험의 그림은 서버가 결정적으로 그린다
 kind: decision
 status: active
-last_verified: 2026-11-10
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다. 단계 A를 만들 때 enforced_by를 시야·결정성 시험으로 바꾼다.

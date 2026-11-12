@@ -3,7 +3,6 @@ title: ADR-0116 진짜 호스트 섞기 — 세계의 서버 몇 대는 실제 �
 kind: decision
 status: superseded
 superseded_by: 0117-deep-os-simulation.md
-last_verified: 2026-11-06
 enforced_by:
   - none
 no_enforcement_reason: 구현하면서 시험으로 바꾼다

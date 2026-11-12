@@ -2,7 +2,6 @@
 title: ADR-0054 빌더는 무작위 편집으로 시험하고, 땅은 옮길 수 없고, 서로 겹치는 일은 한 곳에서 본다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - apps/web/src/logic/builder/fuzz.test.ts
   - apps/web/src/logic/builder/regressions.test.ts

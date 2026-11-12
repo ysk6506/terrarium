@@ -1,0 +1,7 @@
+doc: "docs/design-docs/trust-experiments.md"
+target: "docs/product-specs/requirements.md"
+hash: "de836da292c565f7"
+date: "2026-11-12"
+note: "ADR-0197: 처음 씀. 지금 있는 것의 목록은 운영 모드, 도메인과 가상 담당자, 프로세스 비교 문서와 실험·세션·채점 코드에 대어 봄"
+text_changed: true
+doc_hash: "9167191b85486c89"

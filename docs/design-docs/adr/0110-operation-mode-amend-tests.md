@@ -2,7 +2,6 @@
 title: ADR-0110 운영 모드를 구현하면서 ADR-0094의 강제 장치를 시험으로 잇는다
 kind: decision
 status: active
-last_verified: 2026-11-06
 enforced_by:
   - packages/core/src/session/operation/operation.test.ts
   - packages/core/src/session/operation/discrimination.test.ts

@@ -2,7 +2,6 @@
 title: ADR-0141 UX 검사를 게이트인 여정과 게이트 아닌 측정으로 나누고, 러너에서 안 되던 화면을 고친다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - .github/workflows/ci.yml
   - harness/src/ux/run.ts

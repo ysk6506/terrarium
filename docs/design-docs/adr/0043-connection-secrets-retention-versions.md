@@ -2,7 +2,6 @@
 title: ADR-0043 연결의 비밀 값은 봉인해 보관하고, 안 쓰는 연결은 알린 뒤 지우며, 에이전트는 버전으로 관리한다
 kind: decision
 status: active
-last_verified: 2026-10-30
 enforced_by:
   - apps/server/src/adapters/secret-box.test.ts
   - apps/server/src/runtime/connection-secrets.test.ts

@@ -2,7 +2,6 @@
 title: ADR-0192 테라리움은 처음의 목표로 돌아간다 — 현실 세계 만들기와 워크플로 자동화는 다른 프로젝트가 맡고, 둘 사이는 세계 스냅샷과 판정으로만 잇는다
 kind: decision
 status: active
-last_verified: 2026-11-12
 enforced_by:
   - none
 no_enforcement_reason: 범위를 줄이는 결정이다. 남는 두 이음매(REQ-121, REQ-122)는 아직 만들지 않았고, 만들 때 "내보낸 세계를 다시 받아 연 세계에서 점수 분해가 같다"를 시험으로 건다. 목표 문장이 맨 위 문서에 그대로 있는지는 DOC093이 본다.

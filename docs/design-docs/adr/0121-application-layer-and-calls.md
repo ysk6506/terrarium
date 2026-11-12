@@ -2,7 +2,6 @@
 title: ADR-0121 애플리케이션 층을 코어 모델로 올리고 서비스 호출 그래프를 넣는다 — 시험의 목록 기대값을 늘린다
 kind: decision
 status: active
-last_verified: 2026-11-07
 enforced_by:
   - tests/spec/app-physics.test.ts
   - tests/spec/app-scenarios.test.ts
@@ -31,8 +30,6 @@ amends_tests:
   - tests/spec/service-tools.test.ts::every tool is described in the standard order and tagged with how real it is [REQ-080] [REQ-086] > a summary, when to use and not, an example, access and cost; realism on all of them
 test_change_reason: 애플리케이션 층(REQ-100)은 세계에 새 개체 일곱 종류와 링크 `calls`, 고장 여덟, 툴 여덟, 시나리오 일곱을 더한다. 잠긴 시험 가운데 목록의 길이나 모음을 직접 세는 시험(툴 수 58에서 66, 가상 종류 넷에서 열하나, 점선 아홉에서 다섯, 제어 가능 요소 목록, 장면 팔레트의 고장 목록, 도구 카드 검색)은 목록이 늘어난 만큼 기대값을 고쳤다. 네트워크 정책 시험은 정책이 이제 한 쌍이 아니라 지키는 서비스를 부르는 모든 서비스에 닿는 것을 읽는다(호출 선이 없는 세계의 결과는 같다). 시험 도우미(캠퍼스 샘플, SDN 실험 세계, 변별력 점검의 세계 목록과 그 점검에 드는 시간 한도(시나리오가 일곱 늘어 20초가 모자라다), 제어 가능 요소 시험의 `Drive`, 물리 골든의 세계 목록)는 애플리케이션 층 세계를 더하는 방향으로만 늘렸고 기존 값(골든 해시 포함)은 하나도 바꾸지 않았다.
 decision_hash: 4984ef9d061866fa
-verification_log:
-  - "2026-11-07: o5 합치기 (애플리케이션 층)"
 ---
 # ADR-0121 애플리케이션 층을 코어 모델로 올리고 서비스 호출 그래프를 넣는다
 

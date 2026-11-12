@@ -2,7 +2,6 @@
 title: 물리 법칙이 닿는 자리와 모델 자리 — 무엇이 물리이고, 지금 어떻게 돼 있고, 어떻게 바꿔 끼우나
 kind: spec
 status: active
-last_verified: 2026-11-11
 covers:
   - packages/core/src/physics/engine.ts
   - packages/core/src/physics/thermal.ts
@@ -15,11 +14,6 @@ covers:
   - packages/core/src/world/site-dr.ts
   - packages/core/src/physics/laws.ts
   - packages/core/src/physics/slots/registry.ts
-covers_hash: ddad093fd1e9d57d
-verification_log:
-  - "2026-11-10: 물리 전수 조사와 모델 자리 설계 (ADR-0136)"
-  - "2026-11-10: 단계 0·1 코어 구현 상태 반영, 구현 여부 문장과 만드는 순서 갱신, covers 추가"
-  - "2026-11-11: 고장 날 법칙 시험과 v1 예외 표를 더함"
 ---
 # 물리 법칙이 닿는 자리와 모델 자리
 

@@ -2,7 +2,6 @@
 title: ADR-0003 기술 부채 장부와 래칫
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
 - DEBT001
 - DEBT011

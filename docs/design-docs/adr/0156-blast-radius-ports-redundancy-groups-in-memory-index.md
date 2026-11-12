@@ -2,7 +2,6 @@
 title: ADR-0156 영향 범위는 포트 단위까지 묶음의 뜻으로 계산하고, 메모리의 색인에서 1초·수 초 안에 답한다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-117 예정). 성능 견본 시험과 맞음 시험을 만들면 enforced_by를 그 시험으로 바꾼다.

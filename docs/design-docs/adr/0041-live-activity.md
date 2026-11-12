@@ -2,7 +2,6 @@
 title: ADR-0041 실시간 활동 — 어떤 에이전트가 어느 장비에서 무엇을 하는지 세계에 보인다
 kind: decision
 status: active
-last_verified: 2026-10-30
 enforced_by:
   - packages/core/src/tools/targets.test.ts
   - apps/server/src/runtime/executor-activity.test.ts

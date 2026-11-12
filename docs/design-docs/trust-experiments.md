@@ -2,14 +2,8 @@
 title: 맡겨도 되나에 답하는 실험 — 권한 수준, 승인, 규칙, 운영 실험의 깊이, 판정
 kind: spec
 status: active
-last_verified: 2026-11-12
 follows:
   - docs/product-specs/requirements.md
-follows_hash: 8e726605864c6229
-verified_body: 9167191b85486c89
-unchanged_reverifies: 0
-verification_log:
-  - "2026-11-12: ADR-0197: 처음 씀. 지금 있는 것의 목록은 운영 모드, 도메인과 가상 담당자, 프로세스 비교 문서와 실험·세션·채점 코드에 대어 봄"
 ---
 # 맡겨도 되나에 답하는 실험 (REQ-123~127 예정, [ADR-0197](adr/0197-experiments-answer-whether-to-entrust.md))
 

@@ -2,7 +2,6 @@
 title: 애플리케이션 층 — 로드 밸런서·세션·서킷 브레이커·메시·리전과 서비스 호출 그래프
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - packages/core/src/world/app.ts
   - packages/core/src/world/app-act.ts
@@ -21,16 +20,6 @@ covers:
   - packages/core/src/sources/worldgen/shaped-app.ts
   - packages/core/src/topology/impact-app.ts
   - packages/core/src/world/ladder.ts
-verification_log:
-  - "2026-11-12: ADR-0184: 흉내의 한계 힌트 변경 뒤에도 내용이 맞는지 다시 봤어요"
-  - "2026-11-12: 덮는 시나리오 라이브러리에서 정렬 도우미 byId의 자리만 library-kit.ts로 옮김. 동작은 그대로이고 이 문서는 그 이름을 말하지 않는다"
-  - "2026-11-12: 감사에서 틀린 곳 넷을 고침: 로드 밸런서와 lb_backend_flapping은 app-lb-sticky가 아니라 app-stateless부터 생긴다(ladder.ts, shaped-app.ts), 되돌아오는 사건(다시 넣기·닫힘)의 원인은 cluster가 아니라 physics다(physics/app.ts, app-calls.ts), 시나리오 시험이 재는 것은 shellReach가 아니라 commonReach다, 점선 다섯 칩은 지금 실선이다"
-  - "2026-11-12: 감사 — 덮는 코드 17개와 ladder·service-health·lead-times·controls·시험에 줄마다 대어 봄. 상수·툴·고장 표는 맞고, 4곳이 틀려 고침(LB 칩, 사건 원인, commonReach, 점선 칩)"
-  - "2026-11-12: 덮는 physics/app.ts와 app-calls.ts가 똑같이 두 번 쓰던 사건 도우미(note, back)를 app-calls.ts 한 곳에 둠. 동작과 사건의 원인은 그대로이고 '알아서 하는 일' 표와 대조해 맞다"
-covers_hash: 3032f96324df036d
-verified_body: 24096d703cb84a51
-unchanged_reverifies: 1
-last_audited: 2026-11-12
 ---
 # 애플리케이션 층 (REQ-100, [ADR-0121](adr/0121-application-layer-and-calls.md), [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6)
 

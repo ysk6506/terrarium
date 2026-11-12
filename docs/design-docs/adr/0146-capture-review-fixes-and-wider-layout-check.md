@@ -2,7 +2,6 @@
 title: ADR-0146 캡처 검토에서 나온 화면 결함을 고치고, 겹침 검사를 글자·선·제목까지 넓힌다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - tests/e2e/ux/layout.ts
   - tests/e2e/ux/journeys.ts

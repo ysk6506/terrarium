@@ -2,7 +2,6 @@
 title: ADR-0173 문서만 바뀐 변경은 가벼운 CI 경로를 탄다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - .github/workflows/ci.yml
 touches_protected:

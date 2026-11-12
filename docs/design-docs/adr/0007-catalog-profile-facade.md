@@ -2,7 +2,6 @@
 title: ADR-0007 카탈로그·프로파일·파사드 분리
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
 - ARCH010
 - ARCH020

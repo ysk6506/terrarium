@@ -2,7 +2,6 @@
 title: ADR-0180 문서는 코드뿐 아니라 결정도 따라간다 — 결정이 바꾸는 문서를 적고, 고쳐진 결정에 표시를 남기고, 목록은 만들어 낸다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - DOC010
   - DOC090
@@ -69,6 +68,8 @@ amended_by:
     what: amends와 amended_by는 파일 이름만 적음
   - adr: "0186"
     what: follows는 문서의 서로 가리킴에서 고른다
+  - adr: "0194"
+    what: 확인 상태와 목록 생성물을 변경이 커밋하지 않는다
 ---
 # ADR-0180 문서는 코드뿐 아니라 결정도 따라간다 — 결정이 바꾸는 문서를 적고, 고쳐진 결정에 표시를 남기고, 목록은 만들어 낸다
 

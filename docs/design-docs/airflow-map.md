@@ -2,7 +2,6 @@
 title: 온도와 공기 흐름 지도 — 서버룸 안의 바람을 그리는 법
 kind: spec
 status: active
-last_verified: 2026-11-07
 covers:
   - apps/web/src/logic/world3d/airflow.ts
   - apps/web/src/logic/world3d/airflow-model.ts
@@ -12,13 +11,6 @@ covers:
   - apps/web/src/ui/world3d/airflow-floor.ts
   - apps/web/src/ui/world3d/airflow-motion.ts
   - apps/web/src/logic/world3d/airflow-words.ts
-covers_hash: 97dc96d635a4c15c
-verification_log:
-  - "2026-11-05: REQ-075: 조각을 붙인 방의 바닥 온도(Field.x0/z0, insetOutline로 오려 얹기), 타공 타일과 workBounds의 윤곽 안 자르기를 코드와 대조해 적었다"
-  - "2026-11-05: 공기 흐름 계산·그리는 코드를 지도를 열 때 따로 받도록 바꾼 것(logic/air.ts, AirDoor, air-port.ts, airflow-words.ts)과 말·문장 함수가 airflow-words.ts로 옮겨 간 것을 대조해 '어떻게 내려받나' 절을 더했다"
-  - "2026-11-05: airflow-layer.ts와 airflow-motion.ts를 대조해, 느린 기계에서는 멈추지 않고 입자·화살표가 단계마다 절반이 되는 것으로 움직임 줄이기 문장을 고쳤다"
-  - "2026-11-05: airflow-motion.ts의 줄이기가 길마다가 아니라 방 전체에서 2^단계 번째마다 남기는 것으로 문장을 고쳤다"
-  - "2026-11-07: REQ-102(ADR-0123): 사다리·직접 짓기 화면과 말(시운전·미리 보기·전제)을 코드와 대조해 고쳤다"
 ---
 # 온도와 공기 흐름 지도 (REQ-072, [ADR-0074](adr/0074-airflow-map.md))
 

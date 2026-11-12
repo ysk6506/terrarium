@@ -2,7 +2,6 @@
 title: ADR-0118 깊은 OS 흉내를 구현하면서 시험 다섯 곳의 기대값을 고치고 시험을 더한다
 kind: decision
 status: active
-last_verified: 2026-11-06
 enforced_by:
   - tests/spec/deep-os-shell.test.ts
   - tests/spec/deep-os-faults.test.ts

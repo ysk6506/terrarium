@@ -1,0 +1,7 @@
+doc: "docs/design-docs/service-os-layer.md"
+target: "packages/core/src/physics/os-alarms.ts"
+hash: "ce3b6534e598ff7d"
+date: "2026-11-12"
+note: "ADR-0184: main을 합친 뒤 한계 힌트 변경과 이 문서의 서술이 어긋나지 않음을 대조"
+text_changed: true
+doc_hash: "9c656b1b80e30ea8"

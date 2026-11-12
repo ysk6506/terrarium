@@ -2,7 +2,6 @@
 title: ADR-0181 테라리움의 라이선스는 Apache License 2.0이다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 라이선스 파일과 표기를 두는 결정이다. 들여오는 의존성과 묶어 내는 파일의 라이선스가 이것과 맞는지 보는 검사는 이어지는 변경에서 더한다.

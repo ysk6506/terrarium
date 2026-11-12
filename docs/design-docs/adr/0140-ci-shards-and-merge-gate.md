@@ -2,7 +2,6 @@
 title: ADR-0140 CI가 합치기 관문이다 — 테스트는 조각으로 나눠 병렬로, 커버리지는 따로 잰다
 kind: decision
 status: active
-last_verified: 2026-11-10
 enforced_by:
   - .github/workflows/ci.yml
   - harness/src/ci/shard-sum.test.ts

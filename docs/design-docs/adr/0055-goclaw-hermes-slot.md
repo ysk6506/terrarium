@@ -2,7 +2,6 @@
 title: ADR-0055 GoClaw와 Hermes는 공식 소스를 읽고 만든 전용 연결로 붙이고, 설정 파일로만 도구를 받는 하네스에는 고정 도구 주소를 준다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - apps/server/src/adapters/connectors/goclaw.test.ts
   - apps/server/src/adapters/connectors/hermes.test.ts

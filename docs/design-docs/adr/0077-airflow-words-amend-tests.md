@@ -2,7 +2,6 @@
 title: ADR-0077 공기 흐름 지도의 말도 용어집 점검에 넣고, 그 점검이 읽는 목록을 고친다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - apps/web/src/logic/app-words.test.ts
   - apps/web/src/logic/world3d/airflow.test.ts

@@ -1,0 +1,7 @@
+doc: "docs/design-docs/scaling.md"
+target: "apps/server/src/cluster/control-routes.ts"
+hash: "94e6b6740bd89fb2"
+date: "2026-11-12"
+note: "감사 기록의 지표 둘이 /metrics 끝에 붙는 것(control-routes.ts의 extraMetrics)을 코드와 대어 한 줄 더함. 나머지 표는 그대로 맞다"
+text_changed: true
+doc_hash: "7aeed977f7a9ccba"

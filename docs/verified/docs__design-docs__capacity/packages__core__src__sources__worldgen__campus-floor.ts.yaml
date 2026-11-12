@@ -1,0 +1,7 @@
+doc: "docs/design-docs/capacity.md"
+target: "packages/core/src/sources/worldgen/campus-floor.ts"
+hash: "945ff175df495e7e"
+date: "2026-11-11"
+note: "step 가 (ADR-0174): identity and policy; statements checked against the code"
+text_changed: true
+doc_hash: "48922f4efb99258b"

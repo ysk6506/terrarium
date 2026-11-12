@@ -2,7 +2,6 @@
 title: ADR-0197 실험은 "맡겨도 되나"에 답한다 — 맡기는 범위는 실험 조건, 승인은 규칙, 지킬 것은 점수와 따로, 판정은 업무와 근무 둘
 kind: decision
 status: active
-last_verified: 2026-11-12
 enforced_by:
   - none
 no_enforcement_reason: 아직 만들지 않은 기능(REQ-123~127 예정)의 설계 결정이다. 만들 때 설계 문서의 "시험" 표를 시험으로 건다. 첫 번째는 "기본값에서 기존 실험의 지문과 점수 분해가 그대로다"이다.

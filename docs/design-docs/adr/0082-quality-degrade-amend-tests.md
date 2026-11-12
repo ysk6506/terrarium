@@ -2,7 +2,6 @@
 title: ADR-0082 느린 기계에서는 멈추지 않고 줄인다 — 품질·부하 시험 기대값을 고친다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - apps/web/src/logic/world3d/quality.test.ts
   - apps/web/src/logic/world3d/quality-plan.test.ts

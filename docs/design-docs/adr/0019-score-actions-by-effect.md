@@ -2,7 +2,6 @@
 title: ADR-0019 필수·금지 행동은 툴 이름이 아니라 세계에 끼친 효과로 판정한다
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
   - packages/core/src/scenario/scenario.test.ts
   - packages/core/src/oracle/oracle.test.ts

@@ -2,18 +2,8 @@
 title: 용어집 — 화면에 쓰는 말은 여기서 정한다
 kind: guide
 status: active
-last_verified: 2026-11-12
-verification_log:
-  - "2026-11-11: 현실 데이터 절: 만든 말을 현업의 말로, glossary-data.md로 옮김 (ADR-0167)"
-  - "2026-11-12: ADR-0183: 따라가는 용어집의 새 절(한 가지 말, 조건의 뜻)을 읽고, 이 문서에 옛 말(회·횟수·시드·개체·에스컬레이션)이 없음을 확인했다"
-  - "2026-11-12: 따라가는 glossary-data.md에 워크플로 자동화의 말 절이 더해짐. 이 문서의 말과 겹치지 않는다(실행·역할·검증과 구별해 적음)"
-  - "2026-11-12: 따라가는 glossary-data.md에 모의 툴과 검증 수준이 더해짐(ADR-0190). 이 문서의 말과 겹치지 않는다(현실 수준 꼬리표와 구별해 적음)"
-  - "2026-11-12: ADR-0192: 테라리움은 처음의 목표로 돌아감. 현실 데이터 절을 받은 세계와 모델의 말로 고쳐 씀. 따라가는 문서를 ADR-0183으로 바꿈"
 follows:
   - docs/design-docs/adr/0183-one-vocabulary-on-every-screen.md
-follows_hash: e2fd0d10bc4401e6
-verified_body: 039bc39ec784359a
-unchanged_reverifies: 2
 ---
 # 용어집 (ADR-0071)
 

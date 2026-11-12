@@ -2,7 +2,6 @@
 title: ADR-0158 시드마다 여러 번 돌리고, 통계의 단위는 실행이 아니라 시드다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - apps/server/src/runtime/repeats.test.ts
   - apps/server/src/adapters/sqlite-repeat.test.ts

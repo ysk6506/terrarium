@@ -2,7 +2,6 @@
 title: ADR-0020 테스트 잠금 수정 명령은 ADR 경로도 받는다
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
   - harness/src/checks/testguard.test.ts
 touches_protected:

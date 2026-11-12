@@ -3,7 +3,6 @@ title: ADR-0155 수집의 관측성 — 지표는 밖으로 내보내고, 데이
 kind: decision
 status: superseded
 superseded_by: 0192-terrarium-returns-to-its-first-goal.md
-last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-115 예정). 만들 때 enforced_by를 지표·로그·이름표 시험으로 바꾼다.

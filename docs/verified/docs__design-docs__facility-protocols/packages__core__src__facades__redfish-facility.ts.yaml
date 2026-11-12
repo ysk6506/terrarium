@@ -1,0 +1,7 @@
+doc: "docs/design-docs/facility-protocols.md"
+target: "packages/core/src/facades/redfish-facility.ts"
+hash: "4fe1e8ee21d1427a"
+date: "2026-11-04"
+note: "BACnet Outdoor-Air-Temperature 점(항온항습기 5, 플랜트 6)을 bacnet-points.ts와 대조해 더함 (REQ-073)"
+text_changed: true
+doc_hash: "32afecb46fdb7a35"

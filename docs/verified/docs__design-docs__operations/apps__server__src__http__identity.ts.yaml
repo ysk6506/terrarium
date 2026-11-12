@@ -1,0 +1,7 @@
+doc: "docs/design-docs/operations.md"
+target: "apps/server/src/http/identity.ts"
+hash: "9657da497a736673"
+date: "2026-11-12"
+note: "ADR-0193: audit.preAuthLinesPerMinute(기본 60), 로그인 전 실패 접기, suppressed 지표를 config.ts, audit-fold.ts, audit-metrics.ts와 대어 확인"
+text_changed: false
+doc_hash: "0cd4bf67a07e4c29"

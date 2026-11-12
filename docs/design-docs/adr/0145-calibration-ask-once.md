@@ -2,7 +2,6 @@
 title: ADR-0145 보정 시험은 한 번 돌리고 여러 번 묻는다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - tests/spec/calibration.test.ts
 touches_protected:

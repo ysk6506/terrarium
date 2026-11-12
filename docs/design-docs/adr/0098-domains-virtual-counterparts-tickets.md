@@ -2,7 +2,6 @@
 title: ADR-0098 도메인 범위, 가상 담당자, 작업 티켓 — 넘기고 기다리고 그동안 다른 일을 하는 운영을 잰다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - packages/core/src/world/domains.test.ts
   - packages/core/src/tools/domains.test.ts

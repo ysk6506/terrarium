@@ -1,0 +1,7 @@
+doc: "docs/design-docs/rack-standards.md"
+target: "packages/core/src/physics/power-supply.ts"
+hash: "f28166e25db8d4e2"
+date: "2026-11-10"
+note: "물리 상수를 슬롯 표로 옮김(REQ-113). v1 동작은 physics-golden이 비트까지 같음을 확인, 문서 내용 변화 없음"
+text_changed: true
+doc_hash: "803178ddde189fc5"

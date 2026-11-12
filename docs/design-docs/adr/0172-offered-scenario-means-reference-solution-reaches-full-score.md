@@ -2,7 +2,6 @@
 title: ADR-0172 제공되는 시나리오는 그 세계에서 정답 풀이가 만점을 받는다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - tests/spec/offered-means-solvable.test.ts
 touches_protected: []

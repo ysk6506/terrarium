@@ -2,7 +2,6 @@
 title: ADR-0025 저장소는 Node 내장 SQLite 파일 하나
 kind: decision
 status: active
-last_verified: 2026-10-29
 enforced_by:
   - tests/spec/store.test.ts
 touches_protected: []

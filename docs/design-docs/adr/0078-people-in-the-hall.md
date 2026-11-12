@@ -2,7 +2,6 @@
 title: ADR-0078 서버룸의 사람은 꾸밈이지만 세계를 읽는다 — 고장이 나면 걸어가서 일한다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - none
 no_enforcement_reason: 사람의 움직임과 말은 장면 꾸밈이다. 자리 계산(logic/world3d/crew.ts)은 단위 시험으로 지키고, 보기 좋은지는 캡처로 사람이 본다.

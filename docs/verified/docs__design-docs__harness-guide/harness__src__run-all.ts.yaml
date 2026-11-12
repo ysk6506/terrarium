@@ -1,0 +1,7 @@
+doc: "docs/design-docs/harness-guide.md"
+target: "harness/src/run-all.ts"
+hash: "a082219656d383a0"
+date: "2026-11-12"
+note: "ADR-0194: generate, reverify --target, migrate, --timing 설명을 run-all.ts와 대조"
+text_changed: true
+doc_hash: "f35dce3d58b1dfa0"

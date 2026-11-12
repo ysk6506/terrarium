@@ -2,7 +2,6 @@
 title: ADR-0021 세계 소스 — 생성은 건강하게, 가져오기는 읽기만 하고 가정은 드러낸다
 kind: decision
 status: active
-last_verified: 2026-10-29
 enforced_by:
   - packages/core/src/sources/worldgen/worldgen.test.ts
   - packages/core/src/sources/realimport/realimport.test.ts

@@ -2,7 +2,6 @@
 title: ADR-0086 세계 만들기 재설계로 달라진 글과 흐름의 시험 기대값을 고친다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - apps/web/src/logic/builder/pieces.test.ts
   - apps/web/src/logic/editors.test.ts
