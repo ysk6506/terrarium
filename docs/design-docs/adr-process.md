@@ -13,12 +13,13 @@ covers:
   - harness/src/checks/doc-claims.ts
   - harness/src/checks/doc-facts.ts
 covers_hash: 52afbdf61c2193c6
-verified_body: ab5cc4caa825e2e9
+verified_body: 36c1f4bd2d5e3f85
 unchanged_reverifies: 1
 verification_log:
   - "2026-11-11: 새 앞부분 키(updates_docs, amends)와 명령(link-amends, decisions, audit)을 적음 (ADR-0180)"
   - "2026-11-11: 새 검사 모듈(doc-follow, doc-claims, doc-facts, doc-diff, doc-decisions)의 최종 동작과 맞는지 대조: 키·명령·코드 목록이 그대로 맞다 (ADR-0180)"
   - "2026-11-12: amends의 what 항목, link-amends가 구절을 옮기는 것, 새 ADR의 what 필수(DOC091)를 적고 doc-amends.ts를 covers에 더함 (ADR-0182)"
+  - "2026-11-12: follows를 고르는 기준과 한 방향 규칙 한 줄을 더함 (ADR-0186)"
 ---
 # ADR (Architecture Decision Record)
 
@@ -71,6 +72,7 @@ amends:                 # 앞선 결정의 일부를 바꿀 때 (전체를 대�
 ## 문서는 결정도 따라간다 (ADR-0180)
 
 - 코드를 묘사하지 않는 문서는 `covers` 대신 `follows`(다른 문서나 ADR의 경로·글롭)를 둔다. 따라가는 문서의 본문이 바뀌면 `DOC010`으로 낡았다고 알린다 (`DOC092`는 둘 다 없는 문서).
+- `follows`에는 그 문서가 틀리게 되는 원인이 되는 문서만 적는다(인용만 하는 곳은 적지 않는다). 따라가기는 목표 → 요구사항 → 설계 → 계획의 한 방향이고, 두 문서가 서로를 따라가게 두지 않는다 ([ADR-0186](adr/0186-requirements-do-not-follow-the-design-page.md)).
 - 문서가 가리키는 것은 있어야 한다 (`DOC094`): `TERRARIUM_` 환경 변수, `pnpm` 명령, `METHOD /api/...` 길, 검사 코드, `파일.ts`의 `이름`, `ADR-NNNN`, `REQ-NNN`.
 - 코드에서 셀 수 있는 숫자는 `<!-- fact:tools -->96<!-- /fact -->`처럼 적으면 세어서 견준다 (`DOC095`). `reverify`로는 못 고친다. 숫자를 고친다.
 - 시험을 말하는 표는 `시험 파일` 칸에 시험 경로를 적는다 (`DOC096`, 알림). 아직 없으면 '예정'.
