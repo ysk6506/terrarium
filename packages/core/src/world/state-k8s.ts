@@ -160,6 +160,6 @@ export function placePods(states: Record<string, EntityState>, index: BlueprintI
       entity: w,
       s: states[w.id] as K8sWorkloadState,
     }));
-    initialPods(index, nodes, workloads);
+    initialPods(nodes, workloads);
   }
 }

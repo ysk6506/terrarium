@@ -1,0 +1,4 @@
+doc: "docs/design-docs/container-layer.md"
+date: "2026-11-12"
+note: "covers 17개 파일과 관련 시험·제어표·리드타임·MTBF·사다리에 줄마다 대조. 틀린 주장 4건 고침(describe deployment의 API 확인, describe 표, 토폴로지 단계 수, 최대 30점 조건). 툴 수 40→58 같은 과거 숫자는 확인하지 못함"
+doc_hash: "2e86d6b55a22c7f2"

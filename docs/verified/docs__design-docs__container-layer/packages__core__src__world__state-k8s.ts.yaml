@@ -1,7 +1,7 @@
 doc: "docs/design-docs/container-layer.md"
 target: "packages/core/src/world/state-k8s.ts"
-hash: "f77afba0b8054762"
+hash: "26845db580f84c9b"
 date: "2026-11-12"
-note: "덮는 시나리오 라이브러리에서 정렬 도우미 byId의 자리만 library-kit.ts로 옮김. 동작은 그대로이고 이 문서는 그 이름을 말하지 않는다"
-text_changed: false
-doc_hash: "82acef923ae61bc4"
+note: "코드와 대조: kubectl_describe deployment는 API가 멈춰도 답함(문서는 모두 거부라고 했음), describe 표에 deployment 빠짐, 토폴로지 단계가 셋이 아니라 넷(호출받는 워크로드), 워커 NotReady 최대 30점은 지켜보기만 할 때. 넷을 고침. initialPods의 안 쓰는 매개변수 제거는 동작 변화 없음"
+text_changed: true
+doc_hash: "2e86d6b55a22c7f2"
