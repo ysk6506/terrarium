@@ -7,6 +7,10 @@ verification_log:
   - "2026-11-11: 처음 씀 (ADR-0174). http/identity.ts, http/viewer.ts, runtime/context.ts의 ownerOnly, contract/routes.ts와 대조한 현황 조사를 바탕으로"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-11: self-declared admin: token, else loopback socket address only; proxy mode unchanged"
+follows:
+  - docs/design-docs/http-api.md
+  - docs/design-docs/operations.md
+follows_hash: 0fefa952fcf49c0f
 ---
 # 권한 (클로즈 베타 1차, ADR-0174)
 
@@ -140,16 +144,18 @@ verification_log:
 
 ## 시험 (만들 때)
 
-| 시험 | 내용 |
-|---|---|
-| 프록시만 믿기 | 비밀 값이 없거나 틀린 요청은 헤더에 무엇을 적어도 401이다 |
-| 길 전부 | 계약의 모든 길에 판정이 걸려 있다. 판정이 없는 길이 생기면 시험이 실패한다(공개로 표시한 길 제외) |
-| 범위 | 범위마다, 길마다: 볼 수 없는 사람에게는 목록에도 없고 하나를 물어도 없다고 답한다. 딸린 것(실행·보고서·사건·텔레메트리·내보내기·스트림)도 같다 |
-| 자격 증명 | "나만"인 연결로 남이 대화·실험·텔레메트리 조회를 못 한다 |
-| 관리자 | 관리자가 남의 것을 바꾸면 이유와 함께 감사 기록에 남는다 |
-| 감사 | 바꾸는 길을 부르면 기록이 하나 는다. 기록에 비밀 값이 없다 |
-| 채점 불변 | 권한을 켜도 같은 실험의 점수 분해가 바이트까지 같다 |
-| 끝에서 끝 | 프록시와 SSO를 띄워 로그인 → 세계 → 실험 → 결과가 돈다 |
+| 시험 | 내용 | 시험 파일 |
+|---|---|---|
+| 프록시만 믿기 | 비밀 값이 없거나 틀린 요청은 헤더에 무엇을 적어도 401이다 | `apps/server/src/http/identity-proxy.test.ts` |
+| 길 전부 | 계약의 모든 길에 판정이 걸려 있다. 판정이 없는 길이 생기면 시험이 실패한다(공개로 표시한 길 제외) | `packages/core/src/contract/policies.test.ts` |
+| 범위 | 범위마다, 길마다: 볼 수 없는 사람에게는 목록에도 없고 하나를 물어도 없다고 답한다. 딸린 것(실행·보고서·사건·텔레메트리·내보내기·스트림)도 같다 | `apps/server/src/http/permissions-api.test.ts` |
+| 자격 증명 | "나만"인 연결로 남이 대화·실험·텔레메트리 조회를 못 한다 | 예정 |
+| 관리자 | 관리자가 남의 것을 바꾸면 이유와 함께 감사 기록에 남는다 | 예정 |
+| 감사 | 바꾸는 길을 부르면 기록이 하나 는다. 기록에 비밀 값이 없다 | 예정 |
+| 채점 불변 | 권한을 켜도 같은 실험의 점수 분해가 바이트까지 같다 | `apps/server/src/http/scoring-unchanged.test.ts` |
+| 끝에서 끝 | 프록시와 SSO를 띄워 로그인 → 세계 → 실험 → 결과가 돈다 | 예정 |
+
+시험 파일 칸은 만든 기능의 시험 경로예요. 아직 만들지 않은 줄은 '예정'이라고 적고, 만들면 경로로 바꿔요(`DOC096`이 경로 없는 줄을 알려요).
 
 가 단계의 시험은 이 파일들이에요(모두 `[REQ-054]`):
 

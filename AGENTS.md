@@ -2,19 +2,20 @@
 title: AGENTS.md — 에이전트 진입점
 kind: guide
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - package.json
   - harness/config/architecture.yaml
   - harness/config/protected-paths.txt
 covers_hash: 92c76fe9a7d17245
 verification_log:
-  - "2026-11-10: CI가 합치기 관문이 되었다는 한 줄을 더함 (ADR-0140). 명령 목록과 보호 경로 표는 그대로 맞다"
-  - "2026-11-11: 검사 끄기 금지(IGN*)·품질 등급표(QUAL001) 행과 정리 작업 안내를 더했다. package.json은 quality 스크립트와 ratchet만 바뀌었다 (ADR-0148)"
   - "2026-11-11: 정리 작업의 첫 단계를 pnpm quality write로 정하고, 등급표 낡음(QUAL001)과 끄기 감소(IGN006)를 빨강이 아닌 알림으로 고쳐 적었다 (ADR-0148)"
   - "2026-11-11: CI 문장에 문서만 바뀐 변경의 가벼운 경로를 더함 (ADR-0173). 명령 목록과 보호 경로 표는 그대로 맞다"
-  - "2026-11-11: 웹 화면 변경 단락과 정리 작업 단락을 점수 파일 비커밋에 맞게 고침 (ADR-0175)"
+  - "2026-11-11: 첫 단락을 목표 문장으로 맞추고 새 결정·정리 작업 절차와 DOC090~DOC095 행을 적음 (ADR-0180)"
   - "2026-11-11: package.json에 license 표기만 더해짐. 명령과 안내는 그대로 맞다 (ADR-0181)"
+  - "2026-11-12: 웹 화면 변경·정리 작업 단락을 점수 파일 비커밋에 맞춤 (ADR-0175)"
+verified_body: 0f66d338d39a8374
+unchanged_reverifies: 0
 ---
 # Terrarium — 코딩 에이전트 안내서
 
@@ -52,16 +53,16 @@ CI가 합치기 관문이다 ([ADR-0140](docs/design-docs/adr/0140-ci-shards-and
 | 추적 없는 `TODO` | `TODO(TD-NNNN)` + [부채 장부](docs/exec-plans/tech-debt.yaml) (`DEBT001`) |
 | `Date.now()`, `Math.random()` 직접 사용 | `kernel`의 `Clock`/`Rng`를 주입받는다 (`ARCH052`) |
 | 새 쪽·버튼·문서를 이끼에게 알리지 않기 | `MOSS001`~`MOSS004` — 라우트는 `apps/web/src/moss/registry.ts`에 칸을, 쪽의 버튼은 `data-moss-action`(또는 이유를 적은 `data-moss-skip`)을, 점수·지표 타일은 `MossAsk`를 (REQ-103) |
-| 코드만 바꾸고 문서 방치 | 문서가 `covers`한 코드가 바뀌면 실패 (`DOC010`) |
+| 코드만 바꾸고 문서 방치 | 문서가 `covers`한 코드나 `follows`한 문서가 바뀌면 실패 (`DOC010`). 문서가 가리키는 길·명령·코드·숫자가 없으면 실패 (`DOC094`, `DOC095`). 결정이 바꾸는 문서를 같은 변경에서 안 고치면 실패 (`DOC090`) ([ADR-0180](docs/design-docs/adr/0180-docs-follow-decisions-not-only-code.md)) |
 
 ## 자주 하는 일
 
 - **`DOC010`** → 문서를 코드와 대조해 고치고 `pnpm tsx harness/src/checks/docs.ts reverify <문서> --note "확인한 것"`.
 - **새 테스트 추가** → 제목에 `[REQ-NNN]`을 넣고, 작성 후 `pnpm lock-tests` (새 항목만 추가됨).
-- **새 결정** → [ADR 작성 절차](docs/design-docs/adr-process.md). `enforced_by`로 강제 장치에 연결한다.
+- **새 결정** → [ADR 작성 절차](docs/design-docs/adr-process.md). `enforced_by`로 강제 장치에 연결하고, `updates_docs`에 바꾸는 문서를 적어 같은 변경에서 고친다. 앞선 결정의 일부를 바꾸면 `amends`를 적고 `docs.ts link-amends <ADR>`를 돌린다. 색인과 제품 설계 한 장의 표에는 줄을 더하지 않는다.
 - **부채를 남겨야 함** → 장부에 항목 등록 후 `TODO(TD-NNNN)`. 기한과 예산이 있다.
 - **커버리지를 올렸다** → `pnpm ratchet`으로 하한을 고정. 끄기를 없앴으면 `IGN006` 알림이 나오고 기준선은 정리 작업이 `pnpm ratchet`으로 내린다.
-- **정리 작업(5시간마다)** → 첫 단계는 `pnpm quality write`로 [품질 등급표](docs/generated/quality.md)를 새로 만들고, 등급이 가장 낮은 단위부터 고른다. 한 줄의 "이유" 칸이 무엇을 고치면 등급이 오르는지 알려 준다. 고친 뒤 `pnpm ratchet`으로 끄기 기준선을 내리고 등급표를 다시 만들어 올린다. 일반 변경은 등급표를 건드리지 않아도 된다(변경마다의 등급은 CI 요약에 나온다). 웹 화면이 바뀌었으면 `pnpm ux`로 `ux-score.json`을 새로 재서 올리고, 오른 점수는 `pnpm ux ratchet`으로 하한에 반영한다(ADR-0175).
+- **정리 작업(5시간마다)** → 첫 단계는 `pnpm quality write`로 [품질 등급표](docs/generated/quality.md)를 새로 만들고, 등급이 가장 낮은 단위부터 고른다. 한 줄의 "이유" 칸이 무엇을 고치면 등급이 오르는지 알려 준다. 고친 뒤 `pnpm ratchet`으로 끄기 기준선을 내리고 등급표를 다시 만들어 올린다. 일반 변경은 등급표를 건드리지 않아도 된다(변경마다의 등급은 CI 요약에 나온다). 웹 화면이 바뀌었으면 `pnpm ux`로 `ux-score.json`을 새로 재서 올리고, 오른 점수는 `pnpm ux ratchet`으로 하한에 반영한다(ADR-0175). 이어서 `pnpm tsx harness/src/checks/docs.ts decisions`로 [결정 목록](docs/generated/decisions.md)을 새로 만든다. 그다음 `pnpm tsx harness/src/checks/docs.ts audit-queue`의 앞 셋을 골라, 각 문서를 그것이 `covers`·`follows`하는 코드와 결정에 대어 독립된 눈으로 읽는다. 틀린 곳은 고치고, 맞으면 `docs.ts audit <문서> --note "한 줄로 본 것"`으로 `last_audited`를 남긴다.
 - **웹 화면을 바꿨다** → 여정은 CI의 `ux-journeys`(게이트)가 돌린다. 측정은 CI의 `ux-measure`(게이트 아님)가 조각으로 나눠 돌리고, 이 변경의 점수는 그 작업 요약에 나온다. `ux-score.json`은 변경마다 커밋하지 않는다: 낡으면 알림 한 줄(`UX004`)만 나오고, 정리 작업이 main에서 새로 재서 올린다(`pnpm ux`로 로컬에서 재도 된다). 읽는 법은 [UX 측정](docs/design-docs/ux-honeycomb.md) ([ADR-0175](docs/design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md)).
 
 ## 철학

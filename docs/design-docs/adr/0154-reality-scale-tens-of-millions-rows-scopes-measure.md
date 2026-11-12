@@ -9,6 +9,9 @@ no_enforcement_reason: 구현 전 결정 기록이다(REQ-117 예정). 성능 �
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 01a1304462c2b55a
+amended_by:
+  - adr: "0156"
+    what: 3초와 저장소에서 되짚기
 ---
 # ADR-0154 현실 데이터는 수천만 개체까지 본다 — 줄로 저장하고, 범위로 보고 복사하며, 재서 정한다
 

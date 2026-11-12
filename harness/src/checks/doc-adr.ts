@@ -10,7 +10,7 @@ const RULE_CODE = /^[A-Z]{2,6}\d{3}$/;
 let ruleCodeCache: { root: string; text: string } | undefined;
 
 /** Text of every harness source file, used to prove a rule code really exists. */
-function harnessText(root: string): string {
+export function harnessText(root: string): string {
   if (ruleCodeCache?.root !== root) {
     const files = listFiles(
       root,

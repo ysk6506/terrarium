@@ -101,7 +101,7 @@ verification_log:
 | 에이전트 | 이 사람이 마지막으로 실험을 돌린 연결·에이전트(아직 답하면), 없으면 내장 `builtin`의 `operator` |
 | 이름 | "{세계 이름} · 권장 실험" |
 
-응답은 `{ experimentId, scenarios, faults, runs, hours, harnessId, agentId, agentName, agentFrom }`이다. 이어서 화면이 실험 페이지로 간다. **바꾸기**는 새 실험 폼(`/experiments/new?world=ID&quick=1`)을 위 값이 미리 채워진 채 열고(`logic/quick-draft.ts`), 폼 아래에 "멈추면 시간당 피해"(서비스마다·멈추는 방식마다, 만 원/시간)가 있다. 숫자를 바꾸고 시작하면 세계의 서비스 값(`harmTiers`·`harmPerHourKrw`)을 먼저 고친 뒤(`PATCH /api/worlds/:id`) 실험을 만든다.
+응답은 `{ experimentId, scenarios, faults, runs, hours, harnessId, agentId, agentName, agentFrom }`이다. 이어서 화면이 실험 페이지로 간다. **바꾸기**는 새 실험 폼(`/experiments/new?world=ID&quick=1`)을 위 값이 미리 채워진 채 열고(`logic/quick-draft.ts`), 폼 아래에 "멈추면 시간당 피해"(서비스마다·멈추는 방식마다, 만 원/시간)가 있다. 숫자를 바꾸고 시작하면 세계의 서비스 값(`harmTiers`·`harmPerHourKrw`)을 먼저 고친 뒤(`PUT /api/worlds/:id`) 실험을 만든다.
 
 ### 서비스 카탈로그 ([카드 열 장](service-catalog.md))
 - "+ 서비스 더하기"는 시트("어떤 서비스를 더할까요?")를 연다: **기본 제공 열 장 + 사람들이 공유한 카드(내 카드 포함)**. 카드는 이름 · 한 줄 · 만든 사람(칭호 알약, 기본 제공은 "기본 제공") · 잠김/공유됨이다. 그림도 돈도 없다.

@@ -9,6 +9,8 @@
  * DOC012 covers nothing DOC020 too old           DOC021 future date
  * DOC030 broken link    DOC031 dead path         DOC040 orphan  DOC050 too long
  * DOC060 wrong place    DOC070 sealed ADR edited DOC071 ADR not sealed  DOC080 ADR unenforced
+ * DOC090 new ADR's updates_docs (doc-diff.ts)  DOC091 amends/amended_by  DOC092 no covers or follows
+ * DOC093 goal sentence (doc-follow.ts, ADR-0180)  DOC094/DOC095 notices
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -29,14 +31,17 @@ import {
 } from "../common";
 import { expandGlobs, listFiles } from "../files";
 import { checkAdr } from "./doc-adr";
-import { bodyFingerprint, coversFingerprint } from "./doc-print";
+import { audit, auditQueue, formatQueue, noteVerification } from "./doc-audit";
+import { ClaimContext, checkClaims, proseLines } from "./doc-claims";
+import { linkAmends, writeDecisions } from "./doc-decisions";
+import { checkFacts, FactCounter } from "./doc-facts";
+import { checkAmendLinks, checkFollows, checkGoal, reverifyCommand } from "./doc-follow";
+import { bodyFingerprint, coversFingerprint, followsFingerprint } from "./doc-print";
 
 const CONFIG_PATH = "harness/config/docs.yaml";
 const LINK_RE = /(?<!!)\[[^\]]*\]\(([^)\s]+)\)/g;
 const INLINE_CODE_RE = /`([^`\n]+)`/g;
 const PATH_LIKE_RE = /^[A-Za-z0-9_.\-/]+\.(?:ts|tsx|md|yaml|yml|json|txt|toml|css|html)$/;
-const reverifyCommand = (file: string) =>
-  `pnpm tsx harness/src/checks/docs.ts reverify ${file} --note "<what you checked or changed>"`;
 
 export interface DocsConfig {
   docs_root: string;
@@ -52,6 +57,10 @@ export interface DocsConfig {
   max_lines: Record<string, number>;
   path_roots: string[];
   root_files: string[];
+  /** Spec whose bold goal sentence must lead `goal_docs` (DOC093). */
+  goal_source?: string;
+  goal_docs?: string[];
+  decisions_file?: string;
 }
 
 export const loadDocsConfig = (root: string): DocsConfig =>
@@ -189,20 +198,6 @@ function checkLength(config: DocsConfig, file: string, text: string): Violation[
       ];
 }
 
-/** Lines outside fenced code blocks, with their 1-based line numbers. */
-function proseLines(body: string, firstLine: number): Array<[number, string]> {
-  const out: Array<[number, string]> = [];
-  let fenced = false;
-  body.split("\n").forEach((line, offset) => {
-    if (line.trimStart().startsWith("```")) {
-      fenced = !fenced;
-      return;
-    }
-    if (!fenced) out.push([firstLine + offset, line]);
-  });
-  return out;
-}
-
 function checkLinksAndPaths(
   root: string,
   config: DocsConfig,
@@ -264,8 +259,11 @@ function checkOrphans(
     reachable.add(current);
     frontier.push(...(links.get(current) ?? []));
   }
+  // The ADR folder is reached as a whole once something reachable links to it (ADR-0180).
+  const adrFolderLinked = reachable.has(config.adr_dir);
   return docs
     .filter((doc) => doc.startsWith(`${config.docs_root}/`) && !reachable.has(doc))
+    .filter((doc) => !(adrFolderLinked && doc.startsWith(`${config.adr_dir}/`)))
     .map((doc) =>
       violation(
         "DOC040",
@@ -338,6 +336,9 @@ export function run(root: string, now: string = today()): Violation[] {
   const docs = discoverDocs(root, config);
   const violations: Violation[] = [];
   const links = new Map<string, string[]>();
+  const adrs = new Map<string, Record<string, unknown>>();
+  const claims = new ClaimContext(root, config.adr_dir);
+  const facts = new FactCounter(root, claims);
   for (const file of docs) {
     const text = readFileSync(path.join(root, file), "utf8");
     const { data, body, bodyLine } = splitFrontMatter(text);
@@ -349,10 +350,27 @@ export function run(root: string, now: string = today()): Violation[] {
     violations.push(...scanned.violations);
     links.set(file, scanned.links);
     if (data === null) continue;
-    violations.push(...checkFreshness(root, file, data), ...checkPlacement(config, file, data));
-    if (data.kind === "decision") violations.push(...checkAdr(root, file, data, body));
+    violations.push(
+      ...checkFreshness(root, file, data),
+      ...checkFollows(root, file, data),
+      ...checkPlacement(config, file, data),
+    );
+    if (data.kind === "decision") {
+      violations.push(...checkAdr(root, file, data, body));
+      adrs.set(file, data);
+    } else {
+      violations.push(
+        ...checkClaims(claims, file, body, bodyLine),
+        ...checkFacts(facts, file, body, bodyLine),
+      );
+    }
   }
-  return [...violations, ...checkOrphans(config, docs, links)];
+  return [
+    ...violations,
+    ...checkAmendLinks(config, adrs),
+    ...checkGoal(root, config),
+    ...checkOrphans(config, docs, links),
+  ];
 }
 
 /** Record that someone re-read `file` against its covered code. */
@@ -363,6 +381,9 @@ export function reverify(root: string, file: string, note: string, now: string =
   if (!note.trim()) throw new Error("--note is required: say what you checked or changed");
   if (Array.isArray(data.covers))
     data.covers_hash = coversFingerprint(root, data.covers.map(String));
+  if (Array.isArray(data.follows) && data.follows.length > 0)
+    data.follows_hash = followsFingerprint(root, data.follows.map(String));
+  noteVerification(data, body);
   data.last_verified = now;
   const log = Array.isArray(data.verification_log) ? data.verification_log.map(String) : [];
   data.verification_log = [...log, `${now}: ${note.trim()}`].slice(-5);
@@ -378,20 +399,35 @@ export function sealAdr(root: string, file: string): void {
   writeFileSync(full, joinFrontMatter(data, body), "utf8");
 }
 
+const relPath = (root: string, target: string): string =>
+  path.relative(root, path.resolve(target)).split(path.sep).join("/");
+
+/** Run a subcommand that takes a document; undefined when `command` is not one of them. */
+function onDoc(root: string, command: string | undefined, target: string, note: string): boolean {
+  const file = relPath(root, target);
+  if (command === "reverify") reverify(root, file, note);
+  else if (command === "seal-adr") sealAdr(root, file);
+  else if (command === "audit") audit(root, file, note);
+  else if (command === "link-amends") {
+    for (const changed of linkAmends(root, loadDocsConfig(root), file))
+      console.log(`amended_by: ${changed}`);
+  } else return false;
+  return true;
+}
+
 export function main(argv: readonly string[]): number {
   const { positional, flags } = parseArgs(argv);
   const root = findRoot(flag(flags, "root"));
   const [command, target] = positional;
-  if (command === "reverify" && target) {
-    reverify(
-      root,
-      path.relative(root, path.resolve(target)).split(path.sep).join("/"),
-      flag(flags, "note") ?? "",
-    );
+  if (target && onDoc(root, command, target, flag(flags, "note") ?? "")) return 0;
+  if (command === "audit-queue") {
+    const config = loadDocsConfig(root);
+    const plain = discoverDocs(root, config).filter((f) => !f.startsWith(`${config.adr_dir}/`));
+    console.log(formatQueue(auditQueue(root, plain)));
     return 0;
   }
-  if (command === "seal-adr" && target) {
-    sealAdr(root, path.relative(root, path.resolve(target)).split(path.sep).join("/"));
+  if (command === "decisions") {
+    writeDecisions(root, loadDocsConfig(root));
     return 0;
   }
   return finish("docs", run(root));

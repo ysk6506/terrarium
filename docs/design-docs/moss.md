@@ -24,12 +24,14 @@ covers:
   - apps/web/src/logic/models.ts
   - harness/src/checks/moss.ts
 verification_log:
-  - "2026-11-07: 프로세스 비교 화면은 읽기만 등록하고 동작은 없다고 적었다"
   - "2026-11-11: main(process-compare 9cf2ce8) 합친 뒤 코드와 대조; own-card-only·process-compare 여정과 ADR-0134 내용 모두 유지"
   - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
   - "2026-11-11: ADR-0146: 이끼 알약이 떠 있지 않고 홈에서만 흐름 안, 키보드 도움말은 3D 탭 첫 한 번, 좁은 폭 제목 줄 나눔을 코드와 대조해 맞춤"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
-covers_hash: ed429098e5e6ec06
+  - "2026-11-11: 문서 색인이 하네스가 만든 generated 폴더를 건너뛰게 된 것을 적음 (ADR-0180). 코드의 다른 변화는 없음"
+covers_hash: d4ae855815e68836
+verified_body: afdb85bd1cc10a69
+unchanged_reverifies: 0
 ---
 # 이끼 (REQ-103, [ADR-0124](adr/0124-moss-assistant.md), [ADR-0125](adr/0125-moss-requires-model.md))
 
@@ -53,7 +55,7 @@ covers_hash: ed429098e5e6ec06
 
 ## 지식 둘
 
-1. **리포 문서.** 서버가 시작할 때 `docs/**/*.md`와 `docs/**/mockups/*.html`(`exec-plans` 제외)을 `#`·`##`·`###` 제목 단위 조각으로 나눠 메모리에 올린다 (`runtime/moss-index.ts`).
+1. **리포 문서.** 서버가 시작할 때 `docs/**/*.md`와 `docs/**/mockups/*.html`(`exec-plans`와 하네스가 만든 `generated` 제외 — 표뿐인 생성물은 검색어를 독차지해 서술 조각을 밀어낸다)을 `#`·`##`·`###` 제목 단위 조각으로 나눠 메모리에 올린다 (`runtime/moss-index.ts`).
    - 조각마다 **파일과 제목 경로**(`문서 제목 › 소제목`)와 고정된 id(`docs/…md#소제목`)가 있다. 글이 없는 제목은 조각이 아니다(아래 소제목이 가진다). 긴 칸은 줄 경계에서 1,600자 안팎으로 잘라 같은 제목의 조각 여럿이 된다.
    - 찾기는 **BM25 방식 낱말 점수**다. 한글은 낱말·두 글자 토막·조사를 뗀 말, 영어는 낱말로 자른다. 제목은 세 번 센다. 질문의 말이 조각 제목의 말을 모두 품으면 점수를 얹어, 제목으로 부른 조각이 길이에 묻히지 않는다.
    - **임베딩도 네트워크도 없다.** 파일을 읽어 메모리에 올릴 뿐이라 서버가 켜질 때 한 번 만들고(1,000여 조각) 질문마다 수 밀리초 안에 찾는다.

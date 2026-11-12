@@ -2,7 +2,15 @@
 title: 연결 화면 — 내 연결·하네스 종류·기준 에이전트
 kind: spec
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-12
+follows:
+  - docs/design-docs/web-ui.md
+  - docs/design-docs/harness-protocol.md
+follows_hash: 4ff8a3c323003d75
+verified_body: c0d42d0969fa29ff
+unchanged_reverifies: 0
+verification_log:
+  - "2026-11-12: 따라가는 문서의 바뀐 곳은 ADR-0171 결과 화면의 말(glossary 결과 표, web-ui 결과 절)이고 이 문서가 다루는 화면과 상관없다"
 ---
 # 연결 화면 (REQ-051~053, ADR-0048)
 

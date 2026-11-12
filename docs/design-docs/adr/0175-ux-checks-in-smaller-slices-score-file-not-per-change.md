@@ -8,7 +8,14 @@ enforced_by:
   - harness/src/ux/merge.test.ts
   - harness/src/ux/check.test.ts
   - harness/src/ux/groups.test.ts
+updates_docs:
+  - AGENTS.md
+  - docs/design-docs/ux-honeycomb.md
+amends:
+  - adr: "0141"
+    what: 점수 파일을 변경마다 커밋하고 여정 묶음은 셋
 touches_protected:
+  - docs/design-docs/adr/0141-ux-journeys-gate-and-measure.md
   - .github/workflows/ci.yml
   - .github/actions/browser/action.yml
   - harness/src/ux/check.ts
