@@ -4,7 +4,8 @@ import { has, parseArgs } from "./args";
 import { normalize } from "./fs";
 import { DB_PORT, portOf } from "./layout";
 import { processTable } from "./procs";
-import { type Cmd, fail, joinLines, ok, type R, unsupported } from "./types";
+import { badFlag } from "./real-options";
+import { type Cmd, emulationGap, fail, joinLines, ok, type R } from "./types";
 
 interface Sock {
   readonly proto: "tcp" | "udp";
@@ -80,11 +81,37 @@ function pickSockets(c: Cmd, p: ReturnType<typeof parseArgs>): Sock[] {
   });
 }
 
+const SS_SUPPORTED = "-t -u -l -n -p -a -H -4 -6 -r -e (소켓 목록; 필터 식은 안 돼요)";
+/** The words a real ss filter starts with (`ss -tn state established`, `sport = :22`, `( dport = :80 )`). */
+const SS_FILTER_WORDS = new Set(
+  "state exclude dst src dport sport dev fwmark cgroup autobound not and or (".split(" "),
+);
+
+function ssFilterRefusal(rest: readonly string[]): R {
+  const first = (rest[0] ?? "").toLowerCase();
+  if (!SS_FILTER_WORDS.has(first))
+    return fail(`Error: an inet prefix is expected rather than "${rest[0]}".`, 1);
+  return emulationGap({
+    tool: "ss",
+    feature: "filter",
+    what: `필터 ${rest.join(" ")}`,
+    supported: SS_SUPPORTED,
+    example: "ss -tln",
+  });
+}
+
 export function ss(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "tulnpaH46sre", long: {} });
-  if (p.bad) return unsupported("ss", p.bad);
-  if (p.rest.length > 0 || has(p, "s"))
-    return unsupported("ss", p.rest.length ? `필터 ${p.rest.join(" ")}` : "-s");
+  if (p.bad) return badFlag("ss", p);
+  if (has(p, "s"))
+    return emulationGap({
+      tool: "ss",
+      feature: "flag:-s",
+      what: "-s",
+      supported: SS_SUPPORTED,
+      example: "ss -tln",
+    });
+  if (p.rest.length > 0) return ssFilterRefusal(p.rest);
   const rows = pickSockets(c, p).map((s) => {
     const who = has(p, "p") ? `  users:(("${s.proc}",pid=${s.pid},fd=${3 + (s.port % 7)}))` : "";
     const state = s.state === "ESTAB" ? "ESTAB " : s.state === "UNCONN" ? "UNCONN" : "LISTEN";
@@ -98,7 +125,7 @@ export function ss(c: Cmd): R {
 
 export function netstat(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "tulnpaer46", long: {} });
-  if (p.bad) return unsupported("netstat", p.bad);
+  if (p.bad) return badFlag("netstat", p);
   if (has(p, "r")) return ok(routeTable(c));
   const rows = pickSockets(c, p).map((s) => {
     const prog = has(p, "p") ? `${s.pid}/${s.proc}` : "";
@@ -166,14 +193,32 @@ export function ip(c: Cmd): R {
         `    link/ether ${mac} brd ff:ff:ff:ff:ff:ff`,
       ]),
     );
-  return unsupported("ip", obj);
+  return ipRefusal(obj);
+}
+
+/** The objects of the real ip (iproute2 `ip help`); the fake has addr, route and link. */
+const REAL_IP_OBJECTS =
+  "address addrlabel fou ila ioam l2tp link macsec maddress monitor mptcp mroute mrule neighbor neighbour netconf netns nexthop ntable ntbl route rule sr tap tcpmetrics token tunnel tuntap vrf xfrm".split(
+    " ",
+  );
+
+function ipRefusal(obj: string): R {
+  const real = REAL_IP_OBJECTS.find((o) => o.startsWith(obj));
+  if (!real) return fail(`Object "${obj}" is unknown, try "ip help".`, 1);
+  return emulationGap({
+    tool: "ip",
+    feature: `object:${real}`,
+    what: `ip ${obj}`,
+    supported: "ip addr, ip route, ip link (-br -o)",
+    example: "ip -br addr",
+  });
 }
 
 const LSOF_HEAD = "COMMAND   PID USER   FD   TYPE DEVICE SIZE/OFF NODE NAME";
 
 export function lsof(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "nPtl", val: "ipicu", long: {} });
-  if (p.bad) return unsupported("lsof", p.bad);
+  if (p.bad) return badFlag("lsof", p);
   const table = processTable(c.h);
   const row = (
     cmd: string,
@@ -220,7 +265,14 @@ export function lsof(c: Cmd): R {
     );
   }
   const file = p.rest[0];
-  if (!file) return unsupported("lsof", "(인자 없이)");
+  if (!file)
+    return emulationGap({
+      tool: "lsof",
+      feature: "no-arguments",
+      what: "인자 없이 (모든 열린 파일)",
+      supported: "-i[:포트] -P -n -t -l, -p PID, 파일 경로",
+      example: "lsof -i -P -n",
+    });
   const path = normalize(c.cwd, file);
   const owner = table.find((r) => r.unit && path.startsWith(`/var/log/${r.unit}/`));
   return owner

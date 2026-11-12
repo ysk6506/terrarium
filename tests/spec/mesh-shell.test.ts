@@ -83,8 +83,14 @@ describe("istioctl proxy-status shows each sidecar against the control plane [RE
       output: "Error: could not find any Istio installation in this cluster",
       exitCode: 1,
     });
+    // ADR-0184: analyze is a real istioctl command the fake lacks; a made-up one is istioctl's own error
     expect(boot(appLab({ level: "mesh" })).sh("istioctl analyze")).toMatchObject({
-      output: "이 istioctl 명령은 아직 못 해요: analyze",
+      output:
+        "terrarium: 이 실험장은 istioctl의 analyze 기능을 지원하지 않아요. 실제 istioctl에는 있어요.\nterrarium: istioctl에서 되는 것: proxy-status (ps)\nterrarium: 대신 이 명령은 돼요: istioctl proxy-status",
+      exitCode: 1,
+    });
+    expect(boot(appLab({ level: "mesh" })).sh("istioctl foo")).toMatchObject({
+      output: 'Error: unknown command "foo" for "istioctl"',
       exitCode: 1,
     });
   });

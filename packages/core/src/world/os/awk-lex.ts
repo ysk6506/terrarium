@@ -8,10 +8,17 @@ export type Tok =
   | { readonly k: "p"; readonly v: string }
   | { readonly k: "nl" };
 
+/** What the real awk has and this one does not (ADR-0184): a stable key, and how it reads in a sentence. */
+export interface AwkGap {
+  readonly feature: string;
+  readonly what: string;
+}
+
+/** A program awk cannot run: a mistake in it (the message is what awk says), or a feature of awk this one lacks (`gap`). */
 export class AwkSyntax extends Error {
   constructor(
     message: string,
-    readonly outside?: string,
+    readonly gap?: AwkGap,
   ) {
     super(message);
   }

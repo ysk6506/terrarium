@@ -66,8 +66,16 @@ describe("find walks the fake file system [REQ-098]", () => {
       stderr: "find: '/nope': No such file or directory",
       exitCode: 1,
     });
-    for (const word of ["-o", "!", "-perm", "-regex", "-printf", "-print0", "-x"])
+    // ADR-0184: -print0 is the real find's and the fake lacks it; the others are mistakes the real find refuses itself
+    expect(run("srv-a2", "find /etc -print0").outside).toEqual(["find -print0"]);
+    for (const word of ["-perm", "-regex", "-printf"])
       expect(run("srv-a2", `find /etc ${word}`).outside).toEqual([`find ${word}`]);
+    for (const word of ["-o", "!", "-x"]) {
+      const r = run("srv-a2", `find /etc ${word}`);
+      expect(r.outside, word).toEqual([]);
+      expect(r.exitCode, word).toBe(1);
+      expect(r.stderr, word).not.toContain("terrarium:");
+    }
   });
 });
 
@@ -159,18 +167,13 @@ describe("systemctl reads and changes the units [REQ-098]", () => {
       stderr: "Failed to restart nope.service: Unit nope.service not found.",
       exitCode: 5,
     });
-    for (const verb of [
-      "list-unit-files",
-      "mask",
-      "kill licd",
-      "reset-failed",
-      "list-timers",
-      "foo",
-    ])
+    // ADR-0184: these verbs are systemd's and the fake lacks them; `foo` is no verb, and systemctl says so itself
+    for (const verb of ["list-unit-files", "mask", "kill licd", "reset-failed", "list-timers"])
       expect(run("srv-a2", `systemctl ${verb}`)).toMatchObject({
         exitCode: 2,
         outside: [`systemctl ${verb.split(" ")[0]}`],
       });
+    expect(run("srv-a2", "systemctl foo")).toMatchObject({ exitCode: 1, outside: [] });
     expect(run("srv-a2", "systemctl status").outside).toEqual([
       "systemctl status (유닛 이름 없이)",
     ]);

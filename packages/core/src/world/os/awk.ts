@@ -4,9 +4,10 @@ import { AwkSyntax } from "./awk-lex";
 import { type Program, parseAwk, type Rule } from "./awk-parse";
 import { ev, exec, type Flow, Rt, runBlock, StrNum, toNum, toStr, truthy } from "./awk-run";
 import { errText, readInputs } from "./io";
+import { badFlag } from "./real-options";
 import { posixRegExp } from "./regex";
 import type { Cmd } from "./types";
-import { fail, linesOf, type R, unsupported } from "./types";
+import { emulationGap, fail, linesOf, type R } from "./types";
 
 function ruleMatches(rt: Rt, rule: Rule, index: number): boolean {
   if (rule.range) {
@@ -88,35 +89,63 @@ function assignments(args: readonly string[], operands: readonly string[]): [str
     .map((m) => [m[1] as string, escapes(m[2] as string)]);
 }
 
+const AWK_SUPPORTED =
+  "-F 구분자, -v 변수=값, -f 프로그램파일; 패턴 { 동작 } 규칙과 BEGIN/END, 변수·배열·정규식, if/while/do/for/delete/next/exit, print/printf, 내장 함수 length substr index split sub gsub match sprintf tolower toupper int sqrt exp log sin cos atan2 rand srand";
+const AWK_EXAMPLES: Readonly<Record<string, string>> = {
+  "redirect-output": "awk '{print $1}' /etc/hosts > /tmp/awk-out.txt",
+  system: "echo hi | awk '{print toupper($0)}'",
+  function: "awk 'BEGIN{x=3; print x*x}'",
+};
+const AWK_EXAMPLE = "awk 'NR==2{print $1}' /etc/hosts";
+
+/** What awk says about a program it cannot run: its own words for a mistake, the gap's lines for a feature it lacks. */
+function awkRefusal(e: AwkSyntax): R {
+  if (!e.gap) return { out: "", err: `awk: ${e.message}\n`, code: 2 };
+  return emulationGap({
+    tool: "awk",
+    feature: e.gap.feature,
+    what: e.gap.what,
+    supported: AWK_SUPPORTED,
+    example: AWK_EXAMPLES[e.gap.feature] ?? AWK_EXAMPLE,
+  });
+}
+
 function compileProgram(source: string): Program | R {
   try {
     return parseAwk(source);
   } catch (e) {
-    if (e instanceof AwkSyntax)
-      return {
-        out: "",
-        err: `awk: ${e.message}`,
-        code: 2,
-        ...(e.outside ? { outside: e.outside } : {}),
-      };
+    if (e instanceof AwkSyntax) return awkRefusal(e);
     throw e;
   }
 }
 
-export function awk(c: Cmd): R {
-  const p = parseArgs(c.args, AWK_FLAGS);
-  if (p.bad) return unsupported("awk", p.bad);
-  if (has(p, "--version")) return unsupported("awk", "--version");
-  const file = p.flags.get("f");
-  const source = file !== undefined ? c.fs.read(file) : p.rest.shift();
-  if (source === undefined) return fail("awk: no program given", 2);
-  const program = compileProgram(source);
-  if ("code" in program) return program;
+/** The runtime with -F and the `var=value` operands set before the program starts. */
+function startRt(c: Cmd, p: ReturnType<typeof parseArgs>): Rt {
   const rt = new Rt();
   const fs = p.flags.get("F");
   if (fs !== undefined) rt.vars.set("FS", unescapeFs(fs));
-  const set = assignments(c.args, p.rest);
-  for (const [name, value] of set) rt.vars.set(name, new StrNum(value));
+  for (const [name, value] of assignments(c.args, p.rest)) rt.vars.set(name, new StrNum(value));
+  return rt;
+}
+
+export function awk(c: Cmd): R {
+  const p = parseArgs(c.args, AWK_FLAGS);
+  if (p.bad) return badFlag("awk", p, AWK_SUPPORTED);
+  if (has(p, "--version"))
+    return emulationGap({
+      tool: "awk",
+      feature: "flag:--version",
+      what: "--version",
+      supported: AWK_SUPPORTED,
+      example: AWK_EXAMPLE,
+    });
+  const file = p.flags.get("f");
+  const source = file !== undefined ? c.fs.read(file) : p.rest.shift();
+  if (file !== undefined && source === undefined) return fail(`awk: couldn't open file ${file}`, 2);
+  if (source === undefined) return fail("awk: no program given", 2);
+  const program = compileProgram(source);
+  if ("code" in program) return program;
+  const rt = startRt(c, p);
   const { inputs, errors } = readInputs(
     c,
     p.rest.filter((o) => !ASSIGNMENT.test(o)),
@@ -128,7 +157,7 @@ export function awk(c: Cmd): R {
       inputs.map((i) => i.text),
     );
   } catch (e) {
-    if (e instanceof AwkSyntax) return { out: rt.out, err: `awk: ${e.message}\n`, code: 2 };
+    if (e instanceof AwkSyntax) return { ...awkRefusal(e), out: rt.out };
     throw e;
   }
   return { out: rt.out, err: errText(errors), code: rt.exitCode ?? (errors.length ? 2 : 0) };

@@ -4,15 +4,15 @@ kind: plan
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-12: 이슈 47의 네 단계 일정을 더함, ADR-0173 표시를 머지된 것으로 고침"
   - "2026-11-11: 따라가는 requirements.md의 바뀐 곳은 목표 글뿐이라 차수 계획과 어긋나지 않음을 대조"
   - "2026-11-12: main을 합친 뒤 양쪽 변경을 함께 둠"
   - "2026-11-12: 이슈 47의 순서를 바꿈: 범용 유저랜드를 진짜 구현으로 바꾸는 실험을 앞으로, 흉내를 둘로 나누는 선을 적음"
   - "2026-11-12: 날짜를 지우고 순서만 둠(제품 책임자 결정). 지금의 순서 절을 더함"
+  - "2026-11-12: main을 합침: 따라가는 requirements.md의 바뀐 곳은 REQ-098의 한계 알림 문장(ADR-0184). 이 문서와 어긋나지 않는다"
 follows:
   - docs/product-specs/requirements.md
-follows_hash: 0423cd5150982538
-verified_body: af1c0ec16faf475e
+follows_hash: d6401b76af04a80e
+verified_body: 2a968eaefc8df6ec
 unchanged_reverifies: 0
 ---
 # 클로즈 베타 차수 계획

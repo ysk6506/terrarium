@@ -7,6 +7,7 @@ import { CLUSTER_CAUSE } from "@terrarium/core/physics";
 import { ACTION_LABELS, type ToolCallRecord } from "@terrarium/core/scenario";
 import { callEffect, callTargets } from "@terrarium/core/tools";
 import type {
+  GapEvent,
   HumanEvent,
   RunEvent,
   ToolEvent,
@@ -98,7 +99,16 @@ export class RunLog {
       targets: callTargets(call.tool, call.args),
       summary: summaryOf(call, this.nameOf),
     };
-    this.add([...before, event, ...after]);
+    const at = this.list.length + before.length;
+    const gaps: GapEvent[] = (call.gaps ?? []).map((g) => ({
+      kind: "gap",
+      seq: 0,
+      t: call.t,
+      tool: g.tool,
+      feature: g.feature,
+      call: at,
+    }));
+    this.add([...before, event, ...gaps, ...after]);
   }
 
   /** The agent asked a person, a person did something for it, or the question was answered (ADR-0087 item 4). */

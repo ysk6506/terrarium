@@ -4467,6 +4467,61 @@
       "kind": "auto"
     },
     {
+      "q": "ADR-0184 실험장이 못 해서 틀린 것에만 힌트를 준다가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0184-emulation-gap-hints.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0184 실험장이 못 해서 틀린 것에만 힌트를 준다의 맥락이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0184-emulation-gap-hints.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0184 실험장이 못 해서 틀린 것에만 힌트를 준다의 결정이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0184-emulation-gap-hints.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0184 실험장이 못 해서 틀린 것에만 힌트를 준다의 출력의 모양이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0184-emulation-gap-hints.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0184 실험장이 못 해서 틀린 것에만 힌트를 준다의 기록이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0184-emulation-gap-hints.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0184 실험장이 못 해서 틀린 것에만 힌트를 준다의 화면이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0184-emulation-gap-hints.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0184 실험장이 못 해서 틀린 것에만 힌트를 준다의 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0184-emulation-gap-hints.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0184 실험장이 못 해서 틀린 것에만 힌트를 준다의 대안과 버린 이유가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0184-emulation-gap-hints.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0184 실험장이 못 해서 틀린 것에만 힌트를 준다의 이 결정 밖이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0184-emulation-gap-hints.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0184 실험장이 못 해서 틀린 것에만 힌트를 준다의 열린 질문이 뭐예요?",
+      "expect": ["docs/design-docs/adr/0184-emulation-gap-hints.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "ADR-0184 실험장이 못 해서 틀린 것에만 힌트를 준다의 결과가 뭐예요?",
+      "expect": ["docs/design-docs/adr/0184-emulation-gap-hints.md"],
+      "kind": "auto"
+    },
+    {
       "q": "ADR-0187 공개 저장소에는 공개된 자료에서 온 사실만 둔다 — 내부에서 들은 사실은 요구로 바꿔 적고, 이미 들어간 것은 봉인된 기록에서도 걷어낸다의 맥락이 뭐예요?",
       "expect": ["docs/design-docs/adr/0187-no-internal-facts-in-the-public-repository.md"],
       "kind": "auto"
@@ -7633,6 +7688,11 @@
     },
     {
       "q": "서비스와 OS 층의 정직한 한계가 뭐예요?",
+      "expect": ["docs/design-docs/service-os-layer.md"],
+      "kind": "auto"
+    },
+    {
+      "q": "서비스와 OS 층의 힌트는 흉내의 한계일 때만이 뭐예요?",
       "expect": ["docs/design-docs/service-os-layer.md"],
       "kind": "auto"
     },

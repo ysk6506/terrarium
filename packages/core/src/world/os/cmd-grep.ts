@@ -3,8 +3,9 @@ import { allValues, has, intOf, parseArgs } from "./args";
 import { baseName, normalize } from "./fs";
 import { globToRegExp } from "./glob";
 import { errText, readInputs } from "./io";
+import { badFlag } from "./real-options";
 import { escapeLiteral, translate } from "./regex";
-import { type Cmd, fail, joinLines, linesOf, type R, unsupported } from "./types";
+import { type Cmd, emulationGap, fail, joinLines, linesOf, type R } from "./types";
 
 const GREP_FLAGS = {
   bool: "ivcnEFrRlLwxohHqsaIP",
@@ -200,19 +201,33 @@ function exitCode(p: Flags, errors: number, anyHit: boolean): number {
   return anyHit || has(p, "c") ? 0 : 1;
 }
 
+const GREP_SUPPORTED =
+  "-e -f -E -F -P(-E처럼) -i -v -c -n -l -L -w -x -o -h -H -q -s -a -I -r -R -m N -A N -B N -C N, --include --exclude --color=auto|never";
+
 /** `--color=always` writes escape codes this fake does not make; `auto` and `never` print plain text, as a pipe does. */
-function colorBlocked(p: Flags): string | undefined {
+function colorRefusal(p: Flags): R | undefined {
   const mode = p.flags.get("--color") ?? p.flags.get("--colour");
-  return mode !== undefined && !["", "auto", "never", "none", "no"].includes(mode)
-    ? `--color=${mode}`
-    : undefined;
+  if (mode === undefined || ["", "auto", "never", "none", "no", "tty", "if-tty"].includes(mode))
+    return undefined;
+  if (["always", "yes", "force"].includes(mode))
+    return emulationGap({
+      tool: "grep",
+      feature: "color-always",
+      what: `--color=${mode}`,
+      supported: GREP_SUPPORTED,
+      example: "grep -n root /etc/passwd",
+    });
+  return fail(
+    `grep: invalid argument ‘${mode}’ for ‘--color’\nValid arguments are:\n  - ‘always’, ‘yes’, ‘force’\n  - ‘never’, ‘no’, ‘none’\n  - ‘auto’, ‘tty’, ‘if-tty’\nUsage: grep [OPTION]... PATTERNS [FILE]...\nTry 'grep --help' for more information.`,
+    2,
+  );
 }
 
 export function grep(c: Cmd): R {
   const p = parseArgs(c.args, GREP_FLAGS);
-  if (p.bad) return unsupported("grep", p.bad);
-  const color = colorBlocked(p);
-  if (color) return unsupported("grep", color);
+  if (p.bad) return badFlag("grep", p, GREP_SUPPORTED);
+  const color = colorRefusal(p);
+  if (color) return color;
   const parsed = patternOf(c, p);
   if ("code" in parsed) return parsed;
   const recursive = has(p, "r") || has(p, "R") || has(p, "--recursive");

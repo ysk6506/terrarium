@@ -4,16 +4,16 @@ kind: reference
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: 골든 안전망 링크를 더함"
   - "2026-11-11: 권한 문서와 ADR-0174 링크"
   - "2026-11-11: ADR 목록을 없애고 결정 기록 폴더와 결정 목록을 가리키게 함 (ADR-0180)"
   - "2026-11-11: ADR 목록을 없애고 결정 기록 폴더와 결정 목록을 가리키게 함. AGENTS.md의 바뀐 곳은 CI 문장이라 색인과 무관 (ADR-0180)"
-  - "2026-11-12: 따라가는 AGENTS.md에 내부 사실을 적지 않는다는 줄이 더해짐(ADR-0187). 색인과 무관. 지운 참고 문서는 색인에 없었다"
+  - "2026-11-12: 따라가는 문서(AGENTS.md, ADR-0175)가 바뀐 것을 읽음: 이 문서의 서술과 어긋난 곳 없음"
+  - "2026-11-12: main을 합침: 따라가는 AGENTS.md의 두 변경(ADR-0175, ADR-0187)은 색인과 무관"
 follows:
   - AGENTS.md
-follows_hash: 7bea53a6b8bb4599
+follows_hash: ad4466c9731e19dd
 verified_body: 876cbc22d1a37868
-unchanged_reverifies: 2
+unchanged_reverifies: 3
 ---
 # 문서 색인
 

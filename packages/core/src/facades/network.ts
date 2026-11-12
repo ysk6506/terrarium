@@ -6,7 +6,7 @@
  */
 import { NotFoundError } from "@terrarium/core/kernel";
 import type { ProfileRegistry } from "@terrarium/core/profiles";
-import type { Entity, WorldPort } from "@terrarium/core/world";
+import type { EmulationGap, Entity, WorldPort } from "@terrarium/core/world";
 import { CliSession, type Mode } from "./netos-cli";
 import { runEapi, runNxapi } from "./netos-http";
 import { type Memo, type Os, type SwitchView, switchView } from "./netos-model";
@@ -31,10 +31,16 @@ export type CliResponse =
       readonly os: Os;
       readonly steps: CliStepOut[];
       readonly prompt: string;
+      /** The emulation gaps of the lines, keys only (ADR-0184); absent when there were none. */
+      readonly gaps?: readonly EmulationGap[];
     }
   | { readonly timeout: true; readonly device: string; readonly message: string };
 
 type Json = Record<string, unknown>;
+
+/** `{ gaps }` when there were any, so a response without gaps keeps its old shape. */
+const gapsField = (gaps: readonly EmulationGap[]): { gaps?: readonly EmulationGap[] } =>
+  gaps.length > 0 ? { gaps } : {};
 export type HttpApiResponse =
   | Json
   | { readonly timeout: true; readonly device: string; readonly message: string };
@@ -93,7 +99,13 @@ export class NetworkFacade {
     for (const line of lines) if (!session.closed) run(line);
     // A configuring call leaves configuration mode, unless the commands already did.
     if (request.configure && session.mode.startsWith("config")) run("end");
-    return { device: deviceId, os: v.os, steps, prompt: session.prompt() };
+    return {
+      device: deviceId,
+      os: v.os,
+      steps,
+      prompt: session.prompt(),
+      ...gapsField(session.gaps),
+    };
   }
 
   private http(deviceId: string, api: "eapi" | "nxapi", body: unknown): HttpApiResponse {
@@ -108,9 +120,14 @@ export class NetworkFacade {
         }`,
       );
     if (!v.powered) return this.silent(deviceId, "HTTP connection");
-    return api === "eapi"
-      ? runEapi(body, this.session(entity, "priv"))
-      : runNxapi(body, (mode) => this.session(entity, mode));
+    const sessions: CliSession[] = [];
+    const open = (mode: Mode): CliSession => {
+      const s = this.session(entity, mode);
+      sessions.push(s);
+      return s;
+    };
+    const answer = api === "eapi" ? runEapi(body, open("priv")) : runNxapi(body, open);
+    return { ...answer, ...gapsField(sessions.flatMap((s) => s.gaps)) };
   }
 
   eapi(deviceId: string, body: unknown): HttpApiResponse {

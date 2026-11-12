@@ -1,4 +1,5 @@
 /** What a shell command receives and returns (ADR-0117 decision 4). */
+import { type EmulationGap, type GapNotice, gapOf, gapText } from "../emulation-gap";
 import type { HostAction } from "../host-os";
 import type { WorldPort } from "../world";
 import type { VirtualFs } from "./fs";
@@ -11,6 +12,8 @@ export interface R {
   readonly code: number;
   /** Set when the command asked for something outside the simulation (ADR-0117 decision 6). */
   readonly outside?: string;
+  /** Set when the real tool can do what was asked and this proving ground cannot (ADR-0184). */
+  readonly gap?: EmulationGap;
 }
 
 export interface Cmd {
@@ -29,12 +32,29 @@ export type Handler = (c: Cmd) => R;
 
 export const ok = (out: string): R => ({ out, code: 0 });
 export const fail = (err: string, code = 1): R => ({ out: "", err, code });
-/** A command with a flag or feature the simulation does not have. */
-export const unsupported = (name: string, what: string): R => ({
+/** How the older `outside` list names a gap: the feature, with the tool in front unless the feature already says it. */
+const outsideOf = (n: GapNotice): string =>
+  n.what.startsWith(`${n.tool} `) ? n.what : `${n.tool} ${n.what}`;
+
+/**
+ * A command with a flag or feature the real tool has and the simulation does not (ADR-0184): the tool-style first
+ * line, the `terrarium:` lines, exit status 2, and the gap itself for the run's record. `outside` keeps the older,
+ * looser list of what the fake could not do (ADR-0117 decision 6).
+ */
+export const emulationGap = (n: GapNotice, code = 2): R => ({
   out: "",
-  err: `${name}: ${what}: 이 흉내에서는 안 돼요`,
-  code: 2,
-  outside: `${name} ${what}`,
+  err: `${gapText(n)}\n`,
+  code,
+  gap: gapOf(n),
+  outside: outsideOf(n),
+});
+
+/** A gap that still gives what it can (`tail -f` shows the last lines): the result keeps its output and exit status. */
+export const softGap = (r: R, n: GapNotice): R => ({
+  ...r,
+  err: `${r.err ?? ""}${gapText(n)}\n`,
+  gap: gapOf(n),
+  outside: outsideOf(n),
 });
 
 /** Whether an action on a path goes through a symbolic link in the last part of the path (a write does, a removal does not). */
