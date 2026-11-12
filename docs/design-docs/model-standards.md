@@ -4,16 +4,16 @@ kind: spec
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-12: 따라가는 product-design.md는 ADR-0171 만드는 중 표시만 지워졌고 이 문서의 말과 상관없다"
-  - "2026-11-12: 따라가는 product-design.md의 순서 2와 위험에 범용 도구 실험이 더해짐. 이 문서의 내용과 어긋나지 않는다"
-  - "2026-11-12: 따라가는 product-design.md의 바뀐 곳은 목표 문장과 넷째 기둥(ADR-0189). 모델은 하나라는 이 문서의 서술과 어긋나지 않는다"
   - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
   - "2026-11-12: ADR-0192: 테라리움은 처음의 목표로 돌아감. 따라가는 문서에서 옮긴 설계를 뺌. 층마다의 표준은 테라리움에 남는다"
+  - "2026-11-12: ADR-0196: 따라가는 제품 설계 한 장의 바뀐 곳은 순서 3의 셸 글과 위험 두 줄. 모델의 표준과 상관없다"
+  - "2026-11-12: ADR-0197: 따라가는 문서의 바뀐 곳은 맡겨도 되나 실험. 모델의 표준과 상관없다"
+  - "2026-11-12: main(ADR-0196)을 합침: 두 변경의 글이 함께 들어감. 다시 대조함"
 follows:
   - docs/design-docs/product-design.md
-follows_hash: fcf7abf93feaa35d
+follows_hash: d42e948f03ef6c77
 verified_body: b767bd50a82c81cf
-unchanged_reverifies: 4
+unchanged_reverifies: 6
 ---
 # 표준 모델 대조 (REQ-119·121 예정, ADR-0157)
 

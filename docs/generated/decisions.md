@@ -94,10 +94,10 @@
 | [ADR-0086 세계 만들기 재설계로 달라진 글과 흐름의 시험 기대값을 고친다](../design-docs/adr/0086-world-making-amend-tests.md) | 유효 |  |
 | [ADR-0087 툴 범위는 실험 설계자가 정하고, 현실 수준 꼬리표를 달고, 에스컬레이션과 절차서는 실험 변수다](../design-docs/adr/0087-tool-scope-escalation-sop.md) | 유효 |  |
 | [ADR-0088 테라리움의 데이터는 재활용하도록 설계한다 — 불변 사건, 버전 묶음, 표준 내보내기, 라벨 사건](../design-docs/adr/0088-data-reuse.md) | 유효 |  |
-| [ADR-0089 홈은 경영진 한 장이고 그 뒤가 엔지니어 근거다 — 벤치마크는 pass^k·실패 유형·버전 세트·비용을 말한다](../design-docs/adr/0089-dashboard-benchmark.md) | 유효 |  |
+| [ADR-0089 홈은 경영진 한 장이고 그 뒤가 엔지니어 근거다 — 벤치마크는 pass^k·실패 유형·버전 세트·비용을 말한다](../design-docs/adr/0089-dashboard-benchmark.md) | 유효 | 일부 고침: [0197](../design-docs/adr/0197-experiments-answer-whether-to-entrust.md) (pass^k는 업무 묶음의 합격선이 된다) |
 | [ADR-0091 세계에 서비스·OS 층을 올리고, 채점은 복구 우선이다](../design-docs/adr/0091-service-os-layer-recovery-first.md) | 유효 |  |
 | [ADR-0092 서비스부터 세계를 만들 수 있고, 만든 구성은 저장해 두고 다시 쓴다](../design-docs/adr/0092-service-first-world-and-templates.md) | 유효 |  |
-| [ADR-0094 운영 모드 — 끝이 없는 실험, 당겨서 보는 모니터링, 실시간과 빨리 감기](../design-docs/adr/0094-operation-mode.md) | 유효 |  |
+| [ADR-0094 운영 모드 — 끝이 없는 실험, 당겨서 보는 모니터링, 실시간과 빨리 감기](../design-docs/adr/0094-operation-mode.md) | 유효 | 일부 고침: [0197](../design-docs/adr/0197-experiments-answer-whether-to-entrust.md) (운영 실험에 합격선과 판정을 둔다) |
 | [ADR-0095 현실의 쌍둥이는 네 단계로 가고, 세계의 모델은 플러그인으로 바꿀 수 있다](../design-docs/adr/0095-digital-twin-and-model-plugins.md) | 유효 |  |
 | [ADR-0096 파워 캐핑 — 전기요금을 아끼면서 서비스를 지키는 줄다리기를 잰다](../design-docs/adr/0096-power-capping.md) | 유효 |  |
 | [ADR-0097 토폴로지 보기 ①이 건드리는 보호 경로 — 새 코어 단위, UX 여정, 두 문서의 앞부분](../design-docs/adr/0097-topology-amend-tests.md) | 유효 |  |
@@ -137,7 +137,7 @@
 | [ADR-0132 세계 만들기의 크기는 서비스 숫자로 세고, 알아서는 숫자의 규칙 표이며, 빌더 카드는 고른 물체 옆에 붙는다](../design-docs/adr/0132-world-entry-sizing-and-ux-fixes.md) | 유효 |  |
 | [ADR-0133 채점 정확성 보증: 정답 풀이·결정성·변이 검사](../design-docs/adr/0133-grading-correctness-reference-solver.md) | 유효 |  |
 | [ADR-0134 내 카드만으로도 끝까지 가고, 크기의 숫자는 하나의 계산이며, 빌더 오른쪽 아래는 겹치지 않는다](../design-docs/adr/0134-own-card-alone-and-one-sizing.md) | 유효 |  |
-| [ADR-0135 지금 하는 방식은 사람이 적고, 에이전트의 값은 코드가 기록에서 세어 둘을 같은 잣대로 견준다](../design-docs/adr/0135-process-compare.md) | 유효 |  |
+| [ADR-0135 지금 하는 방식은 사람이 적고, 에이전트의 값은 코드가 기록에서 세어 둘을 같은 잣대로 견준다](../design-docs/adr/0135-process-compare.md) | 유효 | 일부 고침: [0197](../design-docs/adr/0197-experiments-answer-whether-to-entrust.md) (승인 줄은 승인 사건에서만 센다) |
 | [ADR-0136 물리가 닿는 열네 자리를 모델 자리로 만들고, 법칙 검사와 프로필 지문으로 채점을 지킨다](../design-docs/adr/0136-physics-inventory-and-model-slots.md) | 유효 |  |
 | [ADR-0137 물리 모델 자리(이음매)와 물리 프로필(숫자·곡선·바깥 온도·지문)의 코어를 만든다](../design-docs/adr/0137-physics-slots-and-profile-core.md) | 유효 |  |
 | [ADR-0138 제품 목표를 요구사항 문서 맨 위에 적고 설계 결정의 기준으로 삼는다](../design-docs/adr/0138-product-goal.md) | 유효 | 일부 고침: [0189](../design-docs/adr/0189-verified-workflows-go-to-operation.md) (목표 문장과 목표의 세 부분) |
@@ -195,3 +195,5 @@
 | [ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리움으로 보낸다 — 에이전트는 두 세계에서 같은 게이트웨이를 같은 이름으로 부른다](../design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md) | 대체됨 | 대체: [0192](../design-docs/adr/0192-terrarium-returns-to-its-first-goal.md) |
 | [ADR-0192 테라리움은 처음의 목표로 돌아간다 — 현실 세계 만들기와 워크플로 자동화는 다른 프로젝트가 맡고, 둘 사이는 세계 스냅샷과 판정으로만 잇는다](../design-docs/adr/0192-terrarium-returns-to-its-first-goal.md) | 유효 |  |
 | [ADR-0195 커버리지는 게이트 조각 밖에서 네 작업으로 재고, 실패한 여정 단계는 증거를 남기고, 가벼운 경로는 풀 리퀘스트 자신의 차이로 가른다](../design-docs/adr/0195-coverage-apart-failure-evidence-and-own-diff.md) | 유효 |  |
+| [ADR-0196 셸과 awk는 진짜 구현을 WASM으로 돌려 바꾼다 — 결과를 가르는 한도는 세는 것만 쓰고, sleep은 세계 시간이며, 유틸리티는 따로 시험한다](../design-docs/adr/0196-shell-and-awk-run-as-real-implementations.md) | 유효 |  |
+| [ADR-0197 실험은 "맡겨도 되나"에 답한다 — 맡기는 범위는 실험 조건, 승인은 규칙, 지킬 것은 점수와 따로, 판정은 업무와 근무 둘](../design-docs/adr/0197-experiments-answer-whether-to-entrust.md) | 유효 |  |
