@@ -4,17 +4,17 @@ kind: plan
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-07: o15 합치기 (2차 피드백 수정)"
   - "2026-11-11: 따라가는 product-design.md와 beta-rounds.md의 바뀐 곳(1·4절, 앞부분)이 이 계획의 서술과 어긋나지 않음을 대조"
   - "2026-11-12: 따라가는 product-design.md는 ADR-0171 만드는 중 표시만 지워졌고 이 문서의 말과 상관없다"
   - "2026-11-12: 따라가는 beta-rounds.md에 이슈 47 일정 절이 더해짐. 차수의 순서와 내용은 그대로라 이 문서와 어긋나지 않는다"
   - "2026-11-12: 따라가는 beta-rounds.md의 이슈 47 절에서 단계의 순서가 바뀜. 차수의 순서와 내용은 그대로라 이 문서와 어긋나지 않는다"
+  - "2026-11-12: 따라가는 beta-rounds.md에서 날짜를 지우고 '지금의 순서' 절을 더함. 차수의 내용은 그대로라 이 문서와 어긋나지 않는다"
 follows:
   - docs/design-docs/product-design.md
   - docs/exec-plans/active/beta-rounds.md
-follows_hash: 1d57b981d6d1cd9f
+follows_hash: dbd5b9ba046dfa60
 verified_body: a151a892ddb2f8e9
-unchanged_reverifies: 3
+unchanged_reverifies: 4
 ---
 # 구현 계획
 
