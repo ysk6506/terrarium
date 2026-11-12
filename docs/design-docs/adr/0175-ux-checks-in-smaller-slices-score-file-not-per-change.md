@@ -27,6 +27,7 @@ touches_protected:
   - harness/config/test-lock.json
   - AGENTS.md
 amends_tests:
+  - harness/src/ux/merge.test.ts::=parts
   - harness/src/ux/check.test.ts::<import:f51f959f>
   - harness/src/ux/check.test.ts::the recorded measurement [REQ-041] > goes stale when the web app changes (UX004)
   - harness/src/ux/groups.test.ts::the CI groups of UX journeys lose none and repeat none [REQ-114] > there are three groups, named as the workflow names them

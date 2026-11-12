@@ -77350,13 +77350,13 @@
   },
   "harness/src/ux/merge.test.ts::=parts": {
    "kind": "support",
-   "hash": "368c03355d1acc15",
+   "hash": "275b9691f4846254",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0175-ux-checks-in-smaller-slices-score-file-not-per-change.md"
   },
   "harness/src/ux/merge.test.ts::=read": {
    "kind": "support",
