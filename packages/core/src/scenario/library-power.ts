@@ -6,7 +6,7 @@
  *   power-cap-rack-limit   랙이 전력 한도를 넘어요                         → 서버별 캡으로 한도 안에 배분해요 (set_power_cap)
  *   power-cap-cooling-short 공조가 모자라 서버가 뜨거워져요                  → 캡으로 온도 상승을 늦추고 버텨요 (set_power_cap)
  *
- * The last two are the ones the team's own tests verified (docs/design-docs/power-capping-reference.md): keep the rack inside
+ * The last two are the power capping pair (docs/design-docs/power-cooling-ladders.md): keep the rack inside
  * the power it is allotted with the least loss of work, and hold the servers up when the cooling falls short.
  */
 import type { BlueprintIndex, Domain, Entity } from "@terrarium/core/world";

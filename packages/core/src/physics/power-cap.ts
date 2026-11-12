@@ -1,6 +1,6 @@
 /**
- * Power capping at rack level (REQ-107, ADR-0130, docs/design-docs/power-capping-reference.md): given the power a rack may
- * draw, how to split it over its servers. Two ways, the two baselines of the reference: 균등 (everyone gets the same share,
+ * Power capping at rack level (REQ-107, ADR-0130, docs/design-docs/power-cooling-ladders.md): given the power a rack may
+ * draw, how to split it over its servers. Two ways, the two baselines: 균등 (everyone gets the same share,
  * what a server does not need goes to the others) and 부하 비례 (the share follows what each server asks for above idle).
  * A cap never goes below a server's idle power, so a limit under the idle sum cannot be kept; `kept` says so.
  */
