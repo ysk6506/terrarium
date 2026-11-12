@@ -2,23 +2,18 @@
 title: UX Honeycomb 측정
 kind: guide
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - harness/src/ux/score.ts
   - tests/e2e/ux/probes-voice.ts
   - tests/e2e/ux/probes-detail.ts
 covers_hash: 87255ef1b8636946
 verification_log:
-  - "2026-11-11: 2026-11-11: 호버 탐침이 포인터를 직접 옮기고, 값 탐침이 포크의 원본을 읽는 것을 코드와 대조해 맞음 (ADR-0141)"
-  - "2026-11-11: 2026-11-11: 러너 측정 결과와 cancel 여정의 느린 세계를 반영 (ADR-0141)"
-  - "2026-11-11: 2026-11-11: 기록을 작업 로그에도 찍는 것을 반영 (ADR-0141)"
-  - "2026-11-11: 여정 표에 repeat(7)를 더하고 fork 설명과 여정 수를 코드(JOURNEYS, JOURNEY_BUDGETS)와 대조"
-  - "2026-11-11: CI 설명을 조각·여정 묶음 다섯·점수 파일 비커밋·UX004 알림으로 고침 (ADR-0175)"
-  - "2026-11-11: 여정 표에 repeat(7)를 더하고 fork 설명과 여정 수를 코드(JOURNEYS, JOURNEY_BUDGETS)와 대조"
   - "2026-11-11: result page split into tabs (ADR-0171); checked against covered code"
   - "2026-11-11: share budget 4, result tabs (ADR-0171)"
   - "2026-11-11: keyboard probe uses the export dialog; share budget 4"
   - "2026-11-11: keyboard probe uses the export dialog; share budget 4"
+  - "2026-11-12: 탐침 조각의 먼저 돌리는 여정에 small 묶음을 더함 (ADR-0175)"
 ---
 # UX를 숫자로 재는 법 (REQ-041, [ADR-0031](adr/0031-ux-honeycomb-measurement.md))
 
@@ -35,7 +30,7 @@ Peter Morville의 UX Honeycomb 7개 면을 각각 0~100점으로 자동 측정�
 | `pnpm ux ratchet` | 마지막 측정에서 2점을 뺀 값으로 면별 하한(`harness/config/ux-floor.json`)을 올린다. 내리지 않는다. |
 | `pnpm ux check` | `pnpm check`가 돌리는 검사. 브라우저를 열지 않고 기록만 본다. |
 
-CI는 둘로 나뉜다(REQ-114, [ADR-0141](adr/0141-ux-journeys-gate-and-measure.md), [ADR-0175](adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md)): `ux-journeys`는 같은 여정 코드를 다섯 묶음(flow, build, small, own, topology)으로 돌리는 **게이트**이고, `ux-measure`는 측정을 아홉 조각(`tests/e2e/ux/parts.ts`: 여정 묶음마다 하나, 탐침 넷)으로 나눠 동시에 돌린 뒤 한 작업이 `pnpm ux merge`로 모아 점수를 내는 **게이트 아닌** 작업이다(TD-0004). 탐침 조각은 `build` 여정과 `flow` 묶음을 먼저 돌려(기록하지 않고) 읽을 세계와 실험을 만든다. 기록 파일(`ux-score.json`)은 변경마다 커밋하지 않는다: 이 변경의 점수는 `ux-measure` 작업 요약과 아티팩트에 나오고, 하한(`UX001`)은 방금 잰 값으로 판정한다. 저장소의 기록은 5시간마다 도는 정리 작업이 main에서 새로 재서 올린다. 기록이 낡았다는 검사(`UX004`)는 알림 한 줄이다.
+CI는 둘로 나뉜다(REQ-114, [ADR-0141](adr/0141-ux-journeys-gate-and-measure.md), [ADR-0175](adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md)): `ux-journeys`는 같은 여정 코드를 다섯 묶음(flow, build, small, own, topology)으로 돌리는 **게이트**이고, `ux-measure`는 측정을 아홉 조각(`tests/e2e/ux/parts.ts`: 여정 묶음마다 하나, 탐침 넷)으로 나눠 동시에 돌린 뒤 한 작업이 `pnpm ux merge`로 모아 점수를 내는 **게이트 아닌** 작업이다(TD-0004). 탐침 조각은 `build` 여정과 `flow`, `small` 묶음을 먼저 돌려(기록하지 않고) 읽을 세계와 실험을 만든다. 기록 파일(`ux-score.json`)은 변경마다 커밋하지 않는다: 이 변경의 점수는 `ux-measure` 작업 요약과 아티팩트에 나오고, 하한(`UX001`)은 방금 잰 값으로 판정한다. 저장소의 기록은 5시간마다 도는 정리 작업이 main에서 새로 재서 올린다. 기록이 낡았다는 검사(`UX004`)는 알림 한 줄이다.
 
 UI를 바꿨다면 `pnpm ux`로 점수를 볼 수 있다(저장소의 기록이 낡으면 `UX004` 알림이 나오지만 빨강은 아니다). 출력에서 100%가 아닌 항목이
 "무엇을 고쳐야 하는지"이고, `note:` 줄이 구체적인 화면과 요소를 말해 준다.

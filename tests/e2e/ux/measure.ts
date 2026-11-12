@@ -8,7 +8,7 @@
  * earlier ones of the group made, so each group can run on its own fresh server.
  *   tsx tests/e2e/ux/measure.ts --part <name> --out part.json
  * `--part` runs one slice of the measurement on a server of its own (ADR-0175): a group of journeys or some probes. The
- * probes read what the journeys left behind, so a probe slice first runs the `build` journey and the `flow` group
+ * probes read what the journeys left behind, so a probe slice first runs the `build` journey, the `flow` and `small` groups
  * without recording them. `pnpm ux merge` puts the slices together into the same file a whole run writes.
  */
 import { writeFileSync } from "node:fs";
@@ -43,8 +43,19 @@ const wanted = part
   : group
     ? JOURNEY_GROUPS[group]
     : only;
-/** What a probe slice runs first, unrecorded: the world and the experiments the probes look at. */
-const PRELUDE = [...(JOURNEY_GROUPS.build ?? []), ...(JOURNEY_GROUPS.flow ?? [])];
+/**
+ * What a slice runs first, unrecorded (ADR-0175). The probes look at a server that has had the journeys run on it: a
+ * world, a scenario, experiments, and several worlds (a screen with one world offers a default and another button, a
+ * screen with several does not), so a probe slice runs the `build` journey, the `flow` and `small` groups.
+ * The `flow` slice needs only the world that `build` makes.
+ */
+const PRELUDE = part?.probes
+  ? [
+      ...(JOURNEY_GROUPS.build ?? []),
+      ...(JOURNEY_GROUPS.flow ?? []),
+      ...(JOURNEY_GROUPS.small ?? []),
+    ]
+  : [...(JOURNEY_GROUPS.build ?? [])];
 const recorded = JOURNEYS.filter(([id]) => !wanted || wanted.includes(id));
 const chosen = part?.prelude
   ? JOURNEYS.filter(([id]) => PRELUDE.includes(id) || recorded.some(([r]) => r === id))

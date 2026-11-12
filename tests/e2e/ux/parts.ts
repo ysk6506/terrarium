@@ -1,7 +1,7 @@
 /**
  * The slices of a measurement that CI runs side by side (ADR-0175). `groups` are journey groups whose results the slice
  * records; `fresh` also looks at the empty and error screens on a server nothing has run on; `prelude` runs the `build`
- * journey and the `flow` group first so the probes find a world, a scenario and experiments (unrecorded); `probes`
+ * journey (and, for the probes, the `flow` and `small` groups) first so the probes find what the journeys leave (unrecorded); `probes`
  * name the probes of the slice. Every journey and every probe is in exactly one slice.
  */
 export interface Part {
