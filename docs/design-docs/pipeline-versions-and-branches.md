@@ -5,6 +5,10 @@ status: active
 last_verified: 2026-11-11
 verification_log:
   - "2026-11-11: 처음 씀 (ADR-0166). source-management.md 3·5절의 안전장치·세계 버전, ADR-0154의 행 저장과 대조"
+follows:
+  - docs/design-docs/source-management.md
+  - docs/design-docs/glossary-data.md
+follows_hash: 13edb38669a5cd47
 ---
 # 파이프라인의 버전과 브랜치 (REQ-115·116 예정, ADR-0166)
 
