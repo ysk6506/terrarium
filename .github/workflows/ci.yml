@@ -2,6 +2,7 @@
 # Gating: lint-types, test (shards), test-heavy + test-summary, structure, ux-journeys. The `gate` job is the one required check.
 # A pull request whose changed files are all documents takes the light path (ADR-0173): `changes` decides, the heavy jobs are
 # skipped, and structure + docs-tests run instead. Anything else, and every push to main, takes the full path.
+# The non-gating jobs (coverage, ux-parts) start after lint-types: the runners are few, and the gating jobs come first (ADR-0195).
 # Non-gating, with a debt item each: coverage + coverage-floors (TD-0002), ux-measure (TD-0004). Coverage is not collected by
 # the gating test shards: instrumented, the longest shard took more than twice as long and tests hit their time limit (ADR-0195).
 name: ci
@@ -184,7 +185,7 @@ jobs:
   # shards, with a longer timeout, on a few runners (ADR-0195). Every spec file is in exactly one of its shards.
   # Non-gating until TD-0002 (due 2026-11-21) is closed: the floors have not been measured since 2026-11-07.
   coverage:
-    needs: changes
+    needs: [changes, lint-types]
     if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -206,7 +207,7 @@ jobs:
 
   coverage-floors:
     needs: [changes, coverage]
-    if: always() && needs.changes.result == 'success' && needs.changes.outputs.docs_only != 'true'
+    if: always() && needs.changes.result == 'success' && needs.changes.outputs.docs_only != 'true' && needs.coverage.result != 'skipped'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     continue-on-error: true # TD-0002: coverage floors are not gating until every unit meets its floor (due 2026-11-21)
@@ -250,67 +251,6 @@ jobs:
             coverage-gaps.txt
             docs/generated/coverage-record.json
             coverage/coverage-summary.json
-
-  # TEMPORARY (ADR-0195 proof, removed before the change is reported): one real browser, one failed click, the real dump.
-  evidence-demo:
-    needs: changes
-    if: needs.changes.outputs.docs_only != 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-      - uses: ./.github/actions/browser
-      - name: A failed step in a real browser, with secrets planted in the headers, the cookie, the address and the page
-        env:
-          TERRARIUM_UX_ADMIN_TOKEN: planted-secret-7f3a91c2e4
-        run: |
-          cat > demo-evidence.ts <<'EOF'
-          import { createServer } from "node:http";
-          import { chromium } from "playwright";
-          import { dump, watch } from "./tests/e2e/ux/evidence";
-          const SECRET = process.env.TERRARIUM_UX_ADMIN_TOKEN as string;
-          const page_html = `<h1>실험 결과예요</h1><p>합격했어요</p><button id="go">시작</button><script>
-            fetch("/api/worlds?token=${SECRET}", { headers: { authorization: "Bearer ${SECRET}" } });
-            fetch("/api/experiments", { method: "POST", body: JSON.stringify({ token: "${SECRET}" }) });
-            fetch("/api/boom");
-            console.error("request failed for ${SECRET}");
-          </script>`;
-          const server = createServer((req, res) => {
-            if (req.url?.startsWith("/api/")) {
-              res.writeHead(req.url.includes("boom") ? 500 : 200, { "content-type": "application/json", "x-terrarium-proxy-secret": SECRET });
-              res.end(JSON.stringify({ token: SECRET }));
-            } else {
-              res.writeHead(200, { "content-type": "text/html; charset=utf-8", "set-cookie": `sid=${SECRET}` });
-              res.end(page_html);
-            }
-          });
-          await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
-          const port = (server.address() as { port: number }).port;
-          const browser = await chromium.launch();
-          const page = await browser.newPage();
-          const watcher = watch(page);
-          await page.goto(`http://127.0.0.1:${port}/experiments/e1?token=${SECRET}&tab=result`);
-          await page.waitForTimeout(800);
-          let lines: string[] = [];
-          try {
-            await page.click("#missing", { timeout: 1500 });
-          } catch (err) {
-            const note = (err as Error).message.split("\n")[0] ?? "";
-            lines = await dump(page, watcher, { id: "demo", note, dir: "ux-evidence" });
-          }
-          for (const l of lines) console.log(l);
-          await browser.close();
-          server.close();
-          if (lines.join("\n").includes(SECRET)) { console.log("LEAK: the secret is in the dump"); process.exit(1); }
-          console.log("no secret in the dump");
-          EOF
-          node_modules/.bin/tsx demo-evidence.ts
-          ls -la ux-evidence
-      - if: always()
-        uses: ./.github/actions/ux-evidence
-        with:
-          name: ux-evidence-demo
 
   # The light path (ADR-0173): the tests that read the documents, since the full test run is skipped. First it checks
   # again, with a different pattern than `changes`, that the diff holds nothing but documents.
@@ -391,7 +331,7 @@ jobs:
   # same scores a single run gives and prints the record. The record is not committed with each change: the cleanup job
   # measures main and commits docs/generated/ux-score.json. A change reads its own scores in this job's summary.
   ux-parts:
-    needs: changes
+    needs: [changes, lint-types]
     if: needs.changes.outputs.web == 'true' && needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -433,7 +373,7 @@ jobs:
 
   ux-measure:
     needs: [changes, ux-parts]
-    if: always() && needs.changes.result == 'success' && needs.changes.outputs.web == 'true' && needs.changes.outputs.docs_only != 'true'
+    if: always() && needs.changes.result == 'success' && needs.changes.outputs.web == 'true' && needs.changes.outputs.docs_only != 'true' && needs.ux-parts.result != 'skipped'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     continue-on-error: true # TD-0004: the UX score misses its floor on the runner, so it is a record until that is closed

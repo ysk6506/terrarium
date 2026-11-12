@@ -32,7 +32,7 @@ touches_protected:
   - docs/design-docs/adr/0173-docs-only-changes-take-a-light-ci-path.md
   - docs/design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md
 amends_tests: []
-decision_hash: cba9a6eb3e48602b
+decision_hash: f9c8b40ff5eeb887
 ---
 # ADR-0195 커버리지는 게이트 조각 밖에서 네 조각으로 재고, 실패한 여정 단계는 증거를 남기고, 가벼운 경로는 풀 리퀘스트 자신의 차이로 가른다
 
@@ -67,7 +67,8 @@ decision_hash: cba9a6eb3e48602b
 5. **실패한 여정 단계는 그 실패에 한해 증거를 남긴다.** `perform`(`tests/e2e/ux/journeys.ts`)이 여정이 던졌을 때, 코드는 `tests/e2e/ux/evidence.ts`가 한다: 주소(길과 질의 칸의 이름만, 값은 지운다), 보이는 화면 글(접어서 3,000자까지), 마지막 API 요청 20개의 `+초 방법 길 상태코드`(요청이 실패하면 `failed`), 콘솔 오류와 잡히지 않은 오류(스무 줄까지), 스크린샷 한 장이다. 요청과 응답의 본문과 헤더는 읽지 않는다. 출력 전에 이름이 `TOKEN`, `SECRET`, `PASSWORD`, `COOKIE`, `AUTH`, `API_KEY` 같은 환경 변수의 값(서버의 관리자 토큰과 프록시 비밀이 이 이름으로 온다), `Bearer` 뒤의 값, 공유 링크(`/r/…`)와 실행 툴 링크(`/mcp/runs/…/…`)의 토큰, 40자 넘는 불투명 문자열을 `[redacted]`로 바꾼다. 줄은 `evidence: `로 시작하고 CI의 작업 로그에 그대로 찍힌다(`pnpm ux journeys`는 이 줄을 넘겨 준다). 스크린샷은 `TERRARIUM_UX_EVIDENCE_DIR`(CI는 `ux-evidence`)에 쓰고 비어 있으면 쓰지 않는다. 증거를 만들다 어긋나도 던지지 않고 그 부분이 "unavailable"이라고 적힌다. 제한 시간, 재시도, 여정 자체는 바꾸지 않는다. 시험(`tests/spec/ux-evidence.test.ts`)이 헤더, 본문, 주소, 화면 글에 알아볼 수 있는 비밀을 심어 두고 덤프에 없음을 확인한다. 스크린샷에는 화면에 보인 것이 그대로 찍힌다.
 6. **스크린샷 올리기는 작업을 실패시킬 수 없다.** 합성 액션 `.github/actions/ux-evidence`가 `ux-evidence/`를 올린다. 단계가 `continue-on-error`이고 폴더가 없으면 조용히 넘어간다(`if-no-files-found: ignore`). 로그에 이미 글이 있는 실패의 보조 그림이라서, 올리기가 실패해도 여정의 결과를 바꾸면 안 된다. `ux-journeys`와 `ux-parts`가 쓴다. (ADR-0175의 5번은 올리기 단계를 아예 없앴는데, 그때의 아티팩트는 로그와 중복이었다. 스크린샷은 로그에 없다.)
 7. **설치와 빌드 시간을 쟀다.** 작업마다 `actions/checkout` 1~2초, 의존성을 까는 `setup` 중앙값 7초(저장소 캐시 약 143MB를 받고 `pnpm install`이 1~2초), 브라우저가 드는 작업은 `browser` 중앙값 6~7초(Playwright 캐시 약 271MB)다. 웹 빌드는 `ux-journeys`와 `ux-parts` 열다섯 작업이 각자 하며 6~8초다. 캐시는 이미 `actions/setup-node`의 `cache: pnpm`(잠금 파일 해시 키)과 Playwright 버전 키로 쓰고 있다. 작업이 30~575초 도는 데 견주어 표준 키를 바꾸거나 빌드 결과를 캐시해서 줄일 몫이 8초 안팎이라 바꾸지 않는다.
-8. **구조 규칙 한 줄.** `tests.spec`이 `tests.e2e`를 쓸 수 있다. 입구는 `tests/e2e/index.ts`로 증거 코드만 내놓는다(`harness`는 여전히 아무 단위도 못 쓴다).
+8. **게이트가 아닌 작업은 `lint-types`가 끝난 뒤에 시작한다.** `coverage`(조각 넷)와 `ux-parts`(열)가 `needs: [changes, lint-types]`를 갖는다. 러너는 동시에 스무 개 안팎인데 게이트 작업만 스물둘이어서(`changes` 하나, `lint-types`, 시험 조각 12, `test-heavy`, `test-list`, `ux-journeys` 다섯, `structure`), 같은 때 시작하는 게이트가 아닌 작업 열넷이 `test-list`(가장 긴 게이트 작업, 약 220초)를 줄에서 밀어 낸다. 풀 리퀘스트 둘이 겹치면 더하다. 게이트 작업은 대부분 처음 10초 안에 시작하고 `lint-types`는 40초쯤에 끝나므로, 그 뒤에 시작해도 게이트가 아닌 작업의 끝은 40초쯤만 늦는다. 린트가 빨간 변경은 이 작업들을 건너뛴다(`coverage-floors`와 `ux-measure`는 이때 돌지 않는다). `gate`의 기대 결과 표는 이 작업들을 넣지 않으니 그대로다.
+9. **구조 규칙 한 줄.** `tests.spec`이 `tests.e2e`를 쓸 수 있다. 입구는 `tests/e2e/index.ts`로 증거 코드만 내놓는다(`harness`는 여전히 아무 단위도 못 쓴다).
 
 ## 이유
 계측 아래에서 시험이 깨지는 것은 20초 제한과 성능 단언이 계측되지 않은 코드를 가정하기 때문이다. 제한을 늘리면 게이트의 신호(제때 끝난다)를 잃는다. 게이트를 느리게 하지 않고 줄일 수 있는 것은 게이트 밖의 작업 수와 줄 서는 시간이다. 가벼운 경로의 판정은 한 번 틀리면 코드가 시험 없이 합쳐지는 쪽이 아니라(두 번째 눈이 있다) 쓸데없이 오래 걸리는 쪽으로만 기울므로, 합친 참조의 모양에 기대지 않고 사건이 알려 주는 두 점에 직접 기댄다. 증거는 로그에 글로 남겨야 아티팩트 로그인 없이 읽는다.
