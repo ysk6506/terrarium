@@ -71,7 +71,7 @@ describe("the operation screens word each measure by what is known of it [REQ-09
       watchIntervalS: 300,
     });
     expect(withTokens.find((f) => f.label === "사건당 토큰")?.value).toBe("12,346");
-    expect(withTokens.find((f) => f.label === "사건당 툴 호출")?.value).toBe("5.0회");
+    expect(withTokens.find((f) => f.label === "사건당 툴 호출")?.value).toBe("5.0번");
     expect(withTokens.find((f) => f.label === "조용할 때 쓴 호출")?.hint).toContain("약 2,000개");
     expect(withTokens.find((f) => f.label === "감시 주기")?.value).toBe("5분");
   });
@@ -86,7 +86,7 @@ describe("the operation screens word each measure by what is known of it [REQ-09
     expect(
       paceNote({ hours: 24, pace: { mode: "fast", speed: 60 } } as Parameters<typeof paceNote>[0]),
     ).toContain("공식 점수 아님");
-    expect(limitNote("tool_budget", { maxToolCalls: 300 })).toContain("300회 상한");
+    expect(limitNote("tool_budget", { maxToolCalls: 300 })).toContain("300번 상한");
     expect(limitNote("tool_budget", undefined)).toBeUndefined();
     expect(limitNote("time_limit", { maxToolCalls: 300 })).toBeUndefined();
   });

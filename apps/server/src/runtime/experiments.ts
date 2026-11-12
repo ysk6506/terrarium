@@ -405,8 +405,8 @@ export class Experiments {
     const seeds = req.seeds ?? Array.from({ length: req.count ?? 1 }, (_, i) => top + i + 1);
     const again = seeds.filter((s) => used.has(s));
     if (again.length > 0)
-      throw new InvalidInputError("이미 돌린 시드예요", [
-        { path: "seeds", message: `시드 ${again.join(", ")}는 이미 있어요` },
+      throw new InvalidInputError("이미 돌린 상황이에요", [
+        { path: "seeds", message: `상황 ${again.join(", ")}번은 이미 있어요` },
       ]);
     return seeds;
   }

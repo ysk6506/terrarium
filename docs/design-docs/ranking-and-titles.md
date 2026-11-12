@@ -2,7 +2,7 @@
 title: 세계 인기·좋아요·칭호와 계급 모델
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/experiments/popularity.ts
   - packages/core/src/experiments/community.ts
@@ -20,12 +20,12 @@ covers:
   - apps/web/src/ui/pages/world-board.tsx
   - apps/web/src/ui/pages/world-card.tsx
 verification_log:
-  - "2026-11-07: REQ-109: 코드와 대조했다. 해당 문장을 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: REQ-109: 코드와 대조했다"
   - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
   - "2026-11-11: 2026-11-11: 좋아요 수의 title을 더한 것을 코드와 대조해 맞음 (ADR-0141)"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
-covers_hash: 9e93b3430a073b84
+  - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
+covers_hash: bb6057de457dec6b
 ---
 # 세계 인기·좋아요·칭호와 계급 모델 (REQ-101, [ADR-0122](adr/0122-world-popularity-likes-titles.md))
 
@@ -68,7 +68,7 @@ covers_hash: 9e93b3430a073b84
 | 실험 1,000번 | 만든 실험 1,000개 | 1,000번째 | 같음 |
 | 남이 쓰는 세계 | 다른 사람이 내 세계로 만든 실험 10개 이상 | 10번째 실험이 만들어진 때 | 실험과 세계의 만든 사람 |
 | 남이 쓰는 시나리오 | 다른 사람이 내 시나리오로 만든 실험 10개 이상 | 10번째 | 실험과 시나리오의 만든 사람 |
-| 첫 복구 | 에이전트가 내 시나리오를 처음 통과했다 | 합격한 실행이 끝난 때 | 실행 `result.score.passed`, `finishedAt` |
+| 첫 복구 | 에이전트가 내 시나리오에 처음 합격했다 | 합격한 실행이 끝난 때 | 실행 `result.score.passed`, `finishedAt` |
 | 꼼꼼한 출제자 | 변별력 점검에서 고칠 곳이 없던 내 시나리오 5개 | 5번째가 처음 깨끗하게 통과한 때 | `calibration_marks` |
 | 좋아요 10 | 내 세계가 다른 사람에게 좋아요 10번 | 10번째 좋아요가 눌린 때 | `world_likes` |
 

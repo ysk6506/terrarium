@@ -97,7 +97,7 @@ export async function invalid(site: Site, notes: string[]): Promise<Tally> {
     await page.keyboard.press("Escape");
     await open(page, site.base, "/experiments/new");
     await page.getByLabel("몇 개 돌릴까요").fill("99");
-    note("실행 횟수가 너무 많을 때", await rejects(page, "실험 시작"));
+    note("상황이 너무 많을 때", await rejects(page, "실험 시작"));
   });
   await asVisitor(site, { name: null }, async (v) => {
     await open(v.page, site.base, "/");

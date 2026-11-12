@@ -11,7 +11,7 @@ export const DB_CONDITION_FIELDS: Readonly<
     health: HEALTH,
     primary: version("프라이머리 인스턴스"),
     splitBrain: bool("스플릿 브레인"),
-    failovers: num("승격 횟수", "회"),
+    failovers: num("승격 수", "번"),
     lastLostS: num("마지막 승격에서 잃은 쓰기", "초"),
   },
   db_instance: {

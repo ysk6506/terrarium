@@ -54,7 +54,7 @@ function Row({
           {row.score && row.score.n > 1 && <ScoreBar summary={row.score} width={110} />}
         </div>
       </td>
-      <td className="num">{meanText(row.calls, "회", 0)}</td>
+      <td className="num">{meanText(row.calls, "번", 0)}</td>
       <td className="num">
         {row.timeToDiagnosis ? formatDuration(row.timeToDiagnosis.mean) : "—"}
       </td>

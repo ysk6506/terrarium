@@ -2,7 +2,7 @@
 title: 세계 소스 — 생성과 가져오기
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/sources/assembly.ts
   - packages/core/src/sources/assembly-site.ts
@@ -19,12 +19,12 @@ covers:
   - packages/core/src/sources/realimport/mapping.ts
   - packages/core/src/sources/realimport/synthesize.ts
 verification_log:
-  - "2026-11-07: REQ-109: 크기 입력 서술을 고쳤다"
   - "2026-11-07: REQ-109: 코드와 대조했다"
   - "2026-11-07: 2026-11-07: REQ-111(ADR-0134): 기반 랙·서버 수 합계·빌더 오른쪽 아래 칩을 코드와 대조해 고쳤고 나머지는 그대로 맞다"
   - "2026-11-07: 2026-11-07: REQ-111 코드 변경 후 다시 대조: 그대로 맞다"
   - "2026-11-11: 2026-11-11: 가중 뽑기 세 곳(room, campus-rack, campus-plan)의 도달할 수 없던 끝 줄을 정리했을 뿐 결과는 같다. 문서의 서술은 그대로 맞다"
-covers_hash: 6d84dbf36a614cd5
+  - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
+covers_hash: 595dd0e361f04343
 ---
 # 세계 소스 (REQ-009~013, REQ-035, REQ-043~049)
 
@@ -148,11 +148,11 @@ RealitySource(읽기 전용) → classify(매핑으로 역할 판정) → resolv
 - **배치**: 관계(LOCATED_IN 등)가 먼저, 위치 속성(`floor_info`, `rack_row`, `u_position` …)이 다음, 둘 다 없으면 "미배치" 랙.
 - **가정**: 그래프에 없는 전력 계통, 냉방 관계가 없는 랙, 냉방기가 없는 서버룸. 더한 것은 `synthesized`로 표시하고 보고서에 문장으로 남긴다.
   실제 냉방 용량이 부족하면 늘리지 않고 경고한다.
-- **보고서**: 소스에 있는 것, 만들어진 것, 모르는 라벨·관계(매핑 갱신 후보), 일부러 무시한 것(VDS, PortGroup, PEERS_WITH),
+- **보고서**: 소스에 있는 것, 만들어진 것, 모르는 라벨·링크(매핑 갱신 후보), 일부러 무시한 것(VDS, PortGroup, PEERS_WITH),
   필터로 빠진 것, 범위 밖, 추정 개수, 가정, 배치 메모, 검증 결과.
 
 ### KG 스키마가 바뀌면
 
-1. 가져오기 보고서의 `unknown`(모르는 라벨·관계)과 `unmatched`를 본다.
-2. 매핑에 라벨·관계 이름을 더하거나(변형은 목록에 추가) 새 규칙을 둔다. 코드는 고치지 않는다.
+1. 가져오기 보고서의 `unknown`(모르는 라벨·링크)과 `unmatched`를 본다.
+2. 매핑에 라벨·링크 이름을 더하거나(변형은 목록에 추가) 새 규칙을 둔다. 코드는 고치지 않는다.
 3. `sampleGraph()`에 같은 모양을 넣고 테스트를 추가한다.

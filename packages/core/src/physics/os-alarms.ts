@@ -33,7 +33,7 @@ const RULES: readonly Rule[] = [
       ? [
           "os_process_down",
           "critical",
-          `${name}에서 ${p.name} 프로세스가 죽었고 재시작 ${p.restarts}회째예요`,
+          `${name}에서 ${p.name} 프로세스가 죽었고 재시작 ${p.restarts}번째예요`,
         ]
       : undefined;
   },

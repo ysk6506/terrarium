@@ -369,7 +369,7 @@ export const SeedsSchema = z
   )
   .min(1)
   .max(MAX_SEEDS)
-  .refine((xs) => new Set(xs).size === xs.length, { message: "같은 시드가 두 번 있어요" });
+  .refine((xs) => new Set(xs).size === xs.length, { message: "같은 상황이 두 번 있어요" });
 
 /** Times each seed is run (ADR-0158). */
 export const RepeatsSchema = z.number().int().min(1).max(MAX_REPEATS);

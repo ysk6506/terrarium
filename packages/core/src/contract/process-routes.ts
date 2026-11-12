@@ -33,7 +33,7 @@ export const PROCESS_ROUTES = {
     method: "GET",
     path: "/api/worlds/:id/ontology",
     summary:
-      "이 세계를 E2E로 가려면: 시나리오 정의에서 뽑은 Object·Link·Action 요구, 고른 실험에서 실제로 쓴 것",
+      "이 세계에 필요한 액션: 시나리오 정의에서 뽑은 객체·링크·액션 요구, 고른 실험에서 실제로 쓴 것",
     query: WorldOntologyQuery,
     produces: json,
     policy: "signedIn",

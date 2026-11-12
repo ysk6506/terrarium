@@ -41,7 +41,7 @@ describe("the scenario canvas [REQ-034]", () => {
     expect(fault?.summary).toMatch(/: 냉방기 정지$/);
     expect(nodes.find((n) => n.type === "start")?.hasInput).toBe(false);
     expect(nodes[1]?.warnings).toEqual(["주의"]);
-    expect(nodes.find((n) => n.type === "agent_task")?.summary).toMatch(/^툴 \d+회, \d+분 안에$/);
+    expect(nodes.find((n) => n.type === "agent_task")?.summary).toMatch(/^툴 \d+번, \d+분 안에$/);
   });
 
   test("blocks are added, wired, rewired, edited and removed — unusable ones say why", () => {
@@ -217,9 +217,9 @@ describe("the scoring sheet [REQ-034]", () => {
       "원인 ? / 고장 ?",
       "어느 장비든 심각 알람이 없어요",
       "재시작",
-      "전원 끄기 1회마다 −20점",
+      "전원 끄기 1번마다 −20점",
       "30분 안에",
-      "20회 이하",
+      "20번 이하",
     ]);
     doc = sc.removeExpectation(doc, "x2");
     expect(sc.sheetTotal(doc).note).toBe(
