@@ -34,6 +34,13 @@ const PLACES = ["vm", "server"];
 
 const roleOf = (props: Record<string, unknown>) => props.role;
 
+/** A standby that can take the service now: its machine is not one of the switched-off servers of a cold DR site. */
+function standbyReady(index: BlueprintIndex, place: string): boolean {
+  const e = index.find(place);
+  const machine = e?.kind === "vm" ? index.find(index.outgoing(e.id, "runs_on")[0]?.to ?? "") : e;
+  return machine?.props.adminOff !== true;
+}
+
 /**
  * The services of the world that run on a VM or a server. Those with a standby come first (there is always a way to
  * move them, even when the machine cannot be fixed), then the preferred kinds, then by id.
@@ -49,7 +56,9 @@ function candidates(index: BlueprintIndex, prefer: readonly string[]): Pick[] {
       .filter((l) => roleOf(l.props) === "active")
       .map((l) => index.find(l.to))
       .find((e): e is Entity => e !== undefined && PLACES.includes(e.kind));
-    const hasStandby = links.some((l) => roleOf(l.props) === "standby");
+    const hasStandby = links.some(
+      (l) => roleOf(l.props) === "standby" && standbyReady(index, l.to),
+    );
     return host ? [{ service, host, hasStandby }] : [];
   });
   return picks.sort(
@@ -151,7 +160,7 @@ function template(plan: Plan): ScenarioTemplate {
       pick(index)
         ? undefined
         : plan.needsStandby
-          ? "대기 쪽이 있는 서비스가 이 세계에 없어요"
+          ? "켜져 있는 대기 쪽이 있는 서비스가 이 세계에 없어요 (꺼져 있는 DR 사이트로는 서비스를 옮겨도 살아나지 못해요)"
           : "VM이나 서버 위에서 도는 서비스가 이 세계에 없어요",
     build(index, worldId) {
       const p = pick(index) as Pick;

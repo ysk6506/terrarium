@@ -14,12 +14,16 @@ export interface Truth {
   readonly service: string;
   /** The entity of the sheet's first required action. */
   readonly required: string;
+  /** The entity of every one of the sheet's required actions, in the sheet's order. */
+  readonly requiredAll: readonly string[];
   readonly answerRoot: string;
   readonly answerType: string;
   /** The servers a firmware sheet covers: the servers its final-state conditions name. */
   readonly servers: readonly string[];
   /** The servers the sheet wants kept powered; every other server may be shed. */
   readonly critical: readonly string[];
+  /** The UPS whose load the sheet wants held down (the one entity a `loadW` condition names), or "". */
+  readonly loadedUps: string;
 }
 
 type Node = ScenarioDoc["nodes"][number];
@@ -60,6 +64,18 @@ function poweredIn(doc: ScenarioDoc): string[] {
   return out;
 }
 
+/** The entity whose `loadW` a final-state condition caps. */
+function loadedIn(doc: ScenarioDoc): string {
+  let found = "";
+  const walk = (c: unknown): void => {
+    const n = c as { kind?: string; entity?: string; field?: string; of?: unknown[] };
+    if (n.kind === "state" && n.field === "loadW" && n.entity && !found) found = n.entity;
+    for (const inner of n.of ?? []) walk(inner);
+  };
+  for (const e of doc.expectations) if (e.kind === "final_state") walk(e.condition);
+  return found;
+}
+
 /** The servers of the world that the sheet's final-state conditions name. */
 export function namedServers(doc: ScenarioDoc, servers: readonly string[]): string[] {
   const ids = new Set<string>();
@@ -89,19 +105,22 @@ export function truthOf(doc: ScenarioDoc): Truth {
     target: str(n.params.target),
     params: Object.fromEntries(Object.entries(n.params).map(([k, v]) => [k, String(v)])),
   }));
-  const required = doc.expectations.find((e) => e.kind === "required_action") as
-    | { target?: string }
-    | undefined;
+  const requiredAll = doc.expectations.flatMap((e) =>
+    e.kind === "required_action" && e.target ? [e.target] : [],
+  );
+  const required = requiredAll[0];
   return {
     key,
     target: nodesOf[0]?.target ?? d.rootCause[0] ?? "",
     nodes: nodesOf,
     peer: str(mine[0]?.params.peer),
     service: serviceOf(doc),
-    required: required?.target ?? "",
+    required: required ?? "",
+    requiredAll,
     answerRoot: d.rootCause[0] as string,
     answerType: key,
     critical: poweredIn(doc),
+    loadedUps: loadedIn(doc),
     servers: [],
   };
 }

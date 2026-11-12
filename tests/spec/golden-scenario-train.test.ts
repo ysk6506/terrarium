@@ -59,7 +59,7 @@ const EXPECTED: Readonly<Record<string, string>> = {
   "power-cap-rack-limit@train:score": "100 1125:039674f595049507",
   "power-cap-rack-limit@train:world": "85928:11647e15e2026006",
   "power-cap-cooling-short@train:score": "100 1141:13e647b1b864ed05",
-  "power-cap-cooling-short@train:world": "111422:05fea5c3081ef613",
+  "power-cap-cooling-short@train:world": "111424:1bd207c81d187406",
 };
 
 describe("the reference solution gives the recorded score and world on train [REQ-110] [REQ-001]", () => {

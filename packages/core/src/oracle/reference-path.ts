@@ -23,7 +23,7 @@ export interface ReferenceStep {
   readonly tool: string;
   readonly args?: StepArgs;
   /** Run once for every block of the sheet that breaks something (two switches), with `{target}` and `{p.name}` set to each. */
-  readonly forEach?: "targets" | "critical" | "servers" | `alarm:${string}`;
+  readonly forEach?: "targets" | "critical" | "servers" | "required" | `alarm:${string}`;
   /** The read is expected to be refused (a control plane that is down): the refusal is the finding. */
   readonly refused?: boolean;
   /** Steps that run together for each of the `forEach` entities, one entity after another. */

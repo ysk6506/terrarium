@@ -8,17 +8,19 @@ const alarms = read("list_alarms");
  */
 const keepAlive = { ...change("migrate_vm", { vm: "{vmOn}", host: "{haven}" }), when: "{vmOn}" };
 
+/** Only a service with a standby has a place to be moved to. */
+const failover = {
+  ...change("failover_service", { service: "{service}" }),
+  when: "{@service_status/standby/0}",
+};
+
 export const SERVER_PATHS = {
   // bad memory is the server team's: move the VM off the machine, hand it over, wait
   memory_failure: path(
     [alarms, read("service_status", { service: "{service}" })],
     [
       keepAlive,
-      // only a service with a standby has a place to be moved to
-      {
-        ...change("failover_service", { service: "{service}" }),
-        when: "{@service_status/standby/0}",
-      },
+      failover,
       change("escalate", { domain: "server", note: "메모리 불량" }),
       untilTeamDone,
     ],
@@ -27,6 +29,7 @@ export const SERVER_PATHS = {
     [alarms, read("service_status", { service: "{service}" })],
     [
       keepAlive,
+      failover,
       change("escalate", { domain: "network", note: "케이블이 끊겼어요" }),
       untilTeamDone,
     ],

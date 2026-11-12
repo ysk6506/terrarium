@@ -127100,8 +127100,8 @@
   },
   "tests/spec/campus-light.test.ts::tools and scenarios on a light-rack campus [REQ-049] [REQ-033] > %s: builds on servers that exist": {
    "kind": "test",
-   "hash": "c9cc353c75ddf844",
-   "asserts": 3,
+   "hash": "be3d798450927f54",
+   "asserts": 4,
    "literals": [
     "\"%s: builds on servers that exist\"",
     "\"0\"",
@@ -127112,13 +127112,14 @@
     "\"600\"",
     "\"ai-liquid\"",
     "\"generated\"",
+    "\"outage-generator-fails\"",
     "false",
     "false"
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0178-offered-scenario-solved-on-every-world-shape.md"
   },
   "tests/spec/campus-light.test.ts::tools and scenarios on a light-rack campus [REQ-049] [REQ-033] > <suite>": {
    "kind": "support",
@@ -127259,8 +127260,8 @@
   },
   "tests/spec/campus.test.ts::facility scenarios on a generated campus [REQ-033] [REQ-044] [REQ-046] > %s: builds, validates, and the root cause alarms": {
    "kind": "test",
-   "hash": "9215cedd8eb76d45",
-   "asserts": 4,
+   "hash": "9deb16225b0bb424",
+   "asserts": 5,
    "literals": [
     "\"%s: builds, validates, and the root cause alarms\"",
     "\"0\"",
@@ -127273,6 +127274,7 @@
     "\"diagnosis\"",
     "\"generated\"",
     "\"list_alarms\"",
+    "\"outage-generator-fails\"",
     "false",
     "false",
     "true",
@@ -127280,8 +127282,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-29",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0178-offered-scenario-solved-on-every-world-shape.md"
   },
   "tests/spec/campus.test.ts::facility scenarios on a generated campus [REQ-033] [REQ-044] [REQ-046] > <suite>": {
    "kind": "support",
@@ -146938,13 +146940,13 @@
   },
   "tests/spec/golden-scenario-campus.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "9bf9b86d3e45eefd",
+   "hash": "a5ad101b9fe111da",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-11",
-   "amended_by": "0172-offered-scenario-means-reference-solution-reaches-full-score.md"
+   "amended_by": "0178-offered-scenario-solved-on-every-world-shape.md"
   },
   "tests/spec/golden-scenario-campus.test.ts::the reference solution gives the recorded score and world on campus [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",
@@ -147251,13 +147253,13 @@
   },
   "tests/spec/golden-scenario-train.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "301e4ece8234deef",
+   "hash": "955edc1786ac9829",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-11",
-   "amended_by": "0172-offered-scenario-means-reference-solution-reaches-full-score.md"
+   "amended_by": "0178-offered-scenario-solved-on-every-world-shape.md"
   },
   "tests/spec/golden-scenario-train.test.ts::the reference solution gives the recorded score and world on train [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",
@@ -156475,6 +156477,845 @@
    "added": "2026-11-04",
    "amended_by": null
   },
+  "tests/spec/offered-means-campus-cheonan-domain.test.ts::<import:6e2b6568>": {
+   "kind": "support",
+   "hash": "6e2b65686aca10da",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-cheonan-domain.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-cheonan-domain.test.ts::an offered scenario is solved with 100 on the campus preset cheonan, domain [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-cheonan-domain.test.ts::an offered scenario is solved with 100 on the campus preset cheonan, domain [REQ-110] [REQ-111] > every template of this group gives 100 and no error": {
+   "kind": "test",
+   "hash": "38e459f368e715b3",
+   "asserts": 2,
+   "literals": [
+    "\"300000\"",
+    "\"cheonan\"",
+    "\"domain\"",
+    "\"every template of this group gives 100 and no error\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-cheonan.test.ts::<import:6e2b6568>": {
+   "kind": "support",
+   "hash": "6e2b65686aca10da",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-cheonan.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-cheonan.test.ts::an offered scenario is solved with 100 on the campus preset cheonan, rest [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-cheonan.test.ts::an offered scenario is solved with 100 on the campus preset cheonan, rest [REQ-110] [REQ-111] > every template of this group gives 100 and no error": {
+   "kind": "test",
+   "hash": "016355e9dd3fc677",
+   "asserts": 2,
+   "literals": [
+    "\"300000\"",
+    "\"cheonan\"",
+    "\"every template of this group gives 100 and no error\"",
+    "\"rest\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-giheung-domain.test.ts::<import:6e2b6568>": {
+   "kind": "support",
+   "hash": "6e2b65686aca10da",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-giheung-domain.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-giheung-domain.test.ts::an offered scenario is solved with 100 on the campus preset giheung, domain [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-giheung-domain.test.ts::an offered scenario is solved with 100 on the campus preset giheung, domain [REQ-110] [REQ-111] > every template of this group gives 100 and no error": {
+   "kind": "test",
+   "hash": "f8793ebb8b0db0c0",
+   "asserts": 2,
+   "literals": [
+    "\"300000\"",
+    "\"domain\"",
+    "\"every template of this group gives 100 and no error\"",
+    "\"giheung\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-giheung.test.ts::<import:6e2b6568>": {
+   "kind": "support",
+   "hash": "6e2b65686aca10da",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-giheung.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-giheung.test.ts::an offered scenario is solved with 100 on the campus preset giheung, rest [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-giheung.test.ts::an offered scenario is solved with 100 on the campus preset giheung, rest [REQ-110] [REQ-111] > every template of this group gives 100 and no error": {
+   "kind": "test",
+   "hash": "4fd65b11a3f27738",
+   "asserts": 2,
+   "literals": [
+    "\"300000\"",
+    "\"every template of this group gives 100 and no error\"",
+    "\"giheung\"",
+    "\"rest\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-hwaseong-domain.test.ts::<import:6e2b6568>": {
+   "kind": "support",
+   "hash": "6e2b65686aca10da",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-hwaseong-domain.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-hwaseong-domain.test.ts::an offered scenario is solved with 100 on the campus preset hwaseong, domain [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-hwaseong-domain.test.ts::an offered scenario is solved with 100 on the campus preset hwaseong, domain [REQ-110] [REQ-111] > every template of this group gives 100 and no error": {
+   "kind": "test",
+   "hash": "28cf46e51573eac6",
+   "asserts": 2,
+   "literals": [
+    "\"300000\"",
+    "\"domain\"",
+    "\"every template of this group gives 100 and no error\"",
+    "\"hwaseong\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-hwaseong.test.ts::<import:6e2b6568>": {
+   "kind": "support",
+   "hash": "6e2b65686aca10da",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-hwaseong.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-hwaseong.test.ts::an offered scenario is solved with 100 on the campus preset hwaseong, rest [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-hwaseong.test.ts::an offered scenario is solved with 100 on the campus preset hwaseong, rest [REQ-110] [REQ-111] > every template of this group gives 100 and no error": {
+   "kind": "test",
+   "hash": "5ff99594e44007c3",
+   "asserts": 2,
+   "literals": [
+    "\"300000\"",
+    "\"every template of this group gives 100 and no error\"",
+    "\"hwaseong\"",
+    "\"rest\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-onyang-domain.test.ts::<import:6e2b6568>": {
+   "kind": "support",
+   "hash": "6e2b65686aca10da",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-onyang-domain.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-onyang-domain.test.ts::an offered scenario is solved with 100 on the campus preset onyang, domain [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-onyang-domain.test.ts::an offered scenario is solved with 100 on the campus preset onyang, domain [REQ-110] [REQ-111] > every template of this group gives 100 and no error": {
+   "kind": "test",
+   "hash": "5e356f4a976f5e16",
+   "asserts": 2,
+   "literals": [
+    "\"300000\"",
+    "\"domain\"",
+    "\"every template of this group gives 100 and no error\"",
+    "\"onyang\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-onyang.test.ts::<import:6e2b6568>": {
+   "kind": "support",
+   "hash": "6e2b65686aca10da",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-onyang.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-onyang.test.ts::an offered scenario is solved with 100 on the campus preset onyang, rest [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-onyang.test.ts::an offered scenario is solved with 100 on the campus preset onyang, rest [REQ-110] [REQ-111] > every template of this group gives 100 and no error": {
+   "kind": "test",
+   "hash": "f164a25e961ebf64",
+   "asserts": 2,
+   "literals": [
+    "\"300000\"",
+    "\"every template of this group gives 100 and no error\"",
+    "\"onyang\"",
+    "\"rest\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-pyeongtaek-domain.test.ts::<import:6e2b6568>": {
+   "kind": "support",
+   "hash": "6e2b65686aca10da",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-pyeongtaek-domain.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-pyeongtaek-domain.test.ts::an offered scenario is solved with 100 on the campus preset pyeongtaek, domain [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-pyeongtaek-domain.test.ts::an offered scenario is solved with 100 on the campus preset pyeongtaek, domain [REQ-110] [REQ-111] > every template of this group gives 100 and no error": {
+   "kind": "test",
+   "hash": "212da097bdeac617",
+   "asserts": 2,
+   "literals": [
+    "\"300000\"",
+    "\"domain\"",
+    "\"every template of this group gives 100 and no error\"",
+    "\"pyeongtaek\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-pyeongtaek.test.ts::<import:6e2b6568>": {
+   "kind": "support",
+   "hash": "6e2b65686aca10da",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-pyeongtaek.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-pyeongtaek.test.ts::an offered scenario is solved with 100 on the campus preset pyeongtaek, rest [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-pyeongtaek.test.ts::an offered scenario is solved with 100 on the campus preset pyeongtaek, rest [REQ-110] [REQ-111] > every template of this group gives 100 and no error": {
+   "kind": "test",
+   "hash": "c87882ad51cb9b79",
+   "asserts": 2,
+   "literals": [
+    "\"300000\"",
+    "\"every template of this group gives 100 and no error\"",
+    "\"pyeongtaek\"",
+    "\"rest\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-suwon-domain.test.ts::<import:6e2b6568>": {
+   "kind": "support",
+   "hash": "6e2b65686aca10da",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-suwon-domain.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-suwon-domain.test.ts::an offered scenario is solved with 100 on the campus preset suwon, domain [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-suwon-domain.test.ts::an offered scenario is solved with 100 on the campus preset suwon, domain [REQ-110] [REQ-111] > every template of this group gives 100 and no error": {
+   "kind": "test",
+   "hash": "c86fc93286ec756b",
+   "asserts": 2,
+   "literals": [
+    "\"300000\"",
+    "\"domain\"",
+    "\"every template of this group gives 100 and no error\"",
+    "\"suwon\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-suwon.test.ts::<import:6e2b6568>": {
+   "kind": "support",
+   "hash": "6e2b65686aca10da",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-suwon.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-suwon.test.ts::an offered scenario is solved with 100 on the campus preset suwon, rest [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-campus-suwon.test.ts::an offered scenario is solved with 100 on the campus preset suwon, rest [REQ-110] [REQ-111] > every template of this group gives 100 and no error": {
+   "kind": "test",
+   "hash": "1f86cafcb646a6d3",
+   "asserts": 2,
+   "literals": [
+    "\"300000\"",
+    "\"every template of this group gives 100 and no error\"",
+    "\"rest\"",
+    "\"suwon\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-ladder-1.test.ts::<import:9f549010>": {
+   "kind": "support",
+   "hash": "9f549010ca96ee26",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-ladder-1.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-ladder-1.test.ts::an offered scenario is solved with 100 on the ladder chip shapes, part 1 of 3 [REQ-110] [REQ-111] > <stmt:6bb35abe>": {
+   "kind": "support",
+   "hash": "6bb35abe33eb4d04",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-ladder-1.test.ts::an offered scenario is solved with 100 on the ladder chip shapes, part 1 of 3 [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-ladder-1.test.ts::an offered scenario is solved with 100 on the ladder chip shapes, part 1 of 3 [REQ-110] [REQ-111] > the default world: every template it offers gives 100 and no error": {
+   "kind": "test",
+   "hash": "233f1921f57afa8d",
+   "asserts": 2,
+   "literals": [
+    "\"180000\"",
+    "\"the default world: every template it offers gives 100 and no error\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-ladder-2.test.ts::<import:52281f21>": {
+   "kind": "support",
+   "hash": "52281f2144239d0c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-ladder-2.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-ladder-2.test.ts::an offered scenario is solved with 100 on the ladder chip shapes, part 2 of 3 [REQ-110] [REQ-111] > <stmt:9b90fd3d>": {
+   "kind": "support",
+   "hash": "9b90fd3d0d750ece",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-ladder-2.test.ts::an offered scenario is solved with 100 on the ladder chip shapes, part 2 of 3 [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-ladder-3.test.ts::<import:52281f21>": {
+   "kind": "support",
+   "hash": "52281f2144239d0c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-ladder-3.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-ladder-3.test.ts::an offered scenario is solved with 100 on the ladder chip shapes, part 3 of 3 [REQ-110] [REQ-111] > <stmt:06a124eb>": {
+   "kind": "support",
+   "hash": "06a124eba769ac28",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-ladder-3.test.ts::an offered scenario is solved with 100 on the ladder chip shapes, part 3 of 3 [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-shapes.test.ts::<import:118aca58>": {
+   "kind": "support",
+   "hash": "118aca580a14d7cc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-shapes.test.ts::<import:adaef8b9>": {
+   "kind": "support",
+   "hash": "adaef8b9bca3bf85",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-shapes.test.ts::<import:bfa7962f>": {
+   "kind": "support",
+   "hash": "bfa7962f4bd6f28a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-shapes.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-shapes.test.ts::a generated shape that cannot reach the answer key says why, in plain words [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-shapes.test.ts::a generated shape that cannot reach the answer key says why, in plain words [REQ-110] [REQ-111] > =reasonOn": {
+   "kind": "support",
+   "hash": "81ba8c56b1a54c8d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-shapes.test.ts::a generated shape that cannot reach the answer key says why, in plain words [REQ-110] [REQ-111] > a cold DR site has no standby that is switched on": {
+   "kind": "test",
+   "hash": "80533bece6407e7e",
+   "asserts": 2,
+   "literals": [
+    "\"a cold DR site has no standby that is switched on\"",
+    "\"ladder-site-dr-cold\"",
+    "\"ladder-site-dr-cold\"",
+    "\"ladder-site-dr-cold\"",
+    "\"ladder-site-dr-cold\"",
+    "\"os-memory-leak\"",
+    "\"os-memory-leak\"",
+    "\"os-process-crashloop\"",
+    "\"os-process-crashloop\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-shapes.test.ts::a generated shape that cannot reach the answer key says why, in plain words [REQ-110] [REQ-111] > a service across regions comes back only after its regions leave and re-enter the balancer": {
+   "kind": "test",
+   "hash": "a22c56d2759c24a6",
+   "asserts": 1,
+   "literals": [
+    "\"a service across regions comes back only after its regions leave and re-enter the balancer\"",
+    "\"ladder-app-multiregion\"",
+    "\"ladder-app-multiregion\"",
+    "\"sidecar-crash\"",
+    "\"sidecar-crash\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-shapes.test.ts::a generated shape that cannot reach the answer key says why, in plain words [REQ-110] [REQ-111] > too many servers behind the UPS to switch off one call at a time": {
+   "kind": "test",
+   "hash": "1026d03efc9cd312",
+   "asserts": 1,
+   "literals": [
+    "\"ladder-pwr-2n-gen\"",
+    "\"ladder-pwr-2n-gen\"",
+    "\"outage-generator-fails\"",
+    "\"outage-generator-fails\"",
+    "\"too many servers behind the UPS to switch off one call at a time\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-shapes.test.ts::the generated shapes are all held to the same rule, file by file [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-shapes.test.ts::the generated shapes are all held to the same rule, file by file [REQ-110] [REQ-111] > a file stands for each site preset, for the world generator and for the campus generator": {
+   "kind": "test",
+   "hash": "55a8cbe7d0816f5a",
+   "asserts": 1,
+   "literals": [
+    "\"a file stands for each site preset, for the world generator and for the campus generator\"",
+    "\"cheonan\"",
+    "\"cheonan\"",
+    "\"giheung\"",
+    "\"giheung\"",
+    "\"hwaseong\"",
+    "\"hwaseong\"",
+    "\"onyang\"",
+    "\"onyang\"",
+    "\"pyeongtaek\"",
+    "\"pyeongtaek\"",
+    "\"suwon\"",
+    "\"suwon\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-shapes.test.ts::the generated shapes are all held to the same rule, file by file [REQ-110] [REQ-111] > the three ladder files between them take every chip shape once": {
+   "kind": "test",
+   "hash": "f1579bf733977302",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"1\"",
+    "\"2\"",
+    "\"3\"",
+    "\"3\"",
+    "\"3\"",
+    "\"40\"",
+    "\"40\"",
+    "\"the three ladder files between them take every chip shape once\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "tests/spec/offered-means-solvable.test.ts::<import:118aca58>": {
    "kind": "support",
    "hash": "118aca580a14d7cc",
@@ -156661,6 +157502,162 @@
    "asserts": 1,
    "literals": [
     "\"the matrix still offers a real set of templates on every world\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-worlds-1.test.ts::<import:9f88b38b>": {
+   "kind": "support",
+   "hash": "9f88b38bd1dce9d7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-worlds-1.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-worlds-1.test.ts::an offered scenario is solved with 100 on the world generator presets giheung, hwaseong, onyang [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-worlds-1.test.ts::an offered scenario is solved with 100 on the world generator presets giheung, hwaseong, onyang [REQ-110] [REQ-111] > world giheung: every template it offers gives 100 and no error": {
+   "kind": "test",
+   "hash": "bc1fcedf540327be",
+   "asserts": 2,
+   "literals": [
+    "\"180000\"",
+    "\"giheung\"",
+    "\"world giheung\"",
+    "\"world giheung\"",
+    "\"world giheung: every template it offers gives 100 and no error\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-worlds-1.test.ts::an offered scenario is solved with 100 on the world generator presets giheung, hwaseong, onyang [REQ-110] [REQ-111] > world hwaseong: every template it offers gives 100 and no error": {
+   "kind": "test",
+   "hash": "c31a57e3885aa71d",
+   "asserts": 2,
+   "literals": [
+    "\"180000\"",
+    "\"hwaseong\"",
+    "\"world hwaseong\"",
+    "\"world hwaseong\"",
+    "\"world hwaseong: every template it offers gives 100 and no error\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-worlds-1.test.ts::an offered scenario is solved with 100 on the world generator presets giheung, hwaseong, onyang [REQ-110] [REQ-111] > world onyang: every template it offers gives 100 and no error": {
+   "kind": "test",
+   "hash": "a395c41259666fd3",
+   "asserts": 2,
+   "literals": [
+    "\"180000\"",
+    "\"onyang\"",
+    "\"world onyang\"",
+    "\"world onyang\"",
+    "\"world onyang: every template it offers gives 100 and no error\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-worlds-2.test.ts::<import:9f88b38b>": {
+   "kind": "support",
+   "hash": "9f88b38bd1dce9d7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-worlds-2.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-worlds-2.test.ts::an offered scenario is solved with 100 on the world generator presets cheonan, suwon, pyeongtaek [REQ-110] [REQ-111] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-worlds-2.test.ts::an offered scenario is solved with 100 on the world generator presets cheonan, suwon, pyeongtaek [REQ-110] [REQ-111] > world cheonan: every template it offers gives 100 and no error": {
+   "kind": "test",
+   "hash": "b582c8bbafbed900",
+   "asserts": 2,
+   "literals": [
+    "\"180000\"",
+    "\"cheonan\"",
+    "\"world cheonan\"",
+    "\"world cheonan\"",
+    "\"world cheonan: every template it offers gives 100 and no error\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-worlds-2.test.ts::an offered scenario is solved with 100 on the world generator presets cheonan, suwon, pyeongtaek [REQ-110] [REQ-111] > world pyeongtaek: every template it offers gives 100 and no error": {
+   "kind": "test",
+   "hash": "24e402f7ccdce366",
+   "asserts": 2,
+   "literals": [
+    "\"180000\"",
+    "\"pyeongtaek\"",
+    "\"world pyeongtaek\"",
+    "\"world pyeongtaek\"",
+    "\"world pyeongtaek: every template it offers gives 100 and no error\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/offered-means-worlds-2.test.ts::an offered scenario is solved with 100 on the world generator presets cheonan, suwon, pyeongtaek [REQ-110] [REQ-111] > world suwon: every template it offers gives 100 and no error": {
+   "kind": "test",
+   "hash": "2f4f28c50056a72b",
+   "asserts": 2,
+   "literals": [
+    "\"180000\"",
+    "\"suwon\"",
+    "\"world suwon\"",
+    "\"world suwon\"",
+    "\"world suwon: every template it offers gives 100 and no error\""
    ],
    "precision": [],
    "skips": 0,
@@ -175906,6 +176903,172 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-04",
+   "amended_by": null
+  },
+  "tests/spec/world-host-memory.test.ts::<import:080ecee5>": {
+   "kind": "support",
+   "hash": "080ecee56760f92d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/world-host-memory.test.ts::<import:1611f82d>": {
+   "kind": "support",
+   "hash": "1611f82dc2833714",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/world-host-memory.test.ts::<import:828d6b7e>": {
+   "kind": "support",
+   "hash": "828d6b7e2e113abc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/world-host-memory.test.ts::<import:b2677072>": {
+   "kind": "support",
+   "hash": "b26770722ae02ccc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/world-host-memory.test.ts::<import:c5f12583>": {
+   "kind": "support",
+   "hash": "c5f125838f44fc42",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/world-host-memory.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/world-host-memory.test.ts::=ALARM_PCT": {
+   "kind": "support",
+   "hash": "e8e71cd049395d19",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/world-host-memory.test.ts::=catalog": {
+   "kind": "support",
+   "hash": "e0d83f2b24742ae5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/world-host-memory.test.ts::=crowded": {
+   "kind": "support",
+   "hash": "5804b36cca8e65e4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/world-host-memory.test.ts::a host starts below its memory limit in every world the product builds [REQ-087] > <stmt:c19ff811>": {
+   "kind": "support",
+   "hash": "c19ff81133b8e810",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/world-host-memory.test.ts::a host starts below its memory limit in every world the product builds [REQ-087] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/world-host-memory.test.ts::a host starts below its memory limit in every world the product builds [REQ-087] > a generated world and a generated campus": {
+   "kind": "test",
+   "hash": "f320577895318532",
+   "asserts": 2,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"a generated world and a generated campus\"",
+    "\"giheung\"",
+    "\"giheung\"",
+    "\"giheung\"",
+    "\"giheung\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/world-host-memory.test.ts::a host starts below its memory limit in every world the product builds [REQ-087] > a host with ten service processes still ends under the limit, and one with a few keeps its old share": {
+   "kind": "test",
+   "hash": "d13e1def7bb3b238",
+   "asserts": 3,
+   "literals": [
+    "\"10\"",
+    "\"10\"",
+    "\"9\"",
+    "\"9\"",
+    "\"a host with ten service processes still ends under the limit, and one with a few keeps its old share\"",
+    "\"campus\"",
+    "\"srv-l1\"",
+    "\"srv-t1\"",
+    "\"svc\"",
+    "\"svc\"",
+    "\"svc\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "tests/spec/world-host-memory.test.ts::a host starts below its memory limit in every world the product builds [REQ-087] > the default shaped world": {
+   "kind": "test",
+   "hash": "3a7e4af5fe3b5df4",
+   "asserts": 1,
+   "literals": [
+    "\"the default shaped world\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "tests/spec/worldgen.test.ts::<import:0f465da4>": {
