@@ -16,8 +16,12 @@ export const PARTS: Readonly<Record<string, Part>> = {
   "journeys-small": { groups: ["small"] },
   "journeys-own": { groups: ["own"] },
   "journeys-topology": { groups: ["topology"] },
-  "probes-a": { prelude: true, probes: ["axe", "provenance", "value"] },
-  "probes-b": { prelude: true, probes: ["reach", "orientation", "motion"] },
-  "probes-c": { prelude: true, probes: ["detail", "load", "keyboard"] },
-  "probes-d": { prelude: true, probes: ["voice", "invalid", "progress", "colors"] },
+  "probes-a": { prelude: true, probes: ["axe"] },
+  "probes-b": { prelude: true, probes: ["reach", "motion"] },
+  "probes-c": { prelude: true, probes: ["detail", "keyboard"] },
+  "probes-d": { prelude: true, probes: ["load", "orientation"] },
+  "probes-e": {
+    prelude: true,
+    probes: ["voice", "invalid", "progress", "colors", "provenance", "value"],
+  },
 };

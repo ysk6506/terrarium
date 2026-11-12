@@ -24,7 +24,7 @@ function parts(): Record<string, Slice> {
   const source = read("tests/e2e/ux/parts.ts");
   const table = source.slice(source.indexOf("export const PARTS"));
   const found: Record<string, Slice> = {};
-  for (const m of table.matchAll(/^\s+"([a-z-]+)": \{(.*)\},?$/gm)) {
+  for (const m of table.matchAll(/^\s+"([a-z-]+)": \{([^}]*)\},?$/gm)) {
     const body = m[2] as string;
     const list = (key: string): string[] => {
       const at = /\[([^\]]*)\]/.exec(body.split(`${key}:`)[1] ?? "");
