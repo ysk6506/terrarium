@@ -3,6 +3,11 @@
  * Every page has one address, so any screen can be linked to and shared.
  */
 
+/** The four views of an experiment's result; the address carries it as `?tab=`, so a link and the back button keep it. */
+export type ResultTab = "summary" | "runs" | "process" | "world";
+
+export const RESULT_TABS: readonly ResultTab[] = ["summary", "runs", "process", "world"];
+
 export type Page =
   | { readonly name: "home" }
   | { readonly name: "worlds" }
@@ -28,8 +33,10 @@ export type Page =
       readonly worldId?: string;
       /** Open pre-filled with the recommended settings of "실험 시작" (REQ-104). */
       readonly quick?: boolean;
+      /** How many situations a fork starts with ("상황을 10개로 늘려 돌리기"). */
+      readonly runs?: number;
     }
-  | { readonly name: "experiment"; readonly id: string }
+  | { readonly name: "experiment"; readonly id: string; readonly tab?: ResultTab }
   | { readonly name: "run"; readonly id: string }
   | { readonly name: "benchmarks"; readonly set?: string }
   | { readonly name: "connections" }
@@ -82,6 +89,12 @@ export const sectionOf = (page: Page) =>
   [...SECTIONS, SETTINGS_SECTION].find((s) => s.owns.includes(page.name))?.key;
 
 const ID = "([A-Za-z0-9._:-]+)";
+/** A count from the address: a whole number from 1 to 1000, else none. */
+const runsOf = (raw: string | null): number | undefined => {
+  const n = Number(raw);
+  return raw !== null && Number.isInteger(n) && n >= 1 && n <= 1000 ? n : undefined;
+};
+
 const PATTERNS: ReadonlyArray<[RegExp, (m: RegExpExecArray, q: URLSearchParams) => Page]> = [
   [/^\/$/, () => ({ name: "home" })],
   [/^\/worlds\/?$/, () => ({ name: "worlds" })],
@@ -120,9 +133,16 @@ const PATTERNS: ReadonlyArray<[RegExp, (m: RegExpExecArray, q: URLSearchParams) 
       ...(q.get("scenario") ? { scenarioId: q.get("scenario") as string } : {}),
       ...(q.get("world") ? { worldId: q.get("world") as string } : {}),
       ...(q.get("quick") === "1" ? { quick: true } : {}),
+      ...(runsOf(q.get("runs")) ? { runs: runsOf(q.get("runs")) as number } : {}),
     }),
   ],
-  [new RegExp(`^/experiments/${ID}$`), (m) => ({ name: "experiment", id: m[1] as string })],
+  [
+    new RegExp(`^/experiments/${ID}$`),
+    (m, q) => {
+      const tab = RESULT_TABS.find((t) => t === q.get("tab") && t !== "summary");
+      return { name: "experiment", id: m[1] as string, ...(tab ? { tab } : {}) };
+    },
+  ],
   [new RegExp(`^/runs/${ID}$`), (m) => ({ name: "run", id: m[1] as string })],
   [
     /^\/benchmarks\/?$/,
@@ -180,8 +200,12 @@ const HREFS: { readonly [N in PageName]: (page: Of<N>) => string } = {
       scenario: p.scenarioId,
       world: p.worldId,
       quick: p.quick ? "1" : undefined,
+      runs: p.runs === undefined ? undefined : String(p.runs),
     }),
-  experiment: (p) => `/experiments/${enc(p.id)}`,
+  experiment: (p) =>
+    withQuery(`/experiments/${enc(p.id)}`, {
+      tab: p.tab && p.tab !== "summary" ? p.tab : undefined,
+    }),
   run: (p) => `/runs/${enc(p.id)}`,
   benchmarks: (p) => withQuery("/benchmarks", { set: p.set }),
   connections: () => "/connections",

@@ -6,13 +6,14 @@ last_verified: 2026-11-11
 covers:
   - package.json
   - docs/exec-plans/active/beta-rounds.md
-covers_hash: 97a374ad72af2398
+covers_hash: 6cfa164a32e562c5
 verification_log:
-  - "2026-11-11: 목표의 글과 맨 위 문서를 맞춤 (ADR-0177)"
   - "2026-11-11: 목표의 글과 맨 위 문서를 맞춤 (ADR-0177)"
   - "2026-11-11: 제품의 값·기능·철학·한계를 요구사항 전체(REQ-001~119)와 physics-laws·measurement·ADR-0117의 한계에 대조해 다시 씀"
   - "2026-11-11: 제품의 값·기능·철학·한계를 요구사항 전체(REQ-001~119)와 physics-laws·measurement·ADR-0117·product-design의 원칙 여섯에 대조해 다시 씀"
   - "2026-11-11: 따라가는 beta-rounds.md는 앞부분(follows)만 바뀌었고 본문은 같다. requirements.md의 바뀐 곳(목표 첫째 부분)은 이 문서 첫 단락과 맞다 (ADR-0177)"
+  - "2026-11-11: 라이선스 절(Apache-2.0)을 더함. package.json에 license 표기가 들어감 (ADR-0181)"
+  - "2026-11-11: NOTICE 링크를 더함 (ADR-0181)"
 verified_body: f6d4658c7bf7dcf3
 unchanged_reverifies: 0
 ---
@@ -145,6 +146,10 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 ```
 
 여러 사람이 쓰는 곳에는 SSO를 맡은 프록시 뒤에 띄워요. 설정 항목과 신원 설정은 [서버 운영](docs/design-docs/operations.md), 권한의 설계는 [권한](docs/design-docs/permissions.md)에 있어요. 비밀 값은 파일에 쓰지 않고 환경 변수 이름만 적어요.
+
+## 라이선스
+
+[Apache License 2.0](LICENSE)이에요. 저작권 표기는 [NOTICE](NOTICE)에 있어요.
 
 ## 코드를 고치는 사람에게
 

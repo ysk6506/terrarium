@@ -33,14 +33,22 @@ interface Start {
 }
 
 /** Where the form starts: a fork's parent as it was, a chosen scenario, or empty. */
-function useStart(forkOf?: string, scenarioId?: string, worldId?: string, quick = false) {
+function useStart(
+  forkOf?: string,
+  scenarioId?: string,
+  worldId?: string,
+  quick = false,
+  runs?: number,
+) {
   const { api, identity } = useApp();
   return useAsync(
     async (signal): Promise<Start> => {
       const worlds = await api.call("listWorlds", { query: { sort: "new" }, signal });
       if (forkOf) {
         const parent = await api.call("getExperiment", { params: { id: forkOf }, signal });
-        return { worlds, parent, draft: experiment.draftFrom(parent.experiment) };
+        // "상황을 10개로 늘려 돌리기" comes with the count; the rest starts as the original ran
+        const draft = experiment.draftFrom(parent.experiment);
+        return { worlds, parent, draft: runs ? { ...draft, runs } : draft };
       }
       if (scenarioId) {
         const s = await api.call("getScenario", { params: { id: scenarioId }, signal });
@@ -80,7 +88,7 @@ function useStart(forkOf?: string, scenarioId?: string, worldId?: string, quick 
         },
       };
     },
-    [forkOf, scenarioId, worldId, quick],
+    [forkOf, scenarioId, worldId, quick, runs],
   );
 }
 
@@ -368,7 +376,7 @@ export function NewExperimentPage() {
   const query = page.name === "newExperiment" ? page : undefined;
   const forkOf = query?.forkOf;
   const scenarioId = query?.scenarioId;
-  const start = useStart(forkOf, scenarioId, query?.worldId, Boolean(query?.quick));
+  const start = useStart(forkOf, scenarioId, query?.worldId, Boolean(query?.quick), query?.runs);
   return (
     <div className="page">
       <PageHead
@@ -383,7 +391,10 @@ export function NewExperimentPage() {
       {start.error && <Failure error={start.error} retry={start.reload} />}
       {!start.data && !start.error && <Loading lines={5} />}
       {start.data && (
-        <StartBody start={start.data} formKey={`${forkOf ?? ""}${scenarioId ?? ""}`} />
+        <StartBody
+          start={start.data}
+          formKey={`${forkOf ?? ""}${scenarioId ?? ""}${query?.runs ?? ""}`}
+        />
       )}
     </div>
   );

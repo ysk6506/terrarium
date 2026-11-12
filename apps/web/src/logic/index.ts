@@ -200,11 +200,19 @@ export {
   recoveryFigures,
   scoringText,
 } from "./recovery";
+export * as resultDots from "./result-dots";
+export * as resultExport from "./result-export";
+export * as resultLoss from "./result-loss";
+export * as resultNext from "./result-next";
+export * as resultSituations from "./result-situations";
+export * as resultWords from "./result-words";
 export {
   hrefOf,
   type Page,
   type PageName,
   parseLocation,
+  RESULT_TABS,
+  type ResultTab,
   SECTIONS,
   SETTINGS_SECTION,
   sectionOf,

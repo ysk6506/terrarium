@@ -40,11 +40,10 @@ export interface Outcome {
   readonly screens: number;
 }
 
-/** The experiment page is done when the pass rate shows a number. */
+/** The experiment page is done when the first answer, "N번 중 M번 합격했어요", is there. */
 async function waitForResult(page: Page): Promise<void> {
   await page
-    .locator(".figure", { hasText: "합격률" })
-    .locator(".figure-value", { hasText: /\d/ })
+    .locator(".res-headline", { hasText: /\d+번 중 \d+번 합격했어요/ })
     .waitFor({ timeout: 90 * SECOND });
 }
 
@@ -243,7 +242,7 @@ async function cancel(c: Context): Promise<void> {
     await c.d.click(page.getByRole("button", { name: "실험 시작" }));
     await expectPath(c, /^\/experiments\/e-/);
     await c.d.click(page.getByRole("button", { name: "멈추기", exact: true }));
-    await c.d.click(page.getByRole("dialog").getByRole("button", { name: /회 멈추기$/ }));
+    await c.d.click(page.getByRole("dialog").getByRole("button", { name: /번 멈추기$/ }));
     await page
       .getByText(/멈췄어요|멈춤|취소됨/)
       .first()
@@ -277,7 +276,6 @@ async function share(c: Context): Promise<void> {
   const { page } = c.v;
   await openFinishedExperiment(c);
   await c.d.click(page.getByRole("button", { name: "공유" }));
-  await c.d.click(page.getByRole("menuitem", { name: /링크 복사/ }));
   await page
     .getByText("링크를 복사했어요")
     .first()
@@ -506,12 +504,14 @@ async function processCompare(c: Context): Promise<void> {
   await c.d.click(page.getByRole("button", { name: "실험 시작" }));
   await expectPath(c, /^\/experiments\/e-/);
   await waitForResult(page);
-  // the written side and the measured side, side by side, then the ledger
+  // the written side and the measured side, side by side, then the ledger: on the 업무 비교 tab
+  await c.d.click(page.getByRole("link", { name: "업무 비교", exact: true }));
   await page.getByRole("region", { name: "지금 하는 방식" }).waitFor({ timeout: 30 * SECOND });
   await page.getByRole("region", { name: "에이전트가 하면" }).waitFor({ timeout: 10 * SECOND });
   await page.getByRole("list", { name: "단계 장부" }).waitFor({ timeout: 10 * SECOND });
   const download = page.waitForEvent("download", { timeout: 15 * SECOND });
-  await c.d.click(page.getByRole("button", { name: /Object · Link · Action 표로 내보내기/ }));
+  await c.d.click(page.getByRole("link", { name: "세계 범위", exact: true }));
+  await c.d.click(page.getByRole("button", { name: /객체·링크·액션 표 내보내기/ }));
   await c.d.click(page.getByRole("menuitem", { name: /CSV로 받기/ }));
   const file = await download;
   // headless Chromium drops a Hangul name from a blob ("download"), so the name is not asserted; the content is
