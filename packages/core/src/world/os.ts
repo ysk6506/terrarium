@@ -98,6 +98,8 @@ const SYSTEM_PROCESSES: ReadonlyArray<
 const SERVICE_WEIGHT = 12;
 const SERVICE_MEM_PCT = 9;
 const KERNEL_MEM_PCT = 8;
+/** A healthy host holds its services within this share of memory, so a crowded host gives each a smaller share. */
+const HEALTHY_MEM_PCT = 85;
 
 /** A number between `lo` and `hi` that depends only on the id and a salt. */
 const spread = (id: string, salt: string, lo: number, hi: number): number =>
@@ -116,13 +118,22 @@ export interface BaselineInput {
 /** A healthy host: where it would stand if nothing had ever gone wrong on it. */
 export function baselineOs(input: BaselineInput): HostOs {
   const { id, t } = input;
+  const systemMem = SYSTEM_PROCESSES.reduce((sum, p) => sum + p[3], 0);
+  const serviceMem = Math.min(
+    SERVICE_MEM_PCT,
+    Math.floor(
+      ((HEALTHY_MEM_PCT - KERNEL_MEM_PCT - systemMem) /
+        Math.max(1, input.serviceProcesses.length)) *
+        10,
+    ) / 10,
+  );
   const processes: OsProcess[] = [
     ...SYSTEM_PROCESSES.map(([name, user, w, memPct]) => ({ name, user, w, memPct })),
     ...input.serviceProcesses.map((name) => ({
       name,
       user: "svc",
       w: SERVICE_WEIGHT,
-      memPct: SERVICE_MEM_PCT,
+      memPct: serviceMem,
     })),
   ].map((p, i) => ({
     ...p,

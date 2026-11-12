@@ -47,6 +47,8 @@ interface Plan {
   /** What the diagnosis names besides the target of the first fault. */
   readonly alsoRoot?: (c: Case, index: BlueprintIndex) => readonly string[];
   readonly minWorkers: number;
+  /** What a cluster must also have for the sheet to be mendable, as the sentence that says what it lacks (undefined: nothing). */
+  readonly lacks?: (c: Case, index: BlueprintIndex) => string | undefined;
   readonly report: (service: Entity) => string;
   readonly waitS: number;
   readonly forbid: ReadonlyArray<{ readonly action: ActionKind; readonly penalty: number }>;
@@ -78,13 +80,63 @@ function cases(index: BlueprintIndex): Case[] {
   });
 }
 
-function find(index: BlueprintIndex, minWorkers: number): Case | string {
+function find(index: BlueprintIndex, minWorkers: number, lacks?: Plan["lacks"]): Case | string {
   const all = cases(index);
   if (all.length === 0) return "쿠버네티스 위에서 도는 서비스가 이 세계에 없어요";
-  return (
-    all.find((c) => c.workers.length >= minWorkers) ??
-    `워커 노드가 ${minWorkers}개 이상인 쿠버네티스 클러스터가 이 세계에 없어요`
+  const big = all.filter((c) => c.workers.length >= minWorkers);
+  if (big.length === 0)
+    return `워커 노드가 ${minWorkers}개 이상인 쿠버네티스 클러스터가 이 세계에 없어요`;
+  const reasons: string[] = [];
+  for (const c of big) {
+    const reason = lacks?.(c, index);
+    if (reason === undefined) return c;
+    reasons.push(reason);
+  }
+  return reasons[0] as string;
+}
+
+/** The workloads of the cluster that no service waits on (batch work): the ones that can give up their room. */
+const idleWorkloads = (c: Case, index: BlueprintIndex): Entity[] =>
+  workloadsOfCluster(index, c.cluster.id).filter(
+    (w) => servicesOfWorkload(index, w.id).length === 0,
   );
+
+/**
+ * Whether the cluster can place every pod when all its workers stand and it has lost `lostPct` of what they offer. Each
+ * pod goes to the worker with the most room left, the way the cluster itself does it (the scheduler in the world).
+ */
+function everyPodFits(c: Case, index: BlueprintIndex, lostPct: number): boolean {
+  const keep = (100 - lostPct) / 100;
+  const nodes = c.workers.map((w) => {
+    const def = k8sNodeDef(w);
+    return {
+      cpu: Math.round(def.cpuMilli * keep),
+      mem: Math.round(def.memMiB * keep),
+      usedCpu: 0,
+      usedMem: 0,
+    };
+  });
+  for (const w of workloadsOfCluster(index, c.cluster.id)) {
+    const def = k8sWorkloadDef(w);
+    for (let i = 0; i < def.replicas; i++) {
+      let best: (typeof nodes)[number] | undefined;
+      let bestRoom = -1;
+      for (const n of nodes) {
+        const cpuFree = n.cpu - n.usedCpu - def.cpuMilli;
+        const memFree = n.mem - n.usedMem - def.memMiB;
+        if (cpuFree < 0 || memFree < 0) continue;
+        const room = cpuFree / Math.max(1, n.cpu) + memFree / Math.max(1, n.mem);
+        if (!best || room > bestRoom + 1e-9) {
+          best = n;
+          bestRoom = room;
+        }
+      }
+      if (!best) return false;
+      best.usedCpu += def.cpuMilli;
+      best.usedMem += def.memMiB;
+    }
+  }
+  return true;
 }
 
 const is = (entity: string, field: string, value: string | number | boolean): Condition => ({
@@ -175,11 +227,11 @@ function template(plan: Plan, domains: readonly Domain[] = ["service_os"]): Scen
     causeDomain: "service_os",
     scoring: "recovery",
     unavailable: (index) => {
-      const c = find(index, plan.minWorkers);
+      const c = find(index, plan.minWorkers, plan.lacks);
       return typeof c === "string" ? c : undefined;
     },
     build(index, worldId) {
-      const c = find(index, plan.minWorkers) as Case;
+      const c = find(index, plan.minWorkers, plan.lacks) as Case;
       const flow = new Flow();
       let last = flow.add("start", "start", {});
       for (const [i, inj] of plan.inject.entries())
@@ -287,6 +339,10 @@ const pending = template({
     { fault: "k8s_node_notready", target: worker },
   ],
   minWorkers: 3,
+  lacks: (c, index) =>
+    idleWorkloads(c, index).length > 0
+      ? undefined
+      : "서비스가 기대지 않아 줄여도 되는 배치 작업이 이 클러스터에 없어요",
   report: (s) => `${s.name}가 느려졌다는 알림이 왔다.`,
   waitS: 420,
   forbid: [{ action: "k8s_drain", penalty: 10 }],
@@ -308,6 +364,10 @@ const diskPressure = template({
     },
   ],
   minWorkers: 3,
+  lacks: (c, index) =>
+    everyPodFits(c, index, squeezePct(c, index, 1.4, false))
+      ? undefined
+      : "노드를 되살려도 파드가 다 들어갈 자리가 없는 클러스터라서, 디스크를 비워도 서비스가 돌아오지 못해요",
   report: (s) => `${s.name}가 잠깐 느려졌고 노드에 디스크 경고가 떴다는 알림이 왔다.`,
   waitS: 120,
   forbid: [],

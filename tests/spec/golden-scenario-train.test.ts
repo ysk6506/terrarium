@@ -1,8 +1,8 @@
 /**
  * Golden: the reference solution (정답 풀이, REQ-110) played on every built-in scenario template the `train` world can host; the score breakdown and the
  * final world state of each run are fingerprinted, seed 1. It protects the scores and the world after a perfect
- * run while the model moves to ports and one propagation engine (ADR-0168, ADR-0169). A total below 100 is as
- * recorded: that template is not made for this world, and the grader's answer there is pinned all the same.
+ * run while the model moves to ports and one propagation engine (ADR-0168, ADR-0169). A template the world offers
+ * scores 100 here (ADR-0172); a template the world cannot host is not offered and has no row.
  * An expectation here may change only through the test-lock amend procedure (ADR-0004), with an ADR that
  * explains why the behaviour of an existing world changed. A red test here means exactly that.
  * Read docs/design-docs/golden-safety-net.md first.
@@ -22,20 +22,20 @@ const EXPECTED: Readonly<Record<string, string>> = {
   "pdu-breaker-cascade@train:world": "72746:0d750a01edb4b01b",
   "vm-cpu-spike-escalation@train:score": "100 1378:15ad92e1bb414a0b",
   "vm-cpu-spike-escalation@train:world": "73192:0cd8d4ad9f3b9217",
-  "wrong-vlan-port@train:score": "65 1125:0ce8f4dd714f710e",
-  "wrong-vlan-port@train:world": "73428:0d3150d2f193f909",
-  "port-shut-by-mistake@train:score": "65 1160:07e0c66b1be1601b",
-  "port-shut-by-mistake@train:world": "73469:0e01770a7e00f41f",
+  "wrong-vlan-port@train:score": "100 1139:1bcad61b67e96e07",
+  "wrong-vlan-port@train:world": "72801:0cac253d3249740f",
+  "port-shut-by-mistake@train:score": "100 1174:1e2038531e97de0a",
+  "port-shut-by-mistake@train:world": "72720:0545be870b12d514",
   "gateway-interface-shut@train:score": "100 1290:1bf6de731a0f190f",
   "gateway-interface-shut@train:world": "72947:0dede972e4aea015",
   "pdu-outlet-off@train:score": "100 1113:055470ab26e74309",
   "pdu-outlet-off@train:world": "72719:0581801c7089b715",
-  "firmware-one@train:score": "60 2745:04646ec8e9ef7b05",
-  "firmware-one@train:world": "72917:04d30127a855b308",
+  "firmware-one@train:score": "100 2625:0a25bd7a59b78717",
+  "firmware-one@train:world": "72937:010b0f5f1ce79c0c",
   "firmware-rack@train:score": "100 2271:0ec26aa72f227900",
   "firmware-rack@train:world": "72735:00ca46c87129ed0e",
-  "firmware-failure@train:score": "90 1578:0835be0c1925e101",
-  "firmware-failure@train:world": "72883:0b281fbe403c6d1b",
+  "firmware-failure@train:score": "100 1582:1e9a9d1e9119ce08",
+  "firmware-failure@train:world": "72862:04d94f1df02cda1d",
   "os-disk-full@train:score": "100 1354:0da31f32b68a700f",
   "os-disk-full@train:world": "74380:11adfaa62dd6570d",
   "os-fs-readonly@train:score": "100 1358:055edc4d1913e112",

@@ -71,7 +71,8 @@ export const EXPERIMENT_SCREENS = {
   experiment: {
     route: "experiment",
     title: "실험 결과",
-    oneLine: "한 실험의 요약, 실행별 점수와 합격, 조건을 보고 다시 돌려요.",
+    oneLine:
+      "한 실험의 요약(잘했나, 어디서 점수를 잃었나, 상황마다)을 보고, 실행·업무 비교·세계 범위 탭을 열고, 내보내거나 조건을 바꿔 다시 돌려요.",
     stateLabel: "이 실험의 결과와 조건",
     questions: trio(
       "합격은 어떻게 정해져요?",
@@ -85,6 +86,27 @@ export const EXPERIMENT_SCREENS = {
         kind: "navigate",
         aliases: ["실행 열어"],
         saying: "그 실행을 열게요",
+      },
+      {
+        id: "exp-tab",
+        label: "결과 탭 열기",
+        kind: "navigate",
+        aliases: [
+          "실행 탭",
+          "업무 비교 탭",
+          "세계 범위 탭",
+          "요약 탭",
+          "업무 비교 보기",
+          "세계 범위 보기",
+        ],
+        saying: "그 탭을 열게요",
+      },
+      {
+        id: "exp-export",
+        label: "내보내기",
+        kind: "navigate",
+        aliases: ["내보내", "보고서 내려받기", "보고서 받아"],
+        saying: "내보내기를 열게요",
       },
       {
         id: "exp-fork",
