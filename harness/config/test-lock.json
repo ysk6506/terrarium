@@ -182867,6 +182867,23 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "tests/spec/ux-evidence.test.ts::what a failed journey step leaves behind [REQ-041] > the screenshot's file name is printed whole, even for a long journey name": {
+   "kind": "test",
+   "hash": "0558937691622500",
+   "asserts": 1,
+   "literals": [
+    "\"1794486735123\"",
+    "\"process-compare\"",
+    "\"process-compare-1794486735123.png\"",
+    "\"process-compare-1794486735123.png\"",
+    "\"the screenshot's file name is printed whole, even for a long journey name\"",
+    "\"x\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "tests/spec/vmware-conformance.test.ts::<import:04bbe484>": {
    "kind": "support",
    "hash": "04bbe484fe13686d",

@@ -143,6 +143,20 @@ describe("what a failed journey step leaves behind [REQ-041]", () => {
     expect(addressOf("not an address")).toBe("(address unreadable)");
   });
 
+  test("the screenshot's file name is printed whole, even for a long journey name", async () => {
+    const page = new FakePage();
+    const dir = scratch();
+    const lines = await dump(
+      page.asPage(),
+      watch(page.asPage()),
+      { id: "process-compare", note: "x", dir },
+      1794486735123,
+    );
+    expect(lines).toContain(
+      `${PREFIX}screenshot: ${path.join(dir, "process-compare-1794486735123.png")}`,
+    );
+  });
+
   test("a dump that cannot read the page or take the picture still comes back, and the screenshot is written when it can", async () => {
     const page = new FakePage();
     page.text = new Error("page closed");

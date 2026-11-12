@@ -154,5 +154,9 @@ export async function dump(
     shot,
     `----`,
   ];
-  return lines.map((l) => `${PREFIX}${scrub(l, secrets)}`);
+  // The screenshot line is made here from the folder the operator named and a file name of letters, digits and dashes;
+  // scrubbing would take a long journey name for an opaque string. A failure message in its place is scrubbed.
+  return lines.map(
+    (l) => `${PREFIX}${l === shot && shot.startsWith("screenshot: ") ? l : scrub(l, secrets)}`,
+  );
 }
