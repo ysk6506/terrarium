@@ -13603,13 +13603,13 @@
   },
   "apps/server/src/http/scoring-unchanged.test.ts::=SCORE_FINGERPRINTS": {
    "kind": "support",
-   "hash": "5d4bf65a8eadc97b",
+   "hash": "3f96499d2ce6251a",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "apps/server/src/http/scoring-unchanged.test.ts::=SECRET": {
    "kind": "support",
@@ -149102,13 +149102,13 @@
   },
   "tests/spec/golden-scenario-campus.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "a5ad101b9fe111da",
+   "hash": "393d9adda6154f1f",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0178-offered-scenario-solved-on-every-world-shape.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "tests/spec/golden-scenario-campus.test.ts::the reference solution gives the recorded score and world on campus [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",
@@ -149220,13 +149220,13 @@
   },
   "tests/spec/golden-scenario-fabric.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "1b7931fd7faee580",
+   "hash": "91b36bc1288d9058",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0172-offered-scenario-means-reference-solution-reaches-full-score.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "tests/spec/golden-scenario-fabric.test.ts::the reference solution gives the recorded score and world on fabric [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",
@@ -149285,13 +149285,13 @@
   },
   "tests/spec/golden-scenario-iap.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "0c121b62246fe2af",
+   "hash": "f6f8928faf943895",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0172-offered-scenario-means-reference-solution-reaches-full-score.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "tests/spec/golden-scenario-iap.test.ts::the reference solution gives the recorded score and world on iap [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",
@@ -149350,13 +149350,13 @@
   },
   "tests/spec/golden-scenario-sdn.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "0455475b5fc89fba",
+   "hash": "997a85abba6a6873",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0172-offered-scenario-means-reference-solution-reaches-full-score.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "tests/spec/golden-scenario-sdn.test.ts::the reference solution gives the recorded score and world on sdn [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",
@@ -149415,13 +149415,13 @@
   },
   "tests/spec/golden-scenario-train.test.ts::=EXPECTED": {
    "kind": "support",
-   "hash": "955edc1786ac9829",
+   "hash": "539eba709e3b3627",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": "0178-offered-scenario-solved-on-every-world-shape.md"
+   "added": "2026-11-12",
+   "amended_by": "0183-one-vocabulary-on-every-screen.md"
   },
   "tests/spec/golden-scenario-train.test.ts::the reference solution gives the recorded score and world on train [REQ-110] [REQ-001] > <suite>": {
    "kind": "support",

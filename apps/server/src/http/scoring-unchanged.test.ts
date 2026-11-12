@@ -14,8 +14,8 @@ import { authenticatorOf } from "./identity";
  */
 const SECRET = "proxy-secret-for-tests-0003";
 const SCORE_FINGERPRINTS: Readonly<Record<string, string>> = {
-  "cooling-failure/triage": "081192ae4aab6188",
-  "cooling-failure/guess": "ede7c84e40aca4ee",
+  "cooling-failure/triage": "8653eefa24e9f654",
+  "cooling-failure/guess": "9b0401d80c056c06",
 };
 
 const fingerprint = (value: unknown) =>

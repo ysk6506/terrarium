@@ -2,13 +2,16 @@
 title: 파이프라인의 버전과 브랜치 — 고쳐 보고, 비교하고, 병합하고, 되돌리기
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 verification_log:
   - "2026-11-11: 처음 씀 (ADR-0166). source-management.md 3·5절의 안전장치·세계 버전, ADR-0154의 행 저장과 대조"
+  - "2026-11-12: ADR-0183: 따라가는 용어집의 새 절(한 가지 말, 조건의 뜻)을 읽고, 이 문서에 옛 말(회·횟수·시드·개체·에스컬레이션)이 없음을 확인했다"
 follows:
   - docs/design-docs/source-management.md
   - docs/design-docs/glossary-data.md
-follows_hash: 13edb38669a5cd47
+follows_hash: b84d79e44228b1a4
+verified_body: da62c7e8b5aed969
+unchanged_reverifies: 0
 ---
 # 파이프라인의 버전과 브랜치 (REQ-115·116 예정, ADR-0166)
 

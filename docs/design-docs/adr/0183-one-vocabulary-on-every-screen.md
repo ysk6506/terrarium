@@ -13,6 +13,7 @@ touches_protected:
   - harness/src/checks/ui-words.test.ts
   - harness/src/run-all.ts
   - harness/src/common.test.ts
+  - docs/design-docs/adr/0171-result-page-answers-three-questions.md
 amends_tests:
   - apps/server/src/runtime/platform.test.ts::forks, more runs and lineage [REQ-040] > more runs continue the seeds; repeating a seed or someone else's experiment is refused
   - apps/server/src/runtime/repeats.test.ts::repeats of a seed [REQ-118] > adding a repeat gives every seed one more run; adding seeds gives them the repeats it has now
@@ -34,8 +35,29 @@ amends_tests:
   - "packages/core/src/oracle/oracle.test.ts::oracle: state, actions and efficiency [REQ-007] [REQ-037] > required and forbidden actions are judged by effect, whichever tool caused them"
   - "packages/core/src/oracle/oracle.test.ts::oracle: state, actions and efficiency [REQ-007] [REQ-037] > time and tool budget count only when a diagnosis was submitted"
   - packages/core/src/sources/worldgen/worldgen.test.ts::worldgen limits [REQ-009] > a spec outside the limits is refused with every reason in Korean
+  - apps/server/src/http/scoring-unchanged.test.ts::=SCORE_FINGERPRINTS
+  - tests/spec/golden-scenario-campus.test.ts::=EXPECTED
+  - tests/spec/golden-scenario-fabric.test.ts::=EXPECTED
+  - tests/spec/golden-scenario-iap.test.ts::=EXPECTED
+  - tests/spec/golden-scenario-sdn.test.ts::=EXPECTED
+  - tests/spec/golden-scenario-train.test.ts::=EXPECTED
+updates_docs:
+  - docs/design-docs/glossary.md
+  - docs/design-docs/glossary-data.md
+  - docs/design-docs/web-ui.md
+  - docs/design-docs/process-compare.md
+  - docs/design-docs/tool-scope-and-sop.md
+  - docs/design-docs/experiments-and-analysis.md
+  - docs/design-docs/operation-mode.md
+  - docs/design-docs/world-sources.md
+  - docs/design-docs/http-api.md
+  - docs/design-docs/ranking-and-titles.md
+  - docs/guides/operation-agent-guide.md
+amends:
+  - adr: "0171"
+    what: 목록과 홈은 아직 회라는 말(5번)
 test_change_reason: 제품 책임자가 화면의 말이 화면마다 달라 어지럽다고 지적했다. 세는 말을 "번" 하나로, 시드를 "상황"으로, 에스컬레이션을 "넘기기"로 맞추면서 이 시험들이 단정하던 문장(3회, 시드 1는 이미 있어요 같은 것)이 바뀌었다. 시험이 확인하는 성질(숫자가 맞게 세어지고 같은 사실을 말한다)은 그대로이고 문장의 말만 바뀌었다. common.test.ts는 구조 검사가 하나 늘어서 검사 이름 목록이 바뀌었다.
-decision_hash: 2c6303c040399732
+decision_hash: 4aa71f3d4649f88c
 ---
 # ADR-0183 화면의 모든 글은 한 가지 말을 쓰고, 옛 말이 돌아오지 못하게 검사한다
 
@@ -57,6 +79,8 @@ decision_hash: 2c6303c040399732
 3. **오탐은 0에 가깝게.** 규칙은 숫자 뒤나 낱말 단독의 "회"(앞뒤에 한글이 있으면 회사·회색 같은 다른 낱말이다), "회차", "횟수", "시드", "개체", "에스컬레이션", 모델 명사구("관계 종류", "관계 잇기", "라벨·관계")만 잡는다. "관계" 한 낱말은 잡지 않는다. 예외는 하나다: 이끼가 사람이 친 옛 말("횟수 5번으로 정해 줘")을 알아듣는 별칭이다. 화면에 보이지 않는다.
 4. **한 가지 말이 된 곳.** 실험 목록·홈·만들기의 진행과 대기 문장, 툴 호출과 상한 문장, 시나리오 편집기의 단위와 문장, 운영 결과의 숫자 카드, 서버의 검증 메시지, 채점 이유, 알람·토폴로지 줄, 보고서(Markdown·HTML)의 열 이름, 이끼에게 주는 상태의 필드 이름, 용어집과 웹 화면 문서. 문장이 단어 하나로 어색해지면 문장을 다시 썼다.
 5. **잠긴 시험.** 위 문장을 단정하던 시험은 `amends_tests`에 적고 말만 바꿨다. UX 여정(`tests/e2e/ux`)에서 글로 고르는 곳도 바꿨다.
+6. **채점의 골든은 글자만 바뀌었다.** 점수 설명 문장("툴 호출 3번 (상한 3번)")과 알람 문장이 지문(해시)에 들어 있어서, 말을 바꾸면 채점 골든(`golden-scenario-*`)과 `scoring-unchanged`의 지문, `physics-golden.json`의 해시가 바뀐다. 다시 만들기 전에 옛 코드와 새 코드로 같은 실행을 돌려, 한글이 든 글자 값만 지우고 나머지를 견주었다. 골든 시나리오 132건은 총점, 항목별 id·판정·점수·배점, 합격 여부, 풀이 뒤 세계 상태가 모두 같았다(다른 건수 0). 물리 골든은 13개 세계의 1,176 단계가 모두 같았고, 채점 지문의 두 실행(`triage`, `guess`)도 같았다. 달라진 글자는 점수 설명 문장 두 가지("툴 호출 N번 (상한 M번)"과 그 뒤에 "— 과제를 푼 만큼(60%)만 인정해요"가 붙은 것)와 알람 문장의 "재시작 N번째", "플랩 N번"뿐이다. 그래서 새 지문은 이 증명 뒤에 다시 만들었다.
+7. **저장된 글자는 고치지 않는다.** 점수 항목의 설명 문장은 실험 결과 기록에 글자로 저장된다. 옛 실험은 옛 말, 새 실험은 새 말로 보인다. 저장된 기록을 고쳐 쓰는 이행은 하지 않는다.
 
 ## 이유
 - 한 사람이 목록에서 결과로 넘어갈 때 같은 것이 다른 이름이면 읽는 일이 한 번 더 든다.
