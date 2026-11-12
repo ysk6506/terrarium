@@ -2,17 +2,18 @@
 title: 용어집 — 데이터 파이프라인과 온톨로지 매니저에서 쓰는 말
 kind: guide
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 verification_log:
   - "2026-11-11: 처음 씀. 지어낸 말을 현업에서 쓰는 말로 바꿈 (ADR-0167). glossary.md의 쓰는 법 1·3번과 대조"
   - "2026-11-11: ADR-0168에 맞춤: 실험용 복사본은 같은 의미로 움직이고 시뮬레이션은 정밀·기본 두 단계"
   - "2026-11-11: 개체는 객체로 옮긴다 (ADR-0170)"
   - "2026-11-11: 따라가는 product-design.md의 바뀐 곳(1절 기둥, 4절)에 이 문서의 말(객체·링크 등)과 어긋나는 서술 없음을 대조"
+  - "2026-11-12: 따라가는 product-design.md는 ADR-0171 만드는 중 표시만 지워졌고 이 문서의 말과 상관없다"
 follows:
   - docs/design-docs/product-design.md
-follows_hash: 0a112287efbe635d
+follows_hash: 43feca0fac89b780
 verified_body: 200eb252c84f0d43
-unchanged_reverifies: 0
+unchanged_reverifies: 1
 ---
 # 용어집: 데이터 파이프라인과 온톨로지 매니저 (ADR-0167)
 

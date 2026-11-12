@@ -9,7 +9,13 @@ export const FACILITY_PATHS = {
   chiller_failure: ONLY_ANSWER("{target}"),
   cooling_unit_failure: path(
     [read("list_alarms"), read("get_entity", { id: "{target}" })],
-    [change("set_cooling_setpoint", { unitId: "{required}", celsius: 16 })],
+    [
+      // a room whose only unit is the one that stopped has no other unit to turn down
+      {
+        ...change("set_cooling_setpoint", { unitId: "{required}", celsius: "{minSetpoint}" }),
+        when: "{required}",
+      },
+    ],
   ),
   breaker_trip: path(
     [read("list_alarms"), read("get_entity", { id: "{target}" })],
@@ -27,7 +33,7 @@ export const FACILITY_PATHS = {
   ),
   cdu_failure: path(
     [read("list_alarms"), read("get_entity", { id: "{target}" })],
-    [change("power_server", { id: "{required}", action: "off" })],
+    [change("power_server", { id: "{target}", action: "off" }, "required")],
   ),
   utility_outage: path(
     [read("list_alarms"), read("facility_status")],

@@ -2,17 +2,18 @@
 title: 핵심 신념
 kind: guide
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 follows:
   - docs/design-docs/adr-process.md
   - AGENTS.md
-follows_hash: 7c1ac86c9bd08561
+follows_hash: 14f47f8671cf020b
 verified_body: 670d77e72298eecc
-unchanged_reverifies: 2
+unchanged_reverifies: 3
 verification_log:
   - "2026-11-11: 5번에 follows와 확인할 수 있는 주장을 적음 (ADR-0180)"
   - "2026-11-11: 따라가는 adr-process.md와 AGENTS.md의 바뀐 곳(follows, amends, DOC09x)이 5번 서술과 맞는다"
   - "2026-11-11: adr-process.md의 재확인은 앞부분만 바뀜, 5번 서술 그대로 맞다"
+  - "2026-11-12: 따라가는 adr-process.md의 바뀐 곳은 amends의 what 항목(ADR-0182)이고 5번 서술은 그대로 맞다"
 ---
 # 핵심 신념 (Golden Principles)
 

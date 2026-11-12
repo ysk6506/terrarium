@@ -2,19 +2,19 @@
 title: 표준 모델 대조 — 층마다 빌려오는 뼈대와 플랫폼 매핑
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: 사용자가 만드는 타입은 결정이고 링크는 의미대로 영향 범위에 들어감 (ADR-0165)"
   - "2026-11-11: ADR-0167의 말로 다시 씀. 뜻은 그대로"
   - "2026-11-11: ADR-0168에 맞춤: 실험용 복사본은 같은 의미로 움직이고 시뮬레이션은 정밀·기본 두 단계"
   - "2026-11-11: 세 층을 버리고 모델 하나로 (ADR-0169). 넓히는 완료 조건 다섯"
   - "2026-11-11: 따라가는 reality-data-and-ontology.md와 product-design.md의 바뀐 곳은 목표 글과 4절 표현이라 이 문서의 타입·표준 서술에 영향 없음을 대조"
+  - "2026-11-12: 따라가는 product-design.md는 ADR-0171 만드는 중 표시만 지워졌고 이 문서의 말과 상관없다"
 follows:
   - docs/design-docs/reality-data-and-ontology.md
   - docs/design-docs/product-design.md
-follows_hash: e37e45963e9226e9
+follows_hash: 91d739021655efe9
 verified_body: 1f0e2fda761b3e23
-unchanged_reverifies: 0
+unchanged_reverifies: 1
 ---
 # 표준 모델 대조 (REQ-115·117 예정, ADR-0157)
 

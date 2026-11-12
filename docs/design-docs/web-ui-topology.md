@@ -2,13 +2,16 @@
 title: 토폴로지 보기 — 3D와 토폴로지 전환, 다시 보기
 kind: spec
 status: active
-last_verified: 2026-11-07
+last_verified: 2026-11-12
 verification_log:
   - "2026-11-07: o15 합치기 (2차 피드백 수정)"
+  - "2026-11-12: 따라가는 문서의 바뀐 곳은 ADR-0171 결과 화면의 말(glossary 결과 표, web-ui 결과 절)이고 이 문서가 다루는 화면과 상관없다"
 follows:
   - docs/design-docs/topology.md
   - docs/design-docs/web-ui.md
-follows_hash: db86771a56561fe5
+follows_hash: 4240fc0830919eb2
+verified_body: 9134aba5840ab1ca
+unchanged_reverifies: 0
 ---
 # 토폴로지 보기 (REQ-078, REQ-083, REQ-086)
 

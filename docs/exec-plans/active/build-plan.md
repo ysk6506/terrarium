@@ -2,19 +2,19 @@
 title: 구현 계획 — 테라리움
 kind: plan
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 verification_log:
-  - "2026-11-07: 12w 기준 에이전트의 DR과 기대 복구 시간을 구현 끝으로 적었다 (REQ-108)"
   - "2026-11-07: 12u 남은 점선 다섯을 실선으로 구현 끝으로 적었다 (REQ-106)"
   - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-07: o15 합치기 (2차 피드백 수정)"
   - "2026-11-11: 따라가는 product-design.md와 beta-rounds.md의 바뀐 곳(1·4절, 앞부분)이 이 계획의 서술과 어긋나지 않음을 대조"
+  - "2026-11-12: 따라가는 product-design.md는 ADR-0171 만드는 중 표시만 지워졌고 이 문서의 말과 상관없다"
 follows:
   - docs/design-docs/product-design.md
   - docs/exec-plans/active/beta-rounds.md
-follows_hash: 52a3de16675d14e7
+follows_hash: 0ad1156bfef68e20
 verified_body: a151a892ddb2f8e9
-unchanged_reverifies: 0
+unchanged_reverifies: 1
 ---
 # 구현 계획
 

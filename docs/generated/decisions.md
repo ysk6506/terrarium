@@ -174,10 +174,11 @@
 | [ADR-0169 모델은 하나다 — 현실에서 만든 세계와 지어낸 세계는 같은 타입과 같은 링크 표현을 쓰고, 매핑의 목적지는 핵심 모델이다](../design-docs/adr/0169-one-model-for-invented-and-real-worlds.md) | 유효 |  |
 | [ADR-0170 제품의 값과 원칙 여섯을 한 장에 두고, 요구사항은 그 한 장에 대 본 뒤 설계한다](../design-docs/adr/0170-product-design-one-page-six-principles.md) | 유효 | 일부 고침: [0180](../design-docs/adr/0180-docs-follow-decisions-not-only-code.md) (4절의 손으로 쓴 결정 목록) |
 | [ADR-0171 실험 결과의 첫 화면은 세 물음에 답하고, 나머지는 탭 뒤로 간다](../design-docs/adr/0171-result-page-answers-three-questions.md) | 유효 |  |
-| [ADR-0172 제공되는 시나리오는 그 세계에서 정답 풀이가 만점을 받는다](../design-docs/adr/0172-offered-scenario-means-reference-solution-reaches-full-score.md) | 유효 |  |
+| [ADR-0172 제공되는 시나리오는 그 세계에서 정답 풀이가 만점을 받는다](../design-docs/adr/0172-offered-scenario-means-reference-solution-reaches-full-score.md) | 유효 | 일부 고침: [0178](../design-docs/adr/0178-offered-scenario-solved-on-every-world-shape.md) (정답 풀이 불변식은 골든 행렬의 다섯 세계만) |
 | [ADR-0173 문서만 바뀐 변경은 가벼운 CI 경로를 탄다](../design-docs/adr/0173-docs-only-changes-take-a-light-ci-path.md) | 유효 |  |
 | [ADR-0174 권한은 프록시가 넘겨준 신원, 역할 둘, 공개 범위 셋, 감사 기록으로 한다](../design-docs/adr/0174-permissions-proxy-identity-three-scopes-audit.md) | 유효 |  |
 | [ADR-0177 제품 목표의 "현실을 닮은 세계"에 현실의 데이터로 지은 세계를 적고, 맨 위 문서를 목표에 맞춘다](../design-docs/adr/0177-goal-text-reality-worlds-and-top-level-docs.md) | 유효 |  |
+| [ADR-0178 제공되는 시나리오는 제품이 만드는 모든 세계 모양에서 정답 풀이가 만점을 받는다](../design-docs/adr/0178-offered-scenario-solved-on-every-world-shape.md) | 유효 |  |
 | [ADR-0180 문서는 코드뿐 아니라 결정도 따라간다 — 결정이 바꾸는 문서를 적고, 고쳐진 결정에 표시를 남기고, 목록은 만들어 낸다](../design-docs/adr/0180-docs-follow-decisions-not-only-code.md) | 유효 | 일부 고침: [0182](../design-docs/adr/0182-amends-says-what-it-changed.md) (amends와 amended_by는 파일 이름만 적음) |
 | [ADR-0181 테라리움의 라이선스는 Apache License 2.0이다](../design-docs/adr/0181-license-apache-2.md) | 유효 |  |
 | [ADR-0182 고친 결정에는 무엇을 고쳤는지 한 구절을 적는다 — amends의 what, link-amends가 옮겨 적고, 결정 목록이 보인다](../design-docs/adr/0182-amends-says-what-it-changed.md) | 유효 |  |

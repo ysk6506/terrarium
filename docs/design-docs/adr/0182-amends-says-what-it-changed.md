@@ -34,7 +34,9 @@ touches_protected:
   - docs/design-docs/adr/0168-experiment-copy-behaves-like-the-operation-world.md
   - docs/design-docs/adr/0169-one-model-for-invented-and-real-worlds.md
   - docs/design-docs/adr/0170-product-design-one-page-six-principles.md
+  - docs/design-docs/adr/0172-offered-scenario-means-reference-solution-reaches-full-score.md
   - docs/design-docs/adr/0174-permissions-proxy-identity-three-scopes-audit.md
+  - docs/design-docs/adr/0178-offered-scenario-solved-on-every-world-shape.md
 amends_tests: []
 test_change_reason: ""
 decision_hash: 35b8829c9f8ae1bc

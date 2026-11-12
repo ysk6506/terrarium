@@ -141,7 +141,13 @@ describe("facility scenarios on a generated campus [REQ-033] [REQ-044] [REQ-046]
     (id) => {
       const template = FACILITY_TEMPLATES.find((t) => t.id === id);
       const { world, physics } = warm(small({ profile: "ai-liquid", hallsPerFloor: 2 }), 300);
-      expect(template?.unavailable(world.index)).toBeUndefined();
+      const why = template?.unavailable(world.index);
+      // a generated campus has too many servers behind each UPS to switch off one call at a time (ADR-0178)
+      if (id === "outage-generator-fails") {
+        expect(why).toMatch(/UPS 뒤에 서버가/);
+        return;
+      }
+      expect(why).toBeUndefined();
       const doc = template?.build(world.index, "generated");
       if (!doc) throw new Error(id);
       expect(hasErrors(validateScenario(doc, { index: world.index, catalog }))).toBe(false);
