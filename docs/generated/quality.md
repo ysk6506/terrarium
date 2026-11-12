@@ -19,7 +19,7 @@
 - **끄기**: `biome-ignore` 같은 검사 끄기 주석, 건너뛴 시험, CI의 `continue-on-error`예요 (ADR-0148, `IGN*`).
 - **한도 90%를 넘음**: 파일 500줄, 함수 80줄, 복잡도 12 한도의 90%(450줄, 72줄, 10.8)를 넘은 파일·함수 수예요. 괄호는 그중 한도 자체를 넘은 것이에요(매개변수 6개 한도 포함).
 - **열린 부채**: 장부의 열린 항목이에요. 항목이 `units`로 단위를 적었거나, 그 단위의 코드 주석이 `TD-NNNN`으로 가리키면 그 단위의 부채예요. 어느 단위에도 속하지 않는 항목은 "(단위 밖)" 줄에 있어요. 괄호는 그중 가장 이른 기한이에요.
-- **문서**: 그 단위의 코드를 `covers`로 다루는 활성 문서 중 가장 오래된 `last_verified`예요 (결정 문서 ADR은 빼요).
+- **문서**: 그 단위의 코드를 `covers`로 다루는 활성 문서 중 가장 오래된 마지막 확인일이에요(문서마다 확인 기록 중 가장 새 날짜, ADR-0194) (결정 문서 ADR은 빼요).
 - 오늘 날짜를 쓰지 않아요. 기한이 지난 부채는 `DEBT011`이, 너무 오래된 문서는 `DOC020`이 따로 빨갛게 해요.
 
 ## 단위별
@@ -36,11 +36,11 @@
 | core.tools | C | 모름 / 98.0 | 0 | 7 (0) | 0 | 2026-11-12 (application-layer.md) | 한도 90% 넘음 7 |
 | core.scenario | C | 모름 / 98.0 | 0 | 7 (0) | 0 | 2026-11-07 (controllability.md) | 한도 90% 넘음 7 |
 | core.sources.worldgen | C | 모름 / 98.0 | 0 | 8 (0) | 0 | 2026-11-06 (network-fabrics.md) | 한도 90% 넘음 8 |
-| server.adapters | C | 모름 / 97.0 | 0 | 11 (0) | 0 | 2026-11-11 (harness-protocol.md) | 한도 90% 넘음 11 |
+| server.adapters | C | 모름 / 97.0 | 0 | 12 (0) | 0 | 2026-11-11 (harness-protocol.md) | 한도 90% 넘음 12 |
 | server.runtime | C | 모름 / 97.0 | 0 | 11 (0) | 0 | 2026-11-11 (capacity.md) | 한도 90% 넘음 11 |
 | web.logic | C | 모름 / 96.5 | 0 | 28 (0) | 0 | 2026-11-07 (airflow-map.md) | 한도 90% 넘음 28 |
 | web.ui | C | — | 35 | 61 (0) | 2 (2026-12-08) | 2026-11-07 (airflow-map.md) | 열린 부채 2, 한도 90% 넘음 61, 끄기 35 |
-| harness | C | 모름 / 97.5 | 0 | 16 (0) | 0 | 2026-11-12 (adr-process.md) | 한도 90% 넘음 16 |
+| harness | C | 모름 / 97.5 | 0 | 17 (0) | 0 | 2026-11-12 (adr-process.md) | 한도 90% 넘음 17 |
 | (단위 밖) | C | — | 4 | 0 (0) | 9 (2026-11-24) | 2026-11-10 (ARCHITECTURE.md) | 열린 부채 9 |
 | core.kernel | B | 모름 / 99.5 | 0 | 0 (0) | 0 | — | 커버리지 모름 |
 | core.llm | B | 모름 / 96.0 | 0 | 1 (0) | 0 | 2026-11-12 (model-registration.md) | 한도 90% 넘음 1, 커버리지 모름 |
@@ -50,14 +50,14 @@
 | core.physics.slots | B | 모름 / 97.0 | 0 | 3 (0) | 0 | 2026-11-11 (physics-laws.md) | 한도 90% 넘음 3, 커버리지 모름 |
 | core.profiles | B | 모름 / 100.0 | 0 | 0 (0) | 0 | 2026-11-12 (network-os.md) | 커버리지 모름 |
 | core.oracle | B | 모름 / 98.0 | 0 | 1 (0) | 0 | 2026-11-12 (db-storage-layers.md) | 한도 90% 넘음 1, 커버리지 모름 |
-| core.sources.realimport | B | 모름 / 97.5 | 0 | 3 (0) | 0 | 2026-11-11 (reality-data-and-ontology.md) | 한도 90% 넘음 3, 커버리지 모름 |
+| core.sources.realimport | B | 모름 / 97.5 | 0 | 3 (0) | 0 | 2026-11-12 (world-sources.md) | 한도 90% 넘음 3, 커버리지 모름 |
 | core.sources | B | 모름 / 98.0 | 0 | 1 (0) | 0 | 2026-11-12 (world-sources.md) | 한도 90% 넘음 1, 커버리지 모름 |
 | core.experiments | B | 모름 / 98.0 | 0 | 2 (0) | 0 | 2026-11-12 (experiments-and-analysis.md) | 한도 90% 넘음 2, 커버리지 모름 |
 | core.analysis | B | 모름 / 97.5 | 0 | 2 (0) | 0 | 2026-11-12 (experiments-and-analysis.md) | 한도 90% 넘음 2, 커버리지 모름 |
 | core.contract | B | 모름 / 98.0 | 0 | 2 (0) | 0 | 2026-11-11 (service-catalog.md) | 한도 90% 넘음 2, 커버리지 모름 |
-| server.cluster | B | 모름 / 91.0 | 0 | 1 (0) | 0 | 2026-11-06 (scaling.md) | 한도 90% 넘음 1, 커버리지 모름 |
+| server.cluster | B | 모름 / 91.0 | 0 | 1 (0) | 0 | 2026-11-12 (scaling.md) | 한도 90% 넘음 1, 커버리지 모름 |
 | server.mcp | B | 모름 / 98.0 | 0 | 0 (0) | 0 | — | 커버리지 모름 |
-| server.http | B | 모름 / 98.0 | 0 | 0 (0) | 0 | 2026-11-12 (operations.md) | 커버리지 모름 |
+| server.http | B | 모름 / 98.0 | 0 | 2 (0) | 0 | 2026-11-12 (operations.md) | 한도 90% 넘음 2, 커버리지 모름 |
 | server.main | B | 모름 / 95.0 | 0 | 1 (0) | 0 | 2026-11-12 (operations.md) | 한도 90% 넘음 1, 커버리지 모름 |
 | web.main | B | — | 3 | 0 (0) | 0 | 2026-11-12 (web-ui.md) | 끄기 3 |
 | tests.e2e | B | — | 1 | 0 (0) | 0 | 2026-11-12 (harness-e2e.md) | 끄기 1 |

@@ -5,7 +5,6 @@
  * room left for what the pod asks for; among those the one with the most room left wins, ties by id.
  */
 import type { Entity } from "./blueprint";
-import type { BlueprintIndex } from "./graph";
 import { k8sWorkloadDef, podSuffix } from "./k8s";
 import type { K8sNodeState, K8sWorkloadState, PodState } from "./state-k8s";
 
@@ -105,11 +104,7 @@ export function bindPending(
 }
 
 /** The pods of a world at the start: as many as each workload wants, standing where the scheduler puts them, already running. */
-export function initialPods(
-  _index: BlueprintIndex,
-  nodes: readonly NodeRef[],
-  workloads: readonly WorkloadRef[],
-): void {
+export function initialPods(nodes: readonly NodeRef[], workloads: readonly WorkloadRef[]): void {
   for (const w of workloads) {
     for (let i = 0; i < w.s.desired; i++) {
       const pod = newPod(w, 0);
