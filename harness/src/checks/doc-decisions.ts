@@ -48,7 +48,9 @@ function row(config: DocsConfig, adrNames: readonly string[], { name, data }: Ad
   const amended = amendEntries(data.amended_by, names);
   const parts = [
     ...replaced,
-    ...(amended.length > 0 ? [`일부 고침: ${amended.map((e) => ref(e.name, e.what)).join(", ")}`] : []),
+    ...(amended.length > 0
+      ? [`일부 고침: ${amended.map((e) => ref(e.name, e.what)).join(", ")}`]
+      : []),
   ];
   return `| [${label}](${linkTo(config, name)}) | ${status} | ${parts.join("; ")} |`;
 }
@@ -65,7 +67,13 @@ export function decisionsTable(root: string, config: DocsConfig): string {
     "",
     "| 결정 | 상태 | 무엇이 고쳤나 |",
     "|---|---|---|",
-    ...adrs.map((adr) => row(config, adrs.map((a) => a.name), adr)),
+    ...adrs.map((adr) =>
+      row(
+        config,
+        adrs.map((a) => a.name),
+        adr,
+      ),
+    ),
     "",
   ].join("\n");
 }
@@ -101,7 +109,8 @@ export function linkAmends(root: string, config: DocsConfig, file: string): stri
     const wanted = backEntry(self, what);
     const at = amendEntries(already, names).findIndex((e) => e.name === self);
     if (at >= 0 && JSON.stringify(already[at]) === JSON.stringify(wanted)) continue;
-    parsed.data.amended_by = at >= 0 ? already.map((e, i) => (i === at ? wanted : e)) : [...already, wanted];
+    parsed.data.amended_by =
+      at >= 0 ? already.map((e, i) => (i === at ? wanted : e)) : [...already, wanted];
     writeFileSync(path.join(root, target), joinFrontMatter(parsed.data, parsed.body), "utf8");
     changed.push(target);
   }
