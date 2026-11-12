@@ -53,9 +53,9 @@ const clip = (text: string, max: number): string =>
     .trim()
     .slice(0, max);
 
-/** The entry, checked and cleaned. Throws for a word outside the closed lists: that is a mistake in the code, caught by tests. */
-export function cleaned(input: NewAuditEntry): NewAuditEntry {
-  const { action, outcome, reason, resource, subject } = input;
+/** The words of an entry must be the closed lists' own: a mistake in the code is caught by tests, never stored. */
+function checkWords(input: NewAuditEntry): void {
+  const { action, outcome, reason, resource } = input;
   if (!(AUDIT_ACTIONS as readonly string[]).includes(action))
     throw new Error(`감사 행동 '${action}'을 몰라요`);
   if (!(AUDIT_OUTCOMES as readonly string[]).includes(outcome))
@@ -65,45 +65,51 @@ export function cleaned(input: NewAuditEntry): NewAuditEntry {
   if (reason !== undefined && !(AUDIT_REASONS as readonly string[]).includes(reason))
     throw new Error(`감사 까닭 '${reason}'을 몰라요`);
   if (!isResourceKind(resource.kind)) throw new Error(`감사 대상 종류 '${resource.kind}'를 몰라요`);
+}
+
+const cleanResource = (r: NewAuditEntry["resource"]): NewAuditEntry["resource"] => ({
+  kind: r.kind,
+  ...(r.id ? { id: clip(r.id, NAME_MAX) } : {}),
+  ...(r.name ? { name: clip(r.name, NAME_MAX) } : {}),
+  ...(r.owner ? { owner: clip(r.owner, NAME_MAX) } : {}),
+  ...(r.scope ? { scope: r.scope } : {}),
+  ...(r.group ? { group: clip(r.group, NAME_MAX) } : {}),
+});
+
+const cleanSubject = (s: NewAuditEntry["subject"]): NewAuditEntry["subject"] => ({
+  kind: s.kind,
+  id: clip(s.id, NAME_MAX),
+  name: clip(s.name, NAME_MAX),
+  ...(s.source ? { source: s.source } : {}),
+  admin: s.admin,
+});
+
+/** Only the fields whose values may be kept, and each value cut to length. */
+function cleanChanges(changes: NewAuditEntry["changes"]): NonNullable<NewAuditEntry["changes"]> {
+  const kept = (changes ?? []).filter((c) => (VALUE_FIELDS as readonly string[]).includes(c.field));
+  const cut = (v: string | null) => (v === null ? null : clip(v, VALUE_MAX));
+  return kept.map((c) => ({ field: c.field, before: cut(c.before), after: cut(c.after) }));
+}
+
+/** The entry, checked and cleaned. Throws for a word outside the closed lists. */
+export function cleaned(input: NewAuditEntry): NewAuditEntry {
+  checkWords(input);
   const fields = input.fields?.filter((f) => FIELD_NAME.test(f)).slice(0, FIELDS_MAX);
-  const changes = input.changes?.filter((c) =>
-    (VALUE_FIELDS as readonly string[]).includes(c.field),
-  );
+  const changes = cleanChanges(input.changes);
   return {
     requestId: clip(input.requestId, 80),
-    subject: {
-      kind: subject.kind,
-      id: clip(subject.id, NAME_MAX),
-      name: clip(subject.name, NAME_MAX),
-      ...(subject.source ? { source: subject.source } : {}),
-      admin: subject.admin,
-    },
+    subject: cleanSubject(input.subject),
     ...(input.onBehalfOf
       ? { onBehalfOf: { kind: "person", id: clip(input.onBehalfOf.id, NAME_MAX) } }
       : {}),
     ...(input.caseId ? { caseId: clip(input.caseId, 80) } : {}),
-    action,
-    outcome,
-    ...(reason ? { reason } : {}),
+    action: input.action,
+    outcome: input.outcome,
+    ...(input.reason ? { reason: input.reason } : {}),
     ...(input.route ? { route: clip(input.route, 60) } : {}),
-    resource: {
-      kind: resource.kind,
-      ...(resource.id ? { id: clip(resource.id, NAME_MAX) } : {}),
-      ...(resource.name ? { name: clip(resource.name, NAME_MAX) } : {}),
-      ...(resource.owner ? { owner: clip(resource.owner, NAME_MAX) } : {}),
-      ...(resource.scope ? { scope: resource.scope } : {}),
-      ...(resource.group ? { group: clip(resource.group, NAME_MAX) } : {}),
-    },
+    resource: cleanResource(input.resource),
     ...(fields && fields.length > 0 ? { fields } : {}),
-    ...(changes && changes.length > 0
-      ? {
-          changes: changes.map((c) => ({
-            field: c.field,
-            before: c.before === null ? null : clip(c.before, VALUE_MAX),
-            after: c.after === null ? null : clip(c.after, VALUE_MAX),
-          })),
-        }
-      : {}),
+    ...(changes.length > 0 ? { changes } : {}),
     ...(input.remoteAddress ? { remoteAddress: clip(input.remoteAddress, 64) } : {}),
     ...(input.detail ? { detail: input.detail } : {}),
   };

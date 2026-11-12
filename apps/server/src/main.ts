@@ -89,6 +89,24 @@ function placementOf(config: Config, token: string | undefined): Placement {
   return { ...placement, sessions: cluster, capacity: () => cluster.capacity, registry };
 }
 
+/**
+ * The two background clean-ups, each once at start (the connections after the platform starts) and then every few hours:
+ * connections nobody has used for a month are removed (REQ-051), and audit entries older than the retention setting
+ * go in one sweep that writes an entry itself (ADR-0193). Returns the function that stops them.
+ */
+function startSweeps(platform: Platform): () => void {
+  const unused = setInterval(() => void platform.sweepConnections(), CONNECTION_SWEEP_MS);
+  const sweepAudit = () => void platform.sweepAudit().catch(() => undefined);
+  const audit = setInterval(sweepAudit, AUDIT_SWEEP_MS);
+  unused.unref();
+  audit.unref();
+  sweepAudit();
+  return () => {
+    clearInterval(unused);
+    clearInterval(audit);
+  };
+}
+
 /** The whole platform: HTTP, MCP, scheduler, store. With a cluster token it also takes worker nodes. */
 async function runControl(
   config: Config,
@@ -145,14 +163,7 @@ async function runControl(
   const sweep = registry && setInterval(() => registry.sweep(), (c.nodeTtlSeconds * 1000) / 4);
   sweep?.unref();
   const recovered = await platform.start();
-  // Connections nobody has used for a month are removed (REQ-051); once at start, then every few hours.
-  const unused = setInterval(() => void platform.sweepConnections(), CONNECTION_SWEEP_MS);
-  unused.unref();
-  // Audit entries older than the retention setting go in one sweep, once at start and then every few hours; the sweep writes an entry.
-  const sweepAudit = () => void platform.sweepAudit().catch(() => undefined);
-  const auditSweep = setInterval(sweepAudit, AUDIT_SWEEP_MS);
-  auditSweep.unref();
-  sweepAudit();
+  const stopSweeps = startSweeps(platform);
   const url = await app.listen({ port: config.port, host: config.host });
   app.log.info(
     {
@@ -167,8 +178,7 @@ async function runControl(
     url,
     async stop() {
       if (sweep) clearInterval(sweep);
-      clearInterval(unused);
-      clearInterval(auditSweep);
+      stopSweeps();
       await app.close();
       await platform.stop();
       await placement.sessions.close();

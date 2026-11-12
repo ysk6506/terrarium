@@ -106,6 +106,13 @@ export function may(viewer: Viewer, action: Decided, resource: Resource = {}): D
 export const canSee = (viewer: Viewer, resource: Resource): boolean =>
   may(viewer, "see", resource).ok;
 
+/** Which record a lookup found, as the audit log names it: its kind, its id and the name it has now. */
+export const refOf = (kind: string, record: { id: string; name?: string }): Ref => ({
+  kind,
+  id: record.id,
+  name: record.name,
+});
+
 /** Would a person with no admin role see this? When not, an administrator who does is reading it by virtue of the role. */
 const seenByRole = (viewer: Viewer, resource: Resource): boolean =>
   isAdmin(viewer) && !sees({ ...viewer, roles: ["user"] }, resource);

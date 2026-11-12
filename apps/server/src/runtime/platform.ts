@@ -120,6 +120,15 @@ export function withCapacity(
 }
 
 /** The connections: the config file's harnesses plus the ones people registered. */
+/** The gateway and the time limits of a run, when the options give them. */
+function runLimitsOf(options: PlatformOptions) {
+  return {
+    ...(options.gateway ? { gateway: options.gateway } : {}),
+    ...(options.wallLimitMs ? { wallLimitMs: options.wallLimitMs } : {}),
+    ...(options.graceMs !== undefined ? { graceMs: options.graceMs } : {}),
+  };
+}
+
 function connectionsOf(options: PlatformOptions, stamps: Stamps): Connections {
   const { adapters } = options;
   const configs = new Map((adapters.harnessConfigs ?? []).map((c) => [c.id, c]));
@@ -211,9 +220,7 @@ export class Platform {
       emit: (id: string, e: Parameters<EventBus["emit"]>[1]) => this.events.emit(id, e),
       activity: (worldId: string, e: Parameters<EventBus["emitWorld"]>[1]) =>
         this.events.emitWorld(worldId, e),
-      ...(options.gateway ? { gateway: options.gateway } : {}),
-      ...(options.wallLimitMs ? { wallLimitMs: options.wallLimitMs } : {}),
-      ...(options.graceMs !== undefined ? { graceMs: options.graceMs } : {}),
+      ...runLimitsOf(options),
     };
     this.dispatcher = new Dispatcher(
       this.ctx.store,

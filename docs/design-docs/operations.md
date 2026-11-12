@@ -9,15 +9,15 @@ covers:
   - apps/server/src/http/identity.ts
   - apps/server/src/http/viewer.ts
   - apps/server/src/main.ts
-covers_hash: 66e66d7126e1139f
+covers_hash: acf368e03c6beb14
 verification_log:
-  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-11: self-declared admin: token, else loopback socket address only; proxy mode unchanged"
   - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
   - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
   - "2026-11-12: ADR-0193: audit.retentionDays(기본 365, 0은 영구), 스키마 4판, 쓰기 실패 때의 동작, 지표 둘을 config.ts, sqlite-store.ts, sqlite-audit.ts, main.ts, control-routes.ts와 대어 확인"
+  - "2026-11-12: main.ts의 정리 둘(안 쓰는 연결, 감사 기록)을 startSweeps 한 함수로 묶은 것을 대어 봤다: 주기 6시간과 시작 때 한 번이라는 서술은 그대로 맞다"
 verified_body: 6fa3d195ecf31a4f
-unchanged_reverifies: 0
+unchanged_reverifies: 1
 ---
 # 서버 운영
 

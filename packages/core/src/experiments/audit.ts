@@ -225,16 +225,19 @@ export interface AuditStore {
 
 /** Does the entry pass the filter? (The memory store applies it; SQL applies the same rule in its WHERE clause.) */
 export function auditMatches(e: AuditEntry, f: AuditFilter): boolean {
+  // a filter that is not given holds for every entry; each given one must hold
+  const holds = <T>(given: T | undefined, test: (v: T) => boolean): boolean =>
+    given === undefined || test(given);
   return (
-    (f.from === undefined || e.at >= f.from) &&
-    (f.to === undefined || e.at < f.to) &&
-    (f.subject === undefined || e.subject.id === f.subject) &&
-    (f.action === undefined || e.action === f.action) &&
-    (f.resourceKind === undefined || e.resource.kind === f.resourceKind) &&
-    (f.resourceId === undefined || e.resource.id === f.resourceId) &&
-    (f.outcome === undefined || e.outcome === f.outcome) &&
-    (f.owner === undefined || e.resource.owner === f.owner) &&
-    (f.before === undefined || e.seq < f.before)
+    holds(f.from, (v) => e.at >= v) &&
+    holds(f.to, (v) => e.at < v) &&
+    holds(f.subject, (v) => e.subject.id === v) &&
+    holds(f.action, (v) => e.action === v) &&
+    holds(f.resourceKind, (v) => e.resource.kind === v) &&
+    holds(f.resourceId, (v) => e.resource.id === v) &&
+    holds(f.outcome, (v) => e.outcome === v) &&
+    holds(f.owner, (v) => e.resource.owner === v) &&
+    holds(f.before, (v) => e.seq < v)
   );
 }
 

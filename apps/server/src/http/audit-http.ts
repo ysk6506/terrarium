@@ -72,7 +72,11 @@ export function idOfResponse(response: unknown): string | undefined {
 export function standingOfResponse(response: unknown): Partial<AuditResource> {
   const r = asRecord(response);
   if (!r) return {};
-  const inner = NESTED.map((k) => asRecord(r[k])).find(Boolean) ?? r;
+  return standingOf(NESTED.map((k) => asRecord(r[k])).find(Boolean) ?? r);
+}
+
+/** The same, of a record itself (a row of a list), without looking for one inside it. */
+function standingOf(inner: Record<string, unknown>): Partial<AuditResource> {
   const sharing = asRecord(inner.sharing);
   const scope = [sharing?.scope, inner.scope].find((s) =>
     (SCOPES as readonly unknown[]).includes(s),
@@ -122,21 +126,21 @@ function namesOf(value: unknown): string[] | undefined {
 }
 
 /** For a list: how many of the things it held are another person's, kept to themselves or to a group the asker is not in. */
+function isKeptFromViewer(item: unknown, viewer: Viewer): boolean {
+  const outer = asRecord(item);
+  const r = asRecord(outer?.experiment) ?? outer;
+  if (!r) return false;
+  const standing = standingOf(r);
+  const kept =
+    standing.scope === "private" ||
+    (standing.scope === "group" && !viewer.groups.includes(standing.group ?? ""));
+  return standing.owner !== undefined && standing.owner !== viewer.id && kept;
+}
+
 function othersKept(response: unknown, viewer: Viewer): number {
-  if (!Array.isArray(response)) return 0;
-  let n = 0;
-  for (const item of response) {
-    const outer = asRecord(item);
-    const r = asRecord(outer?.experiment) ?? outer;
-    if (!r) continue;
-    const sharing = asRecord(r.sharing);
-    const scope = text(sharing?.scope) ?? text(r.scope);
-    const group = text(sharing?.group) ?? text(r.group);
-    const owner = text(r.owner);
-    const kept = scope === "private" || (scope === "group" && !viewer.groups.includes(group ?? ""));
-    if (owner !== undefined && owner !== viewer.id && kept) n += 1;
-  }
-  return n;
+  return Array.isArray(response)
+    ? response.filter((item) => isKeptFromViewer(item, viewer)).length
+    : 0;
 }
 
 const withStanding = (kind: string, rest: Partial<AuditResource>): AuditResource => ({
@@ -183,20 +187,25 @@ export class AuditedCall {
     return { requestId: this.requestId, subject: subjectOf(viewer), route: this.name };
   }
 
+  /** The id the route's classification says to take: from the address, from the answer, or from what a lookup found. */
+  private idFor(kind: string, end: Ended): string | undefined {
+    switch (this.class.id) {
+      case "param":
+        return end.params.id;
+      case "response":
+        return idOfResponse(end.response);
+      case "note":
+        return [...this.notes.found.values()].find((f) => f.kind === kind)?.id;
+      default:
+        return undefined;
+    }
+  }
+
   /** The thing the route is about. `trusted`: a lookup confirmed it, so the id in the address (or the answer) may be named. */
   private target(viewer: Viewer, end: Ended, trusted: boolean): AuditResource {
     const cls = this.class;
     const kind = cls.resource ?? "session";
-    const found = [...this.notes.found.values()].find((f) => f.kind === kind);
-    const id = !trusted
-      ? undefined
-      : cls.id === "param"
-        ? end.params.id
-        : cls.id === "response"
-          ? idOfResponse(end.response)
-          : cls.id === "note"
-            ? found?.id
-            : undefined;
+    const id = trusted ? this.idFor(kind, end) : undefined;
     const noted = id === undefined ? undefined : this.notes.found.get(keyOf({ kind, id }));
     // what the lookup found is how the thing stood at that moment; an answer says how it stands after the change
     const held: Partial<AuditResource> = noted ?? (trusted ? standingOfResponse(end.response) : {});
