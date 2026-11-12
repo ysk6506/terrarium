@@ -2,7 +2,6 @@
 title: ADR-0135 지금 하는 방식은 사람이 적고, 에이전트의 값은 코드가 기록에서 세어 둘을 같은 잣대로 견준다
 kind: decision
 status: active
-last_verified: 2026-11-07
 enforced_by:
   - packages/core/src/analysis/process.test.ts
   - packages/core/src/analysis/ontology.test.ts

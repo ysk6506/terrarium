@@ -2,7 +2,6 @@
 title: ADR-0142 커버리지 하한을 새 단위까지 넓히고, 고장 난 날에도 물리 법칙을 검사한다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - .github/workflows/ci.yml
   - harness/config/coverage-floor.json

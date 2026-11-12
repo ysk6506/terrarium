@@ -2,19 +2,9 @@
 title: Terrarium
 kind: guide
 status: active
-last_verified: 2026-11-12
 covers:
   - package.json
   - docs/exec-plans/active/beta-rounds.md
-covers_hash: 435da7c7ddd4a39e
-verification_log:
-  - "2026-11-12: main 합침: 라이선스 행·링크(ADR-0185)와 내부 사실 줄(ADR-0187)이 함께 있다. 서로 어긋나지 않는다"
-  - "2026-11-12: main을 합침: 라이선스 절의 고지 파일 링크(ADR-0185)와 main의 변경이 함께 들어감"
-  - "2026-11-12: main을 합침: 넓힌 목표 문장과 설계 단계 절(ADR-0189), 라이선스 절의 고지 파일 링크(ADR-0185)가 함께 들어감"
-  - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
-  - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
-verified_body: 7d0c2323e0ee0ec2
-unchanged_reverifies: 4
 ---
 # Terrarium
 

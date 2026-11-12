@@ -2,7 +2,6 @@
 title: ADR-0117 흉내 OS를 깊게 — 작은 리눅스 흉내가 run_command에 답한다 (0116 대체)
 kind: decision
 status: active
-last_verified: 2026-11-06
 supersedes: 0116-real-hosts-in-the-world.md
 enforced_by:
   - tests/spec/deep-os-shell.test.ts

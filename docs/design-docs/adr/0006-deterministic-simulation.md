@@ -2,7 +2,6 @@
 title: ADR-0006 결정론적 시뮬레이션
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
 - ARCH052
 touches_protected: []

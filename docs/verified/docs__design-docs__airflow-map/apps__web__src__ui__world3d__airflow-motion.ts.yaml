@@ -1,0 +1,7 @@
+doc: "docs/design-docs/airflow-map.md"
+target: "apps/web/src/ui/world3d/airflow-motion.ts"
+hash: "4a888cfaa19d2210"
+date: "2026-11-07"
+note: "REQ-102(ADR-0123): 사다리·직접 짓기 화면과 말(시운전·미리 보기·전제)을 코드와 대조해 고쳤다"
+text_changed: true
+doc_hash: "ff01960c12160a6f"

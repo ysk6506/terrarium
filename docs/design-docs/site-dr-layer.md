@@ -2,7 +2,6 @@
 title: 사이트·DR 층 — 서버룸 하나에서 멀티 사이트까지, 지역 복제, 합의 DB, 관리형 멀티 AZ
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - packages/core/src/world/ladder-site.ts
   - packages/core/src/world/site-dr.ts
@@ -21,15 +20,6 @@ covers:
   - packages/core/src/scenario/controls-site.ts
   - packages/core/src/sources/worldgen/shaped-site.ts
   - packages/core/src/topology/impact-site.ts
-verification_log:
-  - "2026-11-11: tools·world/os: 닿지 않는 분기 정리와 시험 추가; 동작은 같음(TD-0002), awk는 이름 바로 뒤 '(' 호출과 srand 반환값"
-  - "2026-11-11: ADR-0172: 제공되는 시나리오 조건(컨테이너 배치 작업·자리, 사이트 서버), 서비스 프로세스 메모리 몫, 정답 풀이 길의 when·later·choose를 코드와 대조해 서술을 더했다. 나머지는 그대로 맞다"
-  - "2026-11-11: Checked against site-model.ts: the unreferenced siteIds helper was removed, no described behaviour changed."
-  - "2026-11-11: main을 합친 뒤 다시 대조: ADR-0172와 ADR-0174, 커버리지 시험 추가가 함께 들어감"
-  - "2026-11-12: 덮는 시나리오 라이브러리에서 정렬 도우미 byId의 자리만 library-kit.ts로 옮김. 동작은 그대로이고 이 문서는 그 이름을 말하지 않는다"
-covers_hash: c46dd73534c26946
-verified_body: ab41086d082c8d1b
-unchanged_reverifies: 0
 ---
 # 사이트·DR 층 (REQ-106, ADR-0129)
 

@@ -2,7 +2,6 @@
 title: ADR-0052 빌더는 땅을 사고, 건물을 용도대로 짓고, 서버룸을 채우고, 새 사업장에서 시작한다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - apps/web/src/logic/builder/fill.test.ts
   - apps/web/src/logic/builder/new-site.test.ts

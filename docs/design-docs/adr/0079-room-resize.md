@@ -2,7 +2,6 @@
 title: ADR-0079 서버룸과 건물은 직사각형 안에서 자유롭게 넓히고, 꽉 차면 길을 보여 준다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - apps/web/src/logic/builder/builder.test.ts
 touches_protected:

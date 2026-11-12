@@ -2,7 +2,6 @@
 title: ADR-0018 단위 테스트는 단위의 의존 규칙을 따르고, 단위 사이의 약속은 tests/spec에 둔다
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
   - ARCH010
 touches_protected: []

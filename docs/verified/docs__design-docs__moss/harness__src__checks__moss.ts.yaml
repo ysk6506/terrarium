@@ -1,0 +1,7 @@
+doc: "docs/design-docs/moss.md"
+target: "harness/src/checks/moss.ts"
+hash: "fa25ae3c0de7ded9"
+date: "2026-11-12"
+note: "ADR-0194: 질문 은행에 손으로 쓴 질문만 두는 것과 moss.ts 선행 탐침을 대조"
+text_changed: true
+doc_hash: "16b99b45659bb624"

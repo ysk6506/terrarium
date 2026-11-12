@@ -1,0 +1,7 @@
+doc: "docs/design-docs/gpu-fabric.md"
+target: "packages/core/src/facades/netos-bgp.ts"
+hash: "f9bb0576f7ed1a69"
+date: "2026-11-04"
+note: "2026-11-04: ADR-0073. 알람 문장 표를 해요체(끊겼어요, 느려져요, 통신할 수 없어요)로 고쳤다. 계획과 알람 규칙은 그대로"
+text_changed: true
+doc_hash: "09f4ec181a3950c7"

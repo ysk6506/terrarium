@@ -2,7 +2,6 @@
 title: ADR-0169 모델은 하나다 — 현실에서 만든 세계와 지어낸 세계는 같은 타입과 같은 링크 표현을 쓰고, 매핑의 목적지는 핵심 모델이다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-119 예정). 만들 때 enforced_by를 "왕복한 세계에서 기존 시나리오의 점수가 같다" 시험과 기존 세계의 점수 불변 시험으로 바꾼다.

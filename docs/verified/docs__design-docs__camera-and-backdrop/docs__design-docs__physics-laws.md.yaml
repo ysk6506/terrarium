@@ -1,0 +1,7 @@
+doc: "docs/design-docs/camera-and-backdrop.md"
+target: "docs/design-docs/physics-laws.md"
+hash: "1fc10cfd3c032e5f"
+date: "2026-11-12"
+note: "내부 사실 서술을 요구의 말로 고침 (ADR-0188)"
+text_changed: true
+doc_hash: "6655974e30844e1b"

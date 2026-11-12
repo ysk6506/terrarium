@@ -2,7 +2,6 @@
 title: ADR-0115 SDN 오버레이와 클라우드 네이티브 네트워크 층을 코어 모델로 올리면서 시험 열다섯 곳의 기대값을 고친다
 kind: decision
 status: active
-last_verified: 2026-11-06
 enforced_by:
   - tests/spec/sdn-physics.test.ts
   - tests/spec/sdn-worldgen.test.ts

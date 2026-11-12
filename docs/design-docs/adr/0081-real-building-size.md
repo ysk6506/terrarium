@@ -2,7 +2,6 @@
 title: ADR-0081 건물은 실제 크기에 묶이고, 방은 그 바닥이 허락하는 만큼 자유롭다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - packages/core/src/world/floor-space.test.ts
   - packages/core/src/sources/worldgen/hpc-centre.test.ts

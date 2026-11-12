@@ -2,7 +2,6 @@
 title: ADR-0179 공개 범위의 두 결정(기본 모델은 "모두"인 모델만, 범위 바꾸기는 한 길)과 ADR-0174의 바뀐 시험 목록
 kind: decision
 status: active
-last_verified: 2026-11-12
 enforced_by:
   - apps/server/src/http/scope-matrix.test.ts
   - apps/server/src/http/scope-use.test.ts

@@ -2,7 +2,6 @@
 title: ADR-0150 현실 데이터로 세계 만들기는 요구사항이고, 그 설계를 결정과 제안으로 나눈다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - tests/spec/realimport.test.ts
 touches_protected:

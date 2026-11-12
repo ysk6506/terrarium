@@ -2,7 +2,6 @@
 title: ADR-0072 편집기의 말을 용어집에 맞추고, 그 말을 지키던 시험 일곱 개의 기대값을 고친다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - apps/web/src/logic/editor-words.test.ts
   - apps/web/src/logic/editor-units.test.ts

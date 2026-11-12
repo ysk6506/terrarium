@@ -2,7 +2,6 @@
 title: ADR-0073 편집기 밖의 화면 글도 용어집에 맞추고, 그 말을 지키던 시험 열여섯 개의 기대값을 고친다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - apps/web/src/logic/app-words.test.ts
   - apps/server/src/adapters/connectors/connector-words.test.ts

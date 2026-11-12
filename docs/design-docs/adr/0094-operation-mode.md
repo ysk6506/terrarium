@@ -2,7 +2,6 @@
 title: ADR-0094 운영 모드 — 끝이 없는 실험, 당겨서 보는 모니터링, 실시간과 빨리 감기
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - packages/core/src/session/operation/operation.test.ts
   - packages/core/src/session/operation/discrimination.test.ts

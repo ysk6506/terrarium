@@ -2,7 +2,6 @@
 title: HTTP API 계약
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - packages/core/src/contract/routes.ts
   - packages/core/src/contract/responses.ts
@@ -13,13 +12,6 @@ covers:
   - packages/core/src/contract/model-routes.ts
   - packages/core/src/contract/community.ts
   - packages/core/src/contract/community-routes.ts
-covers_hash: eb2ac775fe9ac774
-verification_log:
-  - "2026-11-07: REQ-112의 경로 넷을 표에 더했다"
-  - "2026-11-11: main 합치기 뒤 다시 읽음: 물리 프로필(REQ-113) 반영 문단과 라우트 행이 main의 새 내용과 함께 맞다"
-  - "2026-11-11: REQ-118 시드당 반복: 실행 키(시드·반복), 시드 단위 통계, 순위 조건(시드 3개), 한도 60, 화면 반영을 코드와 대조해 고쳤다. 이 문서의 나머지는 그대로 맞다"
-  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
-  - "2026-11-12: ADR-0183: 한 가지 말(번, 상황, 객체·링크, 넘기기)에 맞춰 인용한 화면 글을 고쳤다"
 ---
 # HTTP API 계약 (core.contract)
 

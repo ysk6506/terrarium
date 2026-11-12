@@ -2,17 +2,9 @@
 title: 현실 데이터와 모델 — 연결·수집·매핑의 분리, 모델 관리, 현실 세계와 실험 세계
 kind: spec
 status: active
-last_verified: 2026-11-11
 covers:
   - packages/core/src/sources/realimport/port.ts
   - packages/core/src/world/blueprint-links.ts
-covers_hash: c2f817a5dab860c4
-verification_log:
-  - "2026-11-11: 샘플 검증의 결과 반영: 정제 연산 여덟 가지, 연쇄 요청, 정규화 후 비교, 링크 정의의 조건 유형, 이중화 그룹의 출처 (ADR-0161). SPL 행을 ADR-0152와 맞춤"
-  - "2026-11-11: ECMP 이중화 그룹의 출처를 장비 설정으로 (ADR-0164)"
-  - "2026-11-11: 층 넷(소스·정제·온톨로지 매핑·링크 정의), 객체 타입과 링크 타입은 열려 있고 의미는 닫힌 목록 (ADR-0165)"
-  - "2026-11-11: ADR-0167의 말로 다시 씀. 뜻은 그대로"
-  - "2026-11-11: ADR-0168에 맞춤: 실험용 복사본은 같은 의미로 움직이고 시뮬레이션은 정밀·기본 두 단계"
 ---
 # 현실 데이터와 모델
 

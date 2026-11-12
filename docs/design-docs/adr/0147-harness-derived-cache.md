@@ -2,7 +2,6 @@
 title: ADR-0147 구조 검사는 같은 파일에 같은 질문을 두 번 하지 않는다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - harness/src/ts-ast.test.ts
   - harness/src/common.test.ts

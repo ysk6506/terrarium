@@ -2,7 +2,6 @@
 title: 이끼 — 테라리움 도우미가 문서와 화면으로 답하고 화면을 같이 넘기는 법
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - apps/web/src/moss/bar-offset.ts
   - apps/web/src/moss/ask.tsx
@@ -23,15 +22,6 @@ covers:
   - apps/web/src/ui/moss/Launcher.tsx
   - apps/web/src/logic/models.ts
   - harness/src/checks/moss.ts
-verification_log:
-  - "2026-11-11: ADR-0146: 이끼 알약이 떠 있지 않고 홈에서만 흐름 안, 키보드 도움말은 3D 탭 첫 한 번, 좁은 폭 제목 줄 나눔을 코드와 대조해 맞춤"
-  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
-  - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
-  - "2026-11-11: 문서 색인이 하네스가 만든 generated 폴더를 건너뛰게 된 것을 적음 (ADR-0180). 코드의 다른 변화는 없음"
-  - "2026-11-12: 이끼가 묻는 사람마다 기본 모델을 정하는 것(defaultFor, ADR-0179)과 합친 main의 변화를 코드와 대조해 한 문장을 더함"
-covers_hash: ff01f4eb25efaa4e
-verified_body: 3be83a9ee1e0432f
-unchanged_reverifies: 0
 ---
 # 이끼 (REQ-103, [ADR-0124](adr/0124-moss-assistant.md), [ADR-0125](adr/0125-moss-requires-model.md))
 
@@ -139,7 +129,7 @@ unchanged_reverifies: 0
 
 ## 찾기 품질을 재는 법
 
-- `tests/spec/moss-questions.json`: 문서 조각마다 "X가 뭐예요?" 하나(자동, `pnpm moss-bank`로 다시 씀)와 손으로 쓴 "왜" 질문 37개(점수를 묻는 7개 포함, 기대 문서는 `measurement.md`). 질문마다 답이 들어 있어도 되는 문서를 적는다(설계 문서와 그 ADR).
+- `tests/spec/moss-questions.json`: 손으로 쓴 "왜" 질문 37개만 커밋한다. 문서 조각마다 "X가 뭐예요?" 하나(자동)는 시험이 돌 때 지금 문서에서 만든다(`tests/spec/moss-bank.ts`의 `loadBank`). 문서를 고칠 때마다 수백 줄이 바뀌어 병렬 변경이 부딪쳤기 때문이다 (ADR-0194). `pnpm moss-bank`는 파일의 모양을 다듬고 질문 수를 알려 준다. 손으로 쓴 질문은 점수를 묻는 7개를 포함하고, 기대 문서는 `measurement.md`(점수를 묻는 7개 포함, 기대 문서는 `measurement.md`). 질문마다 답이 들어 있어도 되는 문서를 적는다(설계 문서와 그 ADR).
 - `tests/spec/moss-questions.test.ts`: 위 세 조각에 기대한 문서가 든 비율이 은행 전체에서 90% 이상, 지금 문서에서 새로 만든 자동 질문에서 90% 이상, 손으로 쓴 "왜" 질문만으로 80% 이상.
 - `pnpm moss-eval`: 기본 모델이 등록된 서버에 은행을 실제로 물어 "출처를 달고 답한 비율"과 "문서에 없어요" 비율을 잰다(`--record`는 `harness/config/moss-floor.json`의 `measured`에 적는다). 바닥값(`floor`)은 아직 정하지 않았다.
 

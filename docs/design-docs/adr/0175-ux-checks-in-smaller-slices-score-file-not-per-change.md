@@ -2,7 +2,6 @@
 title: ADR-0175 UX 검사를 더 잘게 나눠 돌리고, 점수 파일은 변경마다 커밋하지 않는다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - .github/workflows/ci.yml
   - harness/src/ux/merge.test.ts

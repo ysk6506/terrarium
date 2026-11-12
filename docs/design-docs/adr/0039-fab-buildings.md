@@ -2,7 +2,6 @@
 title: ADR-0039 반도체 팹 건물과 사업장의 생활감
 kind: decision
 status: active
-last_verified: 2026-10-30
 enforced_by:
   - packages/core/src/sources/worldgen/campus-fab.test.ts
   - apps/web/src/logic/world3d/fab.test.ts

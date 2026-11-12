@@ -1,0 +1,7 @@
+doc: "docs/design-docs/network-os.md"
+target: "packages/core/src/facades/netos-http.ts"
+hash: "b2c7d14ce9125850"
+date: "2026-11-12"
+note: "ADR-0184: 한계 출력 모양 변경(terrarium 줄만)이 이 문서 내용과 어긋나지 않음을 대조"
+text_changed: false
+doc_hash: "0e1745b3026d9e81"

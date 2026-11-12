@@ -1,70 +1,32 @@
 /**
  * Documents follow decisions, not only code (ADR-0180).
  *
- * DOC092 a non-ADR doc has neither `covers` nor `follows`
- * DOC010/011/012 a followed doc changed / the follows were never verified / they match nothing
+ * DOC092 a non-ADR doc has neither `covers` nor `follows` (freshness itself is doc-freshness.ts, ADR-0194)
  * DOC091 `amends` and `amended_by` do not point at each other
  * DOC093 the product goal sentence differs in README.md or AGENTS.md
  */
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { splitFrontMatter, type Violation, violation } from "../common";
-import { expandGlobs } from "../files";
 import { amendEntries } from "./doc-amends";
-import { followsFingerprint } from "./doc-print";
-import type { DocsConfig } from "./docs";
+import type { DocsConfig } from "./doc-config";
 
 const strings = (value: unknown): string[] => (Array.isArray(value) ? value.map(String) : []);
 const GOAL_HEADING = "## 제품 목표";
 
-export const reverifyCommand = (file: string): string =>
-  `pnpm tsx harness/src/checks/docs.ts reverify ${file} --note "<what you checked or changed>"`;
-
-/** DOC092 plus the freshness of `follows` (same codes and wording as `covers`). */
-export function checkFollows(
-  root: string,
-  file: string,
-  data: Record<string, unknown>,
-): Violation[] {
+/** DOC092: a document that neither covers code nor follows other documents has nothing to go stale against. */
+export function checkFollows(file: string, data: Record<string, unknown>): Violation[] {
   if (data.kind === "decision") return [];
-  const follows = strings(data.follows);
-  if (strings(data.covers).length === 0 && follows.length === 0) {
-    return [
-      violation(
-        "DOC092",
-        file,
-        1,
-        "doc neither covers code nor follows other docs, so nothing tells when it goes out of date",
-        "Add `covers:` (code it describes) or `follows:` (docs, ADRs or globs whose changes should make it be re-read), then run reverify.",
-      ),
-    ];
-  }
-  if (follows.length === 0) return [];
-  if (expandGlobs(root, follows).length === 0) {
-    return [
-      violation(
-        "DOC012",
-        file,
-        1,
-        `'follows' matches no files: ${follows.join(", ")}`,
-        "Fix the paths (the doc moved or was deleted) or remove the stale claim.",
-      ),
-    ];
-  }
-  const fix = `Re-read the doc against the docs it follows, update it, then run: ${reverifyCommand(file)}`;
-  if (typeof data.follows_hash !== "string")
-    return [violation("DOC011", file, 1, "doc declares 'follows' but was never verified", fix)];
-  if (data.follows_hash !== followsFingerprint(root, follows))
-    return [
-      violation(
-        "DOC010",
-        file,
-        1,
-        "a doc this doc follows changed since it was last verified",
-        fix,
-      ),
-    ];
-  return [];
+  if (strings(data.covers).length > 0 || strings(data.follows).length > 0) return [];
+  return [
+    violation(
+      "DOC092",
+      file,
+      1,
+      "doc neither covers code nor follows other docs, so nothing tells when it goes out of date",
+      "Add `covers:` (code it describes) or `follows:` (docs, ADRs or globs whose changes should make it be re-read), then run reverify.",
+    ),
+  ];
 }
 
 /** DOC091: every `amends` entry exists and lists this ADR in its `amended_by`; and the other way round. */

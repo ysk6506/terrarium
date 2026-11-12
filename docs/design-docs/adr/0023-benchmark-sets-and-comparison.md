@@ -2,7 +2,6 @@
 title: ADR-0023 벤치마크 세트, 순위, "분명한 차이"의 기준
 kind: decision
 status: active
-last_verified: 2026-10-29
 enforced_by:
   - packages/core/src/experiments/experiments.test.ts
   - packages/core/src/analysis/analysis.test.ts

@@ -2,7 +2,6 @@
 title: 스위치의 VLAN·MAC 표·ARP·라우팅 — 설정이 실제로 길을 바꾼다
 kind: spec
 status: active
-last_verified: 2026-11-04
 covers:
   - packages/core/src/world/net-addr.ts
   - packages/core/src/world/net-config.ts
@@ -18,13 +17,6 @@ covers:
   - packages/core/src/facades/netos-l3.ts
   - packages/core/src/facades/netos-ping.ts
   - packages/core/src/facades/netos-l23-config.ts
-verification_log:
-  - "2026-11-04: 처음 썼다: 설계 도출, netconf 패치, 덩어리 계산, trace/ping, 설정 때문에 끊긴 서버 알람, 세 OS 명령과 한계를 world/net-*.ts, physics/net-alarms.ts, facades/netos-l2·l3·ping·l23-config와 대조 (REQ-064, ADR-0061)"
-  - "2026-11-04: net-design·net-check·net-model·net-trace·net-plan·net-config·net-topology·net-alarms의 클라우드 분기를 확인했다. 이 문서는 레거시 모양을 말한다고 밝히고 STP·BGP는 새 문서로 보냈다 (REQ-065)"
-  - "2026-11-04: 호스트 계획의 key·rail, NIC별 MAC, net-topology·net-design 변경을 대조하고 GPU 문서 링크를 더함"
-  - "2026-11-04: net-design의 함수 분리(동작 동일)를 확인"
-  - "2026-11-04: 2026-11-04: ADR-0073. 덮는 코드에서 사람이 읽는 말(알람 해요체, 에이전트 지시문 한다체, 툴·멈춤·상한 등)만 바뀌었고 문서가 말하는 구조와 규칙은 그대로다"
-covers_hash: c28e5ab94ea8fd44
 ---
 # 스위치의 VLAN·MAC 표·ARP·라우팅 (REQ-064, ADR-0061)
 

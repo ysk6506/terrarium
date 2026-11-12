@@ -2,7 +2,6 @@
 title: ADR-0144 현실 데이터는 네 단으로 들어오고, 세계는 현실과 실험 두 종류이며, 모델은 핵심을 잠그고 넓힌다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다. 단계 A·B를 만들 때 enforced_by를 단 분리·다시 돌리기·지문 시험으로 바꾼다.

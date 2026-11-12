@@ -2,7 +2,6 @@
 title: ADR-0070 시나리오 편집기는 처음 쓰는 사람이 10분 안에 돌아가는 시나리오를 만들게 한다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - apps/web/src/logic/first-scenario.test.ts
 touches_protected:

@@ -1,0 +1,7 @@
+doc: "docs/design-docs/real-prices.md"
+target: "packages/core/src/catalog/builtin/orv3.ts"
+hash: "4fea9b154988acac"
+date: "2026-11-07"
+note: "2026-11-07: REQ-111(ADR-0134): 기반 랙·서버 수 합계·빌더 오른쪽 아래 칩을 코드와 대조해 고쳤고 나머지는 그대로 맞다"
+text_changed: true
+doc_hash: "d4a9d66967edbb00"

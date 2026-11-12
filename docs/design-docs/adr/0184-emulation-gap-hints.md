@@ -2,7 +2,6 @@
 title: ADR-0184 실험장이 못 해서 틀린 것에만 힌트를 준다 — 흉내 한계(emulation gap)는 한 가지 길로 말하고 기록한다
 kind: decision
 status: active
-last_verified: 2026-11-12
 enforced_by:
   - tests/spec/emulation-gaps.test.ts
 updates_docs:

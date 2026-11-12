@@ -2,7 +2,6 @@
 title: ADR-0148 검사는 조용히 끌 수 없고, 단위별 품질 등급표는 하네스가 만든다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - harness/src/checks/ignores.test.ts
   - harness/src/checks/quality.test.ts

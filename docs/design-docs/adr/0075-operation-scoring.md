@@ -2,7 +2,6 @@
 title: ADR-0075 운영 채점은 물리가 보상하는 곳에만 넣고, 채점표는 사실만 말한다
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - tests/spec/calibration.test.ts
   - tests/spec/operation-scoring.test.ts

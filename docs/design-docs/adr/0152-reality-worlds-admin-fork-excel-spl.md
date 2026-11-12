@@ -2,7 +2,6 @@
 title: ADR-0152 현실에서 만든 세계는 관리자가 다루고 복사해서 실험하며, 엑셀과 SPL이 첫 길이다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-115 예정). 만들 때 enforced_by를 관리자·공개 전·복사·SPL 허용 목록 시험으로 바꾼다.

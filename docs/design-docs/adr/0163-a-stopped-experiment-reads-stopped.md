@@ -2,7 +2,6 @@
 title: ADR-0163 멈춘 실행이 하나라도 있는 실험은 "완료"가 아니라 "멈춤"으로 읽힌다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - packages/core/src/experiments/experiments.test.ts
   - packages/core/src/analysis/stopped-experiment.test.ts

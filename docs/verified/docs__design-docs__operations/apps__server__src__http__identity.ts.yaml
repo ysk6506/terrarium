@@ -1,0 +1,7 @@
+doc: "docs/design-docs/operations.md"
+target: "apps/server/src/http/identity.ts"
+hash: "abe5f7481202edba"
+date: "2026-11-12"
+note: "step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
+text_changed: true
+doc_hash: "2cb4575df7362562"

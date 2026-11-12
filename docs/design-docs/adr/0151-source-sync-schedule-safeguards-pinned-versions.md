@@ -2,7 +2,6 @@
 title: ADR-0151 소스는 주기로 동기화하고, 적용은 안전장치를 거치며, 실험은 세계의 판에 묶인다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-115 예정). 만들 때 enforced_by를 주기·큰 변화·실험 고정·비밀 시험으로 바꾼다.

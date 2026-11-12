@@ -2,18 +2,8 @@
 title: 소스 관리 — 동기화 주기, 실행 기록, 안전장치, 신선도
 kind: spec
 status: active
-last_verified: 2026-11-12
-verification_log:
-  - "2026-11-11: 실시간 상태는 액션과 함께 미룸 (제품 책임자와 정함)"
-  - "2026-11-11: 11절 관측성. cluster/control-routes.ts의 metricsText, runtime/executor.ts의 traceparent와 대조"
-  - "2026-11-11: 9·10절: 엑셀 읽기 설정과 못 읽는 모양, SPL의 기대하는 컬럼 (ADR-0161)"
-  - "2026-11-11: ADR-0167의 말로 다시 씀. 뜻은 그대로"
-  - "2026-11-12: 내부 사실 서술을 요구의 말로 고침 (ADR-0188)"
 follows:
   - docs/design-docs/reality-data-and-ontology.md
-follows_hash: f81800a6f2f629b1
-verified_body: 85393970db6a6ed2
-unchanged_reverifies: 0
 ---
 # 소스 관리 (REQ-115 예정, ADR-0151)
 

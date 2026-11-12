@@ -2,7 +2,6 @@
 title: ADR-0136 물리가 닿는 열네 자리를 모델 자리로 만들고, 법칙 검사와 프로필 지문으로 채점을 지킨다
 kind: decision
 status: active
-last_verified: 2026-11-10
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다. 단계 0(이음매)이 끝나면 enforced_by를 physics-golden과 법칙 시험으로 바꾼다.

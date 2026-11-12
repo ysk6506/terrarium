@@ -1,0 +1,7 @@
+doc: "docs/design-docs/application-layer.md"
+target: "packages/core/src/world/ladder.ts"
+hash: "bb7160a7b3b07d05"
+date: "2026-11-12"
+note: "덮는 시나리오 라이브러리에서 정렬 도우미 byId의 자리만 library-kit.ts로 옮김. 동작은 그대로이고 이 문서는 그 이름을 말하지 않는다"
+text_changed: false
+doc_hash: "363d4fdb2cb10420"

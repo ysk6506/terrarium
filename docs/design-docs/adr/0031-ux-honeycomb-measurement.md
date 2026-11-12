@@ -2,7 +2,6 @@
 title: ADR-0031 UX는 브라우저가 세고 하네스가 점수를 매긴다
 kind: decision
 status: active
-last_verified: 2026-10-29
 enforced_by:
   - UX001
   - UX002

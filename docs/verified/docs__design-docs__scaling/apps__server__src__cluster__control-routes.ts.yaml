@@ -1,0 +1,7 @@
+doc: "docs/design-docs/scaling.md"
+target: "apps/server/src/cluster/control-routes.ts"
+hash: "fa5fcc015e167576"
+date: "2026-11-06"
+note: "cluster/protocol.ts·node-server.ts·remote-host.ts에 사람 응답 경로(/sessions/:id/human)가 생긴 것을 4번 문장에 더했다. 나머지 구조는 그대로 (ADR-0087)"
+text_changed: true
+doc_hash: "5d1c8124362bf22c"

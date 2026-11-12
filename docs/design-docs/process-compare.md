@@ -2,7 +2,6 @@
 title: 프로세스 비교 — 지금 하는 방식과 에이전트가 하는 방식을 단계·사람·시간으로 견주기 (REQ-112)
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - packages/core/src/contract/process.ts
   - packages/core/src/contract/process-routes.ts
@@ -18,15 +17,6 @@ covers:
   - apps/web/src/ui/pages/process-table.tsx
   - apps/web/src/ui/pages/process-compare.tsx
   - apps/web/src/ui/pages/process-ontology.tsx
-covers_hash: 6692b66f7f8d3646
-verification_log:
-  - "2026-11-11: result page split into tabs (ADR-0171); checked against covered code"
-  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
-  - "2026-11-11: merged main; result page tabs (ADR-0171) checked against covered code"
-  - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
-  - "2026-11-12: main을 합친 뒤 공개 범위(ADR-0174 나 단계, ADR-0179)에서 더한 서술을 합쳐진 코드와 대조했고, 바뀐 화면 글(ADR-0183)과 옛 말이 없음을 확인했다"
-verified_body: ffeaeeb160f81b6a
-unchanged_reverifies: 0
 ---
 # 프로세스 비교 (REQ-112, [ADR-0135](adr/0135-process-compare.md))
 

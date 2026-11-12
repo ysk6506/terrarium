@@ -1,0 +1,7 @@
+doc: "docs/guides/operation-agent-guide.md"
+target: "packages/core/src/session/operation/metrics.ts"
+hash: "021107109d1896c2"
+date: "2026-11-12"
+note: "ADR-0183: 숫자 카드 이름을 넘긴 일로 맞췄다"
+text_changed: true
+doc_hash: "67db6735f1e42e9d"

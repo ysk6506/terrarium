@@ -1,0 +1,7 @@
+doc: "docs/design-docs/domains-and-counterparts.md"
+target: "packages/core/src/session/counterparts.ts"
+hash: "4ef7e43e274d01a2"
+date: "2026-11-12"
+note: "덮는 시나리오 라이브러리에서 정렬 도우미 byId의 자리만 library-kit.ts로 옮김. 동작은 그대로이고 이 문서는 그 이름을 말하지 않는다"
+text_changed: true
+doc_hash: "63ea684e352611ae"

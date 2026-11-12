@@ -2,7 +2,6 @@
 title: ADR-0165 데이터셋·정제·온톨로지 매핑·링크 조건을 각자의 층으로 나누고, 객체 종류와 링크 종류는 열려 있다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-115·117 예정). 만들 때 enforced_by를 층 분리 구조 검사와 사용자 링크 종류의 영향 범위 시험으로 바꾼다.

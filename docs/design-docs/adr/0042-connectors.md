@@ -2,7 +2,6 @@
 title: ADR-0042 하네스·에이전트 연결은 커넥터 플러그인과 연결 레지스트리로 한다
 kind: decision
 status: active
-last_verified: 2026-10-30
 enforced_by:
   - apps/server/src/adapters/connectors/connectors.test.ts
   - apps/server/src/adapters/connectors/a2a.test.ts

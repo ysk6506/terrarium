@@ -2,7 +2,6 @@
 title: ADR-0010 TypeScript 단일 언어 모노레포
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
   - ARCH020
   - ARCH021

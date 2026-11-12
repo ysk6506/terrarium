@@ -1,0 +1,7 @@
+doc: "docs/design-docs/switch-l2l3.md"
+target: "packages/core/src/world/net-config.ts"
+hash: "29c38940cfdec8cc"
+date: "2026-11-04"
+note: "2026-11-04: ADR-0073. 덮는 코드에서 사람이 읽는 말(알람 해요체, 에이전트 지시문 한다체, 툴·멈춤·상한 등)만 바뀌었고 문서가 말하는 구조와 규칙은 그대로다"
+text_changed: true
+doc_hash: "a4bbe84605340899"

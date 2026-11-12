@@ -1,0 +1,7 @@
+doc: "docs/design-docs/topology.md"
+target: "packages/core/src/topology/story.ts"
+hash: "5a2679a1f3106f37"
+date: "2026-11-12"
+note: "ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
+text_changed: true
+doc_hash: "1dea9749a2d7a991"

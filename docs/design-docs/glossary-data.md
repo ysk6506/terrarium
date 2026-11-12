@@ -2,18 +2,8 @@
 title: 용어집 — 데이터 파이프라인과 온톨로지 매니저에서 쓰는 말
 kind: guide
 status: active
-last_verified: 2026-11-12
-verification_log:
-  - "2026-11-11: 따라가는 product-design.md의 바뀐 곳(1절 기둥, 4절)에 이 문서의 말(객체·링크 등)과 어긋나는 서술 없음을 대조"
-  - "2026-11-12: 따라가는 product-design.md는 ADR-0171 만드는 중 표시만 지워졌고 이 문서의 말과 상관없다"
-  - "2026-11-12: 따라가는 product-design.md의 순서 2와 위험에 범용 도구 실험이 더해짐. 이 문서의 내용과 어긋나지 않는다"
-  - "2026-11-12: 워크플로 자동화에서 정한 말 절을 더함 (ADR-0189)"
-  - "2026-11-12: 모의 툴과 검증 수준을 더함 (ADR-0190)"
 follows:
   - docs/design-docs/product-design.md
-follows_hash: 7be16d54235bbda7
-verified_body: 746362f2f0650207
-unchanged_reverifies: 2
 ---
 # 용어집: 데이터 파이프라인과 온톨로지 매니저 (ADR-0167)
 

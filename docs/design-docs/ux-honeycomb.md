@@ -2,20 +2,10 @@
 title: UX Honeycomb 측정
 kind: guide
 status: active
-last_verified: 2026-11-12
 covers:
   - harness/src/ux/score.ts
   - tests/e2e/ux/probes-voice.ts
   - tests/e2e/ux/probes-detail.ts
-covers_hash: 87255ef1b8636946
-verification_log:
-  - "2026-11-11: share budget 4, result tabs (ADR-0171)"
-  - "2026-11-11: keyboard probe uses the export dialog; share budget 4"
-  - "2026-11-11: keyboard probe uses the export dialog; share budget 4"
-  - "2026-11-12: 탐침 조각의 먼저 돌리는 여정에 small 묶음을 더함 (ADR-0175)"
-  - "2026-11-12: 조각 수를 열로 고침 (ADR-0175)"
-verified_body: 51196257930a18d5
-unchanged_reverifies: 0
 ---
 # UX를 숫자로 재는 법 (REQ-041, [ADR-0031](adr/0031-ux-honeycomb-measurement.md))
 

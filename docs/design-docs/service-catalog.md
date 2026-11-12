@@ -2,7 +2,6 @@
 title: 서비스 카탈로그 — 기본 제공 카드 열 장과 내 카드 (REQ-104)
 kind: spec
 status: active
-last_verified: 2026-11-11
 covers:
   - packages/core/src/world/service-catalog.ts
   - packages/core/src/world/service-load.ts
@@ -10,13 +9,6 @@ covers:
   - apps/server/src/runtime/service-cards.ts
   - apps/server/src/runtime/experiments-quick.ts
   - packages/core/src/contract/service-cards.ts
-covers_hash: 0afb4bda84540cb6
-verification_log:
-  - "2026-11-07: REQ-109: 코드와 대조했다. 해당 문장을 고쳤고 나머지는 그대로 맞다"
-  - "2026-11-07: REQ-109: 코드와 대조했다"
-  - "2026-11-07: o15 합치기 (2차 피드백 수정)"
-  - "2026-11-07: 2026-11-07: REQ-111(ADR-0134): IAP 빼기·내 카드만·③ 숫자 하나·기반 랙·빌더 오른쪽 아래 칩을 코드와 대조해 고쳤고 나머지는 그대로 맞다"
-  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
 ---
 # 서비스 카탈로그 (REQ-104, [ADR-0127](adr/0127-short-world-flow-and-service-catalog.md))
 

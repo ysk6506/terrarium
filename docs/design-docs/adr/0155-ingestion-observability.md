@@ -2,7 +2,6 @@
 title: ADR-0155 수집의 관측성 — 지표는 밖으로 내보내고, 데이터가 평소와 다른지 보고, 로그에 내용을 찍지 않는다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-115 예정). 만들 때 enforced_by를 지표·로그·이름표 시험으로 바꾼다.

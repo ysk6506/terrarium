@@ -2,7 +2,6 @@
 title: ADR-0105 툴 범위·에스컬레이션·절차서를 구현하면서 시험 세 곳의 기대값을 고친다
 kind: decision
 status: active
-last_verified: 2026-11-06
 enforced_by:
   - tests/spec/tool-scope.test.ts
   - tests/spec/escalation.test.ts

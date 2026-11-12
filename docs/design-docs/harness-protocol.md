@@ -2,16 +2,8 @@
 title: 하네스 프로토콜 (terrarium.harness/1)
 kind: spec
 status: active
-last_verified: 2026-11-11
 covers:
   - apps/server/src/adapters/harness/http.ts
-covers_hash: a9990aeea3947fb7
-verification_log:
-  - "2026-11-04: 2026-11-04: ADR-0073. 연결 오류 문장이 '닿을 수 없어요'에서 '연결할 수 없어요'로 바뀐 것에 맞춰 글을 고쳤다. 프로토콜은 그대로"
-  - "2026-11-05: ADR-0085: 트레이스를 쌓는 곳이 연결마다 정해진다는 문장을 더했다. 덮는 코드의 동작은 그대로"
-  - "2026-11-06: 2f: MCP 주소가 둘(실행·슬롯)이라는 절을 더하고 harness meta의 mcpSlot과 대조했다 (베타 피드백 14)"
-  - "2026-11-06: POST /runs의 operation 필드 설명을 더하고 http.ts와 대조했다 (REQ-090)"
-  - "2026-11-11: REQ-118 시드당 반복: 실행 키(시드·반복), 시드 단위 통계, 순위 조건(시드 3개), 한도 60, 화면 반영을 코드와 대조해 고쳤다. 이 문서의 나머지는 그대로 맞다"
 ---
 # 하네스 프로토콜 `terrarium.harness/1`
 

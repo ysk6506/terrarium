@@ -2,7 +2,6 @@
 title: ADR-0160 시드당 반복을 지을 때 정한 말과 짜임, 그리고 ADR-0158의 시험 수정 목록
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - apps/server/src/runtime/repeats.test.ts
   - apps/server/src/adapters/sqlite-repeat.test.ts

@@ -2,7 +2,6 @@
 title: ADR-0166 파이프라인은 버전으로 남기고, 브랜치에서 고쳐 미리보기 세계로 확인한 뒤 운영에 병합한다
 kind: decision
 status: active
-last_verified: 2026-11-11
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-115·116 예정). 만들 때 enforced_by를 재현·격리·병합·되돌리기 시험으로 바꾼다.

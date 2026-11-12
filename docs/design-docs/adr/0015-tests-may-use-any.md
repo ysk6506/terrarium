@@ -2,7 +2,6 @@
 title: ADR-0015 테스트 코드에서는 any를 허용한다
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
   - none
 no_enforcement_reason: Biome 설정(biome.json의 overrides)이 직접 강제한다. 하네스 규칙 코드가 아니다.

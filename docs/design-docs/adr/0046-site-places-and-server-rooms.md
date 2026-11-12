@@ -2,7 +2,6 @@
 title: ADR-0046 사업장의 건물 자리는 모두 정해져 있고, 서버룸은 팹·연구동·HPC센터의 현실 구조를 따른다
 kind: decision
 status: active
-last_verified: 2026-10-30
 enforced_by:
   - packages/core/src/sources/worldgen/campus-places.test.ts
   - packages/core/src/spatial/outline-reserved.test.ts

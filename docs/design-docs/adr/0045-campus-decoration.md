@@ -2,7 +2,6 @@
 title: ADR-0045 캠퍼스 꾸미기 — 도로 격자 블록에 용도별 시설을 채운다
 kind: decision
 status: active
-last_verified: 2026-10-30
 enforced_by:
   - apps/web/src/logic/world3d/campus.test.ts
 touches_protected:

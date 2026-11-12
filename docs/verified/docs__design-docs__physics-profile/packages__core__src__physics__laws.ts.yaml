@@ -1,0 +1,7 @@
+doc: "docs/design-docs/physics-profile.md"
+target: "packages/core/src/physics/laws.ts"
+hash: "7ef5c87800f8625b"
+date: "2026-11-11"
+note: "laws.ts의 예외 항목에 fault·measured를 더했을 뿐 자리별 숫자는 그대로"
+text_changed: true
+doc_hash: "40a47a20a2ae8915"

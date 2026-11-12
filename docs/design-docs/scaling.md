@@ -2,18 +2,10 @@
 title: 규모 키우기 — 스케일 업과 스케일 아웃
 kind: guide
 status: active
-last_verified: 2026-11-06
 covers:
   - apps/server/src/cluster/protocol.ts
   - apps/server/src/cluster/control-routes.ts
   - apps/server/src/cluster/cluster-host.ts
-covers_hash: e88493d289941b13
-verification_log:
-  - "2026-10-29: 역할, 지표 이름, 하트비트·비우기 동작을 protocol.ts, control-routes.ts, main.ts와 대조했다"
-  - "2026-10-29: 용량 문서 링크 추가"
-  - "2026-11-03: 서버·core가 사람에게 돌려주는 안내 문장이 해요체로 바뀐 것만 확인했다. 동작과 본문은 그대로 (ADR-0050)"
-  - "2026-11-04: 2026-11-04: 자리 잡기와 재시도, 메모리 약속 설명을 cluster-host.ts, admission.ts와 대조했다 (ADR-0056)"
-  - "2026-11-06: cluster/protocol.ts·node-server.ts·remote-host.ts에 사람 응답 경로(/sessions/:id/human)가 생긴 것을 4번 문장에 더했다. 나머지 구조는 그대로 (ADR-0087)"
 ---
 # 규모 키우기 (REQ-042, [ADR-0032](adr/0032-scale-out-workers.md))
 

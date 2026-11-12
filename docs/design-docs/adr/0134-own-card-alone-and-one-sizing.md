@@ -2,7 +2,6 @@
 title: ADR-0134 내 카드만으로도 끝까지 가고, 크기의 숫자는 하나의 계산이며, 빌더 오른쪽 아래는 겹치지 않는다
 kind: decision
 status: active
-last_verified: 2026-11-07
 enforced_by:
   - packages/core/src/sources/worldgen/shaped-totals.test.ts
   - apps/web/src/logic/world-shape/own-card-only.test.ts

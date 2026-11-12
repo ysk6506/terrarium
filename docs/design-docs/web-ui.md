@@ -2,7 +2,6 @@
 title: 웹 화면 — 디자인 원칙과 구조
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - apps/web/src/logic/world3d/crew.ts
   - apps/web/src/logic/world3d/crew-plan.ts
@@ -75,13 +74,6 @@ covers:
   - apps/web/src/ui/replay/FramesBar.tsx
   - apps/web/src/ui/replay/useClock.ts
   - apps/web/src/logic/topology/words.ts
-covers_hash: c5d9b0c7d1f9a0a9
-verification_log:
-  - "2026-11-11: 640px 이하에서 실행 표·채점 항목 표·실험 목록이 줄 단위로 쌓이는 것을 styles.css와 대조해 결과 항목에 적었고, 나머지 서술은 그대로 맞다"
-  - "2026-11-11: 결과 쪽의 구역 순서(원본과 견주면이 상황별로 앞)와 styles.css 토큰(--cobalt-wash, --vignette-edge)을 코드와 대조"
-  - "2026-11-11: 실행 표 390px 확인이 repeat 여정으로 옮겨 간 것을 대조"
-  - "2026-11-11: result page split into tabs (ADR-0171); checked against covered code"
-  - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
 ---
 # 웹 화면 (REQ-006, REQ-030~041)
 

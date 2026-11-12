@@ -2,13 +2,15 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { splitFrontMatter } from "../common";
-import { isSourceFile, isTestFile, listFiles, matchesGlob } from "../files";
+import { isSourceFile, isTestFile, listFiles } from "../files";
 import { comments } from "../ts-ast";
 import { loadArchConfig, unitOf } from "./arch-model";
 import { loadFloors } from "./coverage";
 import { type DebtItem, loadDebtConfig, loadRegister } from "./debt";
 import { type FunctionStat, functionStats, type Limits, lineCount } from "./debt-measure";
-import { loadDocsConfig } from "./docs";
+import { loadDocsConfig } from "./doc-config";
+import { latestDate, readDocRecords } from "./doc-records";
+import { DocFiles } from "./doc-targets";
 import type { Suppression } from "./ignores-scan";
 import { loadTestsConfig } from "./testguard";
 
@@ -146,11 +148,11 @@ function debtFacts(
   return out;
 }
 
-/** Oldest `last_verified` among the active guides, references, specs and plans that cover code of a unit. */
+/** Oldest verification date (newest record of a doc, ADR-0194) among the active guides, references, specs and plans that cover code of a unit. */
 function docFacts(root: string): Map<string, { date: string; file: string }> {
   const config = loadDocsConfig(root);
   const arch = loadArchConfig(root);
-  const all = listFiles(root, ["."], () => true);
+  const files = new DocFiles(root);
   const docs = [
     ...config.root_docs,
     ...listFiles(root, [config.docs_root], (n) => n.endsWith(".md")).filter(
@@ -162,13 +164,9 @@ function docFacts(root: string): Map<string, { date: string; file: string }> {
     const { data } = splitFrontMatter(readFileSync(path.join(root, file), "utf8"));
     if (!data || data.kind === "decision" || data.status !== "active") continue;
     const covers = Array.isArray(data.covers) ? data.covers.map(String) : [];
-    const date = data.last_verified;
-    if (covers.length === 0 || typeof date !== "string") continue;
-    const covered = all.filter((f) =>
-      covers.some(
-        (glob) => f === glob || f.startsWith(`${glob.replace(/\/$/, "")}/`) || matchesGlob(f, glob),
-      ),
-    );
+    const date = latestDate(readDocRecords(root, file).records.values());
+    if (covers.length === 0 || date === null) continue;
+    const covered = covers.flatMap((glob) => files.expand(glob));
     for (const unit of new Set(covered.map((f) => unitOf(arch, f)?.name ?? NO_UNIT))) {
       const known = oldest.get(unit);
       if (!known || date < known.date) oldest.set(unit, { date, file });

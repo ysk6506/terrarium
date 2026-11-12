@@ -1,0 +1,7 @@
+doc: "docs/design-docs/power-cooling-ladders.md"
+target: "packages/core/src/sources/worldgen/dense.ts"
+hash: "2f49f684d3015658"
+date: "2026-11-12"
+note: "파워 캐핑 절에서 내부 출처 서술을 걷어내고 일반 기법의 설명으로 고침. 모델·툴·시나리오 표는 코드와 그대로 맞다 (ADR-0187)"
+text_changed: true
+doc_hash: "8552e4433ac72ea9"

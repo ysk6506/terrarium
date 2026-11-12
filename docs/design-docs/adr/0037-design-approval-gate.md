@@ -2,7 +2,6 @@
 title: ADR-0037 화면 디자인은 사용자가 고른 안으로만 바꾼다
 kind: decision
 status: active
-last_verified: 2026-10-29
 enforced_by:
   - none
 no_enforcement_reason: 사람의 승인 여부는 기계가 판정할 수 없다. 승인한 안의 값은 이 문서에 남기고, 3D 장면 코드가 같은 값을 쓰는지는 리뷰로 본다.

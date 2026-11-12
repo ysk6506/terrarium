@@ -2,7 +2,6 @@
 title: ADR-0057 설비는 표준이 있으면 그 말로 답한다 — Redfish는 스키마로 대조, UPS는 SNMP, 냉각·발전은 BACnet
 kind: decision
 status: active
-last_verified: 2026-11-04
 enforced_by:
   - tests/spec/redfish-conformance.test.ts
   - tests/spec/facility-protocols.test.ts

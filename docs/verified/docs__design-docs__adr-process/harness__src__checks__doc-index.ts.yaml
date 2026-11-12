@@ -1,0 +1,7 @@
+doc: "docs/design-docs/adr-process.md"
+target: "harness/src/checks/doc-index.ts"
+hash: "73dcd8983b0fab92"
+date: "2026-11-12"
+note: "ADR-0194: 확인 기록 문서 밖 이동, 템플릿에서 last_verified 제거, migrate 설명을 코드와 대조"
+text_changed: true
+doc_hash: "6df267282da47ca5"

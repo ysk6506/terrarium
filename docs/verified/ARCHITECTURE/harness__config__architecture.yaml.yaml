@@ -1,0 +1,7 @@
+doc: "ARCHITECTURE.md"
+target: "harness/config/architecture.yaml"
+hash: "5f0b714acd6b440a"
+date: "2026-11-10"
+note: "physics.slots 단위 추가 (architecture.yaml와 맞춤)"
+text_changed: true
+doc_hash: "954a5d93c2339cd8"

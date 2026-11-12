@@ -2,17 +2,9 @@
 title: 고장 종류별 리드타임 — 넘기면 얼마나 걸려 사라지나
 kind: spec
 status: active
-last_verified: 2026-11-07
 covers:
   - packages/core/src/world/lead-times.ts
   - packages/core/src/world/domains.ts
-covers_hash: eddadcad3a2e98ff
-verification_log:
-  - "2026-11-07: REQ-100 애플리케이션 층: 코드와 대조해 해당 절을 더하거나 고쳤고 나머지는 그대로 맞다"
-  - "2026-11-07: o5 합치기 (애플리케이션 층)"
-  - "2026-11-07: REQ-106 열다섯 고장의 행을 LEAD_ROWS와 대조해 더했다"
-  - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장 절을 더하거나 고쳤고 나머지는 코드와 대조해 그대로 맞다"
-  - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
 ---
 # 고장 종류별 리드타임 (ADR-0100)
 

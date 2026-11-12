@@ -1,0 +1,7 @@
+doc: "docs/design-docs/measurement.md"
+target: "packages/core/src/session/operation/metrics.ts"
+hash: "021107109d1896c2"
+date: "2026-11-12"
+note: "ADR-0184: main을 합친 뒤 한계 힌트 변경과 이 문서의 서술이 어긋나지 않음을 대조"
+text_changed: true
+doc_hash: "17222b460d97ab7b"

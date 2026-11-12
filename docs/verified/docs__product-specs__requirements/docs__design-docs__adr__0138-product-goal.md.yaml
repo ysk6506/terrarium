@@ -1,0 +1,7 @@
+doc: "docs/product-specs/requirements.md"
+target: "docs/design-docs/adr/0138-product-goal.md"
+hash: "9bc63476fbf67b14"
+date: "2026-11-12"
+note: "내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
+text_changed: false
+doc_hash: "439be5344d3e8136"

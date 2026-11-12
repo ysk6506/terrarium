@@ -1,0 +1,7 @@
+doc: "docs/design-docs/workflow-automation.md"
+target: "docs/design-docs/reality-data-and-ontology.md"
+hash: "a701ed11970839f1"
+date: "2026-11-12"
+note: "검증하는 건의 호출을 게이트웨이가 테라리움으로 보내는 것으로 고침: 2절의 기대는 것 넷, 11절의 모의 툴 절 (ADR-0191)"
+text_changed: false
+doc_hash: "2bb8f77ad3f46786"

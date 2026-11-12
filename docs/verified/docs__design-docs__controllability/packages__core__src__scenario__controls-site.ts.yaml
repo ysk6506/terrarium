@@ -1,0 +1,7 @@
+doc: "docs/design-docs/controllability.md"
+target: "packages/core/src/scenario/controls-site.ts"
+hash: "237b18d25ff6c4e7"
+date: "2026-11-07"
+note: "o13 합치기 (GPU·전원·냉방)"
+text_changed: true
+doc_hash: "eb7a200d0b70ff91"

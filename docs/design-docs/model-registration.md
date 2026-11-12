@@ -2,7 +2,6 @@
 title: 모델 등록 — LLM API를 워크스페이스에 등록하고 연결 확인까지
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - packages/core/src/llm/types.ts
   - packages/core/src/llm/http.ts
@@ -15,15 +14,6 @@ covers:
   - apps/web/src/logic/models.ts
   - apps/web/src/ui/pages/model-section.tsx
   - apps/web/src/ui/pages/model-dialog.tsx
-covers_hash: 9df9479be11dec9e
-verification_log:
-  - "2026-11-11: model-section.tsx에서 안 쓰는 useAction 호출만 지움, 문서 내용과 동작은 그대로"
-  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
-  - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
-  - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
-  - "2026-11-12: main을 합친 뒤 공개 범위(ADR-0174 나 단계, ADR-0179)에서 더한 서술을 합쳐진 코드와 대조했고, 바뀐 화면 글(ADR-0183)과 옛 말이 없음을 확인했다"
-verified_body: a3d779c952220842
-unchanged_reverifies: 0
 ---
 # 모델 등록 (REQ-099, [ADR-0119](adr/0119-llm-api-registration.md))
 

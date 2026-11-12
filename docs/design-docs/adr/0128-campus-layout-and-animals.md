@@ -2,7 +2,6 @@
 title: ADR-0128 부지는 도로 → 주차장 → 차 → 나무 순서로 깔고, 고양이와 새는 눌리면 대답한다
 kind: decision
 status: active
-last_verified: 2026-11-07
 enforced_by:
   - apps/web/src/logic/world3d/campus-plan.test.ts
   - apps/web/src/logic/world3d/animal-react.test.ts

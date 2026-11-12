@@ -2,7 +2,6 @@
 title: ADR-0004 테스트 잠금
 kind: decision
 status: active
-last_verified: 2026-10-28
 enforced_by:
 - TLOCK001
 - TLOCK002

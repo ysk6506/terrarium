@@ -2,7 +2,6 @@
 title: ADR-0036 사업장은 개략 외곽선을 갖고 건물은 그 안에 선다
 kind: decision
 status: active
-last_verified: 2026-10-29
 enforced_by:
   - packages/core/src/sources/worldgen/sites.test.ts
   - packages/core/src/sources/assembly-outline.test.ts

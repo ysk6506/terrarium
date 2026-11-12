@@ -2,7 +2,6 @@
 title: ADR-0101 랙 실장 장면, 컨테인먼트 안, 펌웨어 올리기 — 시험 세 개의 기대값을 고친다
 kind: decision
 status: active
-last_verified: 2026-11-05
 enforced_by:
   - apps/web/src/logic/world3d/rack-front.test.ts
   - apps/web/src/logic/world3d/aisle.test.ts

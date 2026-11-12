@@ -2,15 +2,10 @@
 title: vCenter와 Aria Operations 응답 — 참고서와 맞춘 것, 못 맞춘 것
 kind: spec
 status: active
-last_verified: 2026-11-12
 covers:
   - packages/core/src/facades/vcenter.ts
   - packages/core/src/facades/vrops.ts
   - tests/spec/vmware-schemas/schemas.ts
-covers_hash: 521b895b97419aad
-verification_log:
-  - "2026-11-04: 처음 썼다: vcenter.ts와 vrops.ts의 응답 모양을 Broadcom 참고서 쪽(8.0.3, VCF Operations)과 옮긴 스키마에 대조했다 (REQ-061, ADR-0058)"
-  - "2026-11-12: vcenter.ts, vrops.ts, 스키마, 대조 시험과 다시 맞춰 봄: 표에 리소스 하나와 오류 응답을 더하고, /rest 경로의 범위와 전원 동작을 한계에 적음"
 ---
 # vCenter와 Aria Operations 응답 (REQ-061, ADR-0058)
 
