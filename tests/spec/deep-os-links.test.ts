@@ -191,7 +191,7 @@ describe("ln -s and readlink make and read symbolic links [REQ-098]", () => {
     const { run } = lab();
     const r = run("srv-a2", "ln /etc/hosts /tmp/hard");
     expect(r.exitCode).toBe(2);
-    expect(r.stderr).toContain("이 흉내에서는 안 돼요");
+    expect(r.stderr).toContain("terrarium: 이 실험장은 ln의 하드 링크 기능을 지원하지 않아요");
     expect(r.outside).toEqual(["ln 하드 링크"]);
     expect(run("srv-a2", "ln -x a b")).toMatchObject({ exitCode: 1, outside: [] });
   });

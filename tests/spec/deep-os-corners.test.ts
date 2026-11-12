@@ -157,7 +157,7 @@ const ROWS: ReadonlyArray<readonly [string, string, string, number, readonly str
   [
     "sed -n 's/a/Q/w' /etc/hosts",
     "",
-    "sed: s 명령의 w 플래그: 이 흉내에서는 안 돼요\nterrarium: 이 실험장은 sed의 s 명령의 w 플래그 기능을 지원하지 않아요. 실제 sed에는 있어요.\nterrarium: sed에서 되는 것: -n -e -f -E -r -s -z -i[접미사]; 주소(줄 번호, $, /정규식/, 구간, !), 명령 s y p d q = h H g G x a i c { }, s의 g p i N 플래그\nterrarium: 대신 이 명령은 돼요: sed -n 1p /etc/hosts",
+    "terrarium: 이 실험장은 sed의 s 명령의 w 플래그 기능을 지원하지 않아요. 실제 sed에는 있어요.\nterrarium: sed에서 되는 것: -n -e -f -E -r -s -z -i[접미사]; 주소(줄 번호, $, /정규식/, 구간, !), 명령 s y p d q = h H g G x a i c { }, s의 g p i N 플래그\nterrarium: 대신 이 명령은 돼요: sed -n 1p /etc/hosts",
     1,
     ["sed s 명령의 w 플래그"],
   ],
@@ -168,7 +168,7 @@ const ROWS: ReadonlyArray<readonly [string, string, string, number, readonly str
   [
     "printf 'a\\nb\\n' > /tmp/t; sed -n '/a/{n;p}' /tmp/t",
     "",
-    "sed: n 명령: 이 흉내에서는 안 돼요\nterrarium: 이 실험장은 sed의 n 명령 기능을 지원하지 않아요. 실제 sed에는 있어요.\nterrarium: sed에서 되는 것: -n -e -f -E -r -s -z -i[접미사]; 주소(줄 번호, $, /정규식/, 구간, !), 명령 s y p d q = h H g G x a i c { }, s의 g p i N 플래그\nterrarium: 대신 이 명령은 돼요: sed -n 1p /etc/hosts",
+    "terrarium: 이 실험장은 sed의 n 명령 기능을 지원하지 않아요. 실제 sed에는 있어요.\nterrarium: sed에서 되는 것: -n -e -f -E -r -s -z -i[접미사]; 주소(줄 번호, $, /정규식/, 구간, !), 명령 s y p d q = h H g G x a i c { }, s의 g p i N 플래그\nterrarium: 대신 이 명령은 돼요: sed -n 1p /etc/hosts",
     1,
     ["sed n 명령"],
   ],
@@ -176,7 +176,7 @@ const ROWS: ReadonlyArray<readonly [string, string, string, number, readonly str
   [
     "ps -Z",
     "",
-    "ps: -Z: 이 흉내에서는 안 돼요\nterrarium: 이 실험장은 ps의 -Z 기능을 지원하지 않아요. 실제 ps에는 있어요.\nterrarium: ps에서 되는 것: -a -A -e -x -f -u -w -l -L -h -T -e -H -o -O -p -C -U --sort --no-headers --forest --pid --user\nterrarium: 대신 이 명령은 돼요: ps aux",
+    "terrarium: 이 실험장은 ps의 -Z 기능을 지원하지 않아요. 실제 ps에는 있어요.\nterrarium: ps에서 되는 것: -a -A -e -x -f -u -w -l -L -h -T -e -H -o -O -p -C -U --sort --no-headers --forest --pid --user\nterrarium: 대신 이 명령은 돼요: ps aux",
     2,
     ["ps -Z"],
   ],
@@ -323,7 +323,7 @@ const ROWS: ReadonlyArray<readonly [string, string, string, number, readonly str
   [
     "echo a b | xargs -P 2 echo",
     "",
-    "xargs: -P: 이 흉내에서는 안 돼요\nterrarium: 이 실험장은 xargs의 -P 기능을 지원하지 않아요. 실제 xargs에는 있어요.\nterrarium: xargs에서 되는 것: -t -0 -r -n -I -L --no-run-if-empty\nterrarium: 대신 이 명령은 돼요: echo a b | xargs echo",
+    "terrarium: 이 실험장은 xargs의 -P 기능을 지원하지 않아요. 실제 xargs에는 있어요.\nterrarium: xargs에서 되는 것: -t -0 -r -n -I -L --no-run-if-empty\nterrarium: 대신 이 명령은 돼요: echo a b | xargs echo",
     2,
     ["xargs -P"],
   ],

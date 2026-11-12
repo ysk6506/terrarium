@@ -35,11 +35,12 @@ describe("the options of a command [REQ-098]", () => {
     expect(sh("head --bogus /tmp/d 2>&1")).toBe(
       "head: unrecognized option '--bogus'\nTry 'head --help' for more information.",
     );
+    // no first line in the tool's style: the real head and cut run these, so they show no error of their own
     expect(sh("head --lines=1 /tmp/d 2>&1").split("\n")[0]).toBe(
-      "head: --lines=1: 이 흉내에서는 안 돼요",
+      "terrarium: 이 실험장은 head의 --lines=1 기능을 지원하지 않아요. 실제 head에는 있어요.",
     );
     expect(sh("cut --delimiter=, --fields=1 /tmp/d 2>&1").split("\n")[0]).toBe(
-      "cut: --delimiter=,: 이 흉내에서는 안 돼요",
+      "terrarium: 이 실험장은 cut의 --delimiter=, 기능을 지원하지 않아요. 실제 cut에는 있어요.",
     );
   });
 

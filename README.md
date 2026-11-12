@@ -6,15 +6,15 @@ last_verified: 2026-11-12
 covers:
   - package.json
   - docs/exec-plans/active/beta-rounds.md
-covers_hash: da2d5ab1428ef17f
+covers_hash: 1435ce8eccf960bb
 verification_log:
-  - "2026-11-11: 라이선스 절(Apache-2.0)을 더함. package.json에 license 표기가 들어감 (ADR-0181)"
   - "2026-11-11: NOTICE 링크를 더함 (ADR-0181)"
   - "2026-11-12: beta-rounds.md에 이슈 47 일정이 더해짐. '지금 단계'의 차수 서술은 그대로 맞다"
   - "2026-11-12: 덮는 beta-rounds.md는 ADR-0171/0173의 만드는 중 표시만 지워졌고 README에 그 표시가 없다"
   - "2026-11-12: 따라가는 beta-rounds.md에 이슈 47 일정 절이 더해짐. 차수의 순서와 내용은 그대로라 이 문서와 어긋나지 않는다"
+  - "2026-11-12: ADR-0184: 한계 출력 모양 변경이 README 설명과 어긋나지 않음을 대조"
 verified_body: 8b0ca42880fa2e30
-unchanged_reverifies: 1
+unchanged_reverifies: 2
 ---
 # Terrarium
 

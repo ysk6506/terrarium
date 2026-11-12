@@ -83,10 +83,11 @@ export function cat(c: Cmd): R {
 
 function pick(c: Cmd, from: "head" | "tail"): R {
   const p = parseArgs(c.args, {
-    bool: "qv",
+    bool: from === "tail" ? "qvf" : "qv",
     val: "nc",
     digits: true,
-    long: { follow: "bool", retry: "bool" },
+    // only tail follows a file; the list of what works that a gap shows must hold what the tool itself has
+    long: from === "tail" ? { follow: "bool", retry: "bool" } : {},
   });
   if (p.bad) return badFlag(from, p);
   const n = intOf(p, "n", 10);
@@ -115,7 +116,6 @@ function pick(c: Cmd, from: "head" | "tail"): R {
         tool: "tail",
         feature: "flag:-f",
         what: "-f",
-        said: "tail: -f는 이 흉내에서 안 돼요, 지금까지의 마지막 줄만 보여요",
         supported: "-n N, -n +N, -c N, -q, -v (파일의 지금까지 내용)",
         example: "tail -n 20 /var/log/messages",
       })

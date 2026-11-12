@@ -23,14 +23,14 @@ covers:
   - packages/core/src/session/shell-reach.ts
   - packages/core/src/scenario/library-os.ts
 verification_log:
-  - "2026-11-11: ADR-0172: 제공되는 시나리오 조건(컨테이너 배치 작업·자리, 사이트 서버), 서비스 프로세스 메모리 몫, 정답 풀이 길의 when·later·choose를 코드와 대조해 서술을 더했다. 나머지는 그대로 맞다"
-  - "2026-11-11: Checked against the code it covers after the rebase onto main; this change adds tests only."
   - "2026-11-11: main을 합친 뒤 다시 대조: ADR-0172와 ADR-0174, 커버리지 시험 추가가 함께 들어감"
   - "2026-11-11: ADR-0178: 만들어지는 모든 모양에서 제공되는 시나리오가 100점이라는 서술(사이드카·정전·CDU·냉방기·콜드 DR 대기 쪽·메모리 규칙)을 코드와 대조해 더했다"
   - "2026-11-12: ADR-0184: 흉내의 한계 힌트 변경 뒤에도 내용이 맞는지 다시 봤어요"
-covers_hash: c3d716b92ad5d4d6
-verified_body: bcaf44e2063902c0
-unchanged_reverifies: 0
+  - "2026-11-12: ADR-0184: 한계의 stderr를 terrarium 줄만으로 고쳤어요"
+  - "2026-11-12: ADR-0184: 한계의 stderr를 terrarium 줄만으로 고침"
+covers_hash: 1b7d4d105d79a3c3
+verified_body: 9c656b1b80e30ea8
+unchanged_reverifies: 1
 ---
 # 서비스와 OS 층 (REQ-086, REQ-087, [ADR-0091](adr/0091-service-os-layer-recovery-first.md))
 
@@ -227,7 +227,7 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 
 ### 힌트는 흉내의 한계일 때만 ([ADR-0184](adr/0184-emulation-gap-hints.md))
 
-실패에는 두 종류가 있다. **진짜 도구도 거절하는 입력**(없는 옵션, 틀린 프로그램, 없는 하위 명령)은 진짜 도구가 할 말과 종료 코드 그대로 답하고, 힌트도 `outside`도 없다. **진짜 도구는 하는데 흉내가 못 하는 입력**은 흉내 한계(emulation gap)다. stderr 첫 줄은 그 도구의 말투이고, 이어 `terrarium:` 줄 셋이 실험장의 한계임, 되는 것, 돌아가는 명령 하나를 말한다. 종료 코드는 0이 아니다(말투를 따라 1·2·127). `tail -f`와 `journalctl -f`만 출력과 종료 코드를 그대로 두고 줄을 덧붙인다. 같은 입력은 글자까지 같다.
+실패에는 두 종류가 있다. **진짜 도구도 거절하는 입력**(없는 옵션, 틀린 프로그램, 없는 하위 명령)은 진짜 도구가 할 말과 종료 코드 그대로 답하고, 힌트도 `outside`도 없다. **진짜 도구는 하는데 흉내가 못 하는 입력**은 흉내 한계(emulation gap)다. stderr는 `terrarium:` 줄만이다. 진짜 도구는 그 입력에 오류를 내지 않으니 도구 말투의 첫 줄은 지어내지 않는다. 줄 셋이 실험장의 한계임, 그 도구에 실제로 있는 되는 것, 어느 세계에서나 돌아가는 명령 하나를 말한다(맞는 명령이 없으면 둘). 결과의 일부라도 맞게 줄 수 있으면 주고 종료 0(`tail -f`, `journalctl -f`), 줄 수 없으면 0이 아닌 종료(말투를 따라 1·2·127)다. 같은 입력은 글자까지 같다.
 
 - 한 길: `world/emulation-gap.ts`의 `GapNotice`와 `os/types.ts`의 `emulationGap`·`softGap`. 도구(`tool`)와 기능(`feature`, `flag:-Z`·`function:gensub`·`verb:list-timers`·`command` 같은 고정 키)만 기록한다. 에이전트가 친 글은 들어가지 않는다.
 - 가르는 근거: 진짜 도구의 문서가 적은 옵션·하위 명령 표(`os/real-options.ts`), 진짜 호스트에 있고 흉내에 없는 명령 이름(`os/real-commands.ts`), 스위치 CLI의 진짜 명령표(`facades/netos-gaps.ts`), 계층 명령의 진짜 하위 명령(`tools/shell-gap.ts`). 표에 없는 이름은 진짜 도구도 거절한 것으로 읽는다. 확실하지 않으면 한계로 센다.
@@ -236,7 +236,7 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 
 ### 흉내 내지 않는 것 (REQ-098)
 
-어느 호스트에도 없는 이름은 진짜 최소 호스트처럼 `bash: xyz: command not found`(127)이고 "흉내 밖"으로 센다. 진짜 호스트에는 있는데 흉내에 없는 명령(`vim`, `export`, `tcpdump`...)은 같은 첫 줄에 `terrarium:` 줄이 붙고 한계로 센다. 있는 명령의 옵션은 진짜 도구에도 있으면 한계(`명령 옵션: 이 흉내에서는 안 돼요` 다음에 `terrarium:` 줄, 종료 코드 2)이고, 없으면 진짜 도구의 거절 글이다. 틀린 글을 찍느니 거절한다.
+어느 호스트에도 없는 이름은 진짜 최소 호스트처럼 `bash: xyz: command not found`(127)이고 "흉내 밖"으로 센다. 진짜 호스트에는 있는데 흉내에 없는 명령(`vim`, `export`, `tcpdump`...)은 `bash: …: command not found` 줄 없이 `terrarium:` 줄만(127) 나오고 한계로 센다. 있는 명령의 옵션은 진짜 도구에도 있으면 한계(`terrarium:` 줄만, 종료 코드 2)이고, 없으면 진짜 도구의 거절 글이다. 틀린 글을 찍느니 거절한다.
 
 - 없는 명령: `chmod`, `chown`, `chgrp`, `mknod`, `mkfifo`, `install`, `rmdir`, `dd`, `tar`, `gzip`, `vi`·`vim`·`nano`. 권한과 소유자는 만들지 않는다(디렉터리는 `drwxr-xr-x root`, 링크는 `lrwxrwxrwx root`).
 - `ln`은 심볼릭 링크(`-s`)만 만든다. 하드 링크(`ln a b`)는 거절한다: 트리를 서술하는 쪽에는 같이 쓰는 inode가 없다. `mkdir -m`도 거절한다.

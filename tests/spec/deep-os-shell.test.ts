@@ -53,12 +53,12 @@ describe("the shell reads a line the way bash does [REQ-098]", () => {
       stderr: "bash: kubectl: command not found",
       outside: ["kubectl"],
     });
-    // ADR-0184: vim is a real command the fake host lacks, so bash's line is followed by the terrarium lines;
-    // a name no host has stays plain
-    expect(run("srv-a2", "vim /etc/hosts").stderr.split("\n")[0]).toBe(
-      "bash: vim: command not found",
-    );
-    expect(run("srv-a2", "vim /etc/hosts").stderr).toContain("terrarium: ");
+    // ADR-0184: vim is a real command the fake host lacks, so the answer is the terrarium lines only (no bash line,
+    // exit 127); a name no host has stays plain
+    const vim = run("srv-a2", "vim /etc/hosts");
+    expect(vim.exitCode).toBe(127);
+    expect(vim.stderr.split("\n")[0]).toMatch(/^terrarium: 이 실험장은 vim 명령을/);
+    expect(vim.stderr).not.toContain("bash:");
     expect(run("srv-a2", "nosuchcmd-xyz").stderr).toBe("bash: nosuchcmd-xyz: command not found");
   });
 
@@ -125,7 +125,9 @@ describe("grep, awk, sed, sort and friends do what they say [REQ-098]", () => {
     const { run } = lab();
     const r = run("srv-a2", "tail -f -n 2 /etc/passwd");
     expect(r.stdout.split("\n")).toHaveLength(2);
-    expect(r.stderr).toContain("-f는 이 흉내에서 안 돼요");
+    // part of the answer is right (the last lines), so it is given with exit 0, and the terrarium lines say what is missing
+    expect(r.exitCode).toBe(0);
+    expect(r.stderr).toContain("terrarium: 이 실험장은 tail의 -f 기능을 지원하지 않아요");
     expect(r.outside).toEqual(["tail -f"]);
   });
 });

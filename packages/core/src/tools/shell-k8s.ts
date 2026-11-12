@@ -266,12 +266,7 @@ function resourceGap(verb: string, what: string | undefined, rest?: string): She
     };
   if (!KUBECTL_RESOURCES.has(what))
     return { output: `error: the server doesn't have a resource type "${what}"`, exitCode: 1 };
-  return layerGap(
-    KUBECTL,
-    `${verb}:${rest ?? what}`,
-    `${verb} ${what}`,
-    `kubectl ${verb} ${what}: 이 흉내에서는 안 돼요`,
-  );
+  return layerGap(KUBECTL, `${verb}:${rest ?? what}`, `${verb} ${what}`);
 }
 
 const ok = (output: string): ShellOut => ({ output, exitCode: 0 });

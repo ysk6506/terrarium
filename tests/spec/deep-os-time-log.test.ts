@@ -124,7 +124,10 @@ describe("journalctl and dmesg read the logs of the host [REQ-098]", () => {
       "journalctl --vacuum-size=100M",
     ]);
     const follow = run("srv-a2", "journalctl -f");
-    expect(follow.stderr).toContain("-f는 이 흉내에서 안 돼요");
+    expect(follow.exitCode).toBe(0);
+    expect(follow.stderr).toContain(
+      "terrarium: 이 실험장은 journalctl의 -f 기능을 지원하지 않아요",
+    );
     expect(follow.stdout).toContain("licd[645]");
   });
 

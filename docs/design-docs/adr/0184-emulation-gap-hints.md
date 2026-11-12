@@ -12,6 +12,7 @@ amends:
     what: 흉내가 못 하는 것은 command not found나 안 돼요로만 답하고 센다
 touches_protected:
   - docs/design-docs/adr/0117-deep-os-simulation.md
+  - docs/product-specs/requirements.md
 amends_tests:
   - tests/spec/accel-tools-faults.test.ts::nvidia-smi, ibstat and dcgmi on a node in trouble, and on a host without the hardware [REQ-107] > a host without GPUs has no driver, no DCGM engine and no IB devices; other dcgmi commands are listed as missing
   - tests/spec/db-shell.test.ts::psql answers the few queries a person asks to see the state [REQ-095] [REQ-098] > a query the fake does not answer says which ones it does, and a session without -c is outside it
@@ -45,8 +46,12 @@ amends_tests:
   - tests/spec/k8s-shell.test.ts::kubectl describe node and the things the fake does not do [REQ-096] [REQ-100] > a verb the fake does not have prints what it can do and exits 1
   - tests/spec/mesh-shell.test.ts::istioctl proxy-status shows each sidecar against the control plane [REQ-100] > a world with no mesh says there is no Istio, and a command the fake does not do says which
   - tests/spec/service-tools.test.ts::the fake shell prints what the state says, in the shape of Linux [REQ-087] > a command outside the list is an answer, not an error; a host that is down cannot be logged in to
-test_change_reason: 흉내가 못 하는 입력의 답이 바뀐다. 실제 도구도 거절하는 입력은 실제 도구의 말과 종료 코드로 답하고 흉내 밖으로 세지 않으며, 실제 도구가 하는 입력은 terrarium 줄이 붙는다. 되는 입력의 출력은 바뀌지 않았다.
-decision_hash: 46802b0de2a30f6f
+  - tests/spec/deep-os-awk-language.test.ts::=REFUSED
+  - "tests/spec/deep-os-shell.test.ts::grep, awk, sed, sort and friends do what they say [REQ-098] > tail -f is not possible: it says so and shows the last lines, and counts as outside"
+  - tests/spec/deep-os-syntax.test.ts::what the shell does not do is refused in its own words and listed as outside it [REQ-098] > %s
+  - tests/spec/deep-os-time-log.test.ts::journalctl and dmesg read the logs of the host [REQ-098] > an option the fake does not have is outside it, and -f says it shows the lines so far
+test_change_reason: 흉내가 못 하는 입력의 답이 바뀐다. 실제 도구도 거절하는 입력은 실제 도구의 말과 종료 코드로 답하고 흉내 밖으로 세지 않으며, 실제 도구가 하는 입력은 도구 말투의 오류 줄 없이 terrarium 줄만 답한다(결과의 일부를 맞게 줄 수 있으면 종료 0). 되는 입력의 출력은 바뀌지 않았다.
+decision_hash: 5e650ff1fbd65858
 ---
 # ADR-0184 실험장이 못 해서 틀린 것에만 힌트를 준다
 
@@ -65,25 +70,28 @@ decision_hash: 46802b0de2a30f6f
 
 **힌트는 실험장의 흉내가 진짜 도구가 하는 것을 못 해서 실패했을 때만 준다. 진짜 도구도 거절하는 입력은 진짜 도구가 할 말 그대로 답하고 힌트를 붙이지 않는다.**
 
-1. 흉내 한계(emulation gap)를 하나의 길로 말한다. `world/emulation-gap.ts`의 `GapNotice`(도구, 기능 키, 사람이 읽는 이름, 되는 것, 돌아가는 명령 하나)와 `os/types.ts`의 `emulationGap`/`softGap`이다. 곳곳의 제각각 "안 돼요" 문자열은 없앴다. 스위치 CLI는 `facades/netos-gaps.ts`, 계층 명령(kubectl, crictl, istioctl, dcgmi)은 `tools/shell-gap.ts`에서 같은 구성을 쓴다.
+1. 흉내 한계(emulation gap)를 하나의 길로 말한다. `world/emulation-gap.ts`의 `GapNotice`(도구, 기능 키, 사람이 읽는 이름, 되는 것, 돌아가는 명령 하나)와 `os/types.ts`의 `emulationGap`/`softGap`이다. `requirements.md`의 REQ-098 문장도 "실제에 없는 명령은 `command not found`, 실제에는 있는데 실험장에 없는 명령은 한계로 알린다"로 고쳤다. 곳곳의 제각각 "안 돼요" 문자열은 없앴다. 스위치 CLI는 `facades/netos-gaps.ts`, 계층 명령(kubectl, crictl, istioctl, dcgmi)은 `tools/shell-gap.ts`에서 같은 구성을 쓴다.
 2. 거절하는 자리마다 "진짜 도구도 실패" 인지 "진짜 도구는 함" 인지 가른다. 가르는 근거는 진짜 도구의 문서가 적은 옵션·하위 명령·함수 표다(`os/real-options.ts`, `os/real-commands.ts`, 스위치 명령표). 표는 GNU coreutils·procps·util-linux·iproute2·curl·systemd 설명서, 벤더(Arista EOS, Cisco NX-OS, Cisco IOS XE) 명령 설명서를 따랐다. 표에 없는 새 진짜 옵션은 진짜 도구도 거절한 것으로 읽히니, 에이전트가 진짜인데 없다고 만난 것은 표에 더한다. 확실하지 않은 것은 한계로 보고 표시했다.
-3. 진짜 도구에는 있지만 흉내에 아직 없는 명령(`vim`, `export`, `tcpdump`...)은 `command not found`(127)에 힌트가 붙는 한계다. 어느 호스트에도 없는 이름은 힌트 없는 `command not found`다.
+3. 진짜 도구에는 있지만 흉내에 아직 없는 명령(`vim`, `export`, `tcpdump`...)은 종료 127에 `terrarium:` 줄만 있는 한계다(`bash: …: command not found` 줄은 없다). 어느 호스트에도 없는 이름은 힌트 없는 `command not found`다.
 
 ## 출력의 모양
 
-stderr의 첫 줄은 그 도구의 말투 그대로다. 그 뒤에 `terrarium:` 줄 셋이 온다.
+한계의 stderr는 `terrarium:` 줄만이다. 진짜 도구는 그 입력에 오류를 내지 않으니, 도구 말투의 첫 줄(`awk: …`, `bash: vim: command not found`)을 지어내면 현실에 없는 오류를 보여 주는 셈이라 두지 않는다. 진짜 도구도 거절하는 입력만 그 도구의 오류 글 그대로 나가고 `terrarium:` 줄은 없다.
 
 ```
 terrarium: 이 실험장은 <도구>의 <기능> 기능을 지원하지 않아요. 실제 <도구>에는 있어요.
-terrarium: <도구>에서 되는 것: <짧은 목록>
-terrarium: 대신 이 명령은 돼요: <돌아가는 명령 하나>
+terrarium: <도구>에서 되는 것: <그 도구에 실제로 있는 것만의 짧은 목록>
+terrarium: 대신 이 명령은 돼요: <어느 세계에서나 돌아가는 명령 하나>
 ```
 
-종료 코드는 0이 아니다(도구의 말투를 따라 1이나 2, 명령이 없으면 127). 글은 입력과 상태만으로 정해져 같은 입력은 글자까지 같다. 해요체이고 에이전트가 친 글이 `terrarium:` 줄에 들어가지 않는다. `tail -f`와 `journalctl -f`는 줄은 보여 주고 끝나므로 출력과 종료 코드는 그대로 두고 뒤에 `terrarium:` 줄만 붙는다(종료 코드가 0일 수 있는 유일한 경우).
+- 되는 것 목록은 도구마다 그 도구에 실제로 있는 것만 나온다(head와 tail이 옵션 표를 나눠 써도 `head`에 `--follow`가 나오지 않는다).
+- 대신 쓸 명령은 어느 세계에서나 돌아가는 것만 쓴다. 시험 세계에만 있는 이름이 든 예는 쓰지 않고, 맞는 예가 없으면(`ping`) 세 번째 줄을 뺀다.
+- 일반 규칙: 결과의 일부라도 맞게 줄 수 있으면 주고 종료 0과 `terrarium:` 줄, 줄 수 없으면 0이 아닌 종료(도구의 말투를 따라 1이나 2, 명령이 없으면 127)다. `tail -f`와 `journalctl -f`가 앞의 경우다. 한계 기록(이벤트)은 두 경우 모두 남긴다.
+- 글은 입력과 상태만으로 정해져 같은 입력은 글자까지 같다. 해요체이고 에이전트가 친 글이 `terrarium:` 줄에 들어가지 않는다(`psql` 질의처럼 그 입력을 되쓰는 한 줄 제외).
 
 ## 기록
 
-한계 하나가 이벤트 하나다. 실행 기록에 `kind: "gap"`이 도구 호출 이벤트 바로 뒤에 쌓이고 `tool`, `feature`, 그 호출의 `call`(번호)을 가진다. `feature`는 고정 표에서 고른 안정된 키(`flag:-Z`, `function:gensub`, `verb:list-timers`, `command`)라서 에이전트가 친 글, 파일 이름, 행 내용이 들어가지 않는다. 호출 기록(`ToolCallRecord.gaps`)과 진단 내보내기(`terrarium.diagnosis/1`의 선택 항목 `gaps`: 키별 횟수)도 같은 키를 나른다. 흉내 밖 명령 목록(`outside`, ADR-0117)은 그대로 둔다. 진짜 도구도 거절한 입력은 이제 `outside`에 넣지 않는다.
+한계 하나가 이벤트 하나다. 실행 기록에 `kind: "gap"`이 도구 호출 이벤트 바로 뒤에 쌓이고 `tool`, `feature`, 그 호출의 `call`(번호)을 가진다. `feature`는 고정 표에서 고른 안정된 키(`flag:-Z`, `function:gensub`, `verb:list-timers`, `command`)라서 에이전트가 친 글, 파일 이름, 행 내용이 들어가지 않는다. 호출 기록(`ToolCallRecord.gaps`)과 진단 내보내기(`terrarium.diagnosis/1`의 선택 항목 `gaps`: 키별 횟수)도 같은 키를 나른다. 결과 화면의 내보내기 대화상자(ADR-0171)에서는 끝난 실행마다 한 줄을 주는 "진단 기록 (JSON)"만 한계를 싣고, 보고서 세 가지(HTML, Markdown, 복사용 글)는 싣지 않는다. 흉내 밖 명령 목록(`outside`, ADR-0117)은 그대로 둔다. 진짜 도구도 거절한 입력은 이제 `outside`에 넣지 않는다.
 
 ## 화면
 

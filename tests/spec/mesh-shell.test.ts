@@ -86,7 +86,7 @@ describe("istioctl proxy-status shows each sidecar against the control plane [RE
     // ADR-0184: analyze is a real istioctl command the fake lacks; a made-up one is istioctl's own error
     expect(boot(appLab({ level: "mesh" })).sh("istioctl analyze")).toMatchObject({
       output:
-        "istioctl analyze: 이 흉내에서는 안 돼요\nterrarium: 이 실험장은 istioctl의 analyze 기능을 지원하지 않아요. 실제 istioctl에는 있어요.\nterrarium: istioctl에서 되는 것: proxy-status (ps)\nterrarium: 대신 이 명령은 돼요: istioctl proxy-status",
+        "terrarium: 이 실험장은 istioctl의 analyze 기능을 지원하지 않아요. 실제 istioctl에는 있어요.\nterrarium: istioctl에서 되는 것: proxy-status (ps)\nterrarium: 대신 이 명령은 돼요: istioctl proxy-status",
       exitCode: 1,
     });
     expect(boot(appLab({ level: "mesh" })).sh("istioctl foo")).toMatchObject({

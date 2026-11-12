@@ -304,7 +304,6 @@ const RUNS: ReadonlyArray<readonly [string, string, string, number]> = [
 
 // What the fake refuses or cannot do: a message on standard error and exit code 2 (a real awk is fatal on most of these too)
 const REFUSED: ReadonlyArray<readonly [string, string]> = [
-  ["getline-simple", "'BEGIN { getline; print \"got\", $0 }' /tmp/in"],
   ["division-zero", "'BEGIN { print 1 / 0 }'"],
   ["mod-zero", "'BEGIN { print 1 % 0 }'"],
   ["syntax-missing-brace", "'BEGIN { print 1'"],
@@ -342,6 +341,16 @@ describe("awk run from the command line prints what the real awk prints [REQ-098
     const r = run("srv-a2", `awk ${args}`);
     expect(r.exitCode).toBe(2);
     expect(r.stderr).toMatch(/^awk: /);
+    expect(r.stdout).toBe("");
+  });
+
+  test("[REQ-098] getline-simple is a gap: gawk runs it, so the answer is the terrarium lines only, exit 2 (ADR-0184)", () => {
+    const { run, sh } = lab();
+    sh(FILES);
+    const r = run("srv-a2", "awk 'BEGIN { getline; print \"got\", $0 }' /tmp/in");
+    expect(r.exitCode).toBe(2);
+    expect(r.stderr.split("\n")[0]).toMatch(/^terrarium: 이 실험장은 awk의 getline 기능을/);
+    expect(r.stderr).not.toMatch(/^awk: /m);
     expect(r.stdout).toBe("");
   });
 

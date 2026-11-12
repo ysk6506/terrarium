@@ -3,7 +3,7 @@
  * list of what the real tool knows; a subcommand on that list that the fake does not do is a gap (the real tool would run
  * it), a word on no list is a mistake the real tool also rejects and gets the tool's own error text, with no hint.
  */
-import type { GapNotice } from "@terrarium/core/world";
+import { type GapNotice, gapText } from "@terrarium/core/world";
 
 export interface ShellOut {
   readonly output: string;
@@ -63,19 +63,10 @@ export const KUBECTL_RESOURCES: ReadonlySet<string> = words(
   "pods pod po services service svc deployments deployment deploy nodes node no namespaces namespace ns configmaps configmap cm secrets secret ingresses ingress ing daemonsets daemonset ds statefulsets statefulset sts replicasets replicaset rs jobs job cronjobs cronjob cj events event ev persistentvolumes persistentvolume pv persistentvolumeclaims persistentvolumeclaim pvc endpoints endpoint ep horizontalpodautoscalers hpa serviceaccounts serviceaccount sa networkpolicies networkpolicy netpol storageclasses storageclass sc roles role rolebindings rolebinding clusterroles clusterrole clusterrolebindings clusterrolebinding customresourcedefinitions crd crds",
 );
 
-/** The gap notice of a real thing the fake lacks; `said` is the tool's own first line. */
-export function layerGap(
-  t: LayerTool,
-  feature: string,
-  what: string,
-  said: string,
-  exitCode = 1,
-): ShellOut {
-  return {
-    output: said,
-    exitCode,
-    gap: { tool: t.tool, feature, what, said, supported: t.supported, example: t.example },
-  };
+/** The gap notice of a real thing the fake lacks: the `terrarium:` lines only, since the real tool would run it. */
+export function layerGap(t: LayerTool, feature: string, what: string, exitCode = 1): ShellOut {
+  const gap = { tool: t.tool, feature, what, supported: t.supported, example: t.example };
+  return { output: gapText(gap), exitCode, gap };
 }
 
 /** A subcommand the fake does not do: a gap when the real tool has it, the tool's own error when no tool has it. */
@@ -83,5 +74,5 @@ export function subcommandGap(t: LayerTool, sub: string | undefined): ShellOut {
   if (sub === undefined || sub === "") return { output: `Usage: ${t.tool} [command]`, exitCode: 1 };
   if (!t.real.has(sub))
     return { output: `Error: unknown command "${sub}" for "${t.tool}"`, exitCode: 1 };
-  return layerGap(t, sub, sub, `${t.tool} ${sub}: 이 흉내에서는 안 돼요`);
+  return layerGap(t, sub, sub);
 }

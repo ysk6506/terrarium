@@ -67,7 +67,6 @@ export {
 } from "./db";
 export { backupAgeS, bestCandidate } from "./db-act";
 export {
-  defaultSaid,
   type EmulationGap,
   type GapNotice,
   gapKey,

@@ -29,10 +29,22 @@ describe("every hint points at something that works [REQ-098]", () => {
   test("each tool's example and each real-command example runs with exit 0", () => {
     const { run } = lab();
     for (const t of realTools()) {
-      const ex = realToolExample(t) as string;
-      expect(run("srv-a2", ex).exitCode, ex).toBe(0);
+      const ex = realToolExample(t);
+      // a tool with no example that fits every world (`ping` needs a host that exists) gives none
+      if (ex !== undefined) expect(run("srv-a2", ex).exitCode, ex).toBe(0);
     }
     for (const ex of realCommandExamples()) expect(run("srv-a2", ex).exitCode, ex).toBe(0);
+  });
+
+  test("an example is never made of a name only one world has: it works in a world of another shape", () => {
+    for (const t of realTools()) {
+      const ex = realToolExample(t);
+      if (ex !== undefined) expect(elsewhere(ex).exitCode, `${t}: ${ex}`).toBe(0);
+    }
+    expect(realToolExample("ping")).toBeUndefined();
+    // no example for ping, so its gap is two lines
+    const ping = lab().run("srv-a2", "ping -Q 1 localhost");
+    expect(terrariumLines(ping.stderr)).toHaveLength(2);
   });
 
   test("a real command the fake lacks is a gap with its name as the key", () => {
@@ -44,6 +56,20 @@ describe("every hint points at something that works [REQ-098]", () => {
     }
   });
 });
+
+/** A command on a host of a world with another shape than the lab (the sample blueprint): what an example must also survive. */
+function elsewhere(cmd: string): { exitCode: number; output: string } {
+  const world = World.fromBlueprint(sampleBlueprint(), new Catalog());
+  const physics = new Physics(world);
+  physics.settle();
+  physics.run(300);
+  const r = new Toolbox(TOOL_NAMES).call(
+    "run_command",
+    { host: "srv-a1", cmd },
+    { world, facades: createFacades(world) },
+  );
+  return r.data as { exitCode: number; output: string };
+}
 
 /** [command, gap key] for input the real tool accepts and the fake does not. */
 const GAPS: ReadonlyArray<readonly [string, string, string]> = [
@@ -67,6 +93,8 @@ const GAPS: ReadonlyArray<readonly [string, string, string]> = [
 const GENUINE: readonly string[] = [
   "ls --no-such-option",
   "head --bogus /etc/hosts",
+  "head --follow /etc/hosts",
+  "head -f /etc/hosts",
   "uname -Z",
   "find /etc -maxdepth x",
   "find /etc -mtime abc",
@@ -89,18 +117,66 @@ describe("a gap says whose limit it is, what works and one command that works [R
       gaps: { tool: string; feature: string }[];
     };
     expect(r.exitCode).not.toBe(0);
-    const lines = terrariumLines(r.stderr);
-    // one gap is three lines (a line with several gaps, like `if … fi`, has one set per word)
-    expect(lines.length % 3).toBe(0);
+    // the real tool runs this input, so the answer is `terrarium:` lines only: no error line in the tool's style
+    const lines = r.stderr.split("\n");
+    for (const l of lines) expect(l).toMatch(/^terrarium: /);
     expect(lines[0]).toMatch(/지원하지 않아요|갖추지 못했어요/);
-    expect(r.stderr.split("\n")[0]).not.toMatch(/^terrarium:/);
     expect(r.gaps.some((g) => g.tool === tool)).toBe(true);
     // a stable key: no spaces, nothing the agent typed beyond the fixed names
     for (const g of r.gaps) expect(g.feature).toMatch(/^[^\s]+$/);
     expect(r.gaps.map((g) => `${g.tool}:${g.feature}`)).toContain(`${tool}:${feature}`);
-    // the alternative it offers works here
-    const example = (lines[2] as string).replace("terrarium: 대신 이 명령은 돼요: ", "");
-    expect(run("srv-a2", example).exitCode, example).toBe(0);
+    // the alternative it offers works here and in a world of another shape
+    const examples = lines
+      .filter((l) => l.startsWith("terrarium: 대신 이 명령은 돼요: "))
+      .map((l) => l.replace("terrarium: 대신 이 명령은 돼요: ", ""));
+    expect(examples.length).toBeGreaterThan(0);
+    for (const example of examples) {
+      expect(run("srv-a2", example).exitCode, example).toBe(0);
+      expect(elsewhere(example).exitCode, example).toBe(0);
+    }
+  });
+
+  test("every item of the list of what works is something the real tool has and this one does", () => {
+    const { run } = lab();
+    for (const [cmd, tool, feature] of GAPS) {
+      if (!feature.startsWith("flag:")) continue;
+      const list = (run("srv-a2", cmd).stderr.split("\n")[1] ?? "")
+        .replace(`terrarium: ${tool}에서 되는 것: `, "")
+        .split(/[ ,]+/)
+        .map((t) => t.replace(/^(-\w|--[\w-]+).*$/, "$1"))
+        .filter((t) => /^--?\w/.test(t));
+      expect(list.length, cmd).toBeGreaterThan(0);
+      for (const flag of list) {
+        const r = run("srv-a2", `${tool} ${flag} 1 /etc/hosts`) as ReturnType<typeof run> & {
+          gaps: { feature: string }[];
+        };
+        expect(r.stderr, `${tool} ${flag}`).not.toMatch(
+          /invalid option|unrecognized|garbage option/,
+        );
+        expect(
+          r.gaps.map((g) => g.feature),
+          `${tool} ${flag}`,
+        ).not.toContain(`flag:${flag}`);
+      }
+    }
+    // head has no --follow or --retry, so they are not listed (tail has them)
+    const head = run("srv-a2", "head --lines=1 /etc/hosts").stderr;
+    expect(head).not.toMatch(/--follow|--retry/);
+    expect(run("srv-a2", "tail --lines=1 /etc/hosts").stderr).toContain("--follow");
+  });
+
+  test("part of the answer that is right is given with exit 0 and the lines say what is missing; the gap is still recorded", () => {
+    const { run } = lab();
+    for (const [cmd, tool, feature] of [
+      ["tail -f -n 2 /etc/passwd", "tail", "flag:-f"],
+      ["journalctl -f", "journalctl", "flag:--follow"],
+    ] as const) {
+      const r = run("srv-a2", cmd) as ReturnType<typeof run> & { gaps: unknown[] };
+      expect(r.exitCode, cmd).toBe(0);
+      expect(r.stdout, cmd).not.toBe("");
+      expect(r.stderr.split("\n")[0], cmd).toMatch(/^terrarium: /);
+      expect(r.gaps, cmd).toEqual([{ tool, feature }]);
+    }
   });
 
   test("the same input gives the same stderr, byte for byte", () => {
@@ -136,15 +212,14 @@ describe("a switch CLI line the real OS reads is a gap, one it rejects is not [R
       };
   }
 
-  test("show ip ospf neighbor: the OS's own error, then the terrarium lines, and the example works", () => {
+  test("show ip ospf neighbor: only the terrarium lines, and the example works", () => {
     const cli = boot();
     const r = cli(["enable", "show ip ospf neighbor"]);
     const out = r.steps[1]?.output as string;
     expect(r.steps[1]?.ok).toBe(false);
-    expect(out.split("\n").filter((l) => !l.startsWith("terrarium:"))[1]).toMatch(
-      /Invalid (input|command)/,
-    );
+    // the real OS reads this line, so there is no `Invalid input` line of its own: the terrarium lines are all of it
     const lines = terrariumLines(out);
+    expect(out.split("\n")).toEqual(lines);
     expect(lines).toHaveLength(3);
     expect(r.gaps).toEqual([{ tool: expect.any(String), feature: "show-ip-ospf-neighbor" }]);
     const example = (lines[2] as string).replace("terrarium: 대신 이 명령은 돼요: ", "");

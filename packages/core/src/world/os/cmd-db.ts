@@ -91,7 +91,6 @@ export function psql(c: Cmd): R {
       tool: "psql",
       feature: "query",
       what: `질의 "${sql}"`,
-      said: `이 질의는 아직 못 해요: ${sql}`,
       supported: PSQL_QUERIES.join(" · "),
       example: `psql -c '${PSQL_QUERIES[2]}'`,
     });

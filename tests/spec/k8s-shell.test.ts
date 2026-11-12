@@ -145,7 +145,7 @@ describe("crictl ps lists the containers on a node, API or not [REQ-096]", () =>
     const { sh } = lab();
     expect(sh(W1, "crictl images")).toMatchObject({
       output:
-        "crictl images: 이 흉내에서는 안 돼요\nterrarium: 이 실험장은 crictl의 images 기능을 지원하지 않아요. 실제 crictl에는 있어요.\nterrarium: crictl에서 되는 것: ps\nterrarium: 대신 이 명령은 돼요: crictl ps",
+        "terrarium: 이 실험장은 crictl의 images 기능을 지원하지 않아요. 실제 crictl에는 있어요.\nterrarium: crictl에서 되는 것: ps\nterrarium: 대신 이 명령은 돼요: crictl ps",
       exitCode: 1,
     });
     expect(sh(W1, "crictl foo").output).toBe('Error: unknown command "foo" for "crictl"');

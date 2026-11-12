@@ -154,7 +154,6 @@ export function journalctl(c: Cmd): R {
         tool: "journalctl",
         feature: "flag:--follow",
         what: "-f",
-        said: "journalctl: -f는 이 흉내에서 안 돼요, 지금까지의 마지막 줄만 보여요",
         supported:
           "-u 유닛, -n N, -p 우선순위, --since --until, -k, -b, -g 패턴, -o cat, -r, --no-pager",
         example: "journalctl -n 5",

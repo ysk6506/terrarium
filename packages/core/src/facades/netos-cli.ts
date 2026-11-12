@@ -12,13 +12,14 @@ import {
   type Entity,
   type GapNotice,
   gapOf,
+  gapText,
   type NetChange,
   type NetModel,
   netModelOf,
   type WorldPort,
 } from "@terrarium/core/world";
 import { bgpConfigSpecs, bgpShowSpecs, stpShowSpecs } from "./netos-bgp-config";
-import { cliGap, cliGapText } from "./netos-gaps";
+import { cliGap } from "./netos-gaps";
 import { interfaceDescription, interfaceDetail, interfaceStatus } from "./netos-iface";
 import { macRows, showMacTable, showTrunk, showVlan } from "./netos-l2";
 import { arpRows, showIpArp, showIpInterfaceBrief } from "./netos-l3";
@@ -451,15 +452,7 @@ export class CliSession {
   ): string {
     if (error instanceof PrivilegeError) return "% Invalid input (privileged mode required)";
     if (error instanceof NestedFailure) return error.message;
-    if (error instanceof CliGapFailure)
-      return cliGapText(
-        error.gap,
-        v.os,
-        { kind: error.kind, at: error.at },
-        tokens,
-        prompt,
-        command.trim(),
-      );
+    if (error instanceof CliGapFailure) return gapText(error.gap);
     if (error instanceof CliFailure)
       return failureText(v.os, { kind: error.kind, at: error.at }, tokens, prompt, command.trim());
     if (error instanceof TerrariumError) return `% ${error.message}`;

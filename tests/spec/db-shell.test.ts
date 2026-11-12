@@ -82,7 +82,8 @@ describe("psql answers the few queries a person asks to see the state [REQ-095] 
     const { sh } = lab({ shape: "replicated" });
     const r = sh("vm-db-1", "psql -c 'select 2'");
     expect(r.exitCode).toBe(2);
-    expect(r.output).toContain("이 질의는 아직 못 해요: select 2");
+    // ADR-0184: a real server would answer, so the output is the terrarium lines only, with no error line of psql's
+    expect(r.output.split("\n")[0]).toMatch(/^terrarium: 이 실험장은 psql의 질의 "select 2"/);
     expect(r.output).toContain("terrarium: psql에서 되는 것: select pg_is_in_recovery()");
     expect(r.outside).toEqual(['psql 질의 "select 2"']);
     const interactive = sh("vm-db-1", "psql");

@@ -28,8 +28,8 @@ interface Real {
   readonly short: string;
   /** Long options, space separated, without the dashes. */
   readonly long: string;
-  /** A command that works on the fake. */
-  readonly example: string;
+  /** A command that works in any world; none when no command is right everywhere (`ping` needs a host that exists). */
+  readonly example?: string;
   readonly style?: Style;
   /** The exit status of a refused option (1 unless the tool says otherwise). */
   readonly code?: number;
@@ -227,14 +227,12 @@ const REAL: Readonly<Record<string, Real>> = {
   curl: {
     short: "012346ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz",
     long: CURL_LONG,
-    example: "curl -s http://localhost/",
     style: "curl",
     code: 2,
   },
   ping: {
     short: "46aAbBcdDfhiIlLmMnNOpqQrRsStTUvVwW",
     long: "help version",
-    example: "ping -c 1 licd",
     code: 2,
   },
   ss: {

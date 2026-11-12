@@ -1,24 +1,17 @@
 /**
  * Switch CLI commands the real OS has and the fake lacks (ADR-0184). When a line cannot be read, the fake first asks
- * whether the real OS would read it: a line that matches an entry here is an emulation gap (the OS's own error line, then
- * the `terrarium:` lines, and a record), a line that matches none is a mistake the real OS rejects too and gets only the
- * OS's own text.
+ * whether the real OS would read it: a line that matches an entry here is an emulation gap (the `terrarium:` lines only,
+ * since the real OS shows no error, and a record), a line that matches none is a mistake the real OS rejects too and
+ * gets only the OS's own text.
  *
  * The tables are written from the vendors' command references (Arista EOS 4.x, Cisco NX-OS 10.x, Cisco IOS XE 17.x
  * command references) and cover the commands an operator reaches for on a switch; a command not listed is treated as a
  * mistake, so the list is meant to grow when an agent reaches for a real command it lacks.
  */
-import { type GapNotice, gapText } from "@terrarium/core/world";
+import type { GapNotice } from "@terrarium/core/world";
 import type { Mode } from "./netos-cli";
 import type { Os } from "./netos-model";
-import {
-  type Failure,
-  failureText,
-  matchCommand,
-  type Token,
-  type Word,
-  wordsOf,
-} from "./netos-parse";
+import { matchCommand, type Token, type Word, wordsOf } from "./netos-parse";
 
 type Where = "show" | "config" | "if";
 
@@ -182,16 +175,4 @@ export function cliGap(
     supported: supportedOf(here, first),
     example: exampleOf(os, mode),
   };
-}
-
-/** The whole text of a CLI gap: the OS's own error for the line, then the `terrarium:` lines. */
-export function cliGapText(
-  gap: GapNotice,
-  os: Os,
-  failure: Failure,
-  tokens: readonly Token[],
-  prompt: string,
-  line: string,
-): string {
-  return gapText({ ...gap, said: failureText(os, failure, tokens, prompt, line) });
 }

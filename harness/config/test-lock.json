@@ -133240,13 +133240,17 @@
   },
   "tests/spec/db-shell.test.ts::psql answers the few queries a person asks to see the state [REQ-095] [REQ-098] > a query the fake does not answer says which ones it does, and a session without -c is outside it": {
    "kind": "test",
-   "hash": "44329ed03e5fac07",
+   "hash": "e2780a86813f7300",
    "asserts": 6,
    "literals": [
+    "\"0\"",
+    "\"0\"",
     "\"2\"",
     "\"2\"",
     "\"2\"",
     "\"2\"",
+    "\"\\n\"",
+    "\"\\n\"",
     "\"a query the fake does not answer says which ones it does, and a session without -c is outside it\"",
     "\"psql -c 'select 2'\"",
     "\"psql 대화형 접속\"",
@@ -133258,9 +133262,7 @@
     "\"terrarium: psql에서 되는 것: select pg_is_in_recovery()\"",
     "\"terrarium: psql에서 되는 것: select pg_is_in_recovery()\"",
     "\"vm-db-1\"",
-    "\"vm-db-1\"",
-    "\"이 질의는 아직 못 해요: select 2\"",
-    "\"이 질의는 아직 못 해요: select 2\""
+    "\"vm-db-1\""
    ],
    "precision": [],
    "skips": 0,
@@ -133696,13 +133698,13 @@
   },
   "tests/spec/deep-os-awk-language.test.ts::=REFUSED": {
    "kind": "support",
-   "hash": "3f94c6cad316552b",
+   "hash": "a22b037bc188c6a9",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0184-emulation-gap-hints.md"
   },
   "tests/spec/deep-os-awk-language.test.ts::=RUNS": {
    "kind": "support",
@@ -133790,6 +133792,28 @@
    "added": "2026-11-11",
    "amended_by": null
   },
+  "tests/spec/deep-os-awk-language.test.ts::awk run from the command line prints what the real awk prints [REQ-098] > [REQ-098] getline-simple is a gap: gawk runs it, so the answer is the terrarium lines only, exit 2 (ADR-0184)": {
+   "kind": "test",
+   "hash": "7d250c107b51e21c",
+   "asserts": 4,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"0\"",
+    "\"0\"",
+    "\"2\"",
+    "\"2\"",
+    "\"[REQ-098] getline-simple is a gap: gawk runs it, so the answer is the terrarium lines only, exit 2 (ADR-0184)\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"awk 'BEGIN { getline; print \\\"got\\\", $0 }' /tmp/in\"",
+    "\"srv-a2\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "tests/spec/deep-os-awk-language.test.ts::awk run from the command line prints what the real awk prints [REQ-098] > [REQ-098] rand is the same sequence for the same seed, and srand returns the seed before": {
    "kind": "test",
    "hash": "31f16f35715ad1cd",
@@ -133854,7 +133878,7 @@
   },
   "tests/spec/deep-os-corners.test.ts::=ROWS": {
    "kind": "support",
-   "hash": "d718db0600a376b4",
+   "hash": "0a04a9857ee4e99b",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -136177,7 +136201,7 @@
   },
   "tests/spec/deep-os-gaps-args.test.ts::the options of a command [REQ-098] > [REQ-098] a long option the fake does not know is said so, whether or not it carries a value": {
    "kind": "test",
-   "hash": "adb9cfa8a61d9eb8",
+   "hash": "e4842d8eec03dbe3",
    "asserts": 3,
    "literals": [
     "\"0\"",
@@ -136191,16 +136215,16 @@
     "\"\\n\"",
     "\"cut --delimiter=, --fields=1 /tmp/d 2>&1\"",
     "\"cut --delimiter=, --fields=1 /tmp/d 2>&1\"",
-    "\"cut: --delimiter=,: 이 흉내에서는 안 돼요\"",
-    "\"cut: --delimiter=,: 이 흉내에서는 안 돼요\"",
     "\"head --bogus /tmp/d 2>&1\"",
     "\"head --bogus /tmp/d 2>&1\"",
     "\"head --lines=1 /tmp/d 2>&1\"",
     "\"head --lines=1 /tmp/d 2>&1\"",
-    "\"head: --lines=1: 이 흉내에서는 안 돼요\"",
-    "\"head: --lines=1: 이 흉내에서는 안 돼요\"",
     "\"head: unrecognized option '--bogus'\\nTry 'head --help' for more information.\"",
-    "\"head: unrecognized option '--bogus'\\nTry 'head --help' for more information.\""
+    "\"head: unrecognized option '--bogus'\\nTry 'head --help' for more information.\"",
+    "\"terrarium: 이 실험장은 cut의 --delimiter=, 기능을 지원하지 않아요. 실제 cut에는 있어요.\"",
+    "\"terrarium: 이 실험장은 cut의 --delimiter=, 기능을 지원하지 않아요. 실제 cut에는 있어요.\"",
+    "\"terrarium: 이 실험장은 head의 --lines=1 기능을 지원하지 않아요. 실제 head에는 있어요.\"",
+    "\"terrarium: 이 실험장은 head의 --lines=1 기능을 지원하지 않아요. 실제 head에는 있어요.\""
    ],
    "precision": [],
    "skips": 0,
@@ -139648,7 +139672,7 @@
   },
   "tests/spec/deep-os-links.test.ts::ln -s and readlink make and read symbolic links [REQ-098] > [REQ-098] a hard link is not simulated: it says so and is counted as outside": {
    "kind": "test",
-   "hash": "f66edd61dcdc6e85",
+   "hash": "3753a50d257ad128",
    "asserts": 4,
    "literals": [
     "\"1\"",
@@ -139664,8 +139688,8 @@
     "\"srv-a2\"",
     "\"srv-a2\"",
     "\"srv-a2\"",
-    "\"이 흉내에서는 안 돼요\"",
-    "\"이 흉내에서는 안 돼요\""
+    "\"terrarium: 이 실험장은 ln의 하드 링크 기능을 지원하지 않아요\"",
+    "\"terrarium: 이 실험장은 ln의 하드 링크 기능을 지원하지 않아요\""
    ],
    "precision": [],
    "skips": 0,
@@ -141395,11 +141419,11 @@
   },
   "tests/spec/deep-os-shell.test.ts::grep, awk, sed, sort and friends do what they say [REQ-098] > tail -f is not possible: it says so and shows the last lines, and counts as outside": {
    "kind": "test",
-   "hash": "930e56da8aad58b2",
-   "asserts": 3,
+   "hash": "a0a8a2a9e5b6d3ac",
+   "asserts": 4,
    "literals": [
-    "\"-f는 이 흉내에서 안 돼요\"",
-    "\"-f는 이 흉내에서 안 돼요\"",
+    "\"0\"",
+    "\"0\"",
     "\"2\"",
     "\"2\"",
     "\"\\n\"",
@@ -141408,12 +141432,14 @@
     "\"tail -f -n 2 /etc/passwd\"",
     "\"tail -f is not possible: it says so and shows the last lines, and counts as outside\"",
     "\"tail -f\"",
-    "\"tail -f\""
+    "\"tail -f\"",
+    "\"terrarium: 이 실험장은 tail의 -f 기능을 지원하지 않아요\"",
+    "\"terrarium: 이 실험장은 tail의 -f 기능을 지원하지 않아요\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-06",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0184-emulation-gap-hints.md"
   },
   "tests/spec/deep-os-shell.test.ts::the files and the processes agree with each other [REQ-098] > <suite>": {
    "kind": "support",
@@ -141524,11 +141550,13 @@
   },
   "tests/spec/deep-os-shell.test.ts::the shell reads a line the way bash does [REQ-098] > an unknown command is bash's own words with exit 127; kubectl waits for the container layer": {
    "kind": "test",
-   "hash": "b89a2f8d6fd76201",
-   "asserts": 4,
+   "hash": "10b18463ad580bf1",
+   "asserts": 5,
    "literals": [
     "\"0\"",
     "\"0\"",
+    "\"127\"",
+    "\"127\"",
     "\"127\"",
     "\"127\"",
     "\"\\n\"",
@@ -141538,8 +141566,8 @@
     "\"bash: kubectl: command not found\"",
     "\"bash: nosuchcmd-xyz: command not found\"",
     "\"bash: nosuchcmd-xyz: command not found\"",
-    "\"bash: vim: command not found\"",
-    "\"bash: vim: command not found\"",
+    "\"bash:\"",
+    "\"bash:\"",
     "\"kubectl get pods\"",
     "\"kubectl\"",
     "\"kubectl\"",
@@ -141549,14 +141577,6 @@
     "\"srv-a2\"",
     "\"srv-a2\"",
     "\"srv-a2\"",
-    "\"srv-a2\"",
-    "\"srv-a2\"",
-    "\"srv-a2\"",
-    "\"terrarium: \"",
-    "\"terrarium: \"",
-    "\"vim /etc/hosts\"",
-    "\"vim /etc/hosts\"",
-    "\"vim /etc/hosts\"",
     "\"vim /etc/hosts\""
    ],
    "precision": [],
@@ -142519,22 +142539,28 @@
   },
   "tests/spec/deep-os-syntax.test.ts::what the shell does not do is refused in its own words and listed as outside it [REQ-098] > %s": {
    "kind": "test",
-   "hash": "89a25f9b0d3105c4",
-   "asserts": 3,
+   "hash": "b6376716a2cf27da",
+   "asserts": 4,
    "literals": [
+    "\"$\"",
+    "\"$\"",
     "\"%s\"",
+    "\"0\"",
+    "\"0\"",
     "\"2\"",
     "\"2\"",
     "\"FOO=1 echo a\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"`\"",
+    "\"bash: \"",
+    "\"bash: \"",
     "\"echo $(date)\"",
     "\"echo \\\"a$HOME\\\"\"",
     "\"echo `date`\"",
     "\"echo a &\"",
     "\"백그라운드 실행(&)\"",
-    "\"변수 지정\"",
-    "\"변수와 명령 치환($)\"",
-    "\"변수와 명령 치환($)\"",
-    "\"변수와 명령 치환(`)\"",
+    "\"변수\"",
     "\"셸 문법 $\"",
     "\"셸 문법 $\"",
     "\"셸 문법 `\"",
@@ -142543,8 +142569,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0184-emulation-gap-hints.md"
   },
   "tests/spec/deep-os-syntax.test.ts::what the shell does not do is refused in its own words and listed as outside it [REQ-098] > <suite>": {
    "kind": "support",
@@ -142558,7 +142584,7 @@
   },
   "tests/spec/deep-os-syntax.test.ts::what the shell does not do is refused in its own words and listed as outside it [REQ-098] > a command that does not exist is command not found, listed as outside, and exit 127": {
    "kind": "test",
-   "hash": "781be90d525e0cac",
+   "hash": "b31275604bd51115",
    "asserts": 4,
    "literals": [
     "\"0\"",
@@ -142570,19 +142596,17 @@
     "\"\\n\"",
     "\"\\n\"",
     "\"a command that does not exist is command not found, listed as outside, and exit 127\"",
-    "\"bash: export: command not found\"",
-    "\"bash: export: command not found\"",
     "\"bash: nosuchcmd-xyz: command not found\"",
     "\"bash: nosuchcmd-xyz: command not found\"",
+    "\"command not found\"",
+    "\"command not found\"",
     "\"export FOO=1\"",
     "\"export\"",
     "\"export\"",
     "\"nosuchcmd-xyz\"",
     "\"nosuchcmd-xyz\"",
     "\"nosuchcmd-xyz\"",
-    "\"nosuchcmd-xyz\"",
-    "\"terrarium: \"",
-    "\"terrarium: \""
+    "\"nosuchcmd-xyz\""
    ],
    "precision": [],
    "skips": 0,
@@ -144465,11 +144489,11 @@
   },
   "tests/spec/deep-os-time-log.test.ts::journalctl and dmesg read the logs of the host [REQ-098] > an option the fake does not have is outside it, and -f says it shows the lines so far": {
    "kind": "test",
-   "hash": "675e90238725c952",
-   "asserts": 4,
+   "hash": "89b3a265f4a86b45",
+   "asserts": 5,
    "literals": [
-    "\"-f는 이 흉내에서 안 돼요\"",
-    "\"-f는 이 흉내에서 안 돼요\"",
+    "\"0\"",
+    "\"0\"",
     "\"2\"",
     "\"2\"",
     "\"an option the fake does not have is outside it, and -f says it shows the lines so far\"",
@@ -144488,12 +144512,14 @@
     "\"srv-a2\"",
     "\"srv-a2\"",
     "\"srv-a2\"",
-    "\"srv-a2\""
+    "\"srv-a2\"",
+    "\"terrarium: 이 실험장은 journalctl의 -f 기능을 지원하지 않아요\"",
+    "\"terrarium: 이 실험장은 journalctl의 -f 기능을 지원하지 않아요\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0184-emulation-gap-hints.md"
   },
   "tests/spec/deep-os-time-log.test.ts::journalctl and dmesg read the logs of the host [REQ-098] > dmesg prints the kernel ring buffer with its boot-relative stamps, -T with dates": {
    "kind": "test",
@@ -144734,6 +144760,16 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "tests/spec/emulation-gaps.test.ts::=elsewhere": {
+   "kind": "support",
+   "hash": "72a864bce8cd307c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "tests/spec/emulation-gaps.test.ts::=GAPS": {
    "kind": "support",
    "hash": "437f35062b8ca417",
@@ -144746,7 +144782,7 @@
   },
   "tests/spec/emulation-gaps.test.ts::=GENUINE": {
    "kind": "support",
-   "hash": "e5ebadfbea463014",
+   "hash": "910a4541459d490e",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -144882,8 +144918,8 @@
   },
   "tests/spec/emulation-gaps.test.ts::a gap says whose limit it is, what works and one command that works [REQ-098] > %s": {
    "kind": "test",
-   "hash": "99b457679d08df5a",
-   "asserts": 8,
+   "hash": "4413620febbc48e9",
+   "asserts": 9,
    "literals": [
     "\"\"",
     "\"%s\"",
@@ -144897,14 +144933,11 @@
     "\"0\"",
     "\"0\"",
     "\"0\"",
-    "\"2\"",
-    "\"3\"",
-    "\"3\"",
-    "\"\\n\"",
     "\"\\n\"",
     "\"srv-a2\"",
     "\"srv-a2\"",
     "\"srv-a2\"",
+    "\"terrarium: 대신 이 명령은 돼요: \"",
     "\"terrarium: 대신 이 명령은 돼요: \"",
     "true",
     "true"
@@ -144919,6 +144952,63 @@
    "hash": "edb4bbfe0a867169",
    "asserts": 0,
    "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/emulation-gaps.test.ts::a gap says whose limit it is, what works and one command that works [REQ-098] > every item of the list of what works is something the real tool has and this one does": {
+   "kind": "test",
+   "hash": "cbb9f553f54a80b4",
+   "asserts": 5,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"$1\"",
+    "\"--follow\"",
+    "\"--follow\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"\\n\"",
+    "\"every item of the list of what works is something the real tool has and this one does\"",
+    "\"flag:\"",
+    "\"head --lines=1 /etc/hosts\"",
+    "\"srv-a2\"",
+    "\"srv-a2\"",
+    "\"srv-a2\"",
+    "\"srv-a2\"",
+    "\"srv-a2\"",
+    "\"tail --lines=1 /etc/hosts\"",
+    "\"tail --lines=1 /etc/hosts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/emulation-gaps.test.ts::a gap says whose limit it is, what works and one command that works [REQ-098] > part of the answer that is right is given with exit 0 and the lines say what is missing; the gap is still recorded": {
+   "kind": "test",
+   "hash": "f031bd6760c0d8e2",
+   "asserts": 4,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"flag:--follow\"",
+    "\"flag:-f\"",
+    "\"journalctl -f\"",
+    "\"journalctl\"",
+    "\"part of the answer that is right is given with exit 0 and the lines say what is missing; the gap is still recorded\"",
+    "\"srv-a2\"",
+    "\"tail -f -n 2 /etc/passwd\"",
+    "\"tail\""
+   ],
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
@@ -145008,14 +145098,12 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "tests/spec/emulation-gaps.test.ts::a switch CLI line the real OS reads is a gap, one it rejects is not [REQ-098] > show ip ospf neighbor: the OS's own error, then the terrarium lines, and the example works": {
+  "tests/spec/emulation-gaps.test.ts::a switch CLI line the real OS reads is a gap, one it rejects is not [REQ-098] > show ip ospf neighbor: only the terrarium lines, and the example works": {
    "kind": "test",
-   "hash": "2af33bc5f800d772",
+   "hash": "19674d6ae5e80174",
    "asserts": 6,
    "literals": [
     "\"\"",
-    "\"1\"",
-    "\"1\"",
     "\"1\"",
     "\"1\"",
     "\"1\"",
@@ -145036,12 +145124,10 @@
     "\"show ip ospf neighbor\"",
     "\"show ip ospf neighbor\"",
     "\"show ip ospf neighbor\"",
-    "\"show ip ospf neighbor: the OS's own error, then the terrarium lines, and the example works\"",
+    "\"show ip ospf neighbor: only the terrarium lines, and the example works\"",
     "\"show-ip-ospf-neighbor\"",
     "\"show-ip-ospf-neighbor\"",
     "\"terrarium: 대신 이 명령은 돼요: \"",
-    "\"terrarium:\"",
-    "\"terrarium:\"",
     "false",
     "false",
     "true",
@@ -145079,9 +145165,29 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "tests/spec/emulation-gaps.test.ts::every hint points at something that works [REQ-098] > an example is never made of a name only one world has: it works in a world of another shape": {
+   "kind": "test",
+   "hash": "7b92bf96314ff728",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"2\"",
+    "\"2\"",
+    "\"an example is never made of a name only one world has: it works in a world of another shape\"",
+    "\"ping -Q 1 localhost\"",
+    "\"ping\"",
+    "\"ping\"",
+    "\"srv-a2\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "tests/spec/emulation-gaps.test.ts::every hint points at something that works [REQ-098] > each tool's example and each real-command example runs with exit 0": {
    "kind": "test",
-   "hash": "6672b5b181155a37",
+   "hash": "4d45f173b8a913b5",
    "asserts": 2,
    "literals": [
     "\"0\"",
@@ -154080,7 +154186,7 @@
   },
   "tests/spec/k8s-shell.test.ts::crictl ps lists the containers on a node, API or not [REQ-096] > a verb other than ps is refused with what it can do": {
    "kind": "test",
-   "hash": "a517f083436d6906",
+   "hash": "14111db9d73b4802",
    "asserts": 2,
    "literals": [
     "\"1\"",
@@ -154092,8 +154198,8 @@
     "\"crictl foo\"",
     "\"crictl images\"",
     "\"crictl images\"",
-    "\"crictl images: 이 흉내에서는 안 돼요\\nterrarium: 이 실험장은 crictl의 images 기능을 지원하지 않아요. 실제 crictl에는 있어요.\\nterrarium: crictl에서 되는 것: ps\\nterrarium: 대신 이 명령은 돼요: crictl ps\"",
-    "\"crictl images: 이 흉내에서는 안 돼요\\nterrarium: 이 실험장은 crictl의 images 기능을 지원하지 않아요. 실제 crictl에는 있어요.\\nterrarium: crictl에서 되는 것: ps\\nterrarium: 대신 이 명령은 돼요: crictl ps\""
+    "\"terrarium: 이 실험장은 crictl의 images 기능을 지원하지 않아요. 실제 crictl에는 있어요.\\nterrarium: crictl에서 되는 것: ps\\nterrarium: 대신 이 명령은 돼요: crictl ps\"",
+    "\"terrarium: 이 실험장은 crictl의 images 기능을 지원하지 않아요. 실제 crictl에는 있어요.\\nterrarium: crictl에서 되는 것: ps\\nterrarium: 대신 이 명령은 돼요: crictl ps\""
    ],
    "precision": [],
    "skips": 0,
@@ -155907,7 +156013,7 @@
   },
   "tests/spec/mesh-shell.test.ts::istioctl proxy-status shows each sidecar against the control plane [REQ-100] > a world with no mesh says there is no Istio, and a command the fake does not do says which": {
    "kind": "test",
-   "hash": "36044e5840f3a85d",
+   "hash": "191392fcedc1595b",
    "asserts": 3,
    "literals": [
     "\"1\"",
@@ -155923,8 +156029,6 @@
     "\"a world with no mesh says there is no Istio, and a command the fake does not do says which\"",
     "\"istioctl analyze\"",
     "\"istioctl analyze\"",
-    "\"istioctl analyze: 이 흉내에서는 안 돼요\\nterrarium: 이 실험장은 istioctl의 analyze 기능을 지원하지 않아요. 실제 istioctl에는 있어요.\\nterrarium: istioctl에서 되는 것: proxy-status (ps)\\nterrarium: 대신 이 명령은 돼요: istioctl proxy-status\"",
-    "\"istioctl analyze: 이 흉내에서는 안 돼요\\nterrarium: 이 실험장은 istioctl의 analyze 기능을 지원하지 않아요. 실제 istioctl에는 있어요.\\nterrarium: istioctl에서 되는 것: proxy-status (ps)\\nterrarium: 대신 이 명령은 돼요: istioctl proxy-status\"",
     "\"istioctl foo\"",
     "\"istioctl foo\"",
     "\"istioctl proxy-status\"",
@@ -155934,7 +156038,9 @@
     "\"mesh\"",
     "\"mesh\"",
     "\"mesh\"",
-    "\"mesh\""
+    "\"mesh\"",
+    "\"terrarium: 이 실험장은 istioctl의 analyze 기능을 지원하지 않아요. 실제 istioctl에는 있어요.\\nterrarium: istioctl에서 되는 것: proxy-status (ps)\\nterrarium: 대신 이 명령은 돼요: istioctl proxy-status\"",
+    "\"terrarium: 이 실험장은 istioctl의 analyze 기능을 지원하지 않아요. 실제 istioctl에는 있어요.\\nterrarium: istioctl에서 되는 것: proxy-status (ps)\\nterrarium: 대신 이 명령은 돼요: istioctl proxy-status\""
    ],
    "precision": [],
    "skips": 0,
@@ -170996,7 +171102,7 @@
   },
   "tests/spec/service-tools.test.ts::the fake shell prints what the state says, in the shape of Linux [REQ-087] > a command outside the list is an answer, not an error; a host that is down cannot be logged in to": {
    "kind": "test",
-   "hash": "38e87be60e1719a7",
+   "hash": "e575b0c552d66272",
    "asserts": 7,
    "literals": [
     "\"0\"",
@@ -171008,8 +171114,8 @@
     "\"\\n\"",
     "\"\\n\"",
     "\"a command outside the list is an answer, not an error; a host that is down cannot be logged in to\"",
-    "\"bash: vim: command not found\"",
-    "\"bash: vim: command not found\"",
+    "\"command not found\"",
+    "\"command not found\"",
     "\"command\"",
     "\"command\"",
     "\"power.set\"",
@@ -171025,8 +171131,6 @@
     "\"srv-a1\"",
     "\"sshd\"",
     "\"sshd\"",
-    "\"terrarium: \"",
-    "\"terrarium: \"",
     "\"uptime\"",
     "\"uptime\"",
     "\"vim /etc/hosts\"",

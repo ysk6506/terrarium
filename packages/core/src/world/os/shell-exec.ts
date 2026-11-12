@@ -37,14 +37,13 @@ const SHELL_SUPPORTED =
   "따옴표('…' \"…\"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)";
 const SHELL_EXAMPLE = "cat /etc/hosts | wc -l";
 
-/** bash syntax the real shell runs and this one does not: bash's own words, then the `terrarium:` lines (ADR-0184). */
-function shellGap(said: string, g: ShellGap): R {
+/** bash syntax the real shell runs and this one does not: the `terrarium:` lines only (ADR-0184). */
+function shellGap(g: ShellGap): R {
   return {
     ...emulationGap({
       tool: "bash",
       feature: g.feature,
       what: g.what,
-      said,
       supported: SHELL_SUPPORTED,
       example: SHELL_EXAMPLE,
     }),
@@ -127,19 +126,14 @@ class Run {
     if (name === "sudo") return this.sudo(args, stdin);
     const builtin = this.builtin(name, args);
     if (builtin) return builtin;
-    if (KEYWORDS.has(name))
-      return shellGap(`bash: ${name}: 셸 문법은 이 흉내에서 안 돼요`, {
-        feature: `keyword:${name}`,
-        what: name,
-      });
+    if (KEYWORDS.has(name)) return shellGap({ feature: `keyword:${name}`, what: name });
     const handler = lookup(name);
     if (!handler) return this.notFound(name);
     return handler(this.context(name, args, stdin));
   }
 
   /**
-   * A name with no handler: a real command the fake lacks is a gap (bash's own words, then the `terrarium:` lines, exit
-   * 127 either way); a name no host has is plain `command not found` (ADR-0184).
+   * A name with no handler: a real command the fake lacks is a gap (the `terrarium:` lines only, exit 127); a name no host has is plain `command not found` (ADR-0184).
    */
   private notFound(name: string): R {
     const example = realCommandExample(name);
@@ -151,7 +145,6 @@ class Run {
       err: `${gapText({
         ...gap,
         what: "명령",
-        said: base.err as string,
         supported: binNames()
           .filter((n) => n !== "[")
           .join(" "),
@@ -318,7 +311,7 @@ export function runLine(world: WorldPort, hostId: string, line: string): ShellOu
   if (!parsed.ok) {
     if (!parsed.gap)
       return { stdout: "", stderr: `${parsed.error}\n`, exitCode: 2, outside: [], gaps: [] };
-    const r = shellGap(parsed.error, parsed.gap);
+    const r = shellGap(parsed.gap);
     return {
       stdout: "",
       stderr: r.err ?? "",
