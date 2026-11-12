@@ -72,7 +72,7 @@ import {
 import { summarize } from "./experiment-summary";
 import { quickPlan } from "./experiments-quick";
 import { Gate } from "./gate";
-import { allow, allowRunOn, mayCancel, mustSee, sightOf, standing } from "./permissions";
+import { allow, allowRunOn, mayCancel, mustSee, refOf, sightOf, standing } from "./permissions";
 import type { Scenarios } from "./scenarios";
 import { canChangeScope, changeScope, startingScope } from "./scoping";
 import { present, subjectOf } from "./subject";
@@ -257,9 +257,15 @@ export class Experiments {
   ): Promise<void> {
     allowRunOn(viewer, this.ctx.harnesses, recipe.harnessId);
     const world = await this.ctx.store.getWorld(recipe.worldId);
-    if (world) mustSee(viewer, standing(world), `세계 ${recipe.worldId}`);
+    if (world) mustSee(viewer, standing(world), `세계 ${recipe.worldId}`, refOf("world", world));
     const scenario = await this.ctx.store.getScenario(recipe.scenarioId);
-    if (scenario) mustSee(viewer, standing(scenario), `시나리오 ${recipe.scenarioId}`);
+    if (scenario)
+      mustSee(
+        viewer,
+        standing(scenario),
+        `시나리오 ${recipe.scenarioId}`,
+        refOf("scenario", scenario),
+      );
   }
 
   async create(viewer: Viewer, req: CreateExperimentRequest): Promise<ExperimentView> {

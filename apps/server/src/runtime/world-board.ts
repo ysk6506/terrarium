@@ -72,7 +72,8 @@ export class WorldBoard {
 
   private async target(viewer: Viewer, id: string): Promise<void> {
     allow(viewer, "like");
-    mustSee(viewer, standing(must(await this.ctx.store.getWorld(id), `세계 ${id}`)), `세계 ${id}`);
+    const world = must(await this.ctx.store.getWorld(id), `세계 ${id}`);
+    mustSee(viewer, standing(world), `세계 ${id}`, { kind: "world", id, name: world.name });
   }
 
   async like(viewer: Viewer, id: string): Promise<LikeView> {

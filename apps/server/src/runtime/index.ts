@@ -1,6 +1,25 @@
 /** server.runtime: the experiment platform — session hosts, the run executor, scheduling and services. */
 export { AgentVersions } from "./agent-versions";
 export {
+  type AuditCounts,
+  type AuditLogLine,
+  Auditor,
+  AuditWriteError,
+  cleaned as cleanedAuditEntry,
+  DONE_UNRECORDED,
+  NOT_DONE,
+} from "./audit";
+export {
+  type Denial,
+  keyOf,
+  type Notes,
+  newNotes,
+  noteChange,
+  withNotes,
+} from "./audit-context";
+export { AuditLog, viewOf as auditViewOf } from "./audit-log";
+export { auditMetricsText } from "./audit-metrics";
+export {
   addressProblem,
   Connections,
   type ConnectionsOptions,
