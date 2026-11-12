@@ -271,24 +271,26 @@ export function rm(c: Cmd): R {
     : r;
 }
 
+/** A size other than 0: the real truncate takes any size (`4096`, `+1K`, `%512`) and refuses a word that is none; this one only empties. */
+function truncateOther(size: string): R {
+  if (!/^[+\-<>/%]?\d+([KMGTPEZY]|[KMGTPEZY]?iB|[KMGTPEZY]B)?$/.test(size))
+    return fail(`truncate: Invalid number: ‘${size}’`, 1);
+  return emulationGap({
+    tool: "truncate",
+    feature: "size-other-than-zero",
+    what: `-s ${size}`,
+    supported: "-s 0 (파일 비우기), -c",
+    example: "touch /tmp/terrarium-trunc && truncate -s 0 /tmp/terrarium-trunc",
+  });
+}
+
 export function truncate(c: Cmd): R {
   const p = parseArgs(c.args, { bool: "c", val: "s", long: { size: "val" } });
   if (p.bad) return badFlag("truncate", p);
   const size = p.flags.get("s") ?? p.flags.get("--size");
   if (size === undefined || p.rest.length === 0)
     return fail("truncate: you must specify either '--size' or '--reference'", 1);
-  if (size !== "0") {
-    // the real truncate takes any size (`4096`, `+1K`, `%512`); a word that is no size it refuses itself
-    if (!/^[+\-<>/%]?\d+([KMGTPEZY]|[KMGTPEZY]?iB|[KMGTPEZY]B)?$/.test(size))
-      return fail(`truncate: Invalid number: ‘${size}’`, 1);
-    return emulationGap({
-      tool: "truncate",
-      feature: "size-other-than-zero",
-      what: `-s ${size}`,
-      supported: "-s 0 (파일 비우기), -c",
-      example: "touch /tmp/terrarium-trunc && truncate -s 0 /tmp/terrarium-trunc",
-    });
-  }
+  if (size !== "0") return truncateOther(size);
   const errs: string[] = [];
   for (const f of p.rest) {
     const path = shown(c, f);
@@ -362,6 +364,26 @@ export function touch(c: Cmd): R {
   return { out: "", err: errs.length ? `${errs.join("\n")}\n` : "", code: errs.length ? 1 : 0 };
 }
 
+/** What cp and mv do in the real tools and this one does not: whole directories and several sources. */
+function copyGap(c: Cmd, from: string, operands: number): R | undefined {
+  const base = { tool: c.name, example: "cp /etc/hosts /tmp/hosts.copy" };
+  if (c.fs.isDir(shown(c, from)))
+    return emulationGap({
+      ...base,
+      feature: "directory",
+      what: "디렉터리 통째로",
+      supported: `${c.name} 파일 대상 (파일 하나를 한 곳으로)`,
+    });
+  if (operands > 2)
+    return emulationGap({
+      ...base,
+      feature: "several-sources",
+      what: "여러 원본을 한 디렉터리로",
+      supported: `${c.name} 원본 대상 (인자 두 개)`,
+    });
+  return undefined;
+}
+
 export function cp(c: Cmd): R {
   const unknown = refuseUnknown(c.name, c.args);
   if (unknown) return unknown;
@@ -372,22 +394,8 @@ export function cp(c: Cmd): R {
   const recursive = c.args.some((a) => /^-[a-zA-Z]*[raR]/.test(a) || a === "--recursive");
   if (c.name === "cp" && c.fs.isDir(shown(c, from)) && !recursive)
     return fail(`cp: -r not specified; omitting directory '${from}'`, 1);
-  if (c.fs.isDir(shown(c, from)))
-    return emulationGap({
-      tool: c.name,
-      feature: "directory",
-      what: "디렉터리 통째로",
-      supported: `${c.name} 파일 대상 (파일 하나를 한 곳으로)`,
-      example: "cp /etc/hosts /tmp/hosts.copy",
-    });
-  if (args.length > 2)
-    return emulationGap({
-      tool: c.name,
-      feature: "several-sources",
-      what: "여러 원본을 한 디렉터리로",
-      supported: `${c.name} 원본 대상 (인자 두 개)`,
-      example: "cp /etc/hosts /tmp/hosts.copy",
-    });
+  const gap = copyGap(c, from, args.length);
+  if (gap) return gap;
   const text = c.fs.read(shown(c, from));
   if (text === undefined)
     return fail(`${c.name}: cannot stat '${from}': No such file or directory`, 1);

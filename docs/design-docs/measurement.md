@@ -2,7 +2,7 @@
 title: 측정의 신뢰 — 효율 점수는 과제를 푼 만큼만, 시험지는 기준 에이전트로 점검
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/session/operation/metrics.ts
   - packages/core/src/oracle/oracle.ts
@@ -16,12 +16,14 @@ covers:
   - packages/core/src/oracle/reference-path.ts
   - packages/core/src/oracle/reference-paths.ts
 verification_log:
-  - "2026-11-07: ADR-0133 변경 후 코드와 대조: 점수표, 기대 복구 시간, 손대지 않는 것이 정답인 시트"
   - "2026-11-07: 보고만 함과 정답 풀이의 관계를 ≤로 바로잡음"
   - "2026-11-11: calibrateBaselines 분리(동작 같음, ADR-0145)를 서술에 더했고 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-11: ADR-0172: 제공되는 시나리오 조건(컨테이너 배치 작업·자리, 사이트 서버), 서비스 프로세스 메모리 몫, 정답 풀이 길의 when·later·choose를 코드와 대조해 서술을 더했다. 나머지는 그대로 맞다"
   - "2026-11-11: ADR-0178: 만들어지는 모든 모양에서 제공되는 시나리오가 100점이라는 서술(사이드카·정전·CDU·냉방기·콜드 DR 대기 쪽·메모리 규칙)을 코드와 대조해 더했다"
-covers_hash: 3da396711cd6de75
+  - "2026-11-12: ADR-0184: 흉내의 한계 힌트 변경 뒤에도 내용이 맞는지 다시 봤어요"
+covers_hash: 74a6657de6c4dbdf
+verified_body: 17222b460d97ab7b
+unchanged_reverifies: 0
 ---
 # 측정의 신뢰 (REQ-070, ADR-0067)
 

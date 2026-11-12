@@ -10,14 +10,18 @@ import { Physics } from "@terrarium/core/physics";
 import { SCENARIO_TEMPLATES } from "@terrarium/core/scenario";
 import { Session } from "@terrarium/core/session";
 import { DEFAULT_TOOLSET, TOOL_NAMES, Toolbox, type ToolContext } from "@terrarium/core/tools";
-import { BlueprintIndex, type RunEvent, tallyGaps, World } from "@terrarium/core/world";
-import { describe, expect, test } from "vitest";
-import { experimentOf, SCRIPTS } from "../../packages/core/src/analysis/test-support/runs";
 import {
+  BlueprintIndex,
+  type RunEvent,
   realCommandExamples,
   realCommandNames,
-} from "../../packages/core/src/world/os/real-commands";
-import { exampleOf, realTools } from "../../packages/core/src/world/os/real-options";
+  realToolExample,
+  realTools,
+  tallyGaps,
+  World,
+} from "@terrarium/core/world";
+import { describe, expect, test } from "vitest";
+import { experimentOf, SCRIPTS } from "../../packages/core/src/analysis/test-support/runs";
 import { sampleBlueprint } from "../../packages/core/src/world/test-support/sample";
 import { lab } from "./test-support/deep-os-lab";
 
@@ -25,7 +29,7 @@ describe("every hint points at something that works [REQ-098]", () => {
   test("each tool's example and each real-command example runs with exit 0", () => {
     const { run } = lab();
     for (const t of realTools()) {
-      const ex = exampleOf(t) as string;
+      const ex = realToolExample(t) as string;
       expect(run("srv-a2", ex).exitCode, ex).toBe(0);
     }
     for (const ex of realCommandExamples()) expect(run("srv-a2", ex).exitCode, ex).toBe(0);

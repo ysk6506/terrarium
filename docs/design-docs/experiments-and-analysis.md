@@ -2,7 +2,7 @@
 title: 실험과 결과 분석
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/experiments/agent-version.ts
   - packages/core/src/experiments/recipe.ts
@@ -18,13 +18,15 @@ covers:
   - packages/core/src/world/incidents.ts
   - apps/server/src/runtime/executor-operation.ts
   - packages/core/src/session/run-events.ts
-covers_hash: ec409d8cf3abeb8b
+covers_hash: 82f1da30a1f1af58
 verification_log:
-  - "2026-11-11: REQ-118 시드당 반복: 실행 키(시드·반복), 시드 단위 통계, 순위 조건(시드 3개), 한도 60, 화면 반영을 코드와 대조해 고쳤다. 이 문서의 나머지는 그대로 맞다"
   - "2026-11-11: 상황 문구, 점수 차이 출처 문단(spreadFindings)을 코드와 대조"
   - "2026-11-11: 상황 문구, 시험 이름표, 둘째 질문 단추와 상황별 구역 머리를 코드와 대조"
   - "2026-11-11: 단계 문구와 한 실행뿐일 때의 조언 절반을 코드와 대조"
   - "2026-11-11: ADR-0163: 실험 상태 규칙(멈춤이 하나라도 있으면 멈춤) 한 줄을 더하고 experimentStatus, 순위표와 통계의 완료 실행 기준을 코드와 대조했다. 나머지는 그대로 맞다"
+  - "2026-11-12: ADR-0184: 흉내의 한계 힌트 변경 뒤에도 내용이 맞는지 다시 봤어요"
+verified_body: a21d9df84f5544ad
+unchanged_reverifies: 0
 ---
 # 실험과 결과 분석 (REQ-015, REQ-030~033, REQ-037~040)
 

@@ -2,7 +2,7 @@
 title: 서비스와 OS 층 — 장비 위에서 무엇이 도는가
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/world/service.ts
   - packages/core/src/world/service-events.ts
@@ -16,16 +16,21 @@ covers:
   - packages/core/src/physics/services.ts
   - packages/core/src/sources/worldgen/services.ts
   - packages/core/src/tools/shell.ts
+  - packages/core/src/tools/shell-gap.ts
+  - packages/core/src/world/emulation-gap.ts
+  - packages/core/src/facades/netos-gaps.ts
   - packages/core/src/world/os/*.ts
   - packages/core/src/session/shell-reach.ts
   - packages/core/src/scenario/library-os.ts
 verification_log:
-  - "2026-11-11: systemctl start·resolv.conf 쓰기로 시계·DNS 고장을 끝내는 시험 추가"
   - "2026-11-11: ADR-0172: 제공되는 시나리오 조건(컨테이너 배치 작업·자리, 사이트 서버), 서비스 프로세스 메모리 몫, 정답 풀이 길의 when·later·choose를 코드와 대조해 서술을 더했다. 나머지는 그대로 맞다"
   - "2026-11-11: Checked against the code it covers after the rebase onto main; this change adds tests only."
   - "2026-11-11: main을 합친 뒤 다시 대조: ADR-0172와 ADR-0174, 커버리지 시험 추가가 함께 들어감"
   - "2026-11-11: ADR-0178: 만들어지는 모든 모양에서 제공되는 시나리오가 100점이라는 서술(사이드카·정전·CDU·냉방기·콜드 DR 대기 쪽·메모리 규칙)을 코드와 대조해 더했다"
-covers_hash: a57e7798e708a3be
+  - "2026-11-12: ADR-0184: 흉내의 한계 힌트 변경 뒤에도 내용이 맞는지 다시 봤어요"
+covers_hash: c3d716b92ad5d4d6
+verified_body: bcaf44e2063902c0
+unchanged_reverifies: 0
 ---
 # 서비스와 OS 층 (REQ-086, REQ-087, [ADR-0091](adr/0091-service-os-layer-recovery-first.md))
 
@@ -210,7 +215,7 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 
 ### "흉내 밖 명령" 세기 (ADR-0117 결정 6)
 
-호출마다 흉내가 못 한 것을 `outside`에 적는다. 모르는 명령은 이름, 안 되는 옵션과 기능은 `명령 옵션`(`tail -f`, `셸 문법 $`, `psql 질의 …`)이다. 실행 결과는 `shellOutside`(`commands`, `count`, `items`)를 가지고, 결과 화면의 "흉내 밖 명령" 블록이 "흉내 밖 명령 n번 (목록)"을 점수와 따로 보여 준다. `run_command`를 한 번도 안 쓴 실행은 이 줄이 없다. 이 목록이 흉내를 어디부터 더 메울지의 근거다.
+호출마다 흉내가 못 한 것을 `outside`에 적는다(진짜 도구도 거절한 입력은 적지 않는다, ADR-0184). 모르는 명령은 이름, 안 되는 옵션과 기능은 `명령 옵션`(`tail -f`, `셸 문법 $`, `psql 질의 …`)이다. 실행 결과는 `shellOutside`(`commands`, `count`, `items`)를 가지고, 결과 화면의 "흉내 밖 명령" 블록이 "흉내 밖 명령 n번 (목록)"을 점수와 따로 보여 준다. `run_command`를 한 번도 안 쓴 실행은 이 줄이 없다. 이 목록이 흉내를 어디부터 더 메울지의 근거다.
 
 ### 정직한 한계
 
@@ -220,9 +225,18 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 - 지난 줄의 PID는 지금 PID로 찍힌다(재시작 반복의 에러 줄만 그때의 PID).
 - 저널은 마지막 6시간(`--since`로 24시간까지)만 만든다. 그 앞은 없다.
 
+### 힌트는 흉내의 한계일 때만 ([ADR-0184](adr/0184-emulation-gap-hints.md))
+
+실패에는 두 종류가 있다. **진짜 도구도 거절하는 입력**(없는 옵션, 틀린 프로그램, 없는 하위 명령)은 진짜 도구가 할 말과 종료 코드 그대로 답하고, 힌트도 `outside`도 없다. **진짜 도구는 하는데 흉내가 못 하는 입력**은 흉내 한계(emulation gap)다. stderr 첫 줄은 그 도구의 말투이고, 이어 `terrarium:` 줄 셋이 실험장의 한계임, 되는 것, 돌아가는 명령 하나를 말한다. 종료 코드는 0이 아니다(말투를 따라 1·2·127). `tail -f`와 `journalctl -f`만 출력과 종료 코드를 그대로 두고 줄을 덧붙인다. 같은 입력은 글자까지 같다.
+
+- 한 길: `world/emulation-gap.ts`의 `GapNotice`와 `os/types.ts`의 `emulationGap`·`softGap`. 도구(`tool`)와 기능(`feature`, `flag:-Z`·`function:gensub`·`verb:list-timers`·`command` 같은 고정 키)만 기록한다. 에이전트가 친 글은 들어가지 않는다.
+- 가르는 근거: 진짜 도구의 문서가 적은 옵션·하위 명령 표(`os/real-options.ts`), 진짜 호스트에 있고 흉내에 없는 명령 이름(`os/real-commands.ts`), 스위치 CLI의 진짜 명령표(`facades/netos-gaps.ts`), 계층 명령의 진짜 하위 명령(`tools/shell-gap.ts`). 표에 없는 이름은 진짜 도구도 거절한 것으로 읽는다. 확실하지 않으면 한계로 센다.
+- 기록: 호출마다 `gaps`가 결과에 실리고, 실행 기록에 호출 이벤트 뒤로 `kind: "gap"` 이벤트(`tool`, `feature`, `call`)가 쌓이며, 진단 내보내기에 키별 횟수(`gaps`)가 붙는다. 결과 화면의 단계 목록은 그 단계에 "실험장 한계" 표시를, 머리줄은 "실험장 한계 N번"을 보인다.
+- 점수는 바뀌지 않는다. 한계를 만난 호출을 도구 효율에서 뺄지는 열린 질문이다.
+
 ### 흉내 내지 않는 것 (REQ-098)
 
-없는 명령은 진짜 최소 호스트처럼 `bash: xyz: command not found`(127)이고 "흉내 밖"으로 센다. 있는 명령의 안 되는 옵션은 `명령 옵션: 이 흉내에서는 안 돼요`(2)이고 역시 센다. 틀린 글을 찍느니 거절한다.
+어느 호스트에도 없는 이름은 진짜 최소 호스트처럼 `bash: xyz: command not found`(127)이고 "흉내 밖"으로 센다. 진짜 호스트에는 있는데 흉내에 없는 명령(`vim`, `export`, `tcpdump`...)은 같은 첫 줄에 `terrarium:` 줄이 붙고 한계로 센다. 있는 명령의 옵션은 진짜 도구에도 있으면 한계(`명령 옵션: 이 흉내에서는 안 돼요` 다음에 `terrarium:` 줄, 종료 코드 2)이고, 없으면 진짜 도구의 거절 글이다. 틀린 글을 찍느니 거절한다.
 
 - 없는 명령: `chmod`, `chown`, `chgrp`, `mknod`, `mkfifo`, `install`, `rmdir`, `dd`, `tar`, `gzip`, `vi`·`vim`·`nano`. 권한과 소유자는 만들지 않는다(디렉터리는 `drwxr-xr-x root`, 링크는 `lrwxrwxrwx root`).
 - `ln`은 심볼릭 링크(`-s`)만 만든다. 하드 링크(`ln a b`)는 거절한다: 트리를 서술하는 쪽에는 같이 쓰는 inode가 없다. `mkdir -m`도 거절한다.
@@ -307,6 +321,7 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 - `tests/spec/deep-os-shell.test.ts`: 셸 문법, `grep`·`awk`·`sed` 같은 텍스트 명령, 쓰기가 사건이 되는 것, 파일과 프로세스가 서로 맞는 것 (REQ-098).
 - `tests/spec/deep-os-faults.test.ts`: 고장 열 가지가 흔한 명령으로 보이고 풀리는 길 (REQ-098).
 - `tests/spec/deep-os-determinism.test.ts`: 같은 명령 열은 같은 글자, 빨리 감기와 1초씩이 같은 로그 (REQ-098).
+- `tests/spec/emulation-gaps.test.ts`: 흉내 한계의 줄·기록·결정론과 진짜 오류에 힌트가 없음 (ADR-0184).
 - `tests/spec/deep-os-outside.test.ts`: "흉내 밖 명령" 세기와 "흔한 명령만으로 원인에 닿는가" 점검 (REQ-098).
 - `tests/spec/os-scenarios.test.ts`: 템플릿 다섯의 변별력(기준 에이전트), 맞게 고친 점수, 재부팅 감점.
 - `tests/spec/recovery-scoring.test.ts`: 복구 우선 채점의 순서(기준 에이전트 아홉), 사고 비용, 복구하는 길, 흔한 툴로 닿는 길 (REQ-088).

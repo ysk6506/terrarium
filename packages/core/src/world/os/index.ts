@@ -3,6 +3,8 @@
 export { OS_EPOCH_MS } from "./clock";
 export { instanceOn } from "./cmd-db";
 export { ipOf } from "./host";
+export { realCommandExamples, realCommandNames } from "./real-commands";
+export { exampleOf as realToolExample, realTools } from "./real-options";
 export { registerShellCommand, runLine, type ShellOutcome } from "./shell-exec";
 export { changesWorld } from "./shell-parse";
 export type { Cmd, Handler, R } from "./types";

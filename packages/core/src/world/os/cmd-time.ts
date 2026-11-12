@@ -54,20 +54,20 @@ export function timedatectl(c: Cmd): R {
   );
 }
 
+function chronycSources(c: Cmd): string {
+  const off = c.h.os.ntpOffsetS;
+  const synced = Math.abs(off) < 1;
+  return joinLines([
+    "MS Name/IP address         Stratum Poll Reach LastRx Last sample",
+    "===============================================================================",
+    `^${synced ? "*" : "?"} ${NTP_SOURCE.padEnd(26)} ${synced ? " 2" : " 0"}   6   377    ${synced ? "38" : "9m"}  ${synced ? `${Math.round(off * 1e6)}us[${Math.round(off * 1e6)}us] +/-   12ms` : `${(off * 1000).toFixed(0)}ms[${(off * 1000).toFixed(0)}ms] +/-   12ms`}`,
+  ]);
+}
+
 export function chronyc(c: Cmd): R {
   const verb = c.args[0];
   if (verb === "tracking") return ok(chronycTracking(c.h));
-  if (verb === "sources" || verb === "sourcestats") {
-    const off = c.h.os.ntpOffsetS;
-    const synced = Math.abs(off) < 1;
-    return ok(
-      joinLines([
-        "MS Name/IP address         Stratum Poll Reach LastRx Last sample",
-        "===============================================================================",
-        `^${synced ? "*" : "?"} ${NTP_SOURCE.padEnd(26)} ${synced ? " 2" : " 0"}   6   377    ${synced ? "38" : "9m"}  ${synced ? `${Math.round(off * 1e6)}us[${Math.round(off * 1e6)}us] +/-   12ms` : `${(off * 1000).toFixed(0)}ms[${(off * 1000).toFixed(0)}ms] +/-   12ms`}`,
-      ]),
-    );
-  }
+  if (verb === "sources" || verb === "sourcestats") return ok(chronycSources(c));
   if (verb?.startsWith("-")) return genuineOption("chronyc", verb);
   if (verb !== undefined && !REAL_CHRONYC.has(verb)) return fail("501 Not implemented", 1);
   return emulationGap({

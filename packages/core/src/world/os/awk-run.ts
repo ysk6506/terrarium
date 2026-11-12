@@ -1,7 +1,8 @@
 /** The interpreter of the small `awk` (ADR-0117): values, fields, variables, arrays, expressions and statements. */
 import { numToStr, sprintf } from "./awk-fmt";
 import { AwkSyntax } from "./awk-lex";
-import { type Expr, type Stmt, undefinedFunction } from "./awk-parse";
+import { undefinedFunction } from "./awk-names";
+import type { Expr, Stmt } from "./awk-parse";
 import { posixRegExp } from "./regex";
 
 /** A field or other input string that counts as a number when it looks like one. */

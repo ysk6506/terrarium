@@ -1,5 +1,6 @@
 /** The parser of the small `awk` (ADR-0117): patterns and actions, `BEGIN`/`END`, expressions with the usual precedence, arrays, `if`/`for`/`while`. */
 import { AwkSyntax, lex, type Tok } from "./awk-lex";
+import { missing, UNSUPPORTED_NAMES, undefinedFunction } from "./awk-names";
 
 export type Expr =
   | { t: "num"; v: number }
@@ -56,48 +57,6 @@ const LEVELS: ReadonlyArray<readonly string[]> = [
   ["*", "/", "%"],
 ];
 const ASSIGN = new Set(["=", "+=", "-=", "*=", "/=", "%=", "^="]);
-const UNSUPPORTED_NAMES = new Set([
-  "getline",
-  "system",
-  "close",
-  "function",
-  "func",
-  "fflush",
-  "nextfile",
-]);
-
-/** Functions of GNU awk (and POSIX awk) that this one does not have; awk itself would run them. */
-const REAL_FUNCTIONS = new Set([
-  "gensub",
-  "strftime",
-  "systime",
-  "mktime",
-  "asort",
-  "asorti",
-  "strtonum",
-  "and",
-  "or",
-  "xor",
-  "compl",
-  "lshift",
-  "rshift",
-  "patsplit",
-  "isarray",
-  "typeof",
-]);
-
-/** A keyword or builtin of awk that this one lacks: the real awk runs it, so it is a gap. */
-function missing(name: string): AwkSyntax {
-  const feature = name === "func" ? "function" : name;
-  return new AwkSyntax(name, { feature, what: feature });
-}
-
-/** A call to a name that is no function: awk says so; if GNU awk has the function, this one lacks it. */
-export function undefinedFunction(name: string): AwkSyntax {
-  return REAL_FUNCTIONS.has(name)
-    ? new AwkSyntax(name, { feature: `function:${name}`, what: `${name}()` })
-    : new AwkSyntax(`function ${name} never defined`);
-}
 
 class Parser {
   private i = 0;

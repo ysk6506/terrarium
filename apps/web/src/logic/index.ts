@@ -105,6 +105,7 @@ export {
   TRANSPORT_LABELS,
 } from "./connections";
 export * as hallCrew from "./crew";
+export * as emulationGaps from "./emulation-gaps";
 export * as humanTalk from "./escalation";
 export { CARD_WORDS, HUMAN_ACTIONS } from "./escalation";
 export * as experiment from "./experiment";

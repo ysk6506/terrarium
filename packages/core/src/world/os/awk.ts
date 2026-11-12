@@ -119,6 +119,15 @@ function compileProgram(source: string): Program | R {
   }
 }
 
+/** The runtime with -F and the `var=value` operands set before the program starts. */
+function startRt(c: Cmd, p: ReturnType<typeof parseArgs>): Rt {
+  const rt = new Rt();
+  const fs = p.flags.get("F");
+  if (fs !== undefined) rt.vars.set("FS", unescapeFs(fs));
+  for (const [name, value] of assignments(c.args, p.rest)) rt.vars.set(name, new StrNum(value));
+  return rt;
+}
+
 export function awk(c: Cmd): R {
   const p = parseArgs(c.args, AWK_FLAGS);
   if (p.bad) return badFlag("awk", p, AWK_SUPPORTED);
@@ -136,11 +145,7 @@ export function awk(c: Cmd): R {
   if (source === undefined) return fail("awk: no program given", 2);
   const program = compileProgram(source);
   if ("code" in program) return program;
-  const rt = new Rt();
-  const fs = p.flags.get("F");
-  if (fs !== undefined) rt.vars.set("FS", unescapeFs(fs));
-  const set = assignments(c.args, p.rest);
-  for (const [name, value] of set) rt.vars.set(name, new StrNum(value));
+  const rt = startRt(c, p);
   const { inputs, errors } = readInputs(
     c,
     p.rest.filter((o) => !ASSIGNMENT.test(o)),

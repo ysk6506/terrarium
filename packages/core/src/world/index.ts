@@ -256,6 +256,10 @@ export {
   type Cmd as ShellCmd,
   changesWorld,
   type R as ShellCmdResult,
+  realCommandExamples,
+  realCommandNames,
+  realToolExample,
+  realTools,
   registerShellCommand,
   runLine,
 } from "./os/index";
