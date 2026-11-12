@@ -35,16 +35,20 @@ describe("the shell prints bash's syntax errors for lines bash would refuse [REQ
 
 describe("what the shell does not do is refused in its own words and listed as outside it [REQ-098]", () => {
   test.each([
-    ['echo "a$HOME"', "셸 문법 $", "변수와 명령 치환($)"],
-    ["echo `date`", "셸 문법 `", "변수와 명령 치환(`)"],
-    ["echo $(date)", "셸 문법 $", "변수와 명령 치환($)"],
+    ['echo "a$HOME"', "셸 문법 $", "$"],
+    ["echo `date`", "셸 문법 `", "`"],
+    ["echo $(date)", "셸 문법 $", "$"],
     ["echo a &", "셸 문법 백그라운드 실행(&)", "백그라운드 실행(&)"],
-    ["FOO=1 echo a", "셸 문법 변수", "변수 지정"],
-  ])("%s", (line, outside, words) => {
+    ["FOO=1 echo a", "셸 문법 변수", "변수"],
+  ])("%s", (line, outside, what) => {
     const r = lab().run(HOST, line);
     expect(r.exitCode).toBe(2);
     expect(r.outside).toEqual([outside]);
-    expect(r.stderr).toContain(words);
+    // ADR-0184: bash runs these, so the answer is the terrarium lines only (no `bash:` line of an error that is not real)
+    expect(r.stderr.split("\n")[0]).toBe(
+      `terrarium: 이 실험장은 bash의 ${what} 기능을 지원하지 않아요. 실제 bash에는 있어요.`,
+    );
+    expect(r.stderr).not.toContain("bash: ");
   });
 
   test("a line with if, for or while is refused word by word and each word is listed", () => {
@@ -60,11 +64,16 @@ describe("what the shell does not do is refused in its own words and listed as o
   });
 
   test("a command that does not exist is command not found, listed as outside, and exit 127", () => {
+    // ADR-0184: `export` is a real bash builtin the fake shell lacks, so the answer is the terrarium lines only;
+    // a word no host has is plain command not found
     const r = lab().run(HOST, "export FOO=1");
-    expect(r).toMatchObject({
+    expect(r).toMatchObject({ exitCode: 127, outside: ["export"] });
+    expect(r.stderr.split("\n")[0]).toMatch(/^terrarium: 이 실험장은 export 명령을/);
+    expect(r.stderr).not.toContain("command not found");
+    expect(lab().run(HOST, "nosuchcmd-xyz")).toMatchObject({
       exitCode: 127,
-      stderr: "bash: export: command not found",
-      outside: ["export"],
+      stderr: "bash: nosuchcmd-xyz: command not found",
+      outside: ["nosuchcmd-xyz"],
     });
   });
 });

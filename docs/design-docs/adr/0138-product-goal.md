@@ -8,7 +8,10 @@ enforced_by:
 no_enforcement_reason: 목표 문장은 시험으로 검사할 수 없다. 3번(채점이 늘 맞고 같다)은 ADR-0133의 시험이 지킨다.
 touches_protected:
   - docs/product-specs/requirements.md
-decision_hash: 620c57f95745f83d
+decision_hash: 22f2cd527a2c2732
+amended_by:
+  - adr: "0189"
+    what: 목표 문장과 목표의 세 부분
 ---
 # ADR-0138 제품 목표를 요구사항 문서 맨 위에 적고 설계 결정의 기준으로 삼는다
 

@@ -9,6 +9,7 @@ import { BlueprintIndex } from "@terrarium/core/world";
 import { useMemo, useState } from "react";
 import {
   commonPathNote,
+  emulationGaps,
   formatDuration,
   PASS_RULE_TEXT,
   recoveryFigures,
@@ -83,6 +84,7 @@ function RunHead({ view }: { readonly view: RunView }) {
     : run.status === "running"
       ? "아직 돌고 있어요"
       : "";
+  const gaps = emulationGaps.gapLine(run.result?.toolCalls);
   return (
     <PageHead
       crumbs={
@@ -95,6 +97,7 @@ function RunHead({ view }: { readonly view: RunView }) {
       lede={
         <>
           <Status status={run.status} operation={operation} /> {ended}
+          {gaps && ` · ${gaps}`}
         </>
       }
     />

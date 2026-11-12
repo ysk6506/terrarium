@@ -16,12 +16,14 @@ covers:
   - packages/core/src/oracle/reference-path.ts
   - packages/core/src/oracle/reference-paths.ts
 verification_log:
-  - "2026-11-07: 보고만 함과 정답 풀이의 관계를 ≤로 바로잡음"
   - "2026-11-11: calibrateBaselines 분리(동작 같음, ADR-0145)를 서술에 더했고 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-11: ADR-0172: 제공되는 시나리오 조건(컨테이너 배치 작업·자리, 사이트 서버), 서비스 프로세스 메모리 몫, 정답 풀이 길의 when·later·choose를 코드와 대조해 서술을 더했다. 나머지는 그대로 맞다"
   - "2026-11-11: ADR-0178: 만들어지는 모든 모양에서 제공되는 시나리오가 100점이라는 서술(사이드카·정전·CDU·냉방기·콜드 DR 대기 쪽·메모리 규칙)을 코드와 대조해 더했다"
   - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
-covers_hash: eb7f56e3852e3802
+  - "2026-11-12: ADR-0184: main을 합친 뒤 한계 힌트 변경과 이 문서의 서술이 어긋나지 않음을 대조"
+covers_hash: bd9a620c17eb0e1d
+verified_body: 17222b460d97ab7b
+unchanged_reverifies: 0
 ---
 # 측정의 신뢰 (REQ-070, ADR-0067)
 

@@ -31,16 +31,23 @@ export interface Step {
 
 export type ParseResult =
   | { readonly ok: true; readonly steps: Step[] }
-  | { readonly ok: false; readonly error: string; readonly outside?: string };
+  | { readonly ok: false; readonly error: string; readonly gap?: ShellGap };
 
 type Token =
   | { readonly kind: "word"; readonly word: Word }
   | { readonly kind: "op"; readonly op: string };
 
+/** Shell syntax the real bash has and this shell does not (ADR-0184): a stable key and how it reads in a sentence. */
+export interface ShellGap {
+  readonly feature: string;
+  readonly what: string;
+}
+
+/** A line the shell refuses: bash's own words for a mistake, or `gap` for syntax bash would run. */
 class Refused extends Error {
   constructor(
     message: string,
-    readonly outside?: string,
+    readonly gap?: ShellGap,
   ) {
     super(message);
   }
@@ -55,8 +62,7 @@ function doubleQuoted(src: string, from: number): { text: string; end: number } 
   let i = from;
   while (i < src.length && src[i] !== '"') {
     const ch = src.charAt(i);
-    if (ch === "$" || ch === "`")
-      throw new Refused(`bash: 변수와 명령 치환(${ch})은 이 흉내에서 안 돼요`, `셸 문법 ${ch}`);
+    if (ch === "$" || ch === "`") throw refuseExpansion(ch);
     if (ch === "\\" && i + 1 < src.length && '$`"\\'.includes(src.charAt(i + 1))) {
       text += src.charAt(i + 1);
       i += 2;
@@ -77,8 +83,12 @@ function singleQuoted(src: string, from: number): { text: string; end: number } 
 
 const isSpace = (ch: string): boolean => ch === " " || ch === "\t" || ch === "\r";
 
-const REFUSE_EXPANSION = (ch: string): Refused =>
-  new Refused(`bash: 변수와 명령 치환(${ch})은 이 흉내에서 안 돼요`, `셸 문법 ${ch}`);
+function refuseExpansion(ch: string): Refused {
+  return new Refused(`bash: 변수와 명령 치환(${ch})은 이 흉내에서 안 돼요`, {
+    feature: ch === "`" ? "command-substitution" : "variable-or-substitution",
+    what: ch,
+  });
+}
 
 /** The `~` at the start of a word is the home directory. */
 const isHomeTilde = (src: string, i: number, from: number): boolean =>
@@ -98,7 +108,7 @@ function readPiece(
     return { text: q.text, end: q.end, glob: false };
   }
   if (ch === "\\") return { text: src.charAt(i + 1), end: i + 2, glob: false };
-  if (ch === "$" || ch === "`") throw REFUSE_EXPANSION(ch);
+  if (ch === "$" || ch === "`") throw refuseExpansion(ch);
   return {
     text: isHomeTilde(src, i, from) ? "/home/ops" : ch,
     end: i + 1,
@@ -230,10 +240,10 @@ function assemble(tokens: Token[]): Step[] {
   return a.finish(tokens.at(-1));
 }
 
-const UNSUPPORTED_OPS: Readonly<Record<string, string>> = {
-  "&": "백그라운드 실행(&)",
-  "<<": "히어독(<<)",
-  "&>": "&> 리다이렉트",
+const UNSUPPORTED_OPS: Readonly<Record<string, ShellGap & { readonly what: string }>> = {
+  "&": { feature: "background", what: "백그라운드 실행(&)" },
+  "<<": { feature: "heredoc", what: "히어독(<<)" },
+  "&>": { feature: "redirect-both", what: "&> 리다이렉트" },
 };
 
 /** Parse a command line. */
@@ -241,17 +251,20 @@ export function parseLine(src: string): ParseResult {
   try {
     const tokens = tokenize(src);
     for (const t of tokens) {
-      const what = t.kind === "op" ? UNSUPPORTED_OPS[t.op] : undefined;
-      if (what) throw new Refused(`bash: ${what}는 이 흉내에서 안 돼요`, `셸 문법 ${what}`);
+      const gap = t.kind === "op" ? UNSUPPORTED_OPS[t.op] : undefined;
+      if (gap) throw new Refused(`bash: ${gap.what}는 이 흉내에서 안 돼요`, gap);
     }
     const steps = assemble(tokens);
     const first = steps[0]?.pipeline[0]?.words[0]?.text ?? "";
     if (/^[A-Za-z_]\w*=/.test(first))
-      throw new Refused("bash: 변수 지정은 이 흉내에서 안 돼요", "셸 문법 변수");
+      throw new Refused("bash: 변수 지정은 이 흉내에서 안 돼요", {
+        feature: "assignment",
+        what: "변수",
+      });
     return { ok: true, steps };
   } catch (e) {
     if (e instanceof Refused)
-      return { ok: false, error: e.message, ...(e.outside ? { outside: e.outside } : {}) };
+      return { ok: false, error: e.message, ...(e.gap ? { gap: e.gap } : {}) };
     throw e;
   }
 }

@@ -2,14 +2,15 @@
  * `pnpm ux`: measure the Honeycomb in a real browser, record it, and say what to fix (REQ-041).
  *   pnpm ux                     both: the journeys and every probe (starts a server and a browser), writes docs/generated/ux-score.json
  *   pnpm ux measure             the same as `pnpm ux`
- *   pnpm ux journeys [--group flow|build|own] [--only id,id]
+ *   pnpm ux journeys [--group flow|build|small|own|topology] [--only id,id]
  *                               only "can a person finish each journey" (the merge gate's `ux-journeys`, ADR-0141)
+ *   pnpm ux merge <dir>         put the slices CI measured side by side (<dir>/*.json) together: the same scores and file as `pnpm ux`
  *   pnpm ux ratchet             raise the floors to what the last measurement reached
  *   pnpm ux check               only the structural check that `pnpm check` runs (no browser)
  * The browser half lives in tests/e2e/ux/measure.ts; it prints raw counts and this file scores them.
  */
 import { spawn } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { findRoot, finish, flag, isMain, parseArgs, today } from "../common";
@@ -18,10 +19,12 @@ import {
   checkFloors,
   loadFloors,
   ratchet,
+  staleNote,
   run as structure,
   type UxReport,
   writeReport,
 } from "./check";
+import { mergeParts } from "./merge";
 import {
   FACET_LABELS,
   FACETS,
@@ -145,14 +148,26 @@ export function describe(report: Report, floors: Partial<Record<Facet, number>>)
   return lines;
 }
 
-export async function main(
-  argv: readonly string[],
-  out: (line: string) => void = console.log,
-  child: Child = runChild,
-): Promise<number> {
-  const { positional, flags } = parseArgs(argv);
-  const root = findRoot(flag(flags, "root"));
-  const action = positional[0] ?? "measure";
+/** The slices CI measured side by side (`<dir>/*.json`), scored as one measurement (ADR-0175). */
+export function mergeSlices(root: string, dir: string): { report: UxReport; notes: string[] } {
+  const files = readdirSync(dir)
+    .filter((n) => n.endsWith(".json"))
+    .sort();
+  const merged = mergeParts(files.map((n) => JSON.parse(readFileSync(path.join(dir, n), "utf8"))));
+  return {
+    report: buildReport(root, merged.measurements, today()),
+    notes: merged.notes.filter((n) => !n.startsWith("여정") && !n.includes("에서 빈 화면")),
+  };
+}
+
+/** What `pnpm ux ratchet`, `journeys` and `check` do; undefined for the commands that measure. */
+function other(
+  action: string,
+  root: string,
+  flags: ReturnType<typeof parseArgs>["flags"],
+  out: (line: string) => void,
+  child: Child,
+): Promise<number> | number | undefined {
   if (action === "ratchet") {
     for (const [facet, floor] of Object.entries(ratchet(root))) out(`${facet}: ${floor}`);
     return 0;
@@ -162,12 +177,35 @@ export async function main(
     const only = flag(flags, "only");
     return journeys(root, { ...(group ? { group } : {}), ...(only ? { only } : {}) }, out, child);
   }
-  if (action === "check") return finish("ux", structure(root, flag(flags, "base")), out);
-  if (action !== "measure") {
-    out(`알 수 없는 명령: ${action} (measure, journeys, ratchet, check)`);
+  if (action === "check") {
+    const note = staleNote(root);
+    if (note) out(note);
+    return finish("ux", structure(root, flag(flags, "base")), out);
+  }
+  return undefined;
+}
+
+export async function main(
+  argv: readonly string[],
+  out: (line: string) => void = console.log,
+  child: Child = runChild,
+): Promise<number> {
+  const { positional, flags } = parseArgs(argv);
+  const root = findRoot(flag(flags, "root"));
+  const action = positional[0] ?? "measure";
+  const done = other(action, root, flags, out, child);
+  if (done !== undefined) return done;
+  if (action !== "measure" && action !== "merge") {
+    out(`알 수 없는 명령: ${action} (measure, merge, journeys, ratchet, check)`);
     return 2;
   }
-  const { report, notes } = await measure(root, child);
+  const dir = positional[1];
+  if (action === "merge" && !dir) {
+    out("`pnpm ux merge <조각이 든 폴더>`처럼 폴더를 준다");
+    return 2;
+  }
+  const { report, notes } =
+    dir && action === "merge" ? mergeSlices(root, dir) : await measure(root, child);
   writeReport(root, report);
   for (const line of describe(scoreAll(report.measurements), loadFloors(root))) out(line);
   if (notes.length > 0) out(`\n본 것:\n${notes.map((n) => `  ${n}`).join("\n")}\n`);

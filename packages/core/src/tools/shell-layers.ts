@@ -5,30 +5,36 @@
  */
 import {
   type ShellCmd as Cmd,
+  gapOf,
+  gapText,
   type ShellCmdResult as R,
   registerShellCommand,
 } from "@terrarium/core/world";
 import { dcgmi, ibstat, nvidiaSmi } from "./shell-accel";
 import { istioctl } from "./shell-app";
-import { crictl, kubectl, type ShellOut } from "./shell-k8s";
+import type { ShellOut } from "./shell-gap";
+import { crictl, kubectl } from "./shell-k8s";
 
-const NOT_YET = /^이 (kubectl|crictl|istioctl) 명령은 아직 못 해요/;
-
-/** The answer of a layer command in the shape of the shell; a thing it cannot do is listed as outside. */
+/**
+ * The answer of a layer command in the shape of the shell. A gap (the real tool does it, the fake does not) gets the
+ * `terrarium:` lines (ADR-0184); `command not found` (a host that is not a node) stays plain and is listed as outside.
+ */
 function asR(c: Cmd, out: ShellOut): R {
   const failed = out.exitCode === 0 ? undefined : out.output;
-  const outside =
-    out.exitCode === 127
-      ? c.name
-      : failed && NOT_YET.test(failed)
-        ? `${c.name} ${c.args.slice(0, 2).join(" ")}`
-        : undefined;
+  if (out.gap)
+    return {
+      out: "",
+      err: `${gapText(out.gap)}\n`,
+      code: out.exitCode,
+      gap: gapOf(out.gap),
+      outside: `${c.name} ${c.args.slice(0, 2).join(" ")}`,
+    };
   return {
     ...(failed
       ? { out: "", err: `${failed}\n` }
       : { out: out.output === "" ? "" : `${out.output}\n` }),
     code: out.exitCode,
-    ...(outside ? { outside } : {}),
+    ...(out.exitCode === 127 ? { outside: c.name } : {}),
   };
 }
 

@@ -66,6 +66,16 @@ export {
   RESTORE_S,
 } from "./db";
 export { backupAgeS, bestCandidate } from "./db-act";
+export {
+  type EmulationGap,
+  type GapNotice,
+  gapKey,
+  gapLines,
+  gapOf,
+  gapText,
+  hasGapLines,
+  tallyGaps,
+} from "./emulation-gap";
 
 ("./db-health");
 
@@ -245,6 +255,10 @@ export {
   type Cmd as ShellCmd,
   changesWorld,
   type R as ShellCmdResult,
+  realCommandExamples,
+  realCommandNames,
+  realToolExample,
+  realTools,
   registerShellCommand,
   runLine,
 } from "./os/index";
@@ -276,6 +290,7 @@ export {
 } from "./room-shape";
 export type {
   CounterpartEvent,
+  GapEvent,
   HandedFault,
   HumanEvent,
   RecentCall,

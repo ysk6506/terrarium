@@ -13,7 +13,7 @@
  */
 import { withJosa } from "@terrarium/core/kernel";
 import type { BlueprintIndex, Domain, Entity, FaultType, Link } from "@terrarium/core/world";
-import { agent, doc, Flow, type ScenarioTemplate } from "./library-kit";
+import { agent, byId, doc, Flow, type ScenarioTemplate } from "./library-kit";
 import type { Expectation } from "./model";
 
 /** 4 days: a part from the vendor can take 3. */
@@ -31,8 +31,6 @@ interface Case {
   /** The cable from that server to a switch, for the port case. */
   readonly cable?: Link;
 }
-
-const byId = (a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id);
 
 const activeHost = (index: BlueprintIndex, service: Entity): Entity | undefined => {
   const link = index.outgoing(service.id, "service_on").find((l) => l.props.role === "active");

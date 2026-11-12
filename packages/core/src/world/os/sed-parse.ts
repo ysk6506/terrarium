@@ -21,14 +21,24 @@ export interface SedCmd {
   readonly block?: SedCmd[];
 }
 
+/** What the real sed has and this one does not (ADR-0184): a stable key, and how it reads in a sentence. */
+export interface SedGap {
+  readonly feature: string;
+  readonly what: string;
+}
+
+/** A script sed cannot run: a mistake in it (the message is what sed says), or a feature of sed this one lacks (`gap`). */
 export class SedSyntax extends Error {
   constructor(
     message: string,
-    readonly outside?: string,
+    readonly gap?: SedGap,
   ) {
     super(message);
   }
 }
+
+/** Commands GNU sed has and this one does not: branching and labels, reading and writing files, line commands. */
+const REAL_COMMANDS = new Set("bt:TDnNPlrRwWeFzQv".split(""));
 
 export type ReBuilder = (src: string, ignoreCase: boolean) => RegExp;
 
@@ -81,7 +91,10 @@ class ScriptParser {
       const m = /^\d+/.exec(this.src.slice(this.i)) as RegExpExecArray;
       this.i += m[0].length;
       if (this.src[this.i] === "~")
-        throw new SedSyntax("first~step 주소는 이 흉내에서 안 돼요", "sed first~step 주소");
+        throw new SedSyntax("first~step", {
+          feature: "address:first~step",
+          what: "first~step 주소",
+        });
       return { kind: "line", n: Number(m[0]) };
     }
     if (ch === "$") {
@@ -101,13 +114,17 @@ class ScriptParser {
 
   private command(): SedCmd {
     const a1 = this.address();
-    if (a1?.kind === "line" && a1.n === 0)
-      throw new SedSyntax("invalid usage of line address 0", "sed 0,/정규식/ 주소");
     let a2: Address | undefined;
     if (a1 && this.src[this.i] === ",") {
       this.i++;
       a2 = this.address();
       if (!a2) throw new SedSyntax("unexpected `,'");
+    }
+    if (a1?.kind === "line" && a1.n === 0) {
+      // GNU sed allows line 0 only as `0,/regex/`
+      if (a2?.kind === "re")
+        throw new SedSyntax("0,/re/", { feature: "address:0,/re/", what: "0,/정규식/ 주소" });
+      throw new SedSyntax("invalid usage of line address 0");
     }
     while (this.src[this.i] === " ") this.i++;
     const negate = this.src[this.i] === "!";
@@ -132,7 +149,9 @@ class ScriptParser {
       case "c":
         return { ...base, text: this.text() };
       default:
-        throw new SedSyntax(`unknown command: \`${op}'`, `sed 명령 ${op}`);
+        throw REAL_COMMANDS.has(op)
+          ? new SedSyntax(op, { feature: `command:${op}`, what: `${op} 명령` })
+          : new SedSyntax(`unknown command: \`${op}'`);
     }
   }
 
@@ -152,6 +171,12 @@ class ScriptParser {
       else if (f === "i" || f === "I") ignore = true;
       else nth = Number(`${nth ?? ""}${f}`);
     }
+    const extra = this.src.charAt(i);
+    if (extra !== "" && "mMew".includes(extra))
+      throw new SedSyntax(`s///${extra}`, {
+        feature: `s-flag:${extra}`,
+        what: `s 명령의 ${extra} 플래그`,
+      });
     this.i = i;
     return {
       re: this.build(re.text, ignore),

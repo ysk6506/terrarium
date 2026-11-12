@@ -4,7 +4,7 @@ import { removeAll, shown } from "./cmd-fs";
 import { longLine } from "./fmt";
 import { baseName } from "./fs";
 import { globToRegExp } from "./glob";
-import { type Cmd, joinLines, type R, unsupported } from "./types";
+import { type Cmd, emulationGap, fail, joinLines, type R } from "./types";
 
 // ── find ────────────────────────────────────────────────────────────────────────────────────
 
@@ -46,10 +46,52 @@ interface FindPlan {
   readonly minDepth: number;
   readonly action: "print" | "ls" | "delete" | "exec";
   readonly exec?: string[];
-  readonly bad?: string;
+  /** Why the line cannot run: what the real find says, or the gap when the real find would run it. */
+  readonly refusal?: R;
 }
 
 const NUMERIC_OPTIONS = new Set(["-maxdepth", "-mindepth"]);
+/** The tests the fake has (a value that does not suit one is a mistake the real find also refuses). */
+const OWN_TESTS = new Set([
+  "-name",
+  "-iname",
+  "-path",
+  "-type",
+  "-size",
+  "-mtime",
+  "-mmin",
+  "-newer",
+  "-user",
+  "-empty",
+]);
+/** Tests, actions and options of the real find (GNU findutils manual) that the fake lacks. */
+const REAL_ONLY = new Set(
+  "-regex -iregex -ipath -wholename -iwholename -atime -ctime -amin -cmin -anewer -cnewer -newerXY -group -nouser -nogroup -uid -gid -perm -links -inum -samefile -lname -ilname -readable -writable -executable -fstype -xtype -used -depth -xdev -mount -follow -daystart -noleaf -regextype -true -false -prune -quit -print0 -printf -fprint -fprint0 -fprintf -fls -ok -okdir -execdir -L -H -P -D -O".split(
+    " ",
+  ),
+);
+const FIND_SUPPORTED =
+  "-name -iname -path -type -size -mtime -mmin -newer -user -empty, -maxdepth -mindepth, 묶기 ( ) ! -a -o, 동작 -print -ls -delete -exec ... ;";
+const FIND_EXAMPLE = "find /etc -name 'host*'";
+
+/** What the real find answers when a test cannot be used, and a gap when the real find has the test. */
+function findRefusal(word: string, value: string | undefined, atEnd: boolean): R {
+  if (OWN_TESTS.has(word)) {
+    if (atEnd && word !== "-empty") return fail(`find: missing argument to \`${word}'`, 1);
+    if (word === "-size") return fail(`find: invalid -size type \`${(value ?? "").slice(-1)}'`, 1);
+    if (word === "-type") return fail(`find: Unknown argument to -type: ${value}`, 1);
+    return fail(`find: invalid argument \`${value}' to \`${word}'`, 1);
+  }
+  if (REAL_ONLY.has(word))
+    return emulationGap({
+      tool: "find",
+      feature: `test:${word}`,
+      what: word,
+      supported: FIND_SUPPORTED,
+      example: FIND_EXAMPLE,
+    });
+  return fail(`find: unknown predicate \`${word}'`, 1);
+}
 const ACTIONS: Readonly<Record<string, FindPlan["action"]>> = {
   "-print": "print",
   "-ls": "ls",
@@ -78,8 +120,20 @@ function planFind(c: Cmd): FindPlan {
   for (let i = 0; i < args.length; i++) {
     const a = args[i] as string;
     if (NUMERIC_OPTIONS.has(a)) {
-      if (a === "-maxdepth") plan.maxDepth = Number(args[i + 1] ?? "");
-      else plan.minDepth = Number(args[i + 1] ?? "");
+      const given = args[i + 1];
+      if (given === undefined)
+        return { ...plan, test: () => true, refusal: fail(`find: missing argument to \`${a}'`, 1) };
+      if (!/^\d+$/.test(given))
+        return {
+          ...plan,
+          test: () => true,
+          refusal: fail(
+            `find: Expected a positive decimal integer argument to ${a}, but got '${given}'`,
+            1,
+          ),
+        };
+      if (a === "-maxdepth") plan.maxDepth = Number(given);
+      else plan.minDepth = Number(given);
       i++;
     } else if (ACTIONS[a]) plan.action = ACTIONS[a] as FindPlan["action"];
     else if (a === "-exec") {
@@ -90,19 +144,19 @@ function planFind(c: Cmd): FindPlan {
     } else words.push(a);
   }
   const parsed = parseExpression(c, words);
-  return "bad" in parsed
-    ? { ...plan, test: () => true, bad: parsed.bad }
+  return "refusal" in parsed
+    ? { ...plan, test: () => true, refusal: parsed.refusal }
     : { ...plan, test: parsed.test, ...(exec ? { exec } : {}) };
 }
 
-type Parsed = { test: FindTest } | { bad: string };
+type Parsed = { test: FindTest } | { refusal: R };
 
 /** `a -o b -a ! c ( d )`: `-o` is looser than `-a` (or just writing two tests), `!` binds closest. */
 function parseExpression(c: Cmd, words: readonly string[]): Parsed {
   let at = 0;
-  let bad: string | undefined;
-  const fail = (w: string): FindTest => {
-    bad ??= w;
+  let refusal: R | undefined;
+  const refuse = (r: R): FindTest => {
+    refusal ??= r;
     return () => true;
   };
   const or = (): FindTest => {
@@ -133,20 +187,38 @@ function parseExpression(c: Cmd, words: readonly string[]): Parsed {
   };
   const primary = (): FindTest => {
     const w = words[at++];
-    if (w === undefined) return fail(words[at - 2] ?? "(");
+    if (w === undefined) return refuse(findRefusal(words[at - 2] ?? "", undefined, true));
     if (w === "(") {
       const inner = or();
-      if (words[at++] !== ")") return fail("(");
+      if (words[at++] !== ")")
+        return refuse(
+          fail(
+            "find: invalid expression; I was expecting to find a ')' somewhere but did not see one.",
+            1,
+          ),
+        );
       return inner;
     }
     const made = makeTest(c, w, words[at] ?? "", c.h.t);
-    if (!made) return fail(w);
+    if (!made) return refuse(findRefusal(w, words[at], at >= words.length));
     if (!NO_VALUE_TESTS.has(w)) at++;
     return made;
   };
   const test = words.length === 0 ? () => true : or();
-  if (bad === undefined && at < words.length) bad = words[at];
-  return bad === undefined ? { test } : { bad };
+  if (refusal === undefined && at < words.length) refusal = strayWord(words, at);
+  return refusal === undefined ? { test } : { refusal };
+}
+
+/** A word where the real find expects an operator: it is a path after the expression began. */
+function strayWord(words: readonly string[], at: number): R {
+  const before = words[at - 2];
+  const unquoted = before !== undefined && ["-name", "-iname", "-path"].includes(before);
+  return fail(
+    `find: paths must precede expression: \`${words[at]}'${
+      unquoted ? `\nfind: possible unquoted pattern after predicate \`${before}'?` : ""
+    }`,
+    1,
+  );
 }
 
 /** Tests that stand alone, with no value after them. */
@@ -181,7 +253,7 @@ function makeTest(c: Cmd, flag: string, v: string, now: number): FindTest | unde
 
 export function find(c: Cmd): R {
   const plan = planFind(c);
-  if (plan.bad) return unsupported("find", plan.bad);
+  if (plan.refusal) return plan.refusal;
   const out: string[] = [];
   const errs: string[] = [];
   const hit: string[] = [];
@@ -222,6 +294,7 @@ function finishFind(
   if (plan.action === "exec" && plan.exec) {
     let text = "";
     let e = err;
+    let inner: Pick<R, "gap" | "outside"> = {};
     for (const p of hit) {
       const r = c.run(
         plan.exec.map((w) => w.split("{}").join(found.shownAs.get(p) ?? p)),
@@ -229,8 +302,10 @@ function finishFind(
       );
       text += r.out;
       e += r.err ?? "";
+      if (inner.gap === undefined && r.gap)
+        inner = { gap: r.gap, ...(r.outside ? { outside: r.outside } : {}) };
     }
-    return { out: text, err: e, code: errs.length ? 1 : 0 };
+    return { out: text, err: e, code: errs.length ? 1 : 0, ...inner };
   }
   return { out: joinLines(out), err, code: errs.length ? 1 : 0 };
 }

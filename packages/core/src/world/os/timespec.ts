@@ -55,3 +55,17 @@ export function parseTimeSpec(spec: string, now: number): number | undefined {
   if (epoch) return Number(epoch[1]) - OS_EPOCH_MS / 1000;
   return relative(s, now) ?? absolute(s, dayStart);
 }
+
+/** The forms of time the fake reads, for the lines of a gap. */
+export const TIME_FORMS =
+  "now today yesterday tomorrow, '10 minutes ago', '-2h', '+1 day', '@초', 'HH:MM[:SS]', 'YYYY-MM-DD[ HH:MM[:SS]]'";
+
+/**
+ * Whether a text `parseTimeSpec` cannot read may still be a time the real tools read (systemd.time(7), GNU date's "Date
+ * input formats"): it holds a number or a word of a date. The fake reads far fewer forms than they do, so such a text
+ * is treated as a gap; a text with neither is not a time to anyone and the real tool refuses it too.
+ */
+export const looksLikeTime = (text: string): boolean =>
+  /\d|\b(mon|tue|wed|thu|fri|sat|sun|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|noon|midnight|last|next|ago|week|month|year)/i.test(
+    text,
+  );

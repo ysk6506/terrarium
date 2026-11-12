@@ -21,7 +21,7 @@ import {
   workersOf,
   workloadsOfCluster,
 } from "@terrarium/core/world";
-import { agent, allOf, doc, Flow, type ScenarioTemplate, SUBMIT } from "./library-kit";
+import { agent, allOf, byId, doc, Flow, type ScenarioTemplate, SUBMIT } from "./library-kit";
 import type { ActionKind, Condition, Expectation } from "./model";
 
 interface Case {
@@ -61,7 +61,6 @@ interface Plan {
 
 const BUDGET = 30;
 const TIME_S = 3600;
-const byId = (a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id);
 
 function cases(index: BlueprintIndex): Case[] {
   return [...index.ofKind("k8s_cluster")].sort(byId).flatMap((cluster) => {

@@ -227,9 +227,9 @@ describe("kubectl tools refuse what they cannot do, in words [REQ-096]", () => {
   test("the kubectl words the fake does not do are listed", () => {
     const { sh } = lab();
     expect(sh("vm-main-w1", "kubectl apply -f x").output).toContain(
-      "kubectl get nodes|pods|deployments",
+      "terrarium: kubectl에서 되는 것: get nodes|pods|deployments",
     );
-    expect(sh("vm-main-w1", "kubectl describe pod x").output).toContain("kubectl describe node");
+    expect(sh("vm-main-w1", "kubectl describe pod x").output).toContain("describe node <name>");
     expect(sh("vm-main-w1", "kubectl describe node nothing").output).toContain("NotFound");
     expect(sh("vm-main-w1", "kubectl get secrets").exitCode).toBe(1);
   });
