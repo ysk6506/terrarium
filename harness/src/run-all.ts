@@ -22,7 +22,15 @@ export function checks(
   notes: string[] = [],
 ): Check[] {
   const plan: Check[] = [
-    ["architecture", () => architecture(root)],
+    [
+      "architecture",
+      () => {
+        // License rules ride on this check: common.test.ts is locked and lists the check names (ADR-0185).
+        const { violations, notes: lic } = licenses(root);
+        notes.push(...lic);
+        return [...architecture(root), ...violations];
+      },
+    ],
     [
       "docs",
       () => {
@@ -37,14 +45,6 @@ export function checks(
       () => {
         const { violations, notes: lowered } = ignores(root, base);
         notes.push(...lowered);
-        return violations;
-      },
-    ],
-    [
-      "licenses",
-      () => {
-        const { violations, notes: lic } = licenses(root);
-        notes.push(...lic);
         return violations;
       },
     ],

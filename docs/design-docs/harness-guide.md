@@ -5,15 +5,15 @@ status: active
 last_verified: 2026-11-12
 covers:
   - harness/src/run-all.ts
-covers_hash: cc4c15a9b778de90
+covers_hash: ab26b5426386b29f
 verification_log:
-  - "2026-11-11: 품질 등급표는 낡으면 알림만, 끄기 감소도 알림만 나오는 것으로 고쳐 적었다 (ADR-0148)"
   - "2026-11-11: CI 한 문단에 가벼운 경로(changes, docs-tests, gate의 기대 결과)를 더함 (ADR-0173)"
   - "2026-11-11: decisions, link-amends, audit-queue 명령을 명령 목록에 더함 (ADR-0180)"
   - "2026-11-11: run-all이 문서 검사 안에서 결정 관련 검사와 알림(DOC090~DOC098)도 돌리게 된 것을 명령 목록에 맞춤 (ADR-0180)"
   - "2026-11-12: 제3자 라이선스 검사 행과 licenses.ts write 명령, LIC001~LIC004를 더함 (ADR-0185)"
+  - "2026-11-12: run-all.ts은 라이선스 검사를 architecture 검사 안에서 돌리도록 한 곳만 바뀜. 표와 명령은 그대로 맞다 (ADR-0185)"
 verified_body: c53cc372467fc329
-unchanged_reverifies: 0
+unchanged_reverifies: 1
 ---
 # 품질 하네스
 

@@ -20,7 +20,7 @@ touches_protected:
   - docs/design-docs/adr/0181-license-apache-2.md
 amends_tests: []
 test_change_reason: ""
-decision_hash: 53fba6528f71c0d5
+decision_hash: ddb8391700cd5e14
 ---
 # ADR-0185 함께 나가는 제3자 구성요소는 허용 목록 안의 라이선스여야 하고, 고지 파일은 하네스가 만든다
 
@@ -37,6 +37,8 @@ decision_hash: 53fba6528f71c0d5
 5. **고지 파일.** `THIRD_PARTY_NOTICES.md`는 `pnpm tsx harness/src/checks/licenses.ts write`가 만들고 손으로 고치지 않는다. 구성요소마다 이름·버전·라이선스·출처·저작권 줄을 적고, 같은 라이선스 전문은 한 번만 적는다. 패키지에 NOTICE 파일이 있으면 그대로 싣는다. 저장소 맨 위에 있어서 압축 파일과 컨테이너 이미지(`COPY . .`)에 들어간다. 맨 위 `.md`라서 문서 검사의 대상이 아니고, 만든 문서를 두는 `docs/generated/`에도 두지 않았다(받는 사람이 맨 위에서 찾도록).
 6. **`NOTICE`는 그대로 둔다.** Apache-2.0 4(d)가 말하는, 함께 나가는 Apache-2.0 구성요소의 NOTICE 파일은 현재 설치된 것 중에 없다(`cluster-key-slot`, `jsbi`는 NOTICE를 싣지 않는다). 생기면 고지 파일에 그대로 실리므로 `NOTICE`에 옮길지는 그때 정한다.
 7. **ADR-0181을 고친다.** 0181 2번은 묶을 수 있는 것을 "허용적 라이선스"로 적었다. 여기에 MPL-2.0(약한 카피레프트)을 수정하지 않은 경우에 한해 더하고, 허용 목록의 BlueOak-1.0.0·Python-2.0·CC-BY-4.0·Unlicense·CC0-1.0을 이름으로 적는다. 0181의 "남은 일" 중 라이선스 칸을 `ARCH020` 계약에 넣는 방식은 쓰지 않았다. 의존성 선언은 `ARCH020`이, 라이선스는 이 검사가 따로 본다.
+
+이 검사는 `run-all`에서 따로 이름을 갖지 않고 `architecture` 검사 안에서 돈다. 검사 이름 목록을 못 박은 잠긴 시험(`harness/src/common.test.ts`)을 바꾸지 않으려는 것이고, 의존성 선언을 보는 `ARCH020`과 한 묶음으로 읽혀도 어긋나지 않는다. 실패와 알림은 `LIC*` 코드로 나온다.
 
 ## 이유
 - 목록이 설치된 패키지에서 기계로 만들어지면 사람이 빼먹은 의존성이 없고, 허용 목록 밖의 라이선스는 들어오는 변경에서 바로 보인다.
