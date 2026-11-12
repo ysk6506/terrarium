@@ -2,16 +2,18 @@
 title: ARCHITECTURE — 단위와 의존 방향
 kind: reference
 status: active
-last_verified: 2026-11-10
+last_verified: 2026-11-12
 covers:
   - harness/config/architecture.yaml
-covers_hash: a181742e9b8230d5
+covers_hash: a24a668d39be26ae
 verification_log:
-  - "2026-11-05: architecture.yaml에 core.topology 단위(kernel, catalog, world, physics)가 늘었다. 단위 표와 그림에 한 줄씩 더했다"
   - "2026-11-06: LLM API 등록"
   - "2026-11-06: 세계 인기·좋아요·칭호·계급 모델 (REQ-101, ADR-0122)"
   - "2026-11-07: REQ-103 이끼 추가 뒤 다시 읽음: 이끼 버튼 속성과 새 모듈 외에 이 문서의 서술과 어긋난 곳 없음"
   - "2026-11-10: physics.slots 단위 추가 (architecture.yaml와 맞춤)"
+  - "2026-11-12: architecture.yaml에서 tests.spec이 tests.e2e를 입구(index.ts)로 쓸 수 있게 된 것을 명세 테스트 항목에 적었다. 단위 표와 나머지 규칙은 그대로 맞다 (ADR-0195)"
+verified_body: b25280de644fb1e6
+unchanged_reverifies: 0
 ---
 # 아키텍처
 
@@ -99,5 +101,5 @@ contract ─► analysis ─► experiments ─► oracle ─► scenario ─►
 
 - **단위 테스트**는 그 단위 폴더에 두고, 그 단위가 import할 수 있는 것만 쓴다. 테스트 파일도 의존 방향 규칙을 똑같이 지킨다.
   위 단위가 필요하면(예: `tools` 테스트에 물리 엔진) 상태를 직접 만들거나(`world.patch`, `alarm.raise`) 가짜를 주입한다.
-- **명세 테스트**(`tests/spec/`)는 core 전체를 쓸 수 있다. "물리가 실제로 망가뜨린 것은 `get_impact`가 미리 말한 범위 안에 있다"처럼 단위 사이의 약속을 검증한다.
+- **명세 테스트**(`tests/spec/`)는 core 전체를 쓸 수 있고, 브라우저 실행기(`tests/e2e/`)는 그 입구(`index.ts`)로만 쓴다(ADR-0195). "물리가 실제로 망가뜨린 것은 `get_impact`가 미리 말한 범위 안에 있다"처럼 단위 사이의 약속을 검증한다.
 - 툴은 프로토콜 파사드를 직접 만들지 않는다. 세션이 실험이 고른 제품 버전으로 `createFacades`를 한 번 만들어 `ToolContext.facades`로 넘긴다.

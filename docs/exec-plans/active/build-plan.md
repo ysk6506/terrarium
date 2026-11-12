@@ -4,17 +4,17 @@ kind: plan
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-12: 따라가는 beta-rounds.md의 이슈 47 절에서 단계의 순서가 바뀜. 차수의 순서와 내용은 그대로라 이 문서와 어긋나지 않는다"
   - "2026-11-12: 따라가는 beta-rounds.md에서 날짜를 지우고 '지금의 순서' 절을 더함. 차수의 내용은 그대로라 이 문서와 어긋나지 않는다"
   - "2026-11-12: main을 합침: 따라가는 문서는 날짜를 지운 순서 절과 내부 출처 서술을 걷어낸 한 줄(ADR-0187)이 함께 들어감. 이 문서와 어긋나지 않는다"
   - "2026-11-12: 따라가는 beta-rounds.md의 지금의 순서에 워크플로 자동화(8번)가 더해짐(ADR-0189). 이 문서와 어긋나지 않는다"
   - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
+  - "2026-11-12: 따라가는 beta-rounds.md는 검사 시간 줄이기 항목의 문장만 바뀌었다. 빌드 계획의 순서와 항목에 그 문장이 없어 어긋나지 않는다 (ADR-0195)"
 follows:
   - docs/design-docs/product-design.md
   - docs/exec-plans/active/beta-rounds.md
-follows_hash: 8661095a25682fe4
+follows_hash: fbd97634a470c187
 verified_body: 9739c793ce36fdd3
-unchanged_reverifies: 6
+unchanged_reverifies: 7
 ---
 # 구현 계획
 

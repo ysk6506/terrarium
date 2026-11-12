@@ -33,6 +33,9 @@ amends_tests:
   - harness/src/ux/groups.test.ts::the CI groups of UX journeys lose none and repeat none [REQ-114] > there are three groups, named as the workflow names them
 test_change_reason: 낡은 측정 기록(UX004)이 실패에서 알림으로 바뀌었고(ADR-0175 결정 3), CI의 여정 묶음이 셋에서 다섯으로 늘었다(결정 2). 두 시험은 옛 동작(낡으면 빨강, 묶음 셋)을 단언했다. 새 동작을 같은 성질의 단언으로 다시 썼고, 기록을 읽지 못함(UX004 실패)·점수 위조(UX005)·하한(UX001~003)의 시험은 그대로다.
 decision_hash: c8e186fdaac5e542
+amended_by:
+  - adr: "0195"
+    what: 진단용 아티팩트를 올리지 않는다는 5번
 ---
 # ADR-0175 UX 검사를 더 잘게 나눠 돌리고, 점수 파일은 변경마다 커밋하지 않는다
 

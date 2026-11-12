@@ -4,15 +4,15 @@ kind: reference
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-12: 따라가는 AGENTS.md에 내부 사실을 적지 않는다는 줄이 더해짐(ADR-0187). 색인과 무관. 지운 참고 문서는 색인에 없었다"
   - "2026-11-12: 따라가는 AGENTS.md의 바뀐 곳은 절대 규칙 표의 라이선스 행(ADR-0185)이고, 색인은 문서 위치만 가리켜 어긋나지 않는다"
   - "2026-11-12: main 합침: 라이선스 행·링크(ADR-0185)와 내부 사실 줄(ADR-0187)이 함께 있다. 서로 어긋나지 않는다"
   - "2026-11-12: main을 합침: 따라가는 AGENTS.md의 변경은 색인과 무관"
   - "2026-11-12: main을 합침: 워크플로 자동화 문서 링크(ADR-0189)가 들어감. 따라가는 AGENTS.md의 변경은 색인과 무관"
+  - "2026-11-12: 따라가는 AGENTS.md의 바뀐 곳은 CI 문단과 웹 화면 항목뿐이다. 색인은 문서 위치만 가리키고 CI 구성을 말하지 않아 어긋나지 않는다 (ADR-0195)"
 follows:
   - AGENTS.md
-follows_hash: bcb8ef586bbc84d0
-verified_body: 37582754606e312e
+follows_hash: cba4b61c3ff1399f
+verified_body: 47c9abf9f35d13e4
 unchanged_reverifies: 4
 ---
 # 문서 색인

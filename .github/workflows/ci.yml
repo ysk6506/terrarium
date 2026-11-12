@@ -251,6 +251,67 @@ jobs:
             docs/generated/coverage-record.json
             coverage/coverage-summary.json
 
+  # TEMPORARY (ADR-0195 proof, removed before the change is reported): one real browser, one failed click, the real dump.
+  evidence-demo:
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/browser
+      - name: A failed step in a real browser, with secrets planted in the headers, the cookie, the address and the page
+        env:
+          TERRARIUM_UX_ADMIN_TOKEN: planted-secret-7f3a91c2e4
+        run: |
+          cat > demo-evidence.ts <<'EOF'
+          import { createServer } from "node:http";
+          import { chromium } from "playwright";
+          import { dump, watch } from "./tests/e2e/ux/evidence";
+          const SECRET = process.env.TERRARIUM_UX_ADMIN_TOKEN as string;
+          const page_html = `<h1>실험 결과예요</h1><p>합격했어요</p><button id="go">시작</button><script>
+            fetch("/api/worlds?token=${SECRET}", { headers: { authorization: "Bearer ${SECRET}" } });
+            fetch("/api/experiments", { method: "POST", body: JSON.stringify({ token: "${SECRET}" }) });
+            fetch("/api/boom");
+            console.error("request failed for ${SECRET}");
+          </script>`;
+          const server = createServer((req, res) => {
+            if (req.url?.startsWith("/api/")) {
+              res.writeHead(req.url.includes("boom") ? 500 : 200, { "content-type": "application/json", "x-terrarium-proxy-secret": SECRET });
+              res.end(JSON.stringify({ token: SECRET }));
+            } else {
+              res.writeHead(200, { "content-type": "text/html; charset=utf-8", "set-cookie": `sid=${SECRET}` });
+              res.end(page_html);
+            }
+          });
+          await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
+          const port = (server.address() as { port: number }).port;
+          const browser = await chromium.launch();
+          const page = await browser.newPage();
+          const watcher = watch(page);
+          await page.goto(`http://127.0.0.1:${port}/experiments/e1?token=${SECRET}&tab=result`);
+          await page.waitForTimeout(800);
+          let lines: string[] = [];
+          try {
+            await page.click("#missing", { timeout: 1500 });
+          } catch (err) {
+            const note = (err as Error).message.split("\n")[0] ?? "";
+            lines = await dump(page, watcher, { id: "demo", note, dir: "ux-evidence" });
+          }
+          for (const l of lines) console.log(l);
+          await browser.close();
+          server.close();
+          if (lines.join("\n").includes(SECRET)) { console.log("LEAK: the secret is in the dump"); process.exit(1); }
+          console.log("no secret in the dump");
+          EOF
+          node_modules/.bin/tsx demo-evidence.ts
+          ls -la ux-evidence
+      - if: always()
+        uses: ./.github/actions/ux-evidence
+        with:
+          name: ux-evidence-demo
+
   # The light path (ADR-0173): the tests that read the documents, since the full test run is skipped. First it checks
   # again, with a different pattern than `changes`, that the diff holds nothing but documents.
   docs-tests:

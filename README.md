@@ -6,15 +6,15 @@ last_verified: 2026-11-12
 covers:
   - package.json
   - docs/exec-plans/active/beta-rounds.md
-covers_hash: 435da7c7ddd4a39e
+covers_hash: 7926c13c7544fb99
 verification_log:
-  - "2026-11-12: main 합침: 라이선스 행·링크(ADR-0185)와 내부 사실 줄(ADR-0187)이 함께 있다. 서로 어긋나지 않는다"
   - "2026-11-12: main을 합침: 라이선스 절의 고지 파일 링크(ADR-0185)와 main의 변경이 함께 들어감"
   - "2026-11-12: main을 합침: 넓힌 목표 문장과 설계 단계 절(ADR-0189), 라이선스 절의 고지 파일 링크(ADR-0185)가 함께 들어감"
   - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
   - "2026-11-12: 내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
+  - "2026-11-12: 덮는 계획 문서(beta-rounds.md)는 검사 시간 줄이기 항목의 문장만 바뀌었다. README에는 그 항목이나 CI 작업 구성을 말하는 곳이 없어 어긋나지 않는다 (ADR-0195)"
 verified_body: 7d0c2323e0ee0ec2
-unchanged_reverifies: 4
+unchanged_reverifies: 5
 ---
 # Terrarium
 

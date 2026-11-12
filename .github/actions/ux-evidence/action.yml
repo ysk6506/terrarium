@@ -8,8 +8,8 @@ runs:
   using: composite
   steps:
     - uses: actions/upload-artifact@v4
-      # ADR-0195: this is a diagnostic picture of a failure the job already reports in its log; if the upload itself fails
-      # (a name taken by a re-run, the service down) the job keeps the result of the journeys. No folder, no failure: nothing to upload.
+      # A diagnostic picture of a failure the job already reports in its log. If the upload itself fails (a name taken by a
+      # re-run, the service down) the job keeps the result of the journeys. No folder, no failure. ADR-0195
       continue-on-error: true
       with:
         name: ${{ inputs.name }}
