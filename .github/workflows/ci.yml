@@ -2,7 +2,7 @@
 # Gating: lint-types, test (shards), test-heavy + test-summary, structure, ux-journeys. The `gate` job is the one required check.
 # A pull request whose changed files are all documents takes the light path (ADR-0173): `changes` decides, the heavy jobs are
 # skipped, and structure + docs-tests run instead. Anything else, and every push to main, takes the full path.
-# The non-gating jobs (coverage, ux-parts) start after lint-types: the runners are few, and the gating jobs come first (ADR-0195).
+# The non-gating jobs (coverage, ux-parts) start after the test shards: the runners are few, and the gating jobs come first (ADR-0195).
 # Non-gating, with a debt item each: coverage + coverage-floors (TD-0002), ux-measure (TD-0004). Coverage is not collected by
 # the gating test shards: instrumented, the longest shard took more than twice as long and tests hit their time limit (ADR-0195).
 name: ci
@@ -186,7 +186,7 @@ jobs:
   # The groups are balanced by the time each shard took instrumented.
   # Non-gating until TD-0002 (due 2026-11-21) is closed: the floors have not been measured since 2026-11-07.
   coverage:
-    needs: [changes, lint-types]
+    needs: [changes, test]
     if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -340,7 +340,7 @@ jobs:
   # same scores a single run gives and prints the record. The record is not committed with each change: the cleanup job
   # measures main and commits docs/generated/ux-score.json. A change reads its own scores in this job's summary.
   ux-parts:
-    needs: [changes, lint-types]
+    needs: [changes, test]
     if: needs.changes.outputs.web == 'true' && needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
