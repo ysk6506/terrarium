@@ -6,15 +6,15 @@ last_verified: 2026-11-12
 follows:
   - docs/design-docs/adr-process.md
   - AGENTS.md
-follows_hash: 125b1d64f4b780dd
+follows_hash: c7aef50d9f9ba0d5
 verified_body: 670d77e72298eecc
-unchanged_reverifies: 8
+unchanged_reverifies: 9
 verification_log:
-  - "2026-11-12: 따라가는 adr-process.md에 follows를 고르는 기준 한 줄이 더해짐(ADR-0186). 5번 서술은 그대로 맞다"
-  - "2026-11-12: main을 합침: 따라가는 AGENTS.md(ADR-0187 한 줄)와 adr-process.md(ADR-0186 한 줄)가 함께 들어감. 5번 서술은 그대로 맞다"
-  - "2026-11-12: main을 합침: 따라가는 AGENTS.md(ADR-0175, ADR-0187)와 adr-process.md(ADR-0186)의 변경은 5번 서술과 어긋나지 않는다"
-  - "2026-11-12: 따라가는 AGENTS.md의 첫 문장이 넓힌 목표 문장으로 바뀜(ADR-0189). 5번 서술은 그대로 맞다"
-  - "2026-11-12: main을 합침: 따라가는 adr-process.md(보호 경로 보탬, ADR-0186 한 줄)와 AGENTS.md의 main 쪽 변경을 읽음. 5번 서술은 그대로 맞다"
+  - "2026-11-12: 따라가는 AGENTS.md의 바뀐 곳은 라이선스 행뿐이고 신념 서술은 그대로 맞다 (ADR-0185)"
+  - "2026-11-12: main 합침: 라이선스 행·링크(ADR-0185)와 내부 사실 줄(ADR-0187)이 함께 있다. 서로 어긋나지 않는다"
+  - "2026-11-12: main을 합침: 따라가는 AGENTS.md와 adr-process.md의 변경(ADR-0175, 0185, 0186, 0187)은 5번 서술과 어긋나지 않는다"
+  - "2026-11-12: main을 합침: 따라가는 AGENTS.md의 변경(ADR-0185, 0189)은 5번 서술과 어긋나지 않는다"
+  - "2026-11-12: main을 합침: 따라가는 adr-process.md의 보호 경로 보탬(.github/, 결정 기록)과 AGENTS.md의 라이선스 행(ADR-0185)을 읽음. 5번 서술은 그대로 맞다"
 ---
 # 핵심 신념 (Golden Principles)
 

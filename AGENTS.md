@@ -9,12 +9,12 @@ covers:
   - harness/config/protected-paths.txt
 covers_hash: 92c76fe9a7d17245
 verification_log:
-  - "2026-11-11: 첫 단락을 목표 문장으로 맞추고 새 결정·정리 작업 절차와 DOC090~DOC095 행을 적음 (ADR-0180)"
-  - "2026-11-11: package.json에 license 표기만 더해짐. 명령과 안내는 그대로 맞다 (ADR-0181)"
-  - "2026-11-12: 웹 화면 변경·정리 작업 단락을 점수 파일 비커밋에 맞춤 (ADR-0175)"
-  - "2026-11-12: main을 합침: 내부 사실을 적지 않는다는 줄(ADR-0187)과 점수 파일 비커밋 단락(ADR-0175)이 함께 들어감"
-  - "2026-11-12: 첫 문장을 넓힌 목표 문장으로 맞춤 (ADR-0189)"
-verified_body: ebf4dd1e79cd6117
+  - "2026-11-12: 하지 말 것 표에 내부 사실을 적지 않는다는 줄을 더함 (ADR-0187)"
+  - "2026-11-12: 절대 규칙 표에 라이선스 행(LIC001, LIC002)을 더함. 명령과 보호 경로는 그대로 맞다 (ADR-0185)"
+  - "2026-11-12: main 합침: 라이선스 행·링크(ADR-0185)와 내부 사실 줄(ADR-0187)이 함께 있다. 서로 어긋나지 않는다"
+  - "2026-11-12: main을 합침: 라이선스 검사 줄(ADR-0185)과 main의 변경(ADR-0175, ADR-0187)이 함께 들어감"
+  - "2026-11-12: main을 합침: 넓힌 목표 문장(ADR-0189)과 라이선스 검사 줄(ADR-0185)이 함께 들어감"
+verified_body: 22db52a5965ed3f9
 unchanged_reverifies: 0
 ---
 # Terrarium — 코딩 에이전트 안내서
@@ -50,6 +50,7 @@ CI가 합치기 관문이다 ([ADR-0140](docs/design-docs/adr/0140-ci-shards-and
 | `harness/`, 설정 파일, ADR, 이 파일 수정 | 보호 경로 (`PROT001`) — 같은 변경에 봉인된 ADR 필요 |
 | 검사 끄기 주석(`biome-ignore` 등)·건너뛴 테스트·CI `continue-on-error`를 이유와 근거 없이 두기, 그 수를 늘리기 | `IGN001`~`IGN007` — 같은 줄이나 윗줄에 이유와 `TD-NNNN`(열린 부채) 또는 `ADR-NNNN`을 적는다. 수는 늘 수 없다. 원인을 고치는 쪽이 먼저다 ([ADR-0148](docs/design-docs/adr/0148-no-silent-ignores-and-quality-grades.md)) |
 | 품질 등급표를 손으로 고치기 | 등급표는 하네스가 만든다. 낡으면 알림 한 줄(`QUAL001`)만 나오고 빨강은 아니다. 정리 작업이 `pnpm quality write`로 새로 만든다 |
+| 허용 목록 밖의 라이선스를 가진 의존성·자료를 함께 내보내기, 고지 파일을 손으로 고치기 | `LIC001`, `LIC002` — 의존성을 들이기 전에 라이선스를 본다. 고지 파일은 `pnpm tsx harness/src/checks/licenses.ts write`가 만든다 ([ADR-0185](docs/design-docs/adr/0185-third-party-notices-and-license-check.md)) |
 | 추적 없는 `TODO` | `TODO(TD-NNNN)` + [부채 장부](docs/exec-plans/tech-debt.yaml) (`DEBT001`) |
 | 내부에서 들은 사실(어느 조직이 무엇을 개발·검증했는지, 내부 시스템의 구조·규모·제조사, 조직과 절차)을 코드·문서·PR·이슈·커밋에 적기 | 저장소는 공개돼 있다. 기계가 못 가리니 쓰는 쪽이 지킨다. 요구로 바꿔 적는다 ([ADR-0187](docs/design-docs/adr/0187-no-internal-facts-in-the-public-repository.md)) |
 | `Date.now()`, `Math.random()` 직접 사용 | `kernel`의 `Clock`/`Rng`를 주입받는다 (`ARCH052`) |
