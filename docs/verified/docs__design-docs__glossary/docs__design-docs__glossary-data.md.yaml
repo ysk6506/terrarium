@@ -1,7 +1,0 @@
-doc: "docs/design-docs/glossary.md"
-target: "docs/design-docs/glossary-data.md"
-hash: "746362f2f0650207"
-date: "2026-11-12"
-note: "따라가는 glossary-data.md에 모의 툴과 검증 수준이 더해짐(ADR-0190). 이 문서의 말과 겹치지 않는다(현실 수준 꼬리표와 구별해 적음)"
-text_changed: false
-doc_hash: "837e81a4ef58411b"

@@ -82,6 +82,8 @@ covers:
 | `terrarium_session_utilization` | 도는 수 ÷ 자리 (0~1) |
 | `terrarium_nodes_wanted` | **일을 다 담으려면 필요한 워커 수. 이 값으로 늘리고 줄인다.** |
 
+같은 길의 끝에 감사 기록의 지표 둘(`terrarium_audit_entries_total`, `terrarium_audit_write_failures_total`)이 붙는다. 자동 확장은 이것을 쓰지 않는다([서버 운영](operations.md)).
+
 CPU 사용률로 늘리지 마라. 실행이 기다리는 동안 CPU는 한가해서, 줄이 길어도 CPU는 낮다.
 `deploy/k8s/autoscaling-keda.yaml`이 KEDA 예다. VM이면 같은 지표를 클라우드 오토스케일러에 연결한다.
 `GET /cluster/v1/nodes`(Bearer)는 노드 목록과 같은 부하를 JSON으로 준다.

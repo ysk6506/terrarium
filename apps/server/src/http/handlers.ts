@@ -209,6 +209,10 @@ export const HANDLERS: Handlers = {
   twinDiagnoses: async (p, i) => toJsonl(await p.results.twinRecords(i.viewer, i.query)),
   twinBrief: (p, i) => p.results.twinBrief(i.viewer, i.query),
 
+  listAudit: (p, i) => p.auditLog.list(i.viewer, i.query),
+  exportAudit: (p, i) => p.auditLog.export(i.viewer, i.query),
+  listAuditMine: (p, i) => p.auditLog.mine(i.viewer, i.query),
+
   sharedReport: (p, i) =>
     p.results.shared(
       i.params.token as string,

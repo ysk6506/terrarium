@@ -1,0 +1,7 @@
+doc: "docs/design-docs/http-api.md"
+target: "packages/core/src/contract/audit-routes.ts"
+hash: "8a26239165b53166"
+date: "2026-11-12"
+note: "ADR-0193: 새 행동 audit.limit이 닫힌 목록에 늘었을 뿐 길·정책 수·항목 모양은 그대로 맞다"
+text_changed: false
+doc_hash: "9b3ee21f1197804e"

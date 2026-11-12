@@ -1,0 +1,7 @@
+doc: "docs/design-docs/glossary.md"
+target: "docs/design-docs/adr/0183-one-vocabulary-on-every-screen.md"
+hash: "4aa71f3d4649f88c"
+date: "2026-11-12"
+note: "ADR-0192: 테라리움은 처음의 목표로 돌아감. 현실 데이터 절을 받은 세계와 모델의 말로 고쳐 씀. 따라가는 문서를 ADR-0183으로 바꿈"
+text_changed: false
+doc_hash: "039bc39ec784359a"

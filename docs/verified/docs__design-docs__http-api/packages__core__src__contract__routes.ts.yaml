@@ -1,7 +1,7 @@
 doc: "docs/design-docs/http-api.md"
 target: "packages/core/src/contract/routes.ts"
-hash: "bf67039ec087bc15"
+hash: "6cb15ab1f7e2483c"
 date: "2026-11-12"
-note: "ADR-0183: 한 가지 말(번, 상황, 객체·링크, 넘기기)에 맞춰 인용한 화면 글을 고쳤다"
-text_changed: true
-doc_hash: "00fc9da9073f3730"
+note: "ADR-0193: 새 행동 audit.limit이 닫힌 목록에 늘었을 뿐 길·정책 수·항목 모양은 그대로 맞다"
+text_changed: false
+doc_hash: "9b3ee21f1197804e"

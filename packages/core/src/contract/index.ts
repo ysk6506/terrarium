@@ -1,6 +1,31 @@
 /** core.contract: the HTTP API contract shared by server and web — routes, request schemas, views, errors. */
 
 export {
+  AUDIT_EXPORT_MAX,
+  AUDIT_LABELS,
+  AUDIT_PAGE_DEFAULT,
+  AUDIT_PAGE_MAX,
+  AUDIT_REASON_LABELS,
+  type AuditEntryView,
+  AuditExportQuery,
+  AuditMineQuery,
+  type AuditOwnPageView,
+  type AuditOwnView,
+  type AuditPageView,
+  AuditQuery,
+  type AuditQueryParams,
+  labelKeyOf,
+} from "./audit";
+export {
+  AUDIT_CLASSES,
+  auditOf,
+  failsClosed,
+  type IdSource,
+  type Recorded,
+  type RouteAudit,
+  type Unrecorded,
+} from "./audit-classes";
+export {
   type LikeView,
   type TitleView,
   type UserTitlesView,

@@ -1,7 +1,8 @@
 ---
 title: ADR-0153 운영 모드의 세계는 고가용으로 설계하고, 오픈 베타에 넣는다
 kind: decision
-status: active
+status: superseded
+superseded_by: 0192-terrarium-returns-to-its-first-goal.md
 enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-116 예정, 오픈 베타). 만들 때 enforced_by를 장애 주입·복구·평면 분리 시험으로 바꾼다.

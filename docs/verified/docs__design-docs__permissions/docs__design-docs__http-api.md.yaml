@@ -1,7 +1,7 @@
 doc: "docs/design-docs/permissions.md"
 target: "docs/design-docs/http-api.md"
-hash: "00fc9da9073f3730"
+hash: "448498d15a025772"
 date: "2026-11-12"
-note: "main을 합친 뒤 공개 범위(ADR-0174 나 단계, ADR-0179)에서 더한 서술을 합쳐진 코드와 대조했고, 바뀐 화면 글(ADR-0183)과 옛 말이 없음을 확인했다"
+note: "ADR-0193 8번이 바뀐 것(건·대신한 사람·에이전트 주체를 뺌)을 따라가는 문서와 대어 봤다: 이 문서에는 그 필드 서술이 없고 맞다"
 text_changed: false
-doc_hash: "73e77da0731c98f0"
+doc_hash: "a813c0a300fcf16c"

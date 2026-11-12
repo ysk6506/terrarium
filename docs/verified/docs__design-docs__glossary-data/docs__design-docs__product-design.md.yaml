@@ -1,7 +1,0 @@
-doc: "docs/design-docs/glossary-data.md"
-target: "docs/design-docs/product-design.md"
-hash: "519de35e9f0b713a"
-date: "2026-11-12"
-note: "모의 툴과 검증 수준을 더함 (ADR-0190)"
-text_changed: false
-doc_hash: "746362f2f0650207"

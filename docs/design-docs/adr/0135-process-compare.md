@@ -13,6 +13,9 @@ touches_protected:
   - harness/src/ux/score.ts
 amends_tests: []
 decision_hash: c7ed5efb0d819f4e
+amended_by:
+  - adr: "0197"
+    what: 승인 줄은 승인 사건에서만 센다
 ---
 # ADR-0135 프로세스 비교: 적은 값과 잰 값을 같은 잣대로
 

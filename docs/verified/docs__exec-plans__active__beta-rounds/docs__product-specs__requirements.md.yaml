@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/beta-rounds.md"
 target: "docs/product-specs/requirements.md"
-hash: "439be5344d3e8136"
+hash: "de836da292c565f7"
 date: "2026-11-12"
-note: "내부 사실 서술을 요구의 말로 고치고 제품 책임자의 이름을 뺌 (ADR-0188). main을 합친 뒤 따라가는 문서와 다시 대조함"
+note: "main(ADR-0196)을 합침: 두 변경의 글이 함께 들어감. 다시 대조함"
 text_changed: true
-doc_hash: "f3d1edea56b84ca0"
+doc_hash: "66707beaed5c0c57"

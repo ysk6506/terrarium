@@ -8,6 +8,9 @@ no_enforcement_reason: 구현 전 결정 기록이다. 구현 작업이 끝나�
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 77e82c4ed83c3c82
+amended_by:
+  - adr: "0197"
+    what: pass^k는 업무 묶음의 합격선이 된다
 ---
 # ADR-0089 홈은 경영진 한 장이고 그 뒤가 엔지니어 근거다
 

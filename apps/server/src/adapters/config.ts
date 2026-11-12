@@ -166,6 +166,15 @@ export const ConfigSchema = z
       })
       .strict()
       .default({}),
+    /** The audit log (ADR-0193): entries older than this many days are removed by one background sweep, which writes an entry itself; 0 keeps them all. */
+    audit: z
+      .object({
+        retentionDays: z.number().int().min(0).max(36500).default(365),
+        /** Lines per minute, all together, that failures before sign-in may write; the rest are only counted (ADR-0193). */
+        preAuthLinesPerMinute: z.number().int().min(1).max(10000).default(60),
+      })
+      .strict()
+      .default({}),
     sources: z.array(FalkorSource).default([]),
     telemetry: ClickStack.optional(),
     cluster: Cluster,

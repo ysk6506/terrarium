@@ -1,7 +1,7 @@
 doc: "docs/design-docs/operations.md"
 target: "apps/server/src/adapters/config.ts"
-hash: "1b586db09b9b3119"
+hash: "0f20ddf2584d01dc"
 date: "2026-11-12"
-note: "step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
-text_changed: true
-doc_hash: "2cb4575df7362562"
+note: "ADR-0193: audit.preAuthLinesPerMinute(기본 60), 로그인 전 실패 접기, suppressed 지표를 config.ts, audit-fold.ts, audit-metrics.ts와 대어 확인"
+text_changed: false
+doc_hash: "0cd4bf67a07e4c29"

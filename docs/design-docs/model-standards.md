@@ -3,10 +3,9 @@ title: 표준 모델 대조 — 층마다 빌려오는 뼈대와 플랫폼 매�
 kind: spec
 status: active
 follows:
-  - docs/design-docs/reality-data-and-ontology.md
   - docs/design-docs/product-design.md
 ---
-# 표준 모델 대조 (REQ-115·117 예정, ADR-0157)
+# 표준 모델 대조 (REQ-119·121 예정, ADR-0157)
 
 현실의 데이터를 받는 모델이 한 회사 제품의 말에 묶이지 않게, 층마다 공개된 표준에서 뼈대를 빌려와요. 아직 만들지 않았어요. 아래 매핑은 방향이고, 만들 때 각 표준 문서와 하나씩 대조해 확정해요. 쓰는 말은 [데이터 용어집](glossary-data.md)을 따라요.
 

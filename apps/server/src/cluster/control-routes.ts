@@ -14,6 +14,8 @@ export interface ControlDeps {
   readonly localSlots: number;
   /** Slots one new worker brings: how many nodes are wanted for the work waiting. */
   readonly slotsPerWorker: () => number;
+  /** More metrics, in the same text format, added after the load (the audit log's counters). */
+  readonly extraMetrics?: () => string;
   /** Told when the set of usable nodes changes, so queued runs can start. */
   readonly onChange?: () => void;
 }
@@ -97,6 +99,8 @@ export function registerControl(app: FastifyInstance, deps: ControlDeps): void {
     load: loadOf(deps),
   }));
   app.get("/metrics", { preHandler: guard }, async (_req, reply) =>
-    reply.type("text/plain; version=0.0.4").send(metricsText(loadOf(deps))),
+    reply
+      .type("text/plain; version=0.0.4")
+      .send(`${metricsText(loadOf(deps))}${deps.extraMetrics?.() ?? ""}`),
   );
 }

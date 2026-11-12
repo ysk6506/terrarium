@@ -11,6 +11,9 @@ amends:
     what: ECMP의 출처
   - adr: "0156"
     what: 관계 표의 묶음 뜻
+amended_by:
+  - adr: "0192"
+    what: 엑셀과 ECMP를 받는 방법
 ---
 # ADR-0164 ECMP는 장비 설정에서 읽고, 위치 엑셀은 목록으로 받고, VMware의 쿠버네티스와 VDI 둘을 대응 표에 넣는다
 

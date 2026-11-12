@@ -1,7 +1,0 @@
-doc: "docs/design-docs/reality-data-and-ontology.md"
-target: "packages/core/src/world/blueprint-links.ts"
-hash: "be323f29117564ab"
-date: "2026-11-11"
-note: "ADR-0168에 맞춤: 실험용 복사본은 같은 의미로 움직이고 시뮬레이션은 정밀·기본 두 단계"
-text_changed: true
-doc_hash: "a701ed11970839f1"

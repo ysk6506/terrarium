@@ -48,7 +48,9 @@ export {
 export { DAY_PATTERN, dayWeight, MTBF_TABLE, type Mtbf } from "./mtbf";
 export {
   DEFAULT_OPERATION_CALLS,
+  DIAGNOSIS_NOTE,
   OPERATION_BRIEF,
   operationPrompt,
   operationScenario,
+  withDiagnosisNote,
 } from "./scenario";
