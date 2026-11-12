@@ -184,3 +184,4 @@
 | [ADR-0182 고친 결정에는 무엇을 고쳤는지 한 구절을 적는다 — amends의 what, link-amends가 옮겨 적고, 결정 목록이 보인다](../design-docs/adr/0182-amends-says-what-it-changed.md) | 유효 |  |
 | [ADR-0183 화면의 모든 글은 한 가지 말을 쓰고, 옛 말이 돌아오지 못하게 검사한다](../design-docs/adr/0183-one-vocabulary-on-every-screen.md) | 유효 |  |
 | [ADR-0185 함께 나가는 제3자 구성요소는 허용 목록 안의 라이선스여야 하고, 고지 파일은 하네스가 만든다](../design-docs/adr/0185-third-party-notices-and-license-check.md) | 유효 |  |
+| [ADR-0187 공개 저장소에는 공개된 자료에서 온 사실만 둔다 — 내부에서 들은 사실은 요구로 바꿔 적고, 이미 들어간 것은 봉인된 기록에서도 걷어낸다](../design-docs/adr/0187-no-internal-facts-in-the-public-repository.md) | 유효 |  |

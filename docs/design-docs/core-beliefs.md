@@ -6,15 +6,15 @@ last_verified: 2026-11-12
 follows:
   - docs/design-docs/adr-process.md
   - AGENTS.md
-follows_hash: 5b57645116e97656
+follows_hash: 98c2ed163e171ae9
 verified_body: 670d77e72298eecc
-unchanged_reverifies: 4
+unchanged_reverifies: 5
 verification_log:
-  - "2026-11-11: 5번에 follows와 확인할 수 있는 주장을 적음 (ADR-0180)"
-  - "2026-11-11: 따라가는 adr-process.md와 AGENTS.md의 바뀐 곳(follows, amends, DOC09x)이 5번 서술과 맞는다"
   - "2026-11-11: adr-process.md의 재확인은 앞부분만 바뀜, 5번 서술 그대로 맞다"
   - "2026-11-12: 따라가는 adr-process.md의 바뀐 곳은 amends의 what 항목(ADR-0182)이고 5번 서술은 그대로 맞다"
+  - "2026-11-12: 따라가는 AGENTS.md에 내부 사실을 적지 않는다는 줄이 더해짐(ADR-0187). 5번 서술은 그대로 맞다"
   - "2026-11-12: 따라가는 AGENTS.md의 바뀐 곳은 라이선스 행뿐이고 신념 서술은 그대로 맞다 (ADR-0185)"
+  - "2026-11-12: main 합침: 라이선스 행·링크(ADR-0185)와 내부 사실 줄(ADR-0187)이 함께 있다. 서로 어긋나지 않는다"
 ---
 # 핵심 신념 (Golden Principles)
 
