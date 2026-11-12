@@ -1,0 +1,92 @@
+| file | tests | pass | fail |
+|---|---|---|---|
+| db-shell | 9 | 9 | 0 |
+| deep-os-awk-language | 116 | 116 | 0 |
+| deep-os-corners | 117 | 115 | 2 |
+| deep-os-curl-state | 10 | 10 | 0 |
+| deep-os-curl-web | 6 | 6 | 0 |
+| deep-os-determinism | 17 | 17 | 0 |
+| deep-os-faults | 11 | 11 | 0 |
+| deep-os-files | 15 | 15 | 0 |
+| deep-os-find-units | 11 | 11 | 0 |
+| deep-os-gaps-args | 6 | 6 | 0 |
+| deep-os-gaps-awk-builtins | 7 | 7 | 0 |
+| deep-os-gaps-awk | 7 | 7 | 0 |
+| deep-os-gaps-find-sed | 8 | 8 | 0 |
+| deep-os-gaps-net | 7 | 7 | 0 |
+| deep-os-gaps-redirect | 5 | 3 | 2 |
+| deep-os-gaps-sed-shell | 9 | 8 | 1 |
+| deep-os-gaps-size | 2 | 2 | 0 |
+| deep-os-gaps-sort-grep | 10 | 10 | 0 |
+| deep-os-gaps-system | 14 | 14 | 0 |
+| deep-os-gaps-text | 12 | 12 | 0 |
+| deep-os-host-fixes | 3 | 3 | 0 |
+| deep-os-links | 15 | 14 | 1 |
+| deep-os-net | 9 | 9 | 0 |
+| deep-os-option-sweep | 46 | 46 | 0 |
+| deep-os-oracle | 245 | 245 | 0 |
+| deep-os-outside | 16 | 15 | 1 |
+| deep-os-proc-errors | 5 | 5 | 0 |
+| deep-os-shell | 18 | 17 | 1 |
+| deep-os-sockets | 10 | 10 | 0 |
+| deep-os-syntax | 20 | 13 | 7 |
+| deep-os-system | 13 | 13 | 0 |
+| deep-os-text-gnu | 16 | 16 | 0 |
+| deep-os-text-oracle | 23 | 23 | 0 |
+| deep-os-time-log | 9 | 9 | 0 |
+| emulation-gaps | 38 | 34 | 4 |
+| golden-facade | 5 | 5 | 0 |
+| golden-impact-campus | 1 | 1 | 0 |
+| golden-impact-fabric | 1 | 1 | 0 |
+| golden-impact-iap | 1 | 1 | 0 |
+| golden-impact-sdn | 1 | 1 | 0 |
+| golden-impact-train | 1 | 1 | 0 |
+| golden-scenario-campus | 1 | 1 | 0 |
+| golden-scenario-extra | 1 | 1 | 0 |
+| golden-scenario-fabric | 1 | 1 | 0 |
+| golden-scenario-iap | 1 | 1 | 0 |
+| golden-scenario-sdn | 1 | 1 | 0 |
+| golden-scenario-train | 1 | 1 | 0 |
+| k8s-shell | 12 | 12 | 0 |
+| mesh-shell | 4 | 4 | 0 |
+| scoring-unchanged | 1 | 1 | 0 |
+| **total** | 918 | 899 | 19 |
+
+FAIL deep-os-corners :: the fake commands answer the odd cases the way the real ones do [REQ-098] find /etc -maxdepth 1 ( -name 'hosts' -o -name 'hostname' )
+     AssertionError: expected { host: 'srv-a2', …(7) } to match object { …(4) } | (4 matching properties omitted from actual) | at Proxy.<anonymous> (file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+expect@3.2.7/node_modules/@vitest/expect/dist/index.js:1 >> describe("the fake commands answer the odd cases the way the real ones do [REQ-098]", () => { / test.each(ROWS)("%s", (cmd, stdout, stderr, exitCode, outside) => { / expect(lab().run("srv-a2", cmd)).toMatchObject({ stdout, stderr, exitCode, outside });
+FAIL deep-os-corners :: the fake commands answer the odd cases the way the real ones do [REQ-098] find /etc -maxdepth 1 ( -name 'hosts'
+     AssertionError: expected { host: 'srv-a2', …(7) } to match object { stdout: '', …(3) } | (4 matching properties omitted from actual) | at Proxy.<anonymous> (file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+expect@3.2.7/node_modules/@vitest/expect/dis >> describe("the fake commands answer the odd cases the way the real ones do [REQ-098]", () => { / test.each(ROWS)("%s", (cmd, stdout, stderr, exitCode, outside) => { / expect(lab().run("srv-a2", cmd)).toMatchObject({ stdout, stderr, exitCode, outside });
+FAIL deep-os-gaps-redirect :: exit and clear [REQ-098] [REQ-098] exit gives the code it is given, zero when it is given none or no number, and clear says nothing
+     AssertionError: expected 2 to be +0 // Object.is equality | at /home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/tests/spec/deep-os-gaps-redirect.test.ts:13:46 | at file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+runner@3.2.7/node_mod >> expect(run("srv-a2", "exit 3").exitCode).toBe(3); / expect(run("srv-a2", "exit").exitCode).toBe(0); / expect(run("srv-a2", "exit x").exitCode).toBe(0);
+FAIL deep-os-gaps-redirect :: redirecting errors [REQ-098] [REQ-098] errors sent to a directory say so, and errors sent to the output come out with it
+     AssertionError: expected { host: 'srv-a2', …(7) } to match object { …(2) } | (6 matching properties omitted from actual) | at Proxy.<anonymous> (file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+expect@3.2.7/node_modules/@vitest/expect/dist/index.js:1 >> test("[REQ-098] errors sent to a directory say so, and errors sent to the output come out with it", () => { / const { run } = lab(); / expect(run("srv-a2", "ls /nosuch 2>/etc")).toMatchObject({
+FAIL deep-os-gaps-sed-shell :: the shell's reading of a line [REQ-098] [REQ-098] a redirect with no file after it is a syntax error, a variable is refused and counted outside
+     AssertionError: expected +0 not to be +0 // Object.is equality | at /home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/tests/spec/deep-os-gaps-sed-shell.test.ts:79:35 | at file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+runner@3.2.7/no >> expect(open.outside).toEqual([]); / const variable = run("srv-a2", 'echo "$HOME"'); / expect(variable.exitCode).not.toBe(0);
+FAIL deep-os-links :: an empty command is a syntax error like in bash [REQ-098] [REQ-098] ; ; and a leading ; are refused, a trailing ; and blank lines are not
+     AssertionError: expected 'bash: syntax error near unexpected to…' to contain 'near unexpected token `;\'' | at /home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/tests/spec/deep-os-links.test.ts:43:46 | at file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_mod >> expect(twice.stderr).toBe("bash: syntax error near unexpected token `;'"); / expect(run("srv-a2", "; echo a").stderr).toContain("near unexpected token `;'"); / expect(run("srv-a2", "echo a;;").stderr).toContain("near unexpected token `;'");
+FAIL deep-os-outside :: a run says how often the fake shell was out of its depth [REQ-098] unknown commands and unsupported features are counted and listed; what the shell did is not
+     AssertionError: expected { commands: 6, count: 3, …(1) } to match object { commands: 6, count: 4 } | (1 matching property omitted from actual) | at Proxy.<anonymous> (file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+expect@3.2.7/node_modules/@vitest/ >> run.call("run_command", { host, cmd }); / const { shellOutside } = run.finish(); / expect(shellOutside).toMatchObject({ commands: 6, count: 4 });
+FAIL deep-os-shell :: the shell reads a line the way bash does [REQ-098] a line with a variable, a substitution or a loop is refused with exit 2 and counted as outside
+     AssertionError: expected +0 to be 2 // Object.is equality | at /home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/tests/spec/deep-os-shell.test.ts:43:26 | at file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+runner@3.2.7/node_modules/@vi >> ]) { / const r = run("srv-a2", cmd); / expect(r.exitCode).toBe(2);
+FAIL deep-os-syntax :: what the shell does not do is refused in its own words and listed as outside it [REQ-098] echo "a$HOME"
+     AssertionError: expected +0 to be 2 // Object.is equality | at /home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/tests/spec/deep-os-syntax.test.ts:45:24 | at file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+runner@3.2.7/node_modules/@v >> ])("%s", (line, outside, what) => { / const r = lab().run(HOST, line); / expect(r.exitCode).toBe(2);
+FAIL deep-os-syntax :: what the shell does not do is refused in its own words and listed as outside it [REQ-098] echo `date`
+     AssertionError: expected +0 to be 2 // Object.is equality | at /home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/tests/spec/deep-os-syntax.test.ts:45:24 | at file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+runner@3.2.7/node_modules/@v >> ])("%s", (line, outside, what) => { / const r = lab().run(HOST, line); / expect(r.exitCode).toBe(2);
+FAIL deep-os-syntax :: what the shell does not do is refused in its own words and listed as outside it [REQ-098] echo $(date)
+     AssertionError: expected +0 to be 2 // Object.is equality | at /home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/tests/spec/deep-os-syntax.test.ts:45:24 | at file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+runner@3.2.7/node_modules/@v >> ])("%s", (line, outside, what) => { / const r = lab().run(HOST, line); / expect(r.exitCode).toBe(2);
+FAIL deep-os-syntax :: what the shell does not do is refused in its own words and listed as outside it [REQ-098] echo a &
+     AssertionError: expected +0 to be 2 // Object.is equality | at /home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/tests/spec/deep-os-syntax.test.ts:45:24 | at file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+runner@3.2.7/node_modules/@v >> ])("%s", (line, outside, what) => { / const r = lab().run(HOST, line); / expect(r.exitCode).toBe(2);
+FAIL deep-os-syntax :: what the shell does not do is refused in its own words and listed as outside it [REQ-098] FOO=1 echo a
+     AssertionError: expected +0 to be 2 // Object.is equality | at /home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/tests/spec/deep-os-syntax.test.ts:45:24 | at file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+runner@3.2.7/node_modules/@v >> ])("%s", (line, outside, what) => { / const r = lab().run(HOST, line); / expect(r.exitCode).toBe(2);
+FAIL deep-os-syntax :: what the shell does not do is refused in its own words and listed as outside it [REQ-098] a line with if, for or while is refused word by word and each word is listed
+     AssertionError: expected +0 to be 2 // Object.is equality | at /home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/tests/spec/deep-os-syntax.test.ts:57:24 | at file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+runner@3.2.7/node_modules/@v >> const { run } = lab(); / const r = run(HOST, "if true; then echo a; fi"); / expect(r.exitCode).toBe(2);
+FAIL deep-os-syntax :: what the shell does not do is refused in its own words and listed as outside it [REQ-098] a command that does not exist is command not found, listed as outside, and exit 127
+     AssertionError: expected { host: 'srv-a2', …(7) } to match object { Object (exitCode, outside) } | (6 matching properties omitted from actual) | at Proxy.<anonymous> (file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+expect@3.2.7/node_modules/@vitest/ >> // a word no host has is plain command not found / const r = lab().run(HOST, "export FOO=1"); / expect(r).toMatchObject({ exitCode: 127, outside: ["export"] });
+FAIL emulation-gaps :: every hint points at something that works [REQ-098] a real command the fake lacks is a gap with its name as the key
+     AssertionError: bash: expected +0 to be 127 // Object.is equality | at /home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/tests/spec/emulation-gaps.test.ts:54:32 | at file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+runner@3.2.7/node_mo >> for (const name of realCommandNames()) { / const r = run("srv-a2", name) as { exitCode: number; gaps: unknown[] }; / expect(r.exitCode, name).toBe(127);
+FAIL emulation-gaps :: a gap says whose limit it is, what works and one command that works [REQ-098] export FOO=1
+     AssertionError: expected +0 not to be +0 // Object.is equality | at /home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/tests/spec/emulation-gaps.test.ts:119:28 | at file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+runner@3.2.7/node_modu >> gaps: { tool: string; feature: string }[]; / }; / expect(r.exitCode).not.toBe(0);
+FAIL emulation-gaps :: a gap says whose limit it is, what works and one command that works [REQ-098] echo $HOME
+     AssertionError: expected +0 not to be +0 // Object.is equality | at /home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/tests/spec/emulation-gaps.test.ts:119:28 | at file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+runner@3.2.7/node_modu >> gaps: { tool: string; feature: string }[]; / }; / expect(r.exitCode).not.toBe(0);
+FAIL emulation-gaps :: a gap says whose limit it is, what works and one command that works [REQ-098] if true; then echo a; fi
+     AssertionError: expected +0 not to be +0 // Object.is equality | at /home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/tests/spec/emulation-gaps.test.ts:119:28 | at file:///home/claude/terrarium/.claude/worktrees/agent-ae1c60f5b6f9efe7d/node_modules/.pnpm/@vitest+runner@3.2.7/node_modu >> gaps: { tool: string; feature: string }[]; / }; / expect(r.exitCode).not.toBe(0);

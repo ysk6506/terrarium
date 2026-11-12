@@ -1,0 +1,106 @@
+$ set | head -40
+
+$ declare -p | head -30
+
+$ env | sort
+HOME=/home/ops
+HOSTNAME=srv-a2
+LANG=en_US.UTF-8
+LOGNAME=ops
+PATH=/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin
+PWD=/home/ops
+SHELL=/bin/bash
+TERM=xterm-256color
+USER=ops
+$ compgen -v | sort | head -20
+[err] compgen: unsupported builtin
+$ declare -A m; m[b]=2; m[a]=1; m[c]=3; for k in "${!m[@]}"; do echo $k=${m[$k]}; done
+b=2
+a=1
+c=3
+$ a=(z y x); for i in "${a[@]}"; do echo $i; done | sort
+x
+y
+z
+$ echo $RANDOM $RANDOM $RANDOM; echo $$ $BASHPID $PPID; echo $SECONDS
+22939 26339 26279
+3 2
+
+$ date; date +%s; date -d '1 hour ago'
+Thu Jan  1 00:10:00 UTC 2026
+1767226200
+Wed Dec 31 23:10:00 UTC 2025
+$ awk 'BEGIN{srand(); print rand(), rand()}'
+0.580532 0.457281
+$ awk 'BEGIN{a["x"]=1;a["y"]=2;a["z"]=3; for(k in a) print k, a[k]}'
+x 1
+y 2
+z 3
+$ awk 'BEGIN{print systime()}'
+[err] terrarium: 이 실험장은 awk의 systime() 기능을 지원하지 않아요. 실제 awk에는 있어요.
+terrarium: awk에서 되는 것: -F 구분자, -v 변수=값, -f 프로그램파일; 패턴 { 동작 } 규칙과 BEGIN/END, 변수·배열·정규식,
+terrarium: 대신 이 명령은 돼요: awk 'NR==2{print $1}' /etc/hosts
+$ printf '%s\n' b a C A ä é z | sort
+A
+C
+a
+b
+z
+ä
+é
+$ printf '%s\n' 10 9 1 | sort -n | head -2; printf 'B\na\n' | sort -f
+1
+9
+a
+B
+$ echo ${HOME} ${PATH} ${USER} ${HOSTNAME} ${LANG} ${LC_ALL:-unset} ${TZ:-unset}
+/home/ops /usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin ops srv-a2 en_US.UTF-8 unset unset
+$ time true 2>&1 | head -3
+
+real	0m0.000s
+user	0m0.000s
+sys	0m0.000s
+$ for i in {1..5}; do echo $((RANDOM % 7)); done
+0
+5
+1
+6
+6
+$ echo 'ä가🙂' | wc -c; echo 'ä가🙂' | awk '{print length($0), toupper($0)}'
+10
+9 Ä가🙂
+$ ls /proc | head -5; ls /etc | head -5; echo /var/log/*
+1
+15
+16
+2
+3
+chrony.conf
+fstab
+group
+hostname
+hosts
+/var/log/audit /var/log/auth.log /var/log/cron /var/log/cron-20251221 /var/log/dmesg /var/log/journal /var/log/kern.log /var/log/licd /var/log/message
+$ x=$(uptime); echo ${x%%,*}
+00:10:00 up 14 days
+$ echo a > /tmp/d1; echo b >> /tmp/d1; cat /tmp/d1; wc -c /tmp/d1
+a
+b
+4 /tmp/d1
+$ jobs; echo a & wait; echo done
+a
+done[err] jobs: unsupported builtin
+$ trap 'echo bye' EXIT; echo run
+run
+bye
+$ mapfile -t L < /etc/hosts; echo ${#L[@]}
+2
+$ printf '%q\n' 'a b' "it's"
+%q
+$ ulimit -n; umask; echo $-
+[err] ulimit: unsupported builtin
+umask: unsupported builtin
+$ cd /tmp && pwd && cd - 
+/tmp
+/home/ops
+e289c3783e0d1fb71e4642ffa2f287a54bd7157e1f7cbc1c38791c012456db88

@@ -1,0 +1,135 @@
+
+## sleep and the clock
+$ date +%T; sleep 5; date +%T   [819.7 ms, 4 host calls] exit=0
+  00:10:00
+  00:10:00
+$ echo $SECONDS; sleep 3; echo $SECONDS   [23.1 ms, 2 host calls] exit=0
+  
+  
+$ until systemctl is-active nosuch >/dev/null; do sleep 1; done; echo finished   [1197.2 ms, 20001 host calls] exit=124
+  ! bash: step budget exceeded
+  ! terrarium: 명령을 너무 많이 실행해서 멈췄어요 (단계 한도)
+$ n=0; until [ $n -ge 3 ]; do n=$((n+1)); sleep 1; done; date +%T; echo $n   [9.7 ms, 5 host calls] exit=0
+  02:56:48
+  3
+world time now: ?
+
+## exit codes and signals
+$ false; echo $?   [6.6 ms, 1 host calls] exit=0
+  1
+$ (exit 4); echo $?   [15.0 ms, 1 host calls] exit=0
+  4
+$ sh -c 'exit 3'; echo $?   [10.4 ms, 1 host calls] exit=0
+  3
+$ nosuchcmd; echo $?   [26.0 ms, 2 host calls] exit=0
+  127
+  ! bash: nosuchcmd: command not found
+$ echo hi > /etc/passwd; echo $?   [22.3 ms, 3 host calls] exit=0
+  0
+$ /etc/hosts; echo $?   [20.9 ms, 2 host calls] exit=0
+  127
+  ! bash: /etc/hosts: command not found
+$ trap 'echo got-term' TERM; kill -TERM $$; echo after   [40.2 ms, 2 host calls] exit=0
+  after
+  ! trap: TERM: invalid signal specification
+$ kill -9 99999; echo $?   [14.8 ms, 2 host calls] exit=0
+  1
+  ! bash: kill: (99999) - No such process
+$ exit 7   [5.2 ms, 1 host calls] exit=7
+$ timeout 1 sleep 5; echo $?   [24.8 ms, 2 host calls] exit=0
+  127
+  ! terrarium: 이 실험장은 timeout 명령을 갖추지 못했어요. 실제 호스트에는 있는 명령이에요.
+  ! terrarium: 이 셸에서 되는 명령: awk cat chronyc cp crictl curl cut date dcgmi df dig dmesg du echo egrep env fgrep find free grep head hostname ibstat id ip istioctl journalctl kill kubectl ln logrotate ls lsblk lsof mkdir mount multipath mv netstat nice nslookup nvidia-smi openssl pg_isready pgrep pidof ping pkill printenv printf ps psql readlink reboot rm sed sort ss stat systemctl tail tee test timedatectl top touch tr truncate uname uniq uptime wc whoami xargs
+  ! terrarium: 대신 이 명령은 돼요: sort -u /etc/hosts
+$ set -e; false; echo not-reached   [3.1 ms, 1 host calls] exit=1
+$ set -o pipefail; false | true; echo $?   [47.4 ms, 1 host calls] exit=0
+  1
+
+## $PATH, environment, home directory
+$ echo $HOME $PWD ~ $USER $LOGNAME $SHELL $HOSTNAME $LANG   [16.2 ms, 1 host calls] exit=0
+  /home/ops /home/ops /home/ops ops ops /bin/bash srv-a2 en_US.UTF-8
+$ echo $PATH   [21.0 ms, 1 host calls] exit=0
+  /usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin
+$ env | head -12   [26.5 ms, 3 host calls] exit=0
+  SHELL=/bin/bash
+  HOSTNAME=srv-a2
+  USER=ops
+  LANG=en_US.UTF-8
+  PWD=/home/ops
+  HOME=/home/ops
+$ printenv HOME; echo $UID $EUID   [21.0 ms, 2 host calls] exit=0
+  /home/ops
+  1 1
+$ id; whoami   [23.5 ms, 3 host calls] exit=0
+  uid=1000(ops) gid=1000(ops) groups=1000(ops),10(wheel)
+  ops
+$ cd; pwd; cd /etc; pwd; cd -; cd ~root; pwd   [23.5 ms, 9 host calls] exit=0
+  /home/ops
+  /etc
+  /home/ops
+  /home/ops
+  ! cd: no such file or directory: "~root"
+$ export FOO=bar; env | grep FOO; sh -c 'echo child:$FOO'   [14.5 ms, 3 host calls] exit=0
+  child:
+$ FOO=1 env | grep FOO   [14.5 ms, 3 host calls] exit=1
+$ which ls; command -v systemctl; type kill   [16.5 ms, 4 host calls] exit=0
+  /usr/bin/ls
+  /usr/bin/systemctl
+  kill is /usr/bin/kill
+
+## background jobs
+$ echo a & echo b; wait; echo c   [5.3 ms, 1 host calls] exit=0
+  b
+  a
+  c
+$ sleep 2 & jobs; wait   [11.9 ms, 2 host calls] exit=0
+  ! jobs: unsupported builtin
+$ (sleep 1; echo late) & echo now; wait   [8.9 ms, 2 host calls] exit=0
+  now
+  late
+$ nohup echo hi   [13.0 ms, 2 host calls] exit=127
+  ! terrarium: 이 실험장은 nohup 명령을 갖추지 못했어요. 실제 호스트에는 있는 명령이에요.
+  ! terrarium: 이 셸에서 되는 명령: awk cat chronyc cp crictl curl cut date dcgmi df dig dmesg du echo egrep env fgrep find free grep head hostname ibstat id ip istioctl journalctl kill kubectl ln logrotate ls lsblk lsof mkdir mount multipath mv netstat nice nslookup nvidia-smi openssl pg_isready pgrep pidof ping pkill printenv printf ps psql readlink reboot rm sed sort ss stat systemctl tail tee test timedatectl top touch tr truncate uname uniq uptime wc whoami xargs
+  ! terrarium: 대신 이 명령은 돼요: sort -u /etc/hosts
+$ ps | head -3; sleep 100 & ps | grep sleep   [14.7 ms, 6 host calls] exit=1
+    PID TT    TIME COMMAND
+  91861 pts/0 0:00 bash
+
+## here-documents and strings
+$ cat <<EOF\nhome=$HOME sum=$((1+2))\nEOF   [7.0 ms, 2 host calls] exit=0
+  home=/home/ops sum=3
+$ cat <<'EOF'\nno $HOME here\nEOF   [21.9 ms, 2 host calls] exit=0
+  no $HOME here
+$ cat <<-EOF\n	indented\nEOF   [7.0 ms, 2 host calls] exit=0
+  indented
+$ grep -c a <<< 'banana'   [24.7 ms, 2 host calls] exit=0
+  1
+$ awk '{print NR": "$0}' <<EOF\nx\ny\nEOF   [39.0 ms, 1 host calls] exit=0
+  1: x
+  2: y
+$ cat <<EOF > /tmp/h1\nwritten\nEOF\ncat /tmp/h1   [31.9 ms, 5 host calls] exit=0
+  written
+
+## globbing against a described-on-demand file system
+$ echo /proc/[0-9]* | wc -w   [51.9 ms, 4 host calls] exit=0
+  16
+$ echo /etc/* | wc -w   [16.0 ms, 4 host calls] exit=0
+  14
+$ echo /*/* | wc -w   [36.2 ms, 16 host calls] exit=0
+  56
+$ ls /var/log/*.log | head -3   [40.1 ms, 6 host calls] exit=0
+  /var/log/auth.log
+  /var/log/kern.log
+$ for f in /etc/*.conf; do echo $f; done | head -3   [19.5 ms, 4 host calls] exit=0
+  /etc/chrony.conf
+  /etc/licd.conf
+  /etc/logrotate.conf
+$ echo /nonexistent/*   [37.6 ms, 2 host calls] exit=0
+  /nonexistent/*
+$ shopt -s nullglob; echo /nonexistent/*; echo done   [11.2 ms, 2 host calls] exit=0
+  
+  done
+$ echo /etc/h{ost,ostname}*   [31.6 ms, 5 host calls] exit=0
+  /etc/hostname /etc/hosts /etc/hostname
+$ echo /etc/**/hosts   [6.9 ms, 6 host calls] exit=0
+  /etc/logrotate.d/hosts /etc/ssl/hosts /etc/systemd/hosts

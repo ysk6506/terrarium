@@ -1,0 +1,65 @@
+| 항목 | 출처 | 담당 | 옛 셸이 맞음 | 새 셸이 맞음 | (awk는 옛 것) | 판정 |
+|---|---|---|---|---|---|---|
+| sed-n | TD-0010 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| sed-N | TD-0010 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| sed-w | TD-0010 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| sed-addr-plus | TD-0010 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| awk-getline | TD-0010 | awk | 아니오 | 예 | 아니오 | goawk가 닫음 |
+| awk-function | TD-0010 | awk | 아니오 | 예 | 아니오 | goawk가 닫음 |
+| awk-pipe-out | TD-0010 | awk | 아니오 | 예 | 아니오 | goawk가 닫음 |
+| sort-M | TD-0010 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| sort-z | TD-0010 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| sort-g | TD-0010 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| cp-r | TD-0010 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| cp-multi | TD-0010 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| mv-multi | TD-0010 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| ls-ap | TD-0010 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| stat-c | TD-0010 | util | 예 | 예 | 예 | 원래 됐음 |
+| rm-d | TD-0010 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| truncate-rel | TD-0010 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| df-width | TD-0010 | util | 예 | 예 | 예 | 원래 됐음 |
+| free-width | TD-0010 | util | 예 | 예 | 예 | 원래 됐음 |
+| awk-gensub | ADR-0184 | awk | 아니오 | 아니오 | 아니오 | 아직 열림 (goawk에 없음) |
+| xargs-P | ADR-0184 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| ps-Z | ADR-0184 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| head-lines | ADR-0184 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| find-print0 | ADR-0184 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| ln-hard | ADR-0184 | util | 아니오 | 아니오 | 아니오 | 아직 열림 (바꾸지 않은 도구) |
+| systemctl-list-timers | ADR-0184 | world | 아니오 | 아니오 | 아니오 | 해당 없음 (세계를 읽는 명령) |
+| ip-neigh | ADR-0184 | world | 아니오 | 아니오 | 아니오 | 해당 없음 (세계를 읽는 명령) |
+| vim | ADR-0184 | world | 아니오 | 아니오 | 아니오 | 해당 없음 (세계를 읽는 명령) |
+| export | ADR-0184 | shell | 아니오 | 예 | 예 | 셸이 닫음 |
+| variable | ADR-0184 | shell | 아니오 | 예 | 예 | 셸이 닫음 |
+| if | ADR-0184 | shell | 아니오 | 예 | 예 | 셸이 닫음 |
+| r-syntax | report | shell | 아니오 | 예 | 예 | 셸이 닫음 |
+| r-for | report | shell | 아니오 | 예 | 예 | 셸이 닫음 |
+| r-while | report | shell | 아니오 | 예 | 예 | 셸이 닫음 |
+| r-case | report | shell | 아니오 | 예 | 예 | 셸이 닫음 |
+| r-func | report | shell | 아니오 | 예 | 예 | 셸이 닫음 |
+| r-subst | report | shell | 아니오 | 예 | 예 | 셸이 닫음 |
+| r-heredoc | report | shell | 아니오 | 예 | 예 | 셸이 닫음 |
+| r-array | report | shell | 아니오 | 예 | 예 | 셸이 닫음 |
+| r-awk-system | report | awk | 아니오 | 예 | 아니오 | goawk가 닫음 |
+| r-awk-var | report | awk | 예 | 예 | 예 | 원래 됐음 |
+
+{'open-util': 18, 'awk': 4, 'was-ok': 4, 'open-awk': 1, 'na': 3, 'shell': 11} total 41
+
+NOT OK: sed-n | fake: {"stdout": "", "stderr": "terrarium: 이 실험장은 sed의 n 명령 기능을 지원하지 않아요. 실제 sed에는 있어요.\nterrarium: sed에서 되는 것: -n -e -f -E -r -s -z -i[접미사]; 주소(줄 번호, $, /정규식/, 구간, !), 명령 s y p d q = h H g G x a i c { }, s의 g p i N 플래그\nterrarium: 대신 이 명령은 돼요: sed -n 1p /etc/hosts" | real: {"stdout": "b", "stderr": "", "code": 0}
+NOT OK: sed-N | fake: {"stdout": "", "stderr": "terrarium: 이 실험장은 sed의 N 명령 기능을 지원하지 않아요. 실제 sed에는 있어요.\nterrarium: sed에서 되는 것: -n -e -f -E -r -s -z -i[접미사]; 주소(줄 번호, $, /정규식/, 구간, !), 명령 s y p d q = h H g G x a i c { }, s의 g p i N 플래그\nterrarium: 대신 이 명령은 돼요: sed -n 1p /etc/hosts" | real: {"stdout": "a,b", "stderr": "", "code": 0}
+NOT OK: sed-w | fake: {"stdout": "", "stderr": "terrarium: 이 실험장은 sed의 s 명령의 w 플래그 기능을 지원하지 않아요. 실제 sed에는 있어요.\nterrarium: sed에서 되는 것: -n -e -f -E -r -s -z -i[접미사]; 주소(줄 번호, $, /정규식/, 구간, !), 명령 s y p d q = h H g G x a i c { }, s의 g p i N 플래그\nterrarium: 대신 이 명령은 돼요: sed -n 1p /etc | real: {"stdout": "Q", "stderr": "", "code": 0}
+NOT OK: sed-addr-plus | fake: {"stdout": "", "stderr": "sed: -e expression #1, char 0: unexpected `,'", "code": 1, "gaps": [], "outside": []} | real: {"stdout": "a\nb", "stderr": "", "code": 0}
+NOT OK: sort-M | fake: {"stdout": "", "stderr": "terrarium: 이 실험장은 sort의 -M 기능을 지원하지 않아요. 실제 sort에는 있어요.\nterrarium: sort에서 되는 것: -n -r -u -f -h -b -c -s -V -k -t -o -T --reverse --unique --numeric-sort --ignore-case --human-numeric-sort --version-sort --stable --check --ignore-lead | real: {"stdout": "Jan\nFeb", "stderr": "", "code": 0}
+NOT OK: sort-z | fake: {"stdout": "", "stderr": "terrarium: 이 실험장은 sort의 -z 기능을 지원하지 않아요. 실제 sort에는 있어요.\nterrarium: sort에서 되는 것: -n -r -u -f -h -b -c -s -V -k -t -o -T --reverse --unique --numeric-sort --ignore-case --human-numeric-sort --version-sort --stable --check --ignore-lead | real: {"stdout": "a b ", "stderr": "", "code": 0}
+NOT OK: sort-g | fake: {"stdout": "", "stderr": "terrarium: 이 실험장은 sort의 -g 기능을 지원하지 않아요. 실제 sort에는 있어요.\nterrarium: sort에서 되는 것: -n -r -u -f -h -b -c -s -V -k -t -o -T --reverse --unique --numeric-sort --ignore-case --human-numeric-sort --version-sort --stable --check --ignore-lead | real: {"stdout": "5\n1e2", "stderr": "", "code": 0}
+NOT OK: cp-r | fake: {"stdout": "", "stderr": "terrarium: 이 실험장은 cp의 디렉터리 통째로 기능을 지원하지 않아요. 실제 cp에는 있어요.\nterrarium: cp에서 되는 것: cp 파일 대상 (파일 하나를 한 곳으로)\nterrarium: 대신 이 명령은 돼요: cp /etc/hosts /tmp/hosts.copy\nls: cannot access '/tmp/g10/d2': No such file or directory", "code": 2, " | real: {"stdout": "f", "stderr": "", "code": 0}
+NOT OK: cp-multi | fake: {"stdout": "", "stderr": "terrarium: 이 실험장은 cp의 여러 원본을 한 디렉터리로 기능을 지원하지 않아요. 실제 cp에는 있어요.\nterrarium: cp에서 되는 것: cp 원본 대상 (인자 두 개)\nterrarium: 대신 이 명령은 돼요: cp /etc/hosts /tmp/hosts.copy", "code": 0, "gaps": ["cp:several-sources"], "outside": ["cp 여러 원본을 한 디렉터리 | real: {"stdout": "a\nb", "stderr": "", "code": 0}
+NOT OK: mv-multi | fake: {"stdout": "", "stderr": "terrarium: 이 실험장은 mv의 여러 원본을 한 디렉터리로 기능을 지원하지 않아요. 실제 mv에는 있어요.\nterrarium: mv에서 되는 것: mv 원본 대상 (인자 두 개)\nterrarium: 대신 이 명령은 돼요: cp /etc/hosts /tmp/hosts.copy", "code": 0, "gaps": ["mv:several-sources"], "outside": ["mv 여러 원본을 한 디렉터리 | real: {"stdout": "a\nb", "stderr": "", "code": 0}
+NOT OK: ls-ap | fake: {"stdout": "", "stderr": "terrarium: 이 실험장은 ls의 -p 기능을 지원하지 않아요. 실제 ls에는 있어요.\nterrarium: ls에서 되는 것: -l -a -h -A -1 -R -d -t -S -r -F -h -i\nterrarium: 대신 이 명령은 돼요: ls -la /etc", "code": 2, "gaps": ["ls:flag:-p"], "outside": ["ls -p"]} | real: {"stdout": "./\n../\n.h\nf\nsub/", "stderr": "", "code": 0}
+NOT OK: rm-d | fake: {"stdout": "e", "stderr": "rm: cannot remove '/tmp/g15/e': Is a directory", "code": 0, "gaps": [], "outside": []} | real: {"stdout": "", "stderr": "", "code": 0}
+NOT OK: truncate-rel | fake: {"stdout": "abcdef", "stderr": "terrarium: 이 실험장은 truncate의 -s -2 기능을 지원하지 않아요. 실제 truncate에는 있어요.\nterrarium: truncate에서 되는 것: -s 0 (파일 비우기), -c\nterrarium: 대신 이 명령은 돼요: touch /tmp/terrarium-trunc && truncate -s 0 /tmp/terrarium-trunc", "code": 0, "gaps": ["t | real: {"stdout": "abcde", "stderr": "", "code": 0}
+NOT OK: awk-gensub | fake: {"stdout": "", "stderr": "terrarium: 이 실험장은 awk의 gensub() 기능을 지원하지 않아요. 실제 awk에는 있어요.\nterrarium: awk에서 되는 것: -F 구분자, -v 변수=값, -f 프로그램파일; 패턴 { 동작 } 규칙과 BEGIN/END, 변수·배열·정규식, if/while/do/for/delete/next/exit, print/printf, 내장 함수 length substr index split sub gs | real: {"stdout": "", "stderr": "awk: line 2: function gensub never defined\n", "code": 2}
+NOT OK: xargs-P | fake: {"stdout": "", "stderr": "terrarium: 이 실험장은 xargs의 -P 기능을 지원하지 않아요. 실제 xargs에는 있어요.\nterrarium: xargs에서 되는 것: -t -0 -r -n -I -L --no-run-if-empty\nterrarium: 대신 이 명령은 돼요: echo a b | xargs echo", "code": 0, "gaps": ["xargs:flag:-P"], "outside": ["xargs -P"]} | real: {"stdout": "1\n2", "stderr": "", "code": 0}
+NOT OK: ps-Z | fake: {"stdout": "", "stderr": "terrarium: 이 실험장은 ps의 -Z 기능을 지원하지 않아요. 실제 ps에는 있어요.\nterrarium: ps에서 되는 것: -a -A -e -x -f -u -w -l -L -h -T -e -H -o -O -p -C -U --sort --no-headers --forest --pid --user\nterrarium: 대신 이 명령은 돼요: ps aux", "code": 0, "gaps": ["ps:flag: | real: {"stdout": "LABEL                             PID TTY          TIME CMD", "stderr": "", "code": 0}
+NOT OK: head-lines | fake: {"stdout": "", "stderr": "terrarium: 이 실험장은 head의 --lines=1 기능을 지원하지 않아요. 실제 head에는 있어요.\nterrarium: head에서 되는 것: -q -v -n -c\nterrarium: 대신 이 명령은 돼요: head -n 5 /etc/passwd", "code": 2, "gaps": ["head:flag:--lines"], "outside": ["head --lines=1"]} | real: {"stdout": "a", "stderr": "", "code": 0}
+NOT OK: find-print0 | fake: {"stdout": "", "stderr": "terrarium: 이 실험장은 find의 -print0 기능을 지원하지 않아요. 실제 find에는 있어요.\nterrarium: find에서 되는 것: -name -iname -path -type -size -mtime -mmin -newer -user -empty, -maxdepth -mindepth, 묶기 ( ) ! -a -o, 동작 -print -ls -delete -exec ... ;\nterrarium:  | real: {"stdout": "@D@/f/a ", "stderr": "", "code": 0}
+NOT OK: ln-hard | fake: {"stdout": "", "stderr": "terrarium: 이 실험장은 ln의 하드 링크 기능을 지원하지 않아요. 실제 ln에는 있어요.\nterrarium: ln에서 되는 것: ln -s 대상 이름 (심볼릭 링크), -f -n -v -T\nterrarium: 대신 이 명령은 돼요: ln -s /etc/hosts /tmp/terrarium-link\ncat: /tmp/g24/h2: No such file or directory", "code": 1, "g | real: {"stdout": "x\ny", "stderr": "", "code": 0}

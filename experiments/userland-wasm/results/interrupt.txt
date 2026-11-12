@@ -1,0 +1,133 @@
+[
+ {
+  "name": "tight shell loop",
+  "ms": 917,
+  "exit": 124,
+  "why": "bash: step budget exceeded | terrarium: 명령을 너무 많이 실행해서 멈췄어요 (단계 한도)",
+  "outBytes": 0,
+  "worldEvents": 0,
+  "poolHealthy": true,
+  "rssMb": 353
+ },
+ {
+  "name": "loop with a command",
+  "ms": 274,
+  "exit": 124,
+  "why": "bash: step budget exceeded | terrarium: 명령을 너무 많이 실행해서 멈췄어요 (단계 한도)",
+  "outBytes": 19999,
+  "worldEvents": 0,
+  "poolHealthy": true,
+  "rssMb": 407
+ },
+ {
+  "name": "awk busy loop",
+  "ms": 2004,
+  "exit": 124,
+  "why": "terrarium: 명령이 너무 오래 걸려서 멈췄어요 (시간 한도)",
+  "outBytes": 0,
+  "worldEvents": 0,
+  "poolHealthy": true,
+  "rssMb": 414
+ },
+ {
+  "name": "endless output into head",
+  "ms": 289,
+  "exit": 124,
+  "why": "bash: step budget exceeded | terrarium: 명령을 너무 많이 실행해서 멈췄어요 (단계 한도)",
+  "outBytes": 99,
+  "worldEvents": 0,
+  "poolHealthy": true,
+  "rssMb": 463
+ },
+ {
+  "name": "output flood in a loop (no head)",
+  "ms": 78,
+  "exit": 0,
+  "why": "",
+  "outBytes": 0,
+  "worldEvents": 0,
+  "poolHealthy": true,
+  "rssMb": 473
+ },
+ {
+  "name": "cat /dev/zero | head -c 5G",
+  "ms": 38,
+  "exit": 0,
+  "why": "",
+  "outBytes": 0,
+  "worldEvents": 0,
+  "poolHealthy": true,
+  "rssMb": 484
+ },
+ {
+  "name": "fork bomb f(){ f|f& };f",
+  "ms": 28,
+  "exit": 0,
+  "why": "",
+  "outBytes": 0,
+  "worldEvents": 0,
+  "poolHealthy": true,
+  "rssMb": 495
+ },
+ {
+  "name": "recursion f(){ f; };f",
+  "ms": 2012,
+  "exit": 70,
+  "why": "terrarium: 셸 모듈이 멈췄어요: RangeError: Maximum call stack size exceeded",
+  "outBytes": 0,
+  "worldEvents": 0,
+  "poolHealthy": true,
+  "rssMb": 531
+ },
+ {
+  "name": "huge brace expansion",
+  "ms": 47,
+  "exit": 0,
+  "why": "",
+  "outBytes": 0,
+  "worldEvents": 0,
+  "poolHealthy": true,
+  "rssMb": 547
+ },
+ {
+  "name": "memory: a=x; a=$a$a forever",
+  "ms": 303,
+  "exit": 70,
+  "why": "terrarium: 셸 모듈이 멈췄어요: memory limit",
+  "outBytes": 0,
+  "worldEvents": 0,
+  "poolHealthy": true,
+  "rssMb": 741
+ },
+ {
+  "name": "awk memory: string doubling",
+  "ms": 150,
+  "exit": 70,
+  "why": "terrarium: 셸 모듈이 멈췄어요: memory limit",
+  "outBytes": 0,
+  "worldEvents": 0,
+  "poolHealthy": true,
+  "rssMb": 802
+ },
+ {
+  "name": "partial effects: appends then loops",
+  "ms": 2063,
+  "exit": 124,
+  "why": "terrarium: 명령이 너무 오래 걸려서 멈췄어요 (시간 한도)",
+  "outBytes": 0,
+  "worldEvents": 3509,
+  "poolHealthy": true,
+  "rssMb": 603
+ },
+ {
+  "name": "wait loop on a service that never comes",
+  "ms": 854,
+  "exit": 124,
+  "why": "bash: step budget exceeded | terrarium: 명령을 너무 많이 실행해서 멈췄어요 (단계 한도)",
+  "outBytes": 0,
+  "worldEvents": 0,
+  "poolHealthy": true,
+  "rssMb": 626
+ }
+]
+state after the append loop: 3509 / -rw-r--r-- 1 root     root           7018 Jan  1 00:10 /tmp/f

@@ -1,0 +1,36 @@
+{
+ "rssBeforeMb": 130,
+ "byWorkers": [
+  {
+   "workers": 1,
+   "rssMb": 237,
+   "deltaMb": 107,
+   "perWorkerMb": 107
+  },
+  {
+   "workers": 2,
+   "rssMb": 312,
+   "deltaMb": 124,
+   "perWorkerMb": 62
+  },
+  {
+   "workers": 4,
+   "rssMb": 447,
+   "deltaMb": 234,
+   "perWorkerMb": 58.5
+  },
+  {
+   "workers": 8,
+   "rssMb": 722,
+   "deltaMb": 477,
+   "perWorkerMb": 59.6
+  }
+ ],
+ "wasmLinearMemoryMb": {
+  "trivial": 5.5,
+  "loop100": 5.5,
+  "read8MiB": 39.5,
+  "stringDoubling18": 60.5,
+  "awkBigArray": 62.5
+ }
+}

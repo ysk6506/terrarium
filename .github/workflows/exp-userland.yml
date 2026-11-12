@@ -1,0 +1,48 @@
+name: exp-userland
+
+# Experiment only (not for merge): builds the WebAssembly shell module of experiments/userland-wasm on branches named
+# exp/** and keeps it as an artifact. It proves the build is reproducible from tags with nothing but GitHub access.
+on:
+  push:
+    branches: ["exp/**"]
+    paths:
+      - "experiments/userland-wasm/**"
+      - ".github/workflows/exp-userland.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-wasm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+          cache: false
+      - run: go version
+      - name: Build terrarium-sh.wasm
+        run: experiments/userland-wasm/scripts/build.sh
+      - name: Size
+        run: |
+          ls -l experiments/userland-wasm/bin/terrarium-sh.wasm
+          gzip -9 -c experiments/userland-wasm/bin/terrarium-sh.wasm | wc -c
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check that the module only imports what the host provides
+        run: |
+          node -e '
+            const fs=require("fs");
+            const m=new WebAssembly.Module(fs.readFileSync("experiments/userland-wasm/bin/terrarium-sh.wasm"));
+            const mods=[...new Set(WebAssembly.Module.imports(m).map(i=>i.module))].sort();
+            console.log(mods.join(","));
+            if(mods.join(",")!=="terrarium,wasi_snapshot_preview1") process.exit(1);
+          '
+      - uses: actions/upload-artifact@v4
+        with:
+          name: terrarium-sh-wasm
+          path: experiments/userland-wasm/bin/terrarium-sh.wasm
+          retention-days: 14

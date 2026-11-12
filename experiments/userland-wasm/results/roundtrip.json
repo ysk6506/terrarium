@@ -1,0 +1,12 @@
+{
+ "compileMs": 25,
+ "firstCallIncludingPoolStartMs": 350,
+ "firstCalls": 1,
+ "iterations": 5000,
+ "loopNoHostCallMs": 64.6,
+ "loopStatMs": 377.4,
+ "loopExecMs": 263.7,
+ "perStatRoundTripUs": 62.6,
+ "perExecRoundTripUs": 39.8,
+ "read4x1MiBms": 28.8
+}

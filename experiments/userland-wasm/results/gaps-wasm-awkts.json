@@ -1,0 +1,834 @@
+[
+ {
+  "id": "sed-n",
+  "src": "TD-0010",
+  "owner": "util",
+  "cmd": "printf 'a\\nb\\nc\\n' | sed -n 'n;p'",
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 sed의 n 명령 기능을 지원하지 않아요. 실제 sed에는 있어요.\nterrarium: sed에서 되는 것: -n -e -f -E -r -s -z -i[접미사]; 주소(줄 번호, $, /정규식/, 구간, !), 명령 s y p d q = h H g G x a i c { }, s의 g p i N 플래그\nterrarium: 대신 이 명령은 돼요: sed -n 1p /etc/hosts",
+   "code": 1,
+   "gaps": [
+    "sed:command:n"
+   ],
+   "outside": [
+    "sed n 명령"
+   ]
+  },
+  "real": {
+   "stdout": "b",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "sed-N",
+  "src": "TD-0010",
+  "owner": "util",
+  "cmd": "printf 'a\\nb\\n' | sed 'N;s/\\n/,/'",
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 sed의 N 명령 기능을 지원하지 않아요. 실제 sed에는 있어요.\nterrarium: sed에서 되는 것: -n -e -f -E -r -s -z -i[접미사]; 주소(줄 번호, $, /정규식/, 구간, !), 명령 s y p d q = h H g G x a i c { }, s의 g p i N 플래그\nterrarium: 대신 이 명령은 돼요: sed -n 1p /etc/hosts",
+   "code": 1,
+   "gaps": [
+    "sed:command:N"
+   ],
+   "outside": [
+    "sed N 명령"
+   ]
+  },
+  "real": {
+   "stdout": "a,b",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "sed-w",
+  "src": "TD-0010",
+  "owner": "util",
+  "cmd": "printf 'a\\nb\\n' | sed -n 's/a/Q/w @D@/o'; cat @D@/o",
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 sed의 s 명령의 w 플래그 기능을 지원하지 않아요. 실제 sed에는 있어요.\nterrarium: sed에서 되는 것: -n -e -f -E -r -s -z -i[접미사]; 주소(줄 번호, $, /정규식/, 구간, !), 명령 s y p d q = h H g G x a i c { }, s의 g p i N 플래그\nterrarium: 대신 이 명령은 돼요: sed -n 1p /etc/hosts\ncat: /tmp/g2/o: No such file or directory",
+   "code": 1,
+   "gaps": [
+    "sed:s-flag:w"
+   ],
+   "outside": [
+    "sed s 명령의 w 플래그"
+   ]
+  },
+  "real": {
+   "stdout": "Q",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "sed-addr-plus",
+  "src": "TD-0010",
+  "owner": "util",
+  "cmd": "printf 'a\\nb\\nc\\n' | sed -n '/a/,+1p'",
+  "fake": {
+   "stdout": "",
+   "stderr": "sed: -e expression #1, char 0: unexpected `,'",
+   "code": 1,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "a\nb",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "awk-getline",
+  "src": "TD-0010",
+  "owner": "awk",
+  "cmd": "awk 'BEGIN{\"echo 5\" | getline a; print a}'",
+  "fake": {
+   "stdout": "",
+   "stderr": "awk: syntax error at source line 1: unexpected character '|'",
+   "code": 2,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "5",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "awk-function",
+  "src": "TD-0010",
+  "owner": "awk",
+  "cmd": "awk 'function f(x){return x*2} BEGIN{print f(3)}'",
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 awk의 function 기능을 지원하지 않아요. 실제 awk에는 있어요.\nterrarium: awk에서 되는 것: -F 구분자, -v 변수=값, -f 프로그램파일; 패턴 { 동작 } 규칙과 BEGIN/END, 변수·배열·정규식, if/while/do/for/delete/next/exit, print/printf, 내장 함수 length substr index split sub gsub match sprintf tolower toupper int sqrt exp log sin cos atan2 rand srand\nterrarium: 대신 이 명령은 돼요: awk 'BEGIN{x=3; print x*x}'",
+   "code": 2,
+   "gaps": [
+    "awk:function"
+   ],
+   "outside": [
+    "awk function"
+   ]
+  },
+  "real": {
+   "stdout": "6",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "awk-pipe-out",
+  "src": "TD-0010",
+  "owner": "awk",
+  "cmd": "printf '2\\n1\\n' | awk '{print | \"sort\"}'",
+  "fake": {
+   "stdout": "",
+   "stderr": "awk: syntax error at source line 1: unexpected character '|'",
+   "code": 2,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "1\n2",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "sort-M",
+  "src": "TD-0010",
+  "owner": "util",
+  "cmd": "printf 'Feb\\nJan\\n' | sort -M",
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 sort의 -M 기능을 지원하지 않아요. 실제 sort에는 있어요.\nterrarium: sort에서 되는 것: -n -r -u -f -h -b -c -s -V -k -t -o -T --reverse --unique --numeric-sort --ignore-case --human-numeric-sort --version-sort --stable --check --ignore-leading-blanks --key --field-separator --output\nterrarium: 대신 이 명령은 돼요: sort -u /etc/hosts",
+   "code": 2,
+   "gaps": [
+    "sort:flag:-M"
+   ],
+   "outside": [
+    "sort -M"
+   ]
+  },
+  "real": {
+   "stdout": "Jan\nFeb",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "sort-z",
+  "src": "TD-0010",
+  "owner": "util",
+  "cmd": "printf 'b\\0a\\0' | sort -z | tr '\\0' ' '",
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 sort의 -z 기능을 지원하지 않아요. 실제 sort에는 있어요.\nterrarium: sort에서 되는 것: -n -r -u -f -h -b -c -s -V -k -t -o -T --reverse --unique --numeric-sort --ignore-case --human-numeric-sort --version-sort --stable --check --ignore-leading-blanks --key --field-separator --output\nterrarium: 대신 이 명령은 돼요: sort -u /etc/hosts",
+   "code": 0,
+   "gaps": [
+    "sort:flag:-z"
+   ],
+   "outside": [
+    "sort -z"
+   ]
+  },
+  "real": {
+   "stdout": "a b ",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "sort-g",
+  "src": "TD-0010",
+  "owner": "util",
+  "cmd": "printf '1e2\\n5\\n' | sort -g",
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 sort의 -g 기능을 지원하지 않아요. 실제 sort에는 있어요.\nterrarium: sort에서 되는 것: -n -r -u -f -h -b -c -s -V -k -t -o -T --reverse --unique --numeric-sort --ignore-case --human-numeric-sort --version-sort --stable --check --ignore-leading-blanks --key --field-separator --output\nterrarium: 대신 이 명령은 돼요: sort -u /etc/hosts",
+   "code": 2,
+   "gaps": [
+    "sort:flag:-g"
+   ],
+   "outside": [
+    "sort -g"
+   ]
+  },
+  "real": {
+   "stdout": "5\n1e2",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "cp-r",
+  "src": "TD-0010",
+  "owner": "util",
+  "cmd": "mkdir -p @D@/d1; echo a > @D@/d1/f; cp -r @D@/d1 @D@/d2; ls @D@/d2",
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 cp의 디렉터리 통째로 기능을 지원하지 않아요. 실제 cp에는 있어요.\nterrarium: cp에서 되는 것: cp 파일 대상 (파일 하나를 한 곳으로)\nterrarium: 대신 이 명령은 돼요: cp /etc/hosts /tmp/hosts.copy\nls: cannot access '/tmp/g10/d2': No such file or directory",
+   "code": 2,
+   "gaps": [
+    "cp:directory"
+   ],
+   "outside": [
+    "cp 디렉터리 통째로"
+   ]
+  },
+  "real": {
+   "stdout": "f",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "cp-multi",
+  "src": "TD-0010",
+  "owner": "util",
+  "cmd": "echo 1 > @D@/a; echo 2 > @D@/b; mkdir -p @D@/dd; cp @D@/a @D@/b @D@/dd; ls @D@/dd",
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 cp의 여러 원본을 한 디렉터리로 기능을 지원하지 않아요. 실제 cp에는 있어요.\nterrarium: cp에서 되는 것: cp 원본 대상 (인자 두 개)\nterrarium: 대신 이 명령은 돼요: cp /etc/hosts /tmp/hosts.copy",
+   "code": 0,
+   "gaps": [
+    "cp:several-sources"
+   ],
+   "outside": [
+    "cp 여러 원본을 한 디렉터리로"
+   ]
+  },
+  "real": {
+   "stdout": "a\nb",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "mv-multi",
+  "src": "TD-0010",
+  "owner": "util",
+  "cmd": "echo 1 > @D@/a; echo 2 > @D@/b; mkdir -p @D@/dd; mv @D@/a @D@/b @D@/dd; ls @D@/dd",
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 mv의 여러 원본을 한 디렉터리로 기능을 지원하지 않아요. 실제 mv에는 있어요.\nterrarium: mv에서 되는 것: mv 원본 대상 (인자 두 개)\nterrarium: 대신 이 명령은 돼요: cp /etc/hosts /tmp/hosts.copy",
+   "code": 0,
+   "gaps": [
+    "mv:several-sources"
+   ],
+   "outside": [
+    "mv 여러 원본을 한 디렉터리로"
+   ]
+  },
+  "real": {
+   "stdout": "a\nb",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "ls-ap",
+  "src": "TD-0010",
+  "owner": "util",
+  "cmd": "mkdir -p @D@/x/sub; echo 1 > @D@/x/.h; echo 1 > @D@/x/f; ls -ap @D@/x",
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 ls의 -p 기능을 지원하지 않아요. 실제 ls에는 있어요.\nterrarium: ls에서 되는 것: -l -a -h -A -1 -R -d -t -S -r -F -h -i\nterrarium: 대신 이 명령은 돼요: ls -la /etc",
+   "code": 2,
+   "gaps": [
+    "ls:flag:-p"
+   ],
+   "outside": [
+    "ls -p"
+   ]
+  },
+  "real": {
+   "stdout": "./\n../\n.h\nf\nsub/",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "stat-c",
+  "src": "TD-0010",
+  "owner": "util",
+  "cmd": "echo abc > @D@/s; stat -c '%s %F' @D@/s",
+  "fake": {
+   "stdout": "4 regular file",
+   "stderr": "",
+   "code": 0,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "4 regular file",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "rm-d",
+  "src": "TD-0010",
+  "owner": "util",
+  "cmd": "mkdir -p @D@/e; rm -d @D@/e; ls @D@",
+  "fake": {
+   "stdout": "e",
+   "stderr": "rm: cannot remove '/tmp/g15/e': Is a directory",
+   "code": 0,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "truncate-rel",
+  "src": "TD-0010",
+  "owner": "util",
+  "cmd": "echo abcdef > @D@/t; truncate -s -2 @D@/t; cat @D@/t",
+  "fake": {
+   "stdout": "abcdef",
+   "stderr": "terrarium: 이 실험장은 truncate의 -s -2 기능을 지원하지 않아요. 실제 truncate에는 있어요.\nterrarium: truncate에서 되는 것: -s 0 (파일 비우기), -c\nterrarium: 대신 이 명령은 돼요: touch /tmp/terrarium-trunc && truncate -s 0 /tmp/terrarium-trunc",
+   "code": 0,
+   "gaps": [
+    "truncate:size-other-than-zero"
+   ],
+   "outside": [
+    "truncate -s -2"
+   ]
+  },
+  "real": {
+   "stdout": "abcde",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "df-width",
+  "src": "TD-0010",
+  "owner": "util",
+  "cmd": "df -h / | head -1",
+  "loose": true,
+  "fake": {
+   "stdout": "Filesystem      Size  Used Avail Use% Mounted on",
+   "stderr": "",
+   "code": 0,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "Filesystem      Size  Used Avail Use% Mounted on",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "free-width",
+  "src": "TD-0010",
+  "owner": "util",
+  "cmd": "free -m | head -1",
+  "loose": true,
+  "fake": {
+   "stdout": "               total        used        free      shared  buff/cache   available",
+   "stderr": "",
+   "code": 0,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "               total        used        free      shared  buff/cache   available",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "awk-gensub",
+  "src": "ADR-0184",
+  "owner": "awk",
+  "cmd": "awk 'BEGIN{print gensub(/a/, \"b\", \"g\", \"aaa\")}'",
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 awk의 gensub() 기능을 지원하지 않아요. 실제 awk에는 있어요.\nterrarium: awk에서 되는 것: -F 구분자, -v 변수=값, -f 프로그램파일; 패턴 { 동작 } 규칙과 BEGIN/END, 변수·배열·정규식, if/while/do/for/delete/next/exit, print/printf, 내장 함수 length substr index split sub gsub match sprintf tolower toupper int sqrt exp log sin cos atan2 rand srand\nterrarium: 대신 이 명령은 돼요: awk 'NR==2{print $1}' /etc/hosts",
+   "code": 2,
+   "gaps": [
+    "awk:function:gensub"
+   ],
+   "outside": [
+    "awk gensub()"
+   ]
+  },
+  "real": {
+   "stdout": "",
+   "stderr": "awk: line 2: function gensub never defined\n",
+   "code": 2
+  }
+ },
+ {
+  "id": "xargs-P",
+  "src": "ADR-0184",
+  "owner": "util",
+  "cmd": "printf '1\\n2\\n' | xargs -P 2 -n1 echo | sort",
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 xargs의 -P 기능을 지원하지 않아요. 실제 xargs에는 있어요.\nterrarium: xargs에서 되는 것: -t -0 -r -n -I -L --no-run-if-empty\nterrarium: 대신 이 명령은 돼요: echo a b | xargs echo",
+   "code": 0,
+   "gaps": [
+    "xargs:flag:-P"
+   ],
+   "outside": [
+    "xargs -P"
+   ]
+  },
+  "real": {
+   "stdout": "1\n2",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "ps-Z",
+  "src": "ADR-0184",
+  "owner": "util",
+  "cmd": "ps -Z | head -1",
+  "loose": true,
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 ps의 -Z 기능을 지원하지 않아요. 실제 ps에는 있어요.\nterrarium: ps에서 되는 것: -a -A -e -x -f -u -w -l -L -h -T -e -H -o -O -p -C -U --sort --no-headers --forest --pid --user\nterrarium: 대신 이 명령은 돼요: ps aux",
+   "code": 0,
+   "gaps": [
+    "ps:flag:-Z"
+   ],
+   "outside": [
+    "ps -Z"
+   ]
+  },
+  "real": {
+   "stdout": "LABEL                             PID TTY          TIME CMD",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "head-lines",
+  "src": "ADR-0184",
+  "owner": "util",
+  "cmd": "printf 'a\\nb\\n' | head --lines=1",
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 head의 --lines=1 기능을 지원하지 않아요. 실제 head에는 있어요.\nterrarium: head에서 되는 것: -q -v -n -c\nterrarium: 대신 이 명령은 돼요: head -n 5 /etc/passwd",
+   "code": 2,
+   "gaps": [
+    "head:flag:--lines"
+   ],
+   "outside": [
+    "head --lines=1"
+   ]
+  },
+  "real": {
+   "stdout": "a",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "find-print0",
+  "src": "ADR-0184",
+  "owner": "util",
+  "cmd": "mkdir -p @D@/f; echo 1 > @D@/f/a; find @D@/f -type f -print0 | tr '\\0' ' '",
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 find의 -print0 기능을 지원하지 않아요. 실제 find에는 있어요.\nterrarium: find에서 되는 것: -name -iname -path -type -size -mtime -mmin -newer -user -empty, -maxdepth -mindepth, 묶기 ( ) ! -a -o, 동작 -print -ls -delete -exec ... ;\nterrarium: 대신 이 명령은 돼요: find /etc -name 'host*'",
+   "code": 0,
+   "gaps": [
+    "find:test:-print0"
+   ],
+   "outside": [
+    "find -print0"
+   ]
+  },
+  "real": {
+   "stdout": "@D@/f/a ",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "ln-hard",
+  "src": "ADR-0184",
+  "owner": "util",
+  "cmd": "echo x > @D@/h1; ln @D@/h1 @D@/h2; echo y >> @D@/h1; cat @D@/h2",
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 ln의 하드 링크 기능을 지원하지 않아요. 실제 ln에는 있어요.\nterrarium: ln에서 되는 것: ln -s 대상 이름 (심볼릭 링크), -f -n -v -T\nterrarium: 대신 이 명령은 돼요: ln -s /etc/hosts /tmp/terrarium-link\ncat: /tmp/g24/h2: No such file or directory",
+   "code": 1,
+   "gaps": [
+    "ln:hard-link"
+   ],
+   "outside": [
+    "ln 하드 링크"
+   ]
+  },
+  "real": {
+   "stdout": "x\ny",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "systemctl-list-timers",
+  "src": "ADR-0184",
+  "owner": "world",
+  "cmd": "systemctl list-timers",
+  "loose": true,
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 systemctl의 list-timers 기능을 지원하지 않아요. 실제 systemctl에는 있어요.\nterrarium: systemctl에서 되는 것: status <유닛>, start|stop|restart|reload <유닛>, enable|disable <유닛>, is-active|is-enabled|is-failed <유닛>, show -p, cat, list-units [--failed] [-a], daemon-reload, 옵션 -a -l -t -p --failed --no-pager --now\nterrarium: 대신 이 명령은 돼요: systemctl list-units --failed",
+   "code": 2,
+   "gaps": [
+    "systemctl:verb:list-timers"
+   ],
+   "outside": [
+    "systemctl list-timers"
+   ]
+  },
+  "real": {
+   "stdout": "",
+   "stderr": "System has not been booted with systemd as init system (PID 1). Can't operate.\nFailed to connect to bus: Host is down\n",
+   "code": 1
+  }
+ },
+ {
+  "id": "ip-neigh",
+  "src": "ADR-0184",
+  "owner": "world",
+  "cmd": "ip neigh",
+  "loose": true,
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 ip의 ip neigh 기능을 지원하지 않아요. 실제 ip에는 있어요.\nterrarium: ip에서 되는 것: ip addr, ip route, ip link (-br -o)\nterrarium: 대신 이 명령은 돼요: ip -br addr",
+   "code": 2,
+   "gaps": [
+    "ip:object:neighbor"
+   ],
+   "outside": [
+    "ip neigh"
+   ]
+  },
+  "real": {
+   "stdout": "",
+   "stderr": "bash: line 1: ip: command not found\n",
+   "code": 127
+  }
+ },
+ {
+  "id": "vim",
+  "src": "ADR-0184",
+  "owner": "world",
+  "cmd": "vim --version | head -1",
+  "loose": true,
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 vim 명령을 갖추지 못했어요. 실제 호스트에는 있는 명령이에요.\nterrarium: 이 셸에서 되는 명령: awk cat chronyc cp crictl curl cut date dcgmi df dig dmesg du echo egrep env fgrep find free grep head hostname ibstat id ip istioctl journalctl kill kubectl ln logrotate ls lsblk lsof mkdir mount multipath mv netstat nice nslookup nvidia-smi openssl pg_isready pgrep pidof ping pkill printenv printf ps psql readlink reboot rm sed sort ss stat systemctl tail tee test timedatectl top touch tr truncate uname uniq uptime wc whoami xargs\nterrarium: 대신 이 명령은 돼요: cat /etc/hosts",
+   "code": 0,
+   "gaps": [
+    "vim:command"
+   ],
+   "outside": [
+    "vim"
+   ]
+  },
+  "real": {
+   "stdout": "VIM - Vi IMproved 9.1 (2024 Jan 02, compiled Aug 24 2026 22:13:04)",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "export",
+  "src": "ADR-0184",
+  "owner": "shell",
+  "cmd": "export FOO=1; echo $FOO",
+  "fake": {
+   "stdout": "1",
+   "stderr": "",
+   "code": 0,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "1",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "variable",
+  "src": "ADR-0184",
+  "owner": "shell",
+  "cmd": "X=abc; echo $X ${X#a}",
+  "fake": {
+   "stdout": "abc bc",
+   "stderr": "",
+   "code": 0,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "abc bc",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "if",
+  "src": "ADR-0184",
+  "owner": "shell",
+  "cmd": "if true; then echo a; fi",
+  "fake": {
+   "stdout": "a",
+   "stderr": "",
+   "code": 0,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "a",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "r-syntax",
+  "src": "report",
+  "owner": "shell",
+  "cmd": "if grep -q x /dev/null; then echo y; fi; v=abc; echo ${v:1:1} ${v#a} ${v/b/X} ${v:-z}",
+  "fake": {
+   "stdout": "b bc aXc abc",
+   "stderr": "",
+   "code": 0,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "b bc aXc abc",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "r-for",
+  "src": "report",
+  "owner": "shell",
+  "cmd": "for i in 1 2 3; do echo $i; done",
+  "fake": {
+   "stdout": "1\n2\n3",
+   "stderr": "",
+   "code": 0,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "1\n2\n3",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "r-while",
+  "src": "report",
+  "owner": "shell",
+  "cmd": "i=0; while [ $i -lt 3 ]; do i=$((i+1)); done; echo $i",
+  "fake": {
+   "stdout": "3",
+   "stderr": "",
+   "code": 0,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "3",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "r-case",
+  "src": "report",
+  "owner": "shell",
+  "cmd": "case abc in a*) echo yes;; *) echo no;; esac",
+  "fake": {
+   "stdout": "yes",
+   "stderr": "",
+   "code": 0,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "yes",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "r-func",
+  "src": "report",
+  "owner": "shell",
+  "cmd": "f() { echo in-$1; }; f 7",
+  "fake": {
+   "stdout": "in-7",
+   "stderr": "",
+   "code": 0,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "in-7",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "r-subst",
+  "src": "report",
+  "owner": "shell",
+  "cmd": "echo $(echo a $(echo b))",
+  "fake": {
+   "stdout": "a b",
+   "stderr": "",
+   "code": 0,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "a b",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "r-heredoc",
+  "src": "report",
+  "owner": "shell",
+  "cmd": "cat <<EOF\nx $((1+2))\nEOF",
+  "fake": {
+   "stdout": "x 3",
+   "stderr": "",
+   "code": 0,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "x 3",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "r-array",
+  "src": "report",
+  "owner": "shell",
+  "cmd": "a=(x y z); echo ${#a[@]} ${a[1]}",
+  "fake": {
+   "stdout": "3 y",
+   "stderr": "",
+   "code": 0,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "3 y",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "r-awk-system",
+  "src": "report",
+  "owner": "awk",
+  "cmd": "echo 1 | awk '{system(\"echo s\")}'",
+  "fake": {
+   "stdout": "",
+   "stderr": "terrarium: 이 실험장은 awk의 system 기능을 지원하지 않아요. 실제 awk에는 있어요.\nterrarium: awk에서 되는 것: -F 구분자, -v 변수=값, -f 프로그램파일; 패턴 { 동작 } 규칙과 BEGIN/END, 변수·배열·정규식, if/while/do/for/delete/next/exit, print/printf, 내장 함수 length substr index split sub gsub match sprintf tolower toupper int sqrt exp log sin cos atan2 rand srand\nterrarium: 대신 이 명령은 돼요: echo hi | awk '{print toupper($0)}'",
+   "code": 2,
+   "gaps": [
+    "awk:system"
+   ],
+   "outside": [
+    "awk system"
+   ]
+  },
+  "real": {
+   "stdout": "s",
+   "stderr": "",
+   "code": 0
+  }
+ },
+ {
+  "id": "r-awk-var",
+  "src": "report",
+  "owner": "awk",
+  "cmd": "printf 'a b\\n' | awk -v n=2 '{print $n, NF}'",
+  "fake": {
+   "stdout": "b 2",
+   "stderr": "",
+   "code": 0,
+   "gaps": [],
+   "outside": []
+  },
+  "real": {
+   "stdout": "b 2",
+   "stderr": "",
+   "code": 0
+  }
+ }
+]

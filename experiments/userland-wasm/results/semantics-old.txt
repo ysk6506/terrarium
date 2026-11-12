@@ -1,0 +1,184 @@
+
+## sleep and the clock
+$ date +%T; sleep 5; date +%T   [5.0 ms] exit=0
+  00:10:00
+  00:10:00
+$ echo $SECONDS; sleep 3; echo $SECONDS   [0.4 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ until systemctl is-active nosuch >/dev/null; do sleep 1; done; echo finished   [1.3 ms] exit=0
+  finished
+  ! terrarium: 이 실험장은 bash의 until 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ n=0; until [ $n -ge 3 ]; do n=$((n+1)); sleep 1; done; date +%T; echo $n   [0.2 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+world time now: ?
+
+## exit codes and signals
+$ false; echo $?   [0.2 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ (exit 4); echo $?   [0.1 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ sh -c 'exit 3'; echo $?   [0.2 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ nosuchcmd; echo $?   [0.1 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ echo hi > /etc/passwd; echo $?   [0.1 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ /etc/hosts; echo $?   [0.1 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ trap 'echo got-term' TERM; kill -TERM $$; echo after   [0.1 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ kill -9 99999; echo $?   [0.1 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ exit 7   [0.1 ms] exit=7
+$ timeout 1 sleep 5; echo $?   [0.1 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ set -e; false; echo not-reached   [1.1 ms] exit=0
+  not-reached
+  ! terrarium: 이 실험장은 set 명령을 갖추지 못했어요. 실제 호스트에는 있는 명령이에요.
+  ! terrarium: 이 셸에서 되는 명령: awk cat chronyc cp crictl curl cut date dcgmi df dig dmesg du echo egrep env fgrep find free grep head hostname ibstat id ip istioctl journalctl kill kubectl ln logrotate ls lsblk lsof mkdir mount multipath mv netstat nice nslookup nvidia-smi openssl pg_isready pgrep pidof ping pkill printenv printf ps psql readlink reboot rm sed sort ss stat systemctl tail tee test timedatectl top touch tr truncate uname uniq uptime wc whoami xargs
+  ! terrarium: 대신 이 명령은 돼요: echo hello
+$ set -o pipefail; false | true; echo $?   [0.1 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+
+## $PATH, environment, home directory
+$ echo $HOME $PWD ~ $USER $LOGNAME $SHELL $HOSTNAME $LANG   [0.0 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ echo $PATH   [0.0 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ env | head -12   [1.0 ms] exit=0
+  SHELL=/bin/bash
+  HOSTNAME=srv-a2
+  USER=ops
+  LANG=en_US.UTF-8
+  PWD=/home/ops
+  HOME=/home/ops
+$ printenv HOME; echo $UID $EUID   [0.1 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ id; whoami   [0.8 ms] exit=0
+  uid=1000(ops) gid=1000(ops) groups=1000(ops),10(wheel)
+  ops
+$ cd; pwd; cd /etc; pwd; cd -; cd ~root; pwd   [0.7 ms] exit=0
+  /home/ops
+  /etc
+  /etc
+  ! bash: cd: -: No such file or directorybash: cd: ~root: No such file or directory
+$ export FOO=bar; env | grep FOO; sh -c 'echo child:$FOO'   [1.3 ms] exit=127
+  ! terrarium: 이 실험장은 export 명령을 갖추지 못했어요. 실제 호스트에는 있는 명령이에요.
+  ! terrarium: 이 셸에서 되는 명령: awk cat chronyc cp crictl curl cut date dcgmi df dig dmesg du echo egrep env fgrep find free grep head hostname ibstat id ip istioctl journalctl kill kubectl ln logrotate ls lsblk lsof mkdir mount multipath mv netstat nice nslookup nvidia-smi openssl pg_isready pgrep pidof ping pkill printenv printf ps psql readlink reboot rm sed sort ss stat systemctl tail tee test timedatectl top touch tr truncate uname uniq uptime wc whoami xargs
+  ! terrarium: 대신 이 명령은 돼요: echo hello
+$ FOO=1 env | grep FOO   [0.1 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 변수 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ which ls; command -v systemctl; type kill   [0.8 ms] exit=127
+  /usr/bin/ls
+  ! terrarium: 이 실험장은 command 명령을 갖추지 못했어요. 실제 호스트에는 있는 명령이에요.
+  ! terrarium: 이 셸에서 되는 명령: awk cat chronyc cp crictl curl cut date dcgmi df dig dmesg du echo egrep env fgrep find free grep head hostname ibstat id ip istioctl journalctl kill kubectl ln logrotate ls lsblk lsof mkdir mount multipath mv netstat nice nslookup nvidia-smi openssl pg_isready pgrep pidof ping pkill printenv printf ps psql readlink reboot rm sed sort ss stat systemctl tail tee test timedatectl top touch tr truncate uname uniq uptime wc whoami xargs
+  ! terrarium: 대신 이 명령은 돼요: echo hello
+
+## background jobs
+$ echo a & echo b; wait; echo c   [0.1 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 백그라운드 실행(&) 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ sleep 2 & jobs; wait   [0.0 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 백그라운드 실행(&) 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ (sleep 1; echo late) & echo now; wait   [0.0 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 백그라운드 실행(&) 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ nohup echo hi   [0.1 ms] exit=127
+  ! terrarium: 이 실험장은 nohup 명령을 갖추지 못했어요. 실제 호스트에는 있는 명령이에요.
+  ! terrarium: 이 셸에서 되는 명령: awk cat chronyc cp crictl curl cut date dcgmi df dig dmesg du echo egrep env fgrep find free grep head hostname ibstat id ip istioctl journalctl kill kubectl ln logrotate ls lsblk lsof mkdir mount multipath mv netstat nice nslookup nvidia-smi openssl pg_isready pgrep pidof ping pkill printenv printf ps psql readlink reboot rm sed sort ss stat systemctl tail tee test timedatectl top touch tr truncate uname uniq uptime wc whoami xargs
+  ! terrarium: 대신 이 명령은 돼요: sort -u /etc/hosts
+$ ps | head -3; sleep 100 & ps | grep sleep   [0.0 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 백그라운드 실행(&) 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+
+## here-documents and strings
+$ cat <<EOF\nhome=$HOME sum=$((1+2))\nEOF   [0.0 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ cat <<'EOF'\nno $HOME here\nEOF   [0.0 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ cat <<-EOF\n	indented\nEOF   [0.0 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 히어독(<<) 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ grep -c a <<< 'banana'   [0.0 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 히어독(<<) 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ awk '{print NR": "$0}' <<EOF\nx\ny\nEOF   [0.1 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 히어독(<<) 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ cat <<EOF > /tmp/h1\nwritten\nEOF\ncat /tmp/h1   [0.1 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 히어독(<<) 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+
+## globbing against a described-on-demand file system
+$ echo /proc/[0-9]* | wc -w   [1.7 ms] exit=0
+  16
+$ echo /etc/* | wc -w   [1.0 ms] exit=0
+  14
+$ echo /*/* | wc -w   [1.0 ms] exit=0
+  55
+$ ls /var/log/*.log | head -3   [1.0 ms] exit=0
+  /var/log/auth.log
+  /var/log/kern.log
+$ for f in /etc/*.conf; do echo $f; done | head -3   [0.1 ms] exit=2
+  ! terrarium: 이 실험장은 bash의 $ 기능을 지원하지 않아요. 실제 bash에는 있어요.
+  ! terrarium: bash에서 되는 것: 따옴표('…' "…"), 파이프(|), 리다이렉트(> >> < 2> 2>&1), ; && ||, 글롭(* ? [)
+  ! terrarium: 대신 이 명령은 돼요: cat /etc/hosts | wc -l
+$ echo /nonexistent/*   [0.6 ms] exit=0
+  /nonexistent/*
+$ shopt -s nullglob; echo /nonexistent/*; echo done   [0.6 ms] exit=0
+  /nonexistent/*
+  done
+  ! terrarium: 이 실험장은 shopt 명령을 갖추지 못했어요. 실제 호스트에는 있는 명령이에요.
+  ! terrarium: 이 셸에서 되는 명령: awk cat chronyc cp crictl curl cut date dcgmi df dig dmesg du echo egrep env fgrep find free grep head hostname ibstat id ip istioctl journalctl kill kubectl ln logrotate ls lsblk lsof mkdir mount multipath mv netstat nice nslookup nvidia-smi openssl pg_isready pgrep pidof ping pkill printenv printf ps psql readlink reboot rm sed sort ss stat systemctl tail tee test timedatectl top touch tr truncate uname uniq uptime wc whoami xargs
+  ! terrarium: 대신 이 명령은 돼요: echo hello
+$ echo /etc/h{ost,ostname}*   [0.7 ms] exit=0
+  /etc/h{ost,ostname}*
+$ echo /etc/**/hosts   [0.6 ms] exit=0
+  /etc/**/hosts

@@ -1,0 +1,102 @@
+diff -ruN awk-a/interp/hook.go awk-b/interp/hook.go
+--- a/interp/hook.go	1970-01-01 00:00:00.000000000 +0000
++++ b/interp/hook.go	2026-11-12 10:24:57.205793109 +0000
+@@ -0,0 +1,50 @@
++package interp
++
++import (
++	"bytes"
++	"io"
++)
++
++// ShellHook, when set, runs the command of system(), `cmd | getline` and `print | cmd` instead of os/exec (which
++// does not exist on WASI). It returns the exit status. (Terrarium experiment patch.)
++var ShellHook func(code string, stdin io.Reader, stdout, stderr io.Writer) int
++
++// outHookStream collects what is printed to `print | cmd` and runs the command when the stream is closed.
++type outHookStream struct {
++	p        *interp
++	code     string
++	buf      bytes.Buffer
++	exitCode int
++	closed   bool
++}
++
++func (s *outHookStream) Write(b []byte) (int, error) { return s.buf.Write(b) }
++func (s *outHookStream) Flush() error                { return nil }
++func (s *outHookStream) Close() error {
++	if s.closed {
++		return errDoubleClose
++	}
++	s.closed = true
++	s.p.flushOutputAndError()
++	s.exitCode = ShellHook(s.code, &s.buf, s.p.output, s.p.errorOutput)
++	return nil
++}
++func (s *outHookStream) ExitCode() int { return s.exitCode }
++
++// inHookStream serves the output of `cmd | getline`, run when the stream was opened.
++type inHookStream struct {
++	io.Reader
++	exitCode int
++	status   int
++	closed   bool
++}
++
++func (s *inHookStream) Close() error {
++	if s.closed {
++		return errDoubleClose
++	}
++	s.closed = true
++	s.exitCode = s.status
++	return nil
++}
++func (s *inHookStream) ExitCode() int { return s.exitCode }
+diff -ruN awk-a/interp/io.go awk-b/interp/io.go
+--- a/interp/io.go	2026-11-12 10:24:44.918692524 +0000
++++ b/interp/io.go	2026-11-12 10:24:57.205433707 +0000
+@@ -215,6 +215,12 @@
+ 		if p.noExec {
+ 			return nil, newError("can't write to pipe due to NoExec")
+ 		}
++		if ShellHook != nil {
++			p.flushOutputAndError() // ensure synchronization
++			out := &outHookStream{p: p, code: name, exitCode: notClosedExitCode}
++			p.outputStreams[name] = out
++			return out, nil
++		}
+ 		cmd := p.execShell(name)
+ 		cmd.Stdout = p.output
+ 		cmd.Stderr = p.errorOutput
+@@ -292,6 +298,16 @@
+ 	if p.noExec {
+ 		return nil, newError("can't read from pipe due to NoExec")
+ 	}
++	if ShellHook != nil {
++		p.flushOutputAndError() // ensure synchronization
++		var buf bytes.Buffer
++		code := ShellHook(name, p.stdin, &buf, p.errorOutput)
++		in := &inHookStream{Reader: &buf, exitCode: notClosedExitCode, status: code}
++		scanner := p.newScanner(in, make([]byte, inputBufSize))
++		p.inputStreams[name] = in
++		p.scanners[name] = scanner
++		return scanner, nil
++	}
+ 	cmd := p.execShell(name)
+ 	cmd.Stdin = p.stdin
+ 	cmd.Stderr = p.errorOutput
+diff -ruN awk-a/interp/vm.go awk-b/interp/vm.go
+--- a/interp/vm.go	2026-11-12 10:24:44.918780895 +0000
++++ b/interp/vm.go	2026-11-12 10:24:57.205634274 +0000
+@@ -1125,6 +1125,11 @@
+ 			return newError("can't call system() due to NoExec")
+ 		}
+ 		cmdline := p.toString(p.peekTop())
++		if ShellHook != nil {
++			_ = p.flushAll() // ensure synchronization
++			p.replaceTop(num(float64(ShellHook(cmdline, p.stdin, p.output, p.errorOutput))))
++			return nil
++		}
+ 		cmd := p.execShell(cmdline)
+ 		cmd.Stdin = p.stdin
+ 		cmd.Stdout = p.output

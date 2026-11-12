@@ -63,7 +63,7 @@ export function registerShellCommand(name: string, handler: Handler): void {
 }
 
 const lookup = (name: string): Handler | undefined => extra.get(name) ?? COMMANDS[name];
-const binNames = (): string[] => [...new Set([...Object.keys(COMMANDS), ...extra.keys()])].sort();
+export const binNames = (): string[] => [...new Set([...Object.keys(COMMANDS), ...extra.keys()])].sort();
 
 const BUILTINS = new Set(["cd", "pwd", "true", "false", "exit", "sudo", "sleep", "which"]);
 const KEYWORDS = new Set([
@@ -79,10 +79,10 @@ const KEYWORDS = new Set([
   "fi",
   "select",
 ]);
-const HOME = "/home/ops";
+export const HOME = "/home/ops";
 
 /** The state one run of a line carries: where it is, what it printed, what it could not do. */
-class Run {
+export class Run {
   cwd = HOME;
   stderr = "";
   readonly outside: string[] = [];
@@ -204,7 +204,7 @@ function expand(run: Run, words: readonly Word[]): string[] {
 }
 
 /** Why a redirect target cannot be written, or undefined. */
-function refusal(run: Run, path: string, shownPath: string): string | undefined {
+export function refusal(run: Run, path: string, shownPath: string): string | undefined {
   const { fs } = run.view();
   if (fs.isDir(path)) return `bash: ${shownPath}: Is a directory`;
   const denied = fs.denyWrite(path);
@@ -213,7 +213,7 @@ function refusal(run: Run, path: string, shownPath: string): string | undefined 
 }
 
 /** Write the output of a command to a file, as a world event. */
-function writeFile(run: Run, path: string, text: string, append: boolean): string | undefined {
+export function writeFile(run: Run, path: string, text: string, append: boolean): string | undefined {
   const { fs } = run.view();
   const full = normalize(run.cwd, path);
   const refused = refusal(run, full, path);
@@ -305,8 +305,21 @@ function runSteps(run: Run, steps: readonly Step[]): { stdout: string; code: num
   return { stdout, code };
 }
 
+/**
+ * EXPERIMENT (userland-wasm, not for merge): with TERRARIUM_SHELL=wasm the shell language runs in a WebAssembly
+ * module and every command comes back here through the exec hook. The switch is read once, at load.
+ */
+type Engine = (world: WorldPort, hostId: string, line: string) => ShellOutcome;
+let engine: Engine | undefined;
+if (typeof process !== "undefined" && process.env?.TERRARIUM_SHELL === "wasm") {
+  const spec = "../../../../../experiments/userland-wasm/host/shell";
+  const m = await import(/* @vite-ignore */ spec);
+  engine = m.createWasmShell({ Run, writeFile, refusal, HOME, binNames });
+}
+
 /** Run a command line on a host the caller has checked is reachable. */
 export function runLine(world: WorldPort, hostId: string, line: string): ShellOutcome {
+  if (engine) return engine(world, hostId, line);
   const parsed = parseLine(line);
   if (!parsed.ok) {
     if (!parsed.gap)
