@@ -302,6 +302,40 @@ describe("an operation session plays the generator's faults into the world [REQ-
     expect(s.finish().endReason).toBe("tool_budget");
   });
 
+  test("[REQ-090] a diagnosis closes one incident, not the run: time keeps going and the hours end it", () => {
+    const config = cfg({
+      hours: 2,
+      source: { kind: "set", faults: [{ type: "fan_failure", target: "srv-a1" }] },
+    });
+    const s = Session.create({
+      blueprint,
+      scenario: operationScenario("op", blueprint.id, config),
+      tools: ["list_alarms", "submit_diagnosis"],
+      seed: 5,
+      operation: config,
+    });
+    s.start();
+    s.sync(60);
+    const t0 = s.worldTime;
+    const res = s.call("submit_diagnosis", {
+      rootCause: "srv-a1",
+      faultType: "fan_failure",
+      summary: "fan stopped",
+      actions: [],
+    });
+    expect(res.ok).toBe(true);
+    expect(res.ended).toBeUndefined();
+    expect(JSON.stringify(res.data)).toContain("운영은 계속돼요");
+    expect(s.status).toBe("running");
+    s.sync(600);
+    expect(s.worldTime).toBeGreaterThan(t0);
+    expect(s.status).toBe("running");
+    for (let elapsed = 1200; s.status === "running"; elapsed += 600) s.sync(elapsed);
+    const result = s.finish();
+    expect(result.endReason).toBe("time_limit");
+    expect(result.toolCalls.filter((c) => c.tool === "submit_diagnosis")).toHaveLength(1);
+  });
+
   test("a fast-forward run moves quickly while it is quiet", () => {
     const config = cfg({
       hours: 8,
