@@ -201,6 +201,31 @@ describe("asset manifest", () => {
   });
 });
 
+describe("references to outside material", () => {
+  const files = (paths: string[]): Record<string, string> => ({
+    "harness/config/third-party-assets.yaml": YAML.stringify({
+      references: [
+        { id: "presets", name: "Preset shapes", paths, text: "Drawn by hand.\n  Nothing copied." },
+      ],
+    }),
+    "data/shapes.ts": "export {};",
+  });
+
+  test("a reference is written in its own section and is not a component", () => {
+    const root = repo([], files(["data/shapes.ts"]));
+    expect(codes(root)).toEqual([]);
+    write(root);
+    const text = readFileSync(path.join(root, "THIRD_PARTY_NOTICES.md"), "utf8");
+    expect(text).toContain("## 바깥 자료를 참고한 데이터");
+    expect(text).toContain("Drawn by hand. Nothing copied.");
+    expect(evaluate(root).components).toEqual([]);
+  });
+
+  test("LIC004 when the file a reference names does not exist", () => {
+    expect(codes(repo([], files(["data/gone.ts"])))).toEqual(["LIC004"]);
+  });
+});
+
 describe("notices file", () => {
   const files = dep("a", { license: "MIT", repository: "github:me/a" }, { LICENSE: MIT_TEXT });
 

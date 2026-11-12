@@ -134,7 +134,19 @@ function section(c: Component, groupId: string | undefined): string[] {
   return out;
 }
 
-export function renderNotices(components: readonly Component[], fingerprint: string): string {
+/** Data in the repository drawn by hand with outside material as a guide; nothing was copied. */
+export interface Reference {
+  readonly id: string;
+  readonly name: string;
+  readonly paths?: readonly string[];
+  readonly text: string;
+}
+
+export function renderNotices(
+  components: readonly Component[],
+  fingerprint: string,
+  references: readonly Reference[] = [],
+): string {
   const sorted = [...components].sort(
     (a, b) => a.name.localeCompare(b.name) || a.version.localeCompare(b.version),
   );
@@ -180,6 +192,13 @@ export function renderNotices(components: readonly Component[], fingerprint: str
       "```",
       "",
     );
+  }
+  if (references.length > 0) {
+    out.push("## 바깥 자료를 참고한 데이터", "");
+    for (const r of references) {
+      out.push(`### ${r.name}`, "", r.text.replace(/\s+/g, " ").trim(), "");
+      if (r.paths?.length) out.push(`위치: ${r.paths.map((p) => `\`${p}\``).join(", ")}`, "");
+    }
   }
   return `${out.join("\n").trimEnd()}\n`;
 }

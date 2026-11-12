@@ -24,7 +24,7 @@ import {
   type Violation,
   violation,
 } from "../common";
-import { type Component, fromPackage, renderNotices } from "./licenses-render";
+import { type Component, fromPackage, type Reference, renderNotices } from "./licenses-render";
 import { type Pkg, type ScanConfig, scan } from "./licenses-scan";
 import { decide, type Expr, parseExpr, show } from "./licenses-spdx";
 
@@ -61,12 +61,19 @@ interface AssetEntry {
 export const loadLicensesConfig = (root: string): LicensesConfig =>
   loadYaml<LicensesConfig>(path.join(root, CONFIG_PATH));
 
-function loadAssets(root: string, config: LicensesConfig): AssetEntry[] {
-  const file = path.join(root, config.assets_manifest);
-  if (!existsSync(file)) return [];
-  const doc = loadYaml<{ assets?: AssetEntry[] }>(file);
-  return doc.assets ?? [];
+interface Manifest {
+  assets?: AssetEntry[];
+  /** Data drawn by hand with outside material as a guide: nothing is copied, so no license applies. */
+  references?: Reference[];
 }
+
+function loadManifest(root: string, config: LicensesConfig): Manifest {
+  const file = path.join(root, config.assets_manifest);
+  return existsSync(file) ? loadYaml<Manifest>(file) : {};
+}
+
+const loadAssets = (root: string, config: LicensesConfig): AssetEntry[] =>
+  loadManifest(root, config).assets ?? [];
 
 /** Packages that have a local patch (`pnpm.patchedDependencies`): a patch makes an unmodified-only license fail. */
 function patchedNames(root: string): Set<string> {
@@ -84,6 +91,7 @@ export interface Evaluation {
   violations: Violation[];
   notes: string[];
   components: Component[];
+  references: Reference[];
   fingerprint: string;
 }
 
@@ -233,7 +241,10 @@ function evalAssets(root: string, j: Judge, out: Evaluation): void {
   }
 }
 
-const fingerprintOf = (components: readonly Component[]): string =>
+const fingerprintOf = (
+  components: readonly Component[],
+  references: readonly Reference[],
+): string =>
   createHash("sha256")
     .update(
       JSON.stringify(
@@ -244,6 +255,7 @@ const fingerprintOf = (components: readonly Component[]): string =>
           c.texts.map((t) => t.length),
           c.notices,
         ]),
+        references,
       ),
     )
     .digest("hex")
@@ -252,16 +264,34 @@ const fingerprintOf = (components: readonly Component[]): string =>
 export function evaluate(root: string): Evaluation {
   const config = loadLicensesConfig(root);
   const j = makeJudge(root, config);
-  const out: Evaluation = { violations: [], notes: [], components: [], fingerprint: "" };
+  const out: Evaluation = {
+    violations: [],
+    notes: [],
+    components: [],
+    references: loadManifest(root, config).references ?? [],
+    fingerprint: "",
+  };
   evalPackages(root, j, out);
   evalAssets(root, j, out);
-  out.fingerprint = fingerprintOf(out.components);
+  for (const r of out.references)
+    for (const p of r.paths ?? [])
+      if (!existsSync(path.join(root, p)))
+        out.violations.push(
+          violation(
+            "LIC004",
+            config.assets_manifest,
+            0,
+            `${r.id}: file does not exist: ${p}`,
+            "Fix the entry in the manifest.",
+          ),
+        );
+  out.fingerprint = fingerprintOf(out.components, out.references);
   return out;
 }
 
 export const render = (root: string): string => {
   const e = evaluate(root);
-  return renderNotices(e.components, e.fingerprint);
+  return renderNotices(e.components, e.fingerprint, e.references);
 };
 
 export function report(root: string): { violations: Violation[]; notes: string[] } {

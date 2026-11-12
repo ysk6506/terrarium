@@ -72550,6 +72550,61 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "harness/src/checks/licenses.test.ts::references to outside material > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/licenses.test.ts::references to outside material > =files": {
+   "kind": "support",
+   "hash": "ce7060b749bb1e09",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/licenses.test.ts::references to outside material > a reference is written in its own section and is not a component": {
+   "kind": "test",
+   "hash": "7f64c62ec59da140",
+   "asserts": 4,
+   "literals": [
+    "\"## 바깥 자료를 참고한 데이터\"",
+    "\"## 바깥 자료를 참고한 데이터\"",
+    "\"Drawn by hand. Nothing copied.\"",
+    "\"Drawn by hand. Nothing copied.\"",
+    "\"THIRD_PARTY_NOTICES.md\"",
+    "\"a reference is written in its own section and is not a component\"",
+    "\"data/shapes.ts\"",
+    "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/licenses.test.ts::references to outside material > LIC004 when the file a reference names does not exist": {
+   "kind": "test",
+   "hash": "ca53dcdf095e15d9",
+   "asserts": 1,
+   "literals": [
+    "\"LIC004 when the file a reference names does not exist\"",
+    "\"LIC004\"",
+    "\"LIC004\"",
+    "\"data/gone.ts\"",
+    "\"data/gone.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "harness/src/checks/moss.test.ts::<import:0458d18f>": {
    "kind": "support",
    "hash": "0458d18f1a491d16",

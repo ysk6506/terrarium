@@ -2772,3 +2772,11 @@ DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
 ```
+
+## 바깥 자료를 참고한 데이터
+
+### 사업장 프리셋의 부지 외곽선과 건물 위치
+
+사업장 프리셋의 부지 외곽선과 건물 위치는 인터넷에 공개된 자료(공개 지도와 보도 자료의 조감도)를 참고해 손으로 그린 근사치예요(5 m 단위로 반올림). 지도 서비스의 데이터나 타일을 복사해 담지 않았어요.
+
+위치: `packages/core/src/sources/worldgen/sites.ts`
