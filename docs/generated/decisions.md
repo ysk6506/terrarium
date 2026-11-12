@@ -194,3 +194,4 @@
 | [ADR-0190 검증에서는 실제 툴 자리에 이름과 입력이 같은 모의 툴이 선다 — 에이전트는 건마다 받은 주소에 붙고, 툴마다 검증 수준을 밝힌다](../design-docs/adr/0190-mock-tools-stand-in-for-real-tools-in-verification.md) | 대체됨 | 대체: [0192](../design-docs/adr/0192-terrarium-returns-to-its-first-goal.md); 일부 고침: [0191](../design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md) (검증하는 건에서 에이전트는 테라리움이 내준 주소에만 붙는다) |
 | [ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리움으로 보낸다 — 에이전트는 두 세계에서 같은 게이트웨이를 같은 이름으로 부른다](../design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md) | 대체됨 | 대체: [0192](../design-docs/adr/0192-terrarium-returns-to-its-first-goal.md) |
 | [ADR-0192 테라리움은 처음의 목표로 돌아간다 — 현실 세계 만들기와 워크플로 자동화는 다른 프로젝트가 맡고, 둘 사이는 세계 스냅샷과 판정으로만 잇는다](../design-docs/adr/0192-terrarium-returns-to-its-first-goal.md) | 유효 |  |
+| [ADR-0196 셸과 awk는 진짜 구현을 WASM으로 돌려 바꾼다 — 결과를 가르는 한도는 세는 것만 쓰고, sleep은 세계 시간이며, 유틸리티는 따로 시험한다](../design-docs/adr/0196-shell-and-awk-run-as-real-implementations.md) | 유효 |  |
