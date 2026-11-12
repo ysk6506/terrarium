@@ -44,6 +44,7 @@ touches_protected:
   - docs/design-docs/adr/**
   - harness/config/test-lock.json
 amends_tests:
+  - packages/core/src/analysis/stopped-experiment.test.ts::=BEFORE
   - apps/server/src/adapters/adapters.test.ts::harness telemetry from ClickStack [REQ-037] > spans and logs of one trace, with numbers restored and the trace id as a parameter
   - apps/server/src/adapters/sqlite-community.test.ts::hearts, marks and awards on SQLite [REQ-101] > [REQ-101] a heart is one per person per world and survives asking twice
   - apps/server/src/adapters/sqlite-community.test.ts::hearts, marks and awards on SQLite [REQ-101] > [REQ-101] awards keep the first time; marks keep the latest per scenario version

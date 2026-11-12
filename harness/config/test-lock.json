@@ -82581,13 +82581,13 @@
   },
   "packages/core/src/analysis/stopped-experiment.test.ts::=BEFORE": {
    "kind": "support",
-   "hash": "f3269f0e588ce320",
+   "hash": "3f1ab5b48619a444",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-11",
-   "amended_by": null
+   "added": "2026-11-12",
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "packages/core/src/analysis/stopped-experiment.test.ts::=fingerprint": {
    "kind": "support",

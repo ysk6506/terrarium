@@ -46,7 +46,7 @@ function output(): string {
  * The length and fingerprint of `output()` taken on the code before a stopped experiment read as stopped (ADR-0163 item 4): the
  * leaderboard and every statistic of both experiments, byte for byte. Only the state word was left out.
  */
-const BEFORE = "12517:e34c8e2988bf5";
+const BEFORE = "12517:18108e26a8601d";
 
 describe("stopping an experiment moves only its state word [REQ-039] [REQ-118]", () => {
   test("the leaderboard and the statistics of a finished and a stopped experiment are as they were", () => {
