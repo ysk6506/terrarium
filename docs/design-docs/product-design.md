@@ -4,17 +4,17 @@ kind: guide
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: 5절에 클로즈 베타 차수 연결"
   - "2026-11-11: 4절에 ADR-0174"
   - "2026-11-11: 4절을 생성된 결정 목록 링크와 짧은 설명으로 바꿈 (ADR-0180). 다른 절은 그대로 맞다"
   - "2026-11-11: main을 합친 뒤: requirements.md의 바뀐 곳(목표 첫째 부분)이 1절 기둥과 맞고, ADR-0171이 아직 합쳐지지 않아 '만드는 중'으로 적고, 툴 수를 세어 견주는 표시로 바꿈 (ADR-0180)"
   - "2026-11-12: 따라가는 beta-rounds.md는 ADR-0171/0173의 만드는 중 표시만 지워졌고, requirements.md는 그대로. ADR-0171이 main에 들어와 본문의 만드는 중 표시를 지움"
+  - "2026-11-12: 따라가는 beta-rounds.md에 이슈 47 일정 절이 더해짐. 차수의 순서와 내용은 그대로라 이 문서와 어긋나지 않는다"
 follows:
   - docs/product-specs/requirements.md
   - docs/exec-plans/active/beta-rounds.md
-follows_hash: 7ac5ffa454136ca8
+follows_hash: 3f7d501ddb81f509
 verified_body: fde6a136c1ff284d
-unchanged_reverifies: 0
+unchanged_reverifies: 1
 ---
 # 제품 설계 한 장 (ADR-0170)
 

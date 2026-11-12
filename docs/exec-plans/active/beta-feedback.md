@@ -4,16 +4,16 @@ kind: plan
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-05: 11번을 반영으로 바꾸고 반영 내용과 남은 확인을 적었다 (작업 #89)"
   - "2026-11-05: 11번 반영 내용 확인"
   - "2026-11-05: 11번 반영 내용 확인"
   - "2026-11-05: 1·3·4·10·12를 반영으로 바꾸고 반영 내용을 적었다 (작업 #90)"
   - "2026-11-12: 따라가는 beta-rounds.md는 ADR-0171/0173의 만드는 중 표시만 지워졌고 이 문서와 상관없다"
+  - "2026-11-12: 따라가는 beta-rounds.md에 이슈 47 일정 절이 더해짐. 차수의 순서와 내용은 그대로라 이 문서와 어긋나지 않는다"
 follows:
   - docs/exec-plans/active/beta-rounds.md
-follows_hash: 581bf80eeb73ca86
+follows_hash: 9bf831d72fb8b1ca
 verified_body: 2173371a57a64c06
-unchanged_reverifies: 0
+unchanged_reverifies: 1
 ---
 # 클로즈 베타 피드백 장부
 
