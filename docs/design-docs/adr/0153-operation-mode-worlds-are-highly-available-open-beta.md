@@ -9,6 +9,11 @@ no_enforcement_reason: 구현 전 결정 기록이다(REQ-116 예정, 오픈 베
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 5531d1a6307ac6ad
+amends:
+  - adr: "0150"
+    what: 평면 둘·고가용성은 제안
+  - adr: "0151"
+    what: 서버 한 대 전제
 ---
 # ADR-0153 운영 모드의 세계는 고가용으로 설계하고, 오픈 베타에 넣는다
 

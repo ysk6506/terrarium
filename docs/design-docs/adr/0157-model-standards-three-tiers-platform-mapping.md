@@ -7,6 +7,15 @@ enforced_by:
   - none
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-115·117 예정). 만들 때 enforced_by를 짝·중립·같은 세계 시험으로 바꾼다.
 decision_hash: 595c877b953cf675
+amended_by:
+  - adr: "0161"
+    what: OpenStack 애그리거트
+  - adr: "0165"
+    what: 사용자가 만든 관계는 영향이 안 넘어감
+  - adr: "0168"
+    what: 모르는 것은 보고
+  - adr: "0169"
+    what: 타입 세 층
 ---
 # ADR-0157 모델은 층마다 표준에서 뼈대를 빌리고, 종류는 세 층이며, 가상화 플랫폼은 대응 표로 받는다
 

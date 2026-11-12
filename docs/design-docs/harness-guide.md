@@ -5,13 +5,15 @@ status: active
 last_verified: 2026-11-11
 covers:
   - harness/src/run-all.ts
-covers_hash: 15346c3aa1edc976
+covers_hash: defbb8a5daa6ab20
 verification_log:
-  - "2026-11-10: run-all이 예정 요구를 따로 출력하게 된 것을 반영 (ADR-0140)"
-  - "2026-11-11: 2026-11-11: UX 검사를 여정(게이트)과 측정(게이트 아님)으로 나눔, REQ-114 (ADR-0141)"
   - "2026-11-11: 검사 끄기 금지(IGN*)와 품질 등급표(QUAL*) 두 검사, pnpm quality write와 ratchet의 끄기 기준선을 적었다 (ADR-0148)"
   - "2026-11-11: 품질 등급표는 낡으면 알림만, 끄기 감소도 알림만 나오는 것으로 고쳐 적었다 (ADR-0148)"
   - "2026-11-11: CI 한 문단에 가벼운 경로(changes, docs-tests, gate의 기대 결과)를 더함 (ADR-0173)"
+  - "2026-11-11: decisions, link-amends, audit-queue 명령을 명령 목록에 더함 (ADR-0180)"
+  - "2026-11-11: run-all이 문서 검사 안에서 결정 관련 검사와 알림(DOC090~DOC098)도 돌리게 된 것을 명령 목록에 맞춤 (ADR-0180)"
+verified_body: 0ce75d047f1ee19f
+unchanged_reverifies: 0
 ---
 # 품질 하네스
 
@@ -37,6 +39,9 @@ verification_log:
 - `pnpm check:pr` — 기준 브랜치(origin/main)와 비교 포함 (CI와 동일).
 - `pnpm ratchet` — 커버리지를 올렸을 때 하한을 올리고, 고친 부채 기준선 항목을 지우고, 줄어든 끄기 수의 기준선을 낮춘다(줄면 `IGN006` 알림만 나온다).
 - `pnpm quality write` — 품질 등급표(`docs/generated/quality.md`)를 새로 만든다(정리 작업의 첫 단계). 손으로 고치지 않는다. 커버리지 값은 CI가 찍는 기록을 읽는다(`pnpm tsx harness/src/checks/quality.ts record`).
+- `pnpm tsx harness/src/checks/docs.ts decisions` — [결정 목록](../generated/decisions.md)을 ADR 앞부분에서 새로 만든다(정리 작업의 둘째 단계, ADR-0180). 낡으면 `DOC098` 알림만 나온다.
+- `pnpm tsx harness/src/checks/docs.ts link-amends <ADR>` — 새 ADR의 `amends`가 가리키는 ADR에 `amended_by`를 남긴다 (`DOC091`).
+- `pnpm tsx harness/src/checks/docs.ts audit-queue` — 본문이 그대로인 채 다시 확인만 된 문서를 오래 감사 못 받은 순으로 보여 준다. 읽은 뒤 `docs.ts audit <문서> --note "한 줄"`로 `last_audited`를 남긴다 (정리 작업의 셋째 단계).
 - `pnpm lock-tests` — 새 테스트를 잠금 파일에 추가한다. 기존 항목은 바꾸지 않는다.
 
 ## 저장소 호스트에서 켜야 하는 설정 (저장소 밖)

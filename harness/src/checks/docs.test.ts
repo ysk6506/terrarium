@@ -4,6 +4,7 @@ import { describe, expect, test } from "vitest";
 import YAML from "yaml";
 import { findRoot, splitFrontMatter } from "../common";
 import { miniRepo } from "../test-support/mini-repo";
+import { followsFingerprint } from "./doc-print";
 import { reverify, run, sealAdr } from "./docs";
 
 const TODAY = "2026-10-28";
@@ -11,8 +12,19 @@ const MODULE =
   "/** Doc. */\nexport function add(a: number, b: number): number {\n  return a + b;\n}\n";
 const realConfig = readFileSync(path.join(findRoot(), "harness/config/docs.yaml"), "utf8");
 
+// Every fixture doc follows package.json so that DOC092 (a doc must cover or follow something) stays quiet (ADR-0180).
+const FOLLOW_HASH = followsFingerprint(miniRepo({}, { "package.json": "{}\n" }), ["package.json"]);
+
 function front(fields: Record<string, unknown> = {}): string {
-  const data = { title: "T", kind: "guide", status: "active", last_verified: TODAY, ...fields };
+  const data = {
+    title: "T",
+    kind: "guide",
+    status: "active",
+    last_verified: TODAY,
+    follows: ["package.json"],
+    follows_hash: FOLLOW_HASH,
+    ...fields,
+  };
   return `---\n${YAML.stringify(data)}---\n`;
 }
 
@@ -120,10 +132,10 @@ describe("docs check [REQ-020]", () => {
 
   test("docs expire by kind, decisions never do", () => {
     expect(
-      codes(docsRepo({ "docs/guide.md": `${front({ last_verified: "2026-08-28" })}x\n` })),
+      codes(docsRepo({ "docs/guide.md": `${front({ last_verified: "2026-09-27" })}x\n` })),
     ).toEqual(["DOC020"]);
     expect(
-      codes(docsRepo({ "docs/guide.md": `${front({ last_verified: "2026-08-29" })}x\n` })),
+      codes(docsRepo({ "docs/guide.md": `${front({ last_verified: "2026-09-28" })}x\n` })),
     ).toEqual([]);
     const adr = adrRepo({ last_verified: "2020-01-01" });
     expect(codes(adr)).not.toContain("DOC020");
@@ -143,8 +155,8 @@ describe("docs check [REQ-020]", () => {
       "# G\n[gone](missing.md)\nSee `packages/nope.ts` and `docs/index.md`.\n```\n[x](missing2.md) `packages/nope2.ts`\n```\n[ext](https://example.com) [anchor](#top)\n";
     const found = run(docsRepo({ "docs/guide.md": front() + body }), TODAY);
     expect(found.map((v) => [v.code, v.line])).toEqual([
-      ["DOC030", 8],
-      ["DOC031", 9],
+      ["DOC030", 11],
+      ["DOC031", 12],
     ]);
   });
 

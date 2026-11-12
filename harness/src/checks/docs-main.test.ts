@@ -4,12 +4,15 @@ import { describe, expect, test } from "vitest";
 import YAML from "yaml";
 import { findRoot } from "../common";
 import { miniRepo } from "../test-support/mini-repo";
+import { followsFingerprint } from "./doc-print";
 import { main, run } from "./docs";
 
 const TODAY = new Date().toISOString().slice(0, 10);
 const realConfig = readFileSync(path.join(findRoot(), "harness/config/docs.yaml"), "utf8");
+// Every fixture doc follows package.json so that DOC092 (a doc must cover or follow something) stays quiet (ADR-0180).
+const FOLLOW_HASH = followsFingerprint(miniRepo({}, { "package.json": "{}\n" }), ["package.json"]);
 const front = (fields: Record<string, unknown> = {}): string =>
-  `---\n${YAML.stringify({ title: "T", kind: "guide", status: "active", last_verified: TODAY, ...fields })}---\n`;
+  `---\n${YAML.stringify({ title: "T", kind: "guide", status: "active", last_verified: TODAY, follows: ["package.json"], follows_hash: FOLLOW_HASH, ...fields })}---\n`;
 const ADR = "docs/design-docs/adr/0001-x.md";
 
 function docsRepo(files: Record<string, string> = {}): string {

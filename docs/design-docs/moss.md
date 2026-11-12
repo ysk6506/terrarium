@@ -24,12 +24,14 @@ covers:
   - apps/web/src/logic/models.ts
   - harness/src/checks/moss.ts
 verification_log:
-  - "2026-11-11: main(process-compare 9cf2ce8) 합친 뒤 코드와 대조; own-card-only·process-compare 여정과 ADR-0134 내용 모두 유지"
-  - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
   - "2026-11-11: ADR-0146: 이끼 알약이 떠 있지 않고 홈에서만 흐름 안, 키보드 도움말은 3D 탭 첫 한 번, 좁은 폭 제목 줄 나눔을 코드와 대조해 맞춤"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
-covers_hash: 7d66f526402e0ec2
+  - "2026-11-11: 문서 색인이 하네스가 만든 generated 폴더를 건너뛰게 된 것을 적음 (ADR-0180). 코드의 다른 변화는 없음"
+  - "2026-11-12: 이끼가 묻는 사람마다 기본 모델을 정하는 것(defaultFor, ADR-0179)과 합친 main의 변화를 코드와 대조해 한 문장을 더함"
+covers_hash: ff01f4eb25efaa4e
+verified_body: 3be83a9ee1e0432f
+unchanged_reverifies: 0
 ---
 # 이끼 (REQ-103, [ADR-0124](adr/0124-moss-assistant.md), [ADR-0125](adr/0125-moss-requires-model.md))
 
@@ -53,7 +55,7 @@ covers_hash: 7d66f526402e0ec2
 
 ## 지식 둘
 
-1. **리포 문서.** 서버가 시작할 때 `docs/**/*.md`와 `docs/**/mockups/*.html`(`exec-plans` 제외)을 `#`·`##`·`###` 제목 단위 조각으로 나눠 메모리에 올린다 (`runtime/moss-index.ts`).
+1. **리포 문서.** 서버가 시작할 때 `docs/**/*.md`와 `docs/**/mockups/*.html`(`exec-plans`와 하네스가 만든 `generated` 제외 — 표뿐인 생성물은 검색어를 독차지해 서술 조각을 밀어낸다)을 `#`·`##`·`###` 제목 단위 조각으로 나눠 메모리에 올린다 (`runtime/moss-index.ts`).
    - 조각마다 **파일과 제목 경로**(`문서 제목 › 소제목`)와 고정된 id(`docs/…md#소제목`)가 있다. 글이 없는 제목은 조각이 아니다(아래 소제목이 가진다). 긴 칸은 줄 경계에서 1,600자 안팎으로 잘라 같은 제목의 조각 여럿이 된다.
    - 찾기는 **BM25 방식 낱말 점수**다. 한글은 낱말·두 글자 토막·조사를 뗀 말, 영어는 낱말로 자른다. 제목은 세 번 센다. 질문의 말이 조각 제목의 말을 모두 품으면 점수를 얹어, 제목으로 부른 조각이 길이에 묻히지 않는다.
    - **임베딩도 네트워크도 없다.** 파일을 읽어 메모리에 올릴 뿐이라 서버가 켜질 때 한 번 만들고(1,000여 조각) 질문마다 수 밀리초 안에 찾는다.
@@ -111,7 +113,7 @@ covers_hash: 7d66f526402e0ec2
 - 문서에도 화면에도 근거가 없으면 **모델에게 묻지 않고** "문서에 없어요"를 돌려준다(지어낼 틈을 주지 않는다).
 - 모델이 돌려준 JSON에서 **없는 출처와 등록 안 된 동작 id는 버리고**, 답은 세 문장으로 자른다. JSON이 아니면 글만 건져 `rough: true`로 알린다. `answered`는 출처가 있고 "문서에 없어요"가 아닐 때 참이다.
 - **서버는 동작을 실행하지 않는다.** 동작은 클라이언트가 등록부에서 골라 누른다.
-- 기본 모델이 없으면 409(`no_model`)다. 모델이 답하지 않거나 시간이 지나면 503이다. 모델 이름은 등록값, 마지막 연결 확인이 본 첫 이름, API의 목록 첫 이름 순으로 정한다.
+- 기본 모델은 묻는 사람마다 정해진다(`defaultFor`, ADR-0179): 범위가 "모두"인 기본 모델이 있으면 그것, 없으면 그 사람이 볼 수 있는 모델 중 가장 먼저 등록된 것. 남의 "나만" 모델의 키는 쓰지 않는다. 기본 모델이 없으면 409(`no_model`)다. 모델이 답하지 않거나 시간이 지나면 503이다. 모델 이름은 등록값, 마지막 연결 확인이 본 첫 이름, API의 목록 첫 이름 순으로 정한다.
 
 ## 점수를 묻는 말의 찾기 규칙 (ADR-0125)
 

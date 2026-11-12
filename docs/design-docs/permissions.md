@@ -4,11 +4,17 @@ kind: spec
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: self-declared admin: token, else loopback socket address only; proxy mode unchanged"
   - "2026-11-11: step 나 (ADR-0174): visibility scopes, share-link list; statements checked against runtime/permissions.ts, gate.ts, scoping.ts, sqlite-scope.ts"
   - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
   - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
   - "2026-11-12: known limit wording: model-name leak recorded, ledger full"
+  - "2026-11-12: 합친 main의 http-api.md·operations.md와 대조: 범위 바꾸기 길 다섯, 기본 모델 규칙, 시험 파일 칸을 맞춤"
+follows:
+  - docs/design-docs/http-api.md
+  - docs/design-docs/operations.md
+follows_hash: "4155e10525416833"
+verified_body: 98232785b15f0ca8
+unchanged_reverifies: 0
 ---
 # 권한 (클로즈 베타 1차, ADR-0174)
 
@@ -154,16 +160,19 @@ verification_log:
 
 ## 시험 (만들 때)
 
-| 시험 | 내용 |
-|---|---|
-| 프록시만 믿기 | 비밀 값이 없거나 틀린 요청은 헤더에 무엇을 적어도 401이다 |
-| 길 전부 | 계약의 모든 길에 판정이 걸려 있다. 판정이 없는 길이 생기면 시험이 실패한다(공개로 표시한 길 제외) |
-| 범위 | 범위마다, 길마다: 볼 수 없는 사람에게는 목록에도 없고 하나를 물어도 없다고 답한다. 딸린 것(실행·보고서·사건·텔레메트리·내보내기·스트림)도 같다 (`scope-matrix.test.ts`, `scope-use.test.ts`, `scope-store.test.ts`) |
-| 자격 증명 | "나만"인 연결로 남이 대화·실험·텔레메트리 조회를 못 한다 |
-| 관리자 | 관리자가 남의 것을 바꾸면 이유와 함께 감사 기록에 남는다 |
-| 감사 | 바꾸는 길을 부르면 기록이 하나 는다. 기록에 비밀 값이 없다 |
-| 채점 불변 | 권한을 켜도 같은 실험의 점수 분해가 바이트까지 같다 |
-| 끝에서 끝 | 프록시와 SSO를 띄워 로그인 → 세계 → 실험 → 결과가 돈다 |
+| 시험 | 내용 | 시험 파일 |
+|---|---|---|
+| 프록시만 믿기 | 비밀 값이 없거나 틀린 요청은 헤더에 무엇을 적어도 401이다 | `apps/server/src/http/identity-proxy.test.ts` |
+| 길 전부 | 계약의 모든 길에 판정이 걸려 있다. 판정이 없는 길이 생기면 시험이 실패한다(공개로 표시한 길 제외) | `packages/core/src/contract/policies.test.ts` |
+| 범위 | 범위마다, 길마다: 볼 수 없는 사람에게는 목록에도 없고 하나를 물어도 없다고 답한다. 딸린 것(실행·보고서·사건·텔레메트리·내보내기·스트림)도 같다 | `apps/server/src/http/scope-matrix.test.ts` |
+| 쓰려면 보여야 함·기본 모델 | 남의 "나만" 연결·모델은 쓸 수 없고, 기본 모델은 범위가 "모두"인 모델만 된다 | `apps/server/src/http/scope-use.test.ts`, `apps/server/src/http/scope-default-model.test.ts` |
+| 자격 증명 | "나만"인 연결로 남이 대화·실험·텔레메트리 조회를 못 한다 | `apps/server/src/http/scope-use.test.ts` |
+| 관리자 | 관리자가 남의 것을 바꾸면 이유와 함께 감사 기록에 남는다 | 예정 |
+| 감사 | 바꾸는 길을 부르면 기록이 하나 는다. 기록에 비밀 값이 없다 | 예정 |
+| 채점 불변 | 권한을 켜도 같은 실험의 점수 분해가 바이트까지 같다 | `apps/server/src/http/scoring-unchanged.test.ts` |
+| 끝에서 끝 | 프록시와 SSO를 띄워 로그인 → 세계 → 실험 → 결과가 돈다 | 예정 |
+
+시험 파일 칸은 만든 기능의 시험 경로예요. 아직 만들지 않은 줄은 '예정'이라고 적고, 만들면 경로로 바꿔요(`DOC096`이 경로 없는 줄을 알려요).
 
 가 단계의 시험은 이 파일들이에요(모두 `[REQ-054]`):
 

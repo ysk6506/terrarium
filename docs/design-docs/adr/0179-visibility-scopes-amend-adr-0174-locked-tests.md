@@ -11,6 +11,13 @@ enforced_by:
   - apps/server/src/runtime/permissions-scope.test.ts
 touches_protected:
   - docs/design-docs/adr/0174-permissions-proxy-identity-three-scopes-audit.md
+updates_docs:
+  - docs/design-docs/permissions.md
+  - docs/design-docs/http-api.md
+  - docs/design-docs/model-registration.md
+amends:
+  - adr: "0174"
+    what: 기본 모델은 범위가 모두인 모델만, 범위 바꾸기는 한 길
 decision_hash: 9ac8aca7d31053c6
 ---
 # ADR-0179 공개 범위의 두 결정(기본 모델은 "모두"인 모델만, 범위 바꾸기는 한 길)과 ADR-0174의 바뀐 시험 목록

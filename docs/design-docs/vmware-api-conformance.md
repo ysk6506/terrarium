@@ -2,7 +2,7 @@
 title: vCenter와 Aria Operations 응답 — 참고서와 맞춘 것, 못 맞춘 것
 kind: spec
 status: active
-last_verified: 2026-11-04
+last_verified: 2026-11-12
 covers:
   - packages/core/src/facades/vcenter.ts
   - packages/core/src/facades/vrops.ts
@@ -10,6 +10,7 @@ covers:
 covers_hash: 521b895b97419aad
 verification_log:
   - "2026-11-04: 처음 썼다: vcenter.ts와 vrops.ts의 응답 모양을 Broadcom 참고서 쪽(8.0.3, VCF Operations)과 옮긴 스키마에 대조했다 (REQ-061, ADR-0058)"
+  - "2026-11-12: vcenter.ts, vrops.ts, 스키마, 대조 시험과 다시 맞춰 봄: 표에 리소스 하나와 오류 응답을 더하고, /rest 경로의 범위와 전원 동작을 한계에 적음"
 ---
 # vCenter와 Aria Operations 응답 (REQ-061, ADR-0058)
 
@@ -30,7 +31,9 @@ verification_log:
 | vCenter | `GET /api/vcenter/vm/{vm}` | VM 상세: `guest_OS`, `hardware`, `boot`, `cpu`, `memory`, 장치 맵들까지 필수 항목 전부 |
 | vCenter | `GET /api/vcenter/host`, `cluster`, `datastore` | 호스트·클러스터·데이터스토어 요약 |
 | vCenter | `POST/GET /api/session` | 새 토큰(201, JSON 글자), 세션 정보(`user`, `created_time`, `last_accessed_time`) |
+| vCenter | 오류 응답 (예: 없는 VM은 404) | `error_type`(`NOT_FOUND` 등)과 `messages[]`(`id`, `default_message`, `args`) |
 | vROps | `GET /suite-api/api/resources` | 리소스: `creationTime`, `resourceHealth`, `resourceHealthValue`, `resourceKey`, `resourceStatusStates` |
+| vROps | `GET /suite-api/api/resources/{id}` | 리소스 하나: 목록의 한 줄과 같은 모양 |
 | vROps | `GET …/resources/{id}/stats/latest` | `values[].stat-list.stat[]` |
 | vROps | `GET /suite-api/api/alerts` | 경보: `alertLevel`, `status`, `controlState`, … |
 | vROps | `POST /suite-api/api/auth/token/acquire` | `token`, `validity`(만료 시각, 밀리초), `expiresAt`(글), `roles` |
@@ -46,3 +49,5 @@ verification_log:
 - 월드가 VM의 디스크·네트워크 카드를 갖고 있지 않아서 그 맵들은 비어 있다.
 - 에러 본문의 `id`와 데이터스토어 용량은 진짜와 다르다(용량은 모두 같은 값).
 - 7.0 호환 경로는 8.0.3 참고서의 VM 상세 모양으로 대조했다.
+- 7.0 호환 경로(`/rest`)는 세션, VM 목록·상세, 호스트 목록만 있다. 클러스터와 데이터스토어는 `/api`에만 있다.
+- VM 전원 동작(`POST /api/vcenter/vm/{vm}/power?action=start|stop|reset`)은 본문 없이 204로 답해서 스키마로 대조하지 않는다.

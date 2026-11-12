@@ -9,6 +9,9 @@ verification_log:
   - "2026-11-11: 11절 관측성. cluster/control-routes.ts의 metricsText, runtime/executor.ts의 traceparent와 대조"
   - "2026-11-11: 9·10절: 엑셀 읽기 설정과 못 읽는 모양, SPL의 기대하는 컬럼 (ADR-0161)"
   - "2026-11-11: ADR-0167의 말로 다시 씀. 뜻은 그대로"
+follows:
+  - docs/design-docs/reality-data-and-ontology.md
+follows_hash: a89a1eda8c275dbe
 ---
 # 소스 관리 (REQ-115 예정, ADR-0151)
 

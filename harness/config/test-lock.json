@@ -42487,6 +42487,94 @@
    "added": "2026-11-06",
    "amended_by": null
   },
+  "apps/web/src/logic/live.test.ts::<import:73535287>": {
+   "kind": "support",
+   "hash": "735352871ebf5732",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/web/src/logic/live.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/web/src/logic/live.test.ts::<import:e8f26ae3>": {
+   "kind": "support",
+   "hash": "e8f26ae3511a28b0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/web/src/logic/live.test.ts::=summary": {
+   "kind": "support",
+   "hash": "decb7fe6b9cc5b91",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/web/src/logic/live.test.ts::an experiment that finished runs before the live stream opened [REQ-030] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/web/src/logic/live.test.ts::an experiment that finished runs before the live stream opened [REQ-030] > a summary further along than the page's own asks for the full view again": {
+   "kind": "test",
+   "hash": "f175fd93268fe0d8",
+   "asserts": 1,
+   "literals": [
+    "\"0\"",
+    "\"5\"",
+    "\"5\"",
+    "\"a summary further along than the page's own asks for the full view again\"",
+    "\"experiment\"",
+    "\"experiment\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "apps/web/src/logic/live.test.ts::an experiment that finished runs before the live stream opened [REQ-030] > a summary that agrees with the page changes nothing to fetch": {
+   "kind": "test",
+   "hash": "d13f0fc4c4c14e37",
+   "asserts": 1,
+   "literals": [
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"a summary that agrees with the page changes nothing to fetch\"",
+    "\"experiment\"",
+    "\"experiment\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "apps/web/src/logic/logic.test.ts::<import:1c771af5>": {
    "kind": "support",
    "hash": "1c771af57f36c73e",
@@ -70089,6 +70177,1709 @@
    "added": "2026-10-28",
    "amended_by": null
   },
+  "harness/src/checks/doc-amends.test.ts::<import:1701697f>": {
+   "kind": "support",
+   "hash": "1701697fc183201f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:2112a8ad>": {
+   "kind": "support",
+   "hash": "2112a8ad340ae02c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:328d0a04>": {
+   "kind": "support",
+   "hash": "328d0a0456491a42",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:329d33e4>": {
+   "kind": "support",
+   "hash": "329d33e47796fd67",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:46dc40aa>": {
+   "kind": "support",
+   "hash": "46dc40aa82ca0ed6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:55ef6c18>": {
+   "kind": "support",
+   "hash": "55ef6c18dcec7e3a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:c37b1540>": {
+   "kind": "support",
+   "hash": "c37b1540b586de0f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::<import:f597dc79>": {
+   "kind": "support",
+   "hash": "f597dc7951bc5887",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::=amendProblems": {
+   "kind": "support",
+   "hash": "90596a235b0d5079",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::=index": {
+   "kind": "support",
+   "hash": "a0e0e246a1de0385",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::=NEW": {
+   "kind": "support",
+   "hash": "ecd49f50842f6c7e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::=OLD": {
+   "kind": "support",
+   "hash": "21704bc46b42c58a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::=pair": {
+   "kind": "support",
+   "hash": "ddd256ec4e81cb81",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::=WHAT": {
+   "kind": "support",
+   "hash": "ab434296ac2c3f27",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::a new ADR says what it changed [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::a new ADR says what it changed [REQ-020] > =base": {
+   "kind": "support",
+   "hash": "b4deff33cb88eb66",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::a new ADR says what it changed [REQ-020] > =withAmends": {
+   "kind": "support",
+   "hash": "806183f1daf0abb7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::a new ADR says what it changed [REQ-020] > the file-name form is refused for a new ADR; the rich form passes": {
+   "kind": "test",
+   "hash": "588bbce2f21f7fae",
+   "asserts": 3,
+   "literals": [
+    "\"0001\"",
+    "\"0001\"",
+    "\"0001\"",
+    "\"0001\"",
+    "\"0001-old.md\"",
+    "\"0001-old.md\"",
+    "\"1\"",
+    "\"1\"",
+    "\"amends 0001-old.md without saying what it changed\"",
+    "\"amends 0001-old.md without saying what it changed\"",
+    "\"the file-name form is refused for a new ADR; the rich form passes\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::amends entries come in two forms [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::amends entries come in two forms [REQ-020] > a file name and { adr, what } both read as the ADR they name": {
+   "kind": "test",
+   "hash": "f9ab4091c7c4616b",
+   "asserts": 4,
+   "literals": [
+    "\" 한 구절 \"",
+    "\" 한 구절 \"",
+    "\"0\"",
+    "\"0\"",
+    "\"0001-old.md\"",
+    "\"0001-old.md\"",
+    "\"0001-old.md\"",
+    "\"0001-old.md\"",
+    "\"0001-old.md\"",
+    "\"0002\"",
+    "\"0002\"",
+    "\"0002-new.md\"",
+    "\"0002-new.md\"",
+    "\"0002-new.md\"",
+    "\"0009\"",
+    "\"0009\"",
+    "\"0009\"",
+    "\"0009\"",
+    "\"a file name and { adr, what } both read as the ADR they name\"",
+    "\"nope\"",
+    "\"nope\"",
+    "\"한 구절\"",
+    "\"한 구절\"",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::amends entries come in two forms [REQ-020] > the back entry carries the phrase when there is one": {
+   "kind": "test",
+   "hash": "ccd174ecf3c37967",
+   "asserts": 2,
+   "literals": [
+    "\"0002\"",
+    "\"0002\"",
+    "\"0002-new.md\"",
+    "\"0002-new.md\"",
+    "\"0002-new.md\"",
+    "\"0002-new.md\"",
+    "\"0002-new.md\"",
+    "\"0002-new.md\"",
+    "\"the back entry carries the phrase when there is one\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::DOC091 reads the rich form on both sides [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::DOC091 reads the rich form on both sides [REQ-020] > a rich amends without the other side still fails on the amending ADR": {
+   "kind": "test",
+   "hash": "e4cc7d34ed1de71e",
+   "asserts": 1,
+   "literals": [
+    "\"0001\"",
+    "\"0001\"",
+    "\"a rich amends without the other side still fails on the amending ADR\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::DOC091 reads the rich form on both sides [REQ-020] > rich on both sides passes, and a number that is no ADR fails": {
+   "kind": "test",
+   "hash": "2bf2753646761b51",
+   "asserts": 2,
+   "literals": [
+    "\"0001\"",
+    "\"0002\"",
+    "\"0009\"",
+    "\"0009\"",
+    "\"rich on both sides passes, and a number that is no ADR fails\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::link-amends copies the phrase to the amended ADR [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::link-amends copies the phrase to the amended ADR [REQ-020] > the generated list shows the phrase beside the amending ADR": {
+   "kind": "test",
+   "hash": "03c93402e3c2cb3c",
+   "asserts": 2,
+   "literals": [
+    "\"0001\"",
+    "\"0001-old.md\"",
+    "\"\\n\"",
+    "\"the generated list shows the phrase beside the amending ADR\"",
+    "\"일부 고침: [0002](\"",
+    "\"일부 고침: [0002](\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::link-amends copies the phrase to the amended ADR [REQ-020] > the phrase lands in amended_by, once, and a bare entry is upgraded": {
+   "kind": "test",
+   "hash": "af0abc97a19e57fd",
+   "asserts": 4,
+   "literals": [
+    "\"0001\"",
+    "\"0002\"",
+    "\"0002\"",
+    "\"0002-new.md\"",
+    "\"the phrase lands in amended_by, once, and a bare entry is upgraded\"",
+    "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-audit.test.ts::<import:0525def2>": {
+   "kind": "support",
+   "hash": "0525def2b6b34466",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-audit.test.ts::<import:1701697f>": {
+   "kind": "support",
+   "hash": "1701697fc183201f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-audit.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-audit.test.ts::<import:46dc40aa>": {
+   "kind": "support",
+   "hash": "46dc40aa82ca0ed6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-audit.test.ts::<import:60edf9ba>": {
+   "kind": "support",
+   "hash": "60edf9baeffed469",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-audit.test.ts::<import:9502ff05>": {
+   "kind": "support",
+   "hash": "9502ff05194133e6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-audit.test.ts::<import:a52e17e9>": {
+   "kind": "support",
+   "hash": "a52e17e97eda65bb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-audit.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-audit.test.ts::=docs": {
+   "kind": "support",
+   "hash": "e5c6f9c4fa2680c7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-audit.test.ts::audit queue [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-audit.test.ts::audit queue [REQ-020] > a re-verify that leaves the body alone puts the doc in the queue; an edit does not": {
+   "kind": "test",
+   "hash": "d7dcb26bbd411cf0",
+   "asserts": 3,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"2026-11-11\"",
+    "\"2026-11-12\"",
+    "\"a re-verify that leaves the body alone puts the doc in the queue; an edit does not\"",
+    "\"again\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"first\"",
+    "\"last_audited=never\"",
+    "\"last_audited=never\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-audit.test.ts::audit queue [REQ-020] > audit records last_audited, clears the count and needs a note; the longest unaudited comes first": {
+   "kind": "test",
+   "hash": "5c9e4121e3ae2e42",
+   "asserts": 4,
+   "literals": [
+    "\" \"",
+    "\" \"",
+    "\"2026-11-10\"",
+    "\"2026-11-11\"",
+    "\"2026-11-12\"",
+    "\"2026-11-12\"",
+    "\"2026-11-12\"",
+    "\"2026-11-13\"",
+    "\"2026-11-14\"",
+    "\"a\"",
+    "\"audit records last_audited, clears the count and needs a note; the longest unaudited comes first\"",
+    "\"b\"",
+    "\"c\"",
+    "\"d\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/index.md\"",
+    "\"docs/index.md\"",
+    "\"docs/index.md\"",
+    "\"docs/index.md\"",
+    "\"docs/index.md\"",
+    "\"docs/index.md\"",
+    "\"docs/index.md\"",
+    "\"docs/index.md\"",
+    "\"read against the code, fine\"",
+    "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-audit.test.ts::test rows [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-audit.test.ts::test rows [REQ-020] > =table": {
+   "kind": "support",
+   "hash": "8fcf3d06039d9f73",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-audit.test.ts::test rows [REQ-020] > a table with a 시험 파일 column is judged by that column, with brace paths expanded": {
+   "kind": "test",
+   "hash": "b83f56b519c6c93b",
+   "asserts": 1,
+   "literals": [
+    "\"(1/2)\"",
+    "\"(1/2)\"",
+    "\"0\"",
+    "\"0\"",
+    "\"a table with a 시험 파일 column is judged by that column, with brace paths expanded\"",
+    "\"apps/x/a-1.test.ts\"",
+    "\"apps/x/a-2.test.ts\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"export {};\\n\"",
+    "\"export {};\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-audit.test.ts::test rows [REQ-020] > rows of a test section without an existing test path are counted; planned rows are not": {
+   "kind": "test",
+   "hash": "6a22ab0a74886d2c",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"DOC096\"",
+    "\"DOC096\"",
+    "\"apps/x/a.test.ts\"",
+    "\"docs/guide.md (1/2)\"",
+    "\"docs/guide.md (1/2)\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"export {};\\n\"",
+    "\"rows of a test section without an existing test path are counted; planned rows are not\"",
+    "\"| a | `apps/x/a.test.ts` |\"",
+    "\"| b | 말만 있다 |\"",
+    "\"| c | 예정 |\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-claims.test.ts::<import:4d08dd16>": {
+   "kind": "support",
+   "hash": "4d08dd1670bf0587",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-claims.test.ts::<import:c37b1540>": {
+   "kind": "support",
+   "hash": "c37b1540b586de0f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-claims.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-claims.test.ts::=FACADE": {
+   "kind": "support",
+   "hash": "b02162180f577726",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-claims.test.ts::=messages": {
+   "kind": "support",
+   "hash": "f141728cc23177f7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-claims.test.ts::=repo": {
+   "kind": "support",
+   "hash": "9ce832731f0fbb2d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-claims.test.ts::=ROUTES": {
+   "kind": "support",
+   "hash": "1ee4327e54e29d68",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-claims.test.ts::what a document names must exist [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-claims.test.ts::what a document names must exist [REQ-020] > a missing ADR or REQ fails unless the line says it is being made": {
+   "kind": "test",
+   "hash": "6e653eed6ee49e06",
+   "asserts": 1,
+   "literals": [
+    "\"ADR-0999 and REQ-999.\\nADR-0998 (만드는 중).\"",
+    "\"ADR-0999 does not exist\"",
+    "\"ADR-0999 does not exist\"",
+    "\"REQ-999 is not in the requirements\"",
+    "\"REQ-999 is not in the requirements\"",
+    "\"a missing ADR or REQ fails unless the line says it is being made\"",
+    "\"docs/index.md\"",
+    "\"docs/product-specs/requirements.md\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-claims.test.ts::what a document names must exist [REQ-020] > a name written next to a file must be in that file; names next to nothing are not checked": {
+   "kind": "test",
+   "hash": "d2507bf22396276d",
+   "asserts": 3,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"`gone`\"",
+    "\"`gone`\"",
+    "\"`other.ts`의 `impactOf` and `gone`(`impact.ts`) and plain `lastVerified`.\"",
+    "\"a name written next to a file must be in that file; names next to nothing are not checked\"",
+    "\"impactOf\"",
+    "\"impactOf\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-claims.test.ts::what a document names must exist [REQ-020] > a route fails when the contract lacks it or has it under another method": {
+   "kind": "test",
+   "hash": "f495ddce1544e37d",
+   "asserts": 1,
+   "literals": [
+    "\"3\"",
+    "\"3\"",
+    "\"`PATCH /api/worlds/:id` and `GET /api/gone` and `DELETE /api/vcenter/vm`.\"",
+    "\"a route fails when the contract lacks it or has it under another method\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-claims.test.ts::what a document names must exist [REQ-020] > ADR bodies are not scanned": {
+   "kind": "test",
+   "hash": "99bed268e862c67b",
+   "asserts": 1,
+   "literals": [
+    "\"# D\\n`TERRARIUM_GONE` ADR-0999\\n\"",
+    "\"ADR bodies are not scanned\"",
+    "\"docs/index.md\"",
+    "\"fine\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-claims.test.ts::what a document names must exist [REQ-020] > an unknown environment variable, script or rule code fails": {
+   "kind": "test",
+   "hash": "5ebc17625f11761c",
+   "asserts": 2,
+   "literals": [
+    "\"3\"",
+    "\"3\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"`TERRARIUM_GONE` and `pnpm nothing` and `ARCH999`.\"",
+    "\"an unknown environment variable, script or rule code fails\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-claims.test.ts::what a document names must exist [REQ-020] > things that exist pass: env var, script, route, facade route, rule code, symbol, ADR": {
+   "kind": "test",
+   "hash": "33df9afed44dc9fb",
+   "asserts": 1,
+   "literals": [
+    "\"ADR-0001 and REQ-001 stay quiet when they exist.\"",
+    "\"Codes `ARCH010` and `QUAL001`. `impact.ts`의 `impactOf`, `impactOf`(`impact.ts`).\"",
+    "\"\\n\"",
+    "\"`GET /api/worlds/:id` and `PUT /api/worlds/{id}` and `GET /api/vcenter/vm`.\"",
+    "\"`TERRARIUM_PORT` sets it. Run `pnpm check`, `pnpm install` and `pnpm tsx x.ts`.\"",
+    "\"docs/index.md\"",
+    "\"docs/product-specs/requirements.md\"",
+    "\"things that exist pass: env var, script, route, facade route, rule code, symbol, ADR\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-decisions.test.ts::<import:0c40cac8>": {
+   "kind": "support",
+   "hash": "0c40cac8654f98b7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-decisions.test.ts::<import:1701697f>": {
+   "kind": "support",
+   "hash": "1701697fc183201f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-decisions.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-decisions.test.ts::<import:32bf0524>": {
+   "kind": "support",
+   "hash": "32bf0524277952df",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-decisions.test.ts::<import:46dc40aa>": {
+   "kind": "support",
+   "hash": "46dc40aa82ca0ed6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-decisions.test.ts::<import:c99c0d8d>": {
+   "kind": "support",
+   "hash": "c99c0d8d11f57026",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-decisions.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-decisions.test.ts::<import:f8cd0c0e>": {
+   "kind": "support",
+   "hash": "f8cd0c0e0ad6b69a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-decisions.test.ts::=repo": {
+   "kind": "support",
+   "hash": "1de773687e70ec9d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-decisions.test.ts::link-amends writes amended_by on the amended ADR, front matter only [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-decisions.test.ts::link-amends writes amended_by on the amended ADR, front matter only [REQ-020] > an unknown target is an error": {
+   "kind": "test",
+   "hash": "8ce3294ce4f2f429",
+   "asserts": 1,
+   "literals": [
+    "\"0009-none.md\"",
+    "\"an unknown target is an error\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-decisions.test.ts::link-amends writes amended_by on the amended ADR, front matter only [REQ-020] > it adds the entry once and leaves the sealed body alone": {
+   "kind": "test",
+   "hash": "6ca95853e0f2560b",
+   "asserts": 5,
+   "literals": [
+    "\"0002-mid.md\"",
+    "\"0002-mid.md\"",
+    "\"2026-11-11\"",
+    "\"2026-11-11\"",
+    "\"DOC091\"",
+    "\"DOC091\"",
+    "\"it adds the entry once and leaves the sealed body alone\"",
+    "\"utf8\"",
+    "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-decisions.test.ts::the decisions table is made from ADR front matter [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-decisions.test.ts::the decisions table is made from ADR front matter [REQ-020] > one line per ADR in number order with status and who changed it": {
+   "kind": "test",
+   "hash": "d13f24dc622c6287",
+   "asserts": 6,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"3\"",
+    "\"3\"",
+    "\"ADR-0003 새 결정\"",
+    "\"ADR-0003 새 결정\"",
+    "\"\\n\"",
+    "\"one line per ADR in number order with status and who changed it\"",
+    "\"| [\"",
+    "\"대체: [0003]\"",
+    "\"대체: [0003]\"",
+    "\"대체됨\"",
+    "\"대체됨\"",
+    "\"일부 고침: [0002]\"",
+    "\"일부 고침: [0002]\"",
+    "\"중간 \\\\| 결정\"",
+    "\"중간 \\\\| 결정\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-decisions.test.ts::the decisions table is made from ADR front matter [REQ-020] > the file is a notice when behind and quiet when current": {
+   "kind": "test",
+   "hash": "6ce8f58dbbc2ddad",
+   "asserts": 4,
+   "literals": [
+    "\"# 결정 목록\"",
+    "\"# 결정 목록\"",
+    "\"--root\"",
+    "\"--root\"",
+    "\"0\"",
+    "\"0\"",
+    "\"DOC098\"",
+    "\"DOC098\"",
+    "\"decisions\"",
+    "\"decisions\"",
+    "\"docs/generated/decisions.md\"",
+    "\"docs/generated/decisions.md\"",
+    "\"the file is a notice when behind and quiet when current\"",
+    "\"utf8\"",
+    "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-diff.test.ts::<import:2112a8ad>": {
+   "kind": "support",
+   "hash": "2112a8ad340ae02c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-diff.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-diff.test.ts::<import:329d33e4>": {
+   "kind": "support",
+   "hash": "329d33e47796fd67",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-diff.test.ts::<import:32bf0524>": {
+   "kind": "support",
+   "hash": "32bf0524277952df",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-diff.test.ts::<import:a52e17e9>": {
+   "kind": "support",
+   "hash": "a52e17e97eda65bb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-diff.test.ts::<import:cd66fb27>": {
+   "kind": "support",
+   "hash": "cd66fb2759e02f26",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-diff.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-diff.test.ts::=base": {
+   "kind": "support",
+   "hash": "ac3ec48b9e4507b5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-diff.test.ts::=NEW_ADR": {
+   "kind": "support",
+   "hash": "336139dbe2a4f1bd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-diff.test.ts::=problems": {
+   "kind": "support",
+   "hash": "5a6fa4e30b278b69",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-diff.test.ts::a new ADR names the docs it updates [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-diff.test.ts::a new ADR names the docs it updates [REQ-020] > a named doc must really change in the same change, and must exist": {
+   "kind": "test",
+   "hash": "c441b78566e5c4d0",
+   "asserts": 2,
+   "literals": [
+    "\"DOC090 updates_docs names docs/guide.md, but this change does not edit it\"",
+    "\"DOC090 updates_docs names docs/guide.md, but this change does not edit it\"",
+    "\"DOC090 updates_docs names docs/none.md, which does not exist\"",
+    "\"DOC090 updates_docs names docs/none.md, which does not exist\"",
+    "\"a named doc must really change in the same change, and must exist\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/none.md\"",
+    "\"docs/none.md\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-diff.test.ts::a new ADR names the docs it updates [REQ-020] > an empty list needs a reason": {
+   "kind": "test",
+   "hash": "2f44d97af5332d01",
+   "asserts": 2,
+   "literals": [
+    "\"DOC090 updates_docs is empty without updates_docs_reason\"",
+    "\"DOC090 updates_docs is empty without updates_docs_reason\"",
+    "\"an empty list needs a reason\"",
+    "\"no doc changes\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-diff.test.ts::a new ADR names the docs it updates [REQ-020] > no updates_docs fails DOC090; old ADRs are not asked": {
+   "kind": "test",
+   "hash": "9d1c6e83de9b70bd",
+   "asserts": 2,
+   "literals": [
+    "\"DOC090 new ADR does not say which docs it updates\"",
+    "\"DOC090 new ADR does not say which docs it updates\"",
+    "\"no updates_docs fails DOC090; old ADRs are not asked\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-diff.test.ts::notices [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-diff.test.ts::notices [REQ-020] > a doc whose body is unchanged and only re-verified is named (DOC097); an edited one is not": {
+   "kind": "test",
+   "hash": "61b1f50cc89f9031",
+   "asserts": 3,
+   "literals": [
+    "\"2026-11-12\"",
+    "\"DOC097\"",
+    "\"DOC097\"",
+    "\"DOC097\"",
+    "\"DOC097\"",
+    "\"HEAD\"",
+    "\"HEAD\"",
+    "\"HEAD\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"a doc whose body is unchanged and only re-verified is named (DOC097); an edited one is not\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"looked\"",
+    "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-diff.test.ts::notices [REQ-020] > a stale decisions file is a notice, never a violation (DOC098)": {
+   "kind": "test",
+   "hash": "7b1332ff972b6216",
+   "asserts": 2,
+   "literals": [
+    "\"DOC098\"",
+    "\"DOC098\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"a stale decisions file is a notice, never a violation (DOC098)\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-facts.test.ts::<import:0a16891b>": {
+   "kind": "support",
+   "hash": "0a16891bd76aacb1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-facts.test.ts::<import:4d08dd16>": {
+   "kind": "support",
+   "hash": "4d08dd1670bf0587",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-facts.test.ts::<import:50321f6c>": {
+   "kind": "support",
+   "hash": "50321f6c860a7a17",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-facts.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-facts.test.ts::=fact": {
+   "kind": "support",
+   "hash": "534eec3f7fa88d99",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-facts.test.ts::=found": {
+   "kind": "support",
+   "hash": "603c2cdf6d748e43",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-facts.test.ts::=repo": {
+   "kind": "support",
+   "hash": "1b8aef3f1a166dfa",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-facts.test.ts::=ROUTES": {
+   "kind": "support",
+   "hash": "87f1ccf57c33c8a8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-facts.test.ts::counted facts [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-facts.test.ts::counted facts [REQ-020] > a different number fails and says which number is true": {
+   "kind": "test",
+   "hash": "9a9d0c5633a76f4c",
+   "asserts": 3,
+   "literals": [
+    "\"7\"",
+    "\"a different number fails and says which number is true\"",
+    "\"contract_routes\"",
+    "\"has 2\"",
+    "\"has 2\"",
+    "\"reverify does not fix\"",
+    "\"reverify does not fix\"",
+    "\"says 7\"",
+    "\"says 7\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-facts.test.ts::counted facts [REQ-020] > a written number equal to the count passes": {
+   "kind": "test",
+   "hash": "ea0501ed3897df03",
+   "asserts": 1,
+   "literals": [
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"a written number equal to the count passes\"",
+    "\"check_codes\"",
+    "\"check_codes\"",
+    "\"contract_routes\"",
+    "\"contract_routes\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-facts.test.ts::counted facts [REQ-020] > an unknown fact name fails": {
+   "kind": "test",
+   "hash": "fb50bb79b3a9e66a",
+   "asserts": 1,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"an unknown fact name fails\"",
+    "\"nonsense\"",
+    "\"nonsense\"",
+    "\"unknown fact 'nonsense'\"",
+    "\"unknown fact 'nonsense'\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-facts.test.ts::counted facts [REQ-020] > the real repository's counts come from the running core code": {
+   "kind": "test",
+   "hash": "e154f52e5d4064e2",
+   "asserts": 1,
+   "literals": [
+    "\"DOC095\"",
+    "\"DOC095\"",
+    "\"the real repository's counts come from the running core code\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::<import:1701697f>": {
+   "kind": "support",
+   "hash": "1701697fc183201f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::<import:c37b1540>": {
+   "kind": "support",
+   "hash": "c37b1540b586de0f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::<import:cd66fb27>": {
+   "kind": "support",
+   "hash": "cd66fb2759e02f26",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::<import:f26506b6>": {
+   "kind": "support",
+   "hash": "f26506b66bf8d35b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::=codes": {
+   "kind": "support",
+   "hash": "f16882c6b084f198",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::=read": {
+   "kind": "support",
+   "hash": "f95d83a94ecd354a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::amends and amended_by point at each other [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::amends and amended_by point at each other [REQ-020] > =onlyAmend": {
+   "kind": "support",
+   "hash": "5fee37ec356a7083",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::amends and amended_by point at each other [REQ-020] > =pair": {
+   "kind": "support",
+   "hash": "2e670e1811d045cd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::amends and amended_by point at each other [REQ-020] > a one-sided amends fails DOC091 on the amending ADR": {
+   "kind": "test",
+   "hash": "4aa35ac5ba2ab8fc",
+   "asserts": 1,
+   "literals": [
+    "\"0001-old.md\"",
+    "\"0001-old.md\"",
+    "\"a one-sided amends fails DOC091 on the amending ADR\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::amends and amended_by point at each other [REQ-020] > amends naming a missing ADR fails": {
+   "kind": "test",
+   "hash": "703a78fc93bc4573",
+   "asserts": 1,
+   "literals": [
+    "\"0009-none.md\"",
+    "\"0009-none.md\"",
+    "\"amends naming a missing ADR fails\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::amends and amended_by point at each other [REQ-020] > both sides present passes; amended_by without amends fails on the amended ADR": {
+   "kind": "test",
+   "hash": "e60c4ab9cacef7b3",
+   "asserts": 2,
+   "literals": [
+    "\"0001-old.md\"",
+    "\"0001-old.md\"",
+    "\"0002-new.md\"",
+    "\"0002-new.md\"",
+    "\"0002-new.md\"",
+    "\"0002-new.md\"",
+    "\"both sides present passes; amended_by without amends fails on the amended ADR\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::docs follow other docs [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::docs follow other docs [REQ-020] > a document with neither covers nor follows fails DOC092, an ADR is exempt": {
+   "kind": "test",
+   "hash": "f2cc7152aed641ba",
+   "asserts": 2,
+   "literals": [
+    "\"DOC071\"",
+    "\"DOC071\"",
+    "\"DOC092\"",
+    "\"DOC092\"",
+    "\"a document with neither covers nor follows fails DOC092, an ADR is exempt\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::docs follow other docs [REQ-020] > a followed doc whose body changes makes the follower stale, front matter changes do not": {
+   "kind": "test",
+   "hash": "fce9ed9c46d783b0",
+   "asserts": 5,
+   "literals": [
+    "\"DOC010\"",
+    "\"DOC010\"",
+    "\"DOC011\"",
+    "\"DOC011\"",
+    "\"a followed doc whose body changes makes the follower stale, front matter changes do not\"",
+    "\"docs/index.md\"",
+    "\"docs/plan.md\"",
+    "\"docs/plan.md\"",
+    "\"docs/plan.md\"",
+    "\"docs/spec.md\"",
+    "\"docs/spec.md\"",
+    "\"docs/spec.md\"",
+    "\"docs/spec.md\"",
+    "\"docs/spec.md\"",
+    "\"last_verified: 2026-11-10\"",
+    "\"last_verified: 2026-11-11\"",
+    "\"read it\"",
+    "\"read v2\"",
+    "\"v1\"",
+    "\"v2\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::docs follow other docs [REQ-020] > follows that match nothing fail DOC012": {
+   "kind": "test",
+   "hash": "b37fb7ff1f2dfe59",
+   "asserts": 1,
+   "literals": [
+    "\"DOC012\"",
+    "\"DOC012\"",
+    "\"docs/gone.md\"",
+    "\"docs/guide.md\"",
+    "\"follows that match nothing fail DOC012\"",
+    "\"x\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::docs follow other docs [REQ-020] > the ADR folder is reached once the index links to it": {
+   "kind": "test",
+   "hash": "d2baf91c7c8adbc0",
+   "asserts": 2,
+   "literals": [
+    "\"DOC040\"",
+    "\"DOC040\"",
+    "\"DOC040\"",
+    "\"DOC040\"",
+    "\"docs/index.md\"",
+    "\"the ADR folder is reached once the index links to it\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::front matter helper stays parseable [REQ-020]": {
+   "kind": "test",
+   "hash": "fbd946eec36a7608",
+   "asserts": 1,
+   "literals": [
+    "\"front matter helper stays parseable [REQ-020]\"",
+    "\"package.json\"",
+    "\"package.json\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::the product goal sentence leads README and AGENTS [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::the product goal sentence leads README and AGENTS [REQ-020] > =goal": {
+   "kind": "support",
+   "hash": "b7ae88b289446416",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::the product goal sentence leads README and AGENTS [REQ-020] > =spec": {
+   "kind": "support",
+   "hash": "65d0917f80c2dd74",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::the product goal sentence leads README and AGENTS [REQ-020] > =withDocs": {
+   "kind": "support",
+   "hash": "df122c8950656a9d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::the product goal sentence leads README and AGENTS [REQ-020] > an old sentence or one that is only later in the file fails DOC093": {
+   "kind": "test",
+   "hash": "d2eb348f1496dad8",
+   "asserts": 2,
+   "literals": [
+    "\"DOC093\"",
+    "\"DOC093\"",
+    "\"README.md\"",
+    "\"README.md\"",
+    "\"an old sentence or one that is only later in the file fails DOC093\"",
+    "\"옛 문장.\"",
+    "\"옛 문장.\"",
+    "\"옛 문장.\\n\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-follow.test.ts::the product goal sentence leads README and AGENTS [REQ-020] > the sentence in the first paragraph passes, bold or plain": {
+   "kind": "test",
+   "hash": "65b43ade9644620c",
+   "asserts": 1,
+   "literals": [
+    "\"the sentence in the first paragraph passes, bold or plain\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "harness/src/checks/docs-main.test.ts::<import:0458d18f>": {
    "kind": "support",
    "hash": "0458d18f1a491d16",
@@ -70132,6 +71923,16 @@
   "harness/src/checks/docs-main.test.ts::<import:6c4348aa>": {
    "kind": "support",
    "hash": "6c4348aabc71ab10",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::<import:73c7b1a0>": {
+   "kind": "support",
+   "hash": "73c7b1a0c3bfb95a",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -70199,15 +72000,25 @@
    "added": "2026-11-11",
    "amended_by": null
   },
-  "harness/src/checks/docs-main.test.ts::=front": {
+  "harness/src/checks/docs-main.test.ts::=FOLLOW_HASH": {
    "kind": "support",
-   "hash": "3b4d4d313014b971",
+   "hash": "d3e1fe9c76277510",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-11",
    "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::=front": {
+   "kind": "support",
+   "hash": "221d865ae9d6d07b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": "0180-docs-follow-decisions-not-only-code.md"
   },
   "harness/src/checks/docs-main.test.ts::=realConfig": {
    "kind": "support",
@@ -70350,6 +72161,16 @@
    "added": "2026-10-28",
    "amended_by": null
   },
+  "harness/src/checks/docs.test.ts::<import:73c7b1a0>": {
+   "kind": "support",
+   "hash": "73c7b1a0c3bfb95a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
   "harness/src/checks/docs.test.ts::<import:92f44056>": {
    "kind": "support",
    "hash": "92f440565031fda5",
@@ -70440,15 +72261,25 @@
    "added": "2026-10-28",
    "amended_by": null
   },
-  "harness/src/checks/docs.test.ts::=front": {
+  "harness/src/checks/docs.test.ts::=FOLLOW_HASH": {
    "kind": "support",
-   "hash": "4f66beaa35e9f733",
+   "hash": "d3e1fe9c76277510",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-28",
+   "added": "2026-11-11",
    "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::=front": {
+   "kind": "support",
+   "hash": "eff3fb35acfb2a5a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": "0180-docs-follow-decisions-not-only-code.md"
   },
   "harness/src/checks/docs.test.ts::=MODULE": {
    "kind": "support",
@@ -70699,14 +72530,14 @@
   },
   "harness/src/checks/docs.test.ts::docs check [REQ-020] > broken links and dead path references fail; fenced code and external links are ignored": {
    "kind": "test",
-   "hash": "ab84dbf290bbea6d",
+   "hash": "c2a2903da3382445",
    "asserts": 1,
    "literals": [
     "\"# G\\n[gone](missing.md)\\nSee `packages/nope.ts` and `docs/index.md`.\\n```\\n[x](missing2.md) `packages/nope2.ts`\\n```\\n[ext](https://example.com) [anchor](#top)\\n\"",
-    "\"8\"",
-    "\"8\"",
-    "\"9\"",
-    "\"9\"",
+    "\"11\"",
+    "\"11\"",
+    "\"12\"",
+    "\"12\"",
     "\"DOC030\"",
     "\"DOC030\"",
     "\"DOC031\"",
@@ -70716,8 +72547,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-28",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0180-docs-follow-decisions-not-only-code.md"
   },
   "harness/src/checks/docs.test.ts::docs check [REQ-020] > comment and formatting changes do not make docs stale": {
    "kind": "test",
@@ -70759,14 +72590,14 @@
   },
   "harness/src/checks/docs.test.ts::docs check [REQ-020] > docs expire by kind, decisions never do": {
    "kind": "test",
-   "hash": "3b6ce0060e54b117",
+   "hash": "7269b9de072c2ef6",
    "asserts": 3,
    "literals": [
     "\"2020-01-01\"",
-    "\"2026-08-28\"",
-    "\"2026-08-28\"",
-    "\"2026-08-29\"",
-    "\"2026-08-29\"",
+    "\"2026-09-27\"",
+    "\"2026-09-27\"",
+    "\"2026-09-28\"",
+    "\"2026-09-28\"",
     "\"DOC020\"",
     "\"DOC020\"",
     "\"DOC020\"",
@@ -70779,8 +72610,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-10-28",
-   "amended_by": null
+   "added": "2026-11-11",
+   "amended_by": "0180-docs-follow-decisions-not-only-code.md"
   },
   "harness/src/checks/docs.test.ts::docs check [REQ-020] > future or malformed dates fail": {
    "kind": "test",
@@ -76178,6 +78009,136 @@
    "precision": [],
    "skips": 0,
    "added": "2026-10-28",
+   "amended_by": null
+  },
+  "harness/src/test-support/docs-repo.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/test-support/docs-repo.ts::<import:46dc40aa>": {
+   "kind": "support",
+   "hash": "46dc40aa82ca0ed6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/test-support/docs-repo.ts::<import:50321f6c>": {
+   "kind": "support",
+   "hash": "50321f6c860a7a17",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/test-support/docs-repo.ts::<import:7ff9be4a>": {
+   "kind": "support",
+   "hash": "7ff9be4ac5940a79",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/test-support/docs-repo.ts::<import:92f44056>": {
+   "kind": "support",
+   "hash": "92f440565031fda5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/test-support/docs-repo.ts::<import:9a8c126c>": {
+   "kind": "support",
+   "hash": "9a8c126c31747fdb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/test-support/docs-repo.ts::=adr": {
+   "kind": "support",
+   "hash": "4878dfc546c797c9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/test-support/docs-repo.ts::=ADR_DIR": {
+   "kind": "support",
+   "hash": "25e7cfc61835c91b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/test-support/docs-repo.ts::=docsRepo": {
+   "kind": "support",
+   "hash": "e0e237d33265ccfb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/test-support/docs-repo.ts::=FOLLOW_HASH": {
+   "kind": "support",
+   "hash": "b29d3a62b8d4faf6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/test-support/docs-repo.ts::=front": {
+   "kind": "support",
+   "hash": "426cee8e28262004",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/test-support/docs-repo.ts::=realConfig": {
+   "kind": "support",
+   "hash": "c119bd1c43e4f785",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
+   "amended_by": null
+  },
+  "harness/src/test-support/docs-repo.ts::=TODAY": {
+   "kind": "support",
+   "hash": "4122d770c4a1dd89",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-11",
    "amended_by": null
   },
   "harness/src/test-support/mini-repo.ts::<import:30102eeb>": {
