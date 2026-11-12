@@ -8,12 +8,12 @@ enforced_by:
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-115 예정). 만들 때 enforced_by를 지표·로그·이름표 시험으로 바꾼다.
 touches_protected:
   - docs/product-specs/requirements.md
-decision_hash: acef31dad2f94201
+decision_hash: 827ccb12c4ac2635
 ---
 # ADR-0155 수집의 관측성 — 지표는 밖으로 내보내고, 데이터가 평소와 다른지 보고, 로그에 내용을 찍지 않는다
 
 ## 맥락
-제품 책임자(연수 님)의 요구(2026-11-11): 데이터 수집을 관리하려면 관측성이 있어야 한다.
+제품 책임자의 요구(2026-11-11): 데이터 수집을 관리하려면 관측성이 있어야 한다.
 
 대조한 것:
 - ADR-0151은 실행 기록, 신선도, 한눈에 보는 화면, 제품 안 알림을 정했고 바깥 알림(메일·메신저)은 하지 않기로 했다.

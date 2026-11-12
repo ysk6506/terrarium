@@ -125,7 +125,7 @@ afterAll(() => close());
 async function api(method: string, path: string, body?: unknown) {
   const r = await fetch(`${base}${path}`, {
     method,
-    headers: { "content-type": "application/json", "x-terrarium-user": encodeURIComponent("연수") },
+    headers: { "content-type": "application/json", "x-terrarium-user": encodeURIComponent("하늘") },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   });
   return (await r.json()) as any;

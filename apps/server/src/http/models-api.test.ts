@@ -54,7 +54,7 @@ function setup(
     authenticator,
     ...(options.logger ? { logger: true } : {}),
   });
-  const send = async (method: string, url: string, payload?: object, who = "yeonsu") => {
+  const send = async (method: string, url: string, payload?: object, who = "haneul") => {
     const r = await app.inject({
       method: method as "GET",
       url,
@@ -91,7 +91,7 @@ describe("registering model APIs: add, list, change, delete [REQ-099]", () => {
       keyHint: "…ab12",
       headers: ["X-Gateway-Token"],
       isDefault: true,
-      owner: "yeonsu",
+      owner: "haneul",
     });
     const second = await send("POST", "/api/models", {
       ...mine,
@@ -192,7 +192,7 @@ describe("registering model APIs: add, list, change, delete [REQ-099]", () => {
 
   test("only whoever registered it changes or deletes it; its maker or an admin chooses the default", async () => {
     const { send, platform } = setup({ "/v1/models": models("a") });
-    const made = await send("POST", "/api/models", { ...mine, scope: "everyone" }, "yeonsu");
+    const made = await send("POST", "/api/models", { ...mine, scope: "everyone" }, "haneul");
     expect(
       (await send("PATCH", `/api/models/${made.body.id}`, { name: "x" }, "jimin")).status,
     ).toBe(403);
@@ -204,13 +204,13 @@ describe("registering model APIs: add, list, change, delete [REQ-099]", () => {
       (await send("POST", `/api/models/${made.body.id}/check`, undefined, "jimin")).status,
     ).toBe(200);
     expect(
-      (await send("POST", `/api/models/${made.body.id}/check`, undefined, "yeonsu")).status,
+      (await send("POST", `/api/models/${made.body.id}/check`, undefined, "haneul")).status,
     ).toBe(200);
     expect(
       (await send("POST", `/api/models/${made.body.id}/check`, undefined, "admin-kim")).status,
     ).toBe(200);
     expect(
-      (await send("POST", `/api/models/${made.body.id}/default`, undefined, "yeonsu")).status,
+      (await send("POST", `/api/models/${made.body.id}/default`, undefined, "haneul")).status,
     ).toBe(200);
     expect(
       (await send("POST", `/api/models/${made.body.id}/default`, undefined, "jimin")).status,
@@ -386,7 +386,7 @@ describe("registrations survive a restart, sealed [REQ-099]", () => {
     const up = upstream({ "/v1/models": models("a", "b") });
     const first = new SqliteStore(file);
     const one = testPlatform([], { adapters: { secretBox: box }, llm: { fetch: up.fetch } }, first);
-    const made = await one.platform.models.create(person("yeonsu", "proxy"), {
+    const made = await one.platform.models.create(person("haneul", "proxy"), {
       kind: "openai",
       name: "저장",
       baseUrl: "https://llm.corp.test",
@@ -403,9 +403,9 @@ describe("registrations survive a restart, sealed [REQ-099]", () => {
       { adapters: { secretBox: box }, llm: { fetch: up.fetch } },
       second,
     );
-    const [again] = await two.platform.models.list(person("yeonsu", "proxy"));
+    const [again] = await two.platform.models.list(person("haneul", "proxy"));
     expect(again).toMatchObject({ id: made.id, keyHint: "…ab12", isDefault: true });
-    const checked = await two.platform.models.check(person("yeonsu", "proxy"), made.id);
+    const checked = await two.platform.models.check(person("haneul", "proxy"), made.id);
     expect(checked.lastCheck).toMatchObject({ ok: true, modelCount: 2 });
     expect((up.calls.at(-1)?.init.headers as Record<string, string>).authorization).toBe(
       `Bearer ${KEY}`,

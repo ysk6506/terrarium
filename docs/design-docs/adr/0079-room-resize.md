@@ -7,12 +7,12 @@ enforced_by:
   - apps/web/src/logic/builder/builder.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
-decision_hash: 361c39356c2bd09c
+decision_hash: 477698612e0f2329
 ---
 # ADR-0079 서버룸과 건물은 직사각형 안에서 자유롭게 넓히고, 꽉 차면 길을 보여 준다
 
 ## 맥락
-연수 님이 물었다. 서버룸을 실제처럼 구성하려는 사용자가 분명히 생길 텐데 공간이 좁으면 어떡하나. 원하는 크기와 모양으로 넓힐 수 있어야 하나.
+제품 책임자가 물었다. 서버룸을 실제처럼 구성하려는 사용자가 분명히 생길 텐데 공간이 좁으면 어떡하나. 원하는 크기와 모양으로 넓힐 수 있어야 하나.
 지금 빌더의 logic에는 `resizeArea`가 있어 방과 건물의 직사각형을 바꿀 수 있고, 안의 장비가 잘리면 막는다. 그런데 화면에는 손잡이도 입력칸도 없어서 사람이 쓸 수 없다. 생성된 세계의 방은 생성기가 정한 크기 그대로다.
 
 ## 결정

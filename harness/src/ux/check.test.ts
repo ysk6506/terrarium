@@ -16,6 +16,7 @@ import {
   REPORT_FILE,
   ratchet,
   run,
+  staleNote,
   webHash,
   writeReport,
 } from "./check";
@@ -111,13 +112,14 @@ describe("the recorded measurement [REQ-041]", () => {
     expect(loadReport(root)).toEqual(expect.any(String));
   });
 
-  test("goes stale when the web app changes (UX004)", () => {
+  test("goes stale when the web app changes: a note (UX004), not a failure (ADR-0175)", () => {
     const root = repo();
     measured(root);
+    expect(staleNote(root)).toBeUndefined();
     writeFiles(root, { "apps/web/src/a.tsx": "export const a = 3;\n" });
-    const found = checkReport(root);
-    expect(found.map((v) => v.code)).toEqual(["UX004"]);
-    expect(found[0]?.fix).toContain("pnpm ux");
+    expect(checkReport(root)).toEqual([]);
+    expect(staleNote(root)).toContain("UX004");
+    expect(staleNote(root)).toContain("pnpm ux");
   });
 
   test("cannot be raised by hand: scores must follow from the counts (UX005)", () => {

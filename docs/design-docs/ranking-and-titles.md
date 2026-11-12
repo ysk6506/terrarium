@@ -23,9 +23,11 @@ verification_log:
   - "2026-11-11: 2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
   - "2026-11-11: 2026-11-11: 좋아요 수의 title을 더한 것을 코드와 대조해 맞음 (ADR-0141)"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
-  - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
-  - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
-covers_hash: 4e5c3f13610bc471
+  - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
+  - "2026-11-12: main을 합친 뒤 공개 범위(ADR-0174 나 단계, ADR-0179)에서 더한 서술을 합쳐진 코드와 대조했고, 바뀐 화면 글(ADR-0183)과 옛 말이 없음을 확인했다"
+covers_hash: ac3bc30b18765591
+verified_body: b43aee3516432e40
+unchanged_reverifies: 0
 ---
 # 세계 인기·좋아요·칭호와 계급 모델 (REQ-101, [ADR-0122](adr/0122-world-popularity-likes-titles.md))
 
@@ -68,7 +70,7 @@ covers_hash: 4e5c3f13610bc471
 | 실험 1,000번 | 만든 실험 1,000개 | 1,000번째 | 같음 |
 | 남이 쓰는 세계 | 다른 사람이 내 세계로 만든 실험 10개 이상 | 10번째 실험이 만들어진 때 | 실험과 세계의 만든 사람 |
 | 남이 쓰는 시나리오 | 다른 사람이 내 시나리오로 만든 실험 10개 이상 | 10번째 | 실험과 시나리오의 만든 사람 |
-| 첫 복구 | 에이전트가 내 시나리오를 처음 통과했다 | 합격한 실행이 끝난 때 | 실행 `result.score.passed`, `finishedAt` |
+| 첫 복구 | 에이전트가 내 시나리오에 처음 합격했다 | 합격한 실행이 끝난 때 | 실행 `result.score.passed`, `finishedAt` |
 | 꼼꼼한 출제자 | 변별력 점검에서 고칠 곳이 없던 내 시나리오 5개 | 5번째가 처음 깨끗하게 통과한 때 | `calibration_marks` |
 | 좋아요 10 | 내 세계가 다른 사람에게 좋아요 10번 | 10번째 좋아요가 눌린 때 | `world_likes` |
 
@@ -110,7 +112,7 @@ covers_hash: 4e5c3f13610bc471
 | 한계 | 왜 / 그래서 |
 |---|---|
 | 점수가 가볍다 | 세 칸이 모두 1점이다. 실험 한 번과 좋아요 한 번이 같은 무게다. 쓰다 보며 가중치가 필요하면 새 ADR |
-| 내가 쌓을 수 있다 | 내 실험도, 내가 누른 좋아요도 센다. 사내 도구라 막지 않았다. 칭호 "좋아요 10"과 "남이 쓰는 …"은 남의 것만 센다 |
+| 내가 쌓을 수 있다 | 내 실험도, 내가 누른 좋아요도 센다. 조직 안에서 쓰는 도구라 막지 않았다. 칭호 "좋아요 10"과 "남이 쓰는 …"은 남의 것만 센다 |
 | 템플릿의 시작 수는 카드에 안 나온다 | 템플릿은 세계 목록에 없다. 세계에서 시작한 경우만 카드에 보인다 |
 | 읽을 때마다 센다 | 세계·실험이 아주 많아지면 캐시를 더해야 한다 |
 | 이름이 곧 사람이다 | 칭호는 이름에 붙는다. SSO가 붙으면 사번으로 잇는다 |

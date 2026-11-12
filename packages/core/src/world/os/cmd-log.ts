@@ -1,9 +1,10 @@
 /** `journalctl` and `dmesg` of the fake shell (ADR-0117 decision 3): the host's one event list, filtered and printed. */
 import { has, parseArgs } from "./args";
 import { dmesgText, formatJournal, type JournalOptions, journalLines, PRIORITY } from "./journal";
+import { badFlag } from "./real-options";
 import { posixRegExp } from "./regex";
-import { parseTimeSpec } from "./timespec";
-import { type Cmd, fail, joinLines, ok, type R, unsupported } from "./types";
+import { looksLikeTime, parseTimeSpec, TIME_FORMS } from "./timespec";
+import { type Cmd, emulationGap, fail, joinLines, ok, type R, softGap } from "./types";
 
 const FLAGS = {
   bool: "kbrfxeaN",
@@ -63,6 +64,14 @@ function windowOf(c: Cmd, p: ReturnType<typeof parseArgs>): { since?: number; un
     const text = flagOf(p, short, long);
     if (text === undefined) continue;
     const t = parseTimeSpec(text, c.h.t);
+    if (t === undefined && looksLikeTime(text))
+      return emulationGap({
+        tool: "journalctl",
+        feature: "time-format",
+        what: `${long} ${text}`,
+        supported: TIME_FORMS,
+        example: "journalctl --since '1 hour ago' -n 5",
+      });
     if (t === undefined) return fail(`Failed to parse timestamp: ${text}`, 1);
     out[key] = t;
   }
@@ -126,7 +135,7 @@ function optionsOf(c: Cmd, p: ReturnType<typeof parseArgs>): JournalOptions | R 
 
 export function journalctl(c: Cmd): R {
   const p = parseArgs(normalizeBoot(c.args), FLAGS);
-  if (p.bad) return unsupported("journalctl", p.bad);
+  if (p.bad) return badFlag("journalctl", p);
   if (has(p, "--disk-usage"))
     return ok("Archived and active journals take up 128.0M in the file system.\n");
   if (has(p, "--list-boots"))
@@ -141,12 +150,14 @@ export function journalctl(c: Cmd): R {
     ? joinLines(lines.map((l) => formatJournal(c.h, l, opts.cat)))
     : "-- No entries --\n";
   return follow
-    ? {
-        out: text,
-        err: "journalctl: -f는 이 흉내에서 안 돼요, 지금까지의 마지막 줄만 보여요\n",
-        code: 0,
-        outside: "journalctl -f",
-      }
+    ? softGap(ok(text), {
+        tool: "journalctl",
+        feature: "flag:--follow",
+        what: "-f",
+        supported:
+          "-u 유닛, -n N, -p 우선순위, --since --until, -k, -b, -g 패턴, -o cat, -r, --no-pager",
+        example: "journalctl -n 5",
+      })
     : ok(text);
 }
 
@@ -172,8 +183,15 @@ export function dmesg(c: Cmd): R {
     val: "l",
     long: { level: "val", ctime: "bool", human: "bool" },
   });
-  if (p.bad) return unsupported("dmesg", p.bad);
-  if (has(p, "w")) return unsupported("dmesg", "-w");
+  if (p.bad) return badFlag("dmesg", p);
+  if (has(p, "w"))
+    return emulationGap({
+      tool: "dmesg",
+      feature: "flag:--follow",
+      what: "-w",
+      supported: "-T -H -c -x -k, -l 수준",
+      example: "dmesg",
+    });
   const level = priorityOf(p.flags.get("l") ?? p.flags.get("--level"));
   const text = dmesgText(c.h, {
     human: has(p, "T") || has(p, "--ctime"),

@@ -42,7 +42,7 @@ export const TITLES: readonly TitleDef[] = [
   },
   { key: "runs-100", label: "실험 100번", means: "실험을 100번 만들었어요" },
   { key: "likes-10", label: "좋아요 10", means: "내 세계가 다른 사람에게 좋아요를 10번 받았어요" },
-  { key: "first-recovery", label: "첫 복구", means: "에이전트가 내 시나리오를 처음 통과했어요" },
+  { key: "first-recovery", label: "첫 복구", means: "에이전트가 내 시나리오에 처음 합격했어요" },
   { key: "first-world", label: "첫 세계", means: "세계를 처음 만들었어요" },
 ];
 

@@ -9,12 +9,12 @@ enforced_by:
   - tests/spec/network-os.test.ts
 touches_protected:
   - docs/product-specs/requirements.md
-decision_hash: 9129798df4b3092f
+decision_hash: 8357d182707bc893
 ---
 # ADR-0061 스위치는 VLAN·MAC 표·ARP·라우팅을 갖고, 설정이 실제로 길을 바꾼다
 
 ## 맥락
-ADR-0059에서 스위치가 EOS·NX-OS·IOS XE의 말로 답하게 했다. 그런데 연수 님이 짚었다. "VLAN, MAC 표, 라우팅은 없는게 말이되나."
+ADR-0059에서 스위치가 EOS·NX-OS·IOS XE의 말로 답하게 했다. 그런데 제품 책임자가 짚었다. "VLAN, MAC 표, 라우팅은 없는게 말이되나."
 맞는 말이다. 현장의 스위치를 만지는 일의 대부분은 포트 shutdown이 아니라 VLAN을 바꾸고, 트렁크를 고치고, 게이트웨이와 경로를 보는 일이다. 이게 없으면 에이전트가 풀 수 있는 네트워크 문제가 "케이블이 빠졌다"밖에 없다.
 
 ## 결정
@@ -37,5 +37,5 @@ ADR-0059에서 스위치가 EOS·NX-OS·IOS XE의 말로 답하게 했다. 그�
 - MAC 표는 정상 상태의 모습이다. 서버가 켜져 있고 VLAN 안에 있으면 그 서버를 향한 포트에서 배운 것으로 나온다.
 - 접근 포트의 VLAN과 트렁크의 상태는 단순화했다(한 포트가 접근과 트렁크를 동시에 갖는 일이 없다).
 - `ping` 실패 문구와 `traceroute` 별표(최대 3줄)는 실제 장비와 한 줄씩 대조하지 않고 손으로 맞췄다. 왕복 시간은 홉 수로 만든 값이다.
-- 사이트 간(수원-화성) 전용선과 패브릭 종류(레거시 VLAN·STP, 클라우드 leaf-spine/VXLAN, GPU InfiniBand/RoCE)는 이번에 없다. 다음 결정(패브릭 종류)에서 다룬다.
+- 사이트 간 전용선과 패브릭 종류(레거시 VLAN·STP, 클라우드 leaf-spine/VXLAN, GPU InfiniBand/RoCE)는 이번에 없다. 다음 결정(패브릭 종류)에서 다룬다.
 - vCenter는 네트워크 설정 때문에 닿지 않는 호스트를 아직 따로 보여 주지 않는다. SNMP는 IP-MIB, Q-BRIDGE-MIB를 아직 주지 않는다.

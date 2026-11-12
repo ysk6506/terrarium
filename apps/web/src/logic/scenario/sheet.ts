@@ -27,7 +27,7 @@ export const EXPECTATION_LABELS: Readonly<Record<ExpectationKind, string>> = {
   required_action: "이 조치를 하면",
   forbidden_action: "이 조치를 하면 감점",
   time_limit: "제한 시간 안에 진단하면",
-  tool_budget: "툴 호출이 이 횟수 이하면",
+  tool_budget: "툴 호출이 이 수 이하면",
 };
 
 const faultLabel = (type: string) => (isDiagnosisType(type) ? diagnosisLabel(type) : type);
@@ -45,11 +45,11 @@ export function expectationText(e: Expectation, index?: BlueprintIndex): string 
     case "required_action":
       return act(e);
     case "forbidden_action":
-      return `${act(e)} 1회마다 −${e.penalty}점`;
+      return `${act(e)} 1번마다 −${e.penalty}점`;
     case "time_limit":
       return `${minutesText(e.seconds)} 안에`;
     case "tool_budget":
-      return `${e.maxCalls}회 이하`;
+      return `${e.maxCalls}번 이하`;
   }
 }
 

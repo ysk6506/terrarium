@@ -115,7 +115,7 @@ export function experimentOf(spec: ExperimentSpec, snapshot = snapshotFor(spec.t
   const experiment: Experiment = {
     id: spec.id,
     name: `실험 ${spec.id}`,
-    owner: spec.owner ?? "yeonsu",
+    owner: spec.owner ?? "haneul",
     createdAt: spec.createdAt ?? AT,
     recipe,
     snapshot,

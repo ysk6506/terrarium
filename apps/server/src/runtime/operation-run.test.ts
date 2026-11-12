@@ -3,13 +3,13 @@ import { TOOL_SPECS, toolsForDomains } from "@terrarium/core/tools";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { serviceLab } from "../../../../packages/core/src/world/test-support/service-lab";
 import type { Platform } from "./platform";
-import { recipe, ScriptHarness, testPlatform, YEONSU } from "./test-support/platform";
+import { HANEUL, recipe, ScriptHarness, testPlatform } from "./test-support/platform";
 
 /** The wall clock is the test's: a second of it per step, so hours of an operation pass in moments. */
 async function finished(platform: Platform, id: string) {
   for (let step = 0; step < 20_000; step++) {
     await vi.advanceTimersByTimeAsync(1000);
-    const v = await platform.experiments.view(YEONSU, id);
+    const v = await platform.experiments.view(HANEUL, id);
     if (v.progress.finished === v.progress.total) return v;
   }
   throw new Error("the operation did not end");
@@ -29,11 +29,11 @@ async function operate(
     toFake: ["setTimeout", "setInterval", "clearTimeout", "clearInterval", "Date"],
   });
   const t = testPlatform(harnesses);
-  const { world } = await t.platform.worlds.create(YEONSU, {
+  const { world } = await t.platform.worlds.create(HANEUL, {
     name: "서비스 홀",
     blueprint: serviceLab(),
   });
-  const created = await t.platform.experiments.create(YEONSU, {
+  const created = await t.platform.experiments.create(HANEUL, {
     name: "운영 8분",
     recipe: recipe(world.id, "operation", {
       harnessId,
@@ -100,12 +100,12 @@ describe("an operation experiment runs the resident operator for its hours [REQ-
 
   test("an operation without events_since is refused, with the way out", async () => {
     const t = testPlatform();
-    const { world } = await t.platform.worlds.create(YEONSU, {
+    const { world } = await t.platform.worlds.create(HANEUL, {
       name: "서비스 홀",
       blueprint: serviceLab(),
     });
     const refused = await t.platform.experiments
-      .create(YEONSU, {
+      .create(HANEUL, {
         name: "툴 없음",
         recipe: recipe(world.id, "operation", {
           agentId: "operator",
@@ -120,12 +120,12 @@ describe("an operation experiment runs the resident operator for its hours [REQ-
   test("waking on every alarm needs a harness that can take it; the built-in one can, others say why not", async () => {
     const quiet = new ScriptHarness("plain", async () => ({ status: "finished" }));
     const t = testPlatform([quiet]);
-    const { world } = await t.platform.worlds.create(YEONSU, {
+    const { world } = await t.platform.worlds.create(HANEUL, {
       name: "서비스 홀",
       blueprint: serviceLab(),
     });
     await expect(
-      t.platform.experiments.create(YEONSU, {
+      t.platform.experiments.create(HANEUL, {
         name: "깨우기",
         recipe: recipe(world.id, "operation", {
           harnessId: "plain",

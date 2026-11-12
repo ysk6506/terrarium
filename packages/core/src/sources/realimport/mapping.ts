@@ -1,11 +1,11 @@
 /**
  * How graph records become world entities (REQ-010, ADR-0009). This is the only place that knows a
  * graph's schema. It is plain data, so a deployment can override it with a JSON file when its graph
- * names things differently; several spellings are listed where the schema has varied (PART_OF and
+ * names things differently; several spellings are listed where a schema may vary (PART_OF and
  * PORT_OF, NicPort and NICPort).
  *
- * Relationships follow the dependency direction (consumer → supplier), as in cloud_topology and in
- * Terrarium's links. A rule with `either: true` also matches the reverse orientation.
+ * Relationships follow the dependency direction (consumer → supplier), as in a typical topology graph
+ * and in Terrarium's links. A rule with `either: true` also matches the reverse orientation.
  */
 import type { EntityKind, LinkKind } from "@terrarium/core/world";
 
@@ -63,7 +63,7 @@ export interface KgMapping {
 
 const PHYSICAL: readonly NodeRole[] = ["server", "switch", "storage"];
 
-/** cloud_topology as built by itcloud-graph-loader. */
+/** A topology graph built by a loader of this shape. */
 export const CLOUD_TOPOLOGY_MAPPING: KgMapping = {
   name: "cloud_topology",
   nodes: [

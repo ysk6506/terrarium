@@ -15,7 +15,7 @@ const worker = (runId: string, extra: Partial<Worker> = {}): Worker => ({
   who: {
     experimentId: "e",
     experiment: "실험",
-    owner: "연수",
+    owner: "하늘",
     harness: "하네스",
     agent: "에이전트",
   },

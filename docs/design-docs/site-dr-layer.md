@@ -2,7 +2,7 @@
 title: 사이트·DR 층 — 서버룸 하나에서 멀티 사이트까지, 지역 복제, 합의 DB, 관리형 멀티 AZ
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/world/ladder-site.ts
   - packages/core/src/world/site-dr.ts
@@ -22,16 +22,18 @@ covers:
   - packages/core/src/sources/worldgen/shaped-site.ts
   - packages/core/src/topology/impact-site.ts
 verification_log:
-  - "2026-11-10: 물리 상수를 슬롯 표로 옮김(REQ-113). v1 동작은 physics-golden이 비트까지 같음을 확인, 문서 내용 변화 없음"
   - "2026-11-11: tools·world/os: 닿지 않는 분기 정리와 시험 추가; 동작은 같음(TD-0002), awk는 이름 바로 뒤 '(' 호출과 srand 반환값"
   - "2026-11-11: ADR-0172: 제공되는 시나리오 조건(컨테이너 배치 작업·자리, 사이트 서버), 서비스 프로세스 메모리 몫, 정답 풀이 길의 when·later·choose를 코드와 대조해 서술을 더했다. 나머지는 그대로 맞다"
   - "2026-11-11: Checked against site-model.ts: the unreferenced siteIds helper was removed, no described behaviour changed."
   - "2026-11-11: main을 합친 뒤 다시 대조: ADR-0172와 ADR-0174, 커버리지 시험 추가가 함께 들어감"
-covers_hash: a846a020f11d88ab
+  - "2026-11-12: 덮는 시나리오 라이브러리에서 정렬 도우미 byId의 자리만 library-kit.ts로 옮김. 동작은 그대로이고 이 문서는 그 이름을 말하지 않는다"
+covers_hash: c46dd73534c26946
+verified_body: ab41086d082c8d1b
+unchanged_reverifies: 0
 ---
 # 사이트·DR 층 (REQ-106, ADR-0129)
 
-연수 님의 결정(2026-11-07): "점선인 거 없이 현실세계와 모순되지 않게 전부 설계해서 구현해줘." 마지막 점선 다섯 칩 — 지역 복제(`sto-geo`), 분산 SQL(`db-distributed-sql`), 관리형 멀티 AZ(`db-managed-multiaz`), DR 웜(`site-dr-warm`), 멀티 사이트(`site-multi-active`) — 이 모두 코어가 흉내 내는 실선이 되었다. 사다리의 점선은 0개다.
+제품 책임자의 결정(2026-11-07): "점선인 거 없이 현실세계와 모순되지 않게 전부 설계해서 구현해줘." 마지막 점선 다섯 칩 — 지역 복제(`sto-geo`), 분산 SQL(`db-distributed-sql`), 관리형 멀티 AZ(`db-managed-multiaz`), DR 웜(`site-dr-warm`), 멀티 사이트(`site-multi-active`) — 이 모두 코어가 흉내 내는 실선이 되었다. 사다리의 점선은 0개다.
 
 ## 한 줄로
 서버룸이 하나일 때는 그 방이 사이트다. 건물이 둘이면 두 번째 건물이 **복구 사이트**가 되고, 둘 사이에 **회선**이 있고, 서비스·볼륨·DB를 **복제 스트림**이 따라 복사하며, **DR 계획**이 약속한 복구 시간(RTO)과 잃어도 되는 쓰기(RPO)를 들고 있다.

@@ -23,7 +23,7 @@ export const person = (
   roles: Viewer["roles"] = ["user"],
 ): Viewer => ({ id: name, name, groups: [], roles, source });
 
-export const YEONSU: Viewer = person("yeonsu", "proxy");
+export const HANEUL: Viewer = person("haneul", "proxy");
 export const JIMIN: Viewer = person("jimin");
 /** An administrator (a login on the settings' list). */
 export const ADMIN: Viewer = person("admin-kim", "proxy", ["user", "admin"]);
@@ -109,13 +109,13 @@ export function testPlatform(
   return { platform, store, events: [] };
 }
 
-/** The sample world and one built-in scenario on it, owned by yeonsu. */
+/** The sample world and one built-in scenario on it, owned by haneul. */
 export async function seed(p: Platform, templateId = "cooling-failure") {
-  const { world } = await p.worlds.create(YEONSU, {
+  const { world } = await p.worlds.create(HANEUL, {
     name: "샘플 홀",
     blueprint: sampleBlueprint(),
   });
-  const { scenario } = await p.scenarios.create(YEONSU, { worldId: world.id, templateId });
+  const { scenario } = await p.scenarios.create(HANEUL, { worldId: world.id, templateId });
   return { world, scenario };
 }
 

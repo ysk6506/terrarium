@@ -113,7 +113,7 @@ const card: EscalationCard = {
   runId: "r1",
   experimentId: "e1",
   experimentName: "냉방 기준선",
-  owner: "yeonsu",
+  owner: "haneul",
   agent: "triage",
   since: "2026-11-06T09:00:00Z",
   request: {
@@ -166,7 +166,7 @@ describe("escalation and runbook compliance on a result [REQ-081] [REQ-082]", ()
     };
     const figures = humanTalk.escalationFigures(human);
     expect(figures.map((f) => [f.label, f.value])).toEqual([
-      ["에스컬레이션", "2회"],
+      ["넘긴 일", "2번"],
       ["기다린 시간", "3분 5초"],
       ["사람이 한 조치", "1개"],
     ]);

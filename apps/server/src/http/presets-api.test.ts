@@ -6,7 +6,7 @@ describe("saved instructions, tool sets and runbooks over HTTP [REQ-090] [REQ-08
   test("save, list, rename, delete and bring back; the same name changes the one it names", async () => {
     const { platform } = testPlatform();
     const a = buildApp({ platform });
-    const send = async (method: string, url: string, payload?: object, who = "yeonsu") => {
+    const send = async (method: string, url: string, payload?: object, who = "haneul") => {
       const r = await a.inject({
         method: method as "GET",
         url,
@@ -60,7 +60,7 @@ describe("saved instructions, tool sets and runbooks over HTTP [REQ-090] [REQ-08
   test("they are the person's own; a body that does not fit its kind is refused", async () => {
     const { platform } = testPlatform();
     const a = buildApp({ platform });
-    const send = async (method: string, url: string, payload?: object, who = "yeonsu") => {
+    const send = async (method: string, url: string, payload?: object, who = "haneul") => {
       const r = await a.inject({
         method: method as "GET",
         url,
@@ -96,7 +96,7 @@ describe("saved instructions, tool sets and runbooks over HTTP [REQ-090] [REQ-08
         await a.inject({
           method: "POST",
           url: "/api/presets/import",
-          headers: { "x-terrarium-user": "yeonsu" },
+          headers: { "x-terrarium-user": "haneul" },
           payload: { items },
         })
       ).json();
@@ -119,7 +119,7 @@ describe("saved instructions, tool sets and runbooks over HTTP [REQ-090] [REQ-08
   test("a deleted one is kept for seven days and then forgotten", async () => {
     const { platform, store } = testPlatform();
     const base = {
-      owner: "yeonsu",
+      owner: "haneul",
       kind: "instruction" as const,
       body: "x",
       createdAt: "2026-09-01T00:00:00Z",
@@ -136,7 +136,7 @@ describe("saved instructions, tool sets and runbooks over HTTP [REQ-090] [REQ-08
       name: "어제",
       deletedAt: "2026-10-28T12:00:00Z",
     });
-    const listed = await platform.presets.list(person("yeonsu"));
+    const listed = await platform.presets.list(person("haneul"));
     expect(listed.deleted.map((p) => p.name)).toEqual(["어제"]);
     expect(await store.getPreset("p-old")).toBeUndefined();
     await platform.stop();

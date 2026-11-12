@@ -2,7 +2,7 @@
 title: 도메인과 가상 담당자 — 내 도메인 밖의 고장은 넘기고, 기다리는 동안 다른 일을 한다
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/world/domains.ts
   - packages/core/src/world/lead-times.ts
@@ -19,13 +19,15 @@ covers:
   - apps/web/src/logic/handoffs.ts
   - apps/web/src/ui/pages/run-handoffs.tsx
   - apps/web/src/ui/pages/experiment-domains.tsx
-covers_hash: 721c3384bbc032be
+covers_hash: 4180b571eec45740
 verification_log:
-  - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장이 이 문서의 내용을 바꾸지 않는지 대조했다(층 수·툴 수·칩 수를 세는 문장을 찾아 고쳤고, 나머지는 그대로 맞다)"
   - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
   - "2026-11-07: REQ-108: ADR-0131에 맞춰 해당 서술을 고쳤고 나머지는 코드와 대조해 그대로 맞다"
   - "2026-11-07: REQ-108: 코드와 대조했고 필요한 서술(기대 복구 시간, 서비스 카드 복사, 숫자 보정)을 고쳤다. 나머지는 그대로 맞다"
   - "2026-11-11: tools·world/os: 닿지 않는 분기 정리와 시험 추가; 동작은 같음(TD-0002), awk는 이름 바로 뒤 '(' 호출과 srand 반환값"
+  - "2026-11-12: 덮는 시나리오 라이브러리에서 정렬 도우미 byId의 자리만 library-kit.ts로 옮김. 동작은 그대로이고 이 문서는 그 이름을 말하지 않는다"
+verified_body: 63ea684e352611ae
+unchanged_reverifies: 0
 ---
 # 도메인과 가상 담당자 (REQ-093, [ADR-0098](adr/0098-domains-virtual-counterparts-tickets.md)·[0099](adr/0099-counterparts-deterministic.md)·[0100](adr/0100-escalate-by-domain.md))
 

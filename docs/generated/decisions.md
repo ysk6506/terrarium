@@ -49,7 +49,7 @@
 | [ADR-0041 실시간 활동 — 어떤 에이전트가 어느 장비에서 무엇을 하는지 세계에 보인다](../design-docs/adr/0041-live-activity.md) | 유효 |  |
 | [ADR-0042 하네스·에이전트 연결은 커넥터 플러그인과 연결 레지스트리로 한다](../design-docs/adr/0042-connectors.md) | 유효 |  |
 | [ADR-0043 연결의 비밀 값은 봉인해 보관하고, 안 쓰는 연결은 알린 뒤 지우며, 에이전트는 버전으로 관리한다](../design-docs/adr/0043-connection-secrets-retention-versions.md) | 유효 |  |
-| [ADR-0044 사용자 식별은 하나의 자리(Authenticator)로 꽂는다 — 지금은 프록시 헤더와 스스로 밝힌 이름, 나중에 사내 SSO](../design-docs/adr/0044-identity-slot.md) | 유효 | 일부 고침: [0174](../design-docs/adr/0174-permissions-proxy-identity-three-scopes-audit.md) (신원과 권한을 넓힘) |
+| [ADR-0044 사용자 식별은 하나의 자리(Authenticator)로 꽂는다 — 지금은 프록시 헤더와 스스로 밝힌 이름, 나중에 SSO](../design-docs/adr/0044-identity-slot.md) | 유효 | 일부 고침: [0174](../design-docs/adr/0174-permissions-proxy-identity-three-scopes-audit.md) (신원과 권한을 넓힘) |
 | [ADR-0045 캠퍼스 꾸미기 — 도로 격자 블록에 용도별 시설을 채운다](../design-docs/adr/0045-campus-decoration.md) | 유효 |  |
 | [ADR-0046 사업장의 건물 자리는 모두 정해져 있고, 서버룸은 팹·연구동·HPC센터의 현실 구조를 따른다](../design-docs/adr/0046-site-places-and-server-rooms.md) | 유효 |  |
 | [ADR-0047 건물은 지도가 부르는 이름과 자리를 따르고, 월드가 만들지 않는 건물도 그 자리에 선다](../design-docs/adr/0047-site-names-and-places.md) | 유효 |  |
@@ -68,7 +68,7 @@
 | [ADR-0060 랙은 두 규격(EIA-310, OCP ORv3)을 다루고, PDU 콘센트는 하나씩 끌 수 있다](../design-docs/adr/0060-rack-standards-and-outlets.md) | 유효 |  |
 | [ADR-0061 스위치는 VLAN·MAC 표·ARP·라우팅을 갖고, 설정이 실제로 길을 바꾼다](../design-docs/adr/0061-switch-l2-l3.md) | 유효 |  |
 | [ADR-0062 네트워크는 레거시와 클라우드 두 가지로 짓고, 클라우드는 케이블마다 BGP 세션이 선다](../design-docs/adr/0062-network-fabrics.md) | 유효 |  |
-| [ADR-0063 GPU는 칩 이름으로 다루고, 베라 루빈은 도입 예정으로만 둔다](../design-docs/adr/0063-gpu-catalog.md) | 유효 |  |
+| [ADR-0063 GPU는 칩 이름으로 다루고, 아직 출시되지 않은 칩은 예정으로만 둔다](../design-docs/adr/0063-gpu-catalog.md) | 유효 |  |
 | [ADR-0064 GPU 백엔드는 서버마다 NIC 여럿을 rail로 꽂는 세 번째 패브릭이고, rail 하나를 잃으면 느려질 뿐 끊기지 않는다](../design-docs/adr/0064-gpu-fabric.md) | 유효 |  |
 | [ADR-0065 설정 변경은 시나리오 블록이고, 블록은 외워 쓰지 않고 장비가 가진 것에서 고른다](../design-docs/adr/0065-config-scenarios.md) | 유효 |  |
 | [ADR-0066 제어 가능한 것은 한 장의 표로 말하고, 표는 월드와 툴에서 거꾸로 검증한다](../design-docs/adr/0066-controllability-matrix.md) | 유효 |  |
@@ -119,7 +119,7 @@
 | [ADR-0114 컨테이너 층을 코어 모델로 올리면서 시험의 기대값을 고친다](../design-docs/adr/0114-container-layer-amend-tests.md) | 유효 |  |
 | [ADR-0115 SDN 오버레이와 클라우드 네이티브 네트워크 층을 코어 모델로 올리면서 시험 열다섯 곳의 기대값을 고친다](../design-docs/adr/0115-sdn-network-layer-amend-tests.md) | 유효 |  |
 | [ADR-0116 진짜 호스트 섞기 — 세계의 서버 몇 대는 실제 리눅스가 답한다](../design-docs/adr/0116-real-hosts-in-the-world.md) | 대체됨 | 대체: [0117](../design-docs/adr/0117-deep-os-simulation.md) |
-| [ADR-0117 흉내 OS를 깊게 — 작은 리눅스 흉내가 run_command에 답한다 (0116 대체)](../design-docs/adr/0117-deep-os-simulation.md) | 유효 |  |
+| [ADR-0117 흉내 OS를 깊게 — 작은 리눅스 흉내가 run_command에 답한다 (0116 대체)](../design-docs/adr/0117-deep-os-simulation.md) | 유효 | 일부 고침: [0184](../design-docs/adr/0184-emulation-gap-hints.md) (흉내가 못 하는 것은 command not found나 안 돼요로만 답하고 센다) |
 | [ADR-0118 깊은 OS 흉내를 구현하면서 시험 다섯 곳의 기대값을 고치고 시험을 더한다](../design-docs/adr/0118-deep-os-tests.md) | 유효 |  |
 | [ADR-0119 LLM API 등록 — 워크스페이스 단위 모델 연결, 키는 서버에만, 얇은 클라이언트](../design-docs/adr/0119-llm-api-registration.md) | 유효 |  |
 | [ADR-0120 컨테이너·SDN 층을 깊은 OS 흉내 위에 얹으면서 노드 디스크 압박 시험의 지우는 길을 고친다](../design-docs/adr/0120-container-layer-on-deep-os.md) | 유효 |  |
@@ -140,10 +140,10 @@
 | [ADR-0135 지금 하는 방식은 사람이 적고, 에이전트의 값은 코드가 기록에서 세어 둘을 같은 잣대로 견준다](../design-docs/adr/0135-process-compare.md) | 유효 |  |
 | [ADR-0136 물리가 닿는 열네 자리를 모델 자리로 만들고, 법칙 검사와 프로필 지문으로 채점을 지킨다](../design-docs/adr/0136-physics-inventory-and-model-slots.md) | 유효 |  |
 | [ADR-0137 물리 모델 자리(이음매)와 물리 프로필(숫자·곡선·바깥 온도·지문)의 코어를 만든다](../design-docs/adr/0137-physics-slots-and-profile-core.md) | 유효 |  |
-| [ADR-0138 제품 목표를 요구사항 문서 맨 위에 적고 설계 결정의 기준으로 삼는다](../design-docs/adr/0138-product-goal.md) | 유효 |  |
+| [ADR-0138 제품 목표를 요구사항 문서 맨 위에 적고 설계 결정의 기준으로 삼는다](../design-docs/adr/0138-product-goal.md) | 유효 | 일부 고침: [0189](../design-docs/adr/0189-verified-workflows-go-to-operation.md) (목표 문장과 목표의 세 부분) |
 | [ADR-0139 CCTV는 카메라 개체·보는 자리·배경 자리의 세 자리로 두고, 실험의 그림은 서버가 결정적으로 그린다](../design-docs/adr/0139-camera-view-and-backdrop-slots.md) | 유효 |  |
 | [ADR-0140 CI가 합치기 관문이다 — 테스트는 조각으로 나눠 병렬로, 커버리지는 따로 잰다](../design-docs/adr/0140-ci-shards-and-merge-gate.md) | 유효 |  |
-| [ADR-0141 UX 검사를 게이트인 여정과 게이트 아닌 측정으로 나누고, 러너에서 안 되던 화면을 고친다](../design-docs/adr/0141-ux-journeys-gate-and-measure.md) | 유효 |  |
+| [ADR-0141 UX 검사를 게이트인 여정과 게이트 아닌 측정으로 나누고, 러너에서 안 되던 화면을 고친다](../design-docs/adr/0141-ux-journeys-gate-and-measure.md) | 유효 | 일부 고침: [0175](../design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md) (점수 파일을 변경마다 커밋하고 여정 묶음은 셋) |
 | [ADR-0142 커버리지 하한을 새 단위까지 넓히고, 고장 난 날에도 물리 법칙을 검사한다](../design-docs/adr/0142-coverage-floors-and-fault-law-checks.md) | 유효 |  |
 | [ADR-0143 깊은 OS 흉내를 GNU에 더 가깝게 하고 커버리지 하한을 채운다](../design-docs/adr/0143-shell-fidelity-and-coverage-gate.md) | 유효 |  |
 | [ADR-0144 현실 데이터는 네 단으로 들어오고, 세계는 현실과 실험 두 종류이며, 모델은 핵심을 잠그고 넓힌다](../design-docs/adr/0144-reality-data-pipeline-ontology-manager-world-kinds.md) | 유효 | 일부 고침: [0156](../design-docs/adr/0156-blast-radius-ports-redundancy-groups-in-memory-index.md) (관계 표의 끊기면 넘어가나), [0165](../design-docs/adr/0165-dataset-refine-ontology-link-layers-open-types.md) (정제·링크를 한 단계 안에 접음), [0167](../design-docs/adr/0167-data-pipeline-words-from-practice.md) (순우리말로 지은 이름), [0170](../design-docs/adr/0170-product-design-one-page-six-principles.md) (단계 A~D의 순서) |
@@ -172,13 +172,23 @@
 | [ADR-0167 데이터 파이프라인과 온톨로지 매니저의 말은 지어내지 않고 현업에서 쓰는 말을 쓴다](../design-docs/adr/0167-data-pipeline-words-from-practice.md) | 유효 | 일부 고침: [0170](../design-docs/adr/0170-product-design-one-page-six-principles.md) (객체·링크와 개체·관계를 나중에 맞춤) |
 | [ADR-0168 실험용 복사본은 운영 세계와 같은 의미로 움직인다 — 전파 엔진은 하나이고, 모든 타입이 실험에 들어간다](../design-docs/adr/0168-experiment-copy-behaves-like-the-operation-world.md) | 유효 |  |
 | [ADR-0169 모델은 하나다 — 현실에서 만든 세계와 지어낸 세계는 같은 타입과 같은 링크 표현을 쓰고, 매핑의 목적지는 핵심 모델이다](../design-docs/adr/0169-one-model-for-invented-and-real-worlds.md) | 유효 |  |
-| [ADR-0170 제품의 값과 원칙 여섯을 한 장에 두고, 요구사항은 그 한 장에 대 본 뒤 설계한다](../design-docs/adr/0170-product-design-one-page-six-principles.md) | 유효 | 일부 고침: [0180](../design-docs/adr/0180-docs-follow-decisions-not-only-code.md) (4절의 손으로 쓴 결정 목록) |
-| [ADR-0171 실험 결과의 첫 화면은 세 물음에 답하고, 나머지는 탭 뒤로 간다](../design-docs/adr/0171-result-page-answers-three-questions.md) | 유효 |  |
+| [ADR-0170 제품의 값과 원칙 여섯을 한 장에 두고, 요구사항은 그 한 장에 대 본 뒤 설계한다](../design-docs/adr/0170-product-design-one-page-six-principles.md) | 유효 | 일부 고침: [0180](../design-docs/adr/0180-docs-follow-decisions-not-only-code.md) (4절의 손으로 쓴 결정 목록), [0189](../design-docs/adr/0189-verified-workflows-go-to-operation.md) (원칙 6 현실에는 읽기만 한다의 글) |
+| [ADR-0171 실험 결과의 첫 화면은 세 물음에 답하고, 나머지는 탭 뒤로 간다](../design-docs/adr/0171-result-page-answers-three-questions.md) | 유효 | 일부 고침: [0183](../design-docs/adr/0183-one-vocabulary-on-every-screen.md) (목록과 홈은 아직 회라는 말(5번)) |
 | [ADR-0172 제공되는 시나리오는 그 세계에서 정답 풀이가 만점을 받는다](../design-docs/adr/0172-offered-scenario-means-reference-solution-reaches-full-score.md) | 유효 | 일부 고침: [0178](../design-docs/adr/0178-offered-scenario-solved-on-every-world-shape.md) (정답 풀이 불변식은 골든 행렬의 다섯 세계만) |
 | [ADR-0173 문서만 바뀐 변경은 가벼운 CI 경로를 탄다](../design-docs/adr/0173-docs-only-changes-take-a-light-ci-path.md) | 유효 |  |
-| [ADR-0174 권한은 프록시가 넘겨준 신원, 역할 둘, 공개 범위 셋, 감사 기록으로 한다](../design-docs/adr/0174-permissions-proxy-identity-three-scopes-audit.md) | 유효 |  |
-| [ADR-0177 제품 목표의 "현실을 닮은 세계"에 현실의 데이터로 지은 세계를 적고, 맨 위 문서를 목표에 맞춘다](../design-docs/adr/0177-goal-text-reality-worlds-and-top-level-docs.md) | 유효 |  |
+| [ADR-0174 권한은 프록시가 넘겨준 신원, 역할 둘, 공개 범위 셋, 감사 기록으로 한다](../design-docs/adr/0174-permissions-proxy-identity-three-scopes-audit.md) | 유효 | 일부 고침: [0179](../design-docs/adr/0179-visibility-scopes-amend-adr-0174-locked-tests.md) (기본 모델은 범위가 모두인 모델만, 범위 바꾸기는 한 길) |
+| [ADR-0175 UX 검사를 더 잘게 나눠 돌리고, 점수 파일은 변경마다 커밋하지 않는다](../design-docs/adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md) | 유효 |  |
+| [ADR-0177 제품 목표의 "현실을 닮은 세계"에 현실의 데이터로 지은 세계를 적고, 맨 위 문서를 목표에 맞춘다](../design-docs/adr/0177-goal-text-reality-worlds-and-top-level-docs.md) | 유효 | 일부 고침: [0189](../design-docs/adr/0189-verified-workflows-go-to-operation.md) (목표의 문장은 그대로다) |
 | [ADR-0178 제공되는 시나리오는 제품이 만드는 모든 세계 모양에서 정답 풀이가 만점을 받는다](../design-docs/adr/0178-offered-scenario-solved-on-every-world-shape.md) | 유효 |  |
-| [ADR-0180 문서는 코드뿐 아니라 결정도 따라간다 — 결정이 바꾸는 문서를 적고, 고쳐진 결정에 표시를 남기고, 목록은 만들어 낸다](../design-docs/adr/0180-docs-follow-decisions-not-only-code.md) | 유효 | 일부 고침: [0182](../design-docs/adr/0182-amends-says-what-it-changed.md) (amends와 amended_by는 파일 이름만 적음) |
-| [ADR-0181 테라리움의 라이선스는 Apache License 2.0이다](../design-docs/adr/0181-license-apache-2.md) | 유효 |  |
+| [ADR-0179 공개 범위의 두 결정(기본 모델은 "모두"인 모델만, 범위 바꾸기는 한 길)과 ADR-0174의 바뀐 시험 목록](../design-docs/adr/0179-visibility-scopes-amend-adr-0174-locked-tests.md) | 유효 |  |
+| [ADR-0180 문서는 코드뿐 아니라 결정도 따라간다 — 결정이 바꾸는 문서를 적고, 고쳐진 결정에 표시를 남기고, 목록은 만들어 낸다](../design-docs/adr/0180-docs-follow-decisions-not-only-code.md) | 유효 | 일부 고침: [0182](../design-docs/adr/0182-amends-says-what-it-changed.md) (amends와 amended_by는 파일 이름만 적음), [0186](../design-docs/adr/0186-requirements-do-not-follow-the-design-page.md) (follows는 문서의 서로 가리킴에서 고른다) |
+| [ADR-0181 테라리움의 라이선스는 Apache License 2.0이다](../design-docs/adr/0181-license-apache-2.md) | 유효 | 일부 고침: [0185](../design-docs/adr/0185-third-party-notices-and-license-check.md) (묶을 수 있는 라이선스 목록에 MPL-2.0을 수정 안 한 것만 더함) |
 | [ADR-0182 고친 결정에는 무엇을 고쳤는지 한 구절을 적는다 — amends의 what, link-amends가 옮겨 적고, 결정 목록이 보인다](../design-docs/adr/0182-amends-says-what-it-changed.md) | 유효 |  |
+| [ADR-0183 화면의 모든 글은 한 가지 말을 쓰고, 옛 말이 돌아오지 못하게 검사한다](../design-docs/adr/0183-one-vocabulary-on-every-screen.md) | 유효 |  |
+| [ADR-0184 실험장이 못 해서 틀린 것에만 힌트를 준다 — 흉내 한계(emulation gap)는 한 가지 길로 말하고 기록한다](../design-docs/adr/0184-emulation-gap-hints.md) | 유효 |  |
+| [ADR-0185 함께 나가는 제3자 구성요소는 허용 목록 안의 라이선스여야 하고, 고지 파일은 하네스가 만든다](../design-docs/adr/0185-third-party-notices-and-license-check.md) | 유효 |  |
+| [ADR-0186 요구사항 문서는 제품 설계 한 장을 따라가지 않는다 — 따라가기는 목표에서 설계로 한 방향이다](../design-docs/adr/0186-requirements-do-not-follow-the-design-page.md) | 유효 |  |
+| [ADR-0187 공개 저장소에는 공개된 자료에서 온 사실만 둔다 — 내부에서 들은 사실은 요구로 바꿔 적고, 이미 들어간 것은 봉인된 기록에서도 걷어낸다](../design-docs/adr/0187-no-internal-facts-in-the-public-repository.md) | 유효 |  |
+| [ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기](../design-docs/adr/0188-second-redaction-under-adr-0187.md) | 유효 |  |
+| [ADR-0189 제품 목표에 "통과한 것만 운영에 나간다"를 더한다 — 워크플로는 테라리움이 정하고, 실제 툴은 에이전트가 게이트웨이를 거쳐 부른다](../design-docs/adr/0189-verified-workflows-go-to-operation.md) | 유효 | 일부 고침: [0190](../design-docs/adr/0190-mock-tools-stand-in-for-real-tools-in-verification.md) (실험 세계에서는 액션이 실험의 툴에 매핑된다) |
+| [ADR-0190 검증에서는 실제 툴 자리에 이름과 입력이 같은 모의 툴이 선다 — 에이전트는 건마다 받은 주소에 붙고, 툴마다 검증 수준을 밝힌다](../design-docs/adr/0190-mock-tools-stand-in-for-real-tools-in-verification.md) | 유효 |  |

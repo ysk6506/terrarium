@@ -25,15 +25,15 @@ export function statusLabel(status: RunStatus | ExperimentStatus, operation = fa
 }
 
 /**
- * How far an experiment got. One a person stopped says what it planned beside what ended, "20회 중 1회 끝", so it is
- * not read as a whole one (ADR-0163); the others say the runs that ended, as "3/20회" while they go.
+ * How far an experiment got. One a person stopped says what it planned beside what ended, "20번 중 1번 끝", so it is
+ * not read as a whole one (ADR-0163); the others say the runs that ended, as "3/20번" while they go.
  */
-export const stoppedWords = (p: Progress): string => `${p.total}회 중 ${p.completed}회 끝`;
+export const stoppedWords = (p: Progress): string => `${p.total}번 중 ${p.completed}번 끝`;
 
 export function progressWords(status: ExperimentStatus, p: Progress): string {
   if (status === "cancelled") return stoppedWords(p);
-  if (p.finished === p.total) return `${p.total}회 끝`;
-  return `${p.finished}/${p.total}회${p.running > 0 ? `, ${p.running}회 실행 중` : ""}`;
+  if (p.finished === p.total) return `${p.total}번 끝`;
+  return `${p.finished}/${p.total}번${p.running > 0 ? `, ${p.running}번 실행 중` : ""}`;
 }
 
 export const percent = (ratio: number, digits = 0) => `${(ratio * 100).toFixed(digits)}%`;

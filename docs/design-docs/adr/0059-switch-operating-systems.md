@@ -12,12 +12,12 @@ amends_tests:
   - packages/core/src/tools/tools.test.ts::=echoFacades
   - packages/core/src/scenario/actions.test.ts::validating action conditions [REQ-034] > action conditions must name a known action and a real target
 test_change_reason: 도구 묶음에 스위치 명령줄과 두 HTTP API가 더해져서 Facades 모양이 늘었다. 시험이 쓰는 가짜 파사드 묶음에 network 항목을 더했을 뿐 도구가 파사드 답을 그대로 돌려주는지 보는 규칙은 같다. 시나리오 행동 종류에 포트 끄기와 포트 켜기가 더해져서 알 수 없는 행동 오류 문구의 가능한 행동 목록이 길어졌고, 시험은 그 문구를 새 목록으로 맞췄다.
-decision_hash: e6dbe6a45ddcbfbf
+decision_hash: c43af86bff2553fa
 ---
 # ADR-0059 스위치는 운영 체제의 말로 답한다
 
 ## 맥락
-요구는 "네트워크 장비는 시스코, 아리스타를 주로 써. 얘네 인터페이스도 에뮬레이션해야 해"였다. 그때까지 스위치는 SNMP(IF-MIB)로만 답했고, 포트를 끄거나 설정을 바꿀 길이 없었다.
+요구는 "널리 쓰이는 두 제조사(시스코, 아리스타)의 스위치 인터페이스도 에뮬레이션해야 한다"였다. 그때까지 스위치는 SNMP(IF-MIB)로만 답했고, 포트를 끄거나 설정을 바꿀 길이 없었다.
 현장의 에이전트가 스위치에서 하는 일은 대부분 명령줄이다. 상태를 `show`로 보고, 설정을 바꾸고(`shutdown`), 자동화는 아리스타 eAPI나 시스코 NX-API로 한다.
 
 ## 결정

@@ -9,6 +9,7 @@ import { BlueprintIndex } from "@terrarium/core/world";
 import { useMemo, useState } from "react";
 import {
   commonPathNote,
+  emulationGaps,
   formatDuration,
   PASS_RULE_TEXT,
   recoveryFigures,
@@ -83,6 +84,7 @@ function RunHead({ view }: { readonly view: RunView }) {
     : run.status === "running"
       ? "아직 돌고 있어요"
       : "";
+  const gaps = emulationGaps.gapLine(run.result?.toolCalls);
   return (
     <PageHead
       crumbs={
@@ -95,6 +97,7 @@ function RunHead({ view }: { readonly view: RunView }) {
       lede={
         <>
           <Status status={run.status} operation={operation} /> {ended}
+          {gaps && ` · ${gaps}`}
         </>
       }
     />
@@ -132,13 +135,13 @@ function RunFigures({ view }: { readonly view: RunView }) {
         },
         {
           label: "조사 호출",
-          value: `${e.investigationCalls}회`,
-          hint: `실패한 호출 ${e.failedCalls}회`,
+          value: `${e.investigationCalls}번`,
+          hint: `실패한 호출 ${e.failedCalls}번`,
         },
         {
           label: "같은 호출 반복",
-          value: `${analysis.behaviour.repeated}회`,
-          hint: "같은 툴을 같은 인자로 다시 부른 횟수",
+          value: `${analysis.behaviour.repeated}번`,
+          hint: "같은 툴을 같은 인자로 다시 부른 수",
         },
         {
           label: "토큰",

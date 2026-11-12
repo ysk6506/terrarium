@@ -17,6 +17,7 @@ import { InvalidInputError } from "@terrarium/core/contract";
 import {
   type LlmCheckRecord,
   type LlmModelRecord,
+  type Scope,
   scopeOf,
   seen,
 } from "@terrarium/core/experiments";
@@ -159,17 +160,32 @@ export class Models {
     return found;
   }
 
-  private async nameTaken(name: string, exceptId?: string): Promise<boolean> {
-    return (await this.ctx.store.listModels()).some((m) => m.name === name && m.id !== exceptId);
+  /**
+   * Whether a name is already used where it would be seen twice: among the maker's own registrations, and among those made
+   * for everyone. Another person's "나만" or group model is never looked at, so a clash cannot tell that it exists.
+   */
+  private async nameTaken(
+    name: string,
+    owner: string,
+    scope: Scope,
+    exceptId?: string,
+  ): Promise<boolean> {
+    return (await this.ctx.store.listModels()).some(
+      (m) =>
+        m.name === name &&
+        m.id !== exceptId &&
+        (m.owner === owner || (scope === "everyone" && scopeOf(m) === "everyone")),
+    );
   }
 
   async create(viewer: Viewer, input: CreateModelRequest): Promise<LlmModelView> {
     addressIssue(input.baseUrl, this.options.allowedHosts);
-    if (await this.nameTaken(input.name)) throw new ConflictError(NAME_TAKEN);
+    const scoped = startingScope(viewer, input, "private");
+    if (await this.nameTaken(input.name, viewer.id, scopeOf(scoped)))
+      throw new ConflictError(NAME_TAKEN);
     const key = input.apiKey ?? "";
     const tail = tailOf(key);
     const all = await this.ctx.store.listModels();
-    const scoped = startingScope(viewer, input, "private");
     const record: LlmModelRecord = {
       id: this.ctx.stamps.id("llm"),
       owner: viewer.id,
@@ -228,7 +244,10 @@ export class Models {
     allow(viewer, "change", { owner: found.owner }, "고치기");
     const old = found;
     if (input.baseUrl !== undefined) addressIssue(input.baseUrl, this.options.allowedHosts);
-    if (input.name !== undefined && (await this.nameTaken(input.name, id)))
+    if (
+      input.name !== undefined &&
+      (await this.nameTaken(input.name, found.owner, scopeOf(found), id))
+    )
       throw new ConflictError(NAME_TAKEN);
     const headers = input.headers ? this.headersOf(old, input.headers) : old.headers;
     const { sealedKey: _k, keyTail: _t, defaultModel: _d, lastCheck: _c, ...rest } = old;
@@ -266,6 +285,12 @@ export class Models {
     allow(viewer, "changeScope", { owner: found.owner }, "모델 공개 범위 바꾸기");
     if (found.isDefault && req.scope !== "everyone") refuse("scope", DEFAULT_IS_EVERYONES);
     const saved = changeScope(viewer, found, req, "모델 공개 범위 바꾸기");
+    // made for everyone, a name must not be a second one among those everyone sees
+    if (
+      scopeOf(saved) === "everyone" &&
+      (await this.nameTaken(saved.name, saved.owner, "everyone", id))
+    )
+      throw new ConflictError(NAME_TAKEN);
     await this.ctx.store.putModel(saved);
     return this.viewFor(viewer, saved);
   }

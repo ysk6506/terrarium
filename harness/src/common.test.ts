@@ -169,6 +169,7 @@ describe("check entry points [REQ-024]", () => {
       "test-integrity",
       "traceability",
       "moss",
+      "ui-words",
       "quality",
       "protected-paths",
       "coverage",
@@ -179,5 +180,6 @@ describe("check entry points [REQ-024]", () => {
     const verdict = lines.at(-1) ?? "";
     expect(verdict.includes("ALL CHECKS PASSED")).toBe(code === 0);
     expect(verdict.includes("CHECK(S) FAILED")).toBe(code === 1);
-  });
+    // Runs every check over the whole repository; a change that touches many documents takes longer than the default limit (ADR-0188).
+  }, 120_000);
 });

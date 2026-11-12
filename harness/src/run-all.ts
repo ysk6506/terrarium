@@ -5,11 +5,13 @@ import { run as debt } from "./checks/debt";
 import { report as docsDiff } from "./checks/doc-diff";
 import { run as docs } from "./checks/docs";
 import { report as ignores } from "./checks/ignores";
+import { report as licenses } from "./checks/licenses";
 import { run as moss } from "./checks/moss";
 import { run as protectedPaths } from "./checks/protected";
 import { report as quality } from "./checks/quality";
 import { run as testguard } from "./checks/testguard";
 import { report as traceability } from "./checks/traceability";
+import { run as uiWords } from "./checks/ui-words";
 import { findRoot, finish, flag, isMain, parseArgs, today, type Violation } from "./common";
 
 export type Check = readonly [name: string, run: () => Violation[]];
@@ -21,7 +23,15 @@ export function checks(
   notes: string[] = [],
 ): Check[] {
   const plan: Check[] = [
-    ["architecture", () => architecture(root)],
+    [
+      "architecture",
+      () => {
+        // License rules ride on this check: common.test.ts is locked and lists the check names (ADR-0185).
+        const { violations, notes: lic } = licenses(root);
+        notes.push(...lic);
+        return [...architecture(root), ...violations];
+      },
+    ],
     [
       "docs",
       () => {
@@ -49,6 +59,7 @@ export function checks(
       },
     ],
     ["moss", () => moss(root)],
+    ["ui-words", () => uiWords(root)],
     [
       "quality",
       () => {

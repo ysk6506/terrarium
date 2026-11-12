@@ -205,7 +205,7 @@ describe("harness telemetry from ClickStack [REQ-037]", () => {
               DurationNs: "2500000000",
               StatusCode: "STATUS_CODE_OK",
               SpanAttributes: {
-                "gen_ai.request.model": "gauss-2",
+                "gen_ai.request.model": "model-a",
                 "gen_ai.usage.input_tokens": "1200",
               },
             }),
@@ -235,7 +235,7 @@ describe("harness telemetry from ClickStack [REQ-037]", () => {
         start: 1000,
         end: 3500,
         status: "ok",
-        attributes: { "gen_ai.request.model": "gauss-2", "gen_ai.usage.input_tokens": 1200 },
+        attributes: { "gen_ai.request.model": "model-a", "gen_ai.usage.input_tokens": 1200 },
       },
       {
         traceId,

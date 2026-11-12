@@ -2,19 +2,19 @@ import { DEFAULT_FINGERPRINT } from "@terrarium/core/physics/slots";
 import { describe, expect, test } from "vitest";
 import { sampleBlueprint } from "../../../../packages/core/src/world/test-support/sample";
 import {
+  HANEUL,
   JIMIN,
   recipe,
   seed,
   settled,
   testPlatform,
-  YEONSU,
 } from "../runtime/test-support/platform";
 import { buildApp } from "./app";
 
 function setup() {
   const t = testPlatform();
   const app = buildApp({ platform: t.platform });
-  const send = async (method: string, url: string, body?: unknown, who = "yeonsu") => {
+  const send = async (method: string, url: string, body?: unknown, who = "haneul") => {
     const r = await app.inject({
       method: method as "GET",
       url,
@@ -46,7 +46,7 @@ describe("the physics slots and a world's physics profile over HTTP [REQ-113]", 
 
   test("a world starts on the default physics, v1", async () => {
     const { platform, send } = setup();
-    const { world } = await platform.worlds.create(YEONSU, {
+    const { world } = await platform.worlds.create(HANEUL, {
       name: "물리",
       blueprint: sampleBlueprint(),
     });
@@ -63,7 +63,7 @@ describe("the physics slots and a world's physics profile over HTTP [REQ-113]", 
 
   test("saving a profile makes a new version of the world with another fingerprint; saving the default puts it back", async () => {
     const { platform, send } = setup();
-    const { world } = await platform.worlds.create(YEONSU, {
+    const { world } = await platform.worlds.create(HANEUL, {
       name: "물리",
       blueprint: sampleBlueprint(),
     });
@@ -89,7 +89,7 @@ describe("the physics slots and a world's physics profile over HTTP [REQ-113]", 
 
   test("a profile that cannot be used is refused with every problem in Korean; a stale version and a stranger are refused too", async () => {
     const { platform, send } = setup();
-    const { world } = await platform.worlds.create(YEONSU, {
+    const { world } = await platform.worlds.create(HANEUL, {
       name: "물리",
       blueprint: sampleBlueprint(),
     });
@@ -115,15 +115,15 @@ describe("the physics slots and a world's physics profile over HTTP [REQ-113]", 
       profile: HOT,
       baseDigest: world.digest,
     });
-    const created = await platform.experiments.create(YEONSU, {
+    const created = await platform.experiments.create(HANEUL, {
       name: "물리 실험",
       recipe: recipe(world.id, scenario.id, { runs: 1 }),
     });
     expect(created.experiment.snapshot.physics).toBe(saved.body.fingerprint);
-    const done = await settled(platform, YEONSU, created.experiment.id);
+    const done = await settled(platform, HANEUL, created.experiment.id);
     expect(done.status).toBe("completed");
     const plain = await seed(platform);
-    const other = await platform.experiments.create(YEONSU, {
+    const other = await platform.experiments.create(HANEUL, {
       name: "기본 물리 실험",
       recipe: recipe(plain.world.id, plain.scenario.id, { runs: 1 }),
     });

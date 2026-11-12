@@ -3,7 +3,7 @@ import { NotFoundError } from "@terrarium/core/kernel";
 import { describe, expect, test } from "vitest";
 import { FakeFetch, json } from "../adapters/test-support/fake-fetch";
 import type { Stamps } from "./ids";
-import { ADMIN, JIMIN, recipe, seed, testPlatform, YEONSU } from "./test-support/platform";
+import { ADMIN, HANEUL, JIMIN, recipe, seed, testPlatform } from "./test-support/platform";
 
 const DAY = 86_400_000;
 const T0 = Date.UTC(2026, 9, 1);
@@ -19,13 +19,13 @@ async function setup() {
   ];
   const fake = new FakeFetch().on("GET", /^\/agents$/, () => json({ agents }));
   const built = testPlatform([], { stamps, adapters: { connect: { env: {}, fetch: fake.fetch } } });
-  const connection = await built.platform.connections.create(YEONSU, {
+  const connection = await built.platform.connections.create(HANEUL, {
     connector: "http",
     name: "회사 하네스",
     config: { url: "https://harness.test" },
   });
   const { world, scenario } = await seed(built.platform);
-  const experiment = (who = YEONSU, agentId = "triage", name = "실험") =>
+  const experiment = (who = HANEUL, agentId = "triage", name = "실험") =>
     built.platform.experiments.create(who, {
       name,
       recipe: recipe(world.id, scenario.id, { harnessId: connection.id, agentId }),
@@ -58,7 +58,7 @@ describe("an agent that changed gets a new version when an experiment is made [R
       model: "m-2",
       facts: { graph: "v1", mode: "fast" },
     };
-    // another person may use the connection only when they are an admin: it is yeonsu's, with yeonsu's secrets
+    // another person may use the connection only when they are an admin: it is haneul's, with haneul's secrets
     const changed = await s.experiment(ADMIN);
     expect(changed.experiment.agentVersion).toBe(2);
 
@@ -76,9 +76,9 @@ describe("an agent that changed gets a new version when an experiment is made [R
         { field: "fact.mode", label: "하네스가 알려 준 사실 mode", after: "fast" },
       ],
     });
-    expect(history.versions[1]).toMatchObject({ n: 1, changes: [], experiments: 2, by: "yeonsu" });
+    expect(history.versions[1]).toMatchObject({ n: 1, changes: [], experiments: 2, by: "haneul" });
     // The other agent of the harness has its own history.
-    expect((await s.experiment(YEONSU, "fixer")).experiment.agentVersion).toBe(1);
+    expect((await s.experiment(HANEUL, "fixer")).experiment.agentVersion).toBe(1);
     expect(
       (await s.platform.agentVersions.history(ADMIN, s.connection.id, "fixer")).versions,
     ).toHaveLength(1);
@@ -119,20 +119,20 @@ describe("an agent that changed gets a new version when an experiment is made [R
     const parent = await s.experiment();
     s.agents[0] = { id: "triage", name: "분류", model: "m-2", facts: { graph: "v1" } };
     await expect(
-      s.platform.experiments.fork(YEONSU, parent.experiment.id, { change: {} }),
+      s.platform.experiments.fork(HANEUL, parent.experiment.id, { change: {} }),
     ).rejects.toThrow();
     expect(
       (await s.platform.agentVersions.history(ADMIN, s.connection.id, "triage")).versions,
     ).toHaveLength(1);
 
-    const fork = await s.platform.experiments.fork(YEONSU, parent.experiment.id, {
+    const fork = await s.platform.experiments.fork(HANEUL, parent.experiment.id, {
       change: { seeds: [7] },
     });
     expect(fork.experiment.agentVersion).toBe(2);
     expect(fork.experiment.subject?.agent.model).toBe("m-2");
     expect(parent.experiment.subject?.agent.model).toBe("m-1");
     // Forking to another agent carries that agent's version.
-    const other = await s.platform.experiments.fork(YEONSU, parent.experiment.id, {
+    const other = await s.platform.experiments.fork(HANEUL, parent.experiment.id, {
       change: { agentId: "fixer" },
     });
     expect(other.experiment.agentVersion).toBe(1);
@@ -155,7 +155,7 @@ describe("people add, change and delete versions [REQ-053]", () => {
     const s = await setup();
     await s.experiment();
     s.day(3);
-    const added = await s.platform.agentVersions.add(YEONSU, s.connection.id, "triage", {
+    const added = await s.platform.agentVersions.add(HANEUL, s.connection.id, "triage", {
       label: "프롬프트 v2",
       note: "규칙 추가",
       attributes: { prompt: "v2" },
@@ -163,7 +163,7 @@ describe("people add, change and delete versions [REQ-053]", () => {
     expect(added.versions[0]).toMatchObject({
       n: 2,
       source: "manual",
-      by: "yeonsu",
+      by: "haneul",
       label: "프롬프트 v2",
       note: "규칙 추가",
       attributes: { prompt: "v2" },
@@ -172,7 +172,7 @@ describe("people add, change and delete versions [REQ-053]", () => {
     // Nothing differs in what the agent says, so the next experiment runs as the version people added.
     expect((await s.experiment()).experiment.agentVersion).toBe(2);
 
-    const edited = await s.platform.agentVersions.edit(YEONSU, s.connection.id, "triage", 2, {
+    const edited = await s.platform.agentVersions.edit(HANEUL, s.connection.id, "triage", 2, {
       label: null,
       attributes: { prompt: "v2b" },
     });
@@ -187,14 +187,14 @@ describe("people add, change and delete versions [REQ-053]", () => {
 
   test("the first version may be a person's, then it is the agent as it is now", async () => {
     const s = await setup();
-    const added = await s.platform.agentVersions.add(YEONSU, s.connection.id, "triage", {
+    const added = await s.platform.agentVersions.add(HANEUL, s.connection.id, "triage", {
       label: "시작",
     });
     expect(added.versions).toHaveLength(1);
     expect(added.versions[0]?.snapshot.model).toBe("m-1");
     s.agents.length = 0;
     await expect(
-      s.platform.agentVersions.add(YEONSU, s.connection.id, "fixer", {}),
+      s.platform.agentVersions.add(HANEUL, s.connection.id, "fixer", {}),
     ).rejects.toThrow("버전을 더할 수 없어요");
   });
 
@@ -203,15 +203,15 @@ describe("people add, change and delete versions [REQ-053]", () => {
     await s.experiment();
     s.agents[0] = { id: "triage", name: "분류", model: "m-2" };
     await s.experiment();
-    const cut = await s.platform.agentVersions.remove(YEONSU, s.connection.id, "triage", 2);
+    const cut = await s.platform.agentVersions.remove(HANEUL, s.connection.id, "triage", 2);
     expect(cut.versions.map((v) => v.n)).toEqual([1]);
     // The agent still says m-2, so the next experiment finds it differs from version 1: version 3.
     expect((await s.experiment()).experiment.agentVersion).toBe(3);
     await expect(
-      s.platform.agentVersions.remove(YEONSU, s.connection.id, "triage", 2),
+      s.platform.agentVersions.remove(HANEUL, s.connection.id, "triage", 2),
     ).rejects.toBeInstanceOf(NotFoundError);
     await expect(
-      s.platform.agentVersions.edit(YEONSU, s.connection.id, "fixer", 1, { label: "x" }),
+      s.platform.agentVersions.edit(HANEUL, s.connection.id, "fixer", 1, { label: "x" }),
     ).rejects.toBeInstanceOf(NotFoundError);
   });
 
@@ -240,10 +240,10 @@ describe("people add, change and delete versions [REQ-053]", () => {
     await s.experiment();
     await s.platform.agentVersions.add(ADMIN, "builtin", "triage", {});
     const made = await s.experiment();
-    await s.platform.experiments.cancel(YEONSU, made.experiment.id);
+    await s.platform.experiments.cancel(HANEUL, made.experiment.id);
     for (const e of await s.platform.experiments.list(ADMIN, {}))
-      await s.platform.experiments.cancel(YEONSU, e.experiment.id).catch(() => undefined);
-    await s.platform.connections.remove(YEONSU, s.connection.id);
+      await s.platform.experiments.cancel(HANEUL, e.experiment.id).catch(() => undefined);
+    await s.platform.connections.remove(HANEUL, s.connection.id);
     expect(await s.store.listAgentHistories(s.connection.id)).toEqual([]);
     expect(await s.store.listAgentHistories("builtin")).toHaveLength(1);
   });

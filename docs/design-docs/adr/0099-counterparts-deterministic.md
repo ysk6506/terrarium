@@ -8,12 +8,12 @@ enforced_by:
   - packages/core/src/topology/partner.test.ts
   - apps/web/src/logic/world3d/crew-partner.test.ts
   - apps/web/src/logic/handoffs.test.ts
-decision_hash: 5d33e4e3192a3726
+decision_hash: efd7cfcfcb60b27d
 ---
 # ADR-0099 가상 담당자 보정 (ADR-0098)
 
 ## 맥락
-ADR-0098에 "거절 확률"을 넣었고, 요청 처리 방식과 티켓 툴의 기본값, 3D 표현이 빠져 있었다. 연수 님 지적.
+ADR-0098에 "거절 확률"을 넣었고, 요청 처리 방식과 티켓 툴의 기본값, 3D 표현이 빠져 있었다. 제품 책임자 지적.
 
 ## 결정 (ADR-0098의 2·3항을 이렇게 읽는다)
 1. **거절 확률은 없다.** 가상 담당자는 항상 받아서 처리한다. 현실감은 리드타임과 되묻기로만 낸다.

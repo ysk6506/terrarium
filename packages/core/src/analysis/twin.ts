@@ -7,6 +7,7 @@
 import type { Experiment, RunRecord } from "@terrarium/core/experiments";
 import { josa } from "@terrarium/core/kernel";
 import { investigationCalls } from "@terrarium/core/oracle";
+import { tallyGaps } from "@terrarium/core/world";
 import { ratio } from "./stats";
 
 export const DIAGNOSIS_SCHEMA = "terrarium.diagnosis/1";
@@ -48,6 +49,15 @@ export interface DiagnosisRecord {
     readonly failed: number;
   };
   readonly toolErrors: readonly { readonly tool: string; readonly error: string }[];
+  /**
+   * The emulation gaps the run hit (ADR-0184), counted by key, most frequent first: where the proving ground, not the
+   * agent, fell short. Left out when there were none; carries only keys and counts, never a command or a row.
+   */
+  readonly gaps?: readonly {
+    readonly tool: string;
+    readonly feature: string;
+    readonly n: number;
+  }[];
   readonly finishedAt: string | null;
 }
 
@@ -106,8 +116,17 @@ function record(e: Experiment, run: RunRecord): DiagnosisRecord {
     toolErrors: result.toolCalls
       .filter((c) => !c.ok)
       .map((c) => ({ tool: c.tool, error: c.error ?? "알 수 없는 오류" })),
+    ...gapsOf(result.toolCalls),
     finishedAt: run.finishedAt ?? null,
   };
+}
+
+/** The run's emulation gaps by key (nothing when there were none, so a record without gaps keeps its old shape). */
+function gapsOf(
+  calls: NonNullable<RunRecord["result"]>["toolCalls"],
+): Pick<DiagnosisRecord, "gaps"> {
+  const gaps = tallyGaps(calls.flatMap((c) => c.gaps ?? []));
+  return gaps.length > 0 ? { gaps } : {};
 }
 
 /** JSON Lines: one record per line, stable key order, newline-terminated. */
@@ -267,8 +286,8 @@ function gapSection(gaps: readonly WorldGaps[]): string[] {
     const unknown = [...Object.entries(g.unknownLabels), ...Object.entries(g.unknownRelationships)];
     out.push(
       unknown.length > 0
-        ? `- 매핑하지 못한 라벨·관계: ${unknown.map(([k, n]) => `${k} ${n}개`).join(", ")}`
-        : "- 매핑하지 못한 라벨·관계 없음",
+        ? `- 매핑하지 못한 라벨·링크: ${unknown.map(([k, n]) => `${k} ${n}개`).join(", ")}`
+        : "- 매핑하지 못한 라벨·링크 없음",
     );
     for (const a of g.assumptions) out.push(`- 가정: ${a}`);
     out.push("");
@@ -309,7 +328,7 @@ export function modelingBrief(input: BriefInput): string {
     ...(errors.length === 0
       ? ["툴 오류가 없었어요.", ""]
       : [
-          "| 툴 | 오류 형태 | 횟수 | 예 |",
+          "| 툴 | 오류 형태 | 몇 번 | 예 |",
           "|---|---|---|---|",
           ...errors.map(
             (e) =>

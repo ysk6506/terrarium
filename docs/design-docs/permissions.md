@@ -4,17 +4,17 @@ kind: spec
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: step 나 (ADR-0174): visibility scopes, share-link list; statements checked against runtime/permissions.ts, gate.ts, scoping.ts, sqlite-scope.ts"
-  - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
-  - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
-  - "2026-11-12: known limit wording: model-name leak recorded, ledger full"
-  - "2026-11-12: 합친 main의 http-api.md·operations.md와 대조: 범위 바꾸기 길 다섯, 기본 모델 규칙, 시험 파일 칸을 맞춤"
+  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
+  - "2026-11-11: self-declared admin: token, else loopback socket address only; proxy mode unchanged"
+  - "2026-11-12: ADR-0183: 따라가는 용어집의 새 절(한 가지 말, 조건의 뜻)을 읽고, 이 문서에 옛 말(회·횟수·시드·개체·에스컬레이션)이 없음을 확인했다"
+  - "2026-11-12: 따라가는 문서나 코드의 내부 사실 서술이 요구의 말로 바뀐 것을 대조했고 이 문서의 내용은 그대로 맞다 (ADR-0188)"
+  - "2026-11-12: main을 합친 뒤 공개 범위(ADR-0174 나 단계, ADR-0179)에서 더한 서술을 합쳐진 코드와 대조했고, 바뀐 화면 글(ADR-0183)과 옛 말이 없음을 확인했다"
 follows:
   - docs/design-docs/http-api.md
   - docs/design-docs/operations.md
-follows_hash: "4155e10525416833"
-verified_body: 98232785b15f0ca8
-unchanged_reverifies: 0
+follows_hash: 16c41f2b87bafdb5
+verified_body: 73e77da0731c98f0
+unchanged_reverifies: 1
 ---
 # 권한 (클로즈 베타 1차, ADR-0174)
 
@@ -148,9 +148,14 @@ unchanged_reverifies: 0
 
 - **읽기 규칙**은 `may(viewer, "see", resource)`와 같은 규칙의 순수한 꼴 `seen(sight, record)`(`packages/core/src/experiments/scope.ts`)예요. 저장소는 `visibleTo`로, 길은 `Gate`(`runtime/gate.ts`)로 같은 규칙을 써요.
 - **범위 바꾸기는 `changeScope` 한 함수**(`runtime/scoping.ts`)를 지나고, 길도 하나예요: 다섯 종류 모두 `PUT /api/<worlds|scenarios|experiments|connections|models>/:id/scope`(`{ scope, group? }`). 기존 고치기 길은 범위를 받지 않아요(연결의 범위만 바꾸려고 설정을 다시 보내지 않아요). 다 단계가 이 함수에서 감사 기록을 남겨요.
-- **알려진 한계 하나**: 모델 이름이 전체에서 유일해서, 남의 "나만" 모델과 같은 이름을 적으면 충돌(409)로 그 모델이 있다는 사실이 새어요. 기한은 2026-11-25, 고칠 방향은 "이름은 주인 안에서만 유일"이에요. 기술 부채 장부가 한도(열린 항목 12)에 차 있어서 항목은 아직 적지 못했고, 한 건을 닫는 대로 적어요(ADR-0179 결정 4).
+- **모델 이름은 두 곳에서만 유일해요**: 만든 사람 자신의 등록 안에서, 그리고 "모두"로 만든 등록 사이에서요(`Models.nameTaken`). 남의 "나만"·"우리 파트" 모델은 이름을 견주지 않아서, 같은 이름을 적었을 때의 충돌(409)로 그 모델이 있다는 사실이 새지 않아요. 그래서 두 사람이 같은 이름의 "나만" 모델을 따로 가질 수 있어요. 모델은 이름이 아니라 ID로 가리켜서(기본 모델, 이끼, 확인) 이름이 겹쳐도 헷갈리지 않아요. "나만" 모델의 범위를 "모두"로 넓힐 때 같은 이름의 "모두" 모델이 있으면 409예요.
 - 웹의 "내 것" 표시는 이제 `meta.user.id`로 견줘요. 범위를 고르는 화면은 라 단계예요. 응답에는 `scope`, `group`, `canChangeScope`(연결·모델은 `sharing`)가 이미 있어요.
 - 프록시가 보낸 이름·그룹 헤더가 UTF-8 그대로 오면(Node가 Latin-1로 읽은 것) 다시 맞춰 읽어요.
+
+## 다음에 할 일
+
+- 감사 기록은 권한이 바뀐 일뿐 아니라 워크플로의 건과 승인도 같은 기록에 남겨요([워크플로 자동화](workflow-automation.md) 13절).
+- 자원은 공개 범위와 별도로 자원마다 맡은 일(주인, 편집, 승인 같은)을 사람이나 무리에게 줄 수 있게 돼요. 같은 문서 13절이 맡은 일을 정해요.
 
 ## 하지 않는 것
 

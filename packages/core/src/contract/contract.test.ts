@@ -61,8 +61,8 @@ describe("the route table [REQ-030]", () => {
     expect(paramNames(ROUTES.getRun.path)).toEqual(["id"]);
     expect(pathFor("getRun", { id: "r 1/2" })).toBe("/api/runs/r%201%2F2");
     expect(
-      pathFor("listExperiments", {}, { owner: "연수", status: undefined, limit: 20, q: "" }),
-    ).toBe("/api/experiments?owner=%EC%97%B0%EC%88%98&limit=20");
+      pathFor("listExperiments", {}, { owner: "하늘", status: undefined, limit: 20, q: "" }),
+    ).toBe("/api/experiments?owner=%ED%95%98%EB%8A%98&limit=20");
     expect(pathFor("meta")).toBe("/api/meta");
     expect(() => pathFor("getWorld", {})).toThrow("getWorld: 'id' 값이 없어요");
     expect(() => pathFor("getWorld", { id: "" })).toThrow();
@@ -175,10 +175,10 @@ describe("experiments: create, fork, add runs [REQ-030] [REQ-040]", () => {
     });
     expect(
       messages(CreateExperimentBody, { name: "x", recipe: { ...recipe, runs: 3, seeds: [1] } }),
-    ).toEqual(["recipe.runs: 시드 목록과 실행 횟수 중 하나만 정해요"]);
+    ).toEqual(["recipe.runs: 상황 번호 목록과 상황 수 중 하나만 정해요"]);
     expect(
       messages(CreateExperimentBody, { name: "x", recipe: { ...recipe, seeds: [1, 1] } }),
-    ).toEqual(["recipe.seeds: 같은 시드가 두 번 있어요"]);
+    ).toEqual(["recipe.seeds: 같은 상황이 두 번 있어요"]);
     expect(messages(CreateExperimentBody, { name: "", recipe })).toEqual([
       "name: 비어 있으면 안 돼요",
     ]);
@@ -196,9 +196,11 @@ describe("experiments: create, fork, add runs [REQ-030] [REQ-040]", () => {
       "change: 모르는 항목이 있어요: 'owner'",
     ]);
     expect(parseWith(AddRunsBody, { count: 2 }).ok).toBe(true);
-    expect(messages(AddRunsBody, {})).toEqual(["더할 실행 횟수, 시드, 반복 중 하나를 정해요"]);
+    expect(messages(AddRunsBody, {})).toEqual([
+      "더할 상황 수, 상황 번호, 몇 번씩 중 하나를 정해요",
+    ]);
     expect(messages(AddRunsBody, { count: 2, seeds: [4] })).toEqual([
-      "더할 실행 횟수, 시드, 반복 중 하나를 정해요",
+      "더할 상황 수, 상황 번호, 몇 번씩 중 하나를 정해요",
     ]);
   });
 

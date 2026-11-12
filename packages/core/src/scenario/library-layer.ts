@@ -4,7 +4,7 @@
  * and the template made of them. The same as the application layer's, with a few more things a plan may say.
  */
 import type { BlueprintIndex, Domain, Entity, FaultType } from "@terrarium/core/world";
-import { agent, allOf, doc, Flow, type ScenarioTemplate, SUBMIT } from "./library-kit";
+import { agent, allOf, byId, doc, Flow, type ScenarioTemplate, SUBMIT } from "./library-kit";
 import type { ActionKind, Condition, Expectation } from "./model";
 
 export interface Case {
@@ -65,7 +65,6 @@ export const atLeast = (entity: string, field: string, value: number): Condition
   value,
 });
 
-export const byId = (a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id);
 const KIND_ORDER = ["request", "stateful", "batch"];
 const rank = (e: Entity) => KIND_ORDER.indexOf(String(e.props.serviceKind));
 export const servicesOf = (index: BlueprintIndex, ids: readonly string[]) =>

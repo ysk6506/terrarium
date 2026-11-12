@@ -1,7 +1,7 @@
 /**
- * What "서비스부터" starts with (ADR-0108): IAP, the platform the closed beta's own team runs, already chosen; the
- * "보통" ladders; and a custom service with nothing in it but a name. The numbers are an example the person
- * presses to change (VM and host counts are the real IAP shape, to be corrected by the team that owns it).
+ * What "서비스부터" starts with (ADR-0108): an example platform card, IAP, already chosen; the "보통" ladders;
+ * and a custom service with nothing in it but a name. The numbers are example values the person presses to
+ * change; they make no claim about any real platform.
  */
 import {
   DEFAULT_WORKLOAD,
@@ -14,7 +14,7 @@ import type { HarmTier, ServiceDraft, ShapeSpec } from "./shaped-plan";
 
 export const IAP_HARM: readonly HarmTier[] = [
   { name: "컨트롤 플레인 멈춤 · 배포만 막힘", perHourKrw: 300_000 },
-  { name: "에이전트 응답 없음 · 파트원 40명", perHourKrw: 2_000_000 },
+  { name: "에이전트 응답 없음 · 사용자 40명", perHourKrw: 2_000_000 },
   { name: "그래프 DB 멈춤 · 전부 멈춤", perHourKrw: 5_000_000 },
 ];
 
@@ -29,7 +29,7 @@ export const IAP_DRAFT: ServiceDraft = {
   key: "iap",
   name: "IAP",
   gives:
-    "VM 위에 직접 만든 쿠버네티스 클러스터에서 도메인 에이전트·오케스트레이터·인프라 토폴로지 그래프가 돌아요. 파트원들이 쓰는 플랫폼이에요.",
+    "VM 위에 직접 만든 쿠버네티스 클러스터에서 도메인 에이전트·오케스트레이터·인프라 토폴로지 그래프가 돌아요. 사용자들이 쓰는 플랫폼이에요.",
   stopsText: "에이전트가 답하지 못하고 새 배포가 막혀요",
   kind: "request",
   nodes: 9,
@@ -63,7 +63,7 @@ export const IAP_DRAFT: ServiceDraft = {
     { what: "호스트 하나", result: "그 위 VM 3대가 같이 멈춰요 → 에이전트 일부 응답 없음" },
     {
       what: "그래프 DB·스토리지",
-      result: "오케스트레이터가 답을 못 해요 · 파트 전체 멈춤",
+      result: "오케스트레이터가 답을 못 해요 · 사용자 전체 멈춤",
       bad: true,
     },
   ],

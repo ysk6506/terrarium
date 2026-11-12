@@ -15,13 +15,15 @@ covers:
   - apps/web/src/logic/models.ts
   - apps/web/src/ui/pages/model-section.tsx
   - apps/web/src/ui/pages/model-dialog.tsx
-covers_hash: d5915c2c54561b82
+covers_hash: 9df9479be11dec9e
 verification_log:
-  - "2026-11-07: ADR-0125: 이끼는 기본 모델이 있어야만 켜진다(꺼지면 알약만, 409 no_model), 점수 질문 찾기 규칙을 문서에 반영하고 코드와 대조함"
   - "2026-11-11: model-section.tsx에서 안 쓰는 useAction 호출만 지움, 문서 내용과 동작은 그대로"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
   - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
+  - "2026-11-12: main을 합친 뒤 공개 범위(ADR-0174 나 단계, ADR-0179)에서 더한 서술을 합쳐진 코드와 대조했고, 바뀐 화면 글(ADR-0183)과 옛 말이 없음을 확인했다"
+verified_body: a3d779c952220842
+unchanged_reverifies: 0
 ---
 # 모델 등록 (REQ-099, [ADR-0119](adr/0119-llm-api-registration.md))
 
@@ -50,7 +52,7 @@ verification_log:
 | `litellm` | LiteLLM | `GET /v1/models`, 그 경로가 없으면(404) `GET /model/info` | openai와 같다 | openai와 같다 |
 | `anthropic` | Claude 호환 | `GET /v1/models?limit=1000` | `POST /v1/messages` (`system`은 따로, `max_tokens` 필수, 없으면 1024) | `x-api-key: 키`, `anthropic-version: 2023-06-01` |
 
-주소 끝에 `/v1`이 있어도 없어도 된다(`joinUrl`이 겹치지 않게 잇는다). 추가 헤더는 기본 헤더보다 앞선다. 키가 없는 사내 게이트웨이를 위해 키는 선택이다.
+주소 끝에 `/v1`이 있어도 없어도 된다(`joinUrl`이 겹치지 않게 잇는다). 추가 헤더는 기본 헤더보다 앞선다. 키가 없는 게이트웨이를 위해 키는 선택이다.
 
 ## 연결 확인이 하는 일
 
@@ -79,4 +81,5 @@ verification_log:
 
 - 등록한 모델은 처음에 **나만**이에요(`scope`, `group`을 만들 때 적고, 바꿀 때는 `PUT /api/models/:id/scope`예요). 목록에는 내게 보이는 것만 나오고, 보이지 않는 것을 확인·고치기·지우기 하면 404예요. 응답의 `sharing`에 범위와 내가 바꿀 수 있는지가 있어요.
 - **모두의 기본 모델은 범위가 "모두"인 모델만 될 수 있어요**(관리자와 그 모델의 주인이 `POST /api/models/:id/default`로 정해요). "나만"·"우리 파트" 모델은 기본으로 정할 수 없고, 기본의 범위를 좁히는 것도 거절해요. 저절로 기본이 되는 건 "모두" 모델이 처음 생길 때뿐이고, 기본을 지우면 먼저 등록된 "모두" 모델로 넘어가요. 한 사람에게 보이는 기본은 모두의 기본, 없으면 그 사람이 볼 수 있는 모델 중 먼저 등록된 것이라 모델 하나를 혼자 쓰는 개발 모드는 그대로예요. 이끼는 이 함수(`defaultFor`)로 모델을 골라요.
+- **이름은 만든 사람 안에서, 그리고 "모두"로 만든 등록 사이에서만 유일해요.** 남의 "나만" 모델과는 견주지 않아서 같은 이름의 충돌로 그 모델이 있다는 사실이 새지 않아요. 모델은 ID로 가리켜요.
 - 범위가 없는 예전 등록은 "모두"로 읽어요. 자세한 규칙은 [권한](permissions.md).

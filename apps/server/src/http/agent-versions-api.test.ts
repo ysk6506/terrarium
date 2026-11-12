@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { FakeFetch, json } from "../adapters/test-support/fake-fetch";
-import { recipe, seed, testPlatform, YEONSU } from "../runtime/test-support/platform";
+import { HANEUL, recipe, seed, testPlatform } from "../runtime/test-support/platform";
 import { buildApp } from "./app";
 
 describe("the versions of an agent over HTTP [REQ-053]", () => {
@@ -11,18 +11,18 @@ describe("the versions of an agent over HTTP [REQ-053]", () => {
     const { platform } = testPlatform([], {
       adapters: { connect: { env: {}, fetch: fake.fetch } },
     });
-    const connection = await platform.connections.create(YEONSU, {
+    const connection = await platform.connections.create(HANEUL, {
       connector: "http",
       name: "회사 하네스",
       config: { url: "https://harness.test" },
     });
     const { world, scenario } = await seed(platform);
-    await platform.experiments.create(YEONSU, {
+    await platform.experiments.create(HANEUL, {
       name: "실험",
       recipe: recipe(world.id, scenario.id, { harnessId: connection.id, agentId: "team/ops" }),
     });
     const a = buildApp({ platform });
-    const send = async (method: string, url: string, payload?: object, who = "yeonsu") => {
+    const send = async (method: string, url: string, payload?: object, who = "haneul") => {
       const r = await a.inject({
         method: method as "GET",
         url,

@@ -2,7 +2,7 @@
 title: SDN 오버레이와 클라우드 네이티브 네트워크 층 — 리프-스파인 위에 덮는 가상 네트워크와 서비스의 문
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/world/sdn.ts
   - packages/core/src/world/sdn-act.ts
@@ -22,13 +22,15 @@ covers:
   - packages/core/src/topology/layer-network.ts
   - packages/core/src/session/probes.ts
   - packages/core/src/session/operation/mtbf.ts
-covers_hash: e9fd5f1bb1854dd5
+covers_hash: fa9dc317d69c3005
 verification_log:
-  - "2026-11-07: ADR-0133에 맞춰 대조: 기대 복구 시간(+5분), 손대지 않는 것이 정답인 시트의 만점, 링크 흔들림 서술"
-  - "2026-11-10: 물리 상수를 슬롯 표로 옮김(REQ-113). v1 동작은 physics-golden이 비트까지 같음을 확인, 문서 내용 변화 없음"
   - "2026-11-11: library-sdn.ts에서 안 쓰는 상수 OWN 한 줄만 지웠다. 동작과 서술은 그대로다"
   - "2026-11-11: main 합치기 뒤 다시 읽음: 물리 프로필(REQ-113) 반영 문단과 라우트 행이 main의 새 내용과 함께 맞다"
   - "2026-11-11: tools·world/os: 닿지 않는 분기 정리와 시험 추가; 동작은 같음(TD-0002), awk는 이름 바로 뒤 '(' 호출과 srand 반환값"
+  - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
+  - "2026-11-12: 덮는 시나리오 라이브러리에서 정렬 도우미 byId의 자리만 library-kit.ts로 옮김. 동작은 그대로이고 이 문서는 그 이름을 말하지 않는다"
+verified_body: ae5e2c0df7836671
+unchanged_reverifies: 0
 ---
 # SDN 오버레이와 클라우드 네이티브 네트워크 층 (REQ-097, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0115](adr/0115-sdn-network-layer-amend-tests.md))
 

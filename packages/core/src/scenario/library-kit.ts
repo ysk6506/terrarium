@@ -57,6 +57,8 @@ export class Flow {
   }
 }
 
+/** Order by id, so a pick from a world is the same every time. */
+export const byId = (a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id);
 export const byLinks = (index: BlueprintIndex, kind: EntityKind, count: (e: Entity) => number) =>
   [...index.ofKind(kind)].sort((a, b) => count(b) - count(a) || a.id.localeCompare(b.id))[0];
 

@@ -13,14 +13,17 @@ touches_protected:
   - packages/core/package.json
   - harness/package.json
   - AGENTS.md
-decision_hash: 2018ecb30a2d4c19
+decision_hash: 4ce24ddabe62e773
+amended_by:
+  - adr: "0185"
+    what: 묶을 수 있는 라이선스 목록에 MPL-2.0을 수정 안 한 것만 더함
 ---
 # ADR-0181 테라리움의 라이선스는 Apache License 2.0이다
 
 ## 맥락
-저장소는 GitHub에 공개돼 있는데 라이선스가 없었다. `LICENSE` 파일도, `package.json`의 표기도 없었다. 라이선스가 없는 공개 저장소는 기본적으로 모든 권리가 보유된 상태라서, 사내 사용자가 내려받아 쓰는 근거가 적혀 있지 않았다. 흉내 OS의 유틸리티를 GPL 프로그램(BusyBox)으로 바꾸는 제안(이슈 #47)을 검토하다가 드러났다.
+저장소는 GitHub에 공개돼 있는데 라이선스가 없었다. `LICENSE` 파일도, `package.json`의 표기도 없었다. 라이선스가 없는 공개 저장소는 기본적으로 모든 권리가 보유된 상태라서, 사용자가 내려받아 쓰는 근거가 적혀 있지 않았다. 흉내 OS의 유틸리티를 GPL 프로그램(BusyBox)으로 바꾸는 제안(이슈 #47)을 검토하다가 드러났다.
 
-제품 책임자(연수 님)의 결정: 테라리움은 Apache 2.0으로 한다.
+제품 책임자의 결정: 테라리움은 Apache 2.0으로 한다.
 
 ## 결정
 1. **라이선스는 Apache License 2.0이다.** 저장소 맨 위에 `LICENSE`(전문)를 두고, 모든 `package.json`에 `"license": "Apache-2.0"`을 적고, README에 한 줄을 둔다.
@@ -29,7 +32,7 @@ decision_hash: 2018ecb30a2d4c19
 4. **저작권자 표기는 제품 책임자가 정해 주면 `NOTICE`에 적는다.** 그전에는 적지 않는다(지어내지 않는다).
 
 ## 이유
-- Apache 2.0은 사내에서 내려받아 쓰는 데 필요한 권리(사용·수정·재배포)와 특허 조항을 분명히 준다.
+- Apache 2.0은 내려받아 쓰는 데 필요한 권리(사용·수정·재배포)와 특허 조항을 분명히 준다.
 - 묶는 것의 라이선스를 정해 두지 않으면 의존성 하나가 저장소 전체의 조건을 바꾼다.
 
 ## 버린 길

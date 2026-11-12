@@ -9,13 +9,13 @@ enforced_by:
   - tests/spec/worldgen.test.ts
   - tests/spec/realimport.test.ts
 touches_protected: []
-decision_hash: e0748e2e8e887afa
+decision_hash: b0bb9b0ee6795d46
 ---
 # ADR-0021 세계 소스
 
 ## 맥락
-세계는 두 길로 만들어진다. 사업장 프리셋과 크기 파라미터로 생성하는 길(REQ-009, REQ-035)과, FalkorDB KG `cloud_topology` 같은
-현실 기록을 읽어 오는 길(REQ-010, REQ-011)이다. 실제 사업장 지도는 없고, KG에는 전력 계통이 없으며, 관계 이름은 시기마다 조금씩 달랐다
+세계는 두 길로 만들어진다. 사업장 프리셋과 크기 파라미터로 생성하는 길(REQ-009, REQ-035)과, FalkorDB 그래프 같은
+현실 기록을 읽어 오는 길(REQ-010, REQ-011)이다. 현실 기록은 소스마다 모양이 다르다: 사업장 지도나 전력 계통이 없는 소스도 있고, 관계 이름의 철자가 여럿일 수 있다
 (PART_OF/PORT_OF, NicPort/NICPort). 어느 길로 만들든 시나리오가 의미 있으려면 세계가 평상시에 조용해야 한다.
 
 ## 결정

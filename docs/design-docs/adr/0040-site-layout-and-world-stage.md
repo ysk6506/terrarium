@@ -11,12 +11,12 @@ enforced_by:
   - apps/web/src/logic/world3d/camera.test.ts
   - apps/web/src/logic/world3d/site.test.ts
 touches_protected: []
-decision_hash: f60f479b748f4f47
+decision_hash: 0b64b62a4223e71d
 ---
 # ADR-0040 지도에서 옮긴 사업장 배치와 하나의 3D 무대(WorldStage)
 
 ## 맥락
-사용자는 "건물들이 왜 다 땅 끝에 붙어 있어?"라고 물으며 사업장 위성지도를 주었고, 파란 지붕 건물이 팹이라고 알려 주었다. 지금까지 조립기는 건물을 외곽선 안에서
+사용자는 "건물들이 왜 다 땅 끝에 붙어 있어?"라고 물었다. 사업장 위성지도에서 파란 지붕 건물을 팹으로 읽는다. 지금까지 조립기는 건물을 외곽선 안에서
 "위쪽 왼쪽부터 첫 빈자리"에 쌓았기 때문에 모든 건물이 한쪽 가장자리에 몰렸다. 또 3D는 보는 용도(`Stage`)와 짓는 용도(빌더의 평면 그림)가 따로여서,
 같은 월드가 화면마다 다르게 생겼다.
 

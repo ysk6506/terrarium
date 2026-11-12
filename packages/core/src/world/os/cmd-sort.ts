@@ -6,7 +6,8 @@
 import { allValues, has, hasAny, parseArgs } from "./args";
 import { normalize } from "./fs";
 import { errText, readInputs } from "./io";
-import { act, type Cmd, fail, joinLines, linesOf, ok, type R, unsupported } from "./types";
+import { badFlag } from "./real-options";
+import { act, type Cmd, emulationGap, fail, joinLines, linesOf, ok, type R } from "./types";
 
 const SORT_FLAGS = {
   bool: "nrufhbcsV",
@@ -180,17 +181,32 @@ function writeOutput(c: Cmd, target: string, text: string, errors: readonly stri
   return { out: "", err: errText(errors), code };
 }
 
+/** A key the real sort reads (`F[.C][OPTS][,F[.C][OPTS]]`, GNU coreutils manual) that the fake does not simulate. */
+const REAL_KEY = /^\d+(\.\d+)?[bdfgiMhnRrV]*(,\d+(\.\d+)?[bdfgiMhnRrV]*)?$/;
+
+function sortKeyRefusal(spec: string): R {
+  if (!REAL_KEY.test(spec))
+    return fail(`sort: invalid number at field start: invalid count at start of ‘${spec}’`, 2);
+  return emulationGap({
+    tool: "sort",
+    feature: "key-form",
+    what: `-k ${spec}`,
+    supported: "-k 시작[,끝][bfhnrV] (필드 단위), -t 구분자, -n -r -u -f -h -V -b -o 파일 -c -s",
+    example: "sort -k2,2 -n /etc/hosts",
+  });
+}
+
 /** The keys of the call (`-k`, or the whole line), or the refusal for one that cannot be done. */
 function keysOf(args: readonly string[], p: ReturnType<typeof parseArgs>): Key[] | R {
   const specs = allValues(args, SORT_FLAGS, "k", "key").map((s) => keyOf(s, p));
   const bad = specs.find((k): k is string => typeof k === "string");
-  if (bad !== undefined) return unsupported("sort", `-k ${bad} (글자 위치는 안 돼요)`);
+  if (bad !== undefined) return sortKeyRefusal(bad);
   return specs.length ? (specs as Key[]) : [wholeLine(p)];
 }
 
 export function sort(c: Cmd): R {
   const p = parseArgs(c.args, SORT_FLAGS);
-  if (p.bad) return unsupported("sort", p.bad);
+  if (p.bad) return badFlag("sort", p);
   const keys = keysOf(c.args, p);
   if (!Array.isArray(keys)) return keys;
   const byKey = byKeys(keys, p.flags.get("t") ?? p.flags.get("--field-separator"));

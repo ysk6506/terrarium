@@ -17,12 +17,12 @@ amends_tests:
   - tests/spec/controllability.test.ts::the list of what can be controlled is made of real things [REQ-069] > every world command is either on the list or named as no operator's
   - tests/spec/controllability.test.ts::=DRIVES
 test_change_reason: 서버 펌웨어 올리기가 운영자가 바꿀 수 있는 것에 더해졌다. 그래서 행동 종류 목록에 "펌웨어 올리기"가 들어가 행동 조건의 오류 문장이 한 항목 길어지고, 제어 가능 요소표의 운영자 명령 목록에 firmware.update가 들어가고, 에이전트의 길마다 실제 호출로 시험하는 표(DRIVES)에 Redfish UpdateService 호출 한 줄이 더해진다. 재는 성질(표의 모든 길이 월드를 바꾸고 채점에 그 행동으로 잡힌다)은 그대로다.
-decision_hash: 3ddd94ec61485cb1
+decision_hash: 8eefdf5167de8085
 ---
 # ADR-0101 랙 실장 장면, 컨테인먼트 안, 펌웨어 올리기
 
 ## 맥락
-클로즈 베타 피드백 6·8·9(연수 님).
+클로즈 베타 피드백 6·8·9(제품 책임자).
 - **6**: 랙을 눌렀을 때 실장 보기가 "허접"하다. 서버가 평평한 상자로 나열돼 있고, 무슨 장비인지·비어 있는지·뒤가 어떤지 알 수 없다.
 - **8**: 컨테인먼트 안을 들여다볼 수 없다. 지붕과 문이 가린다. 사람도 그 안을 걷지 않는다(ADR-0078은 "컨테인먼트 안은 걷지 않는다"고 정했다).
 - **9**: 서버 펌웨어 작업을 시험하는 시나리오 템플릿이 없다. 월드에는 서버의 펌웨어 버전도, 올리는 길(Redfish UpdateService)도 없었다.

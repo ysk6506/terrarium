@@ -18,7 +18,7 @@ function serve(identity: object) {
 }
 
 type App = ReturnType<typeof serve>;
-const typed = { "x-terrarium-user": encodeURIComponent("연수") };
+const typed = { "x-terrarium-user": encodeURIComponent("하늘") };
 
 async function asking(app: App, remoteAddress: string, headers: Record<string, string> = typed) {
   const reply = await app.inject({ method: "GET", url: "/api/meta", headers, remoteAddress });

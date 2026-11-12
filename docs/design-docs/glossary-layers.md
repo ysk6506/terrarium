@@ -6,11 +6,12 @@ last_verified: 2026-11-12
 verification_log:
   - "2026-11-07: o13 합치기: 용어집이 400줄을 넘어 층별 말(SDN·컨테이너·애플리케이션·가속기·사이트·DR)을 이 문서로 옮겼다"
   - "2026-11-12: 따라가는 문서의 바뀐 곳은 ADR-0171 결과 화면의 말(glossary 결과 표, web-ui 결과 절)이고 이 문서가 다루는 화면과 상관없다"
+  - "2026-11-12: ADR-0183: 따라가는 용어집의 새 절(한 가지 말, 조건의 뜻)을 읽고, 이 문서에 옛 말(회·횟수·시드·개체·에스컬레이션)이 없음을 확인했다"
 follows:
   - docs/design-docs/glossary.md
-follows_hash: 4bd81bd6e9e577ba
+follows_hash: 75b620af4a4d007f
 verified_body: 07b7cff4cb473118
-unchanged_reverifies: 0
+unchanged_reverifies: 1
 ---
 # 용어집: 층별 말
 

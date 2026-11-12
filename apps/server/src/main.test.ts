@@ -42,7 +42,7 @@ describe("starting and stopping the server [REQ-030]", () => {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "x-terrarium-user": "yeonsu",
+        "x-terrarium-user": "haneul",
         "x-terrarium-admin-token": "invented-admin-token",
       },
       body: JSON.stringify({ source: "sample", name: "남는 세계" }),

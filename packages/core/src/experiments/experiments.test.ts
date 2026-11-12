@@ -49,7 +49,7 @@ const snapshot: Snapshot = {
 const experiment = (id: string, extra: Partial<Experiment> = {}): Experiment => ({
   id,
   name: `실험 ${id}`,
-  owner: "yeonsu",
+  owner: "haneul",
   createdAt: `2026-10-29T00:00:0${id.length % 10}Z`,
   recipe: recipe(),
   snapshot,
@@ -77,8 +77,8 @@ describe("recipes [REQ-030] [REQ-031]", () => {
     ).toEqual([
       "알 수 없는 툴: teleport",
       "같은 툴이 두 번 들어 있어요",
-      "시드는 0 이상의 정수여야 해요",
-      "같은 시드가 두 번 들어 있어요",
+      "상황 번호는 0 이상의 정수여야 해요",
+      "같은 상황이 두 번 들어 있어요",
       "툴 호출당 시간은 1~600초여야 해요",
       "알 수 없는 vCenter 버전 'vcenter/9.9'",
       "알 수 없는 vROps 버전 'vrops/1'",
@@ -87,7 +87,7 @@ describe("recipes [REQ-030] [REQ-031]", () => {
     ]);
     expect(recipeProblems(recipe({ tools: ["submit_diagnosis"], seeds: [] }), ctx)).toEqual([
       "조사에 쓸 툴을 하나 이상 골라야 해요 (진단 제출은 늘 포함돼요)",
-      "시드를 하나 이상 정해야 해요",
+      "상황을 하나 이상 정해야 해요",
     ]);
     expect(recipeProblems(recipe({ seeds: seedsUpTo(21), agentId: "" }), ctx)).toEqual([
       "상황은 한 실험에 20개까지예요 (지금 21개)",
@@ -387,7 +387,7 @@ describe("memory store [REQ-030] [REQ-033]", () => {
   const world = (digest: string, name = "홀") => ({
     id: "w1",
     name,
-    owner: "yeonsu",
+    owner: "haneul",
     origin: "sample" as const,
     blueprint: { ...sampleBlueprint(), name },
     digest,

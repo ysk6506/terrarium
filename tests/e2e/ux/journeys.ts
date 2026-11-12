@@ -307,7 +307,7 @@ async function fork(c: Context): Promise<void> {
     );
   const once = page.getByRole("button", { name: "1번", exact: true });
   if ((await once.getAttribute("aria-pressed")) !== "true")
-    throw new Error("포크 만들기가 원본의 반복 횟수(1번)로 시작하지 않는다");
+    throw new Error("포크 만들기가 원본의 몇 번씩(1번)으로 시작하지 않는다");
   await c.d.click(page.getByRole("button", { name: /조건 바꿔 다시 돌리기|실험 시작/ }));
   await expectPath(c, /^\/experiments\/e-/);
   await waitForResult(page);
@@ -396,7 +396,7 @@ const FIRST_PICTURE_MS = 3 * SECOND;
 
 const HWASEONG = "화성 사업장 실제 그대로 연습";
 
-const asViewer = { "content-type": "application/json", "x-terrarium-user": "%EC%97%B0%EC%88%98" };
+const asViewer = { "content-type": "application/json", "x-terrarium-user": "%ED%95%98%EB%8A%98" };
 
 /** Hwaseong as it really is, made the way a person who had built it earlier would have it: it is in the list. */
 async function makeHwaseong(c: Context): Promise<string> {
@@ -581,7 +581,8 @@ export async function seedWorld(base: string, ids: readonly JourneyId[]): Promis
 /**
  * Runs of journeys that depend on what the earlier ones of the run made (the experiment `run` finishes is the one
  * `share` and `fork` open; the scenario `design` saves is the one `process-compare` writes on). Each group starts on
- * a fresh server, so CI can run the groups side by side (ADR-0141). Every journey is in exactly one group.
+ * a fresh server, so CI can run the groups side by side (ADR-0141). Every journey is in exactly one group. The groups that
+ * depend on nothing are cut small (ADR-0175) so that no group takes much more than a minute and a half of journeys.
  */
 export const JOURNEY_GROUPS: Readonly<Record<string, readonly JourneyId[]>> = {
   flow: [
@@ -595,8 +596,10 @@ export const JOURNEY_GROUPS: Readonly<Record<string, readonly JourneyId[]>> = {
     "compare",
     "author",
   ],
-  build: ["build", "site", "build-small"],
-  own: ["own-card-only", "topology"],
+  build: ["build"],
+  small: ["site", "build-small"],
+  own: ["own-card-only"],
+  topology: ["topology"],
 };
 
 export async function perform(
@@ -611,11 +614,6 @@ export async function perform(
     "framenavigated",
     (f) => f === v.page.mainFrame() && screens.add(new URL(f.url()).pathname),
   );
-  const seen: string[] = [];
-  v.page.on("response", (r) => {
-    if (r.url().includes("/api/"))
-      seen.push(`${r.status()} ${r.request().method()} ${r.url().replace(base, "")}`);
-  });
   try {
     await work({ browser, base, v, d });
     return {
@@ -626,14 +624,6 @@ export async function perform(
     };
   } catch (err) {
     const note = err instanceof Error ? err.message.split("\n")[0] : String(err);
-    const text = await v.page
-      .locator("body")
-      .innerText()
-      .catch(() => "");
-    const api = seen.filter((l) => !l.includes("/escalations")).slice(-10);
-    process.stdout.write(
-      `DEBUG ${note} url=${v.page.url()} api=${JSON.stringify(api)} text=${JSON.stringify(text.replace(/\s+/g, " ").slice(0, 400))}\n`,
-    );
     return {
       ok: false,
       actions: d.actions,

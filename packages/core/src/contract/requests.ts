@@ -163,7 +163,7 @@ export const RecipeBody = z
   })
   .strict()
   .refine((r) => !(r.seeds && r.runs), {
-    message: "시드 목록과 실행 횟수 중 하나만 정해요",
+    message: "상황 번호 목록과 상황 수 중 하나만 정해요",
     path: ["runs"],
   });
 
@@ -236,7 +236,7 @@ export const AddRunsBody = z
   })
   .strict()
   .refine((b) => [b.count, b.seeds, b.repeats].filter((x) => x !== undefined).length === 1, {
-    message: "더할 실행 횟수, 시드, 반복 중 하나를 정해요",
+    message: "더할 상황 수, 상황 번호, 몇 번씩 중 하나를 정해요",
   });
 
 export const EXPERIMENT_STATUSES = [

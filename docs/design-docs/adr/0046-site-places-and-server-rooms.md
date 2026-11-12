@@ -20,7 +20,7 @@ amends_tests:
   - "packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > sites without a map to read have no fixed places: their buildings are spread over the land"
   - packages/core/src/sources/worldgen/site-slots.test.ts::the sites drawn from the owner's maps have their fabs where the blue roofs are [REQ-048] [REQ-043] > every place for a building has a size, and only the three mapped sites have fab places
 test_change_reason: 사용자가 알려 준 현실이 두 가지 바뀌었다. 화성의 데이터센터는 HPC센터 하나뿐이고(두 번째 자리는 내가 만든 것이었다), 화성에는 DSR 연구동 세 동이 있어 건물 자리 목록에 연구동이 더해졌다. 또 사업장의 기본 구성은 지도에 보이는 팹을 모두 짓고, 화성은 HPC센터 때문에 홀 크기와 상세 비율이 사업장별로 정해진다. 그래서 자리 개수·종류를 세던 시험과 기본 구성 시험이 새 현실에 맞게 바뀌었고, 기본 구성이 커진 화성에서 시험이 쓰던 상세 비율과 홀 크기도 사업장 구성을 따르게 바뀌었다. 건물이 자리 안에 서고 설비 마당이 부지 안에 놓이는 성질은 그대로 확인한다.
-decision_hash: 457ed24c8bd8f0f2
+decision_hash: 409770d0dd2e06d5
 ---
 # ADR-0046 건물 자리와 서버룸의 현실 구조
 
@@ -29,8 +29,8 @@ decision_hash: 457ed24c8bd8f0f2
 짓지 않은 자리에는 사무동·기숙사·주차 건물이 들어섰다. 둘, 서버룸의 모양이 현실과 달랐다.
 
 - HPC센터(화성): 10~11층, 안에 서버룸이 아주 많고 팹이나 DSR의 서버룸보다 훨씬 크다. 기사로 확인한 것: 지하 2층·지상 11층, 연면적 약 5만 3천㎡, 건축면적 약 6,800㎡, 108MW급, 이중 데크.
-- 팹: 팹마다 특정 층에 아주 작은 서버룸이 1~2개. 컨테인먼트가 수십 개 들어갈 공간, 컨테인먼트당 랙 10~20개.
-- DSR(화성사업장 DSR동): A·B·C 세 동. C동 3층에 2개, B동 5층에 1개처럼 동·층별로 있고 크기는 팹과 비슷하다. 기사로 확인한 것: 세 동 합쳐 지하 5층·지상 28층, 연면적 약 33만㎡.
+- 팹: 팹 안의 서버룸은 작고 건물마다 층과 수가 다르다. 가정으로 팹마다 특정 층에 1~2개를 둔다. 컨테인먼트가 수십 개 들어갈 공간, 컨테인먼트당 랙 10~20개.
+- 연구동(DSR동): A·B·C 세 동. 서버룸은 높은 건물의 몇몇 층에 동·층별로 두는 것으로 가정하고, 크기는 팹과 비슷하게 둔다. 기사로 확인한 것: 세 동 합쳐 지하 5층·지상 28층, 연면적 약 33만㎡.
 
 ## 결정
 1. **자리는 모두 정해져 있다.** 사업장은 팹·데이터센터·연구동 자리(`fabs`, `dcs`, `labs`)를 갖고, 기본 구성(`SITE_CAMPUS_MIX`)은 지도에 보이는 팹을 전부 짓는다(기흥 3, 화성 9, 평택 5).
@@ -38,7 +38,7 @@ decision_hash: 457ed24c8bd8f0f2
    이 자리 밖에 놓고(`asm.reserve`), 웹의 캠퍼스 꾸미기는 이 자리를 짓지 않은 건물로 센다: 블록이 덮지 않고, 가까움 띠의 기준이 되고, 도로와 나무가 비켜 가며, 포장된 빈 터와 모서리 말뚝으로 그린다.
 3. **화성은 HPC센터 하나와 DSR 세 동이다.** 데이터센터 자리는 하나(건축면적 약 6,800㎡)고 이름은 `HPC센터`, 층은 10개 홀 층(2F~11F)에 층당 홀 2개다. 화성의 기본 구성은 홀 크기와 상세 비율도 정한다
    (`SITE_CAMPUS_MIX`가 `labs`, `floors`, `hallsPerFloor`, `podsPerHall`, `detail`을 가질 수 있다).
-4. **연구동(`labs`, 건물 용도 `research`)을 더한다.** 이름은 `DSR동 A타워`처럼 짓고 지상 27층이다. 서버룸 층은 A 4층 1개(내 추측), B 5층 1개, C 3층 2개.
+4. **연구동(`labs`, 건물 용도 `research`)을 더한다.** 이름은 `DSR동 A타워`처럼 짓고 지상 27층이다. 서버룸 층은 동마다 정한 예시 값이다(코드의 `LAB_ROOM_FLOORS`).
 5. **팹의 서버룸**은 팹마다 정해진 층(2~4층 중 하나)에 1~2개, 컨테인먼트는 보통 홀의 40~85%(기본 구성에서 열 개 남짓~서른 개), 컨테인먼트 한 줄 5~10랙(컨테인먼트당 10~20랙)이다.
 6. **큰 설비 마당은 넓게 편다.** HPC센터의 설비 마당은 개체가 수백 개라 건물 너비만큼의 좁고 긴 띠가 되어 어떤 땅에도 들어가지 않았다. 마당이 건물 너비의 1.5배보다 깊어지면 정사각에 가깝게 펴고, 개체가 150개를 넘는 마당은 개체 사이를 8 m 대신 3 m로 좁혀 놓는다(화성 HPC센터의 마당은 약 370개).
 

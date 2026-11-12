@@ -8,7 +8,7 @@
  * `outside` so the run's result can say where the fake is thin (ADR-0117 decision 6).
  */
 import { InvalidValueError } from "@terrarium/core/kernel";
-import { hostOsOf, runLine, type WorldPort } from "@terrarium/core/world";
+import { type EmulationGap, hostOsOf, runLine, type WorldPort } from "@terrarium/core/world";
 import "./shell-layers";
 
 export interface ShellResult {
@@ -19,6 +19,8 @@ export interface ShellResult {
   readonly exitCode: number;
   /** The commands and features of this call that the simulation could not do. */
   readonly outside: string[];
+  /** The emulation gaps of this call: the real tool does it, the proving ground does not (ADR-0184). */
+  readonly gaps: EmulationGap[];
 }
 
 const MAX_LINES = 400;
@@ -47,7 +49,7 @@ export function runShell(world: WorldPort, id: string, line: string): ShellResul
     throw new InvalidValueError(`'${id}' is a ${kind}; run_command needs a server or VM`);
   if (!reachable(world, id)) {
     const stderr = `ssh: connect to host ${world.index.entity(id).name} port 22: Connection timed out`;
-    return { output: stderr, stdout: "", stderr, exitCode: 255, outside: [] };
+    return { output: stderr, stdout: "", stderr, exitCode: 255, outside: [], gaps: [] };
   }
   const r = runLine(world, id, line);
   const output = clip(trimEnd(r.stdout + r.stderr));
@@ -57,5 +59,6 @@ export function runShell(world: WorldPort, id: string, line: string): ShellResul
     stderr: trimEnd(r.stderr),
     exitCode: r.exitCode,
     outside: r.outside,
+    gaps: r.gaps,
   };
 }

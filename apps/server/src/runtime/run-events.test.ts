@@ -1,12 +1,12 @@
 import { NotFoundError } from "@terrarium/core/kernel";
 import { describe, expect, test } from "vitest";
 import {
+  HANEUL,
   recipe,
   ScriptHarness,
   seed,
   settled,
   testPlatform,
-  YEONSU,
 } from "./test-support/platform";
 
 /** An agent that looks twice, then answers, with a pause between so the live record can be read mid-run. */
@@ -28,11 +28,11 @@ describe("a run's record is served as events with two clocks [REQ-083]", () => {
   test("a finished run gives its events, the wall clock on every one, and a window cuts them", async () => {
     const { platform: p } = testPlatform([agent()]);
     const { world, scenario } = await seed(p);
-    const e = await p.experiments.create(YEONSU, {
+    const e = await p.experiments.create(HANEUL, {
       name: "기록",
       recipe: recipe(world.id, scenario.id, { harnessId: "looker", agentId: "a", runs: 1 }),
     });
-    const done = await settled(p, YEONSU, e.experiment.id);
+    const done = await settled(p, HANEUL, e.experiment.id);
     const id = done.runs[0]?.id as string;
     const all = await p.results.runEvents(id, {});
     expect(all.live).toBe(false);
@@ -59,12 +59,12 @@ describe("a run's record is served as events with two clocks [REQ-083]", () => {
     });
     const { platform: p, store } = testPlatform([harness]);
     const { world, scenario } = await seed(p);
-    const e = await p.experiments.create(YEONSU, {
+    const e = await p.experiments.create(HANEUL, {
       name: "실시간",
       recipe: recipe(world.id, scenario.id, { harnessId: "looker", agentId: "a", runs: 1 }),
     });
     const experimentId = e.experiment.id;
-    await settled(p, YEONSU, experimentId);
+    await settled(p, HANEUL, experimentId);
     expect(live?.live).toBe(true);
     expect(live?.events.filter((x) => x.kind === "tool").map((x) => x.tool)).toEqual([
       "list_alarms",

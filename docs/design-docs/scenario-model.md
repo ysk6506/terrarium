@@ -2,7 +2,7 @@
 title: 시나리오 모델
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/scenario/model.ts
   - packages/core/src/scenario/blocks.ts
@@ -10,12 +10,14 @@ covers:
   - packages/core/src/scenario/library-facility.ts
   - packages/core/src/scenario/library-domains.ts
 verification_log:
-  - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
-  - "2026-11-07: REQ-108: 코드와 대조했고 필요한 서술(기대 복구 시간, 서비스 카드 복사, 숫자 보정)을 고쳤다. 나머지는 그대로 맞다"
   - "2026-11-07: ADR-0133에 맞춰 대조: 기대 복구 시간(+5분), 손대지 않는 것이 정답인 시트의 만점, 링크 흔들림 서술"
   - "2026-11-11: blocks.ts에서 안 쓰는 import(SDN_CONDITION_FIELDS) 한 줄만 지웠다. 동작과 서술은 그대로다"
   - "2026-11-11: ADR-0178: 만들어지는 모든 모양에서 제공되는 시나리오가 100점이라는 서술(사이드카·정전·CDU·냉방기·콜드 DR 대기 쪽·메모리 규칙)을 코드와 대조해 더했다"
-covers_hash: 6d7945d8ba865c0e
+  - "2026-11-12: ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
+  - "2026-11-12: 덮는 시나리오 라이브러리에서 정렬 도우미 byId의 자리만 library-kit.ts로 옮김. 동작은 그대로이고 이 문서는 그 이름을 말하지 않는다"
+covers_hash: 23919ff3f2ea2159
+verified_body: 6454e3e681db4b11
+unchanged_reverifies: 0
 ---
 # 시나리오 모델 (REQ-033, REQ-034)
 

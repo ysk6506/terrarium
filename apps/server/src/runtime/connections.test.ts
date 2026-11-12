@@ -6,13 +6,13 @@ import { FakeFetch, json } from "../adapters/test-support/fake-fetch";
 import { addressProblem } from "./connections";
 import {
   ADMIN,
+  HANEUL,
   JIMIN,
   recipe,
   ScriptHarness,
   seed,
   testPlatform,
   untilStopped,
-  YEONSU,
 } from "./test-support/platform";
 
 const AGENTS = [
@@ -47,28 +47,28 @@ describe("the connections people register, and the ones the config file names [R
 
   test("connecting a harness finds its agents, and they can be chosen in an experiment", async () => {
     const { platform } = setup();
-    const view = await platform.connections.create(YEONSU, harness);
+    const view = await platform.connections.create(HANEUL, harness);
     expect(view).toMatchObject({
       id: expect.any(String),
       source: "screen",
-      owner: "yeonsu",
+      owner: "haneul",
       connector: "http",
       scope: "harness",
       status: "ok",
     });
     expect(view.agents.map((a) => a.id)).toEqual(["triage", "fixer"]);
 
-    const meta = await platform.meta(YEONSU);
+    const meta = await platform.meta(HANEUL);
     expect(meta.harnesses.find((h) => h.id === view.id)?.agents).toHaveLength(2);
 
     const { world, scenario } = await seed(platform);
     await expect(
-      platform.experiments.create(YEONSU, {
+      platform.experiments.create(HANEUL, {
         name: "연결한 하네스",
         recipe: recipe(world.id, scenario.id, { harnessId: view.id, agentId: "chef" }),
       }),
     ).rejects.toMatchObject({ issues: [{ message: "하네스에 'chef' 에이전트가 없어요" }] });
-    const made = await platform.experiments.create(YEONSU, {
+    const made = await platform.experiments.create(HANEUL, {
       name: "연결한 하네스",
       recipe: recipe(world.id, scenario.id, { harnessId: view.id, agentId: "fixer" }),
     });
@@ -77,7 +77,7 @@ describe("the connections people register, and the ones the config file names [R
 
   test("trying a connection reports the agents it found and the time it took, and saves nothing", async () => {
     const { platform } = setup();
-    const checked = await platform.connections.check(YEONSU, {
+    const checked = await platform.connections.check(HANEUL, {
       connector: "http",
       config: harness.config,
     });
@@ -95,7 +95,7 @@ describe("the connections people register, and the ones the config file names [R
     );
     const a = testPlatform([], { adapters: { connect: { env: {}, fetch: down.fetch } } });
     expect(
-      await a.platform.connections.check(YEONSU, { connector: "http", config: harness.config }),
+      await a.platform.connections.check(HANEUL, { connector: "http", config: harness.config }),
     ).toMatchObject({
       ok: false,
       error: "하네스가 에이전트 목록에 502로 답했어요",
@@ -104,7 +104,7 @@ describe("the connections people register, and the ones the config file names [R
     const none = new FakeFetch().on("GET", /^\/agents$/, () => json({ agents: [] }));
     const b = testPlatform([], { adapters: { connect: { env: {}, fetch: none.fetch } } });
     expect(
-      await b.platform.connections.check(YEONSU, { connector: "http", config: harness.config }),
+      await b.platform.connections.check(HANEUL, { connector: "http", config: harness.config }),
     ).toMatchObject({
       ok: true,
       notes: ["연결은 되지만 에이전트를 하나도 찾지 못했어요"],
@@ -121,7 +121,7 @@ describe("the connections people register, and the ones the config file names [R
       agentsTimeoutMs: 40,
       adapters: { connect: { env: {}, fetch: hang.fetch } },
     });
-    const view = await platform.connections.create(YEONSU, harness);
+    const view = await platform.connections.create(HANEUL, harness);
     expect(view.status).toBe("unreachable");
     expect(view.error).toBe("0초 안에 답이 없어요");
     expect(view.agents).toEqual([]);
@@ -130,7 +130,7 @@ describe("the connections people register, and the ones the config file names [R
   test("what is wrong with the form is said by field", async () => {
     const { platform } = setup();
     const wrong = (config: Record<string, unknown>, connector = "http") =>
-      platform.connections.check(YEONSU, { connector, config }).catch((e: InvalidInputError) => e);
+      platform.connections.check(HANEUL, { connector, config }).catch((e: InvalidInputError) => e);
     const missing = await wrong({});
     expect(missing).toBeInstanceOf(InvalidInputError);
     expect((missing as InvalidInputError).issues.map((i) => i.path)).toContain("url");
@@ -140,7 +140,7 @@ describe("the connections people register, and the ones the config file names [R
     expect(nope.issues).toEqual([{ path: "connector", message: "연결 방식 'gopher'을 몰라요" }]);
     // An empty field on a form means "not given".
     expect(
-      await platform.connections.check(YEONSU, {
+      await platform.connections.check(HANEUL, {
         connector: "http",
         config: { ...harness.config, tokenEnv: "" },
       }),
@@ -150,12 +150,12 @@ describe("the connections people register, and the ones the config file names [R
   test("a secret is only ever the name of a variable the server has", async () => {
     const { platform, fake } = setup({ HARNESS_TOKEN: "s3cret" });
     const missing = (await platform.connections
-      .check(YEONSU, { connector: "http", config: { ...harness.config, tokenEnv: "NOT_SET" } })
+      .check(HANEUL, { connector: "http", config: { ...harness.config, tokenEnv: "NOT_SET" } })
       .catch((e: InvalidInputError) => e)) as InvalidInputError;
     expect(missing.issues).toEqual([
       { path: "tokenEnv", message: "서버에는 'NOT_SET'라는 환경 변수가 없어요" },
     ]);
-    const view = await platform.connections.create(YEONSU, {
+    const view = await platform.connections.create(HANEUL, {
       ...harness,
       config: { ...harness.config, tokenEnv: "HARNESS_TOKEN" },
     });
@@ -167,7 +167,7 @@ describe("the connections people register, and the ones the config file names [R
     const { platform } = setup();
     const at = (url: string) =>
       platform.connections
-        .check(YEONSU, { connector: "http", config: { url } })
+        .check(HANEUL, { connector: "http", config: { url } })
         .catch((e: InvalidInputError) => e.issues[0]?.message);
     expect(await at("http://169.254.169.254/latest")).toBe(
       "클라우드의 메타데이터 주소에는 연결할 수 없어요",
@@ -188,7 +188,7 @@ describe("the connections people register, and the ones the config file names [R
     }).platform;
     const via = (url: string) =>
       strict.connections
-        .check(YEONSU, { connector: "http", config: { url } })
+        .check(HANEUL, { connector: "http", config: { url } })
         .then(() => "ok")
         .catch((e: InvalidInputError) => e.issues[0]?.message);
     expect(await via("https://harness.test")).toBe("ok");
@@ -212,7 +212,7 @@ describe("the connections people register, and the ones the config file names [R
   test("the command connector is for the config file only", async () => {
     const { platform } = setup();
     const err = (await platform.connections
-      .create(YEONSU, {
+      .create(HANEUL, {
         connector: "command",
         name: "내 스크립트",
         config: { command: ["agent.sh"] },
@@ -225,16 +225,16 @@ describe("the connections people register, and the ones the config file names [R
 
   test("an id comes from the name, a taken one gets a number, a chosen one that is taken is refused", async () => {
     const { platform } = setup();
-    const a = await platform.connections.create(YEONSU, { ...harness, name: "My Harness" });
-    const b = await platform.connections.create(YEONSU, { ...harness, name: "My Harness" });
-    const c = await platform.connections.create(YEONSU, { ...harness, name: "한글 이름" });
+    const a = await platform.connections.create(HANEUL, { ...harness, name: "My Harness" });
+    const b = await platform.connections.create(HANEUL, { ...harness, name: "My Harness" });
+    const c = await platform.connections.create(HANEUL, { ...harness, name: "한글 이름" });
     expect([a.id, b.id]).toEqual(["my-harness", "my-harness-2"]);
     expect(c.id).toMatch(/^c-/);
-    const chosen = await platform.connections.create(YEONSU, { ...harness, name: "x", id: "mine" });
+    const chosen = await platform.connections.create(HANEUL, { ...harness, name: "x", id: "mine" });
     expect(chosen.id).toBe("mine");
     for (const id of ["mine", "builtin"]) {
       const dup = (await platform.connections
-        .create(YEONSU, { ...harness, name: "또", id })
+        .create(HANEUL, { ...harness, name: "또", id })
         .catch((e: InvalidInputError) => e)) as InvalidInputError;
       expect(dup.issues).toEqual([{ path: "id", message: "같은 id의 연결이 이미 있어요" }]);
     }
@@ -242,25 +242,25 @@ describe("the connections people register, and the ones the config file names [R
 
   test("only whoever connected it can remove it, and not while runs are on it", async () => {
     const { platform } = setup();
-    const view = await platform.connections.create(YEONSU, harness);
+    const view = await platform.connections.create(HANEUL, harness);
     await expect(platform.connections.remove(JIMIN, view.id)).rejects.toBeInstanceOf(NotFoundError);
-    await expect(platform.connections.remove(YEONSU, "builtin")).rejects.toMatchObject({
+    await expect(platform.connections.remove(HANEUL, "builtin")).rejects.toMatchObject({
       message: "서버 설정 파일에 적힌 연결은 화면에서 지울 수 없어요",
     });
-    await expect(platform.connections.remove(YEONSU, "nobody")).rejects.toBeInstanceOf(
+    await expect(platform.connections.remove(HANEUL, "nobody")).rejects.toBeInstanceOf(
       NotFoundError,
     );
 
     const { world, scenario } = await seed(platform);
-    await platform.connections.create(YEONSU, { ...harness, name: "바쁜 하네스", id: "busy" });
-    const run = await platform.experiments.create(YEONSU, {
+    await platform.connections.create(HANEUL, { ...harness, name: "바쁜 하네스", id: "busy" });
+    const run = await platform.experiments.create(HANEUL, {
       name: "돌리는 중",
       recipe: recipe(world.id, scenario.id, { harnessId: "busy", agentId: "triage" }),
     });
-    await expect(platform.connections.remove(YEONSU, "busy")).rejects.toBeInstanceOf(ConflictError);
-    await platform.experiments.cancel(YEONSU, run.experiment.id);
+    await expect(platform.connections.remove(HANEUL, "busy")).rejects.toBeInstanceOf(ConflictError);
+    await platform.experiments.cancel(HANEUL, run.experiment.id);
 
-    expect(await platform.connections.remove(YEONSU, view.id)).toEqual({ deleted: true });
+    expect(await platform.connections.remove(HANEUL, view.id)).toEqual({ deleted: true });
     expect(platform.connections.get(view.id)).toBeUndefined();
     expect((await platform.connections.views(ADMIN)).map((v) => v.id)).not.toContain(view.id);
   });
@@ -268,7 +268,7 @@ describe("the connections people register, and the ones the config file names [R
   test("what people connected is still there after a restart; one that no longer builds is shown, not lost", async () => {
     const env: Record<string, string> = { HARNESS_TOKEN: "t" };
     const first = setup(env);
-    const kept = await first.platform.connections.create(YEONSU, {
+    const kept = await first.platform.connections.create(HANEUL, {
       ...harness,
       config: { ...harness.config, tokenEnv: "HARNESS_TOKEN" },
     });
@@ -282,13 +282,13 @@ describe("the connections people register, and the ones the config file names [R
     );
     await second.platform.start();
     const broken = (await second.platform.connections.views(ADMIN)).find((v) => v.id === kept.id);
-    expect(broken).toMatchObject({ status: "unreachable", owner: "yeonsu", source: "screen" });
+    expect(broken).toMatchObject({ status: "unreachable", owner: "haneul", source: "screen" });
     expect(broken?.error).toBe("서버에는 'HARNESS_TOKEN'라는 환경 변수가 없어요");
     expect(second.platform.connections.get(kept.id)).toBeUndefined();
 
     // Set it right, ask again.
     env.HARNESS_TOKEN = "t";
-    const healed = await second.platform.connections.recheck(YEONSU, kept.id);
+    const healed = await second.platform.connections.recheck(HANEUL, kept.id);
     expect(healed.status).toBe("ok");
     expect(healed.agents).toHaveLength(2);
     expect(second.platform.connections.get(kept.id)).toBeDefined();
@@ -296,13 +296,13 @@ describe("the connections people register, and the ones the config file names [R
 
   test("asking again sees a harness's new agents without waiting for the cache", async () => {
     const { platform, fake } = setup();
-    const view = await platform.connections.create(YEONSU, harness);
+    const view = await platform.connections.create(HANEUL, harness);
     expect(view.agents).toHaveLength(2);
     fake.on("GET", /^\/agents$/, () => json({ agents: [AGENTS[0]] }));
     expect(
       (await platform.connections.views(ADMIN)).find((v) => v.id === view.id)?.agents,
     ).toHaveLength(2);
-    expect((await platform.connections.recheck(YEONSU, view.id)).agents).toHaveLength(2);
+    expect((await platform.connections.recheck(HANEUL, view.id)).agents).toHaveLength(2);
   });
 
   test("a harness from the config file keeps its settings for display, and ports of any kind are listed", async () => {
@@ -355,13 +355,13 @@ describe("the connections people register, and the ones the config file names [R
       { gateway, adapters: { connect: { env: {}, fetch: fake.fetch } } },
       new MemoryStore(),
     );
-    const hermes = await platform.connections.create(YEONSU, {
+    const hermes = await platform.connections.create(HANEUL, {
       connector: "hermes",
       name: "내 헤르메스",
       config: { url: "https://hermes.test" },
     });
     expect(hermes.mcpSlotUrl).toBe(`https://t.test/mcp/slots/${hermes.id}/secret`);
-    const plain = await platform.connections.create(YEONSU, harness);
+    const plain = await platform.connections.create(HANEUL, harness);
     expect(plain.mcpSlotUrl).toBeUndefined();
   });
 });

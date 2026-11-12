@@ -55,7 +55,7 @@ export interface CatalogCard {
   readonly load: ServiceLoad;
 }
 
-/** IAP's own numbers: forty teammates, a few requests a second, a graph and some logs. It is not a catalog card. */
+/** Example numbers for the platform card: forty users, a few requests a second, a graph and some logs. It is not a catalog card. */
 export const IAP_LOAD: ServiceLoad = { rps: 20, dataGB: 300, users: 40, maxDowntimeS: 300 };
 
 const part = (

@@ -3,7 +3,7 @@
  * last measurement (docs/generated/ux-score.json) and the floors (harness/config/ux-floor.json).
  *
  * UX001 a facet's score is below its floor            UX002 a floor is missing or not a usable number
- * UX003 (with --base) a floor was lowered             UX004 no measurement, or the web app changed since it
+ * UX003 (with --base) a floor was lowered             UX004 no measurement (a failure); the web app changed since it (a note)
  * UX005 the recorded scores do not follow from the recorded measurements (edited by hand)
  */
 import { createHash } from "node:crypto";
@@ -117,16 +117,6 @@ export function checkReport(root: string): Violation[] {
       ),
     ];
   const out: Violation[] = [];
-  if (report.webHash !== webHash(root))
-    out.push(
-      violation(
-        "UX004",
-        REPORT_FILE,
-        0,
-        "측정한 뒤에 웹 화면이나 UX 측정 코드가 바뀌었다",
-        "`pnpm ux`로 다시 측정하고, 오른 점수는 `pnpm ux ratchet`으로 하한에 반영한다.",
-      ),
-    );
   const expected = scoresOf(scoreAll(report.measurements));
   const edited = FACETS.filter((f) => report.scores?.[f] !== expected[f]);
   if (edited.length > 0)
@@ -140,6 +130,17 @@ export function checkReport(root: string): Violation[] {
       ),
     );
   return out;
+}
+
+/**
+ * UX004 as a note: the committed measurement describes an older web app. Nearly every change to a screen makes it
+ * so, and the 5-hourly cleanup job measures main again and commits the file (ADR-0175), so it is not a failure. The
+ * change's own scores are in its `ux-measure` job summary.
+ */
+export function staleNote(root: string): string | undefined {
+  const report = loadReport(root);
+  if (typeof report === "string" || report.webHash === webHash(root)) return undefined;
+  return "NOTE ux [UX004] 측정한 뒤에 웹 화면이나 UX 측정 코드가 바뀌었다: 정리 작업이 main에서 `pnpm ux`로 다시 재서 올린다. 이 변경의 점수는 CI의 ux-measure 요약에 나온다";
 }
 
 export function checkFloors(root: string): Violation[] {

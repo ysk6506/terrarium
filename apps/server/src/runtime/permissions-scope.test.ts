@@ -1,11 +1,11 @@
 import { NotFoundError } from "@terrarium/core/kernel";
 import { describe, expect, test } from "vitest";
 import { canSee, may, mustSee, sightOf, standing } from "./permissions";
-import { ADMIN, person, YEONSU } from "./test-support/platform";
+import { ADMIN, HANEUL, person } from "./test-support/platform";
 
 const member = { ...person("mina", "proxy"), groups: ["part-a"] };
 const outsider = { ...person("omar", "proxy"), groups: ["part-b"] };
-const maker = { ...YEONSU, groups: ["part-a"] };
+const maker = { ...HANEUL, groups: ["part-a"] };
 
 const WHO = [
   ["maker", maker],
@@ -23,7 +23,7 @@ describe("the read rule: who sees a resource [REQ-054]", () => {
   ];
   test.each(cases)("[REQ-054] %s", (_name, scoping, expected) => {
     WHO.forEach(([, who], i) => {
-      const r = standing({ owner: YEONSU.id, ...scoping });
+      const r = standing({ owner: HANEUL.id, ...scoping });
       expect(may(who, "see", r).ok).toBe(expected[i]);
       expect(canSee(who, r)).toBe(expected[i]);
     });
@@ -34,15 +34,15 @@ describe("the read rule: who sees a resource [REQ-054]", () => {
   });
 
   test("[REQ-054] seeing something that is not allowed answers like not found", () => {
-    expect(() => mustSee(outsider, { owner: "yeonsu", scope: "private" }, "세계")).toThrow(
+    expect(() => mustSee(outsider, { owner: "haneul", scope: "private" }, "세계")).toThrow(
       NotFoundError,
     );
-    expect(() => mustSee(maker, { owner: "yeonsu", scope: "private" }, "세계")).not.toThrow();
+    expect(() => mustSee(maker, { owner: "haneul", scope: "private" }, "세계")).not.toThrow();
   });
 
   test("[REQ-054] using needs sight, and the person's sight carries the id, the groups and the admin role", () => {
-    expect(may(outsider, "use", { owner: "yeonsu", scope: "private" }).ok).toBe(false);
-    expect(may(member, "use", { owner: "yeonsu", scope: "group", group: "part-a" }).ok).toBe(true);
+    expect(may(outsider, "use", { owner: "haneul", scope: "private" }).ok).toBe(false);
+    expect(may(member, "use", { owner: "haneul", scope: "group", group: "part-a" }).ok).toBe(true);
     expect(sightOf(ADMIN).admin).toBe(true);
     expect(sightOf(member)).toEqual({ id: "mina", groups: ["part-a"], admin: false });
   });
@@ -52,7 +52,7 @@ describe("changing the scope, and listing the links [REQ-054]", () => {
   test.each(["changeScope", "listShares"] as const)(
     "[REQ-054] %s is for the maker and an admin",
     (action) => {
-      const r = standing({ owner: YEONSU.id, scope: "everyone" });
+      const r = standing({ owner: HANEUL.id, scope: "everyone" });
       expect(may(maker, action, r).ok).toBe(true);
       expect(may(ADMIN, action, r).ok).toBe(true);
       expect(may(member, action, r).ok).toBe(false);

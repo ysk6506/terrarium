@@ -4,7 +4,7 @@ import { TOOL_SPECS, toolsForDomains } from "@terrarium/core/tools";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { serviceLab } from "../../../../packages/core/src/world/test-support/service-lab";
 import type { Platform } from "./platform";
-import { recipe, ScriptHarness, testPlatform, YEONSU } from "./test-support/platform";
+import { HANEUL, recipe, ScriptHarness, testPlatform } from "./test-support/platform";
 
 const ALL = ["server", "network", "storage", "facility", "service_os", "virtualization"] as const;
 const FAKE = {
@@ -39,11 +39,11 @@ function resident(prompts: string[]) {
 
 async function begin(store: MemoryStore, prompts: string[], extra: Record<string, unknown> = {}) {
   const t = testPlatform([resident(prompts)], {}, store);
-  const { world } = await t.platform.worlds.create(YEONSU, {
+  const { world } = await t.platform.worlds.create(HANEUL, {
     name: "서비스 홀",
     blueprint: serviceLab(),
   });
-  const created = await t.platform.experiments.create(YEONSU, {
+  const created = await t.platform.experiments.create(HANEUL, {
     name: "운영 9분",
     recipe: recipe(world.id, "operation", {
       harnessId: "resident",
@@ -70,7 +70,7 @@ const tick = async (seconds: number) => {
 async function finished(platform: Platform, id: string) {
   for (let step = 0; step < 4000; step++) {
     await vi.advanceTimersByTimeAsync(1000);
-    const v = await platform.experiments.view(YEONSU, id);
+    const v = await platform.experiments.view(HANEUL, id);
     if (v.progress.finished === v.progress.total) return v;
   }
   throw new Error("the operation did not end");
@@ -84,7 +84,7 @@ describe("an operation goes on after the server restarts [REQ-090]", () => {
     const first = await begin(store, prompts);
     await tick(40);
     const before = await first.platform.results.run(
-      (await first.platform.experiments.view(YEONSU, first.id)).runs[0]?.id as string,
+      (await first.platform.experiments.view(HANEUL, first.id)).runs[0]?.id as string,
     );
     expect(before.run.error).toBeUndefined();
     expect(before.run.status).toBe("running");

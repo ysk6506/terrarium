@@ -1,13 +1,13 @@
 /**
  * Drives one experiment over Terrarium's HTTP API against a real harness and prints the outcome.
  * Usage: pnpm tsx tests/e2e/harness/drive.ts <connector> <name> '<config json>' [agentId]
- * Env: TERRARIUM_URL (default http://127.0.0.1:8787), TERRARIUM_USER (default yeonsu).
+ * Env: TERRARIUM_URL (default http://127.0.0.1:8787), TERRARIUM_USER (default haneul).
  * It makes a small world and the "냉방기 정지" scenario the first time, and reuses a connection of that name.
  */
 export {};
 
 const base = process.env.TERRARIUM_URL ?? "http://127.0.0.1:8787";
-const user = process.env.TERRARIUM_USER ?? "yeonsu";
+const user = process.env.TERRARIUM_USER ?? "haneul";
 const out = (text: string): void => {
   process.stdout.write(`${text}\n`);
 };

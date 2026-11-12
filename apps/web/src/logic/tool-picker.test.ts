@@ -19,7 +19,7 @@ const record = (id: string): ScenarioRecord => {
     id,
     worldId: "sample",
     name: d.name,
-    owner: "yeonsu",
+    owner: "haneul",
     doc: d,
     digest: id,
     createdAt: "",

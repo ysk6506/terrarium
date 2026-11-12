@@ -82,7 +82,7 @@ describe("durations are minutes wherever people read them [REQ-071]", () => {
     expect(n("wait", { seconds: 300 })).toBe("5분 기다려요");
     expect(n("wait", { seconds: 90 })).toBe("1.5분 기다려요");
     expect(n("agent_task", { maxToolCalls: 40, timeLimitSeconds: 3600 })).toBe(
-      "툴 40회, 60분 안에",
+      "툴 40번, 60분 안에",
     );
     const doc = template("cooling-failure");
     const wait = {

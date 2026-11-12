@@ -8,7 +8,7 @@ enforced_by:
 no_enforcement_reason: 구현 전 결정 기록이다(REQ-117 예정). 성능 견본 시험을 만들면 enforced_by를 그 시험으로 바꾼다.
 touches_protected:
   - docs/product-specs/requirements.md
-decision_hash: 01a1304462c2b55a
+decision_hash: 35696f019015c4bd
 amended_by:
   - adr: "0156"
     what: 3초와 저장소에서 되짚기
@@ -16,7 +16,7 @@ amended_by:
 # ADR-0154 현실 데이터는 수천만 개체까지 본다 — 줄로 저장하고, 범위로 보고 복사하며, 재서 정한다
 
 ## 맥락
-제품 책임자(연수 님)의 요구(2026-11-11): 성능도 고려해야 한다. 개체와 관계가 수천만 개까지 갈 수 있다. 언어, DB의 종류 등을 그에 맞게 정한다.
+제품 책임자의 요구(2026-11-11): 성능도 고려해야 한다. 개체와 관계가 수천만 개인 세계를 지원한다(목표 규모). 언어, DB의 종류 등을 그에 맞게 정한다.
 
 지금의 사실:
 - 세계 하나는 문서 하나(`Blueprint`)다. 한도는 개체 10만, 관계 20만이다(`contract/schemas.ts`). 판마다 문서 전체를 통째로 저장한다(`world_versions`의 `blueprint` 열).

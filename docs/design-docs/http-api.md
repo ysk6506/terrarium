@@ -15,11 +15,11 @@ covers:
   - packages/core/src/contract/community-routes.ts
 covers_hash: eb2ac775fe9ac774
 verification_log:
+  - "2026-11-07: REQ-112의 경로 넷을 표에 더했다"
   - "2026-11-11: main 합치기 뒤 다시 읽음: 물리 프로필(REQ-113) 반영 문단과 라우트 행이 main의 새 내용과 함께 맞다"
   - "2026-11-11: REQ-118 시드당 반복: 실행 키(시드·반복), 시드 단위 통계, 순위 조건(시드 3개), 한도 60, 화면 반영을 코드와 대조해 고쳤다. 이 문서의 나머지는 그대로 맞다"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
-  - "2026-11-11: step 나 (ADR-0174): visibility scopes; statements checked against runtime/permissions.ts, gate.ts, scoping.ts and the stores"
-  - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
+  - "2026-11-12: ADR-0183: 한 가지 말(번, 상황, 객체·링크, 넘기기)에 맞춰 인용한 화면 글을 고쳤다"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -67,7 +67,7 @@ verification_log:
 | `DELETE /api/presets/:id` | 지우기: 7일 동안 남겨 두었다가 목록을 읽을 때 정리한다 | |
 | `POST /api/presets/:id/restore` | 지운 것 되돌리기 | |
 | `GET /api/models` | 워크스페이스에 등록한 LLM API 목록(모두에게 같다). 키는 `hasKey`와 `keyHint`(`…ab12`)뿐이고 헤더는 이름만 나온다. `lastCheck`에 마지막 확인 결과가 있다 | |
-| `POST /api/models` | 등록 `{kind: litellm\|openai\|anthropic, name, baseUrl, apiKey?, defaultModel?, headers?: [{name, value}]}`. 첫 번째는 기본이 된다. 같은 이름은 409, 주소가 안 맞으면(메타데이터 주소 등) 400 | |
+| `POST /api/models` | 등록 `{kind: litellm\|openai\|anthropic, name, baseUrl, apiKey?, defaultModel?, headers?: [{name, value}]}`. 범위가 "모두"인 첫 번째가 기본이 된다. 같은 이름은 내 등록 사이와 "모두"로 만든 등록 사이에서만 409(남의 "나만" 모델과는 견주지 않는다), 주소가 안 맞으면(메타데이터 주소 등) 400 | |
 | `PATCH /api/models/:id` | 고치기(만든 사람과 관리자). 안 보낸 칸은 그대로, `apiKey`를 비우면 기존 키, `clearKey: true`면 키 삭제, 헤더는 `value` 없는 줄이 기존 값을 유지. 주소·키·헤더가 바뀌면 `lastCheck`가 지워진다 | |
 | `DELETE /api/models/:id` | 지우기(만든 사람과 관리자). 저장한 키도 지워진다. 기본이었으면 가장 먼저 등록한 것이 기본이 된다 | |
 | `POST /api/models/:id/check` | 연결 확인: 모델 목록을 읽고(`GET /v1/models`, LiteLLM은 `/model/info`도), 안 되면 기본 모델 이름이 있을 때 `max_tokens: 1` 완성 한 번. 결과(`ok`·`ms`·`via`·`modelCount`·`models`·`reason`·`error`)와 시각을 기록해 모델을 돌려준다. 이 호출은 **서버에서 바깥으로** 나가므로, 나가지 못하는 환경이면 `reason: network`로 그렇게 말한다. 봉인된 키를 열어 쓰므로 등록한 사람과 관리자만 부른다 | |
@@ -100,7 +100,7 @@ verification_log:
 | `GET /api/scenarios/:id/current-process` | 시나리오의 "지금 하는 방식" 표(적은 값, 안 적었으면 빈 표) (REQ-112) | |
 | `PUT /api/scenarios/:id/current-process` | 표 저장 (시나리오를 만든 사람과 관리자만. 먼저 적은 사람이 아니다. 줄 1~30, 시간은 분) | |
 | `GET /api/experiments/:id/process` | 전후 비교: 코드가 실행 기록에서 센 단계·사람·시간(평균), 적은 표와의 차이, 대표 실행의 단계 장부 | |
-| `GET /api/worlds/:id/ontology` | 이 세계를 E2E로 가려면: Object·Link·Action 요구와 `?experimentId=`로 고른 실험에서 쓴 것 | |
+| `GET /api/worlds/:id/ontology` | 이 세계에 필요한 액션: 객체·링크·액션 요구와 `?experimentId=`로 고른 실험에서 쓴 것 | |
 | `DELETE /api/scenarios/:id` | 시나리오 숨기기 | |
 | `POST /api/scenarios/:id/dry-run` | 에이전트 없이 미리 보기 | |
 | `POST /api/scenarios/:id/calibrate` | 시험지 점검(시나리오를 만든 사람과 관리자만): 아무것도 안 하는·찍는·정답만 아는 에이전트로 점수 재 보기. 서비스를 옮겨 복구하는 길(`recoveryPath`)과 흔한 툴만으로 원인에 닿는 길(`commonReach`)도 함께 답한다. 또 툴 설명만 읽는 기준 에이전트가 상황마다 고른 툴과 모호한 쌍(`toolPick`)도 답한다 | |
