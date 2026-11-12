@@ -13,6 +13,9 @@ enforced_by:
 touches_protected:
   - docs/product-specs/requirements.md
 decision_hash: 46c2eff583ef3898
+amended_by:
+  - adr: "0197"
+    what: 운영 실험에 합격선과 판정을 둔다
 ---
 # ADR-0094 운영 모드 — 끝이 없는 실험, 당겨서 보는 모니터링, 실시간과 빨리 감기
 

@@ -1,7 +1,8 @@
 ---
 title: ADR-0190 검증에서는 실제 툴 자리에 이름과 입력이 같은 모의 툴이 선다 — 에이전트는 건마다 받은 주소에 붙고, 툴마다 검증 수준을 밝힌다
 kind: decision
-status: active
+status: superseded
+superseded_by: 0192-terrarium-returns-to-its-first-goal.md
 last_verified: 2026-11-12
 enforced_by:
   - none

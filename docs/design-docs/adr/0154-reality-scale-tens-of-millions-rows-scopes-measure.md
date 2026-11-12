@@ -1,7 +1,8 @@
 ---
 title: ADR-0154 현실 데이터는 수천만 개체까지 본다 — 줄로 저장하고, 범위로 보고 복사하며, 재서 정한다
 kind: decision
-status: active
+status: superseded
+superseded_by: 0192-terrarium-returns-to-its-first-goal.md
 last_verified: 2026-11-11
 enforced_by:
   - none

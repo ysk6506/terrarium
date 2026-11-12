@@ -1,7 +1,8 @@
 ---
 title: ADR-0191 검증하는 건의 툴 호출은 게이트웨이가 테라리움으로 보낸다 — 에이전트는 두 세계에서 같은 게이트웨이를 같은 이름으로 부른다
 kind: decision
-status: active
+status: superseded
+superseded_by: 0192-terrarium-returns-to-its-first-goal.md
 last_verified: 2026-11-12
 enforced_by:
   - none

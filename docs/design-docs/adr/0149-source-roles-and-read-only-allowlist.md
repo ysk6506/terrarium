@@ -1,7 +1,8 @@
 ---
 title: ADR-0149 소스의 역할은 구성·사건·실측 셋이고, 읽기 전용은 허용 목록과 계정으로 지킨다
 kind: decision
-status: active
+status: superseded
+superseded_by: 0192-terrarium-returns-to-its-first-goal.md
 last_verified: 2026-11-11
 enforced_by:
   - none

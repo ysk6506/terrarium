@@ -24,13 +24,13 @@ covers:
   - apps/web/src/logic/models.ts
   - harness/src/checks/moss.ts
 verification_log:
-  - "2026-11-11: ADR-0146: 이끼 알약이 떠 있지 않고 홈에서만 흐름 안, 키보드 도움말은 3D 탭 첫 한 번, 좁은 폭 제목 줄 나눔을 코드와 대조해 맞춤"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-12: step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
   - "2026-11-11: 문서 색인이 하네스가 만든 generated 폴더를 건너뛰게 된 것을 적음 (ADR-0180). 코드의 다른 변화는 없음"
   - "2026-11-12: 이끼가 묻는 사람마다 기본 모델을 정하는 것(defaultFor, ADR-0179)과 합친 main의 변화를 코드와 대조해 한 문장을 더함"
-covers_hash: ff01f4eb25efaa4e
-verified_body: 3be83a9ee1e0432f
+  - "2026-11-12: ADR-0192: 이끼의 색인에서 보관함(docs/archive)을 뺌. 옮긴 설계를 답의 근거로 쓰지 않는다. 질문 은행을 다시 만듦"
+covers_hash: 54740cac0bc47e07
+verified_body: ca1d4e27134a0cd9
 unchanged_reverifies: 0
 ---
 # 이끼 (REQ-103, [ADR-0124](adr/0124-moss-assistant.md), [ADR-0125](adr/0125-moss-requires-model.md))
@@ -55,7 +55,7 @@ unchanged_reverifies: 0
 
 ## 지식 둘
 
-1. **리포 문서.** 서버가 시작할 때 `docs/**/*.md`와 `docs/**/mockups/*.html`(`exec-plans`와 하네스가 만든 `generated` 제외 — 표뿐인 생성물은 검색어를 독차지해 서술 조각을 밀어낸다)을 `#`·`##`·`###` 제목 단위 조각으로 나눠 메모리에 올린다 (`runtime/moss-index.ts`).
+1. **리포 문서.** 서버가 시작할 때 `docs/**/*.md`와 `docs/**/mockups/*.html`(`exec-plans`, 하네스가 만든 `generated`, 보관함 `archive` 제외 — 표뿐인 생성물은 검색어를 독차지해 서술 조각을 밀어내고, 보관함은 테라리움이 더 만들지 않는 것의 설계라 답의 근거로 쓰지 않는다, ADR-0192)을 `#`·`##`·`###` 제목 단위 조각으로 나눠 메모리에 올린다 (`runtime/moss-index.ts`).
    - 조각마다 **파일과 제목 경로**(`문서 제목 › 소제목`)와 고정된 id(`docs/…md#소제목`)가 있다. 글이 없는 제목은 조각이 아니다(아래 소제목이 가진다). 긴 칸은 줄 경계에서 1,600자 안팎으로 잘라 같은 제목의 조각 여럿이 된다.
    - 찾기는 **BM25 방식 낱말 점수**다. 한글은 낱말·두 글자 토막·조사를 뗀 말, 영어는 낱말로 자른다. 제목은 세 번 센다. 질문의 말이 조각 제목의 말을 모두 품으면 점수를 얹어, 제목으로 부른 조각이 길이에 묻히지 않는다.
    - **임베딩도 네트워크도 없다.** 파일을 읽어 메모리에 올릴 뿐이라 서버가 켜질 때 한 번 만들고(1,000여 조각) 질문마다 수 밀리초 안에 찾는다.

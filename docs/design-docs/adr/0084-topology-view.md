@@ -18,6 +18,8 @@ decision_hash: 7d771178da77c9c2
 amended_by:
   - adr: "0150"
     what: 현실 가져오기를 지움
+  - adr: "0192"
+    what: 가져오기는 스냅샷 받기로 연다
 ---
 # ADR-0084 가져오기를 없애고 토폴로지 보기를 둔다
 

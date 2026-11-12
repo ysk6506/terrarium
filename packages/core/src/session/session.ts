@@ -44,6 +44,7 @@ import {
   DEFAULT_OPERATION_CALLS,
   type OperationDriver,
   operationReport,
+  withDiagnosisNote,
 } from "./operation";
 import { DEFAULT_RECORDER, MetricRecorder } from "./recorder";
 import { RunLog } from "./run-events";
@@ -309,7 +310,7 @@ export class Session {
     this.log.call(this.calls[this.calls.length - 1] as ToolCallRecord);
   }
 
-  /** A call is done: record it, let time move on per the policy, and end the run if that was the last call. */
+  /** A call is done: record it, let time move on per the policy, and end the run if that was the last call (a diagnosis ends it unless this is an operation, ADR-0094). */
   private conclude(
     tool: string,
     args: Args,
@@ -318,7 +319,7 @@ export class Session {
     before: number,
   ): CallResult {
     this.record(tool, args, result, t, before);
-    if (tool === "submit_diagnosis" && result.ok) {
+    if (tool === "submit_diagnosis" && result.ok && !this.operation) {
       this.end("diagnosed");
       return { ...result, t, ended: "diagnosed" };
     }
@@ -329,7 +330,7 @@ export class Session {
       this.end("time_limit");
       return { ...result, t, ended: "time_limit" };
     }
-    return { ...result, t };
+    return { ...withDiagnosisNote(tool, result, this.operation !== undefined), t };
   }
 
   // ── asking a person (ADR-0087 item 4; the line itself is in human-line.ts) ─────────────
