@@ -1,7 +1,8 @@
 ---
 title: ADR-0152 현실에서 만든 세계는 관리자가 다루고 복사해서 실험하며, 엑셀과 SPL이 첫 길이다
 kind: decision
-status: active
+status: superseded
+superseded_by: 0192-terrarium-returns-to-its-first-goal.md
 last_verified: 2026-11-11
 enforced_by:
   - none

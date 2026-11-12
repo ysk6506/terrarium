@@ -1,7 +1,8 @@
 ---
 title: ADR-0189 제품 목표에 "통과한 것만 운영에 나간다"를 더한다 — 워크플로는 테라리움이 정하고, 실제 툴은 에이전트가 게이트웨이를 거쳐 부른다
 kind: decision
-status: active
+status: superseded
+superseded_by: 0192-terrarium-returns-to-its-first-goal.md
 last_verified: 2026-11-12
 enforced_by:
   - DOC093

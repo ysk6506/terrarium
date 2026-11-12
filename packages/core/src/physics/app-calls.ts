@@ -34,7 +34,8 @@ export function hostGone(world: World, id: string | undefined): boolean {
 export const hasFault = (world: World, id: string, type: string): boolean =>
   world.faultsOn(id).some((f) => f.type === type);
 
-function note(world: World, events: WorldEvent[], text: string): void {
+/** Something the layer did by itself to end the trouble: an event with the cluster's cause. Shared with app.ts. */
+export function note(world: World, events: WorldEvent[], text: string): void {
   events.push(world.apply({ type: "note", text }, CLUSTER_CAUSE));
 }
 
@@ -42,7 +43,7 @@ function note(world: World, events: WorldEvent[], text: string): void {
  * Something coming back after what was wrong is gone. It is not the system's recovery (the oracle credits the cluster only
  * for what it did by itself to end the trouble), so it does not carry the cluster's cause.
  */
-function back(world: World, events: WorldEvent[], text: string): void {
+export function back(world: World, events: WorldEvent[], text: string): void {
   events.push(world.apply({ type: "note", text }, "physics"));
 }
 

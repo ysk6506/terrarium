@@ -1,7 +1,8 @@
 ---
 title: ADR-0155 수집의 관측성 — 지표는 밖으로 내보내고, 데이터가 평소와 다른지 보고, 로그에 내용을 찍지 않는다
 kind: decision
-status: active
+status: superseded
+superseded_by: 0192-terrarium-returns-to-its-first-goal.md
 last_verified: 2026-11-11
 enforced_by:
   - none

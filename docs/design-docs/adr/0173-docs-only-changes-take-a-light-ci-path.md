@@ -9,6 +9,9 @@ touches_protected:
   - .github/workflows/ci.yml
   - AGENTS.md
 decision_hash: 47199d01c2f62cb6
+amended_by:
+  - adr: "0195"
+    what: 판정에 쓰는 차이를 합친 참조가 아니라 풀 리퀘스트의 base와 head로
 ---
 # ADR-0173 문서만 바뀐 변경은 가벼운 CI 경로를 탄다
 

@@ -27,6 +27,9 @@ touches_protected:
   - docs/product-specs/requirements.md
   - AGENTS.md
 decision_hash: 2ef5d56a67a9317d
+amended_by:
+  - adr: "0195"
+    what: 커버리지 조각 열둘
 ---
 # ADR-0140 CI가 합치기 관문이다 — 테스트는 조각으로 나눠 병렬로, 커버리지는 따로 잰다
 

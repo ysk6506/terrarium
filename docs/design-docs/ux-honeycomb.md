@@ -34,6 +34,8 @@ Peter Morville의 UX Honeycomb 7개 면을 각각 0~100점으로 자동 측정�
 
 CI는 둘로 나뉜다(REQ-114, [ADR-0141](adr/0141-ux-journeys-gate-and-measure.md), [ADR-0175](adr/0175-ux-checks-in-smaller-slices-score-file-not-per-change.md)): `ux-journeys`는 같은 여정 코드를 다섯 묶음(flow, build, small, own, topology)으로 돌리는 **게이트**이고, `ux-measure`는 측정을 열 조각(`tests/e2e/ux/parts.ts`: 여정 묶음마다 하나, 탐침 다섯)으로 나눠 동시에 돌린 뒤 한 작업이 `pnpm ux merge`로 모아 점수를 내는 **게이트 아닌** 작업이다(TD-0004). 탐침 조각은 `build` 여정과 `flow`, `small` 묶음을 먼저 돌려(기록하지 않고) 읽을 세계와 실험을 만든다. 기록 파일(`ux-score.json`)은 변경마다 커밋하지 않는다: 이 변경의 점수는 `ux-measure` 작업 요약과 아티팩트에 나오고, 하한(`UX001`)은 방금 잰 값으로 판정한다. 저장소의 기록은 5시간마다 도는 정리 작업이 main에서 새로 재서 올린다. 기록이 낡았다는 검사(`UX004`)는 알림 한 줄이다.
 
+여정 단계가 실패하면 그 실패에 한해 증거가 남는다(ADR-0195, `tests/e2e/ux/evidence.ts`): 작업 로그에 `evidence:`로 시작하는 줄(주소, 보이는 화면 글 3,000자까지, 마지막 API 요청 20개의 방법·길·상태 코드, 콘솔 오류)이 찍히고, 스크린샷은 `TERRARIUM_UX_EVIDENCE_DIR` 폴더에 쓰여 CI가 `ux-evidence-*` 아티팩트로 올린다. 요청·응답의 본문과 헤더는 읽지 않고, 알려진 비밀 값과 토큰처럼 보이는 문자열은 지운다. 제한 시간, 재시도, 여정은 그대로다.
+
 UI를 바꿨다면 `pnpm ux`로 점수를 볼 수 있다(저장소의 기록이 낡으면 `UX004` 알림이 나오지만 빨강은 아니다). 출력에서 100%가 아닌 항목이
 "무엇을 고쳐야 하는지"이고, `note:` 줄이 구체적인 화면과 요소를 말해 준다.
 

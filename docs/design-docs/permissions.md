@@ -4,16 +4,16 @@ kind: spec
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
   - "2026-11-11: self-declared admin: token, else loopback socket address only; proxy mode unchanged"
   - "2026-11-12: ADR-0183: 따라가는 용어집의 새 절(한 가지 말, 조건의 뜻)을 읽고, 이 문서에 옛 말(회·횟수·시드·개체·에스컬레이션)이 없음을 확인했다"
   - "2026-11-12: 따라가는 문서나 코드의 내부 사실 서술이 요구의 말로 바뀐 것을 대조했고 이 문서의 내용은 그대로 맞다 (ADR-0188)"
   - "2026-11-12: main을 합친 뒤 공개 범위(ADR-0174 나 단계, ADR-0179)에서 더한 서술을 합쳐진 코드와 대조했고, 바뀐 화면 글(ADR-0183)과 옛 말이 없음을 확인했다"
+  - "2026-11-12: ADR-0192: 테라리움은 처음의 목표로 돌아감. 감사 기록에 워크플로의 건과 승인을 남긴다는 줄을 뺌"
 follows:
   - docs/design-docs/http-api.md
   - docs/design-docs/operations.md
 follows_hash: 16c41f2b87bafdb5
-verified_body: 73e77da0731c98f0
+verified_body: 67a22efe99740793
 unchanged_reverifies: 1
 ---
 # 권한 (클로즈 베타 1차, ADR-0174)
@@ -154,7 +154,6 @@ unchanged_reverifies: 1
 
 ## 다음에 할 일
 
-- 감사 기록은 권한이 바뀐 일뿐 아니라 워크플로의 건과 승인도 같은 기록에 남겨요([워크플로 자동화](workflow-automation.md) 13절).
 - 자원은 공개 범위와 별도로 자원마다 맡은 일(주인, 편집, 승인 같은)을 사람이나 무리에게 줄 수 있게 돼요. 같은 문서 13절이 맡은 일을 정해요.
 
 ## 하지 않는 것

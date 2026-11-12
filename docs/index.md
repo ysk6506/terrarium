@@ -4,16 +4,16 @@ kind: reference
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-12: 따라가는 AGENTS.md에 내부 사실을 적지 않는다는 줄이 더해짐(ADR-0187). 색인과 무관. 지운 참고 문서는 색인에 없었다"
-  - "2026-11-12: 따라가는 AGENTS.md의 바뀐 곳은 절대 규칙 표의 라이선스 행(ADR-0185)이고, 색인은 문서 위치만 가리켜 어긋나지 않는다"
   - "2026-11-12: main 합침: 라이선스 행·링크(ADR-0185)와 내부 사실 줄(ADR-0187)이 함께 있다. 서로 어긋나지 않는다"
   - "2026-11-12: main을 합침: 따라가는 AGENTS.md의 변경은 색인과 무관"
   - "2026-11-12: main을 합침: 워크플로 자동화 문서 링크(ADR-0189)가 들어감. 따라가는 AGENTS.md의 변경은 색인과 무관"
+  - "2026-11-12: ADR-0192: 테라리움은 처음의 목표로 돌아감. 옮긴 설계 여섯을 따로 묶어 표지로 가리킴"
+  - "2026-11-12: 따라가는 AGENTS.md의 내가 바꾼 곳은 CI 문단과 웹 화면 항목뿐이다. 색인은 문서 위치만 가리키고 CI 구성을 말하지 않아 어긋나지 않는다 (ADR-0195)"
 follows:
   - AGENTS.md
-follows_hash: bcb8ef586bbc84d0
-verified_body: 37582754606e312e
-unchanged_reverifies: 4
+follows_hash: cdf498b15a1ab9b3
+verified_body: 79a97379bd518f51
+unchanged_reverifies: 5
 ---
 # 문서 색인
 
@@ -50,12 +50,7 @@ unchanged_reverifies: 4
 - [애플리케이션 층 — 서비스 호출 그래프, 로드 밸런서·세션·브레이커·메시·리전, 고장 여덟](design-docs/application-layer.md)
 - [가속기(GPU) 층 — GPU·NVLink·IB 패브릭·스케줄러·학습 잡·추론 풀, 고장 여덟](design-docs/gpu-layer.md)
 - [물리 법칙이 닿는 자리와 모델 자리 — 열네 자리, 세 깊이, 법칙 검사](design-docs/physics-laws.md)
-- [현실 데이터와 모델 — 연결·수집·대응의 분리, 모델 관리, 현실 세계와 실험 세계](design-docs/reality-data-and-ontology.md)
-- [소스 관리 — 동기화 주기, 실행 기록, 안전장치, 신선도](design-docs/source-management.md)
 - [표준 모델 대조 — 층마다 빌려오는 뼈대와 플랫폼 대응](design-docs/model-standards.md)
-- [생김새 견본 시험 — 현실 소스 여덟 가지를 종이 위에서 설계에 넣어 본 결과](design-docs/reality-shape-samples.md)
-- [파이프라인의 버전과 브랜치 — 고쳐 보고, 비교하고, 병합하고, 되돌리기](design-docs/pipeline-versions-and-branches.md)
-- [용어집 — 데이터 파이프라인과 온톨로지 매니저에서 쓰는 말](design-docs/glossary-data.md)
 - [물리 프로필 레퍼런스 — 자리별 숫자·곡선, 지문, 자리 뒤로 간 것과 남은 것](design-docs/physics-profile.md)
 - [CCTV 자리 — 카메라 개체, 보는 자리, 배경 자리](design-docs/camera-and-backdrop.md)
 - [전원·냉방 사다리 확장 — N+1 UPS·랙 배터리·변전소, 리어도어·침지, 파워 캐핑(모델만)](design-docs/power-cooling-ladders.md)
@@ -92,10 +87,20 @@ unchanged_reverifies: 4
 - [도메인과 가상 담당자 — 내 도메인 밖의 고장은 넘기고, 기다리는 동안 다른 일을 한다](design-docs/domains-and-counterparts.md)
 - [시나리오 편집기 검토 — 처음 쓰는 사람의 눈으로, 토스의 원칙으로 (세 번째 검토: 질문 셋·문장 채점표)](design-docs/scenario-editor-review.md)
 - [운영 모드 — 끝이 없는 실험, 당겨서 보는 모니터링, 실시간과 빨리 감기](design-docs/operation-mode.md)
-- [E2E 워크플로 자동화 — 검증한 워크플로만 운영에 나가고, 나간 뒤에도 잰다](design-docs/workflow-automation.md)
 - [운영 에이전트 설계 가이드 — 8시간 동안 지켜보는 에이전트를 만드는 법](guides/operation-agent-guide.md)
 - [용어집 — 화면에 쓰는 말은 여기서 정한다](design-docs/glossary.md)
 - [용어집 층별 말 — SDN·컨테이너·애플리케이션·가속기·사이트](design-docs/glossary-layers.md)
+
+### 다른 프로젝트로 옮긴 설계
+
+테라리움이 만들지 않기로 한 것이다(ADR-0192). 아래는 앞선 결정 기록의 링크가 끊기지 않게 남긴 표지이고, 옮기기 전의 설계는 `docs/archive/moved-out/`에 있다.
+
+- [현실 데이터와 모델 (옮김)](design-docs/reality-data-and-ontology.md)
+- [소스 관리 (옮김)](design-docs/source-management.md)
+- [생김새 견본 시험 (옮김)](design-docs/reality-shape-samples.md)
+- [파이프라인의 버전과 브랜치 (옮김)](design-docs/pipeline-versions-and-branches.md)
+- [용어집: 데이터 파이프라인과 온톨로지 매니저 (옮김)](design-docs/glossary-data.md)
+- [E2E 워크플로 자동화 (옮김)](design-docs/workflow-automation.md)
 
 ### 결정 기록
 
