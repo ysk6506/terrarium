@@ -4,15 +4,15 @@ kind: reference
 status: active
 last_verified: 2026-11-12
 verification_log:
-  - "2026-11-12: 따라가는 AGENTS.md의 바뀐 곳은 절대 규칙 표의 라이선스 행(ADR-0185)이고, 색인은 문서 위치만 가리켜 어긋나지 않는다"
   - "2026-11-12: main 합침: 라이선스 행·링크(ADR-0185)와 내부 사실 줄(ADR-0187)이 함께 있다. 서로 어긋나지 않는다"
   - "2026-11-12: main을 합침: 따라가는 AGENTS.md의 변경은 색인과 무관"
   - "2026-11-12: main을 합침: 워크플로 자동화 문서 링크(ADR-0189)가 들어감. 따라가는 AGENTS.md의 변경은 색인과 무관"
   - "2026-11-12: ADR-0192: 테라리움은 처음의 목표로 돌아감. 옮긴 설계 여섯을 따로 묶어 표지로 가리킴"
+  - "2026-11-12: ADR-0197: 새 설계 문서를 색인에 더함"
 follows:
   - AGENTS.md
 follows_hash: 0b71d88ccb75df3e
-verified_body: 79a97379bd518f51
+verified_body: 45ef7381b9d0e05f
 unchanged_reverifies: 4
 ---
 # 문서 색인
@@ -87,6 +87,7 @@ unchanged_reverifies: 4
 - [도메인과 가상 담당자 — 내 도메인 밖의 고장은 넘기고, 기다리는 동안 다른 일을 한다](design-docs/domains-and-counterparts.md)
 - [시나리오 편집기 검토 — 처음 쓰는 사람의 눈으로, 토스의 원칙으로 (세 번째 검토: 질문 셋·문장 채점표)](design-docs/scenario-editor-review.md)
 - [운영 모드 — 끝이 없는 실험, 당겨서 보는 모니터링, 실시간과 빨리 감기](design-docs/operation-mode.md)
+- [맡겨도 되나에 답하는 실험 — 권한 수준, 승인, 규칙, 운영 실험의 깊이, 판정](design-docs/trust-experiments.md)
 - [운영 에이전트 설계 가이드 — 8시간 동안 지켜보는 에이전트를 만드는 법](guides/operation-agent-guide.md)
 - [용어집 — 화면에 쓰는 말은 여기서 정한다](design-docs/glossary.md)
 - [용어집 층별 말 — SDN·컨테이너·애플리케이션·가속기·사이트](design-docs/glossary-layers.md)
