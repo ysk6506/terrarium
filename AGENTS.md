@@ -2,20 +2,19 @@
 title: AGENTS.md — 에이전트 진입점
 kind: guide
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - package.json
   - harness/config/architecture.yaml
   - harness/config/protected-paths.txt
 covers_hash: 92c76fe9a7d17245
 verification_log:
-  - "2026-11-10: CI가 합치기 관문이 되었다는 한 줄을 더함 (ADR-0140). 명령 목록과 보호 경로 표는 그대로 맞다"
-  - "2026-11-11: 검사 끄기 금지(IGN*)·품질 등급표(QUAL001) 행과 정리 작업 안내를 더했다. package.json은 quality 스크립트와 ratchet만 바뀌었다 (ADR-0148)"
   - "2026-11-11: 정리 작업의 첫 단계를 pnpm quality write로 정하고, 등급표 낡음(QUAL001)과 끄기 감소(IGN006)를 빨강이 아닌 알림으로 고쳐 적었다 (ADR-0148)"
   - "2026-11-11: CI 문장에 문서만 바뀐 변경의 가벼운 경로를 더함 (ADR-0173). 명령 목록과 보호 경로 표는 그대로 맞다"
   - "2026-11-11: 첫 단락을 목표 문장으로 맞추고 새 결정·정리 작업 절차와 DOC090~DOC095 행을 적음 (ADR-0180)"
   - "2026-11-11: package.json에 license 표기만 더해짐. 명령과 안내는 그대로 맞다 (ADR-0181)"
-verified_body: 9c891c415c2f6a5a
+  - "2026-11-12: 하지 말 것 표에 내부 사실을 적지 않는다는 줄을 더함 (ADR-0187)"
+verified_body: a19b43aa9f00384f
 unchanged_reverifies: 0
 ---
 # Terrarium — 코딩 에이전트 안내서
@@ -52,6 +51,7 @@ CI가 합치기 관문이다 ([ADR-0140](docs/design-docs/adr/0140-ci-shards-and
 | 검사 끄기 주석(`biome-ignore` 등)·건너뛴 테스트·CI `continue-on-error`를 이유와 근거 없이 두기, 그 수를 늘리기 | `IGN001`~`IGN007` — 같은 줄이나 윗줄에 이유와 `TD-NNNN`(열린 부채) 또는 `ADR-NNNN`을 적는다. 수는 늘 수 없다. 원인을 고치는 쪽이 먼저다 ([ADR-0148](docs/design-docs/adr/0148-no-silent-ignores-and-quality-grades.md)) |
 | 품질 등급표를 손으로 고치기 | 등급표는 하네스가 만든다. 낡으면 알림 한 줄(`QUAL001`)만 나오고 빨강은 아니다. 정리 작업이 `pnpm quality write`로 새로 만든다 |
 | 추적 없는 `TODO` | `TODO(TD-NNNN)` + [부채 장부](docs/exec-plans/tech-debt.yaml) (`DEBT001`) |
+| 내부에서 들은 사실(어느 조직이 무엇을 개발·검증했는지, 내부 시스템의 구조·규모·제조사, 조직과 절차)을 코드·문서·PR·이슈·커밋에 적기 | 저장소는 공개돼 있다. 기계가 못 가리니 쓰는 쪽이 지킨다. 요구로 바꿔 적는다 ([ADR-0187](docs/design-docs/adr/0187-no-internal-facts-in-the-public-repository.md)) |
 | `Date.now()`, `Math.random()` 직접 사용 | `kernel`의 `Clock`/`Rng`를 주입받는다 (`ARCH052`) |
 | 새 쪽·버튼·문서를 이끼에게 알리지 않기 | `MOSS001`~`MOSS004` — 라우트는 `apps/web/src/moss/registry.ts`에 칸을, 쪽의 버튼은 `data-moss-action`(또는 이유를 적은 `data-moss-skip`)을, 점수·지표 타일은 `MossAsk`를 (REQ-103) |
 | 코드만 바꾸고 문서 방치 | 문서가 `covers`한 코드나 `follows`한 문서가 바뀌면 실패 (`DOC010`). 문서가 가리키는 길·명령·코드·숫자가 없으면 실패 (`DOC094`, `DOC095`). 결정이 바꾸는 문서를 같은 변경에서 안 고치면 실패 (`DOC090`) ([ADR-0180](docs/design-docs/adr/0180-docs-follow-decisions-not-only-code.md)) |

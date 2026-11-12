@@ -28,12 +28,12 @@ amends_tests:
   - tests/spec/physics-golden.test.ts::=worlds
   - tests/spec/service-tools.test.ts::every tool is described in the standard order and tagged with how real it is [REQ-080] [REQ-086] > a summary, when to use and not, an example, access and cost; realism on all of them
 test_change_reason: 컨테이너 층을 코어 모델로 올려 개체 종류가 셋, 고장 종류가 여덟, 툴이 아홉, 세계 명령이 다섯, 행동 종류가 다섯 늘고 ADR-0107 결정 5의 점선이던 컴퓨트 칩 셋이 실선이 된다. 시험들은 같은 성질(모든 툴이 같은 모양, 모든 명령이 목록에 있거나 운영자의 것이 아니다, 가상 종류의 목록, 점선의 목록, 팔레트의 쓸 수 없는 고장, 모든 고장 종류의 물리 기록)을 새 값으로 읽고, 캠퍼스 샘플은 "모든 종류를 쓴다"는 성질을 지키려고 쿠버네티스 개체를 얻는다.
-decision_hash: f8582413447d650c
+decision_hash: 768ba826f96c349b
 ---
 # ADR-0114 컨테이너 층을 코어 모델로 올리면서 시험의 기대값을 고친다
 
 ## 맥락
-[ADR-0107](0107-world-entry-two-doors-ha-ladders.md) 결정 5가 점선으로 둔 컴퓨트 칩 셋(자동 재배치 DRS, 컨테이너 오케스트레이션, 멀티클러스터)을 실선으로 바꿨다(REQ-096). 연수 님 팀의 IAP가 "VM 위에 직접 만든 쿠버네티스"라서 컨테이너 오케스트레이션이 핵심이고, IAP 기본 카드가 이 칩으로 지어져야 한다. 동작과 규칙은 [컨테이너 층](../container-layer.md)에 있다. 구현이 잠긴 시험 몇 곳을 건드렸고, 구현하면서 정한 것이 몇 있어 함께 남긴다.
+[ADR-0107](0107-world-entry-two-doors-ha-ladders.md) 결정 5가 점선으로 둔 컴퓨트 칩 셋(자동 재배치 DRS, 컨테이너 오케스트레이션, 멀티클러스터)을 실선으로 바꿨다(REQ-096). 기본 서비스 카드 IAP가 "VM 위에 직접 만든 쿠버네티스" 모양이라서 컨테이너 오케스트레이션이 핵심이고, IAP 기본 카드가 이 칩으로 지어져야 한다. 동작과 규칙은 [컨테이너 층](../container-layer.md)에 있다. 구현이 잠긴 시험 몇 곳을 건드렸고, 구현하면서 정한 것이 몇 있어 함께 남긴다.
 
 ## 결정
 1. **개체 종류 셋과 링크 규칙을 더한다.** `k8s_cluster`, `k8s_node`, `k8s_workload`는 자기 자리가 없는 가상 종류다. 파드는 개체가 아니라 워크로드 상태 안의 목록이다(스케일과 재스케줄로 늘고 줄어서). `workload`라는 이름은 서비스의 일감 설정(`world/workload.ts`)이 이미 쓰고 있어서 `k8s_workload`로 했다. 서비스가 기대는 `depends_on`의 대상과 노드가 올라간 곳 `hosted_on`, 노드·워크로드가 클러스터에 속하는 `member_of`의 종류를 넓혔다.

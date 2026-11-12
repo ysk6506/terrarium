@@ -301,7 +301,7 @@ function updateServerThermal(heat: Heat, i: number, air: RackAir): void {
     model.maxPowerW > model.idlePowerW
       ? (state.powerW - model.idlePowerW) / (model.maxPowerW - model.idlePowerW)
       : 0;
-  // an experiment setting (REQ-107): fans held below full speed stand in for a weak room cooling, as the team's own tests did
+  // an experiment setting (REQ-107): fans held below full speed stand in for a weak room cooling
   const fanPct = (heat.plan.ents[i] as Entity).props.fanSpeedPct;
   const held = typeof fanPct === "number" ? clamp(fanPct, 20, 100) / 100 : 1;
   const fanPenalty =

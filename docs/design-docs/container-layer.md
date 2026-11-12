@@ -2,7 +2,7 @@
 title: 컨테이너 층 — 쿠버네티스 클러스터, 노드, 파드, 그리고 클러스터가 알아서 하는 일
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/world/k8s.ts
   - packages/core/src/world/k8s-sched.ts
@@ -23,11 +23,13 @@ covers:
   - packages/core/src/world/ladder.ts
 covers_hash: cf66c8a1c13526ce
 verification_log:
-  - "2026-11-07: REQ-107: 가속기 층·전원·냉방 확장이 이 문서의 내용을 바꾸지 않는지 대조했다(층 수·툴 수·칩 수를 세는 문장을 찾아 고쳤고, 나머지는 그대로 맞다)"
   - "2026-11-07: o13 합치기 (GPU·전원·냉방)"
   - "2026-11-07: ADR-0133에 맞춰 대조: 기대 복구 시간(+5분), 손대지 않는 것이 정답인 시트의 만점, 링크 흔들림 서술"
   - "2026-11-11: tools·world/os: 닿지 않는 분기 정리와 시험 추가; 동작은 같음(TD-0002), awk는 이름 바로 뒤 '(' 호출과 srand 반환값"
   - "2026-11-11: ADR-0172: 제공되는 시나리오 조건(컨테이너 배치 작업·자리, 사이트 서버), 서비스 프로세스 메모리 몫, 정답 풀이 길의 when·later·choose를 코드와 대조해 서술을 더했다. 나머지는 그대로 맞다"
+  - "2026-11-12: IAP 기본 카드의 설명에서 내부 출처 서술을 걷어냄 (ADR-0187)"
+verified_body: 82acef923ae61bc4
+unchanged_reverifies: 0
 ---
 # 컨테이너 층 (REQ-096, [ADR-0107](adr/0107-world-entry-two-doors-ha-ladders.md) 결정 6, [ADR-0114](adr/0114-container-layer-amend-tests.md))
 
@@ -37,7 +39,7 @@ verification_log:
 
 비유하면 식당 홀이다. 서비스는 손님이 받는 음식, 워크로드는 "이 요리는 늘 세 접시"라는 주문서, 파드는 접시 하나, 노드는 조리대, 컨트롤 플레인은 주문서를 보고 접시를 조리대에 나눠 주는 매니저다. 조리대 하나가 불이 나도 매니저는 5분쯤 기다렸다가(혹시 돌아올까 봐) 접시를 다른 조리대에 다시 올린다. 매니저가 자리를 비우면 새 주문과 자리 옮기기만 멈추고, 이미 올라간 접시는 계속 나간다.
 
-IAP(연수 님 팀의 플랫폼)가 바로 "VM 위에 직접 만든 쿠버네티스"라서 IAP 기본 카드의 컴퓨트 칸이 이 층이다.
+기본 서비스 카드 IAP는 "VM 위에 직접 만든 쿠버네티스" 모양이라서 IAP 기본 카드의 컴퓨트 칸이 이 층이다.
 
 ## 한계부터 (정직하게)
 
