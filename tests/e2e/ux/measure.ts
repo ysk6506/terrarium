@@ -177,7 +177,7 @@ try {
     // and the next journey would pay for that wait (software rendering on the runner).
     const once = async () => {
       const own = await launch();
-      return perform(own, server.url, work).finally(() => own.close());
+      return perform(own, server.url, work, id).finally(() => own.close());
     };
     // A slice's prelude journeys only make what the probes look at; their results belong to the slice that records them.
     const kept = recorded.some(([r]) => r === id);

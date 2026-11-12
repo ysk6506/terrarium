@@ -25,8 +25,10 @@ env:
 
 jobs:
   # Is every changed file a document? Documents are *.md under docs/ (not docs/generated/) and *.md in the repository
-  # root. Everything else is an input of some check or measurement. The diff is against the branch the pull request
-  # merges into; if it cannot be taken, or is empty, or this is not a pull request, the answer is false (full path).
+  # root. Everything else is an input of some check or measurement. The diff is the pull request's own: from the
+  # merge base of the base and the head (what "Files changed" shows), so commits that came in by merging the base
+  # branch into the head are not part of it (ADR-0195). If it cannot be taken, or is empty, or this is not a pull
+  # request, the answer is false (full path).
   changes:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -41,13 +43,14 @@ jobs:
         id: scope
         env:
           EVENT: ${{ github.event_name }}
-          BASE_REF: ${{ github.base_ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           docs_only=false
           web=true
           reason="not a pull request"
           if [ "$EVENT" = "pull_request" ]; then
-            if files=$(git -c core.quotepath=off diff --name-only --no-renames "origin/$BASE_REF...HEAD") && [ -n "$files" ]; then
+            if files=$(git -c core.quotepath=off diff --name-only --no-renames "$BASE_SHA...$HEAD_SHA") && [ -n "$files" ]; then
               others=""
               # Does the change touch the web app or the UX measurement? Then ux-measure runs (it is a record, not a gate).
               if printf '%s\n' "$files" | grep -qE '^(apps/web/|tests/e2e/ux/|harness/src/ux/|\.github/)'; then web=true; else web=false; fi
@@ -244,6 +247,71 @@ jobs:
             docs/generated/coverage-record.json
             coverage/coverage-summary.json
 
+  # TEMPORARY (ADR-0195 measurement, removed before the change is reported): the same shard run twice on one runner,
+  # first as the gating job runs it, then with coverage and the same 20 s limit, to see what coverage costs and breaks.
+  trial:
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, heavy]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - name: Plain, then with coverage
+        run: |
+          set +e
+          if [ "${{ matrix.shard }}" = heavy ]; then
+            sel="$HEAVY --no-file-parallelism --dangerouslyIgnoreUnhandledErrors"
+          else
+            for f in $HEAVY; do exclude="$exclude --exclude=$f"; done
+            sel="--shard=${{ matrix.shard }}/${{ env.SHARDS }} $exclude"
+          fi
+          t0=$(date +%s)
+          pnpm exec vitest run $sel --reporter=json --outputFile.json=plain.json > plain.log 2>&1
+          rc1=$?
+          t1=$(date +%s)
+          pnpm exec vitest run $sel --coverage --reporter=json --reporter=blob --outputFile.json=cov.json > cov.log 2>&1
+          rc2=$?
+          t2=$(date +%s)
+          echo "TRIAL shard=${{ matrix.shard }} plain=$((t1-t0))s exit=$rc1 coverage=$((t2-t1))s exit=$rc2" | tee -a "$GITHUB_STEP_SUMMARY"
+          for k in plain cov; do
+            echo "== $k: failed tests"
+            jq -r '.testResults[] | .name as $n | .assertionResults[] | select(.status=="failed") | "\($n | sub(".*/terrarium/"; "")) :: \(.fullName)"' $k.json | head -20
+            echo "== $k: slowest files (ms)"
+            jq -r '.testResults[] | "\((.endTime-.startTime)|floor) \(.name | sub(".*/terrarium/"; ""))"' $k.json | sort -rn | head -6
+          done
+          grep -E "Unhandled|Timeout|timed out" cov.log plain.log | head -10
+          exit 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trial-blob-${{ matrix.shard }}
+          path: .vitest-reports
+          include-hidden-files: true
+          if-no-files-found: error
+
+  trial-merge:
+    needs: [changes, trial]
+    if: always() && needs.changes.result == 'success' && needs.changes.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: trial-blob-*
+          path: .vitest-reports
+          merge-multiple: true
+      - run: pnpm exec vitest --merge-reports --coverage 2>&1 | tail -15
+      - run: pnpm tsx harness/src/checks/coverage.ts | head -20 || true
+      - run: pnpm tsx harness/src/checks/quality.ts record
+
   # The light path (ADR-0173): the tests that read the documents, since the full test run is skipped. First it checks
   # again, with a different pattern than `changes`, that the diff holds nothing but documents.
   docs-tests:
@@ -257,10 +325,11 @@ jobs:
           fetch-depth: 0
       - name: The light path holds only documents (second look)
         env:
-          BASE_REF: ${{ github.base_ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          others=$(git -c core.quotepath=off diff --name-only --no-renames "origin/$BASE_REF...HEAD" | grep -vE '^(docs/.+|[^/]+)\.md$' || true)
-          generated=$(git -c core.quotepath=off diff --name-only --no-renames "origin/$BASE_REF...HEAD" | grep -E '^docs/generated/' || true)
+          others=$(git -c core.quotepath=off diff --name-only --no-renames "$BASE_SHA...$HEAD_SHA" | grep -vE '^(docs/.+|[^/]+)\.md$' || true)
+          generated=$(git -c core.quotepath=off diff --name-only --no-renames "$BASE_SHA...$HEAD_SHA" | grep -E '^docs/generated/' || true)
           if [ -n "$others$generated" ]; then
             echo "::error::the light path was taken but these files are not documents: $others $generated"
             exit 1
@@ -304,11 +373,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
       - uses: ./.github/actions/browser
-      - name: Journeys of the group (15 minute limit inside; the log is the job log, so no artifact is uploaded, ADR-0175)
+      - name: Journeys of the group (15 minute limit inside; the log is the job log; a failed step prints what the page showed, ADR-0195)
         run: pnpm ux journeys --group ${{ matrix.group }}
         env:
           TERRARIUM_UX_ECHO: "1"
+          TERRARIUM_UX_EVIDENCE_DIR: ux-evidence
         shell: bash
+      # Only the screenshots of failed steps, and only when there are any (ADR-0195). It cannot fail the job.
+      - if: always()
+        uses: ./.github/actions/ux-evidence
+        with:
+          name: ux-evidence-journeys-${{ matrix.group }}
 
   # The Honeycomb score: timings, sizes, accessibility, wording, and the journeys again for their hand counts. Non-gating
   # until TD-0004 is closed. It runs on every push to main and on pull requests that touch the web app. The browser half
@@ -341,6 +416,7 @@ jobs:
       - name: One slice of the measurement
         env:
           TERRARIUM_UX_ECHO: "1"
+          TERRARIUM_UX_EVIDENCE_DIR: ux-evidence
         run: |
           mkdir -p ux-parts
           node_modules/.bin/tsx tests/e2e/ux/measure.ts --part ${{ matrix.part }} --out ux-parts/${{ matrix.part }}.json
@@ -350,6 +426,10 @@ jobs:
           name: ux-part-${{ matrix.part }}
           path: ux-parts/${{ matrix.part }}.json
           if-no-files-found: error
+      - if: always()
+        uses: ./.github/actions/ux-evidence
+        with:
+          name: ux-evidence-${{ matrix.part }}
 
   ux-measure:
     needs: [changes, ux-parts]
