@@ -80,7 +80,7 @@ const LABELS: Readonly<Record<keyof Recipe, string>> = {
   repeats: "상황당 반복",
   time: "시간 정책",
   profiles: "제품 버전",
-  escalation: "에스컬레이션 처리",
+  escalation: "넘기기 처리",
   faultScope: "고장 범위",
   sop: "절차서",
   domains: "내 도메인",

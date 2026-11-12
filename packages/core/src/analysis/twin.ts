@@ -286,8 +286,8 @@ function gapSection(gaps: readonly WorldGaps[]): string[] {
     const unknown = [...Object.entries(g.unknownLabels), ...Object.entries(g.unknownRelationships)];
     out.push(
       unknown.length > 0
-        ? `- 매핑하지 못한 라벨·관계: ${unknown.map(([k, n]) => `${k} ${n}개`).join(", ")}`
-        : "- 매핑하지 못한 라벨·관계 없음",
+        ? `- 매핑하지 못한 라벨·링크: ${unknown.map(([k, n]) => `${k} ${n}개`).join(", ")}`
+        : "- 매핑하지 못한 라벨·링크 없음",
     );
     for (const a of g.assumptions) out.push(`- 가정: ${a}`);
     out.push("");
@@ -328,7 +328,7 @@ export function modelingBrief(input: BriefInput): string {
     ...(errors.length === 0
       ? ["툴 오류가 없었어요.", ""]
       : [
-          "| 툴 | 오류 형태 | 횟수 | 예 |",
+          "| 툴 | 오류 형태 | 몇 번 | 예 |",
           "|---|---|---|---|",
           ...errors.map(
             (e) =>

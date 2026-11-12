@@ -176,7 +176,7 @@ export function Body({ x, e, set }: BodyProps) {
           value={x.maxCalls}
           min={1}
           max={500}
-          unit="회"
+          unit="번"
           onChange={(n) => n !== undefined && set({ maxCalls: n })}
         />
       );

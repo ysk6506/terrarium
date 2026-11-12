@@ -169,6 +169,7 @@ describe("check entry points [REQ-024]", () => {
       "test-integrity",
       "traceability",
       "moss",
+      "ui-words",
       "quality",
       "protected-paths",
       "coverage",

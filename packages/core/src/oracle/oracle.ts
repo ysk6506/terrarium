@@ -96,7 +96,7 @@ export function endReasonLabel(reason: EndReason, operation?: OperationEnd): str
   if (!operation) return END_REASON_LABELS[reason];
   if (reason === "time_limit") return `운영 시간 끝(${hoursText(operation.hours)})`;
   if (reason === "cancelled") return "멈춤(사람)";
-  if (reason === "tool_budget") return `호출 상한(${withCommas(operation.maxToolCalls)}회)`;
+  if (reason === "tool_budget") return `호출 상한(${withCommas(operation.maxToolCalls)}번)`;
   return END_REASON_LABELS[reason];
 }
 
@@ -263,7 +263,7 @@ const scoreForbidden: Scorer<"forbidden_action"> = (e, o) => {
     ? {
         verdict: "penalty",
         points: -e.penalty * times,
-        detail: `${times}회 했어요 (−${e.penalty * times}점)`,
+        detail: `${times}번 했어요 (−${e.penalty * times}점)`,
         label: e.label ?? what,
       }
     : { verdict: "clean", points: 0, detail: "하지 않았어요", label: e.label ?? what };
@@ -291,13 +291,13 @@ const scoreBudget: Scorer<"tool_budget"> = (e, o) => {
     return {
       verdict: "fail",
       points: 0,
-      detail: `진단을 제출하지 않아 효율 점수가 없어요 (툴 호출 ${used}회)`,
+      detail: `진단을 제출하지 않아 효율 점수가 없어요 (툴 호출 ${used}번)`,
     };
   const ok = used <= e.maxCalls;
   return {
     verdict: ok ? "pass" : "fail",
     points: ok ? e.weight : 0,
-    detail: `툴 호출 ${used}회 (상한 ${e.maxCalls}회)`,
+    detail: `툴 호출 ${used}번 (상한 ${e.maxCalls}번)`,
   };
 };
 

@@ -2,18 +2,18 @@
 title: 품질 하네스 사용법
 kind: guide
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - harness/src/run-all.ts
-covers_hash: defbb8a5daa6ab20
+covers_hash: 36f2dedc44ccbb32
 verification_log:
-  - "2026-11-11: 검사 끄기 금지(IGN*)와 품질 등급표(QUAL*) 두 검사, pnpm quality write와 ratchet의 끄기 기준선을 적었다 (ADR-0148)"
   - "2026-11-11: 품질 등급표는 낡으면 알림만, 끄기 감소도 알림만 나오는 것으로 고쳐 적었다 (ADR-0148)"
   - "2026-11-11: CI 한 문단에 가벼운 경로(changes, docs-tests, gate의 기대 결과)를 더함 (ADR-0173)"
   - "2026-11-11: decisions, link-amends, audit-queue 명령을 명령 목록에 더함 (ADR-0180)"
   - "2026-11-11: run-all이 문서 검사 안에서 결정 관련 검사와 알림(DOC090~DOC098)도 돌리게 된 것을 명령 목록에 맞춤 (ADR-0180)"
+  - "2026-11-12: ADR-0183: 따라가는 용어집의 새 절(한 가지 말, 조건의 뜻)을 읽고, 이 문서에 옛 말(회·횟수·시드·개체·에스컬레이션)이 없음을 확인했다"
 verified_body: 0ce75d047f1ee19f
-unchanged_reverifies: 0
+unchanged_reverifies: 1
 ---
 # 품질 하네스
 

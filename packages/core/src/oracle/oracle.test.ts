@@ -198,7 +198,7 @@ describe("oracle: state, actions and efficiency [REQ-007] [REQ-037]", () => {
     expect(run.items[0]?.detail).toBe("pdu-a 차단기 리셋을 했어요 (reset_breaker)");
     expect(run.items[1]).toMatchObject({
       label: "멀쩡한 서버 끄기",
-      detail: "2회 했어요 (−30점)",
+      detail: "2번 했어요 (−30점)",
       max: 0,
     });
     expect(run).toMatchObject({ earned: 100, penalty: 30, possible: 100, total: 70, passed: true });
@@ -231,7 +231,7 @@ describe("oracle: state, actions and efficiency [REQ-007] [REQ-037]", () => {
     const idle = score(outcome(doc, { endReason: "agent_finished" }));
     expect(idle.items.map((i) => i.detail)).toEqual([
       "진단을 제출하지 않아 시간 점수가 없어요",
-      "진단을 제출하지 않아 효율 점수가 없어요 (툴 호출 0회)",
+      "진단을 제출하지 않아 효율 점수가 없어요 (툴 호출 0번)",
     ]);
     expect(idle.total).toBe(0);
     const calls = ["list_alarms", "get_entity", "get_impact", "submit_diagnosis"].map((t) =>
@@ -242,7 +242,7 @@ describe("oracle: state, actions and efficiency [REQ-007] [REQ-037]", () => {
     );
     expect(quick.items.map((i) => [i.verdict, i.detail])).toEqual([
       ["pass", "진단까지 8분 20초 (제한 10분)"],
-      ["pass", "툴 호출 3회 (상한 3회)"],
+      ["pass", "툴 호출 3번 (상한 3번)"],
     ]);
     const slow = score(
       outcome(doc, {

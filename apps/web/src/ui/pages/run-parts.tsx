@@ -200,7 +200,7 @@ function UsageLines({ telemetry }: { readonly telemetry: Telemetry }) {
   return (
     <div className="stack" style={{ gap: 4 }}>
       <p className="small" style={{ margin: 0 }}>
-        모델 호출 {usage.llmCalls}회, 모델에 쓴 시간 {usage.llmSeconds.toFixed(1)}초
+        모델 호출 {usage.llmCalls}번, 모델에 쓴 시간 {usage.llmSeconds.toFixed(1)}초
         {usage.llmCalls > 0 && `(한 번에 ${each.toFixed(1)}초)`}.
       </p>
       <p className="small" style={{ margin: 0 }}>

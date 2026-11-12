@@ -164,7 +164,7 @@ const CORE_BLOCK_SPECS: readonly BlockSpec[] = [
     category: "flow",
     label: "무작위 선택",
     description:
-      "갈래 중 하나를 골라요. 실험의 시드가 같으면 늘 같은 갈래를 고르므로 결과를 재현할 수 있어요.",
+      "갈래 중 하나를 골라요. 실험의 상황이 같으면 늘 같은 갈래를 고르므로 결과를 재현할 수 있어요.",
     hasInput: true,
     outputs: [],
     params: [
@@ -352,7 +352,7 @@ const CORE_BLOCK_SPECS: readonly BlockSpec[] = [
         kind: "number",
         min: 1,
         max: 500,
-        unit: "회",
+        unit: "번",
         default: 40,
         integer: true,
       },
