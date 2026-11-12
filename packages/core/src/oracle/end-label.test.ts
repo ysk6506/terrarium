@@ -7,8 +7,8 @@ describe("how an operation says it ended [REQ-090]", () => {
   test("the hours used up, a person's stop and the call limit are told in an operation's own words", () => {
     expect(endReasonLabel("time_limit", op)).toBe("운영 시간 끝(8시간)");
     expect(endReasonLabel("cancelled", op)).toBe("멈춤(사람)");
-    expect(endReasonLabel("tool_budget", op)).toBe("호출 상한(5,000회)");
-    expect(endReasonLabel("tool_budget", { hours: 1, maxToolCalls: 120 })).toBe("호출 상한(120회)");
+    expect(endReasonLabel("tool_budget", op)).toBe("호출 상한(5,000번)");
+    expect(endReasonLabel("tool_budget", { hours: 1, maxToolCalls: 120 })).toBe("호출 상한(120번)");
   });
 
   test("a run that is not an operation keeps the old words, and the other reasons stay as they were", () => {

@@ -156,17 +156,17 @@ export function otherFigures(m: OperationMetrics): OpFigure[] {
     {
       label: "악화",
       value: `${m.worsened}번`,
-      hint: "조치 직후 멀쩡하던 서비스가 멈춘 횟수예요",
+      hint: "조치 직후 멀쩡하던 서비스가 멈춘 건수예요",
     },
     {
-      label: "에스컬레이션",
+      label: "넘긴 일",
       value: `${m.escalations}번`,
-      hint: "escalate로 팀에 넘기거나 ask_human으로 사람에게 물은 횟수예요",
+      hint: "escalate로 팀에 넘기거나 ask_human으로 사람에게 물은 일의 수예요",
     },
     {
       label: "사건당 툴 호출",
-      value: m.callsPerIncident === undefined ? "—" : `${m.callsPerIncident.toFixed(1)}회`,
-      hint: `전체 ${m.calls}회를 사건 수로 나눈 값이에요`,
+      value: m.callsPerIncident === undefined ? "—" : `${m.callsPerIncident.toFixed(1)}번`,
+      hint: `전체 ${m.calls}번을 사건 수로 나눈 값이에요`,
     },
     ...(m.tokensPerIncident === undefined
       ? []
@@ -179,11 +179,11 @@ export function otherFigures(m: OperationMetrics): OpFigure[] {
         ]),
     {
       label: "조용할 때 쓴 호출",
-      value: `${m.quietCalls}회`,
+      value: `${m.quietCalls}번`,
       hint:
         m.quietTokens === undefined
-          ? "알람이 없는 동안 부른 횟수예요"
-          : `알람이 없는 동안 부른 횟수예요. 그때 쓴 토큰은 약 ${m.quietTokens.toLocaleString("ko-KR")}개로 어림해요`,
+          ? "알람이 없는 동안 부른 수예요"
+          : `알람이 없는 동안 부른 수예요. 그때 쓴 토큰은 약 ${m.quietTokens.toLocaleString("ko-KR")}개로 어림해요`,
     },
     {
       label: "감시 주기",
@@ -258,7 +258,7 @@ export function limitNote(
   if (endReason !== "tool_budget") return undefined;
   const n = budget?.maxToolCalls;
   return n
-    ? `툴 호출 ${n}회 상한에 닿아 멈췄어요. 상한은 실험 만들기에서 바꿀 수 있어요`
+    ? `툴 호출 ${n}번 상한에 닿아 멈췄어요. 상한은 실험 만들기에서 바꿀 수 있어요`
     : undefined;
 }
 

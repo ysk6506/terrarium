@@ -2,7 +2,7 @@
 title: HTTP API 계약
 kind: spec
 status: active
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 covers:
   - packages/core/src/contract/routes.ts
   - packages/core/src/contract/responses.ts
@@ -15,11 +15,11 @@ covers:
   - packages/core/src/contract/community-routes.ts
 covers_hash: cd562149b0e6a238
 verification_log:
-  - "2026-11-10: 물리 프로필(REQ-113) 반영: 새 라우트·벤치마크 키 지문"
   - "2026-11-07: REQ-112의 경로 넷을 표에 더했다"
   - "2026-11-11: main 합치기 뒤 다시 읽음: 물리 프로필(REQ-113) 반영 문단과 라우트 행이 main의 새 내용과 함께 맞다"
   - "2026-11-11: REQ-118 시드당 반복: 실행 키(시드·반복), 시드 단위 통계, 순위 조건(시드 3개), 한도 60, 화면 반영을 코드와 대조해 고쳤다. 이 문서의 나머지는 그대로 맞다"
   - "2026-11-11: step 가 (ADR-0174): identity and policy; statements checked against the code"
+  - "2026-11-12: ADR-0183: 한 가지 말(번, 상황, 객체·링크, 넘기기)에 맞춰 인용한 화면 글을 고쳤다"
 ---
 # HTTP API 계약 (core.contract)
 
@@ -99,7 +99,7 @@ verification_log:
 | `GET /api/scenarios/:id/current-process` | 시나리오의 "지금 하는 방식" 표(적은 값, 안 적었으면 빈 표) (REQ-112) | |
 | `PUT /api/scenarios/:id/current-process` | 표 저장 (시나리오를 만든 사람과 관리자만. 먼저 적은 사람이 아니다. 줄 1~30, 시간은 분) | |
 | `GET /api/experiments/:id/process` | 전후 비교: 코드가 실행 기록에서 센 단계·사람·시간(평균), 적은 표와의 차이, 대표 실행의 단계 장부 | |
-| `GET /api/worlds/:id/ontology` | 이 세계를 E2E로 가려면: Object·Link·Action 요구와 `?experimentId=`로 고른 실험에서 쓴 것 | |
+| `GET /api/worlds/:id/ontology` | 이 세계에 필요한 액션: 객체·링크·액션 요구와 `?experimentId=`로 고른 실험에서 쓴 것 | |
 | `DELETE /api/scenarios/:id` | 시나리오 숨기기 | |
 | `POST /api/scenarios/:id/dry-run` | 에이전트 없이 미리 보기 | |
 | `POST /api/scenarios/:id/calibrate` | 시험지 점검(시나리오를 만든 사람과 관리자만): 아무것도 안 하는·찍는·정답만 아는 에이전트로 점수 재 보기. 서비스를 옮겨 복구하는 길(`recoveryPath`)과 흔한 툴만으로 원인에 닿는 길(`commonReach`)도 함께 답한다. 또 툴 설명만 읽는 기준 에이전트가 상황마다 고른 툴과 모호한 쌍(`toolPick`)도 답한다 | |

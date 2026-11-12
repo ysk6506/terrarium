@@ -24,7 +24,7 @@ export const TOOL_WORDS = {
 } as const;
 
 export const HUMAN_WORDS = {
-  ESC_TITLE: "에스컬레이션 처리",
+  ESC_TITLE: "넘기기 처리",
   ESC_HELP: "에이전트가 사람에게 묻기를 부르면 어떻게 할지 정해요",
   ESC_NEEDS_TOOL: "사람에게 묻기 툴을 켜면 고를 수 있어요",
   ESC_WAIT: "사람 기다림",
