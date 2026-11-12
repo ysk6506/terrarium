@@ -40,10 +40,12 @@ updates_docs:
   - docs/index.md
   - docs/product-specs/requirements.md
 touches_protected:
+  - harness/src/common.test.ts
   - docs/product-specs/requirements.md
   - docs/design-docs/adr/**
   - harness/config/test-lock.json
 amends_tests:
+  - harness/src/common.test.ts::check entry points [REQ-024] > run-all runs every check and prints a verdict
   - packages/core/src/analysis/stopped-experiment.test.ts::=BEFORE
   - apps/server/src/adapters/adapters.test.ts::harness telemetry from ClickStack [REQ-037] > spans and logs of one trace, with numbers restored and the trace id as a parameter
   - apps/server/src/adapters/sqlite-community.test.ts::hearts, marks and awards on SQLite [REQ-101] > [REQ-101] a heart is one per person per world and survives asking twice
@@ -314,7 +316,7 @@ amends_tests:
   - tests/spec/store.test.ts::=scenario
   - tests/spec/store.test.ts::=world
 test_change_reason: 요구사항이 바뀐 것은 아니다. 시험이 쓰는 견본 사용자 이름과 견본 모델 이름, 시험 제목 한 곳을 지어낸 것으로 바꿔 저장소에 개인 이름과 내부에서 쓰는 이름이 남지 않게 한다. 단언하는 동작과 기대하는 값의 뜻은 같고, 이름 순서가 바뀌어 정렬 결과를 단정한 세 곳은 기대값의 순서만 따라갔다.
-decision_hash: 2c0d098d11cd2e87
+decision_hash: 8f87234c934d7bbb
 ---
 # ADR-0188 내부 사실 서술을 요구의 말로 고친다 — ADR-0187에 따른 두 번째 걷어내기
 
@@ -342,6 +344,7 @@ ADR-0187은 공개 저장소에 내부에서 들은 사실을 두지 않기로 �
 4. **글만 바꾼다. 데이터는 그대로다.** 숫자, 기본값, 상수, 좌표, 프리셋 이름, 만들어지는 세계, 코드의 식별자는 바꾸지 않았다. 값이 현실이라는 주장만 뺐다. 그 값을 어떻게 할지(예시 값으로 둘지, 지어낸 값으로 바꿀지)는 이어서 따로 정한다. 점수와 세계의 지문은 그대로여야 한다(`apps/server/src/http/scoring-unchanged.test.ts`와 `tests/spec/golden-*.test.ts`가 지킨다).
 5. **결정의 뜻은 바뀌지 않는다.** 결정 기록 89개의 본문이나 제목을 고쳐 다시 봉인했다(ADR-0187 자신 포함). 사실 없이는 결정을 적을 수 없는 곳은 결정을 두고 사실만 뺐다. 제목이 바뀐 것은 결정 기록 둘과 설계 문서 하나다. 고친 보호 파일은 `touches_protected`에 있다. 결정 기록은 줄 수 제한(`DOC050`) 때문에 하나하나 적지 않고 보호 경로 글롭 `docs/design-docs/adr/**`로 적는다.
 6. **잠긴 시험.** 견본 이름 문자열이 든 시험과 도우미의 지문이 바뀌고(제목이 바뀐 시험 하나는 옛 항목이 사라지고 새 항목이 생긴다) 모두 `amends_tests`에 있다(268개). 동작과 기대값의 뜻은 그대로이고, 이름 순서가 바뀌어 정렬 결과를 단정한 세 곳은 기대값의 순서만 따라갔다. `lock --amend`로 잠금을 갱신한다.
+7. **하네스 시험 하나의 시간 한도를 올린다.** 검사 전체를 한 번 돌려 보는 시험(`harness/src/common.test.ts`의 "run-all runs every check and prints a verdict")이 이 변경처럼 문서를 많이 고친 변경에서 기본 한도 20초를 조금 넘는다(21초). 그 시험 하나의 한도를 120초로 한다. 단정하는 내용은 그대로다.
 
 ## 이유
 - 공개 저장소의 글은 누구나 읽고 히스토리에 남는다. 지금의 파일에서라도 지우는 것이 할 수 있는 가장 싼 일이다.

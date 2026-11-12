@@ -76735,7 +76735,7 @@
   },
   "harness/src/common.test.ts::check entry points [REQ-024] > run-all runs every check and prints a verdict": {
    "kind": "test",
-   "hash": "144f0bcb33556c3c",
+   "hash": "eccc54cc21076289",
    "asserts": 4,
    "literals": [
     "\"\"",
@@ -76745,6 +76745,7 @@
     "\"1\"",
     "\"1\"",
     "\"1\"",
+    "\"120000\"",
     "\"ALL CHECKS PASSED\"",
     "\"ALL CHECKS PASSED\"",
     "\"CHECK(S) FAILED\"",
@@ -76781,7 +76782,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
-   "amended_by": "0183-one-vocabulary-on-every-screen.md"
+   "amended_by": "0188-second-redaction-under-adr-0187.md"
   },
   "harness/src/common.test.ts::check entry points [REQ-024] > traceability and protected CLIs return 0 or 1": {
    "kind": "test",
