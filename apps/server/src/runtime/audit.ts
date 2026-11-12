@@ -102,10 +102,6 @@ export function cleaned(input: NewAuditEntry): NewAuditEntry {
   return {
     requestId: clip(input.requestId, 80),
     subject: cleanSubject(input.subject),
-    ...(input.onBehalfOf
-      ? { onBehalfOf: { kind: "person", id: clip(input.onBehalfOf.id, NAME_MAX) } }
-      : {}),
-    ...(input.caseId ? { caseId: clip(input.caseId, 80) } : {}),
     action: input.action,
     outcome: input.outcome,
     ...(input.reason ? { reason: input.reason } : {}),

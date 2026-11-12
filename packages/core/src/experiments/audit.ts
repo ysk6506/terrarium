@@ -94,8 +94,8 @@ export const AUDIT_ACTIONS = [
 ] as const;
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
 
-/** Who did it: a person, an agent acting for the platform (workflows, later) or the server itself (the retention sweep). */
-export const SUBJECT_KINDS = ["person", "agent", "system"] as const;
+/** Who did it: a person, or the server itself (the retention sweep and the limit line). */
+export const SUBJECT_KINDS = ["person", "system"] as const;
 export type SubjectKind = (typeof SUBJECT_KINDS)[number];
 
 /**
@@ -164,10 +164,6 @@ export interface AuditEntry {
   /** Ties together the entries one request wrote. */
   readonly requestId: string;
   readonly subject: AuditSubject;
-  /** The person who started something an agent then did (workflows, later). */
-  readonly onBehalfOf?: { readonly kind: "person"; readonly id: string };
-  /** The workflow case this belongs to (later). */
-  readonly caseId?: string;
   readonly action: AuditAction;
   readonly outcome: AuditOutcome;
   readonly reason?: AuditReason;

@@ -56,21 +56,6 @@ describe("what an entry may hold [REQ-054]", () => {
     expect(e.resource.name?.length).toBeLessThanOrEqual(120);
     expect(e.resource.name).not.toMatch(/\p{Cc}/u);
   });
-
-  test("[REQ-054] it can be about a person or an agent, on someone's behalf, in a case: the same shape", () => {
-    const e = cleaned(
-      valid({
-        subject: { kind: "agent", id: "triage", name: "분류", admin: false },
-        onBehalfOf: { kind: "person", id: "haneul" },
-        caseId: "case-9",
-      }),
-    );
-    expect(e).toMatchObject({
-      subject: { kind: "agent" },
-      onBehalfOf: { id: "haneul" },
-      caseId: "case-9",
-    });
-  });
 });
 
 describe("the time, the counters and the log lines [REQ-054]", () => {
