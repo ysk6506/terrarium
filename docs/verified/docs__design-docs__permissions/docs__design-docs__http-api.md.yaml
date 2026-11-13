@@ -1,7 +1,7 @@
 doc: "docs/design-docs/permissions.md"
 target: "docs/design-docs/http-api.md"
-hash: "bdb8eca964a55d2d"
+hash: "f46bdb8bd65c1c14"
 date: "2026-11-13"
-note: "ADR-0199과 구현(조치 관문, 권한 수준 둘, 규칙 넷)에 맞춰 다시 읽고 어긋난 곳이 없음을 확인함"
-text_changed: false
-doc_hash: "a813c0a300fcf16c"
+note: "라 단계 절을 더하고 합친 뒤 http-api.md와 맞춰 다시 읽음"
+text_changed: true
+doc_hash: "8593219bfab0770a"

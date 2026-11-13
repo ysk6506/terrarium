@@ -1,5 +1,5 @@
 ---
-title: ADR-0198 권한 화면 — 이름으로 보이고, 범위는 한 가지만 묻고, 남의 것을 고칠 때는 이유를 적고, 감사 기록은 Astryx로 시험해 그린다
+title: ADR-0198 화면은 사람을 이름으로 보여 주고, 볼 수 있는 사람을 한 번만 묻고, 남의 것을 고치는 관리자에게 이유를 받는다
 kind: decision
 status: active
 enforced_by:
@@ -16,15 +16,15 @@ touches_protected:
 amends_tests:
   - apps/web/src/logic/agent-versions.test.ts::a version history reads in words [REQ-053] > versions are changed by the one who connected it, or by anyone when the server's file did
 test_change_reason: 설정 파일의 연결은 이제 관리자만 버전을 고치고(permissions.md 4절), 관리자는 남이 만든 연결도 고치므로 canEditVersions가 관리자 여부를 받고 기대값이 바뀐다. 예전 기대값은 설정 파일의 연결을 누구나 고치게 했다.
-decision_hash: 8ef29f2433491b33
+decision_hash: 30642b1a3015e35c
 ---
-# ADR-0198 권한 화면
+# ADR-0198 사람을 이름으로 보여 주고 이유를 받는 화면
 
 ## 맥락
 
-[ADR-0174](0174-permissions-proxy-identity-three-scopes-audit.md)의 순서에서 가(신원)·나(범위)·다([감사 기록](0193-audit-log-one-recording-point.md))는 서버에 있고, 라는 화면이에요. 서버는 응답마다 `scope`, `group`, `canChangeScope`(연결·모델은 `sharing`)를 이미 주고, 범위 바꾸기 길은 하나(`PUT …/:id/scope`)예요. 화면만 없어서 사용자가 범위를 정하지도, 막힌 까닭을 알지도 못해요. 워크플로 자동화는 [ADR-0192](0192-terrarium-returns-to-its-first-goal.md)가 없앴으므로 이 화면들에 그 자리를 두지 않아요.
+앞선 결정의 순서에서 가(신원)·나(범위)·다([감사 기록](0193-audit-log-one-recording-point.md))는 서버에 있고, 라는 화면이에요. 서버는 응답마다 `scope`, `group`, `canChangeScope`(연결·모델은 `sharing`)를 이미 주고, 범위 바꾸기 길은 하나(`PUT …/:id/scope`)예요. 화면만 없어서 사용자가 범위를 정하지도, 막힌 까닭을 알지도 못해요. 워크플로 자동화는 [ADR-0192](0192-terrarium-returns-to-its-first-goal.md)가 없앴으므로 이 화면들에 그 자리를 두지 않아요.
 
-## 결정
+## 화면이 하기로 한 아홉 가지
 
 1. **묻는 것은 하나예요.** 세계·시나리오·실험·연결·모델을 만들 때 "누가 볼 수 있나요": 나만 / 우리 파트 / 모두. 그룹이 없으면 "우리 파트"를 내놓지 않아요. 연결과 모델은 "나만"에서, 나머지는 "모두"에서 시작해요. 만든 뒤 바꾸는 길은 범위 바꾸기 길 하나뿐이고, 화면에서는 "누가 볼 수 있나요" 버튼이 불러요.
 2. **목록은 모두가 아닐 때만 범위를 표시하고** 내 것 / 우리 파트 / 모두로 걸러요. 만든 사람은 로그인 ID가 아니라 보이는 이름으로 써요. 서버가 요청마다 이름을 듣고(`People`, 메모리, 500명) `meta.people`으로 내보내요. 다시 시작하면 그 사람이 다시 쓸 때까지 ID로 보여요. 디스크에 쓰지 않아요.
