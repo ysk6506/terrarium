@@ -4,6 +4,7 @@
  */
 import type { ExperimentQueryParams, ForkRequest, RecipeRequest } from "@terrarium/core/contract";
 import { type ExperimentFilter, normalizeTools, type Recipe } from "@terrarium/core/experiments";
+import { DEFAULT_PERMISSION, rulesOf } from "@terrarium/core/session";
 
 export const asIssues = (problems: readonly string[], path = "recipe") =>
   problems.map((message) => ({ path, message }));
@@ -39,6 +40,11 @@ export function optionsOf(req: RecipeRequest): Partial<Recipe> {
     ...(req.domains && req.domains.length > 0 ? { domains: req.domains } : {}),
     ...(req.leadTimes ? { leadTimes: req.leadTimes } : {}),
     ...(req.operation ? { operation: req.operation } : {}),
+    // the default level and no rules are left out, so an experiment that chose neither reads as it always did
+    ...(req.permission && req.permission !== DEFAULT_PERMISSION
+      ? { permission: req.permission }
+      : {}),
+    ...(req.rules && req.rules.length > 0 ? { rules: rulesOf(req) } : {}),
   };
 }
 

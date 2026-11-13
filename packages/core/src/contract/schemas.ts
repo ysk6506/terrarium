@@ -382,6 +382,15 @@ export const DomainsSchema = z
   .max(6)
   .refine((d) => new Set(d).size === d.length, { message: "같은 도메인이 두 번 들어 있어요" });
 
+/** How far an experiment entrusts the agent (REQ-123): look only, or act by itself (the default). */
+export const PermissionSchema = z.enum(["view", "act"]);
+
+/** The rules an experiment is held to (REQ-125): a closed list, each once. */
+export const RulesSchema = z
+  .array(z.enum(["look_first", "impact_first", "verify_after", "no_harm"]))
+  .max(4)
+  .refine((r) => new Set(r).size === r.length, { message: "같은 규칙이 두 번 들어 있어요" });
+
 const FaultTemplateSchema = z
   .object({
     type: z.string().min(1).max(64),

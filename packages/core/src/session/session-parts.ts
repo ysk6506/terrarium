@@ -1,19 +1,25 @@
 /** Pieces of a session's setup and result that need nothing of its state, kept out of `session.ts` (500-line limit). */
 
-import type { RunOutcome } from "@terrarium/core/oracle";
+import { ORACLE_VERSION, type RunOutcome } from "@terrarium/core/oracle";
 import { CLUSTER_CAUSE } from "@terrarium/core/physics";
 import {
+  type AgentTask,
   actionsOf,
   mainProblems,
   reaches,
   type ScenarioDoc,
+  scenarioDigest,
   scoreSop,
   type ToolCallRecord,
 } from "@terrarium/core/scenario";
-import type { Toolbox, ToolResult } from "@terrarium/core/tools";
-import type { FaultType, World, WorldEvent } from "@terrarium/core/world";
+import { type Args, runbookPrompt, type Toolbox, type ToolResult } from "@terrarium/core/tools";
+import type { FaultType, RunEvent, World, WorldEvent } from "@terrarium/core/world";
 import type { HumanLine } from "./human-line";
 import { HUMAN_CAUSE } from "./human-line";
+import { keySeries } from "./key-series";
+import type { MetricRecorder } from "./recorder";
+import { buildTimeline } from "./timeline";
+import { deniedAnswer, gateStops, rulesOf, trustOf, trustPrompt } from "./trust";
 import type { RunResult, SessionConfig, ShellOutside } from "./types";
 
 /** Background faults that no tool the agent has can reach do not happen when faults are limited to the tools given. */
@@ -110,4 +116,65 @@ export function effectsSince(world: World, before: number) {
     const link = world.index.link(id);
     return end === "from" ? link.from : link.to;
   });
+}
+
+/** The task as the agent reads it: the runbook when the experiment gives it, and what it is entrusted with and held to (REQ-123, REQ-125). */
+export function taskFor(
+  task: AgentTask,
+  config: Pick<SessionConfig, "scenario" | "sop" | "permission" | "rules">,
+): AgentTask {
+  const runbook = config.scenario.runbook;
+  const given = config.sop === "given" && runbook ? runbookPrompt(runbook) : "";
+  const prompt = task.prompt + given + trustPrompt(config.permission, rulesOf(config));
+  return prompt === task.prompt ? task : { ...task, prompt };
+}
+
+/** The gate's answer to a call it stops (a level of `view` and a call that changes the world); undefined when the call goes on to the tool. */
+export function gateAnswer(
+  config: Pick<SessionConfig, "permission">,
+  toolbox: Toolbox,
+  tool: string,
+  args: Args,
+): ToolResult | undefined {
+  const has = (name: string) => toolbox.has(name);
+  return gateStops(config.permission, has, tool, args) ? deniedAnswer(has) : undefined;
+}
+
+/** What the run shows of its level and rules, counted from its events (nothing when the experiment chose neither). */
+export const trustOfRun = (
+  config: Pick<SessionConfig, "permission" | "rules">,
+  events: readonly RunEvent[],
+): Pick<RunResult, "trust"> => {
+  const trust = trustOf(events, config.permission, rulesOf(config));
+  return trust ? { trust } : {};
+};
+
+/** The finished run's timeline, key series and digests. */
+export function viewsOf(run: {
+  readonly config: Pick<SessionConfig, "scenario">;
+  readonly trace: Parameters<typeof buildTimeline>[1];
+  readonly world: World;
+  readonly recorder: MetricRecorder;
+  readonly calls: readonly ToolCallRecord[];
+  readonly scenarioStart: number;
+  readonly worldDigest: string;
+}): Pick<RunResult, "timeline" | "series" | "digests"> {
+  const { config, world, recorder, calls, scenarioStart } = run;
+  return {
+    timeline: buildTimeline(
+      config.scenario,
+      run.trace,
+      world.events(),
+      calls,
+      scenarioStart,
+      (id) => world.index.find(id)?.name ?? id,
+    ),
+    series: keySeries({ world, recorder, scenario: config.scenario, calls, scenarioStart }),
+    digests: {
+      world: run.worldDigest,
+      scenario: scenarioDigest(config.scenario),
+      oracle: ORACLE_VERSION,
+      physics: world.physics.fingerprint,
+    },
+  };
 }

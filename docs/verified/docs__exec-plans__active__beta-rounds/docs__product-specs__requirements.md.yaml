@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/beta-rounds.md"
 target: "docs/product-specs/requirements.md"
-hash: "de836da292c565f7"
-date: "2026-11-12"
-note: "main(ADR-0196)을 합침: 두 변경의 글이 함께 들어감. 다시 대조함"
-text_changed: true
+hash: "f51b263c01d96ce9"
+date: "2026-11-13"
+note: "ADR-0199과 구현(조치 관문, 권한 수준 둘, 규칙 넷)에 맞춰 다시 읽고 어긋난 곳이 없음을 확인함"
+text_changed: false
 doc_hash: "66707beaed5c0c57"
