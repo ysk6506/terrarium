@@ -49,16 +49,10 @@ describe("alone on one's own machine, the loopback address is the administrator 
 
   test("[REQ-054] the admin routes open for loopback and stay shut for others", async () => {
     const app = serve({});
-    const post = (remoteAddress: string) =>
-      app.inject({
-        method: "POST",
-        url: "/api/worlds/import",
-        headers: typed,
-        payload: { source: "sample" },
-        remoteAddress,
-      });
-    expect((await post("127.0.0.1")).statusCode).toBe(200);
-    expect((await post("10.1.2.3")).statusCode).toBe(403);
+    const get = (remoteAddress: string) =>
+      app.inject({ method: "GET", url: "/api/audit", headers: typed, remoteAddress });
+    expect((await get("127.0.0.1")).statusCode).toBe(200);
+    expect((await get("10.1.2.3")).statusCode).toBe(403);
   });
 
   test("[REQ-054] with a token configured, loopback alone is not enough", async () => {

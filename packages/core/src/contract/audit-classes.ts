@@ -110,7 +110,6 @@ export const AUDIT_CLASSES = {
   getWorld: reads("world.read", "world", "param"),
   createWorld: change("world.create", "world", "response"),
   generateWorld: change("world.generate", "world", "response"),
-  importWorld: change("world.import", "world", "response"),
   updateWorld: change("world.update", "world", "param"),
   deleteWorld: change("world.delete", "world", "param"),
   setWorldScope: change("scope.change", "world", "param"),

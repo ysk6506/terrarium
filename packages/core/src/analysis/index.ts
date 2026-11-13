@@ -102,5 +102,4 @@ export {
   type ToolErrorStats,
   toJsonl,
   toolErrorStats,
-  type WorldGaps,
 } from "./twin";

@@ -16,6 +16,7 @@ import type {
 import type { Blueprint, Domain, LeadTimeSettings } from "@terrarium/core/world";
 import type { Shared } from "./scope";
 
+/** "import" is a world that came from outside as a saved file (kept: older records carry it, and REQ-121 will write it again); nothing here makes one now (ADR-0202). */
 export type WorldOrigin = "builder" | "worldgen" | "import" | "sample" | "template";
 
 export interface WorldRecord extends Shared {
@@ -27,7 +28,7 @@ export interface WorldRecord extends Shared {
   readonly digest: string;
   readonly createdAt: string;
   readonly updatedAt: string;
-  /** How it was made: worldgen spec, import report summary, etc. (shown, not interpreted). */
+  /** How it was made: worldgen spec and the like (shown, not interpreted). An older world may carry a report from the removed import; it is kept and never read (ADR-0202). */
   readonly provenance?: Readonly<Record<string, unknown>>;
   /** The template or world this one was made from (REQ-101); worlds built from scratch have none. */
   readonly startedFrom?: string;

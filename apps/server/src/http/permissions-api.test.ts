@@ -185,14 +185,10 @@ describe("what was open to every signed-in person is for its maker and admins [R
     expect((await send("alice", "POST", own, { label: "v" })).status).toBe(200);
   });
 
-  test("[REQ-054] importing a world from a source is for admins", async () => {
+  test("[REQ-054] reading the audit log is for admins", async () => {
     const { send } = setup();
-    expect((await send("bob", "POST", "/api/worlds/import", { source: "sample" })).status).toBe(
-      403,
-    );
-    expect(
-      (await send("admin-kim", "POST", "/api/worlds/import", { source: "sample" })).status,
-    ).toBe(200);
+    expect((await send("bob", "GET", "/api/audit")).status).toBe(403);
+    expect((await send("admin-kim", "GET", "/api/audit")).status).toBe(200);
   });
 
   test("[REQ-054] an experiment on someone's screen-made connection, created or forked, is for that person and admins; the config file's is open", async () => {

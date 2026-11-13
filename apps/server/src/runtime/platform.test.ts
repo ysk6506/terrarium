@@ -269,7 +269,7 @@ describe("worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034]", 
     await expect(p.worlds.get("w-1")).rejects.toThrow("세계 w-1을 찾을 수 없어요");
   });
 
-  test("worlds come from presets and from reality, with what was assumed", async () => {
+  test("worlds come from site presets", async () => {
     const { platform: p } = testPlatform();
     const generated = await p.worlds.generate(HANEUL, {
       spec: {
@@ -290,20 +290,20 @@ describe("worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034]", 
     });
     expect(generated.world).toMatchObject({ name: "온양사업장 생성 세계", origin: "worldgen" });
     expect(generated.stats.rack).toBe(8);
-    // reading the company's systems with the server's account is for admins
-    await expect(p.worlds.import(HANEUL, { source: "sample" })).rejects.toThrow("관리자만");
-    const imported = await p.worlds.import(ADMIN, { source: "sample" });
-    expect(imported.world).toMatchObject({
-      name: "샘플 그래프 (가상)에서 가져온 세계",
-      origin: "import",
+  });
+
+  test("[REQ-121] a world saved earlier with origin import opens, is renamed and is deleted like any world; no call makes a new one (ADR-0202)", async () => {
+    const { platform: p, store } = testPlatform();
+    const saved = await p.worlds.create(HANEUL, { name: "받은 홀", blueprint: sampleBlueprint() });
+    await store.putWorld({ ...saved.world, origin: "import", provenance: { source: "sample" } });
+    expect((await p.worlds.get(saved.world.id)).origin).toBe("import");
+    const open = await p.worlds.update(HANEUL, saved.world.id, {
+      baseDigest: saved.world.digest,
+      name: "받은 홀 2",
     });
-    expect(imported.report.assumptions.length).toBeGreaterThan(0);
-    await expect(p.worlds.import(ADMIN, { source: "prod-kg" })).rejects.toThrow(
-      "현실 소스 'prod-kg'를 찾을 수 없어요",
-    );
-    await expect(p.worlds.import(ADMIN, { source: "sample", maxEntities: 100 })).rejects.toThrow(
-      "너무 많아요",
-    );
+    expect(open.world).toMatchObject({ name: "받은 홀 2", origin: "import" });
+    expect(await p.worlds.delete(HANEUL, saved.world.id)).toEqual({ deleted: true });
+    expect((p.worlds as unknown as { import?: unknown }).import).toBeUndefined();
   });
 
   test("scenarios: drafts may have problems, templates must fit the world, saves are versioned", async () => {
