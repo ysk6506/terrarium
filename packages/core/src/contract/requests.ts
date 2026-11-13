@@ -149,6 +149,8 @@ export const RecipeBody = z
     operation: OperationSchema.optional(),
     /** How far the agent is entrusted: look only, or act by itself (the default). */
     permission: PermissionSchema.optional(),
+    approval: ApprovalSchema.optional(),
+    verifyWithinSeconds: VerifyWithinSchema.optional(),
     /** The rules the runs are held to, counted from the events and kept apart from the score. */
     rules: RulesSchema.optional(),
   })
@@ -189,6 +191,8 @@ export const ForkBody = z
         leadTimes: LeadTimesSchema.optional(),
         operation: OperationSchema.optional(),
         permission: PermissionSchema.optional(),
+        approval: ApprovalSchema.optional(),
+        verifyWithinSeconds: VerifyWithinSchema.optional(),
         rules: RulesSchema.optional(),
       })
       .strict(),

@@ -44,7 +44,13 @@ export {
   summarizeState,
   type ToolContext,
 } from "./handlers";
-export type { EscalateAnswer, OpsPort, TicketInput, VisibleEvent } from "./handlers-ops";
+export type {
+  ApprovalAnswer,
+  EscalateAnswer,
+  OpsPort,
+  TicketInput,
+  VisibleEvent,
+} from "./handlers-ops";
 export {
   MAX_RUNBOOK_STEPS,
   type ParsedRunbook,

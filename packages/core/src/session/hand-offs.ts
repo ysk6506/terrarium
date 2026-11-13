@@ -14,6 +14,7 @@ import {
 import { Counterparts } from "./counterparts";
 import { visibleSince } from "./ops";
 import type { RunLog } from "./run-events";
+import { Approvals, type ApprovalConfig } from "./trust";
 import { Tickets } from "./tickets";
 
 export interface HandOffsDeps {
@@ -25,11 +26,15 @@ export interface HandOffsDeps {
   readonly originT: () => number;
   /** Whether the ticket tools are on: only then does a hand-off make a ticket by itself. */
   readonly ticketsOn: () => boolean;
+  /** Set at the level `approve` (REQ-124): how approvals are asked and answered, and what the agent has. */
+  readonly approval?: { readonly config: ApprovalConfig; readonly has: (tool: string) => boolean };
 }
 
 export class HandOffs {
   private readonly counterparts: Counterparts;
   private readonly tickets: Tickets;
+  /** Approvals of actions, beside the hand-offs: the other side that answers after a wait (REQ-124); only at the level `approve`. */
+  readonly approvals: Approvals | undefined;
   readonly port: OpsPort;
 
   constructor(readonly deps: HandOffsDeps) {
@@ -70,7 +75,23 @@ export class HandOffs {
           );
       },
     });
+    const { approval } = deps;
+    this.approvals = approval
+      ? new Approvals({
+          world,
+          seed: deps.seed,
+          leadTimes: deps.leadTimes,
+          originT: deps.originT,
+          events: () => log.events,
+          emit: (e) => log.approval(e),
+          ...approval,
+        })
+      : undefined;
+    const approvals = this.approvals;
     this.port = {
+      ...(approvals
+        ? { requestApproval: (tool, target, reason) => approvals.request(tool, target, reason) }
+        : {}),
       escalate: (domain, note) => this.counterparts.escalate(domain, note),
       eventsSince: (cursor) => {
         log.flush();
@@ -84,12 +105,16 @@ export class HandOffs {
 
   /** The next moment something happens on the other side, after `now`. */
   nextWakeAt(now: number): number | undefined {
-    return this.counterparts.nextWakeAt(now);
+    const next = [this.counterparts.nextWakeAt(now), this.approvals?.nextWakeAt(now)].filter(
+      (at): at is number => at !== undefined,
+    );
+    return next.length === 0 ? undefined : Math.min(...next);
   }
 
   /** Do what is due at the world's time. */
   tick(): void {
     this.counterparts.tick();
+    this.approvals?.tick();
   }
 }
 

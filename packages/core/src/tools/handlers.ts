@@ -208,7 +208,7 @@ const getTopology: Handler = (ctx, args) => {
  * a lost host loses its VMs, and a lost cooling unit puts its racks at risk and overheats the servers
  * in them. Redundant feeds are ignored, so this is the worst case.
  */
-export function dependents(ctx: ToolContext, id: string): string[] {
+export function dependents(ctx: Pick<ToolContext, "world">, id: string): string[] {
   const index = ctx.world.index;
   const out = new Set<string>();
   const expanded = new Set<string>([id]);
@@ -245,7 +245,7 @@ const PROPAGATES: ReadonlySet<LinkKind> = new Set<LinkKind>([
  * a CDU or a chilled-water unit whose plant is lost stops cooling what hangs on it, which this follows.
  */
 function coolingLost(
-  ctx: ToolContext,
+  ctx: Pick<ToolContext, "world">,
   consumer: string,
   out: Set<string>,
   fails: (id: string) => void,
@@ -260,7 +260,7 @@ function coolingLost(
 }
 
 /** What cools a device: a server's rack relies on cooling units or CDUs, and those rely on a plant. */
-function coolingOf(ctx: ToolContext, id: string): string[] {
+function coolingOf(ctx: Pick<ToolContext, "world">, id: string): string[] {
   const index = ctx.world.index;
   const entity = index.entity(id);
   const kind = entity.kind;
@@ -273,7 +273,7 @@ function coolingOf(ctx: ToolContext, id: string): string[] {
 }
 
 /** What `id` needs in order to work: the exact inverse of `dependents` for non-container entities. */
-export function dependencies(ctx: ToolContext, id: string): string[] {
+export function dependencies(ctx: Pick<ToolContext, "world">, id: string): string[] {
   const out = new Set<string>();
   const queue = [id];
   for (let node = queue.pop(); node !== undefined; node = queue.pop()) {

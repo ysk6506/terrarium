@@ -61,6 +61,25 @@ export const OPS_SPECS: readonly OpsSpec[] = [
     }),
   },
   {
+    name: "request_approval",
+    title: "승인 요청하기",
+    category: "observe",
+    // it changes nothing itself: the answer comes later as an event, and the call it allows is made with the tool itself
+    mutating: false,
+    optional: true,
+    help: "'승인받고 조치'를 고르면 저절로 켜져요. 승인 규칙에 걸리는 조치는 이 툴로 승인을 받아야 해요.",
+    inputSchema: obj(
+      {
+        tool: str("The tool you want to call, e.g. restart_cooling_unit"),
+        target: str(
+          "The equipment id the call would name; leave it empty only for a call that names no equipment",
+        ),
+        reason: str("Why you want to do it, and what you saw that tells you it is safe"),
+      },
+      ["tool", "target", "reason"],
+    ),
+  },
+  {
     name: "create_ticket",
     title: "작업 티켓 만들기",
     category: "act",
@@ -139,6 +158,21 @@ export const OPS_DOCS: Readonly<Record<string, ToolDoc>> = {
     costWhy: "only what is new",
     details:
       "Returns { cursor, events }. Pass the cursor back next time. Event types: alarm_raised, alarm_cleared, handed (a team has the work), started (an engineer is on site or at the console), done (the fault is gone).",
+  }),
+  request_approval: d({
+    area: "act",
+    realism: "common",
+    summary:
+      "Ask for approval to make one change: say which tool you want to call, on which equipment and why. The answer does not come back now; it arrives later as an event.",
+    use: "a call that changes the world was refused for want of an approval, or you know this experiment asks for approval before a change.",
+    notUse:
+      "the call only looks (no approval is needed), or you already asked for the same tool on the same equipment (the waiting request is told to you instead of a new one).",
+    example:
+      '{"tool":"restart_cooling_unit","target":"crah-1","reason":"The unit is down and its rack is heating; I checked what depends on it"}',
+    cost: "low",
+    costWhy: "one call; the wait itself is world time, not calls",
+    details:
+      "Returns { request, status, message }. The approval or rejection arrives in events_since (approval_approved, approval_rejected) or after wait. An approval is for that tool on that target, for one successful call, for a limited time of world time. A rejection says what was missing. Look at the equipment and check what depends on it (get_impact) before you ask.",
   }),
   create_ticket: d({
     area: "act",

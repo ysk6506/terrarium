@@ -29,6 +29,21 @@ function autoRecovery(e: RunEvent & { kind: "world" }): VisibleEvent | undefined
   return { t: e.t, type: "auto_recovery", text: c.type === "note" ? c.text : autoText(c.type) };
 }
 
+/** The answer to a request for approval, as the agent reads it (REQ-124); the request itself is the agent's own call and stays out. */
+function approvalEvent(e: Extract<RunEvent, { kind: "approval"; what: "answered" }>): VisibleEvent {
+  const approved = e.decision === "approved";
+  return {
+    t: e.t,
+    type: approved ? "approval_approved" : "approval_rejected",
+    text: `요청 ${e.request}(${e.tool}${e.target ? ` · ${e.target}` : ""}): ${e.because}`,
+    request: e.request,
+    tool: e.tool,
+    target: e.target,
+    ...(e.permit ? { expiresAt: e.permit.expiresAt } : {}),
+    ...(e.missing.length > 0 ? { missing: e.missing } : {}),
+  };
+}
+
 export function visibleEvent(
   e: RunEvent,
   nameOf: (id: string) => string,
@@ -47,6 +62,7 @@ export function visibleEvent(
       };
     return { ...base, entity: e.fault.target, fault: e.fault.faultId, type: e.what };
   }
+  if (e.kind === "approval") return e.what === "answered" ? approvalEvent(e) : undefined;
   if (e.kind !== "world") return undefined;
   const c = e.command;
   const auto = autoRecovery(e);

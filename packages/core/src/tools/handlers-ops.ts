@@ -29,6 +29,13 @@ export interface EscalateAnswer {
   }>;
 }
 
+/** What `request_approval` answers: the request's number and where the answer will come (REQ-124). */
+export interface ApprovalAnswer {
+  readonly request: string;
+  readonly status: "waiting" | "approved";
+  readonly message: string;
+}
+
 /** One thing that happened on the other side or in the world, as the agent reads it. */
 export interface VisibleEvent {
   readonly t: number;
@@ -59,6 +66,8 @@ export interface OpsPort {
   createTicket(input: TicketInput & { readonly title: string }): TicketSnapshot;
   updateTicket(id: string, input: TicketInput): TicketSnapshot;
   listTickets(status: TicketStatus | undefined): readonly TicketSnapshot[];
+  /** Ask for an approval of `tool` on `target` (REQ-124); only a session at the level that asks for approvals has it. */
+  requestApproval?(tool: string, target: string, reason: string): ApprovalAnswer;
 }
 
 type Handler = (ctx: ToolContext, args: Args) => unknown;
@@ -105,10 +114,17 @@ const updateTicket: Handler = (ctx, args) => ops(ctx).updateTicket(String(args.i
 
 const listTickets: Handler = (ctx, args) => ops(ctx).listTickets(statusOf(args));
 
+const requestApproval: Handler = (ctx, args) => {
+  const ask = ops(ctx).requestApproval;
+  if (!ask) throw new InvalidValueError("this experiment does not ask for approvals");
+  return ask(String(args.tool), String(args.target), String(args.reason));
+};
+
 export const OPS_HANDLERS: Readonly<Record<string, Handler>> = {
   escalate,
   events_since: eventsSince,
   create_ticket: createTicket,
   update_ticket: updateTicket,
   list_tickets: listTickets,
+  request_approval: requestApproval,
 };

@@ -26,7 +26,6 @@ import {
 } from "@terrarium/core/scenario";
 import {
   type Args,
-  scopeTools,
   Toolbox,
   type ToolContext,
   type ToolResult,
@@ -49,10 +48,14 @@ import {
   effectsSince,
   extrasOf,
   faultSkipper,
+  approvalOf,
+  type CallMark,
   gateAnswer,
+  markOf,
   operationEndOf,
   outsideOf,
   taskFor,
+  toolNamesOf,
   trustOfRun,
   viewsOf,
 } from "./session-parts";
@@ -67,8 +70,6 @@ import {
 } from "./types";
 
 export type { SessionConfig } from "./types";
-
-const ALWAYS_TOOLS = ["submit_diagnosis"];
 
 export class Session {
   readonly world: World;
@@ -102,10 +103,7 @@ export class Session {
     this.log = new RunLog(world, (id) => world.index.find(id)?.name ?? id);
     this.physics = new Physics(world);
     this.time = config.operation ? { kind: "realtime", speed: 1 } : (config.time ?? DEFAULT_TIME);
-    const finder = config.sop === "search" ? ["search_runbooks"] : [];
-    this.toolbox = new Toolbox([
-      ...new Set([...scopeTools(config.tools, config.domains), ...ALWAYS_TOOLS, ...finder]),
-    ]);
+    this.toolbox = new Toolbox(toolNamesOf(config));
     this.handOffs = new HandOffs({
       world,
       log: this.log,
@@ -113,6 +111,7 @@ export class Session {
       leadTimes: config.leadTimes,
       originT: () => this.task?.startedAt ?? world.time(),
       ticketsOn: () => this.toolbox.has("create_ticket"),
+      approval: approvalOf(config, this.toolbox),
     });
     this.recorder = new MetricRecorder(world, {
       sampleSeconds: config.sampleSeconds ?? DEFAULT_RECORDER.sampleSeconds,
@@ -283,19 +282,20 @@ export class Session {
     if (tool === "ask_human" && this.toolbox.has(tool)) return this.line.ask(args, t);
     const before = this.world.lastSeq();
     // the action gate (REQ-123): the one place a call passes before it reaches a tool
-    const denied = gateAnswer(this.config, this.toolbox, tool, args);
-    const result = denied ?? this.toolbox.call(tool, args, this.ctx);
-    return this.conclude(tool, args, result, t, before, denied ? "view" : undefined);
+    const gate = gateAnswer(this.config, this.toolbox, this.handOffs.approvals, { tool, args, t });
+    const result = gate?.stop ?? this.toolbox.call(tool, args, this.ctx);
+    const mark = markOf(gate, result, this.handOffs.approvals);
+    return this.conclude(tool, args, result, t, before, mark);
   }
 
-  /** Write a finished call into the record, with what it did to the world (`blocked`: the gate stopped it). */
+  /** Write a finished call into the record, with what it did to the world (`mark`: why the gate stopped it, or the approvals it used). */
   private record(
     tool: string,
     args: Args,
     result: ToolResult,
     t: number,
     before: number,
-    blocked?: "view",
+    mark?: CallMark,
   ): void {
     const effects = effectsSince(this.world, before);
     if (tool !== "submit_diagnosis") this.spent++;
@@ -307,7 +307,7 @@ export class Session {
       ...(result.error ? { error: result.error } : {}),
       effects,
       ...outsideOf(tool, result),
-      ...(blocked ? { blocked } : {}),
+      ...mark,
     });
     this.log.call(this.calls[this.calls.length - 1] as ToolCallRecord);
   }
@@ -319,9 +319,9 @@ export class Session {
     result: ToolResult,
     t: number,
     before: number,
-    blocked?: "view",
+    mark?: CallMark,
   ): CallResult {
-    this.record(tool, args, result, t, before, blocked);
+    this.record(tool, args, result, t, before, mark);
     if (tool === "submit_diagnosis" && result.ok && !this.operation) {
       this.end("diagnosed");
       return { ...result, t, ended: "diagnosed" };

@@ -40,9 +40,52 @@ export interface ToolEvent extends Stamp {
   readonly targets: readonly string[];
   /** What came of it in a few words: what it changed, or why it failed; empty for a plain look. */
   readonly summary: string;
-  /** Set when the action gate stopped the call before it reached the tool (REQ-123): the world was not touched. */
-  readonly blockedBy?: "view";
+  /** Set when the action gate stopped the call before it reached the tool (REQ-123, REQ-124): the world was not touched. */
+  readonly blockedBy?: BlockedBy;
+  /** The approvals (request ids) this call used up: it went through on them (REQ-124); only a successful call uses one. */
+  readonly permits?: readonly string[];
 }
+
+/**
+ * Why the action gate stopped a call: the level only looks (`view`), or an approval was needed and the agent had none
+ * that fits (`no_permit`), one for another target (`other_target`) or another tool (`other_tool`), one that ran out of
+ * time (`expired`) or one a successful call had already used (`used`).
+ */
+export type BlockedBy = "view" | "no_permit" | "other_target" | "other_tool" | "expired" | "used";
+
+/** What an approver looked for before it approved: a look at the target, and a look at what its failure reaches. */
+export type ApprovalCheck = "look" | "impact";
+
+/**
+ * The approval of an action (REQ-124, ADR-0203): the agent asks (`requested`), and after a wait in world time the
+ * approver answers (`answered`). An approval is a permit for one successful call of that tool on that target until
+ * `permit.expiresAt`; the call that used it carries the request id in its `permits`.
+ */
+export type ApprovalEvent = Stamp & {
+  readonly kind: "approval";
+  /** The request's id: "a1", "a2", in the order they were made. */
+  readonly request: string;
+  readonly tool: string;
+  /** The equipment the call would name; empty for a call that names none. */
+  readonly target: string;
+} & (
+    | { readonly what: "requested"; readonly reason: string }
+    | {
+        readonly what: "answered";
+        readonly decision: "approved" | "rejected";
+        /** Who answered: always approves, approves on evidence, always rejects. */
+        readonly by: "always" | "evidence" | "never";
+        /** The answer in words, as the agent reads it. */
+        readonly because: string;
+        /** What the approver found done before the request, and what was missing. */
+        readonly checked: readonly ApprovalCheck[];
+        readonly missing: readonly ApprovalCheck[];
+        /** World seconds from the request to the answer. */
+        readonly waitedSeconds: number;
+        /** An approval gives a permit; this is when it ends. */
+        readonly permit?: { readonly expiresAt: number };
+      }
+  );
 
 /** Something that happened in the world: a fault, an alarm, a switch flipped. `cause` tells who did it. */
 export interface WorldRunEvent extends Stamp {
@@ -211,4 +254,5 @@ export type RunEvent =
   | HumanEvent
   | CounterpartEvent
   | TicketEvent
-  | LinkEvent;
+  | LinkEvent
+  | ApprovalEvent;

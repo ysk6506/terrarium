@@ -12,14 +12,30 @@ import {
   scoreSop,
   type ToolCallRecord,
 } from "@terrarium/core/scenario";
-import { type Args, runbookPrompt, type Toolbox, type ToolResult } from "@terrarium/core/tools";
-import type { FaultType, RunEvent, World, WorldEvent } from "@terrarium/core/world";
+import {
+  type Args,
+  runbookPrompt,
+  scopeTools,
+  type Toolbox,
+  type ToolResult,
+} from "@terrarium/core/tools";
+import type { BlockedBy, FaultType, RunEvent, World, WorldEvent } from "@terrarium/core/world";
+import type { HandOffsDeps } from "./hand-offs";
 import type { HumanLine } from "./human-line";
 import { HUMAN_CAUSE } from "./human-line";
 import { keySeries } from "./key-series";
 import type { MetricRecorder } from "./recorder";
 import { buildTimeline } from "./timeline";
-import { deniedAnswer, gateStops, rulesOf, trustOf, trustPrompt } from "./trust";
+import {
+  type Approvals,
+  deniedAnswer,
+  type Gate,
+  gateStops,
+  REQUEST_TOOL,
+  rulesOf,
+  trustOf,
+  trustPrompt,
+} from "./trust";
 import type { RunResult, SessionConfig, ShellOutside } from "./types";
 
 /** Background faults that no tool the agent has can reach do not happen when faults are limited to the tools given. */
@@ -118,34 +134,88 @@ export function effectsSince(world: World, before: number) {
   });
 }
 
-/** The task as the agent reads it: the runbook when the experiment gives it, and what it is entrusted with and held to (REQ-123, REQ-125). */
+/** The words about trust in a config: what the task tells and what the result counts by. */
+type TrustConfig = Pick<
+  SessionConfig,
+  "permission" | "rules" | "approval" | "verifyWithinSeconds"
+>;
+
+/** The task as the agent reads it: the runbook when the experiment gives it, and what it is entrusted with and held to (REQ-123, REQ-124, REQ-125). */
 export function taskFor(
   task: AgentTask,
-  config: Pick<SessionConfig, "scenario" | "sop" | "permission" | "rules">,
+  config: Pick<SessionConfig, "scenario" | "sop"> & TrustConfig,
 ): AgentTask {
   const runbook = config.scenario.runbook;
   const given = config.sop === "given" && runbook ? runbookPrompt(runbook) : "";
-  const prompt = task.prompt + given + trustPrompt(config.permission, rulesOf(config));
+  const trust = trustPrompt(config.permission, rulesOf(config), {
+    ...(config.approval ? { approval: config.approval } : {}),
+    ...(config.verifyWithinSeconds ? { verifyWithinSeconds: config.verifyWithinSeconds } : {}),
+  });
+  const prompt = task.prompt + given + trust;
   return prompt === task.prompt ? task : { ...task, prompt };
 }
 
-/** The gate's answer to a call it stops (a level of `view` and a call that changes the world); undefined when the call goes on to the tool. */
+/** The tools a session starts with: the experiment's, within its domains, the one that answers, the runbook finder, and the one that asks for approval at the level that asks for it. */
+export function toolNamesOf(config: SessionConfig): string[] {
+  const finder = config.sop === "search" ? ["search_runbooks"] : [];
+  const asks = config.permission === "approve" ? [REQUEST_TOOL] : [];
+  const mine = scopeTools(config.tools, config.domains).filter((t) => t !== REQUEST_TOOL);
+  return [...new Set([...mine, "submit_diagnosis", ...finder, ...asks])];
+}
+
+/** How the approvals are asked and answered: only at the level `approve`, and only when the experiment said who approves. */
+export function approvalOf(
+  config: Pick<SessionConfig, "permission" | "approval">,
+  toolbox: Toolbox,
+): HandOffsDeps["approval"] {
+  return config.permission === "approve" && config.approval
+    ? { config: config.approval, has: (tool) => toolbox.has(tool) }
+    : undefined;
+}
+
+/** What a call carries into the record: the reason the gate stopped it, or the approvals it went through on. */
+export interface CallMark {
+  readonly blocked?: BlockedBy;
+  readonly permits?: readonly string[];
+}
+
+/**
+ * The gate's decision on a call (REQ-123, REQ-124): a stop (a level of `view`, or an approval that is missing) with
+ * the answer the agent gets in place of the tool's, the approvals the call goes through on, or nothing when the call
+ * goes on to the tool as it always did.
+ */
 export function gateAnswer(
   config: Pick<SessionConfig, "permission">,
   toolbox: Toolbox,
-  tool: string,
-  args: Args,
-): ToolResult | undefined {
+  approvals: Approvals | undefined,
+  call: { readonly tool: string; readonly args: Args; readonly t: number },
+): Gate | undefined {
   const has = (name: string) => toolbox.has(name);
-  return gateStops(config.permission, has, tool, args) ? deniedAnswer(has) : undefined;
+  const { tool, args, t } = call;
+  if (gateStops(config.permission, has, tool, args))
+    return { stop: deniedAnswer(has), blocked: "view", permits: [] };
+  return approvals && has(tool) ? approvals.check(tool, args, t) : undefined;
+}
+
+/** What the call leaves in the record, once it has been made: a stopped call its reason, a successful call the approvals it used up (a failed one uses none). */
+export function markOf(
+  gate: Gate | undefined,
+  result: ToolResult,
+  approvals: Approvals | undefined,
+): CallMark | undefined {
+  if (!gate) return undefined;
+  if (gate.blocked) return { blocked: gate.blocked };
+  if (!result.ok || gate.permits.length === 0) return undefined;
+  approvals?.use(gate.permits);
+  return { permits: gate.permits };
 }
 
 /** What the run shows of its level and rules, counted from its events (nothing when the experiment chose neither). */
-export const trustOfRun = (
-  config: Pick<SessionConfig, "permission" | "rules">,
-  events: readonly RunEvent[],
-): Pick<RunResult, "trust"> => {
-  const trust = trustOf(events, config.permission, rulesOf(config));
+export const trustOfRun = (config: TrustConfig, events: readonly RunEvent[]): Pick<RunResult, "trust"> => {
+  const trust = trustOf(events, config.permission, rulesOf(config), {
+    ...(config.approval ? { approval: config.approval } : {}),
+    ...(config.verifyWithinSeconds ? { verifyWithinSeconds: config.verifyWithinSeconds } : {}),
+  });
   return trust ? { trust } : {};
 };
 

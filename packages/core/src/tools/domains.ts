@@ -21,6 +21,7 @@ export const TOOL_DOMAIN: Readonly<Record<string, ToolDomain>> = {
   submit_diagnosis: "common",
   events_since: "common",
   escalate: "common",
+  request_approval: "common",
   create_ticket: "common",
   update_ticket: "common",
   list_tickets: "common",

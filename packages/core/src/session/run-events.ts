@@ -17,6 +17,7 @@ import type {
 } from "@terrarium/core/world";
 import type { CounterpartDraft } from "./counterparts";
 import type { TicketDraft } from "./tickets";
+import type { ApprovalDraft } from "./trust";
 
 /** A person's event as it is written: the log numbers it. */
 type HumanInput = HumanEvent extends infer E ? (E extends unknown ? Omit<E, "seq"> : never) : never;
@@ -99,6 +100,7 @@ export class RunLog {
       targets: callTargets(call.tool, call.args),
       summary: summaryOf(call, this.nameOf),
       ...(call.blocked ? { blockedBy: call.blocked } : {}),
+      ...(call.permits ? { permits: call.permits } : {}),
     };
     const at = this.list.length + before.length;
     const gaps: GapEvent[] = (call.gaps ?? []).map((g) => ({
@@ -119,6 +121,11 @@ export class RunLog {
 
   /** The other side of a hand-off did something (REQ-093): the world events up to it come first. */
   counterpart(e: CounterpartDraft): void {
+    this.waiting.push({ ...e, seq: 0 } as RunEvent);
+  }
+
+  /** An approval was asked for or answered (REQ-124): the world events up to it come first. */
+  approval(e: ApprovalDraft): void {
     this.waiting.push({ ...e, seq: 0 } as RunEvent);
   }
 

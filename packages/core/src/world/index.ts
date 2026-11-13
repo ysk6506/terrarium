@@ -136,7 +136,7 @@ export {
   unitHeightM,
 } from "./geometry";
 export { BlueprintIndex } from "./graph";
-export { DB_PROCESS, hostOsOf } from "./host-os";
+export { DB_PROCESS, hostOsOf, servicesOnHost } from "./host-os";
 export {
   ALARM_TOOLS,
   type AlarmLife,
@@ -200,6 +200,8 @@ export { LAND_MARKETS, landMarket, PYEONG_M2, parcelPriceM } from "./land";
 export {
   type Clock,
   clockAt,
+  APPROVAL_LEAD,
+  approvalRange,
   DEFAULT_LEAD_SETTINGS,
   describeLeadSettings,
   formatSpan,
@@ -289,6 +291,9 @@ export {
   shapesOverlap,
 } from "./room-shape";
 export type {
+  ApprovalCheck,
+  ApprovalEvent,
+  BlockedBy,
   CounterpartEvent,
   GapEvent,
   HandedFault,

@@ -104,6 +104,7 @@ export const TARGET_ARGS: Readonly<Record<string, readonly string[]>> = {
   ingress_restart: ["ingress"],
   escalate: [],
   events_since: [],
+  request_approval: [],
   create_ticket: [],
   update_ticket: [],
   list_tickets: [],

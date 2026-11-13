@@ -382,8 +382,21 @@ export const DomainsSchema = z
   .max(6)
   .refine((d) => new Set(d).size === d.length, { message: "같은 도메인이 두 번 들어 있어요" });
 
-/** How far an experiment entrusts the agent (REQ-123): look only, or act by itself (the default). */
-export const PermissionSchema = z.enum(["view", "act"]);
+/** How far an experiment entrusts the agent (REQ-123, REQ-124): look only, ask for approval first, or act by itself (the default). */
+export const PermissionSchema = z.enum(["view", "approve", "act"]);
+
+/** What the level `approve` needs (REQ-124): which changes need an approval and who approves; the numbers fall back to the defaults. */
+export const ApprovalSchema = z
+  .object({
+    rule: z.enum(["all", "service_reach"]),
+    approver: z.enum(["always", "evidence", "never"]),
+    permitSeconds: z.number().int().min(60).max(86_400).optional(),
+    leadSeconds: z.number().int().min(60).max(172_800).optional(),
+  })
+  .strict();
+
+/** World seconds within which `verify_after` wants a second look (default 600). */
+export const VerifyWithinSchema = z.number().int().min(60).max(86_400);
 
 /** The rules an experiment is held to (REQ-125): a closed list, each once. */
 export const RulesSchema = z

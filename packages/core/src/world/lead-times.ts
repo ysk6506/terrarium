@@ -339,6 +339,29 @@ export function workWindow(kind: WorkKind): { readonly seconds: number; readonly
   return { seconds: 10 * M, onSite: false };
 }
 
+// ---------- the approval row (REQ-124, ADR-0203) ----------
+
+/**
+ * How long somebody takes to answer a request for approval: a row of the table beside the faults', in the same shape
+ * (minimum, typical and maximum, a log-normal drawn from the run's seed). Short in working hours, long at night and on
+ * a weekend, when the one who approves has to be reached. The experiment's `afterHours` setting, which scales the
+ * on-site work, decides whether the long row is used at all.
+ */
+export const APPROVAL_LEAD: { readonly day: Range; readonly after: Range } = {
+  day: [10 * M, 30 * M, 2 * H],
+  after: [1 * H, 4 * H, 12 * H],
+};
+
+/** The range an approval asked for at `at` takes under the experiment's settings. */
+export function approvalRange(
+  settings: LeadTimeSettings | undefined,
+  at: Clock,
+): Pick<LeadRange, "min" | "typ" | "max"> & { readonly afterHours: boolean } {
+  const afterHours = resolveLeadSettings(settings).afterHours && isAfterHours(at);
+  const [min, typ, max] = afterHours ? APPROVAL_LEAD.after : APPROVAL_LEAD.day;
+  return { min, typ, max, afterHours };
+}
+
 /** "4시간 10분", "1일 2시간": days when it is a day or more, else the usual hours and minutes. */
 export function formatSpan(seconds: number): string {
   const total = Math.max(0, Math.round(seconds));

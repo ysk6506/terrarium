@@ -1,7 +1,12 @@
 /** Evaluating and describing conditions. Shared by the runner (branch, wait_until) and the oracle. */
 import { josa } from "@terrarium/core/kernel";
 import type { Diagnosis } from "@terrarium/core/tools";
-import type { BlueprintIndex, WorldCommand, WorldReader } from "@terrarium/core/world";
+import type {
+  BlockedBy,
+  BlueprintIndex,
+  WorldCommand,
+  WorldReader,
+} from "@terrarium/core/world";
 import { CONDITION_FIELDS } from "./blocks";
 import { EVENT_LABELS, eventTarget, isEventType } from "./events";
 import {
@@ -29,8 +34,10 @@ export interface ToolCallRecord {
   readonly outside?: readonly string[];
   /** The emulation gaps this call hit (ADR-0184): stable keys, no free text. */
   readonly gaps?: readonly { readonly tool: string; readonly feature: string }[];
-  /** Set when the action gate stopped the call before it reached the tool (REQ-123); `view` is the level that did. */
-  readonly blocked?: "view";
+  /** Set when the action gate stopped the call before it reached the tool (REQ-123, REQ-124): `view` is the level, the rest are missing approvals. */
+  readonly blocked?: BlockedBy;
+  /** The approvals (request ids) the call used up (REQ-124). */
+  readonly permits?: readonly string[];
 }
 
 const SIMPLE_ACTIONS: Partial<Record<WorldCommand["type"], ActionKind>> = {

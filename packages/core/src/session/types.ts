@@ -20,7 +20,7 @@ import type { EscalationPolicy, HumanRequest, HumanSummary } from "./human";
 import type { OperationConfig, OperationMetrics } from "./operation";
 import type { MetricSeries } from "./recorder";
 import type { TimelineEntry } from "./timeline";
-import type { PermissionLevel, TrustResult, TrustRule } from "./trust";
+import type { ApprovalConfig, PermissionLevel, TrustResult, TrustRule } from "./trust";
 import type { WarmStartCache } from "./warm";
 
 export type TimePolicy =
@@ -80,6 +80,10 @@ export interface SessionConfig {
   readonly permission?: PermissionLevel;
   /** The rules the run is held to (REQ-125); they are counted from the events and never change the score. Unset: none. */
   readonly rules?: readonly TrustRule[];
+  /** With the level `approve` (REQ-124, ADR-0203): which changes need an approval and who approves. Unset at any other level. */
+  readonly approval?: ApprovalConfig;
+  /** World seconds `verify_after` allows (default 600); only with that rule. */
+  readonly verifyWithinSeconds?: number;
 }
 
 /** Whether the agent gets the team's runbook (ADR-0087 item 6): not at all, in its task, or by searching for it. */
