@@ -19,7 +19,8 @@ import type { Shelled } from "./deep-os-lab";
 /** One engine for a whole test file: the module is compiled once and the workers are kept. */
 let shared: WasmShellEngine | undefined;
 export const sharedEngine = (): WasmShellEngine => {
-  shared ??= new WasmShellEngine();
+  // a generous wall-clock net: a loaded machine must never reach it in a test about counted limits
+  shared ??= new WasmShellEngine({ wallClockMs: 60_000 });
   return shared;
 };
 
@@ -55,7 +56,8 @@ export function engineLab(o: EngineLabOptions = {}) {
           : Math.max(0, Math.min(3600, (o.remaining ?? 1e9) - (world.time() - started))),
       advance: (s) => physics.run(s),
     },
-    ...(o.limits ? { limits: o.limits } : {}),
+    // smaller than the default on purpose: the counted limit comes long before any wall-clock net, however slow the machine
+    limits: { steps: 5000, ...o.limits },
     observe: (line, result) => results.push({ line, result }),
   };
   const ctx = { world, facades: {} as Facades, shell: plug };
