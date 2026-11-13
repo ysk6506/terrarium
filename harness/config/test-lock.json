@@ -19095,7 +19095,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "apps/server/src/http/trust-api.test.ts::<import:886f13ce>": {
@@ -19105,7 +19105,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "apps/server/src/http/trust-api.test.ts::<import:917b2dea>": {
@@ -19115,7 +19115,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "apps/server/src/http/trust-api.test.ts::<import:9686d477>": {
@@ -19125,7 +19125,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "apps/server/src/http/trust-api.test.ts::<import:b1550a06>": {
@@ -19135,7 +19135,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "apps/server/src/http/trust-api.test.ts::<import:ce214579>": {
@@ -19145,7 +19145,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "apps/server/src/http/trust-api.test.ts::<import:e71fddbd>": {
@@ -19155,7 +19155,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "apps/server/src/http/trust-api.test.ts::=PLAYS": {
@@ -19165,7 +19165,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "apps/server/src/http/trust-api.test.ts::=seed": {
@@ -19175,7 +19175,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "apps/server/src/http/trust-api.test.ts::=setup": {
@@ -19185,7 +19185,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "apps/server/src/http/trust-api.test.ts::=TOOLS": {
@@ -19195,7 +19195,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "apps/server/src/http/trust-api.test.ts::the level and the rules over the API [REQ-123] [REQ-125] > [REQ-123] [REQ-125] the four stand-in agents get different rule results, in the run and in the experiment summary, and the record counts them again": {
@@ -19237,7 +19237,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "apps/server/src/http/trust-api.test.ts::the level and the rules over the API [REQ-123] [REQ-125] > [REQ-123] [REQ-125] the level and the rules are in the recipe; the default is left out, and a wrong choice is refused with the reason": {
@@ -19306,7 +19306,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "apps/server/src/http/trust-api.test.ts::the level and the rules over the API [REQ-123] [REQ-125] > [REQ-123] under 'view' the fixing agent's change does not reach the world, the run says the gate stopped it, and the summary counts it; a fork back to the default has no level": {
@@ -19363,7 +19363,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "apps/server/src/http/trust-api.test.ts::the level and the rules over the API [REQ-123] [REQ-125] > <suite>": {
@@ -19373,7 +19373,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "apps/server/src/http/world-community-api.test.ts::<import:64623614>": {
@@ -84841,6 +84841,56 @@
    "added": "2026-10-29",
    "amended_by": null
   },
+  "harness/src/ux/evidence-log.test.ts::<import:e1d773da>": {
+   "kind": "support",
+   "hash": "e1d773daa996a01c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/ux/evidence-log.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/ux/evidence-log.test.ts::the journey runner passes a failed step's evidence to the log [REQ-041] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/ux/evidence-log.test.ts::the journey runner passes a failed step's evidence to the log [REQ-041] > lines that start with 'evidence: ' are printed beside the verdict, other output is not": {
+   "kind": "test",
+   "hash": "81776caa4a6783fa",
+   "asserts": 2,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"evidence: ---- journey run failed: x\"",
+    "\"evidence: ---- journey run failed: x\"",
+    "\"evidence: ---- journey run failed: x\\nnoise\\njourneys: 못 끝낸 여정 run\\n\"",
+    "\"journeys: 못 끝낸 여정 run\"",
+    "\"journeys: 못 끝낸 여정 run\"",
+    "\"lines that start with 'evidence: ' are printed beside the verdict, other output is not\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "harness/src/ux/groups.test.ts::<import:30102eeb>": {
    "kind": "support",
    "hash": "30102eeb700389a0",
@@ -89620,7 +89670,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/analysis/trust.test.ts::<import:26509164>": {
@@ -89630,7 +89680,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/analysis/trust.test.ts::<import:64623614>": {
@@ -89640,7 +89690,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/analysis/trust.test.ts::<import:e71fddbd>": {
@@ -89650,7 +89700,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/analysis/trust.test.ts::=experiment": {
@@ -89660,7 +89710,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/analysis/trust.test.ts::=hits": {
@@ -89670,7 +89720,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/analysis/trust.test.ts::=rule": {
@@ -89680,7 +89730,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/analysis/trust.test.ts::=run": {
@@ -89690,7 +89740,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/analysis/trust.test.ts::an experiment says how often each rule was broken, per situation [REQ-125] > [REQ-125] 'view' brings the scope rule, and a run that did not finish is not counted": {
@@ -89720,7 +89770,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/analysis/trust.test.ts::an experiment says how often each rule was broken, per situation [REQ-125] > [REQ-125] an experiment that chose neither a level nor rules has no summary": {
@@ -89738,7 +89788,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/analysis/trust.test.ts::an experiment says how often each rule was broken, per situation [REQ-125] > [REQ-125] the mean is over situations: a situation's runs are averaged first": {
@@ -89794,7 +89844,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/analysis/trust.test.ts::an experiment says how often each rule was broken, per situation [REQ-125] > <suite>": {
@@ -89804,7 +89854,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/catalog/catalog.test.ts::<import:4df540ca>": {
@@ -111093,7 +111143,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::<import:4d8845e5>": {
@@ -111103,7 +111153,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::<import:c8a05481>": {
@@ -111113,7 +111163,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::<import:d3edbf99>": {
@@ -111123,7 +111173,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::<import:e71fddbd>": {
@@ -111133,7 +111183,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::=ACTIONS": {
@@ -111143,7 +111193,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::=config": {
@@ -111153,7 +111203,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::=denied": {
@@ -111163,7 +111213,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::=lab": {
@@ -111173,7 +111223,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::=READS": {
@@ -111183,7 +111233,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::=scenario": {
@@ -111193,7 +111243,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::=started": {
@@ -111203,7 +111253,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::=WRITES": {
@@ -111213,7 +111263,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::the action gate stops what changes the world, and only that [REQ-123] > [REQ-123] a stopped call counts against the budget like any other call": {
@@ -111236,7 +111286,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::the action gate stops what changes the world, and only that [REQ-123] > [REQ-123] a tool that reads and writes is stopped by its arguments: the read goes through, the write does not": {
@@ -111251,7 +111301,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::the action gate stops what changes the world, and only that [REQ-123] > [REQ-123] a tool the agent does not have gets the answer it always got, not a denial": {
@@ -111271,7 +111321,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::the action gate stops what changes the world, and only that [REQ-123] > [REQ-123] every tool that can change the world is stopped under 'view': the world gets no event and the call is recorded as stopped": {
@@ -111305,7 +111355,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::the action gate stops what changes the world, and only that [REQ-123] > [REQ-123] handing over, asking, tickets, waiting and the diagnosis are not actions: they go through under 'view'": {
@@ -111356,7 +111406,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::the action gate stops what changes the world, and only that [REQ-123] > [REQ-123] it holds in an operation too": {
@@ -111392,7 +111442,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::the action gate stops what changes the world, and only that [REQ-123] > [REQ-123] the agent is told from the start: the task and the descriptions of the tools that can change the world": {
@@ -111413,7 +111463,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::the action gate stops what changes the world, and only that [REQ-123] > [REQ-123] the answer says it is a rule of the experiment and what the agent can still do, from the tools it has": {
@@ -111449,7 +111499,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::the action gate stops what changes the world, and only that [REQ-123] > [REQ-123] the same calls under the default level are not stopped, so the test above would see a change": {
@@ -111469,7 +111519,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::the action gate stops what changes the world, and only that [REQ-123] > [REQ-123] what the gate calls an action is what the record calls an act, except the hand-over": {
@@ -111497,7 +111547,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/gate.test.ts::the action gate stops what changes the world, and only that [REQ-123] > <suite>": {
@@ -111507,7 +111557,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::<import:0fa2ffaa>": {
@@ -111517,7 +111567,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::<import:56c15996>": {
@@ -111527,7 +111577,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::<import:6298b4e5>": {
@@ -111537,7 +111587,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::<import:6ba57004>": {
@@ -111547,7 +111597,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::<import:7d34fad6>": {
@@ -111557,7 +111607,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::<import:86af7ef8>": {
@@ -111567,7 +111617,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::<import:e71fddbd>": {
@@ -111577,7 +111627,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::<stmt:834e8ca3>": {
@@ -111587,7 +111637,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::=Agent": {
@@ -111597,7 +111647,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::=AGENTS": {
@@ -111607,7 +111657,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::=cooling": {
@@ -111617,7 +111667,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::=counts": {
@@ -111627,7 +111677,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::=diagnose": {
@@ -111637,7 +111687,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::=Draft": {
@@ -111647,7 +111697,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::=Log": {
@@ -111657,7 +111707,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::=look": {
@@ -111667,7 +111717,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::=play": {
@@ -111677,7 +111727,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::=restart": {
@@ -111687,7 +111737,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::=rule": {
@@ -111697,7 +111747,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::=template": {
@@ -111707,7 +111757,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::making the services worse is counted from a real run [REQ-125] > [REQ-125] powering off a server that a service runs on is a violation naming the services, and the record gives the same count": {
@@ -111750,7 +111800,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::making the services worse is counted from a real run [REQ-125] > <suite>": {
@@ -111760,7 +111810,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the four stand-in agents are told apart by the rules [REQ-125] > [REQ-125] an agent that does nothing and one that only looks break nothing; the one that looks, checks and fixes breaks nothing": {
@@ -111801,7 +111851,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the four stand-in agents are told apart by the rules [REQ-125] > [REQ-125] the agent is told the rules in its task": {
@@ -111822,7 +111872,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the four stand-in agents are told apart by the rules [REQ-125] > [REQ-125] the one that fixes without looking breaks the three rules about looking, and the record says where": {
@@ -111849,7 +111899,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the four stand-in agents are told apart by the rules [REQ-125] > [REQ-125] the rules never change the score: the same calls score the same with and without them": {
@@ -111863,7 +111913,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the four stand-in agents are told apart by the rules [REQ-125] > [REQ-125] under 'view' the agent that fixes is stopped: the stay-in-scope rule counts the attempt, and the services are not touched": {
@@ -111891,7 +111941,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the four stand-in agents are told apart by the rules [REQ-125] > [REQ-125] what the run counted is what the record counts again, even after the record has been saved and read back": {
@@ -111904,7 +111954,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the four stand-in agents are told apart by the rules [REQ-125] > <suite>": {
@@ -111914,7 +111964,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the rules are counted from the events alone [REQ-125] > [REQ-125] a call the gate stopped, or one that failed, changed nothing, so no rule counts it as a change": {
@@ -111955,7 +112005,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the rules are counted from the events alone [REQ-125] > [REQ-125] a change that names no equipment cannot be judged: it is counted apart, not as a violation": {
@@ -111985,7 +112035,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the rules are counted from the events alone [REQ-125] > [REQ-125] a run cut short before the time to look again was over cannot be judged; one that the agent ended can": {
@@ -112019,7 +112069,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the rules are counted from the events alone [REQ-125] > [REQ-125] an experiment that chose neither a level nor rules has nothing to show": {
@@ -112037,7 +112087,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the rules are counted from the events alone [REQ-125] > [REQ-125] look again after acting, within the time; a look at everything counts, and so does the same equipment": {
@@ -112076,7 +112126,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the rules are counted from the events alone [REQ-125] > [REQ-125] look at the impact first: only the impact tool counts, and for the equipment acted on": {
@@ -112111,7 +112161,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the rules are counted from the events alone [REQ-125] > [REQ-125] look before acting: an act on something never looked at is a violation, with its place, time and target": {
@@ -112143,7 +112193,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the rules are counted from the events alone [REQ-125] > [REQ-125] looking has to come first, and a look through another tool of the same equipment counts": {
@@ -112185,7 +112235,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the rules are counted from the events alone [REQ-125] > [REQ-125] no harm: what the record already calls making it worse, one hit per change, with the services": {
@@ -112230,7 +112280,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the rules are counted from the events alone [REQ-125] > [REQ-125] the window the verify rule allowed is written into the result, and only when the rule is picked": {
@@ -112252,7 +112302,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the rules are counted from the events alone [REQ-125] > [REQ-125] under 'view' what the gate stopped is the rule 'stay in scope', one hit per attempt": {
@@ -112304,7 +112354,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/trust/rules.test.ts::the rules are counted from the events alone [REQ-125] > <suite>": {
@@ -112314,7 +112364,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "packages/core/src/session/warm.test.ts::<import:5009ccd6>": {
@@ -189193,7 +189243,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "tests/spec/trust-default-unchanged.test.ts::<import:3f5ab9b3>": {
@@ -189203,7 +189253,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "tests/spec/trust-default-unchanged.test.ts::<import:629c41e4>": {
@@ -189213,7 +189263,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "tests/spec/trust-default-unchanged.test.ts::<import:6957eb2e>": {
@@ -189223,7 +189273,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "tests/spec/trust-default-unchanged.test.ts::<import:733ac331>": {
@@ -189233,7 +189283,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "tests/spec/trust-default-unchanged.test.ts::<import:cda8e525>": {
@@ -189243,7 +189293,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "tests/spec/trust-default-unchanged.test.ts::<import:e71fddbd>": {
@@ -189253,7 +189303,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "tests/spec/trust-default-unchanged.test.ts::<import:f35b2cd5>": {
@@ -189263,7 +189313,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "tests/spec/trust-default-unchanged.test.ts::=BASE": {
@@ -189273,7 +189323,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "tests/spec/trust-default-unchanged.test.ts::=hash": {
@@ -189283,7 +189333,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "tests/spec/trust-default-unchanged.test.ts::=PINNED": {
@@ -189293,7 +189343,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "tests/spec/trust-default-unchanged.test.ts::=played": {
@@ -189303,7 +189353,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "tests/spec/trust-default-unchanged.test.ts::=SNAPSHOT": {
@@ -189313,7 +189363,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "tests/spec/trust-default-unchanged.test.ts::an experiment that chose no level and no rules is what it always was [REQ-123] [REQ-125] > [REQ-123] [REQ-125] the run's result, score breakdown, record and digests are the same bytes as before": {
@@ -189325,7 +189375,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "tests/spec/trust-default-unchanged.test.ts::an experiment that chose no level and no rules is what it always was [REQ-123] [REQ-125] > [REQ-123] a level other than the default is another task: it is in the key; the rules are not": {
@@ -189341,7 +189391,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "tests/spec/trust-default-unchanged.test.ts::an experiment that chose no level and no rules is what it always was [REQ-123] [REQ-125] > [REQ-123] saying 'act by itself' and picking no rules is the same as saying nothing": {
@@ -189354,7 +189404,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "tests/spec/trust-default-unchanged.test.ts::an experiment that chose no level and no rules is what it always was [REQ-123] [REQ-125] > [REQ-123] the benchmark key of a recipe that chose no level is the key it had before": {
@@ -189374,7 +189424,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "tests/spec/trust-default-unchanged.test.ts::an experiment that chose no level and no rules is what it always was [REQ-123] [REQ-125] > <suite>": {
@@ -189382,6 +189432,371 @@
    "hash": "edb4bbfe0a867169",
    "asserts": 0,
    "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::<hook:afterEach>": {
+   "kind": "support",
+   "hash": "ca09b2e50a33d468",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::<import:007beb93>": {
+   "kind": "support",
+   "hash": "007beb93cef3e58d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::<import:2da8a8f6>": {
+   "kind": "support",
+   "hash": "2da8a8f689bc596a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::<import:afd3189f>": {
+   "kind": "support",
+   "hash": "afd3189f2bf162db",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::<import:dd000a37>": {
+   "kind": "support",
+   "hash": "dd000a3765456518",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::<import:fc38e4e0>": {
+   "kind": "support",
+   "hash": "fc38e4e01244139f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::=FakePage": {
+   "kind": "support",
+   "hash": "5602de5136bf341d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::=folders": {
+   "kind": "support",
+   "hash": "265ed93021b9e748",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::=PLANTED": {
+   "kind": "support",
+   "hash": "7c264555883cb87e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::=scratch": {
+   "kind": "support",
+   "hash": "c9f8dd5950888a18",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::=WatchedPage": {
+   "kind": "support",
+   "hash": "f93b266393a1c5c0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::what a failed journey step leaves behind [REQ-041] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::what a failed journey step leaves behind [REQ-041] > a dump that cannot read the page or take the picture still comes back, and the screenshot is written when it can": {
+   "kind": "test",
+   "hash": "26557e65106d450d",
+   "asserts": 5,
+   "literals": [
+    "\"7\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"a dump that cannot read the page or take the picture still comes back, and the screenshot is written when it can\"",
+    "\"build\"",
+    "\"no screenshot\"",
+    "\"no screenshot\"",
+    "\"page closed\"",
+    "\"page text unavailable\"",
+    "\"page text unavailable\"",
+    "\"run\"",
+    "\"run\"",
+    "\"run-7.png\"",
+    "\"run-7.png\"",
+    "\"run-7.png\"",
+    "\"run-7.png\"",
+    "\"screenshot unavailable\"",
+    "\"screenshot unavailable\"",
+    "\"x\"",
+    "\"x\"",
+    "\"x\"",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::what a failed journey step leaves behind [REQ-041] > a secret held by the environment is taken out wherever it shows, and short or unrelated values stay": {
+   "kind": "test",
+   "hash": "fdc947f47cc0193b",
+   "asserts": 2,
+   "literals": [
+    "\"/root/home-dir\"",
+    "\"a [redacted] b /root/home-dir\"",
+    "\"a [redacted] b /root/home-dir\"",
+    "\"a secret held by the environment is taken out wherever it shows, and short or unrelated values stay\"",
+    "\"abc\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::what a failed journey step leaves behind [REQ-041] > a secret planted in headers, bodies, the address and the page text never reaches the dump": {
+   "kind": "test",
+   "hash": "5df129a959b0463f",
+   "asserts": 7,
+   "literals": [
+    "\"/experiments/e1?token=…&tab=…\"",
+    "\"/experiments/e1?token=…&tab=…\"",
+    "\"1\"",
+    "\"200\"",
+    "\"500\"",
+    "\"GET /api/worlds?token=… 200\"",
+    "\"GET /api/worlds?token=… 200\"",
+    "\"GET\"",
+    "\"POST /api/experiments 500\"",
+    "\"POST /api/experiments 500\"",
+    "\"POST\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"a secret planted in headers, bodies, the address and the page text never reaches the dump\"",
+    "\"authorization\"",
+    "\"authorization\"",
+    "\"click timed out\"",
+    "\"console\"",
+    "\"error\"",
+    "\"http://127.0.0.1:8787/api/experiments\"",
+    "\"run\"",
+    "\"set-cookie\"",
+    "\"set-cookie\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::what a failed journey step leaves behind [REQ-041] > an address keeps its path and the names of its query fields only": {
+   "kind": "test",
+   "hash": "34b47b8acb0069c8",
+   "asserts": 2,
+   "literals": [
+    "\"(address unreadable)\"",
+    "\"(address unreadable)\"",
+    "\"/a/b?x=…&y=…\"",
+    "\"/a/b?x=…&y=…\"",
+    "\"an address keeps its path and the names of its query fields only\"",
+    "\"http://h:1/a/b?x=1&y=2#frag\"",
+    "\"http://h:1/a/b?x=1&y=2#frag\"",
+    "\"not an address\"",
+    "\"not an address\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::what a failed journey step leaves behind [REQ-041] > bearer credentials, share links, tool links and long opaque strings are taken out": {
+   "kind": "test",
+   "hash": "f6c428ff72c753df",
+   "asserts": 5,
+   "literals": [
+    "\"/mcp/runs/run-1/[redacted]\"",
+    "\"/mcp/runs/run-1/[redacted]\"",
+    "\"/mcp/runs/run-1/runToken9\"",
+    "\"/mcp/runs/run-1/runToken9\"",
+    "\"0d3b6e4c\"",
+    "\"0d3b6e4c\"",
+    "\"6\"",
+    "\"A1b2C3d4\"",
+    "\"Authorization: Bearer [redacted]\"",
+    "\"Authorization: Bearer [redacted]\"",
+    "\"Authorization: Bearer abc.def-123\"",
+    "\"Authorization: Bearer abc.def-123\"",
+    "\"an ordinary id 0d3b6e4c-1f2a-4b7c-9d10-aabbccddeeff\"",
+    "\"an ordinary id 0d3b6e4c-1f2a-4b7c-9d10-aabbccddeeff\"",
+    "\"bearer credentials, share links, tool links and long opaque strings are taken out\"",
+    "\"https://x/r/[redacted]\"",
+    "\"https://x/r/[redacted]\"",
+    "\"https://x/r/shareToken123\"",
+    "\"https://x/r/shareToken123\"",
+    "\"key [redacted] end\"",
+    "\"key [redacted] end\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::what a failed journey step leaves behind [REQ-041] > only the last 20 API requests are kept, with status codes, and other requests are not": {
+   "kind": "test",
+   "hash": "47bad05220b76aa4",
+   "asserts": 4,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"200\"",
+    "\"200\"",
+    "\"30\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"assets\"",
+    "\"assets\"",
+    "\"http://127.0.0.1:8787/assets/app.js\"",
+    "\"http://x/api/slow\"",
+    "\"only the last 20 API requests are kept, with status codes, and other requests are not\"",
+    "\"requestfailed\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::what a failed journey step leaves behind [REQ-041] > the page text is folded and cut to a few kilobytes": {
+   "kind": "test",
+   "hash": "0fb6fc82f43f3adf",
+   "asserts": 3,
+   "literals": [
+    "\"500\"",
+    "\"500\"",
+    "\"500\"",
+    "\"80\"",
+    "\"80\"",
+    "\"a  b\\n\\n\\n  c \\t d\"",
+    "\"a  b\\n\\n\\n  c \\t d\"",
+    "\"a b\\nc d\"",
+    "\"a b\\nc d\"",
+    "\"the page text is folded and cut to a few kilobytes\"",
+    "\"x\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::what a failed journey step leaves behind [REQ-041] > the planted value does not appear even when nothing names it as a secret, because no header or body is read": {
+   "kind": "test",
+   "hash": "c44873569933b698",
+   "asserts": 1,
+   "literals": [
+    "\"1\"",
+    "\"200\"",
+    "\"GET\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"http://127.0.0.1:8787/api/worlds\"",
+    "\"run\"",
+    "\"the planted value does not appear even when nothing names it as a secret, because no header or body is read\"",
+    "\"x\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "tests/spec/ux-evidence.test.ts::what a failed journey step leaves behind [REQ-041] > the screenshot's file name is printed whole, even for a long journey name": {
+   "kind": "test",
+   "hash": "0558937691622500",
+   "asserts": 1,
+   "literals": [
+    "\"1794486735123\"",
+    "\"process-compare\"",
+    "\"process-compare-1794486735123.png\"",
+    "\"process-compare-1794486735123.png\"",
+    "\"the screenshot's file name is printed whole, even for a long journey name\"",
+    "\"x\""
+   ],
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",

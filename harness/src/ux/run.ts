@@ -87,7 +87,12 @@ export async function journeys(
   if (selection.only) args.push("--only", selection.only);
   const result = await child("npx", args, { cwd: root, timeoutMs: JOURNEYS_TIMEOUT_MS });
   for (const line of result.output.split("\n")) {
-    if (line.startsWith("note: ") || line.startsWith("journeys: ") || line.startsWith("step: "))
+    if (
+      line.startsWith("note: ") ||
+      line.startsWith("journeys: ") ||
+      line.startsWith("step: ") ||
+      line.startsWith("evidence: ")
+    )
       out(line);
   }
   if (result.code !== 0 && !result.output.includes("journeys: "))

@@ -1,0 +1,17 @@
+name: ux-evidence
+description: Upload the screenshots a failed UX journey step left in ux-evidence/. It cannot fail the job (ADR-0195).
+inputs:
+  name:
+    description: Artifact name, unique within the run.
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/upload-artifact@v4
+      # A diagnostic picture of a failure the job already reports in its log. If the upload itself fails (a name taken by a
+      # re-run, the service down) the job keeps the result of the journeys. No folder, no failure. ADR-0195
+      continue-on-error: true
+      with:
+        name: ${{ inputs.name }}
+        path: ux-evidence
+        if-no-files-found: ignore

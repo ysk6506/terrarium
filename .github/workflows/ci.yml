@@ -2,7 +2,9 @@
 # Gating: lint-types, test (shards), test-heavy + test-summary, structure, ux-journeys. The `gate` job is the one required check.
 # A pull request whose changed files are all documents takes the light path (ADR-0173): `changes` decides, the heavy jobs are
 # skipped, and structure + docs-tests run instead. Anything else, and every push to main, takes the full path.
-# Non-gating, with a debt item each: coverage (TD-0002), ux-measure (TD-0004).
+# The non-gating jobs (coverage, ux-parts) start after the test shards: the runners are few, and the gating jobs come first (ADR-0195).
+# Non-gating, with a debt item each: coverage + coverage-floors (TD-0002), ux-measure (TD-0004). Coverage is not collected by
+# the gating test shards: instrumented, the longest shard took more than twice as long and tests hit their time limit (ADR-0195).
 name: ci
 on:
   pull_request:
@@ -25,8 +27,10 @@ env:
 
 jobs:
   # Is every changed file a document? Documents are *.md under docs/ (not docs/generated/) and *.md in the repository
-  # root. Everything else is an input of some check or measurement. The diff is against the branch the pull request
-  # merges into; if it cannot be taken, or is empty, or this is not a pull request, the answer is false (full path).
+  # root. Everything else is an input of some check or measurement. The diff is the pull request's own: from the
+  # merge base of the base and the head (what "Files changed" shows), so commits that came in by merging the base
+  # branch into the head are not part of it (ADR-0195). If it cannot be taken, or is empty, or this is not a pull
+  # request, the answer is false (full path).
   changes:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -41,13 +45,14 @@ jobs:
         id: scope
         env:
           EVENT: ${{ github.event_name }}
-          BASE_REF: ${{ github.base_ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           docs_only=false
           web=true
           reason="not a pull request"
           if [ "$EVENT" = "pull_request" ]; then
-            if files=$(git -c core.quotepath=off diff --name-only --no-renames "origin/$BASE_REF...HEAD") && [ -n "$files" ]; then
+            if files=$(git -c core.quotepath=off diff --name-only --no-renames "$BASE_SHA...$HEAD_SHA") && [ -n "$files" ]; then
               others=""
               # Does the change touch the web app or the UX measurement? Then ux-measure runs (it is a record, not a gate).
               if printf '%s\n' "$files" | grep -qE '^(apps/web/|tests/e2e/ux/|harness/src/ux/|\.github/)'; then web=true; else web=false; fi
@@ -173,33 +178,45 @@ jobs:
           name: test-list
       - run: pnpm tsx harness/src/ci/shard-sum.ts list.json shards/shard-*.json
 
-  # Pass/fail of the tests is decided by the gating shards above. This job measures coverage with a
-  # longer timeout (instrumented simulations are slow) and checks the floors. Non-gating until TD-0002
-  # (due 2026-11-21) is closed: the floors have not been measured since 2026-11-07.
+  # Pass/fail of the tests is decided by the gating shards above. This job measures coverage: instrumented, the
+  # simulations take two to three times as long and some tests miss their time limit, so it runs apart from the gating
+  # shards, with a longer timeout, on four runners (ADR-0195). The files are cut into the same twelve shards as the test
+  # job (every spec file is in exactly one), and a runner takes three of them one after the other, so each shard is one
+  # process of its own as before and the merged numbers do not move; cutting the files into four shards moved them.
+  # The groups are balanced by the time each shard took instrumented.
+  # Non-gating until TD-0002 (due 2026-11-21) is closed: the floors have not been measured since 2026-11-07.
   coverage:
-    needs: changes
+    needs: [changes, test]
     if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        include:
+          - { group: 1, shards: "3 5 1" }
+          - { group: 2, shards: "7 6 12" }
+          - { group: 3, shards: "4 2 11" }
+          - { group: 4, shards: "9 8 10" }
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - run: pnpm exec vitest run --coverage --shard=${{ matrix.shard }}/${{ env.SHARDS }} --reporter=blob --testTimeout=300000
-        continue-on-error: true # ADR-0140: an instrumented shard can hit a time limit; the gating test shards decide pass or fail
+      # A shard can miss a time limit instrumented; the gating test shards decide pass or fail (ADR-0140), so the loop goes on.
+      - run: |
+          for s in ${{ matrix.shards }}; do
+            pnpm exec vitest run --coverage --shard=$s/${{ env.SHARDS }} --reporter=blob --testTimeout=300000 \
+              || echo "::notice::ADR-0195: coverage shard $s ended with an error (exit $?); the gating test shards decide pass or fail"
+          done
       - uses: actions/upload-artifact@v4
         with:
-          name: blob-${{ matrix.shard }}
+          name: blob-${{ matrix.group }}
           path: .vitest-reports
           include-hidden-files: true
           if-no-files-found: error
 
   coverage-floors:
     needs: [changes, coverage]
-    if: always() && needs.changes.result == 'success' && needs.changes.outputs.docs_only != 'true'
+    if: always() && needs.changes.result == 'success' && needs.changes.outputs.docs_only != 'true' && needs.coverage.result != 'skipped'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     continue-on-error: true # TD-0002: coverage floors are not gating until every unit meets its floor (due 2026-11-21)
@@ -216,8 +233,8 @@ jobs:
       # Instrumented, one calibration test needs more than its own 180 s limit, so the merged report can
       # carry that one failure. Whether tests pass is decided by the gating jobs; this step only needs the
       # coverage numbers.
-      - run: pnpm exec vitest --merge-reports --coverage
-        continue-on-error: true # ADR-0140: the merged report can carry one instrumented timeout; only the coverage numbers are needed
+      - run: |
+          pnpm exec vitest --merge-reports --coverage || echo "::notice::ADR-0195: the merged report carries instrumented timeouts (exit $?); only the coverage numbers are used here"
       - name: Coverage per unit against the floors
         run: |
           base=""
@@ -257,10 +274,11 @@ jobs:
           fetch-depth: 0
       - name: The light path holds only documents (second look)
         env:
-          BASE_REF: ${{ github.base_ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          others=$(git -c core.quotepath=off diff --name-only --no-renames "origin/$BASE_REF...HEAD" | grep -vE '^(docs/.+|[^/]+)\.md$' || true)
-          generated=$(git -c core.quotepath=off diff --name-only --no-renames "origin/$BASE_REF...HEAD" | grep -E '^docs/generated/' || true)
+          others=$(git -c core.quotepath=off diff --name-only --no-renames "$BASE_SHA...$HEAD_SHA" | grep -vE '^(docs/.+|[^/]+)\.md$' || true)
+          generated=$(git -c core.quotepath=off diff --name-only --no-renames "$BASE_SHA...$HEAD_SHA" | grep -E '^docs/generated/' || true)
           if [ -n "$others$generated" ]; then
             echo "::error::the light path was taken but these files are not documents: $others $generated"
             exit 1
@@ -304,11 +322,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
       - uses: ./.github/actions/browser
-      - name: Journeys of the group (15 minute limit inside; the log is the job log, so no artifact is uploaded, ADR-0175)
+      - name: Journeys of the group (15 minute limit inside; the log is the job log; a failed step prints what the page showed, ADR-0195)
         run: pnpm ux journeys --group ${{ matrix.group }}
         env:
           TERRARIUM_UX_ECHO: "1"
+          TERRARIUM_UX_EVIDENCE_DIR: ux-evidence
         shell: bash
+      # Only the screenshots of failed steps, and only when there are any (ADR-0195). It cannot fail the job.
+      - if: always()
+        uses: ./.github/actions/ux-evidence
+        with:
+          name: ux-evidence-journeys-${{ matrix.group }}
 
   # The Honeycomb score: timings, sizes, accessibility, wording, and the journeys again for their hand counts. Non-gating
   # until TD-0004 is closed. It runs on every push to main and on pull requests that touch the web app. The browser half
@@ -316,7 +340,7 @@ jobs:
   # same scores a single run gives and prints the record. The record is not committed with each change: the cleanup job
   # measures main and commits docs/generated/ux-score.json. A change reads its own scores in this job's summary.
   ux-parts:
-    needs: changes
+    needs: [changes, test]
     if: needs.changes.outputs.web == 'true' && needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -341,6 +365,7 @@ jobs:
       - name: One slice of the measurement
         env:
           TERRARIUM_UX_ECHO: "1"
+          TERRARIUM_UX_EVIDENCE_DIR: ux-evidence
         run: |
           mkdir -p ux-parts
           node_modules/.bin/tsx tests/e2e/ux/measure.ts --part ${{ matrix.part }} --out ux-parts/${{ matrix.part }}.json
@@ -350,10 +375,14 @@ jobs:
           name: ux-part-${{ matrix.part }}
           path: ux-parts/${{ matrix.part }}.json
           if-no-files-found: error
+      - if: always()
+        uses: ./.github/actions/ux-evidence
+        with:
+          name: ux-evidence-${{ matrix.part }}
 
   ux-measure:
     needs: [changes, ux-parts]
-    if: always() && needs.changes.result == 'success' && needs.changes.outputs.web == 'true' && needs.changes.outputs.docs_only != 'true'
+    if: always() && needs.changes.result == 'success' && needs.changes.outputs.web == 'true' && needs.changes.outputs.docs_only != 'true' && needs.ux-parts.result != 'skipped'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     continue-on-error: true # TD-0004: the UX score misses its floor on the runner, so it is a record until that is closed

@@ -91,5 +91,5 @@ contract ─► analysis ─► experiments ─► oracle ─► scenario ─►
 
 - **단위 테스트**는 그 단위 폴더에 두고, 그 단위가 import할 수 있는 것만 쓴다. 테스트 파일도 의존 방향 규칙을 똑같이 지킨다.
   위 단위가 필요하면(예: `tools` 테스트에 물리 엔진) 상태를 직접 만들거나(`world.patch`, `alarm.raise`) 가짜를 주입한다.
-- **명세 테스트**(`tests/spec/`)는 core 전체를 쓸 수 있다. "물리가 실제로 망가뜨린 것은 `get_impact`가 미리 말한 범위 안에 있다"처럼 단위 사이의 약속을 검증한다.
+- **명세 테스트**(`tests/spec/`)는 core 전체를 쓸 수 있고, 브라우저 실행기(`tests/e2e/`)는 그 입구(`index.ts`)로만 쓴다(ADR-0195). "물리가 실제로 망가뜨린 것은 `get_impact`가 미리 말한 범위 안에 있다"처럼 단위 사이의 약속을 검증한다.
 - 툴은 프로토콜 파사드를 직접 만들지 않는다. 세션이 실험이 고른 제품 버전으로 `createFacades`를 한 번 만들어 `ToolContext.facades`로 넘긴다.
