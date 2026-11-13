@@ -184,6 +184,14 @@ func dispatch(ctx context.Context, hc interp.HandlerContext, args, env []string,
 			name = base
 		}
 	}
+	// an endless source read to its end by a command of the machine is a flood of output, not an empty file
+	for _, a := range args[1:] {
+		if a == "/dev/zero" || a == "/dev/urandom" || a == "/dev/random" {
+			if !engineNames[name] && name != "awk" {
+				return trip("output")
+			}
+		}
+	}
 	switch {
 	case name == "awk":
 		return runAwk(ctx, hc, args[1:], env, in)

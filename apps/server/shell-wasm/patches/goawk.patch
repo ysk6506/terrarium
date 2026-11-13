@@ -1,3 +1,38 @@
+--- a/interp/functions.go
++++ b/interp/functions.go
+@@ -9,6 +9,7 @@
+ 	"reflect"
+ 	"sort"
+ 	"strconv"
++	"math"
+ 	"strings"
+ 	"unicode/utf8"
+ 
+@@ -515,7 +516,23 @@
+ 		}
+ 		converted = append(converted, v)
+ 	}
+-	return fmt.Sprintf(format, converted...), nil
++	result := fmt.Sprintf(format, converted...)
++	// Terrarium patch: gawk writes an infinity as +inf / -inf and a NaN as +nan / -nan; Go writes +Inf / -Inf / NaN.
++	for _, v := range converted {
++		if f, ok := v.(float64); ok && (math.IsInf(f, 0) || math.IsNaN(f)) {
++			result = strings.NewReplacer("+Inf", "+inf", "-Inf", "-inf", "NaN", gawkNaN(f)).Replace(result)
++			break
++		}
++	}
++	return result, nil
++}
++
++// gawkNaN is how gawk writes a NaN: with the sign of its sign bit.
++func gawkNaN(f float64) string {
++	if math.Signbit(f) {
++		return "-nan"
++	}
++	return "+nan"
+ }
+ 
+ func substrChars(s string, pos int) string {
 --- a/interp/hook.go
 +++ b/interp/hook.go
 @@ -0,0 +1,62 @@
@@ -107,6 +142,25 @@
  	cmd := p.execShell(name)
  	cmd.Stdin = p.stdin
  	cmd.Stderr = p.errorOutput
+--- a/interp/value.go
++++ b/interp/value.go
+@@ -143,13 +143,13 @@
+ // nan/inf are special cases and don't use floatFormat.
+ func numToStr(n float64, floatFormat string) string {
+ 	switch {
+-	case math.IsNaN(n):
+-		return "nan"
++	case math.IsNaN(n): // Terrarium patch: gawk's words for infinity and NaN
++		return gawkNaN(n)
+ 	case math.IsInf(n, 0):
+ 		if n < 0 {
+ 			return "-inf"
+ 		} else {
+-			return "inf"
++			return "+inf"
+ 		}
+ 	case n == float64(int64(n)):
+ 		return strconv.FormatInt(int64(n), 10)
 --- a/interp/vm.go
 +++ b/interp/vm.go
 @@ -487,6 +487,11 @@

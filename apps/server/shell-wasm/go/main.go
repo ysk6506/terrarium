@@ -26,8 +26,8 @@ import (
 // the same line stops at the same place on every machine (ADR-0196 decision 2). Zero means no limit.
 type Limits struct {
 	Steps        int64   `json:"steps"`
-	OutBytes     int64   `json:"outBytes"`
-	MemBytes     int64   `json:"memBytes"`
+	OutBytes     int64   `json:"outputBytes"`
+	MemBytes     int64   `json:"memoryBytes"`
 	WorldSeconds float64 `json:"worldSeconds"`
 	Expansions   int64   `json:"expansions"`
 }

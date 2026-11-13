@@ -8,6 +8,7 @@ import (
 	"io"
 	"runtime"
 	"runtime/debug"
+	"strings"
 
 	awk "github.com/benhoyt/goawk/interp"
 	"mvdan.cc/sh/v3/interp"
@@ -38,6 +39,11 @@ func setupLimits() {
 	// the collector keeps the heap near what the line needs, so that the memory limit counts live data
 	debug.SetGCPercent(25)
 	interp.StepHook = stepHook
+	interp.ExpandErrHook = func(err error) {
+		if strings.Contains(err.Error(), "would exceed") {
+			trip("expansion")
+		}
+	}
 	awk.StepHook = stepHook
 }
 

@@ -1,6 +1,16 @@
 --- a/interp/runner.go
 +++ b/interp/runner.go
-@@ -310,6 +310,13 @@
+@@ -196,6 +196,9 @@
+ 		return
+ 	}
+ 	errMsg := err.Error()
++	if ExpandErrHook != nil { // Terrarium patch: a refused expansion is a limit of the host, not a silent success
++		ExpandErrHook(err)
++	}
+ 	fmt.Fprintln(r.stderr, errMsg)
+ 	_, unsetParam := errors.AsType[expand.UnsetParameterError](err)
+ 	switch {
+@@ -310,6 +313,13 @@
  	if r.stop(ctx) {
  		return
  	}
@@ -14,7 +24,7 @@
  	r.exit = exitStatus{}
  	if st.Background || st.Disown {
  		r2 := r.subshell(true)
-@@ -321,12 +328,18 @@
+@@ -321,12 +331,18 @@
  			exit: new(exitStatus),
  		}
  		r.bgProcs = append(r.bgProcs, bg)
@@ -165,7 +175,7 @@
  
 --- a/interp/terrarium.go
 +++ b/interp/terrarium.go
-@@ -0,0 +1,27 @@
+@@ -0,0 +1,30 @@
 +// Terrarium patch: hooks for the embedding host (the simulation counts what a line does and orders its background jobs).
 +
 +package interp
@@ -179,6 +189,9 @@
 +// background jobs). A non-nil error stops the shell with that error as a fatal one. The host counts steps with it, so
 +// that a line which never ends is stopped at the same statement on every machine.
 +var StepHook func() error
++
++// ExpandErrHook, when set, is told of every expansion error (such as a brace expansion that would be too large).
++var ExpandErrHook func(err error)
 +
 +type bgJobKey struct{}
 +
