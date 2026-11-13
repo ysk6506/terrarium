@@ -132,6 +132,11 @@ export const ConfigSchema = z
     /** Who is asking and who administers: the company's SSO proxy, or typed names for local use (REQ-033, ADR-0174). */
     identity: IdentitySchema,
     workers: z.number().int().min(0).max(64).optional(),
+    /** The shell of `run_command` (ADR-0200): `legacy` is the hand-written one (the default); `wasm` is the real shell and awk. */
+    shell: z
+      .object({ engine: z.enum(["legacy", "wasm"]).default("legacy") })
+      .strict()
+      .default({}),
     limits: z
       .object({
         maxRunning: z.number().int().min(1).max(512).optional(),

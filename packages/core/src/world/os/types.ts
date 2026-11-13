@@ -24,6 +24,8 @@ export interface Cmd {
   readonly fs: VirtualFs;
   readonly world: WorldPort;
   readonly cwd: string;
+  /** The environment the command was started with, when the shell passes it on (the new engine, ADR-0200); else a login shell's. */
+  readonly env?: readonly string[];
   /** Run another command in this shell (for `xargs`). */
   readonly run: (argv: readonly string[], stdin: string) => R;
 }

@@ -1,7 +1,7 @@
 doc: "docs/design-docs/permissions.md"
 target: "docs/design-docs/operations.md"
-hash: "8a996ed674b58a0a"
+hash: "e5cb7585449b909c"
 date: "2026-11-13"
-note: "ADR-0202: 관리자 권한 설명과 표에서 소스 가져오기를 뺐다"
-text_changed: true
+note: "main(ADR-0202) 병합 뒤 다시 읽고 셸 엔진 내용과 맞는지 확인"
+text_changed: false
 doc_hash: "c50e152163949487"

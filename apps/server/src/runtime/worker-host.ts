@@ -15,6 +15,7 @@ import type { EndReason } from "@terrarium/core/oracle";
 import type { CallResult, HumanAct, RunResult, SessionInput } from "@terrarium/core/session";
 import type { ToolSpec } from "@terrarium/core/tools";
 import type { RunEvent } from "@terrarium/core/world";
+import type { ShellEngineKind } from "../shell";
 import { defaultThreadMb, Ledger, PROMISED_SHARE } from "./admission";
 import type { HostedSession, PlainSessionConfig, SessionHost } from "./hosts";
 import {
@@ -83,6 +84,8 @@ export interface WorkerHostOptions {
   readonly promisedMb?: number;
   /** How long a session may wait for memory (default 5 minutes) before it fails with a conflict. */
   readonly admissionWaitMs?: number;
+  /** The shell of `run_command` in the sessions' threads (ADR-0200); default `legacy`. */
+  readonly shellEngine?: ShellEngineKind;
 }
 
 const ENTRY = new URL("./session-worker.ts", import.meta.url).href;
@@ -144,6 +147,7 @@ export class WorkerHost implements SessionHost {
   private spawn(): Slot {
     const worker = new Worker(BOOT, {
       eval: true,
+      env: { ...process.env, TERRARIUM_SHELL_ENGINE: this.options.shellEngine ?? "legacy" },
       resourceLimits: { maxOldGenerationSizeMb: this.threadMb },
     });
     const slot: Slot = { worker, ledger: new Ledger(this.promisedMb) };

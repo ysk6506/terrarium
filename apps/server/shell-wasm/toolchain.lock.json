@@ -1,0 +1,44 @@
+{
+  "comment": "The pinned tool chain and the hashes of what was built with it (ADR-0200). Edit `pins` by hand; `scripts/lock.mjs write` fills the rest after a build. `scripts/lock.mjs check` needs no Go.",
+  "pins": {
+    "go": {
+      "version": "1.26.11",
+      "commit": "26b4433366fce47e480679e0b5a30222b63996e0"
+    },
+    "modules": {
+      "mvdan.cc/sh/v3": {
+        "repo": "https://github.com/mvdan/sh",
+        "tag": "v3.14.1",
+        "commit": "a3f0c75d21d918756fa38de8b5d3429efde7948b",
+        "license": "BSD-3-Clause"
+      },
+      "github.com/benhoyt/goawk": {
+        "repo": "https://github.com/benhoyt/goawk",
+        "tag": "v1.32.0",
+        "commit": "f59bf0db58a7dd3bebcdd64c9bd75ae2ea10932e",
+        "license": "MIT"
+      },
+      "golang.org/x/sys": {
+        "repo": "https://github.com/golang/sys",
+        "tag": "v0.47.0",
+        "commit": "9e7e939dcafac07e8ab4cffa6e5fc74908413f00",
+        "license": "BSD-3-Clause"
+      },
+      "golang.org/x/term": {
+        "repo": "https://github.com/golang/term",
+        "tag": "v0.45.0",
+        "commit": "9f69229da31ca6a34b522f59dbe07cad5ea21587",
+        "license": "BSD-3-Clause"
+      }
+    }
+  },
+  "inputs": {
+    "sha256": "67c04bb747d5c5c3cb1524d65badd4be31b116c335d0c82ce63b0e106d8e2a5f",
+    "files": 10
+  },
+  "output": {
+    "file": "bin/terrarium-sh.wasm",
+    "bytes": 7893182,
+    "sha256": "4da24d043b7f3ff1ec0794ce4798b105d96367d1a97c2866c6efb67598aaea5c"
+  }
+}

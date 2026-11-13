@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "602ccf1fb271c43e"
+hash: "a40377c1d4c2ff29"
 date: "2026-11-13"
-note: "ADR-0202: architecture.yaml에서 realimport 단위와 falkordb 줄이 빠진 것을 대조했고, 이 문서의 말은 그대로 맞다"
+note: "main(ADR-0202) 병합 뒤 다시 읽고 셸 엔진 내용과 맞는지 확인"
 text_changed: false
 doc_hash: "ad69b0fbbb0b5d9e"

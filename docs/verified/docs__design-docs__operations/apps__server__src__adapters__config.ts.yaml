@@ -1,7 +1,7 @@
 doc: "docs/design-docs/operations.md"
 target: "apps/server/src/adapters/config.ts"
-hash: "31cb37f63efb5bfe"
+hash: "2bbaa8feff29a255"
 date: "2026-11-13"
-note: "ADR-0202: 설정 예시와 표에서 sources를 빼고 남아 있으면 시작이 안 된다고 적었고, FalkorDB 확인 항목을 뺐다"
+note: "main(ADR-0202) 병합 뒤 다시 읽고 셸 엔진 내용과 맞는지 확인"
 text_changed: true
-doc_hash: "8a996ed674b58a0a"
+doc_hash: "e5cb7585449b909c"

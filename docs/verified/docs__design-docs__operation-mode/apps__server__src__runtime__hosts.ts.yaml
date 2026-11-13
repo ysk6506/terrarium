@@ -1,7 +1,7 @@
 doc: "docs/design-docs/operation-mode.md"
 target: "apps/server/src/runtime/hosts.ts"
-hash: "4bd0f9bec4329a3e"
-date: "2026-11-12"
-note: "ADR-0183: 한 가지 말(번, 상황, 객체·링크, 넘기기)에 맞춰 인용한 화면 글을 고쳤다"
-text_changed: true
+hash: "cdc59d3cc888569d"
+date: "2026-11-13"
+note: "셸 엔진 추가(ADR-0200)는 덧붙임이고 이 문서가 말하는 동작은 그대로임을 코드와 대조해 확인"
+text_changed: false
 doc_hash: "6bf1cbb54cb943cd"

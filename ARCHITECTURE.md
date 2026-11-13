@@ -55,7 +55,8 @@ contract ─► analysis ─► experiments ─► oracle ─► scenario ─►
 | 단위 | 책임 | 쓸 수 있는 단위 |
 |---|---|---|
 | `server.adapters` | 설정, 저장소(SQLite, ADR-0025), 연결 방식(커넥터: 내장·하네스 프로토콜·A2A·범용 HTTP·MCP 에이전트·OpenClaw·OpenCode·LangGraph·명령, ADR-0042), 비밀 값 봉인(ADR-0043), ClickStack | core 전부 |
-| `server.runtime` | 워커 스레드 세션 호스트, 실행기, 스케줄러 루프(ADR-0027), 연결 레지스트리와 에이전트 버전(ADR-0042, 0043), 세계·시나리오·실험·결과 서비스 | core, adapters |
+| `server.shell` | 셸과 awk의 진짜 구현(WebAssembly)과 그 일꾼. 코어의 `ShellEngine` 포트를 구현하고 세계의 파일·시계·명령만 연다. 기본은 꺼짐(ADR-0200) | core |
+| `server.runtime` | 워커 스레드 세션 호스트, 실행기, 스케줄러 루프(ADR-0027), 연결 레지스트리와 에이전트 버전(ADR-0042, 0043), 세계·시나리오·실험·결과 서비스 | core, adapters, shell |
 | `server.cluster` | 스케일 아웃: 워커 노드 서버, 노드 등록부, 배치(`ClusterHost`), 자동 확장 지표(ADR-0032) | core, runtime |
 | `server.mcp` | 실행마다 하나인 MCP 툴 엔드포인트 | core, runtime |
 | `server.http` | 계약의 경로 표 그대로의 Fastify 라우트, SSE, 공유 링크, 정적 웹, 사용자 식별 자리(ADR-0028, 0044) | core, adapters, runtime, mcp |

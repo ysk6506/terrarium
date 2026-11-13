@@ -1,0 +1,7 @@
+doc: "docs/design-docs/service-os-layer.md"
+target: "packages/core/src/world/os/shell-engine.ts"
+hash: "e32aede511b85ce5"
+date: "2026-11-13"
+note: "셸 엔진 추가(ADR-0200)는 덧붙임이고 이 문서가 말하는 동작은 그대로임을 코드와 대조해 확인"
+text_changed: false
+doc_hash: "23fe3cbf8c15a98e"

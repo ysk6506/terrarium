@@ -261,6 +261,18 @@ export {
   realTools,
   registerShellCommand,
   runLine,
+  runLineWith,
+  SHELL_LIMITS,
+  type ShellClock,
+  type ShellEngine,
+  type ShellEngineResult,
+  type ShellFileStat,
+  type ShellHostPort,
+  type ShellJob,
+  type ShellLimitKind,
+  type ShellLimits,
+  type ShellPlug,
+  type ShellUse,
 } from "./os/index";
 export { outletConsumer, outletCount, outletOff } from "./outlets";
 export { type PreparedWorld, prepareWorld } from "./prepared";

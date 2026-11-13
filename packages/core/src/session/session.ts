@@ -56,6 +56,7 @@ import {
   trustOfRun,
   viewsOf,
 } from "./session-parts";
+import { shellPlugOf } from "./shell-plug";
 import { gatedSpecs } from "./trust";
 import {
   type CallResult,
@@ -164,6 +165,7 @@ export class Session {
         this.diagnosedAt = world.time();
       },
       ops: this.handOffs.port,
+      ...shellPlugOf(config, this, this.calls, (n) => this.advance(n)),
     };
   }
 

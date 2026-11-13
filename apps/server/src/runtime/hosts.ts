@@ -19,14 +19,17 @@ import {
   WarmStartCache,
 } from "@terrarium/core/session";
 import type { ToolSpec } from "@terrarium/core/tools";
-import type { RunEvent } from "@terrarium/core/world";
+import type { RunEvent, ShellEngine } from "@terrarium/core/world";
 import { identityOf, WorldCache, type WorldIdentity } from "./world-cache";
 
 /**
  * A session config that can cross a thread boundary (no catalog instance, warm cache or prepared world: the host
  * makes its own). `world` says which version of which world the blueprint is, when the caller knows.
  */
-export type PlainSessionConfig = Omit<SessionConfig, "catalog" | "warm" | "prepared"> & {
+export type PlainSessionConfig = Omit<
+  SessionConfig,
+  "catalog" | "warm" | "prepared" | "shellEngine"
+> & {
   readonly world?: WorldIdentity;
   /** An operation picked up again after a restart: what its session was given before, played in order (ADR-0112). */
   readonly resume?: readonly SessionInput[];
@@ -205,6 +208,9 @@ export class LocalSession implements HostedSession {
 }
 
 export class InProcessHost implements SessionHost {
+  /** `shellEngine`: the shell of `run_command` for every session of this host (ADR-0200); default the old shell. */
+  constructor(private readonly options: { readonly shellEngine?: ShellEngine } = {}) {}
+
   private count = 0;
   private readonly warm = new WarmStartCache();
   private readonly worlds = new WorldCache();
@@ -219,7 +225,12 @@ export class InProcessHost implements SessionHost {
     const prepared =
       this.worlds.get(identity.key) ?? this.worlds.prepare(identity, config.blueprint);
     const local = new LocalSession(
-      Session.create({ ...rest, warm: this.warm, prepared }),
+      Session.create({
+        ...rest,
+        warm: this.warm,
+        prepared,
+        ...(this.options.shellEngine ? { shellEngine: this.options.shellEngine } : {}),
+      }),
       undefined,
       undefined,
       resume,

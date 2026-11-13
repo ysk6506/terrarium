@@ -63,7 +63,8 @@ export function registerShellCommand(name: string, handler: Handler): void {
 }
 
 const lookup = (name: string): Handler | undefined => extra.get(name) ?? COMMANDS[name];
-const binNames = (): string[] => [...new Set([...Object.keys(COMMANDS), ...extra.keys()])].sort();
+export const binNames = (): string[] =>
+  [...new Set([...Object.keys(COMMANDS), ...extra.keys()])].sort();
 
 const BUILTINS = new Set(["cd", "pwd", "true", "false", "exit", "sudo", "sleep", "which"]);
 const KEYWORDS = new Set([
@@ -79,11 +80,13 @@ const KEYWORDS = new Set([
   "fi",
   "select",
 ]);
-const HOME = "/home/ops";
+export const HOME = "/home/ops";
 
 /** The state one run of a line carries: where it is, what it printed, what it could not do. */
-class Run {
+export class Run {
   cwd = HOME;
+  /** What the shell of the new engine exports to the command it runs now (ADR-0200). */
+  env: readonly string[] | undefined;
   stderr = "";
   readonly outside: string[] = [];
   readonly gaps: EmulationGap[] = [];
@@ -94,6 +97,11 @@ class Run {
     readonly world: WorldPort,
     readonly id: string,
   ) {}
+
+  /** Forget the view: the world moved (time passed) without writing anything (the new engine, ADR-0200). */
+  refresh(): void {
+    this.seq = -1;
+  }
 
   /** The host and its tree as they stand now; rebuilt after a command changed the world. */
   view(): { h: OsHost; fs: VirtualFs } {
@@ -116,6 +124,7 @@ class Run {
       fs,
       world: this.world,
       cwd: this.cwd,
+      ...(this.env ? { env: this.env } : {}),
       run: (argv, input) => this.exec(argv, input),
     };
   }
@@ -204,7 +213,7 @@ function expand(run: Run, words: readonly Word[]): string[] {
 }
 
 /** Why a redirect target cannot be written, or undefined. */
-function refusal(run: Run, path: string, shownPath: string): string | undefined {
+export function refusal(run: Run, path: string, shownPath: string): string | undefined {
   const { fs } = run.view();
   if (fs.isDir(path)) return `bash: ${shownPath}: Is a directory`;
   const denied = fs.denyWrite(path);
@@ -213,7 +222,12 @@ function refusal(run: Run, path: string, shownPath: string): string | undefined 
 }
 
 /** Write the output of a command to a file, as a world event. */
-function writeFile(run: Run, path: string, text: string, append: boolean): string | undefined {
+export function writeFile(
+  run: Run,
+  path: string,
+  text: string,
+  append: boolean,
+): string | undefined {
   const { fs } = run.view();
   const full = normalize(run.cwd, path);
   const refused = refusal(run, full, path);

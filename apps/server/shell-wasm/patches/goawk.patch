@@ -1,0 +1,305 @@
+--- a/interp/functions.go
++++ b/interp/functions.go
+@@ -9,6 +9,7 @@
+ 	"reflect"
+ 	"sort"
+ 	"strconv"
++	"math"
+ 	"strings"
+ 	"unicode/utf8"
+ 
+@@ -515,7 +516,23 @@
+ 		}
+ 		converted = append(converted, v)
+ 	}
+-	return fmt.Sprintf(format, converted...), nil
++	result := fmt.Sprintf(format, converted...)
++	// Terrarium patch: gawk writes an infinity as +inf / -inf and a NaN as +nan / -nan; Go writes +Inf / -Inf / NaN.
++	for _, v := range converted {
++		if f, ok := v.(float64); ok && (math.IsInf(f, 0) || math.IsNaN(f)) {
++			result = strings.NewReplacer("+Inf", "+inf", "-Inf", "-inf", "NaN", gawkNaN(f)).Replace(result)
++			break
++		}
++	}
++	return result, nil
++}
++
++// gawkNaN is how gawk writes a NaN: with the sign of its sign bit.
++func gawkNaN(f float64) string {
++	if math.Signbit(f) {
++		return "-nan"
++	}
++	return "+nan"
+ }
+ 
+ func substrChars(s string, pos int) string {
+--- a/interp/hook.go
++++ b/interp/hook.go
+@@ -0,0 +1,62 @@
++package interp
++
++import (
++	"bytes"
++	"io"
++)
++
++// ShellHook, when set, runs the command of system(), `cmd | getline` and `print | cmd` instead of os/exec (which
++// does not exist on WASI). It returns the exit status. (Terrarium experiment patch.)
++var ShellHook func(code string, stdin io.Reader, stdout, stderr io.Writer) int
++
++// outHookStream collects what is printed to `print | cmd` and runs the command when the stream is closed.
++type outHookStream struct {
++	p        *interp
++	code     string
++	buf      bytes.Buffer
++	exitCode int
++	closed   bool
++}
++
++func (s *outHookStream) Write(b []byte) (int, error) { return s.buf.Write(b) }
++func (s *outHookStream) Flush() error                { return nil }
++func (s *outHookStream) Close() error {
++	if s.closed {
++		return errDoubleClose
++	}
++	s.closed = true
++	s.p.flushOutputAndError()
++	s.exitCode = ShellHook(s.code, &s.buf, s.p.output, s.p.errorOutput)
++	return nil
++}
++func (s *outHookStream) ExitCode() int { return s.exitCode }
++
++// inHookStream serves the output of `cmd | getline`, run when the stream was opened.
++type inHookStream struct {
++	io.Reader
++	exitCode int
++	status   int
++	closed   bool
++}
++
++func (s *inHookStream) Close() error {
++	if s.closed {
++		return errDoubleClose
++	}
++	s.closed = true
++	s.exitCode = s.status
++	return nil
++}
++func (s *inHookStream) ExitCode() int { return s.exitCode }
++
++// StepHook, when set, is called once for every backward jump (every turn of a loop), every iteration of `for (k in a)`,
++// every user function call and every input record. A non-nil error stops the program with that error. The host counts
++// steps with it, so that a loop which never ends is stopped at the same turn on every machine. (Terrarium patch.)
++var StepHook func() error
++
++func step() error {
++	if StepHook != nil {
++		return StepHook()
++	}
++	return nil
++}
+--- a/interp/interp.go
++++ b/interp/interp.go
+@@ -712,6 +712,9 @@
+ 		if err != nil {
+ 			return err
+ 		}
++		if err := step(); err != nil { // Terrarium patch: one step per input record
++			return err
++		}
+ 		p.setLine(line, false)
+ 		p.reparseCSV = false
+ 
+--- a/interp/io.go
++++ b/interp/io.go
+@@ -215,6 +215,12 @@
+ 		if p.noExec {
+ 			return nil, newError("can't write to pipe due to NoExec")
+ 		}
++		if ShellHook != nil {
++			p.flushOutputAndError() // ensure synchronization
++			out := &outHookStream{p: p, code: name, exitCode: notClosedExitCode}
++			p.outputStreams[name] = out
++			return out, nil
++		}
+ 		cmd := p.execShell(name)
+ 		cmd.Stdout = p.output
+ 		cmd.Stderr = p.errorOutput
+@@ -292,6 +298,16 @@
+ 	if p.noExec {
+ 		return nil, newError("can't read from pipe due to NoExec")
+ 	}
++	if ShellHook != nil {
++		p.flushOutputAndError() // ensure synchronization
++		var buf bytes.Buffer
++		code := ShellHook(name, p.stdin, &buf, p.errorOutput)
++		in := &inHookStream{Reader: &buf, exitCode: notClosedExitCode, status: code}
++		scanner := p.newScanner(in, make([]byte, inputBufSize))
++		p.inputStreams[name] = in
++		p.scanners[name] = scanner
++		return scanner, nil
++	}
+ 	cmd := p.execShell(name)
+ 	cmd.Stdin = p.stdin
+ 	cmd.Stderr = p.errorOutput
+--- a/interp/value.go
++++ b/interp/value.go
+@@ -143,13 +143,13 @@
+ // nan/inf are special cases and don't use floatFormat.
+ func numToStr(n float64, floatFormat string) string {
+ 	switch {
+-	case math.IsNaN(n):
+-		return "nan"
++	case math.IsNaN(n): // Terrarium patch: gawk's words for infinity and NaN
++		return gawkNaN(n)
+ 	case math.IsInf(n, 0):
+ 		if n < 0 {
+ 			return "-inf"
+ 		} else {
+-			return "inf"
++			return "+inf"
+ 		}
+ 	case n == float64(int64(n)):
+ 		return strconv.FormatInt(int64(n), 10)
+--- a/interp/vm.go
++++ b/interp/vm.go
+@@ -487,6 +487,11 @@
+ 
+ 		case compiler.Jump:
+ 			offset := code[ip]
++			if offset < 0 { // Terrarium patch: a backward jump is one step of the budget
++				if err := step(); err != nil {
++					return err
++				}
++			}
+ 			ip += 1 + int(offset)
+ 
+ 		case compiler.JumpFalse:
+@@ -494,6 +499,11 @@
+ 			ip++
+ 			v := p.pop()
+ 			if !v.boolean() {
++				if offset < 0 { // Terrarium patch: a backward jump is one step of the budget
++					if err := step(); err != nil {
++						return err
++					}
++				}
+ 				ip += int(offset)
+ 			}
+ 
+@@ -502,6 +512,11 @@
+ 			ip++
+ 			v := p.pop()
+ 			if v.boolean() {
++				if offset < 0 { // Terrarium patch: a backward jump is one step of the budget
++					if err := step(); err != nil {
++						return err
++					}
++				}
+ 				ip += int(offset)
+ 			}
+ 
+@@ -518,6 +533,11 @@
+ 				b = ln == rn
+ 			}
+ 			if b {
++				if offset < 0 { // Terrarium patch: a backward jump is one step of the budget
++					if err := step(); err != nil {
++						return err
++					}
++				}
+ 				ip += int(offset)
+ 			}
+ 
+@@ -534,6 +554,11 @@
+ 				b = ln != rn
+ 			}
+ 			if b {
++				if offset < 0 { // Terrarium patch: a backward jump is one step of the budget
++					if err := step(); err != nil {
++						return err
++					}
++				}
+ 				ip += int(offset)
+ 			}
+ 
+@@ -550,6 +575,11 @@
+ 				b = ln < rn
+ 			}
+ 			if b {
++				if offset < 0 { // Terrarium patch: a backward jump is one step of the budget
++					if err := step(); err != nil {
++						return err
++					}
++				}
+ 				ip += int(offset)
+ 			}
+ 
+@@ -566,6 +596,11 @@
+ 				b = ln > rn
+ 			}
+ 			if b {
++				if offset < 0 { // Terrarium patch: a backward jump is one step of the budget
++					if err := step(); err != nil {
++						return err
++					}
++				}
+ 				ip += int(offset)
+ 			}
+ 
+@@ -582,6 +617,11 @@
+ 				b = ln <= rn
+ 			}
+ 			if b {
++				if offset < 0 { // Terrarium patch: a backward jump is one step of the budget
++					if err := step(); err != nil {
++						return err
++					}
++				}
+ 				ip += int(offset)
+ 			}
+ 
+@@ -598,6 +638,11 @@
+ 				b = ln >= rn
+ 			}
+ 			if b {
++				if offset < 0 { // Terrarium patch: a backward jump is one step of the budget
++					if err := step(); err != nil {
++						return err
++					}
++				}
+ 				ip += int(offset)
+ 			}
+ 
+@@ -625,6 +670,9 @@
+ 			array := p.array(resolver.Scope(arrayScope), int(arrayIndex))
+ 			loopCode := code[ip : ip+int(offset)]
+ 			for index := range array {
++				if err := step(); err != nil { // Terrarium patch: one step per iteration
++					return err
++				}
+ 				switch resolver.Scope(varScope) {
+ 				case resolver.Global:
+ 					p.globals[varIndex] = str(index)
+@@ -728,6 +776,9 @@
+ 			p.localArrays = append(p.localArrays, arrays)
+ 
+ 			// Execute the function!
++			if err := step(); err != nil { // Terrarium patch: one step per call
++				return err
++			}
+ 			p.callDepth++
+ 			err := p.execute(f.Body)
+ 			p.callDepth--
+@@ -1125,6 +1176,11 @@
+ 			return newError("can't call system() due to NoExec")
+ 		}
+ 		cmdline := p.toString(p.peekTop())
++		if ShellHook != nil {
++			_ = p.flushAll() // ensure synchronization
++			p.replaceTop(num(float64(ShellHook(cmdline, p.stdin, p.output, p.errorOutput))))
++			return nil
++		}
+ 		cmd := p.execShell(cmdline)
+ 		cmd.Stdin = p.stdin
+ 		cmd.Stdout = p.output

@@ -15,6 +15,7 @@ import type {
   LeadTimeSettings,
   PreparedWorld,
   RunEvent,
+  ShellEngine,
 } from "@terrarium/core/world";
 import type { EscalationPolicy, HumanRequest, HumanSummary } from "./human";
 import type { OperationConfig, OperationMetrics } from "./operation";
@@ -76,6 +77,11 @@ export interface SessionConfig {
    * time follows the pace. The host syncs it to the wall clock like a realtime session.
    */
   readonly operation?: OperationConfig;
+  /**
+   * The shell engine `run_command` uses instead of the old shell (ADR-0196, ADR-0200). The side that opens the session
+   * plugs it in; it lives outside the core. Not part of a config that travels to a worker thread.
+   */
+  readonly shellEngine?: ShellEngine;
   /** How far the agent is entrusted (REQ-123): with `view`, a call that changes the world is stopped at the gate. Unset: it acts by itself. */
   readonly permission?: PermissionLevel;
   /** The rules the run is held to (REQ-125); they are counted from the events and never change the score. Unset: none. */

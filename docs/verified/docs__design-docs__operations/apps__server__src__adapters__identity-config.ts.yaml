@@ -1,7 +1,7 @@
 doc: "docs/design-docs/operations.md"
 target: "apps/server/src/adapters/identity-config.ts"
 hash: "2b20f94afc6ce5c6"
-date: "2026-11-12"
-note: "step 나 review fixes (ADR-0179): default model is a model made for everyone, one scope route for five kinds; statements checked against the code"
-text_changed: true
-doc_hash: "2cb4575df7362562"
+date: "2026-11-13"
+note: "셸 엔진 추가(ADR-0200)는 덧붙임이고 이 문서가 말하는 동작은 그대로임을 코드와 대조해 확인"
+text_changed: false
+doc_hash: "77858fcef630504e"
