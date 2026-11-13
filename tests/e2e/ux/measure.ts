@@ -85,7 +85,9 @@ const step = async <T>(name: string, work: () => Promise<T>, failed: T): Promise
 };
 const none = { tried: 1, ok: 0 };
 
+const builtAt = Date.now();
 buildWeb(root);
+log(`step: 웹 빌드 ${Math.round((Date.now() - builtAt) / 1000)}초`);
 const server = await startServer(root);
 const browser = await launch();
 const failedProbes = { pages: 0, critical: 0, serious: 0, moderate: 0 };
@@ -177,7 +179,7 @@ try {
     // and the next journey would pay for that wait (software rendering on the runner).
     const once = async () => {
       const own = await launch();
-      return perform(own, server.url, work).finally(() => own.close());
+      return perform(own, server.url, work, id).finally(() => own.close());
     };
     // A slice's prelude journeys only make what the probes look at; their results belong to the slice that records them.
     const kept = recorded.some(([r]) => r === id);
