@@ -77,6 +77,25 @@ const entry = (s: ShellFileStat): Record<string, unknown> => ({
 });
 const failed = (errno: string): Reply => ({ hdr: { ok: false, errno } });
 
+const okOr = (e: { readonly errno: string } | undefined): Reply =>
+  e ? failed(e.errno) : { hdr: { ok: true } };
+
+const statReply = (s: ShellFileStat | { readonly errno: string }): Reply =>
+  "errno" in s ? failed(s.errno) : { hdr: entry(s) };
+
+function execReply(host: ShellHostPort, hdr: Record<string, unknown>, raw: Uint8Array): Reply {
+  const r = host.exec(
+    hdr.argv as string[],
+    String(hdr.cwd),
+    (hdr.env as string[] | undefined) ?? [],
+    raw,
+  );
+  const out = new Uint8Array(r.stdout.length + r.stderr.length);
+  out.set(r.stdout, 0);
+  out.set(r.stderr, r.stdout.length);
+  return { hdr: { code: r.code, outLen: r.stdout.length }, raw: out };
+}
+
 export class WasmShellEngine implements ShellEngine {
   private slots: Slot[] = [];
   private module: WebAssembly.Module | undefined;
@@ -214,46 +233,27 @@ export class WasmShellEngine implements ShellEngine {
     raw: Uint8Array,
   ): Reply {
     const path = String(hdr.path ?? "");
-    switch (op) {
-      case OP.exec: {
-        const r = host.exec(
-          hdr.argv as string[],
-          String(hdr.cwd),
-          (hdr.env as string[] | undefined) ?? [],
-          raw,
-        );
-        const out = new Uint8Array(r.stdout.length + r.stderr.length);
-        out.set(r.stdout, 0);
-        out.set(r.stderr, r.stdout.length);
-        return { hdr: { code: r.code, outLen: r.stdout.length }, raw: out };
-      }
-      case OP.stat: {
-        const s = host.stat(path, hdr.follow === true);
-        return "errno" in s ? failed(s.errno) : { hdr: entry(s) };
-      }
-      case OP.readdir: {
+    const append = hdr.append === true;
+    const answers: Record<number, () => Reply> = {
+      [OP.exec]: () => execReply(host, hdr, raw),
+      [OP.stat]: () => statReply(host.stat(path, hdr.follow === true)),
+      [OP.readdir]: () => {
         const list = host.readDir(path);
         return "errno" in list
           ? failed(list.errno)
           : { hdr: { ok: true, entries: list.map(entry) } };
-      }
-      case OP.read: {
+      },
+      [OP.read]: () => {
         const r = host.read(path);
         return "errno" in r ? failed(r.errno) : { hdr: { ok: true }, raw: r };
-      }
-      case OP.wopen: {
-        const e = host.mayWrite(path, hdr.append === true);
-        return e ? failed(e.errno) : { hdr: { ok: true } };
-      }
-      case OP.write: {
-        const e = host.write(path, raw, hdr.append === true);
-        return e ? failed(e.errno) : { hdr: { ok: true } };
-      }
-      case OP.gap:
-        return { hdr: { text: host.gap(String(hdr.tool), String(hdr.feature), String(hdr.what)) } };
-      default:
-        return failed("ENOSYS");
-    }
+      },
+      [OP.wopen]: () => okOr(host.mayWrite(path, append)),
+      [OP.write]: () => okOr(host.write(path, raw, append)),
+      [OP.gap]: () => ({
+        hdr: { text: host.gap(String(hdr.tool), String(hdr.feature), String(hdr.what)) },
+      }),
+    };
+    return answers[op]?.() ?? failed("ENOSYS");
   }
 
   private answer(slot: Slot, reply: Reply): void {

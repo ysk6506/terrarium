@@ -44,14 +44,14 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const v = arg.split("|").reduce((o, k) => o?.[k], lock.pins) ?? "";
     process.stdout.write(typeof v === "string" ? v : JSON.stringify(v));
   } else if (cmd === "inputs") {
-    console.log(inputs().lines.join("\n"));
+    process.stdout.write(`${inputs().lines.join("\n")}\n`);
   } else if (cmd === "write") {
     const i = inputs();
     writeFileSync(
       lockPath,
       `${JSON.stringify({ ...lock, inputs: { sha256: i.sha256, files: i.files }, output: outputOf(lock) }, null, 2)}\n`,
     );
-    console.log(`inputs ${i.sha256}\noutput ${outputOf(read()).sha256}`);
+    process.stdout.write(`${`inputs ${i.sha256}\noutput ${outputOf(read()).sha256}`}\n`);
   } else if (cmd === "check" || cmd === "verify") {
     const bad = [];
     const out = outputOf(lock);
@@ -60,12 +60,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     if (cmd === "check" && inputs().sha256 !== lock.inputs.sha256)
       bad.push("the sources changed since the lock was written: rebuild and write the lock");
     if (bad.length) {
-      console.error(bad.join("\n"));
+      process.stderr.write(`${bad.join("\n")}\n`);
       process.exit(1);
     }
-    console.log(`ok ${out.sha256} ${out.bytes} bytes`);
+    process.stdout.write(`${`ok ${out.sha256} ${out.bytes} bytes`}\n`);
   } else {
-    console.error("usage: lock.mjs pin|inputs|write|check|verify");
+    process.stderr.write(`${"usage: lock.mjs pin|inputs|write|check|verify"}\n`);
     process.exit(2);
   }
 }

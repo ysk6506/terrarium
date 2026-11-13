@@ -243,6 +243,17 @@ VM은 자기 OS 상태를 보기 전에 올라간 서버의 "전원·네트워�
 | `awk` | `getline`, `print > 파일`·`print \| 명령`·`system()`, 사용자 함수(`function`), `CONVFMT`·`OFMT`(거절; 숫자는 늘 `%.6g`), gawk 전용 함수(`gensub`, `strftime`, `systime`, `asort`…)는 없다(거절하거나 `function … never defined`). `RS`는 줄바꿈, 한 글자, 빈 문자열(문단), 정규식이 되지만 `RT`는 없고, 문단 모드에서 줄바꿈을 칸 구분자로 더하는 일도 없다. `--version`은 거절. 변수 인자(`name=값`)는 첫 파일을 읽기 전에 한꺼번에 정해진다(파일 사이에서 바뀌지 않는다). |
 | `sort` | `-M -d -g -R -m -z`는 거절. `-k F.C`(칸 안의 글자 위치)는 거절. 칸은 공백 덩어리로 나뉘고 키는 앞 공백을 뺀 칸에서 시작한다(`-b`를 준 것과 같다). 긴 옵션은 `--reverse --unique --numeric-sort --ignore-case --human-numeric-sort --version-sort --stable --check --key --field-separator --output`만 된다. |
 
+## 진짜 셸과 awk (꺼진 채로, [ADR-0200](adr/0200-shell-engine-behind-a-switch.md))
+
+위의 손으로 쓴 셸이 기본이다. 서버 설정 `shell.engine`을 `wasm`으로 하면 `run_command`의 줄을 진짜 셸(mvdan/sh)과 awk(goawk)가 돈다(WebAssembly, `apps/server/shell-wasm`). 이 단계에서는 설정으로만 켜고, 옛 셸로 되돌아가는 길은 없다.
+
+- **자리**: 코어는 `world/os/shell-engine.ts`의 포트(`ShellEngine`, `ShellHostPort`)만 안다. 엔진과 일꾼은 `apps/server/src/shell`이고 세션을 여는 쪽(`SessionConfig.shellEngine`)이 꽂는다. 엔진이 열 수 있는 것은 세계의 파일시스템·시계·명령뿐이다(호스트 함수 `call` `take` `job` 셋). 웹 번들에는 없다.
+- **결과를 가르는 한도는 세는 것만**: 단계 20,000(셸 문장, awk의 반복 한 바퀴·함수 호출·입력 한 줄), 출력 1MB, 메모리 128MB, 펼치는 목록 50,000개, 세계 시간(한 줄이 `sleep`으로 보낼 수 있는 양: `wait` 한 번의 한도 3600초와 남은 시간 중 작은 것). 같은 줄은 어느 기계에서나 같은 곳에서 멈추고 같은 쓰기를 남긴다. 벽시계(10초)는 안전망이고, 걸리면 실험장 한계로 알린다. 크기는 정답 풀이와 기존 시험이 쓰는 양보다 한참 크게 잡은 첫 값이고, 재서 고치는 일은 기본을 바꾸기 전에 한다.
+- **조용한 성공은 없다**: 한도에 걸린 줄은 종료 124와 `terrarium:` 줄. 큰 중괄호 확장은 mvdan/sh가 오류 줄만 쓰고 0으로 끝났기에 확장 한도로 센다. 끝없는 원천(`/dev/zero` 등)을 명령이 통째로 읽으면 출력 한도다. 거절된 쓰기는 진짜 셸의 문구와 종료 코드 1이다.
+- **의미**: `sleep`은 세계 시간(사건 하나에서는 `wait`와 같은 규칙, 운영에서는 바로 돌아오며 한계로 알림), `timeout`은 세계 시간, 호출 하나는 새 로그인 셸, `export`와 `FOO=1 cmd`는 흉내 낸 명령에도 넘어간다, 백그라운드 `&`는 시작한 차례대로 돈다, `$RANDOM`은 상황과 호출 번호로 정해진다, 글롭은 한 줄에서 디렉터리 목록을 한 번만 묻는다.
+- **awk**: goawk를 gawk에 맞춘 패치(무한대는 `+inf`/`-inf`, `substr`의 위치, `**`)가 들어 있다. gawk에만 있는 함수·변수(`gensub`, `strftime`, `IGNORECASE` …)는 한계로 알린다.
+- **묶음**: `.wasm`은 저장소에 있고(약 7.5MB), `toolchain.lock.json`이 Go 버전·모듈 커밋·패치·입력 해시·출력 해시를 고정한다. 소스가 바뀌면 `shell-wasm` 작업이 Go를 소스에서 빌드해 같은 파일인지 본다.
+
 ## 서비스 툴
 
 | 툴 | 하는 일 | 현실 수준 |

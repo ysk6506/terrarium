@@ -49,6 +49,7 @@ import {
 import { DEFAULT_RECORDER, MetricRecorder } from "./recorder";
 import { RunLog } from "./run-events";
 import { effectsSince, extrasOf, faultSkipper, operationEndOf, outsideOf } from "./session-parts";
+import { shellPlugOf } from "./shell-plug";
 import { buildTimeline } from "./timeline";
 import {
   type CallResult,
@@ -59,19 +60,7 @@ import {
   type TimePolicy,
 } from "./types";
 
-export {
-  type CallResult,
-  DEFAULT_TIME,
-  type FaultScope,
-  type OperationReport,
-  type RunResult,
-  type SessionConfig,
-  type SessionStatus,
-  type ShellOutside,
-  type SopMode,
-  type SopResult,
-  type TimePolicy,
-} from "./types";
+export type { SessionConfig } from "./types";
 
 const ALWAYS_TOOLS = ["submit_diagnosis"];
 
@@ -169,21 +158,12 @@ export class Session {
         this.diagnosedAt = world.time();
       },
       ops: this.handOffs.port,
-      ...(config.shellEngine
-        ? {
-            shell: {
-              engine: config.shellEngine,
-              seed: config.seed,
-              callNumber: () => this.calls.length,
-              // an event: the world moves here, as far as one `wait` may and the run has left. An operation's world
-              // follows its own clock, which this synchronous call cannot hold, so there `sleep` returns at once.
-              clock: {
-                budget: () => (this.operation ? 0 : Math.max(0, Math.min(3600, this.remaining()))),
-                advance: (seconds) => this.advance(Math.min(seconds, this.remaining())),
-              },
-            },
-          }
-        : {}),
+      ...shellPlugOf(
+        config,
+        this,
+        () => this.calls.length,
+        (s) => this.advance(s),
+      ),
     };
   }
 

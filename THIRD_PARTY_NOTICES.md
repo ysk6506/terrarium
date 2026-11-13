@@ -6,7 +6,7 @@ Terrarium은 Apache License 2.0이에요 ([LICENSE](LICENSE)). 이 파일은 Ter
 - 이 목록은 웹·서버에서 닿을 수 있는 모든 패키지를 담아 실제 묶음보다 넓어요.
 - 소스 zip과 컨테이너 이미지에 이 파일이 들어 있어요.
 
-<!-- licenses-fingerprint: 09ee56cd2e30751d -->
+<!-- licenses-fingerprint: d63f6c03bac400ff -->
 
 ## 요약
 
@@ -15,9 +15,9 @@ Terrarium은 Apache License 2.0이에요 ([LICENSE](LICENSE)). 이 파일은 Ter
 | Apache-2.0 | 2 |
 | BlueOak-1.0.0 | 8 |
 | BSD-2-Clause | 1 |
-| BSD-3-Clause | 7 |
+| BSD-3-Clause | 11 |
 | ISC | 21 |
-| MIT | 160 |
+| MIT | 161 |
 | OFL-1.1 | 1 |
 
 ## 구성요소
@@ -852,6 +852,62 @@ Copyright 2014-2026 DMTF. For the full DMTF copyright policy, see http://www.dmt
 - 저작권: 라이선스 파일에 저작권 줄이 없어요 (package.json의 author: Isaac Z. Schlueter)
 - 라이선스 전문: [BlueOak-1.0.0-2](#blueoak-100-2)
 
+### Go 표준 라이브러리 (WebAssembly에 들어가요) (go1.26.11)
+
+- 라이선스: BSD-3-Clause
+- 출처: https://github.com/golang/go
+- 들어가는 곳: 셸과 awk를 돌리는 WebAssembly 묶음 (apps/server/shell-wasm, 서버에서만 쓰고 웹 번들에는 없어요)
+- 저작권: Copyright 2009 The Go Authors.
+- 라이선스 전문: [BSD-3-Clause-4](#bsd-3-clause-4)
+
+고지 문구 또는 NOTICE 파일:
+
+```text
+Copyright 2009 The Go Authors.
+```
+
+### GoAWK (awk 해석기) (v1.32.0, 패치 포함)
+
+- 라이선스: MIT
+- 출처: https://github.com/benhoyt/goawk
+- 들어가는 곳: 셸과 awk를 돌리는 WebAssembly 묶음 (apps/server/shell-wasm, 서버에서만 쓰고 웹 번들에는 없어요)
+- 저작권: Copyright (c) 2022 Ben Hoyt
+- 라이선스 전문: [MIT-1](#mit-1)
+
+고지 문구 또는 NOTICE 파일:
+
+```text
+Copyright (c) 2022 Ben Hoyt
+```
+
+### golang.org/x/sys (v0.47.0)
+
+- 라이선스: BSD-3-Clause
+- 출처: https://github.com/golang/sys
+- 들어가는 곳: 셸과 awk를 돌리는 WebAssembly 묶음 (apps/server/shell-wasm, 서버에서만 쓰고 웹 번들에는 없어요)
+- 저작권: Copyright 2009 The Go Authors.
+- 라이선스 전문: [BSD-3-Clause-4](#bsd-3-clause-4)
+
+고지 문구 또는 NOTICE 파일:
+
+```text
+Copyright 2009 The Go Authors.
+```
+
+### golang.org/x/term (v0.45.0)
+
+- 라이선스: BSD-3-Clause
+- 출처: https://github.com/golang/term
+- 들어가는 곳: 셸과 awk를 돌리는 WebAssembly 묶음 (apps/server/shell-wasm, 서버에서만 쓰고 웹 번들에는 없어요)
+- 저작권: Copyright 2009 The Go Authors.
+- 라이선스 전문: [BSD-3-Clause-4](#bsd-3-clause-4)
+
+고지 문구 또는 NOTICE 파일:
+
+```text
+Copyright 2009 The Go Authors.
+```
+
 ### gopd@1.2.0
 
 - 라이선스: MIT
@@ -1002,7 +1058,7 @@ Copyright 2014-2026 DMTF. For the full DMTF copyright policy, see http://www.dmt
 - 출처: https://github.com/fastify/light-my-request
 - 들어가는 곳: server 코드
 - 저작권: Copyright (c) 2012-2014, Walmart Copyright (c) 2012-2017, Project contributors Copyright (c) 2017-present The Fastify team <https://github.com/fastify/fastify#team> All rights reserved.
-- 라이선스 전문: [BSD-3-Clause-4](#bsd-3-clause-4)
+- 라이선스 전문: [BSD-3-Clause-5](#bsd-3-clause-5)
 
 ### lodash@4.18.1
 
@@ -1091,6 +1147,20 @@ Copyright 2014-2026 DMTF. For the full DMTF copyright policy, see http://www.dmt
 - 들어가는 곳: server 코드
 - 저작권: Copyright (c) 2020 Vercel, Inc.
 - 라이선스 전문: [MIT-5](#mit-5)
+
+### mvdan/sh (셸 해석기) (v3.14.1, 패치 포함)
+
+- 라이선스: BSD-3-Clause
+- 출처: https://github.com/mvdan/sh
+- 들어가는 곳: 셸과 awk를 돌리는 WebAssembly 묶음 (apps/server/shell-wasm, 서버에서만 쓰고 웹 번들에는 없어요)
+- 저작권: Copyright (c) 2016, Daniel Martí. All rights reserved.
+- 라이선스 전문: [BSD-3-Clause-6](#bsd-3-clause-6)
+
+고지 문구 또는 NOTICE 파일:
+
+```text
+Copyright (c) 2016, Daniel Martí. All rights reserved.
+```
 
 ### negotiator@1.1.0
 
@@ -1394,7 +1464,7 @@ Copyright 2014-2026 DMTF. For the full DMTF copyright policy, see http://www.dmt
 - 출처: https://github.com/fastify/secure-json-parse
 - 들어가는 곳: server 코드
 - 저작권: Copyright (c) 2019, Sideway Inc, and project contributors Copyright (c) 2019-present The Fastify team <https://github.com/fastify/fastify#team> All rights reserved.
-- 라이선스 전문: [BSD-3-Clause-5](#bsd-3-clause-5)
+- 라이선스 전문: [BSD-3-Clause-7](#bsd-3-clause-7)
 
 ### semver@7.8.5
 
@@ -2260,6 +2330,38 @@ The complete list of contributors can be found at:
 
 ### BSD-3-Clause-4
 
+쓰는 구성요소: Go 표준 라이브러리 (WebAssembly에 들어가요)@go1.26.11, golang.org/x/sys@v0.47.0, golang.org/x/term@v0.45.0
+
+```text
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+   * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the
+distribution.
+   * Neither the name of Google LLC nor the names of its
+contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
+### BSD-3-Clause-5
+
 쓰는 구성요소: light-my-request@6.8.0
 
 ```text
@@ -2292,7 +2394,39 @@ The complete list of contributors can be found at:
 - https://github.com/fastify/light-my-request/graphs/contributors
 ```
 
-### BSD-3-Clause-5
+### BSD-3-Clause-6
+
+쓰는 구성요소: mvdan/sh (셸 해석기)@v3.14.1, 패치 포함
+
+```text
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+   * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the
+distribution.
+   * Neither the name of the copyright holder nor the names of its
+contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
+### BSD-3-Clause-7
 
 쓰는 구성요소: secure-json-parse@4.1.1
 
@@ -2372,7 +2506,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ### MIT-1
 
-쓰는 구성요소: @fastify/accept-negotiator@2.1.2, @fastify/ajv-compiler@4.0.7, @fastify/deepmerge@3.2.4, @fastify/error@4.2.1, @fastify/fast-json-stringify-compiler@5.1.1, @fastify/forwarded@3.1.2, @fastify/merge-json-schemas@0.2.2, @fastify/proxy-addr@5.1.2, @fastify/send@4.2.0, @hono/node-server@2.1.5, @lukeed/ms@2.0.2, @modelcontextprotocol/sdk@1.32.2, @pinojs/redact@0.4.0, @xyflow/react@12.12.0, @xyflow/system@0.0.83, ajv-formats@3.0.1, avvio@9.3.1, call-bind-apply-helpers@1.0.2, call-bound@1.0.4, dunder-proto@1.0.1, es-define-property@1.0.1, es-errors@1.3.0, es-object-atoms@1.1.2, esbuild@0.25.12, eventsource-parser@3.1.1, express-rate-limit@8.7.1, falkordb@7.0.0, fast-decode-uri-component@1.0.1, fast-deep-equal@3.1.3, fast-json-stringify@7.2.0, fastify@5.12.7, find-my-way@9.10.0, get-intrinsic@1.3.0, get-proto@1.0.1, get-tsconfig@4.14.3, gopd@1.2.0, has-symbols@1.1.0, hasown@2.0.4, hono@4.13.14, json-schema-ref-resolver@3.0.1, json-schema-traverse@1.0.0, math-intrinsics@1.1.0, merge-descriptors@2.0.0, object-inspect@1.13.4, on-exit-leak-free@2.1.2, path-key@3.1.1, pino-abstract-transport@3.0.0, pkce-challenge@5.0.1, process-warning@5.1.1, react@19.1.10, react-dom@19.1.10, resolve-pkg-maps@1.0.0, ret@0.5.1, safe-regex2@5.1.2, safer-buffer@2.1.2, scheduler@0.26.0, shebang-command@2.0.0, shebang-regex@3.0.0, side-channel@1.1.1, side-channel-list@1.0.1, side-channel-map@1.0.1, side-channel-weakmap@1.0.2, sonic-boom@4.2.1, thread-stream@4.2.0, toad-cache@3.7.4, toidentifier@1.0.1, tsx@4.20.6, use-sync-external-store@1.7.0, zod@3.25.76, zustand@4.5.7
+쓰는 구성요소: @fastify/accept-negotiator@2.1.2, @fastify/ajv-compiler@4.0.7, @fastify/deepmerge@3.2.4, @fastify/error@4.2.1, @fastify/fast-json-stringify-compiler@5.1.1, @fastify/forwarded@3.1.2, @fastify/merge-json-schemas@0.2.2, @fastify/proxy-addr@5.1.2, @fastify/send@4.2.0, @hono/node-server@2.1.5, @lukeed/ms@2.0.2, @modelcontextprotocol/sdk@1.32.2, @pinojs/redact@0.4.0, @xyflow/react@12.12.0, @xyflow/system@0.0.83, ajv-formats@3.0.1, avvio@9.3.1, call-bind-apply-helpers@1.0.2, call-bound@1.0.4, dunder-proto@1.0.1, es-define-property@1.0.1, es-errors@1.3.0, es-object-atoms@1.1.2, esbuild@0.25.12, eventsource-parser@3.1.1, express-rate-limit@8.7.1, falkordb@7.0.0, fast-decode-uri-component@1.0.1, fast-deep-equal@3.1.3, fast-json-stringify@7.2.0, fastify@5.12.7, find-my-way@9.10.0, get-intrinsic@1.3.0, get-proto@1.0.1, get-tsconfig@4.14.3, GoAWK (awk 해석기)@v1.32.0, 패치 포함, gopd@1.2.0, has-symbols@1.1.0, hasown@2.0.4, hono@4.13.14, json-schema-ref-resolver@3.0.1, json-schema-traverse@1.0.0, math-intrinsics@1.1.0, merge-descriptors@2.0.0, object-inspect@1.13.4, on-exit-leak-free@2.1.2, path-key@3.1.1, pino-abstract-transport@3.0.0, pkce-challenge@5.0.1, process-warning@5.1.1, react@19.1.10, react-dom@19.1.10, resolve-pkg-maps@1.0.0, ret@0.5.1, safe-regex2@5.1.2, safer-buffer@2.1.2, scheduler@0.26.0, shebang-command@2.0.0, shebang-regex@3.0.0, side-channel@1.1.1, side-channel-list@1.0.1, side-channel-map@1.0.1, side-channel-weakmap@1.0.2, sonic-boom@4.2.1, thread-stream@4.2.0, toad-cache@3.7.4, toidentifier@1.0.1, tsx@4.20.6, use-sync-external-store@1.7.0, zod@3.25.76, zustand@4.5.7
 
 ```text
 MIT License

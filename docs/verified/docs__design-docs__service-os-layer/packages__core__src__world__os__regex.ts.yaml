@@ -1,7 +1,7 @@
 doc: "docs/design-docs/service-os-layer.md"
 target: "packages/core/src/world/os/regex.ts"
 hash: "9af50f509678ced4"
-date: "2026-11-12"
-note: "ADR-0184: main을 합친 뒤 한계 힌트 변경과 이 문서의 서술이 어긋나지 않음을 대조"
-text_changed: true
-doc_hash: "9c656b1b80e30ea8"
+date: "2026-11-13"
+note: "셸 엔진 추가(ADR-0200)는 덧붙임이고 이 문서가 말하는 동작은 그대로임을 코드와 대조해 확인"
+text_changed: false
+doc_hash: "23fe3cbf8c15a98e"

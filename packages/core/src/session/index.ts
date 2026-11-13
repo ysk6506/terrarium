@@ -97,20 +97,7 @@ export {
   type RecorderOptions,
 } from "./recorder";
 export { type CallStamp, legacyEvents, RunLog, stampReal } from "./run-events";
-export {
-  type CallResult,
-  DEFAULT_TIME,
-  type FaultScope,
-  type OperationReport,
-  type RunResult,
-  Session,
-  type SessionConfig,
-  type SessionStatus,
-  type ShellOutside,
-  type SopMode,
-  type SopResult,
-  type TimePolicy,
-} from "./session";
+export { Session } from "./session";
 export { FIRST_LOOK, type ShellReach, SIGNS, shellReach } from "./shell-reach";
 export { buildTimeline, type TimelineEntry, type TimelineSource } from "./timeline";
 export {
@@ -121,4 +108,17 @@ export {
   type ToolPickCheck,
   toolPickCheck,
 } from "./tool-pick";
+export {
+  type CallResult,
+  DEFAULT_TIME,
+  type FaultScope,
+  type OperationReport,
+  type RunResult,
+  type SessionConfig,
+  type SessionStatus,
+  type ShellOutside,
+  type SopMode,
+  type SopResult,
+  type TimePolicy,
+} from "./types";
 export { type WarmStart, WarmStartCache } from "./warm";

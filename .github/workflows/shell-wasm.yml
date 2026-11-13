@@ -1,0 +1,30 @@
+# Rebuilds the shell module when its sources change and checks it is the file in the repository (ADR-0196 2-바, ADR-0200).
+# Normal CI never builds Go: the .wasm is committed and the lock check runs with the tests.
+name: shell-wasm
+on:
+  pull_request:
+    paths: ["apps/server/shell-wasm/**", ".github/workflows/shell-wasm.yml"]
+  push:
+    branches: [main]
+    paths: ["apps/server/shell-wasm/**"]
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: the lock matches the sources
+        run: node apps/server/shell-wasm/scripts/lock.mjs check
+      - name: build the pinned Go from source
+        run: |
+          want="$(node apps/server/shell-wasm/scripts/lock.mjs pin 'go|version')"
+          git clone --quiet --depth 1 --branch "go$want" https://github.com/golang/go "$RUNNER_TEMP/go-src"
+          (cd "$RUNNER_TEMP/go-src/src" && GOROOT_BOOTSTRAP="$(go env GOROOT)" ./make.bash >/dev/null)
+          echo "GO=$RUNNER_TEMP/go-src/bin/go" >> "$GITHUB_ENV"
+      - name: rebuild and compare
+        run: |
+          cp apps/server/shell-wasm/bin/terrarium-sh.wasm "$RUNNER_TEMP/committed.wasm"
+          bash apps/server/shell-wasm/scripts/build.sh
+          cmp "$RUNNER_TEMP/committed.wasm" apps/server/shell-wasm/bin/terrarium-sh.wasm
+          node apps/server/shell-wasm/scripts/lock.mjs verify

@@ -81,6 +81,10 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 | `telemetry` | 하네스가 남긴 trace·log를 읽을 ClickStack의 **기본값**. 읽기 전용 계정을 쓴다. 연결이 "서버 기본값"을 고르면 이것을 읽는다 | 토큰·모델 시간 칸이 비고 나머지 분석은 그대로 |
 | 하네스의 `traces` | 그 하네스의 트레이스가 쌓이는 곳: `{"kind": "none"}`, `{"kind": "default"}`, `{"kind": "clickstack", "url": …}`, `{"kind": "langfuse", "host": …, "publicKey": …, "secretKeyEnv": …}`. 화면에서는 연결 폼의 "이 하네스의 트레이스는 어디에 쌓이나요?"로 고른다 | 옛 규칙: 하네스가 `telemetry: "clickstack"`이면 서버 기본값 |
 
+## 셸 엔진 (`shell.engine`)
+
+`run_command`의 셸은 기본이 손으로 쓴 것(`"legacy"`)이다. `{"shell": {"engine": "wasm"}}`로 하면 진짜 셸과 awk(WebAssembly)가 돈다. 일꾼 스레드마다 모듈 하나를 미리 데워 두어 스레드당 약 60MB가 더 든다. 한도와 의미는 [서비스와 OS 층](service-os-layer.md)에 있다. 이 단계에서는 설정 하나로만 켜고 끄며, 켠 채로 옛 셸로 돌아가는 길은 없다.
+
 ## 비밀 값과 열쇠
 
 - 화면에서 입력한 토큰·비밀번호·비밀 헤더는 AES-256-GCM으로 봉인해 `terrarium.db`에 둔다. 열쇠는 환경 변수 `TERRARIUM_SECRET_KEY`에서 만들고, 없으면 `dataDir/secret.key`(만든 서버만 읽는 권한)를 처음에 만들어 쓴다.

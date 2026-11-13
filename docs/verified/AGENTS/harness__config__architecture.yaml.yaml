@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "7614717bad04d4f7"
-date: "2026-11-12"
-note: "main을 합침: CI 문단과 웹 화면 항목의 ADR-0195 문장이 main의 정리 작업 항목(문서 목록 생성)과 함께 있다. architecture.yaml의 바뀐 줄(tests.spec이 tests.e2e를 씀)은 의존 방향 서술과 어긋나지 않는다"
-text_changed: true
+hash: "fb0cdef7040710b7"
+date: "2026-11-13"
+note: "셸 엔진 추가(ADR-0200)는 덧붙임이고 이 문서가 말하는 동작은 그대로임을 코드와 대조해 확인"
+text_changed: false
 doc_hash: "ad69b0fbbb0b5d9e"

@@ -15,6 +15,61 @@ assets:
     copyright: >-
       Copyright 2014-2026 DMTF. For the full DMTF copyright policy, see
       http://www.dmtf.org/about/policies/copyright
+  - id: mvdan-sh
+    name: mvdan/sh (셸 해석기)
+    version: v3.14.1, 패치 포함
+    license: BSD-3-Clause
+    source: https://github.com/mvdan/sh
+    where: 셸과 awk를 돌리는 WebAssembly 묶음 (apps/server/shell-wasm, 서버에서만 쓰고 웹 번들에는 없어요)
+    paths:
+      - apps/server/shell-wasm/bin/terrarium-sh.wasm
+    license_file: apps/server/shell-wasm/licenses/LICENSE-mvdan-sh
+    copyright: >-
+      Copyright (c) 2016, Daniel Martí. All rights reserved.
+  - id: goawk
+    name: GoAWK (awk 해석기)
+    version: v1.32.0, 패치 포함
+    license: MIT
+    source: https://github.com/benhoyt/goawk
+    where: 셸과 awk를 돌리는 WebAssembly 묶음 (apps/server/shell-wasm, 서버에서만 쓰고 웹 번들에는 없어요)
+    paths:
+      - apps/server/shell-wasm/bin/terrarium-sh.wasm
+    license_file: apps/server/shell-wasm/licenses/LICENSE-goawk
+    copyright: >-
+      Copyright (c) 2022 Ben Hoyt
+  - id: go-stdlib
+    name: Go 표준 라이브러리 (WebAssembly에 들어가요)
+    version: go1.26.11
+    license: BSD-3-Clause
+    source: https://github.com/golang/go
+    where: 셸과 awk를 돌리는 WebAssembly 묶음 (apps/server/shell-wasm, 서버에서만 쓰고 웹 번들에는 없어요)
+    paths:
+      - apps/server/shell-wasm/bin/terrarium-sh.wasm
+    license_file: apps/server/shell-wasm/licenses/LICENSE-go
+    copyright: >-
+      Copyright 2009 The Go Authors.
+  - id: golang-x-sys
+    name: golang.org/x/sys
+    version: v0.47.0
+    license: BSD-3-Clause
+    source: https://github.com/golang/sys
+    where: 셸과 awk를 돌리는 WebAssembly 묶음 (apps/server/shell-wasm, 서버에서만 쓰고 웹 번들에는 없어요)
+    paths:
+      - apps/server/shell-wasm/bin/terrarium-sh.wasm
+    license_file: apps/server/shell-wasm/licenses/LICENSE-x-sys
+    copyright: >-
+      Copyright 2009 The Go Authors.
+  - id: golang-x-term
+    name: golang.org/x/term
+    version: v0.45.0
+    license: BSD-3-Clause
+    source: https://github.com/golang/term
+    where: 셸과 awk를 돌리는 WebAssembly 묶음 (apps/server/shell-wasm, 서버에서만 쓰고 웹 번들에는 없어요)
+    paths:
+      - apps/server/shell-wasm/bin/terrarium-sh.wasm
+    license_file: apps/server/shell-wasm/licenses/LICENSE-x-term
+    copyright: >-
+      Copyright 2009 The Go Authors.
 
 # Data drawn by hand with outside material as a guide. Nothing is copied, so no license applies; the notices
 # file says so in a section of its own. Say only what is known; do not add who gave it or which service it was.

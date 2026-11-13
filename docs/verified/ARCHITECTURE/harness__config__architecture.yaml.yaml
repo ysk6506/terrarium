@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "7614717bad04d4f7"
-date: "2026-11-12"
-note: "architecture.yaml에서 tests.spec이 tests.e2e를 입구(index.ts)로 쓸 수 있게 된 것이 명세 테스트 항목에 적혀 있다. 나머지는 그대로 맞다 (ADR-0195)"
-text_changed: true
-doc_hash: "b25280de644fb1e6"
+hash: "fb0cdef7040710b7"
+date: "2026-11-13"
+note: "셸 엔진 추가(ADR-0200)는 덧붙임이고 이 문서가 말하는 동작은 그대로임을 코드와 대조해 확인"
+text_changed: false
+doc_hash: "a4cb61d30297e19a"
