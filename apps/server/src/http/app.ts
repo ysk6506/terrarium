@@ -162,6 +162,7 @@ async function handle(
   let viewer: Viewer = NOBODY;
   try {
     viewer = await identify(route, req, auth);
+    options.platform.people.hear(viewer);
     admit(route, viewer);
     // a change is not begun when the log could not record it (permissions.md section 6)
     await call.ready();

@@ -9,18 +9,24 @@ import {
   cardFacts,
   checkedWhen,
   checkLine,
+  defaultNote,
   deleteText,
   EMPTY_BODY,
   EMPTY_TITLE,
   LIMIT_LINE,
   MODELS_CHANGED,
   MODELS_HASH,
+  matchesFilter,
   modelKindName,
   modelSectionState,
+  NO_DEFAULT_WHY,
+  repeatedNames,
+  type ScopeFilter,
 } from "../../logic";
 import { modelsState, pickByText, useMossScreen } from "../../moss";
 import { useAction, useApp, useAsync, useNow } from "../context";
-import { Button, Dialog, Empty, Failure, Loading, Section, ToneDot } from "../kit";
+import { Button, Dialog, Empty, Failure, Loading, Note, Section, ToneDot } from "../kit";
+import { FilterEmpty, ScopeButton, ScopeFilterBar, ScopeTag, useOwnerName } from "../scope";
 import { ModelDialog } from "./model-dialog";
 
 type Editing = { readonly view?: LlmModelView; readonly kind?: LlmKind } | undefined;
@@ -58,17 +64,72 @@ function DeleteDialog(props: {
   );
 }
 
-function ModelCard(props: {
+function CardTitle({ view, twin }: { readonly view: LlmModelView; readonly twin: boolean }) {
+  const ownerOf = useOwnerName();
+  return (
+    <h3 style={{ margin: 0 }}>
+      {view.name}
+      {twin && <span className="small muted"> · {ownerOf(view.owner)}</span>}{" "}
+      <span className="tag">{modelKindName(view.kind)}</span>
+      <ScopeTag item={view.sharing} />
+      {view.isDefault && (
+        <>
+          {" "}
+          <span className="tag tag-recommend">기본</span>
+        </>
+      )}
+    </h3>
+  );
+}
+
+/** What the maker and administrators may do to a model: who sees it, change it, delete it. */
+function ChangeButtons(props: {
   readonly view: LlmModelView;
   readonly onEdit: () => void;
   readonly onDelete: () => void;
   readonly onChanged: () => void;
 }) {
   const { view, onEdit, onDelete, onChanged } = props;
-  const { api, me } = useApp();
+  return (
+    <>
+      <ScopeButton
+        kind="model"
+        id={view.id}
+        name={view.name}
+        owner={view.owner}
+        current={{
+          scope: view.sharing.scope,
+          ...(view.sharing.group ? { group: view.sharing.group } : {}),
+        }}
+        onChanged={onChanged}
+      />
+      <Button data-moss-skip="폼과 대화상자 안" size="small" onClick={onEdit}>
+        고치기
+      </Button>
+      <Button data-moss-skip="폼과 대화상자 안" size="small" kind="danger" onClick={onDelete}>
+        지우기
+      </Button>
+    </>
+  );
+}
+
+function ModelCard(props: {
+  readonly view: LlmModelView;
+  /** The same name is two people's: the maker is named beside it. */
+  readonly twin: boolean;
+  /** No model is the default: each card that cannot be one says what to change. */
+  readonly noDefault: boolean;
+  readonly onEdit: () => void;
+  readonly onDelete: () => void;
+  readonly onChanged: () => void;
+}) {
+  const { view, twin, noDefault, onEdit, onDelete, onChanged } = props;
+  const { api } = useApp();
   const { busy, run } = useAction();
   const now = useNow();
-  const mine = view.owner === me;
+  // the maker and administrators change it (permissions.md section 4); the screen asks the server's own answer
+  const mayChange = view.sharing.canChange;
+  const asDefault = defaultNote(view);
   const last = checkLine(view.lastCheck);
   const when = checkedWhen(view.lastCheck, now);
   const act = async (call: "checkModel" | "setDefaultModel", done?: string) => {
@@ -79,15 +140,7 @@ function ModelCard(props: {
       <div className="stack" style={{ gap: 10 }}>
         <div className="conn-head">
           <div>
-            <h3 style={{ margin: 0 }}>
-              {view.name} <span className="tag">{modelKindName(view.kind)}</span>
-              {view.isDefault && (
-                <>
-                  {" "}
-                  <span className="tag tag-recommend">기본</span>
-                </>
-              )}
-            </h3>
+            <CardTitle view={view} twin={twin} />
             <div className="small muted">{cardFacts(view).join(" · ")}</div>
             {view.headers.length > 0 && (
               <div className="small muted">헤더 {view.headers.join(", ")}</div>
@@ -103,7 +156,7 @@ function ModelCard(props: {
             >
               {busy ? "확인하는 중" : "연결 확인"}
             </Button>
-            {!view.isDefault && (
+            {!view.isDefault && asDefault.canSet && (
               <Button
                 size="small"
                 busy={busy}
@@ -113,23 +166,17 @@ function ModelCard(props: {
                 기본으로
               </Button>
             )}
-            {mine && (
-              <>
-                <Button data-moss-skip="폼과 대화상자 안" size="small" onClick={onEdit}>
-                  고치기
-                </Button>
-                <Button
-                  data-moss-skip="폼과 대화상자 안"
-                  size="small"
-                  kind="danger"
-                  onClick={onDelete}
-                >
-                  지우기
-                </Button>
-              </>
+            {mayChange && (
+              <ChangeButtons
+                view={view}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onChanged={onChanged}
+              />
             )}
           </div>
         </div>
+        {noDefault && asDefault.why && <p className="small muted">{asDefault.why}</p>}
         <div className="row" style={{ flexWrap: "wrap", gap: 8 }} aria-live="polite">
           <ToneDot tone={last.tone}>{last.text}</ToneDot>
           {when && <span className="small muted">{when}</span>}
@@ -177,6 +224,52 @@ function useModelsMoss(models: readonly LlmModelView[], reload: () => void, onAd
   });
 }
 
+/** The note when no model is the default, the filter, and one card for each model. */
+function ModelCards(props: {
+  readonly models: readonly LlmModelView[];
+  readonly onEdit: (view: LlmModelView) => void;
+  readonly onDelete: (view: LlmModelView) => void;
+  readonly onChanged: () => void;
+}) {
+  const { models } = props;
+  const { me } = useApp();
+  const [who, setWho] = useState<ScopeFilter>("all");
+  const shown = models.filter((m) =>
+    matchesFilter(who, { owner: m.owner, scope: m.sharing.scope }, me),
+  );
+  const noDefault = models.length > 0 && !models.some((m) => m.isDefault);
+  const twins = repeatedNames(models);
+  return (
+    <>
+      {noDefault && (
+        <Note tone="warn">
+          <b>모두의 기본 모델이 아직 없어요.</b> {NO_DEFAULT_WHY} 기본으로 정하려면 아래 모델의
+          '누가 볼 수 있나요'를 '모두'로 바꾼 뒤 '기본으로'를 눌러요.
+        </Note>
+      )}
+      {models.length > 1 && (
+        <div className="scope-filter-row" style={{ marginBottom: 0 }}>
+          <ScopeFilterBar value={who} onChange={setWho} />
+        </div>
+      )}
+      {models.length > 0 && shown.length === 0 && (
+        <FilterEmpty filter={who} onClear={() => setWho("all")} />
+      )}
+      {shown.map((view) => (
+        <ModelCard
+          key={view.id}
+          view={view}
+          twin={twins.has(view.name)}
+          noDefault={noDefault}
+          onEdit={() => props.onEdit(view)}
+          onDelete={() => props.onDelete(view)}
+          onChanged={props.onChanged}
+        />
+      ))}
+    </>
+  );
+}
+
 export function ModelSection() {
   const { api } = useApp();
   const list = useAsync((signal) => api.call("listModels", { signal }), []);
@@ -217,15 +310,12 @@ export function ModelSection() {
         {list.error && <Failure error={list.error} retry={list.reload} />}
         {state === "loading" && !list.error && <Loading lines={2} />}
         {state === "empty" && <Empty title={EMPTY_TITLE}>{EMPTY_BODY}</Empty>}
-        {models.map((view) => (
-          <ModelCard
-            key={view.id}
-            view={view}
-            onEdit={() => setEditing({ view })}
-            onDelete={() => setDeleting(view)}
-            onChanged={reload}
-          />
-        ))}
+        <ModelCards
+          models={models}
+          onEdit={(view) => setEditing({ view })}
+          onDelete={setDeleting}
+          onChanged={reload}
+        />
         {state === "list" && (
           <p className="small muted" style={{ margin: 0 }}>
             {LIMIT_LINE}

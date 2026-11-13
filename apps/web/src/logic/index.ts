@@ -44,6 +44,7 @@ export {
   type FetchLike,
   NETWORK_MESSAGE,
 } from "./api";
+export * as auditScreen from "./audit-screen";
 export * as builder from "./builder";
 export { type Box, type LineChart, lineChart, niceTicks, scoreBar } from "./charts";
 export {
@@ -221,6 +222,35 @@ export {
 } from "./router";
 export * as runbook from "./runbook";
 export * as scenario from "./scenario";
+export {
+  type BlockedWords,
+  blockedWords,
+  defaultNote,
+  emptyFilterText,
+  groupsOf,
+  isAdmin,
+  matchesFilter,
+  NO_DEFAULT_WHY,
+  ownerName,
+  peopleNames,
+  repeatedNames,
+  SCOPE_FILTER_LABEL,
+  SCOPE_LABELS,
+  SCOPE_QUESTION,
+  type ScopedKind,
+  type ScopeFilter,
+  type ScopeOption,
+  type ScopeValue,
+  START_SCOPE,
+  sameScope,
+  scopeBody,
+  scopeFilters,
+  scopeOptions,
+  scopeSentence,
+  scopeTag,
+  type WhoLine,
+  whoLine,
+} from "./scope";
 export {
   DOT_LABELS,
   DOT_MARKS,

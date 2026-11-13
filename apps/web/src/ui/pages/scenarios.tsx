@@ -2,14 +2,31 @@
  * Scenarios (REQ-033, REQ-034): the list (all, or one world's), and starting a new one from a template
  * that fits the world or from an empty canvas.
  */
-import type { ScenarioRecord, WorldSummary } from "@terrarium/core/experiments";
+import type { ScenarioWithScope } from "@terrarium/core/contract";
+import type { WorldSummary } from "@terrarium/core/experiments";
 import { TEMPLATE_GROUPS } from "@terrarium/core/scenario";
 import { type Blueprint, BlueprintIndex } from "@terrarium/core/world";
 import { type KeyboardEvent, useEffect, useRef, useState } from "react";
-import { relativeTime, scenario } from "../../logic";
+import {
+  matchesFilter,
+  relativeTime,
+  type ScopeFilter,
+  type ScopeValue,
+  START_SCOPE,
+  scenario,
+  scopeBody,
+} from "../../logic";
 import { scenariosState, useMossRead } from "../../moss";
 import { Go, messageOf, useApp, useAsync, useNow } from "../context";
 import { Button, Dialog, Empty, Failure, Loading, Note, PageHead, SelectField } from "../kit";
+import {
+  FilterEmpty,
+  ScopeAsk,
+  ScopeButton,
+  ScopeFilterBar,
+  ScopeTag,
+  useOwnerName,
+} from "../scope";
 
 const KEYS: Readonly<Record<string, 1 | -1>> = {
   ArrowDown: 1,
@@ -123,9 +140,10 @@ function NewScenarioDialog({
   readonly worldId?: string;
   readonly onClose: () => void;
 }) {
-  const { api, navigate } = useApp();
+  const { api, navigate, meta } = useApp();
   const [world, setWorld] = useState(worldId ?? worlds[0]?.id);
   const [picked, setPicked] = useState<string>();
+  const [sharing, setSharing] = useState<ScopeValue>({ scope: START_SCOPE.scenario });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
   const detail = useAsync(
@@ -141,11 +159,12 @@ function NewScenarioDialog({
     if (!world) return;
     setBusy(true);
     try {
+      const shared = scopeBody(sharing, meta?.user.groups ?? []);
       const saved = await api.call("createScenario", {
         body:
           start === scenario.EMPTY_START
-            ? { worldId: world }
-            : { worldId: world, templateId: start },
+            ? { worldId: world, ...shared }
+            : { worldId: world, templateId: start, ...shared },
       });
       onClose();
       navigate({ name: "scenario", id: saved.scenario.id });
@@ -186,6 +205,7 @@ function NewScenarioDialog({
           <p className="small muted">시나리오는 한 세계의 장비를 대상으로 해요.</p>
         )}
         <StartCards groups={groups} chosen={start} onPick={setPicked} />
+        <ScopeAsk value={sharing} onChange={setSharing} />
         {error && <Note tone="bad">{error}</Note>}
       </div>
     </Dialog>
@@ -195,11 +215,14 @@ function NewScenarioDialog({
 function ScenarioTable({
   scenarios,
   worlds,
+  onChanged,
 }: {
-  readonly scenarios: readonly ScenarioRecord[];
+  readonly scenarios: readonly ScenarioWithScope[];
   readonly worlds: readonly WorldSummary[];
+  readonly onChanged: () => void;
 }) {
   const now = useNow();
+  const ownerOf = useOwnerName();
   const worldName = (id: string) => worlds.find((w) => w.id === id)?.name ?? id;
   return (
     <div className="table-wrap">
@@ -224,11 +247,12 @@ function ScenarioTable({
               <tr key={s.id}>
                 <td>
                   <Go to={{ name: "scenario", id: s.id }}>{s.name}</Go>
+                  <ScopeTag item={s} />
                 </td>
                 <td>{worldName(s.worldId)}</td>
                 <td className="num">{s.doc.nodes.length}</td>
                 <td className="num">{s.doc.expectations.length}</td>
-                <td>{s.owner}</td>
+                <td>{ownerOf(s.owner)}</td>
                 <td>{relativeTime(s.updatedAt, now)}</td>
                 <td>
                   <Go to={{ name: "newExperiment", scenarioId: s.id }}>
@@ -238,6 +262,22 @@ function ScenarioTable({
                   <Go to={{ name: "scenarioProcess", id: s.id }}>
                     지금 방식<span className="sr-only"> ({s.name})</span>
                   </Go>
+                  {s.canChangeScope && (
+                    <>
+                      {" · "}
+                      <ScopeButton
+                        kind="scenario"
+                        id={s.id}
+                        name={s.name}
+                        owner={s.owner}
+                        current={{
+                          scope: s.scope ?? "everyone",
+                          ...(s.group ? { group: s.group } : {}),
+                        }}
+                        onChanged={onChanged}
+                      />
+                    </>
+                  )}
                 </td>
               </tr>
             ))}
@@ -248,17 +288,21 @@ function ScenarioTable({
 }
 
 interface ScenarioData {
-  readonly scenarios: readonly ScenarioRecord[];
+  readonly scenarios: readonly ScenarioWithScope[];
   readonly worlds: readonly WorldSummary[];
 }
 
 function ScenarioBody({
   data,
   onMake,
+  onChanged,
 }: {
   readonly data: ScenarioData;
   readonly onMake: () => void;
+  readonly onChanged: () => void;
 }) {
+  const { me } = useApp();
+  const [who, setWho] = useState<ScopeFilter>("all");
   if (data.worlds.length === 0)
     return (
       <Empty
@@ -281,7 +325,19 @@ function ScenarioBody({
         팬 고장, 냉방 정지 같은 템플릿에서 시작하면 블록과 채점표가 미리 채워져요.
       </Empty>
     );
-  return <ScenarioTable scenarios={data.scenarios} worlds={data.worlds} />;
+  const shown = data.scenarios.filter((s) => matchesFilter(who, s, me));
+  return (
+    <>
+      <div className="scope-filter-row">
+        <ScopeFilterBar value={who} onChange={setWho} />
+      </div>
+      {shown.length === 0 ? (
+        <FilterEmpty filter={who} onClear={() => setWho("all")} />
+      ) : (
+        <ScenarioTable scenarios={shown} worlds={data.worlds} onChanged={onChanged} />
+      )}
+    </>
+  );
 }
 
 function WorldFilter({
@@ -348,7 +404,9 @@ export function ScenariosPage() {
       <WorldFilter worlds={worlds} worldId={worldId} />
       {data.error && <Failure error={data.error} retry={data.reload} />}
       {!data.data && !data.error && <Loading />}
-      {data.data && <ScenarioBody data={data.data} onMake={() => setMaking(true)} />}
+      {data.data && (
+        <ScenarioBody data={data.data} onMake={() => setMaking(true)} onChanged={data.reload} />
+      )}
       {making && (
         <NewScenarioDialog
           worlds={worlds}

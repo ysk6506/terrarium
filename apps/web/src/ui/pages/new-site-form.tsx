@@ -13,6 +13,7 @@ import { browserStore } from "../browser-store";
 import { catalog } from "../builder/useBuilder";
 import { messageOf, useApp } from "../context";
 import { Button, Check, Note, NumberField, Segmented, SelectField, TextField } from "../kit";
+import { useSharingChoice } from "../scope";
 import { OutlineView, SitePad } from "./site-pad";
 
 type Shape = "preset" | "size" | "draw";
@@ -209,6 +210,7 @@ export function SmallForm({ onDone }: { readonly onDone: () => void }) {
   const [name, setName] = useState(NAME);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
+  const sharing = useSharingChoice("world");
   const create = async () => {
     setBusy(true);
     try {
@@ -217,7 +219,9 @@ export function SmallForm({ onDone }: { readonly onDone: () => void }) {
         { name: title, siteName: title, outline: s.outline, forSale, market: s.market },
         catalog,
       );
-      const saved = await api.call("createWorld", { body: { name: title, blueprint } });
+      const saved = await api.call("createWorld", {
+        body: { name: title, blueprint, ...sharing.forCreate },
+      });
       // The first small site of a browser asks about the tour once, in the builder.
       queueTour(browserStore(), saved.world.id);
       onDone();
@@ -243,6 +247,7 @@ export function SmallForm({ onDone }: { readonly onDone: () => void }) {
         {...(error ? { error } : {})}
         help="땅 하나, 건물 하나, 서버룸 하나로 시작해요. 서버룸을 채우고 넓히는 건 안에서 해요."
       />
+      {sharing.field}
       <details className="fold detail-fold">
         <summary>땅 모양 정하기</summary>
         <div className="stack" style={{ marginTop: 12 }}>

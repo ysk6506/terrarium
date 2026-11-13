@@ -23,6 +23,7 @@ import {
 } from "../../logic";
 import { Go, useAction, useApp, useNow } from "../context";
 import { Button, Note, ToneDot } from "../kit";
+import { ScopeButton, ScopeTag, useOwnerName } from "../scope";
 import { TryPanel, whyNot } from "./connection-try";
 
 function AgentList({
@@ -185,10 +186,11 @@ function CensusRow(props: {
 
 function Badges({ view }: { readonly view: ConnectionView }) {
   const expiry = expiryOf(view);
+  const ownerOf = useOwnerName();
   return (
     <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
       <span className="tag">
-        {view.source === "config" ? "서버 설정" : `만든 사람 ${view.owner}`}
+        {view.source === "config" ? "서버 설정" : `만든 사람 ${ownerOf(view.owner ?? "")}`}
       </span>
       <span className="tag">{view.scope === "harness" ? "하네스" : "에이전트 하나"}</span>
       <span className="tag">{TRANSPORT_LABELS[view.toolTransport]}</span>
@@ -260,6 +262,17 @@ function Upkeep({
       )}
       {mine && (
         <>
+          <ScopeButton
+            kind="connection"
+            id={view.id}
+            name={view.name}
+            {...(view.owner ? { owner: view.owner } : {})}
+            current={{
+              scope: view.sharing.scope,
+              ...(view.sharing.group ? { group: view.sharing.group } : {}),
+            }}
+            onChanged={onChanged}
+          />
           <Button data-moss-skip="폼과 대화상자 안" size="small" onClick={onEdit}>
             고치기
           </Button>
@@ -301,7 +314,8 @@ function CardHead(props: {
     <div className="conn-head">
       <div>
         <h2 style={{ margin: 0 }}>
-          {view.name}{" "}
+          {view.name}
+          <ScopeTag item={view.sharing} />{" "}
           <ToneDot tone={view.status === "ok" ? "good" : "bad"}>
             {view.status === "ok" ? "연결됨" : "연결 안 됨"}
           </ToneDot>
@@ -356,8 +370,8 @@ export function ConnectionCard({
   /** A built-in reference agent: no "말 걸어 보기", since it only plays a script. */
   readonly reference?: boolean;
 }) {
-  const { me } = useApp();
-  const mine = view.source === "screen" && view.owner === me;
+  // the maker and administrators change a connection made on the screen; the server says which this person is
+  const mine = view.source === "screen" && view.sharing.canChange;
   const [talk, setTalk] = useState(false);
   const [manage, setManage] = useState(false);
   const [peek, setPeek] = useState(false);

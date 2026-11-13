@@ -12,11 +12,13 @@ import {
   operationWords,
   quickDraft,
   quickOperation,
+  type ScopeValue,
   shapeView,
   withHarm,
 } from "../../logic";
 import { Go, messageOf, useApp, useAsync } from "../context";
 import { Button, Failure, Loading, Note, PageHead } from "../kit";
+import { useSharingChoice } from "../scope";
 import { slotPending } from "./experiment-mcp";
 import { HowStep, NameStep, WhatStep, WhoStep } from "./experiment-steps";
 import { useWizardMoss } from "./new-experiment-moss";
@@ -242,7 +244,13 @@ function useDefaultHarness(draft: Draft, setDraft: Dispatch<SetStateAction<Draft
 }
 
 /** 실험을 시작한다(또는 이어서 돌린다): "실험 시작" 버튼과 이끼의 "실험 시작"이 같은 `launch`를 써요. */
-function useLaunch(start: Start, draft: Draft, placeholder: string, harm: HarmEdits) {
+function useLaunch(
+  start: Start,
+  draft: Draft,
+  placeholder: string,
+  harm: HarmEdits,
+  sharing: ScopeValue,
+) {
   const { api, navigate } = useApp();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
@@ -262,9 +270,11 @@ function useLaunch(start: Start, draft: Draft, placeholder: string, harm: HarmEd
       const view = start.parent
         ? await api.call("forkExperiment", {
             params: { id: start.parent.experiment.id },
-            body: experiment.toForkRequest(start.parent.experiment, draft),
+            body: { ...experiment.toForkRequest(start.parent.experiment, draft), ...sharing },
           })
-        : await api.call("createExperiment", { body: experiment.toRequest(draft, placeholder) });
+        : await api.call("createExperiment", {
+            body: { ...experiment.toRequest(draft, placeholder), ...sharing },
+          });
       navigate({ name: "experiment", id: view.experiment.id });
     } catch (err) {
       setError(messageOf(err));
@@ -295,7 +305,8 @@ function Wizard({ start }: { readonly start: Start }) {
     agents?.find((a) => a.id === draft.agentId)?.name,
   );
   const [harm, setHarm] = useState<HarmEdits>({});
-  const { busy, error, launch } = useLaunch(start, draft, placeholder, harm);
+  const sharing = useSharingChoice("experiment");
+  const { busy, error, launch } = useLaunch(start, draft, placeholder, harm, sharing.forCreate);
   useWizardMoss({
     draft,
     set,
@@ -329,6 +340,7 @@ function Wizard({ start }: { readonly start: Start }) {
           {...(scenario ? { scenario } : {})}
         />
         <NameStep draft={draft} set={set} placeholder={placeholder} />
+        <section className="wizard-step stack">{sharing.field}</section>
         {start.world && <QuickHarm world={start.world} edits={harm} onChange={setHarm} />}
       </div>
       <div className="stack">

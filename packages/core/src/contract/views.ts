@@ -66,6 +66,11 @@ export interface MetaView {
   };
   /** How people are told apart here: `proxy` believes the SSO proxy; `self-declared` believes whatever name is typed (one person, locally). */
   readonly identity: { readonly mode: "proxy" | "self-declared" };
+  /**
+   * The names people go by here, so a list can say "김하늘" where a record holds a login id. Only people the server has
+   * heard from since it started; for anyone else a screen shows the id it has.
+   */
+  readonly people: readonly { readonly id: string; readonly name: string }[];
   readonly harnesses: readonly HarnessView[];
   readonly sources: readonly SourceView[];
   readonly telemetry: { readonly configured: boolean; readonly name: string };

@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import { count, worldScale } from "../../logic";
 import { messageOf, useApp } from "../context";
 import { Button, Note } from "../kit";
+import { useSharingChoice } from "../scope";
 import { OutlineView } from "./site-pad";
 import { WorldDetails } from "./world-details";
 
@@ -115,6 +116,7 @@ export function CampusForm({ onDone }: { readonly onDone: () => void }) {
   const [form, setForm] = useState<Form>(START);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
+  const sharing = useSharingChoice("world");
   const choices = useMemo(() => worldScale.scaleChoices(form.site), [form.site]);
   const scale = choices.find((c) => c.id === form.scale) ?? choices[choices.length - 1];
   const base = scale?.spec ?? worldScale.scaleSpec(form.site, "real");
@@ -131,7 +133,9 @@ export function CampusForm({ onDone }: { readonly onDone: () => void }) {
     setBusy(true);
     setError(undefined);
     try {
-      const saved = await api.call("generateWorld", { body: { campus: spec } });
+      const saved = await api.call("generateWorld", {
+        body: { campus: spec, ...sharing.forCreate },
+      });
       toast(`${saved.world.name}을 만들었어요. 랙 ${count(saved.stats.rack ?? 0)}대예요`);
       onDone();
       navigate({ name: "world", id: saved.world.id });
@@ -169,6 +173,7 @@ export function CampusForm({ onDone }: { readonly onDone: () => void }) {
         onName={(name) => set({ name })}
         placeholder={`${worldScale.siteName(form.site)} 세계`}
       />
+      {sharing.field}
       {problem && <Note tone="bad">{problem}</Note>}
       {error && <Note tone="bad">{error}</Note>}
       {stage && <output className="small muted">{stage}</output>}

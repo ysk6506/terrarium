@@ -13,7 +13,15 @@ import {
   useRef,
   useState,
 } from "react";
-import { ApiError, SECTIONS, STATUS_TONES, sectionOf, statusLabel, type Tone } from "../logic";
+import {
+  ApiError,
+  blockedWords,
+  SECTIONS,
+  STATUS_TONES,
+  sectionOf,
+  statusLabel,
+  type Tone,
+} from "../logic";
 import { MossAsk, termQuestion } from "../moss";
 import { Go, useApp } from "./context";
 import { Icon } from "./icons";
@@ -152,17 +160,28 @@ export function Note({
   );
 }
 
-/** An error from loading something, with a way to try again. */
-/** What went wrong in the server's words, and the ways on: try again (unless it is simply gone) or go to the list. */
+/**
+ * What went wrong in the server's words, and the ways on: try again (unless it is simply gone) or go to the list. A thing the
+ * person may not open (403, or 404, which the server also gives for what is kept private) says why and what can be done
+ * (permissions.md section 7), in place of the server's one line.
+ */
 export function Failure({ error, retry }: { readonly error: Error; readonly retry?: () => void }) {
   const { page } = useApp();
   const gone = error instanceof ApiError && error.status === 404;
   const section = SECTIONS.find((s) => s.key === sectionOf(page));
   const away = section && section.key !== "home" ? section : undefined;
+  const blocked = error instanceof ApiError ? blockedWords(error.status) : undefined;
   return (
     <Note tone="bad">
       <div className="stack">
-        <span>{error.message}</span>
+        {blocked ? (
+          <div className="blocked">
+            <h2>{blocked.title}</h2>
+            <span>{blocked.body}</span>
+          </div>
+        ) : (
+          <span>{error.message}</span>
+        )}
         <div className="row">
           {retry && !gone && (
             <Button size="small" onClick={retry}>

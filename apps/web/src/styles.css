@@ -6733,3 +6733,120 @@ a.res-cell:hover {
     padding: 0 2px;
   }
 }
+
+/* 누가 볼 수 있나요 (ADR-0198): the one question, its tag in lists, and the foot of the rail. */
+.scope-ask {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.scope-ask-options {
+  display: grid;
+  gap: 6px;
+}
+
+.scope-ask-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.scope-ask-option:has(input:checked) {
+  border-color: var(--cobalt);
+  background: var(--cobalt-soft);
+  box-shadow: 0 0 0 1px var(--cobalt);
+}
+
+.scope-ask-option:has(input:focus-visible) {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 2px;
+}
+
+.scope-ask-option input {
+  flex: none;
+  margin: 3px 0 0;
+}
+
+.scope-ask-option > span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.scope-ask-help {
+  margin: 0;
+}
+
+.tag-scope {
+  margin-inline-start: 6px;
+  padding: 1px 8px;
+  background: var(--warn-soft);
+  color: var(--warn);
+  font-size: 12px;
+}
+
+.rail-user-fixed {
+  display: block;
+  cursor: default;
+}
+
+.rail-note {
+  padding: 0 4px 6px;
+  color: var(--warn);
+  font-size: 11px;
+  line-height: 1.3;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.scope-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-bottom: 16px;
+}
+
+.blocked {
+  display: grid;
+  gap: 8px;
+  max-width: 560px;
+}
+
+.blocked h2 {
+  margin: 0;
+}
+
+.audit-line td {
+  vertical-align: top;
+}
+
+.audit-detail {
+  margin: 0;
+  padding: 6px 0 2px;
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.table-owner-twin {
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .rail-note {
+    align-self: center;
+    padding: 0 6px;
+    white-space: nowrap;
+  }
+}

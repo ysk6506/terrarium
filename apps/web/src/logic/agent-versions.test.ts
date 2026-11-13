@@ -119,11 +119,13 @@ describe("a version history reads in words [REQ-053]", () => {
     expect(down.text).toContain("연결이 끊겼다");
   });
 
-  test("versions are changed by the one who connected it, or by anyone when the server's file did", () => {
-    expect(canEditVersions({ source: "config" }, undefined)).toBe(true);
-    expect(canEditVersions({ source: "screen", owner: "하늘" }, "하늘")).toBe(true);
-    expect(canEditVersions({ source: "screen", owner: "하늘" }, "민수")).toBe(false);
-    expect(canEditVersions({ source: "screen", owner: "하늘" }, undefined)).toBe(false);
-    expect(canEditVersions(undefined, "하늘")).toBe(false);
+  test("versions are changed by the one who connected it and by administrators; the server's file's connections only by administrators", () => {
+    expect(canEditVersions({ source: "config" }, "하늘", false)).toBe(false);
+    expect(canEditVersions({ source: "config" }, "하늘", true)).toBe(true);
+    expect(canEditVersions({ source: "screen", owner: "하늘" }, "하늘", false)).toBe(true);
+    expect(canEditVersions({ source: "screen", owner: "하늘" }, "민수", false)).toBe(false);
+    expect(canEditVersions({ source: "screen", owner: "하늘" }, "민수", true)).toBe(true);
+    expect(canEditVersions({ source: "screen", owner: "하늘" }, undefined, false)).toBe(false);
+    expect(canEditVersions(undefined, "하늘", true)).toBe(false);
   });
 });

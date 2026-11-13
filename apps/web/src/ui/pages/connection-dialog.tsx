@@ -28,6 +28,7 @@ import {
 } from "../../logic";
 import { useAction, useApp, useAsync } from "../context";
 import { Button, Dialog, Note, TextField } from "../kit";
+import { useSharingChoice } from "../scope";
 import { AgentCensusLine } from "./agent-census";
 import { PresetForm, TracesChooser } from "./connection-extras";
 import { ConnectorFieldInput, HeaderEditor, MetaEditor } from "./connection-form";
@@ -235,6 +236,12 @@ function useConnectionDialog({
   );
   const [check, setCheck] = useState<ConnectionCheck>();
   const [shown, setShown] = useState(false);
+  const sharing = useSharingChoice(
+    "connection",
+    existing
+      ? { ...existing.sharing, ...(existing.owner ? { owner: existing.owner } : {}) }
+      : undefined,
+  );
   const kept = existing?.secrets ?? [];
   const list = useAsync((signal) => api.call("listTelemetryAdapters", { signal }), []).data;
   const traces = form.traces ?? blankTraces(list);
@@ -280,7 +287,7 @@ function useConnectionDialog({
   };
   const save = async () => {
     const s = ready();
-    if (!s) return;
+    if (!s || !sharing.ready) return;
     const common = {
       name: form.name.trim(),
       description: form.description.trim(),
@@ -290,15 +297,39 @@ function useConnectionDialog({
       ...tracesBody(),
     };
     const saved = await run(
-      () =>
-        existing
-          ? api.call("updateConnection", { params: { id: existing.id }, body: common })
-          : api.call("createConnection", { body: { connector: s.kind, ...common } }),
+      async () => {
+        if (!existing)
+          return api.call("createConnection", {
+            body: { connector: s.kind, ...common, ...sharing.forCreate },
+          });
+        const done = await api.call("updateConnection", {
+          params: { id: existing.id },
+          body: common,
+          ...(sharing.reason ? { reason: sharing.reason } : {}),
+        });
+        await sharing.applyTo(existing.id);
+        return done;
+      },
       existing ? "연결을 고쳤어요" : "연결을 저장했어요",
     );
     if (saved) onSaved(saved);
   };
-  return { busy, kind, spec, form, check, problems, kept, patch, pick, test, save, list, traces };
+  return {
+    busy,
+    kind,
+    spec,
+    form,
+    check,
+    problems,
+    kept,
+    patch,
+    pick,
+    test,
+    save,
+    list,
+    traces,
+    sharing,
+  };
 }
 
 type DialogState = ReturnType<typeof useConnectionDialog>;
@@ -374,6 +405,7 @@ function DialogFields({
         onChange={(traces) => d.patch({ traces })}
       />
       <Extras form={form} problems={problems} patch={d.patch} />
+      {d.sharing.field}
       {d.check && <CheckResult check={d.check} />}
       {!existing && (
         <p className="small muted" style={{ margin: 0 }}>

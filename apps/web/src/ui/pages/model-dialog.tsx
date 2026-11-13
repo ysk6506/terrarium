@@ -20,6 +20,7 @@ import {
 } from "../../logic";
 import { useAction, useApp } from "../context";
 import { Button, Dialog, Note, SelectField, TextField } from "../kit";
+import { useSharingChoice } from "../scope";
 
 type Step = "kind" | "form" | "result";
 
@@ -246,14 +247,22 @@ function useModelDialog(props: {
   );
   const [shown, setShown] = useState(false);
   const [made, setMade] = useState<LlmModelView>();
+  const sharing = useSharingChoice(
+    "model",
+    existing ? { ...existing.sharing, owner: existing.owner } : undefined,
+  );
   const patch = (change: Partial<ModelForm>) => setForm((f) => ({ ...f, ...change }));
 
   const change = async (existingView: LlmModelView) => {
-    const saved = await run(
-      () =>
-        api.call("updateModel", { params: { id: existingView.id }, body: updateModelBody(form) }),
-      "고쳤어요",
-    );
+    const saved = await run(async () => {
+      const done = await api.call("updateModel", {
+        params: { id: existingView.id },
+        body: updateModelBody(form),
+        ...(sharing.reason ? { reason: sharing.reason } : {}),
+      });
+      await sharing.applyTo(existingView.id);
+      return done;
+    }, "고쳤어요");
     if (saved) {
       onSaved();
       onClose();
@@ -261,10 +270,12 @@ function useModelDialog(props: {
   };
   const save = async () => {
     setShown(true);
-    if (Object.keys(modelProblems(form)).length > 0) return;
+    if (Object.keys(modelProblems(form)).length > 0 || !sharing.ready) return;
     if (existing) return change(existing);
     // registering is one step and checking is the next: the person sees at once whether it answers
-    const created = await run(() => api.call("createModel", { body: createModelBody(form) }));
+    const created = await run(() =>
+      api.call("createModel", { body: { ...createModelBody(form), ...sharing.forCreate } }),
+    );
     if (!created) return;
     onSaved();
     const checked = await run(() => api.call("checkModel", { params: { id: created.id } }));
@@ -296,6 +307,7 @@ function useModelDialog(props: {
     save,
     pick,
     kind,
+    sharing,
     problems: shown ? modelProblems(form) : {},
   };
 }
@@ -344,7 +356,10 @@ export function ModelDialog(props: {
     >
       {d.step === "kind" && <KindStep onPick={d.kind} />}
       {d.step === "form" && (
-        <FormStep form={d.form} existing={existing} problems={d.problems} patch={d.patch} />
+        <div className="stack">
+          <FormStep form={d.form} existing={existing} problems={d.problems} patch={d.patch} />
+          {d.sharing.field}
+        </div>
       )}
       {d.step === "result" && d.made && <ResultStep view={d.made} onPick={d.pick} busy={d.busy} />}
     </Dialog>

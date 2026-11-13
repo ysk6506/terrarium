@@ -4,10 +4,11 @@
  */
 import type { ConnectionView } from "@terrarium/core/contract";
 import { useState } from "react";
-import { splitConnections } from "../../logic";
+import { matchesFilter, type ScopeFilter, splitConnections } from "../../logic";
 import { connectionsState, useMossScreen } from "../../moss";
 import { Go, useAction, useApp, useAsync } from "../context";
 import { Button, Dialog, Empty, Failure, Loading, PageHead } from "../kit";
+import { FilterEmpty, ScopeFilterBar } from "../scope";
 import { ConnectionCard } from "./connection-card";
 import { ConnectionDialog } from "./connection-dialog";
 import { KindCards } from "./connection-kinds";
@@ -122,7 +123,8 @@ function useConnectionsMoss(
 }
 
 export function ConnectionsPage() {
-  const { api, reloadMeta } = useApp();
+  const { api, reloadMeta, me } = useApp();
+  const [who, setWho] = useState<ScopeFilter>("all");
   const list = useAsync((signal) => api.call("listConnections", { signal }), []);
   const connectors = useAsync((signal) => api.call("listConnectors", { signal }), []);
   const [editing, setEditing] = useState<Editing>();
@@ -132,7 +134,10 @@ export function ConnectionsPage() {
     reloadMeta();
   };
   const addable = (connectors.data ?? []).filter((c) => c.fromScreen);
-  const { mine, reference } = splitConnections(list.data ?? []);
+  const { mine: seen, reference } = splitConnections(list.data ?? []);
+  const mine = seen.filter((v) =>
+    matchesFilter(who, { ...(v.owner ? { owner: v.owner } : {}), scope: v.sharing.scope }, me),
+  );
   useConnectionsMoss(list.data, addable.length > 0, () => setEditing({}));
   return (
     <div className="page">
@@ -146,7 +151,15 @@ export function ConnectionsPage() {
       {list.data && (
         <section className="stack" style={{ gap: 12 }} aria-label="내 연결">
           <h2 style={{ margin: 0 }}>내 연결 {mine.length}</h2>
-          {mine.length === 0 && (
+          {seen.length > 1 && (
+            <div className="scope-filter-row" style={{ marginBottom: 0 }}>
+              <ScopeFilterBar value={who} onChange={setWho} />
+            </div>
+          )}
+          {seen.length > 0 && mine.length === 0 && (
+            <FilterEmpty filter={who} onClear={() => setWho("all")} />
+          )}
+          {seen.length === 0 && (
             <Empty title="아직 연결된 하네스가 없어요">
               아래에서 쓰는 하네스를 고르면 주소와 토큰만 물어봐요. 연결하면 바로 확인해 줘요.
             </Empty>

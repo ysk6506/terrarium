@@ -94,9 +94,17 @@ export function pendingOf(history: AgentHistoryView): Pending {
   };
 }
 
-/** Who may add, change or remove versions: the one who connected it, or anyone when it came from the server's config. */
+/**
+ * Who may add, change or remove versions (permissions.md section 4): the one who connected it and administrators; for a
+ * connection from the server's config file only administrators. The button is hidden from everyone else, since pressing it
+ * would only bring a 403.
+ */
 export const canEditVersions = (
   connection: { readonly source: "config" | "screen"; readonly owner?: string } | undefined,
   me: string | undefined,
-): boolean =>
-  connection?.source === "config" || (connection?.owner !== undefined && connection.owner === me);
+  admin: boolean,
+): boolean => {
+  if (!connection) return false;
+  if (connection.source === "config") return admin;
+  return admin || (connection.owner !== undefined && connection.owner === me);
+};

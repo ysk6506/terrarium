@@ -11,6 +11,7 @@ import {
   changeText,
   dateText,
   editRequest,
+  isAdmin,
   metaProblems,
   pendingOf,
   type VersionForm,
@@ -382,7 +383,7 @@ function Versions({
 }
 
 export function AgentVersionsPage({ connectionId, agentId }: Target) {
-  const { api, me } = useApp();
+  const { api, me, meta } = useApp();
   const history = useAsync(
     (signal) => api.call("listAgentVersions", { params: { id: connectionId, agentId }, signal }),
     [connectionId, agentId],
@@ -412,7 +413,7 @@ export function AgentVersionsPage({ connectionId, agentId }: Target) {
           <Versions
             history={history.data}
             target={{ connectionId, agentId }}
-            mayEdit={canEditVersions(connection, me)}
+            mayEdit={canEditVersions(connection, me, isAdmin(meta))}
             set={history.set}
           />
         </div>
