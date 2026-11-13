@@ -65,6 +65,7 @@ function LinkRow({ link, onGone }: { readonly link: ShareListItem; readonly onGo
       </span>
       <span className="share-row-actions">
         <Button
+          data-moss-skip="공유 대화상자 안"
           variant="secondary"
           size="sm"
           label="복사"
@@ -72,6 +73,7 @@ function LinkRow({ link, onGone }: { readonly link: ShareListItem; readonly onGo
           onClick={() => void copy(link.url, "링크를 복사했어요")}
         />
         <Button
+          data-moss-skip="공유 대화상자 안"
           variant="destructive"
           size="sm"
           label="끊기"
@@ -140,6 +142,7 @@ function Body({ view }: { readonly view: ExperimentView }) {
         onChange={setDays}
       />
       <Button
+        data-moss-skip="공유 대화상자 안"
         variant="primary"
         label="링크 만들어 복사"
         isLoading={busy}

@@ -17,7 +17,6 @@ import {
   formOf,
   formProblems,
   hiddenWarning,
-  metadataOf,
   reasonPhrase,
   TRANSPORT_LABELS,
   tracesProblems,
@@ -29,7 +28,7 @@ import { AgentCensusLine } from "./agent-census";
 import { PresetForm, TracesChooser } from "./connection-extras";
 import { ConnectorFieldInput, HeaderEditor, MetaEditor } from "./connection-form";
 import { KindCards } from "./connection-kinds";
-import { sharingOf, submit, switchedForm, tracesPart, wireOf } from "./connection-wire";
+import { namesOf, sharingOf, submit, switchedForm, tracesPart, wireOf } from "./connection-wire";
 
 const emptyForm: ConnectionForm = {
   name: "",
@@ -255,28 +254,19 @@ function useConnectionDialog({
       ? spec
       : undefined;
   };
+  /** What the server is told about the connection, with where the traces go. */
+  const wire = (s: ConnectorSpec) => ({ ...wireOf(s, form), ...tracesPart(list, traces) });
   const test = async () => {
     const s = ready();
     if (!s) return;
-    const body = {
-      connector: s.kind,
-      ...(existing ? { id: existing.id } : {}),
-      ...wireOf(s, form),
-      ...tracesPart(list, traces),
-    };
+    const body = { connector: s.kind, ...(existing ? { id: existing.id } : {}), ...wire(s) };
     const result = await run(() => api.call("checkConnection", { body }));
     if (result) setCheck(result);
   };
   const save = async () => {
     const s = ready();
     if (!s || !sharing.ready) return;
-    const common = {
-      name: form.name.trim(),
-      description: form.description.trim(),
-      metadata: metadataOf(form.metadata),
-      ...wireOf(s, form),
-      ...tracesPart(list, traces),
-    };
+    const common = { ...namesOf(form), ...wire(s) };
     const saved = await run(
       () => submit(api, existing, { kind: s.kind, common }, sharing),
       existing ? "연결을 고쳤어요" : "연결을 저장했어요",

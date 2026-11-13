@@ -233,6 +233,7 @@ function CountBar(props: {
       </Text>
       {admin && (
         <Button
+          data-moss-skip="화면 안의 거르기와 받기"
           variant="secondary"
           size="sm"
           label="조건에 맞는 기록 파일로 받기"
@@ -253,6 +254,7 @@ function AuditBody({ admin }: { readonly admin: boolean }) {
       {narrowed(filters) && (
         <div>
           <Button
+            data-moss-skip="화면 안의 거르기와 받기"
             variant="ghost"
             size="sm"
             label="거르기 모두 풀기"
@@ -267,7 +269,13 @@ function AuditBody({ admin }: { readonly admin: boolean }) {
           title="기록을 불러오지 못했어요"
           description={list.error.message}
           endContent={
-            <Button variant="secondary" size="sm" label="다시 불러오기" onClick={list.retry} />
+            <Button
+              data-moss-skip="화면 안의 거르기와 받기"
+              variant="secondary"
+              size="sm"
+              label="다시 불러오기"
+              onClick={list.retry}
+            />
           }
         />
       )}
@@ -285,6 +293,7 @@ function AuditBody({ admin }: { readonly admin: boolean }) {
       {list.next !== undefined && (
         <div>
           <Button
+            data-moss-skip="화면 안의 거르기와 받기"
             variant="secondary"
             label="더 보기"
             isLoading={list.loading}

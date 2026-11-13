@@ -11,6 +11,7 @@ import {
   type ConnectionForm,
   configOf,
   headersOf,
+  metadataOf,
   settingsOf,
   tracesRequest,
 } from "../../logic";
@@ -36,6 +37,13 @@ export const tracesPart = (
   list: TelemetryAdapterList | undefined,
   traces: ReturnType<typeof blankTraces>,
 ) => (list ? { traces: tracesRequest(list, traces, settingsOf) } : ({} as Record<string, never>));
+
+/** The name, the description and the labels a person writes. */
+export const namesOf = (form: ConnectionForm) => ({
+  name: form.name.trim(),
+  description: form.description.trim(),
+  metadata: metadataOf(form.metadata),
+});
 
 /** The address, the token and the headers as the server takes them. */
 export const wireOf = (s: ConnectorSpec, form: ConnectionForm) => ({

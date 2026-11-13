@@ -68,7 +68,7 @@ function RecordSection() {
               : "내가 만든 것에 누가 언제 무엇을 했는지 읽어요."}
           </p>
         </div>
-        <Go to={{ name: "audit" }} className="btn">
+        <Go data-moss-skip="설정 안의 이동" to={{ name: "audit" }} className="btn">
           {admin ? "감사 기록 열기" : "내 것에 있던 일 열기"}
         </Go>
       </div>
