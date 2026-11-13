@@ -9,9 +9,11 @@ import type {
   EscalationPolicy,
   FaultScope,
   OperationConfig,
+  PermissionLevel,
   RunResult,
   SopMode,
   TimePolicy,
+  TrustRule,
 } from "@terrarium/core/session";
 import type { Blueprint, Domain, LeadTimeSettings } from "@terrarium/core/world";
 import type { Shared } from "./scope";
@@ -75,6 +77,13 @@ export interface Recipe {
    * scenario is then not a stored one (its id is `OPERATION_SCENARIO_ID`) and `time` is not used.
    */
   readonly operation?: OperationConfig;
+  /**
+   * How far the agent is entrusted (REQ-123, ADR-0199): `view` stops every call that changes the world. Absent (or `act`):
+   * it acts by itself, as experiments always did.
+   */
+  readonly permission?: PermissionLevel;
+  /** The rules the runs are held to (REQ-125), counted from the events and kept apart from the score. Absent: none. */
+  readonly rules?: readonly TrustRule[];
 }
 
 /** The scenario id an operation recipe carries: there is no stored scenario behind it. */

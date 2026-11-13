@@ -1,7 +1,7 @@
 doc: "docs/design-docs/web-ui-connections.md"
 target: "docs/design-docs/harness-protocol.md"
-hash: "1434464d323d5a1e"
-date: "2026-11-12"
-note: "따라가는 문서나 코드의 내부 사실 서술이 요구의 말로 바뀐 것을 대조했고 이 문서의 내용은 그대로 맞다 (ADR-0188)"
+hash: "4d0a0c176d102724"
+date: "2026-11-13"
+note: "ADR-0199과 구현(조치 관문, 권한 수준 둘, 규칙 넷)에 맞춰 다시 읽고 어긋난 곳이 없음을 확인함"
 text_changed: false
 doc_hash: "c0d42d0969fa29ff"

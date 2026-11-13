@@ -147,6 +147,14 @@ const WRITES: Readonly<Record<string, (args: Readonly<Record<string, unknown>>) 
 };
 
 /**
+ * Whether the call changes the world: an `act` of a tool that can change it. A hand-off to a team (`escalate`) is
+ * judged `act` by `callEffect` but changes nothing itself, so it is not an action here (REQ-123).
+ */
+export function isWorldAction(name: string, args: Readonly<Record<string, unknown>>): boolean {
+  return callEffect(name, args) === "act" && toolSpec(name)?.mutating === true;
+}
+
+/**
  * What the call does: `act` changes the world (a Redfish or vCenter request only when it is not a plain GET),
  * `wait` lets time pass, `answer` hands in the diagnosis, and everything else only looks.
  */

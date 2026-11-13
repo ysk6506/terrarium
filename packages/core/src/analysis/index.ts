@@ -89,6 +89,7 @@ export {
   traceIdOf,
   usageOf,
 } from "./telemetry";
+export { type RuleSummary, type TrustSummary, trustSummary } from "./trust";
 export {
   type BriefInput,
   DIAGNOSIS_SCHEMA,

@@ -139,6 +139,8 @@ async function openSession(
       ...(experiment.recipe.domains ? { domains: experiment.recipe.domains } : {}),
       ...(experiment.recipe.leadTimes ? { leadTimes: experiment.recipe.leadTimes } : {}),
       ...(experiment.recipe.operation ? { operation: experiment.recipe.operation } : {}),
+      ...(experiment.recipe.permission ? { permission: experiment.recipe.permission } : {}),
+      ...(experiment.recipe.rules ? { rules: experiment.recipe.rules } : {}),
       ...(resume ? { resume: resume.parts.inputs } : {}),
     });
   } catch (err) {
