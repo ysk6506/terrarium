@@ -10,7 +10,7 @@ import type { SessionConfig } from "./types";
 export function shellPlugOf(
   config: Pick<SessionConfig, "shellEngine" | "seed">,
   session: { readonly operating: boolean; remaining(): number },
-  calls: () => number,
+  calls: readonly unknown[],
   advance: (seconds: number) => void,
 ): { shell?: ShellPlug } {
   if (!config.shellEngine) return {};
@@ -18,7 +18,7 @@ export function shellPlugOf(
     shell: {
       engine: config.shellEngine,
       seed: config.seed,
-      callNumber: calls,
+      callNumber: () => calls.length,
       clock: {
         budget: () => (session.operating ? 0 : Math.max(0, Math.min(3600, session.remaining()))),
         advance: (seconds) => advance(Math.min(seconds, session.remaining())),

@@ -147,7 +147,7 @@ export class WorkerHost implements SessionHost {
   private spawn(): Slot {
     const worker = new Worker(BOOT, {
       eval: true,
-      workerData: { shellEngine: this.options.shellEngine ?? "legacy" },
+      env: { ...process.env, TERRARIUM_SHELL_ENGINE: this.options.shellEngine ?? "legacy" },
       resourceLimits: { maxOldGenerationSizeMb: this.threadMb },
     });
     const slot: Slot = { worker, ledger: new Ledger(this.promisedMb) };

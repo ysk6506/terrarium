@@ -14,20 +14,18 @@
 import { Catalog } from "@terrarium/core/catalog";
 import { createFacades } from "@terrarium/core/facades";
 import { ConflictError, InvalidValueError } from "@terrarium/core/kernel";
-import { type EndReason, ORACLE_VERSION, score } from "@terrarium/core/oracle";
+import { type EndReason, score } from "@terrarium/core/oracle";
 import { DEFAULT_PHYSICS, Physics } from "@terrarium/core/physics";
 import {
   type AgentTask,
   type Diagnosis,
   hasErrors,
   ScenarioRunner,
-  scenarioDigest,
   type ToolCallRecord,
   validateScenario,
 } from "@terrarium/core/scenario";
 import {
   type Args,
-  runbookPrompt,
   scopeTools,
   Toolbox,
   type ToolContext,
@@ -38,7 +36,6 @@ import { blueprintDigest, type RunEvent, World } from "@terrarium/core/world";
 import { HandOffs, scopeOf } from "./hand-offs";
 import type { HumanAct, HumanRequest, HumanResolution } from "./human";
 import { HumanLine } from "./human-line";
-import { keySeries } from "./key-series";
 import {
   attachOperation,
   DEFAULT_OPERATION_CALLS,
@@ -48,9 +45,19 @@ import {
 } from "./operation";
 import { DEFAULT_RECORDER, MetricRecorder } from "./recorder";
 import { RunLog } from "./run-events";
-import { effectsSince, extrasOf, faultSkipper, operationEndOf, outsideOf } from "./session-parts";
+import {
+  effectsSince,
+  extrasOf,
+  faultSkipper,
+  gateAnswer,
+  operationEndOf,
+  outsideOf,
+  taskFor,
+  trustOfRun,
+  viewsOf,
+} from "./session-parts";
 import { shellPlugOf } from "./shell-plug";
-import { buildTimeline } from "./timeline";
+import { gatedSpecs } from "./trust";
 import {
   type CallResult,
   DEFAULT_TIME,
@@ -158,12 +165,7 @@ export class Session {
         this.diagnosedAt = world.time();
       },
       ops: this.handOffs.port,
-      ...shellPlugOf(
-        config,
-        this,
-        () => this.calls.length,
-        (s) => this.advance(s),
-      ),
+      ...shellPlugOf(config, this, this.calls, (n) => this.advance(n)),
     };
   }
 
@@ -193,7 +195,7 @@ export class Session {
 
   /** The tools the agent may call, with their JSON schemas (for harness adapters and MCP). */
   toolSpecs(): ToolSpec[] {
-    return this.toolbox.list();
+    return gatedSpecs(this.toolbox.list(), this.config.permission);
   }
 
   /** Warm up, then play the scenario until it hands the task to the agent. */
@@ -216,11 +218,7 @@ export class Session {
           maxToolCalls: this.config.operation?.budget?.maxToolCalls ?? DEFAULT_OPERATION_CALLS,
         }
       : this.runner.agentTask;
-    const runbook = this.config.scenario.runbook;
-    this.task =
-      this.config.sop === "given" && runbook
-        ? { ...task, prompt: task.prompt + runbookPrompt(runbook) }
-        : task;
+    this.task = taskFor(task, this.config);
     this.state = "running";
     this.operation?.begin(this.task.startedAt);
     this.log.agentStart(this.task.startedAt, this.scenarioStart);
@@ -286,11 +284,21 @@ export class Session {
     this.operation?.touch();
     if (tool === "ask_human" && this.toolbox.has(tool)) return this.line.ask(args, t);
     const before = this.world.lastSeq();
-    return this.conclude(tool, args, this.toolbox.call(tool, args, this.ctx), t, before);
+    // the action gate (REQ-123): the one place a call passes before it reaches a tool
+    const denied = gateAnswer(this.config, this.toolbox, tool, args);
+    const result = denied ?? this.toolbox.call(tool, args, this.ctx);
+    return this.conclude(tool, args, result, t, before, denied ? "view" : undefined);
   }
 
-  /** Write a finished call into the record, with what it did to the world. */
-  private record(tool: string, args: Args, result: ToolResult, t: number, before: number): void {
+  /** Write a finished call into the record, with what it did to the world (`blocked`: the gate stopped it). */
+  private record(
+    tool: string,
+    args: Args,
+    result: ToolResult,
+    t: number,
+    before: number,
+    blocked?: "view",
+  ): void {
     const effects = effectsSince(this.world, before);
     if (tool !== "submit_diagnosis") this.spent++;
     this.calls.push({
@@ -301,6 +309,7 @@ export class Session {
       ...(result.error ? { error: result.error } : {}),
       effects,
       ...outsideOf(tool, result),
+      ...(blocked ? { blocked } : {}),
     });
     this.log.call(this.calls[this.calls.length - 1] as ToolCallRecord);
   }
@@ -312,8 +321,9 @@ export class Session {
     result: ToolResult,
     t: number,
     before: number,
+    blocked?: "view",
   ): CallResult {
-    this.record(tool, args, result, t, before);
+    this.record(tool, args, result, t, before, blocked);
     if (tool === "submit_diagnosis" && result.ok && !this.operation) {
       this.end("diagnosed");
       return { ...result, t, ended: "diagnosed" };
@@ -452,6 +462,15 @@ export class Session {
         e.kind === "diagnosis" ? e.rootCause : [],
       ),
     });
+    const views = viewsOf({
+      config: this.config,
+      trace: this.runner.trace(),
+      world: this.world,
+      recorder: this.recorder,
+      calls: this.calls,
+      scenarioStart: this.scenarioStart,
+      worldDigest: this.worldDigest(),
+    });
     this.result = {
       score: scored,
       endReason: reason,
@@ -460,28 +479,10 @@ export class Session {
       ...(this.diagnosis
         ? { diagnosis: this.diagnosis, diagnosedAt: this.diagnosedAt as number }
         : {}),
-      timeline: buildTimeline(
-        this.config.scenario,
-        this.runner.trace(),
-        this.world.events(),
-        this.calls,
-        this.scenarioStart,
-        (id) => this.world.index.find(id)?.name ?? id,
-      ),
+      timeline: views.timeline,
       events: this.log.events,
-      series: keySeries({
-        world: this.world,
-        recorder: this.recorder,
-        scenario: this.config.scenario,
-        calls: this.calls,
-        scenarioStart: this.scenarioStart,
-      }),
-      digests: {
-        world: this.worldDigest(),
-        scenario: scenarioDigest(this.config.scenario),
-        oracle: ORACLE_VERSION,
-        physics: this.world.physics.fingerprint,
-      },
+      series: views.series,
+      digests: views.digests,
       seed: this.config.seed,
       ...scopeOf(this.config.domains, this.config.leadTimes),
       simTime: { scenarioStart: this.scenarioStart, agentStart: task.startedAt, end: endedAt },
@@ -490,6 +491,7 @@ export class Session {
       ...(this.operation
         ? { operation: operationReport(this.operation, this.world, this.log.events, endedAt) }
         : {}),
+      ...trustOfRun(this.config, this.log.events),
     };
   }
 }

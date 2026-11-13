@@ -109,6 +109,26 @@ export {
   toolPickCheck,
 } from "./tool-pick";
 export {
+  DEFAULT_PERMISSION,
+  deniedAnswer,
+  IMPACT_TOOL,
+  PERMISSION_LABELS,
+  PERMISSION_LEVELS,
+  type PermissionLevel,
+  permissionOf,
+  RULE_LABELS,
+  type RuleHit,
+  type RuleId,
+  type RuleResult,
+  rulesOf,
+  TRUST_RULES,
+  type TrustResult,
+  type TrustRule,
+  trustOf,
+  trustProblems,
+  VERIFY_WITHIN_SECONDS,
+} from "./trust";
+export {
   type CallResult,
   DEFAULT_TIME,
   type FaultScope,

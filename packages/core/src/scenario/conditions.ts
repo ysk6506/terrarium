@@ -29,6 +29,8 @@ export interface ToolCallRecord {
   readonly outside?: readonly string[];
   /** The emulation gaps this call hit (ADR-0184): stable keys, no free text. */
   readonly gaps?: readonly { readonly tool: string; readonly feature: string }[];
+  /** Set when the action gate stopped the call before it reached the tool (REQ-123); `view` is the level that did. */
+  readonly blocked?: "view";
 }
 
 const SIMPLE_ACTIONS: Partial<Record<WorldCommand["type"], ActionKind>> = {

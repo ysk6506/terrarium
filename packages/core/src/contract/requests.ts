@@ -10,8 +10,10 @@ import {
   NameSchema,
   NoteSchema,
   OperationSchema,
+  PermissionSchema,
   ProfilesSchema,
   RepeatsSchema,
+  RulesSchema,
   ScenarioDocSchema,
   SeedsSchema,
   TimePolicySchema,
@@ -160,6 +162,10 @@ export const RecipeBody = z
     leadTimes: LeadTimesSchema.optional(),
     /** An operation instead of one incident (ADR-0094): the scenario is then not used. */
     operation: OperationSchema.optional(),
+    /** How far the agent is entrusted: look only, or act by itself (the default). */
+    permission: PermissionSchema.optional(),
+    /** The rules the runs are held to, counted from the events and kept apart from the score. */
+    rules: RulesSchema.optional(),
   })
   .strict()
   .refine((r) => !(r.seeds && r.runs), {
@@ -197,6 +203,8 @@ export const ForkBody = z
         domains: DomainsSchema.optional(),
         leadTimes: LeadTimesSchema.optional(),
         operation: OperationSchema.optional(),
+        permission: PermissionSchema.optional(),
+        rules: RulesSchema.optional(),
       })
       .strict(),
     name: NameSchema.optional(),

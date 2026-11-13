@@ -21,6 +21,7 @@ import type { EscalationPolicy, HumanRequest, HumanSummary } from "./human";
 import type { OperationConfig, OperationMetrics } from "./operation";
 import type { MetricSeries } from "./recorder";
 import type { TimelineEntry } from "./timeline";
+import type { PermissionLevel, TrustResult, TrustRule } from "./trust";
 import type { WarmStartCache } from "./warm";
 
 export type TimePolicy =
@@ -81,6 +82,10 @@ export interface SessionConfig {
    * plugs it in; it lives outside the core. Not part of a config that travels to a worker thread.
    */
   readonly shellEngine?: ShellEngine;
+  /** How far the agent is entrusted (REQ-123): with `view`, a call that changes the world is stopped at the gate. Unset: it acts by itself. */
+  readonly permission?: PermissionLevel;
+  /** The rules the run is held to (REQ-125); they are counted from the events and never change the score. Unset: none. */
+  readonly rules?: readonly TrustRule[];
 }
 
 /** Whether the agent gets the team's runbook (ADR-0087 item 6): not at all, in its task, or by searching for it. */
@@ -149,6 +154,8 @@ export interface RunResult {
   readonly shellOutside?: ShellOutside;
   /** What an operation run measured and how it was set up (ADR-0094); only for an operation run. */
   readonly operation?: OperationReport;
+  /** The level and how the run kept the rules, apart from the score (REQ-123, REQ-125); only when the experiment chose one. */
+  readonly trust?: TrustResult;
 }
 
 /** An operation run's numbers; the host works them out again with the tokens the harness reports. */

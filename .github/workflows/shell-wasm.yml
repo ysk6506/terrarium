@@ -20,11 +20,21 @@ jobs:
         run: |
           want="$(node apps/server/shell-wasm/scripts/lock.mjs pin 'go|version')"
           git clone --quiet --depth 1 --branch "go$want" https://github.com/golang/go "$RUNNER_TEMP/go-src"
+          # a tag clone has no VERSION file; without it the toolchain calls itself "devel" and stamps that into the build
+          echo "go$want" > "$RUNNER_TEMP/go-src/VERSION"
           (cd "$RUNNER_TEMP/go-src/src" && GOROOT_BOOTSTRAP="$(go env GOROOT)" ./make.bash >/dev/null)
           echo "GO=$RUNNER_TEMP/go-src/bin/go" >> "$GITHUB_ENV"
+          "$RUNNER_TEMP/go-src/bin/go" version
       - name: rebuild and compare
         run: |
           cp apps/server/shell-wasm/bin/terrarium-sh.wasm "$RUNNER_TEMP/committed.wasm"
           bash apps/server/shell-wasm/scripts/build.sh
+          cp apps/server/shell-wasm/bin/terrarium-sh.wasm "$RUNNER_TEMP/rebuilt.wasm"
           cmp "$RUNNER_TEMP/committed.wasm" apps/server/shell-wasm/bin/terrarium-sh.wasm
           node apps/server/shell-wasm/scripts/lock.mjs verify
+      - name: temporary diagnosis, removed once the build reproduces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rebuilt-wasm
+          path: ${{ runner.temp }}/rebuilt.wasm

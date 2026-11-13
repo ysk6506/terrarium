@@ -98,6 +98,7 @@ export class RunLog {
       effect: callEffect(call.tool, call.args),
       targets: callTargets(call.tool, call.args),
       summary: summaryOf(call, this.nameOf),
+      ...(call.blocked ? { blockedBy: call.blocked } : {}),
     };
     const at = this.list.length + before.length;
     const gaps: GapEvent[] = (call.gaps ?? []).map((g) => ({

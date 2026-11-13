@@ -21,6 +21,7 @@ import { analyzeRun, type RunAnalysis } from "./run";
 import { groupBySeed, meanOf, seedRate, seedSummary, splitSeeds, withinSeedSpread } from "./seeds";
 import { clearlyDifferent, type Summary } from "./stats";
 import { NO_TELEMETRY, type Telemetry } from "./telemetry";
+import { type TrustSummary, trustSummary } from "./trust";
 
 export interface CriterionRate {
   readonly id: string;
@@ -62,6 +63,8 @@ export interface ExperimentAnalysis {
   readonly endReasons: Readonly<Partial<Record<EndReason, number>>>;
   readonly findings: readonly string[];
   readonly parent?: ParentComparison;
+  /** The level the experiment entrusted and how often each rule was broken (REQ-123, REQ-125); only when it chose a level or rules. */
+  readonly trust?: TrustSummary;
 }
 
 export interface ParentComparison {
@@ -150,6 +153,7 @@ export function analyzeExperiment(
     ...(withinSeed ? { withinSeed } : {}),
     criteria: criteria(input.runs.filter((r) => r.status === "completed")),
     endReasons: endReasons(input.runs),
+    ...trustSummary(input.experiment, input.runs),
     ...optional({
       score: seedSummary(groups, (r) => r.score),
       calls: seedSummary(groups, (r) => r.efficiency.investigationCalls),
