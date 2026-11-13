@@ -1,7 +1,7 @@
 doc: "docs/design-docs/web-ui-topology.md"
 target: "docs/design-docs/web-ui.md"
-hash: "d93d2f531126f5b2"
-date: "2026-11-12"
-note: "따라가는 문서나 코드의 내부 사실 서술이 요구의 말로 바뀐 것을 대조했고 이 문서의 내용은 그대로 맞다 (ADR-0188)"
+hash: "24a6c35612368ad7"
+date: "2026-11-13"
+note: "web-ui.md에 /audit 줄만 더해져 위상 화면의 말과 상관없음을 읽음"
 text_changed: false
 doc_hash: "9134aba5840ab1ca"

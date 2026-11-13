@@ -1,7 +1,7 @@
 doc: "docs/design-docs/web-ui.md"
 target: "apps/web/src/styles.css"
-hash: "d290c806a2bd1026"
-date: "2026-11-12"
-note: "ADR-0183: 화면 글의 말을 번·상황·넘기기·링크로 맞췄다. 이 문서의 서술은 코드의 바뀐 문자열(단위 번, 라벨, 메시지)과 대조해 맞다"
+hash: "f27e62b32d7da9b0"
+date: "2026-11-13"
+note: "라 단계(ADR-0198)로 화면에 범위 표시·이름·감사 기록이 더해진 것을 읽고 이 문서의 말과 어긋나지 않음"
 text_changed: true
-doc_hash: "d93d2f531126f5b2"
+doc_hash: "24a6c35612368ad7"

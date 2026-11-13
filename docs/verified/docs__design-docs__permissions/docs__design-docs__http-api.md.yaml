@@ -1,7 +1,7 @@
 doc: "docs/design-docs/permissions.md"
 target: "docs/design-docs/http-api.md"
-hash: "448498d15a025772"
-date: "2026-11-12"
-note: "ADR-0193 8번이 바뀐 것(건·대신한 사람·에이전트 주체를 뺌)을 따라가는 문서와 대어 봤다: 이 문서에는 그 필드 서술이 없고 맞다"
-text_changed: false
-doc_hash: "a813c0a300fcf16c"
+hash: "8122c8a166290fe7"
+date: "2026-11-13"
+note: "라 단계 절을 더하고 7·9절을 화면과 맞춰 읽음"
+text_changed: true
+doc_hash: "8593219bfab0770a"

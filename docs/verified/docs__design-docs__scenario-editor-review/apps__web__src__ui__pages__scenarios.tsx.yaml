@@ -1,7 +1,7 @@
 doc: "docs/design-docs/scenario-editor-review.md"
 target: "apps/web/src/ui/pages/scenarios.tsx"
-hash: "c686304cb4ac8595"
-date: "2026-11-11"
-note: "2026-11-11: ADR-0141 변경(레지스트리 분할, 한 가지 행동, 크기, aria)을 코드와 대조해 이 문서에 반영했다"
-text_changed: true
+hash: "a88cf4075b97c3b1"
+date: "2026-11-13"
+note: "라 단계(ADR-0198)로 화면에 범위 표시·이름·감사 기록이 더해진 것을 읽고 이 문서의 말과 어긋나지 않음"
+text_changed: false
 doc_hash: "3da49ede908b12e0"

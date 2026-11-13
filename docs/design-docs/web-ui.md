@@ -212,6 +212,7 @@ covers:
 | `/scenarios/:id/process` | 시나리오의 "지금 하는 방식" 표(누가·무엇을·시간·종류, 줄 추가·삭제·순서, 발 줄에 "N단계 · 사람 N명 · 시간"과 저장). 실험 결과 화면에는 적은 값과 잰 값의 전후 비교·단계 장부·"이 세계에 필요한 액션"이 붙는다 | REQ-112 |
 | `/experiments`, `/experiments/new`, `/experiments/:id` | 실험 목록, 만들기, 실시간 진행과 결과·공유·포크·계보 | REQ-030, 037, 038, 040 |
 | `/runs/:id` | 실행 하나: 타임라인, 툴 호출, 지표, 진단 대 정답, 하네스 트레이스 | REQ-037 |
+| `/audit` | 감사 기록(관리자: 목록·거르기·파일 받기, 그 밖: 내 것에 있던 일). 설정 안의 "기록" 구역에서 들어가요. [Astryx](adr/0198-permissions-screens-names-scope-audit-reason.md)로 그린 두 화면 중 하나(다른 하나는 실험의 공유 대화상자). 게으르게 불러와요 | REQ-054 |
 | `/settings` | 설정: 화면 색(시스템·밝게·어둡게, `<html data-theme>`)과 그래픽, 그리고 서버에 저장하는 "모델" 구역(LLM API 등록, [모델 등록](model-registration.md)) | REQ-036, 077, 099 |
 | `/benchmarks` | 벤치마크 세트별 순위, 디지털 트윈 내보내기 | REQ-039, 015 |
 | `/connections`, `/connections/:id/agents/:agentId/versions` | 연결한 하네스·에이전트(상태·주인·남은 기간·에이전트 목록), 연결 만들기·고치기 창, 에이전트 버전 기록 | REQ-051, 052, 053 |

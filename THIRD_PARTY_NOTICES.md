@@ -6,7 +6,7 @@ Terrarium은 Apache License 2.0이에요 ([LICENSE](LICENSE)). 이 파일은 Ter
 - 이 목록은 웹·서버에서 닿을 수 있는 모든 패키지를 담아 실제 묶음보다 넓어요.
 - 소스 zip과 컨테이너 이미지에 이 파일이 들어 있어요.
 
-<!-- licenses-fingerprint: 09ee56cd2e30751d -->
+<!-- licenses-fingerprint: 95a38c705b2899c7 -->
 
 ## 요약
 
@@ -15,12 +15,28 @@ Terrarium은 Apache License 2.0이에요 ([LICENSE](LICENSE)). 이 파일은 Ter
 | Apache-2.0 | 2 |
 | BlueOak-1.0.0 | 8 |
 | BSD-2-Clause | 1 |
-| BSD-3-Clause | 7 |
-| ISC | 21 |
-| MIT | 160 |
+| BSD-3-Clause | 8 |
+| ISC | 22 |
+| MIT | 167 |
 | OFL-1.1 | 1 |
 
 ## 구성요소
+
+### @astryxdesign/core@0.7.15
+
+- 라이선스: MIT
+- 출처: https://github.com/meta/astryx
+- 들어가는 곳: web 묶음
+- 저작권: 라이선스 파일에 저작권 줄이 없어요 (package.json의 author: Meta Open Source)
+- 라이선스 전문: 패키지가 라이선스 파일을 싣지 않았어요 (확인 못 함)
+
+### @astryxdesign/theme-neutral@0.7.15
+
+- 라이선스: MIT
+- 출처: https://github.com/meta/astryx
+- 들어가는 곳: web 묶음
+- 저작권: Copyright (c) 2026 Meta Platforms, Inc.
+- 라이선스 전문: [MIT-1](#mit-1)
 
 ### @esbuild/linux-x64@0.25.12
 
@@ -110,6 +126,30 @@ Terrarium은 Apache License 2.0이에요 ([LICENSE](LICENSE)). 이 파일은 Ter
 - 저작권: Copyright (c) 2017-present The Fastify team
 - 라이선스 전문: [MIT-2](#mit-2)
 
+### @formatjs/fast-memoize@3.1.7
+
+- 라이선스: MIT
+- 출처: https://github.com/formatjs/formatjs
+- 들어가는 곳: web 묶음
+- 저작권: Copyright (c) 2023 FormatJS
+- 라이선스 전문: [MIT-1](#mit-1)
+
+### @formatjs/icu-messageformat-parser@3.5.18
+
+- 라이선스: MIT
+- 출처: https://github.com/formatjs/formatjs
+- 들어가는 곳: web 묶음
+- 저작권: Copyright (c) 2023 FormatJS
+- 라이선스 전문: [MIT-1](#mit-1)
+
+### @formatjs/icu-skeleton-parser@2.1.11
+
+- 라이선스: MIT
+- 출처: https://github.com/formatjs/formatjs
+- 들어가는 곳: web 묶음
+- 저작권: Copyright (c) 2023 FormatJS
+- 라이선스 전문: [MIT-1](#mit-1)
+
 ### @hono/node-server@2.1.5
 
 - 라이선스: MIT
@@ -195,6 +235,14 @@ Terrarium은 Apache License 2.0이에요 ([LICENSE](LICENSE)). 이 파일은 Ter
 - 라이선스: MIT
 - 출처: https://github.com/redis/node-redis
 - 들어가는 곳: server 코드
+- 저작권: 라이선스 파일에 저작권 줄이 없어요
+- 라이선스 전문: 패키지가 라이선스 파일을 싣지 않았어요 (확인 못 함)
+
+### @stylexjs/stylex@0.19.2
+
+- 라이선스: MIT
+- 출처: https://github.com/facebook/stylex
+- 들어가는 곳: web 묶음
 - 저작권: 라이선스 파일에 저작권 줄이 없어요
 - 라이선스 전문: 패키지가 라이선스 파일을 싣지 않았어요 (확인 못 함)
 
@@ -908,6 +956,14 @@ Copyright 2014-2026 DMTF. For the full DMTF copyright policy, see http://www.dmt
 - 저작권: Copyright (c) Isaac Z. Schlueter
 - 라이선스 전문: [ISC-2](#isc-2)
 
+### intl-messageformat@11.2.15
+
+- 라이선스: BSD-3-Clause
+- 출처: https://github.com/formatjs/formatjs
+- 들어가는 곳: web 묶음
+- 저작권: Copyright (c) 2023, Oath Inc.
+- 라이선스 전문: [BSD-3-Clause-4](#bsd-3-clause-4)
+
 ### ip-address@10.7.5
 
 - 라이선스: MIT
@@ -1002,7 +1058,7 @@ Copyright 2014-2026 DMTF. For the full DMTF copyright policy, see http://www.dmt
 - 출처: https://github.com/fastify/light-my-request
 - 들어가는 곳: server 코드
 - 저작권: Copyright (c) 2012-2014, Walmart Copyright (c) 2012-2017, Project contributors Copyright (c) 2017-present The Fastify team <https://github.com/fastify/fastify#team> All rights reserved.
-- 라이선스 전문: [BSD-3-Clause-4](#bsd-3-clause-4)
+- 라이선스 전문: [BSD-3-Clause-5](#bsd-3-clause-5)
 
 ### lodash@4.18.1
 
@@ -1019,6 +1075,15 @@ Copyright 2014-2026 DMTF. For the full DMTF copyright policy, see http://www.dmt
 - 들어가는 곳: server 코드
 - 저작권: 라이선스 파일에 저작권 줄이 없어요 (package.json의 author: Isaac Z. Schlueter)
 - 라이선스 전문: [BlueOak-1.0.0-4](#blueoak-100-4)
+
+### lucide-react@1.72.0
+
+- 라이선스: ISC
+- 출처: https://github.com/lucide-icons/lucide
+- 들어가는 곳: web 묶음
+- 저작권: Copyright (c) 2026 Lucide Icons and Contributors
+- 저작권: Copyright (c) 2013-present Cole Bemis
+- 라이선스 전문: [ISC-3](#isc-3)
 
 ### math-intrinsics@1.1.0
 
@@ -1394,7 +1459,7 @@ Copyright 2014-2026 DMTF. For the full DMTF copyright policy, see http://www.dmt
 - 출처: https://github.com/fastify/secure-json-parse
 - 들어가는 곳: server 코드
 - 저작권: Copyright (c) 2019, Sideway Inc, and project contributors Copyright (c) 2019-present The Fastify team <https://github.com/fastify/fastify#team> All rights reserved.
-- 라이선스 전문: [BSD-3-Clause-5](#bsd-3-clause-5)
+- 라이선스 전문: [BSD-3-Clause-6](#bsd-3-clause-6)
 
 ### semver@7.8.5
 
@@ -1516,6 +1581,14 @@ Copyright 2014-2026 DMTF. For the full DMTF copyright policy, see http://www.dmt
 - 저작권: Copyright (c) 2014 Jonathan Ong <me@jongleberry.com> Copyright (c) 2016 Douglas Christopher Wilson <doug@somethingdoug.com>
 - 라이선스 전문: [MIT-5](#mit-5)
 
+### styleq@0.2.1
+
+- 라이선스: MIT
+- 출처: https://github.com/necolas/styleq
+- 들어가는 곳: web 묶음
+- 저작권: Copyright (c) Nicolas Gallagher
+- 라이선스 전문: [MIT-1](#mit-1)
+
 ### thread-stream@4.2.0
 
 - 라이선스: MIT
@@ -1618,7 +1691,7 @@ Copyright 2014-2026 DMTF. For the full DMTF copyright policy, see http://www.dmt
 - 출처: https://github.com/StefanTerdell/zod-to-json-schema
 - 들어가는 곳: server 코드
 - 저작권: Copyright (c) 2020, Stefan Terdell
-- 라이선스 전문: [ISC-3](#isc-3)
+- 라이선스 전문: [ISC-4](#isc-4)
 
 ### zustand@4.5.7
 
@@ -2260,6 +2333,44 @@ The complete list of contributors can be found at:
 
 ### BSD-3-Clause-4
 
+쓰는 구성요소: intl-messageformat@11.2.15
+
+```text
+Licensed under the terms of the New BSD license. See below for terms.
+
+Redistribution and use of this software in source and binary forms,
+with or without modification, are permitted provided that the following
+conditions are met:
+
+- Redistributions of source code must retain the above
+  copyright notice, this list of conditions and the
+  following disclaimer.
+
+- Redistributions in binary form must reproduce the above
+  copyright notice, this list of conditions and the
+  following disclaimer in the documentation and/or other
+  materials provided with the distribution.
+
+- Neither the name of Oath Inc. nor the names of its
+  contributors may be used to endorse or promote products
+  derived from this software without specific prior
+  written permission of Oath Inc.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
+### BSD-3-Clause-5
+
 쓰는 구성요소: light-my-request@6.8.0
 
 ```text
@@ -2292,7 +2403,7 @@ The complete list of contributors can be found at:
 - https://github.com/fastify/light-my-request/graphs/contributors
 ```
 
-### BSD-3-Clause-5
+### BSD-3-Clause-6
 
 쓰는 구성요소: secure-json-parse@4.1.1
 
@@ -2352,6 +2463,52 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ### ISC-3
 
+쓰는 구성요소: lucide-react@1.72.0
+
+```text
+ISC License
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+---
+
+The following Lucide icons are derived from the Feather project:
+
+airplay, alert-circle, alert-octagon, alert-triangle, aperture, arrow-down-circle, arrow-down-left, arrow-down-right, arrow-down, arrow-left-circle, arrow-left, arrow-right-circle, arrow-right, arrow-up-circle, arrow-up-left, arrow-up-right, arrow-up, at-sign, calendar, cast, check, chevron-down, chevron-left, chevron-right, chevron-up, chevrons-down, chevrons-left, chevrons-right, chevrons-up, circle, clipboard, clock, code, columns, command, compass, corner-down-left, corner-down-right, corner-left-down, corner-left-up, corner-right-down, corner-right-up, corner-up-left, corner-up-right, crosshair, database, divide-circle, divide-square, dollar-sign, download, external-link, feather, frown, hash, headphones, help-circle, info, italic, key, layout, life-buoy, link-2, link, loader, lock, log-in, log-out, maximize, meh, minimize, minimize-2, minus-circle, minus-square, minus, monitor, moon, more-horizontal, more-vertical, move, music, navigation-2, navigation, octagon, pause-circle, percent, plus-circle, plus-square, plus, power, radio, rss, search, server, share, shopping-bag, sidebar, smartphone, smile, square, table-2, tablet, target, terminal, trash-2, trash, triangle, tv, type, upload, x-circle, x-octagon, x-square, x, zoom-in, zoom-out
+
+The MIT License (MIT) (for the icons listed above)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+### ISC-4
+
 쓰는 구성요소: zod-to-json-schema@3.25.2
 
 ```text
@@ -2372,7 +2529,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ### MIT-1
 
-쓰는 구성요소: @fastify/accept-negotiator@2.1.2, @fastify/ajv-compiler@4.0.7, @fastify/deepmerge@3.2.4, @fastify/error@4.2.1, @fastify/fast-json-stringify-compiler@5.1.1, @fastify/forwarded@3.1.2, @fastify/merge-json-schemas@0.2.2, @fastify/proxy-addr@5.1.2, @fastify/send@4.2.0, @hono/node-server@2.1.5, @lukeed/ms@2.0.2, @modelcontextprotocol/sdk@1.32.2, @pinojs/redact@0.4.0, @xyflow/react@12.12.0, @xyflow/system@0.0.83, ajv-formats@3.0.1, avvio@9.3.1, call-bind-apply-helpers@1.0.2, call-bound@1.0.4, dunder-proto@1.0.1, es-define-property@1.0.1, es-errors@1.3.0, es-object-atoms@1.1.2, esbuild@0.25.12, eventsource-parser@3.1.1, express-rate-limit@8.7.1, falkordb@7.0.0, fast-decode-uri-component@1.0.1, fast-deep-equal@3.1.3, fast-json-stringify@7.2.0, fastify@5.12.7, find-my-way@9.10.0, get-intrinsic@1.3.0, get-proto@1.0.1, get-tsconfig@4.14.3, gopd@1.2.0, has-symbols@1.1.0, hasown@2.0.4, hono@4.13.14, json-schema-ref-resolver@3.0.1, json-schema-traverse@1.0.0, math-intrinsics@1.1.0, merge-descriptors@2.0.0, object-inspect@1.13.4, on-exit-leak-free@2.1.2, path-key@3.1.1, pino-abstract-transport@3.0.0, pkce-challenge@5.0.1, process-warning@5.1.1, react@19.1.10, react-dom@19.1.10, resolve-pkg-maps@1.0.0, ret@0.5.1, safe-regex2@5.1.2, safer-buffer@2.1.2, scheduler@0.26.0, shebang-command@2.0.0, shebang-regex@3.0.0, side-channel@1.1.1, side-channel-list@1.0.1, side-channel-map@1.0.1, side-channel-weakmap@1.0.2, sonic-boom@4.2.1, thread-stream@4.2.0, toad-cache@3.7.4, toidentifier@1.0.1, tsx@4.20.6, use-sync-external-store@1.7.0, zod@3.25.76, zustand@4.5.7
+쓰는 구성요소: @astryxdesign/theme-neutral@0.7.15, @fastify/accept-negotiator@2.1.2, @fastify/ajv-compiler@4.0.7, @fastify/deepmerge@3.2.4, @fastify/error@4.2.1, @fastify/fast-json-stringify-compiler@5.1.1, @fastify/forwarded@3.1.2, @fastify/merge-json-schemas@0.2.2, @fastify/proxy-addr@5.1.2, @fastify/send@4.2.0, @formatjs/fast-memoize@3.1.7, @formatjs/icu-messageformat-parser@3.5.18, @formatjs/icu-skeleton-parser@2.1.11, @hono/node-server@2.1.5, @lukeed/ms@2.0.2, @modelcontextprotocol/sdk@1.32.2, @pinojs/redact@0.4.0, @xyflow/react@12.12.0, @xyflow/system@0.0.83, ajv-formats@3.0.1, avvio@9.3.1, call-bind-apply-helpers@1.0.2, call-bound@1.0.4, dunder-proto@1.0.1, es-define-property@1.0.1, es-errors@1.3.0, es-object-atoms@1.1.2, esbuild@0.25.12, eventsource-parser@3.1.1, express-rate-limit@8.7.1, falkordb@7.0.0, fast-decode-uri-component@1.0.1, fast-deep-equal@3.1.3, fast-json-stringify@7.2.0, fastify@5.12.7, find-my-way@9.10.0, get-intrinsic@1.3.0, get-proto@1.0.1, get-tsconfig@4.14.3, gopd@1.2.0, has-symbols@1.1.0, hasown@2.0.4, hono@4.13.14, json-schema-ref-resolver@3.0.1, json-schema-traverse@1.0.0, math-intrinsics@1.1.0, merge-descriptors@2.0.0, object-inspect@1.13.4, on-exit-leak-free@2.1.2, path-key@3.1.1, pino-abstract-transport@3.0.0, pkce-challenge@5.0.1, process-warning@5.1.1, react@19.1.10, react-dom@19.1.10, resolve-pkg-maps@1.0.0, ret@0.5.1, safe-regex2@5.1.2, safer-buffer@2.1.2, scheduler@0.26.0, shebang-command@2.0.0, shebang-regex@3.0.0, side-channel@1.1.1, side-channel-list@1.0.1, side-channel-map@1.0.1, side-channel-weakmap@1.0.2, sonic-boom@4.2.1, styleq@0.2.1, thread-stream@4.2.0, toad-cache@3.7.4, toidentifier@1.0.1, tsx@4.20.6, use-sync-external-store@1.7.0, zod@3.25.76, zustand@4.5.7
 
 ```text
 MIT License

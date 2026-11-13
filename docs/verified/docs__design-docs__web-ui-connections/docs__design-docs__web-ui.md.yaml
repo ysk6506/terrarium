@@ -1,7 +1,7 @@
 doc: "docs/design-docs/web-ui-connections.md"
 target: "docs/design-docs/web-ui.md"
-hash: "d93d2f531126f5b2"
-date: "2026-11-12"
-note: "따라가는 문서나 코드의 내부 사실 서술이 요구의 말로 바뀐 것을 대조했고 이 문서의 내용은 그대로 맞다 (ADR-0188)"
+hash: "24a6c35612368ad7"
+date: "2026-11-13"
+note: "연결 카드에 범위 표시와 만든 사람 이름이 더해진 것을 읽고 이 문서의 말과 어긋나지 않음"
 text_changed: false
 doc_hash: "c0d42d0969fa29ff"

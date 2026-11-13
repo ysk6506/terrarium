@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "7614717bad04d4f7"
-date: "2026-11-12"
-note: "architecture.yaml에서 tests.spec이 tests.e2e를 입구(index.ts)로 쓸 수 있게 된 것이 명세 테스트 항목에 적혀 있다. 나머지는 그대로 맞다 (ADR-0195)"
-text_changed: true
+hash: "e5eddb07a1d7e793"
+date: "2026-11-13"
+note: "architecture.yaml에 Astryx 두 패키지를 web.ui 안에서만 허용하는 줄이 더해진 것을 읽음"
+text_changed: false
 doc_hash: "b25280de644fb1e6"
