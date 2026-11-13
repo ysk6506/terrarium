@@ -350,13 +350,6 @@ const ROWS: readonly Row[] = [
     ],
   },
   {
-    route: "importWorld",
-    who: BOSS,
-    action: "world.import",
-    kind: "world",
-    request: async () => ["POST", "/api/worlds/import", { source: "sample" }],
-  },
-  {
     route: "updateWorld",
     who: OLIVIA,
     action: "world.update",

@@ -1,7 +1,7 @@
 doc: "docs/design-docs/permissions.md"
 target: "docs/design-docs/http-api.md"
-hash: "f46bdb8bd65c1c14"
+hash: "5397eb8cf484836b"
 date: "2026-11-13"
-note: "라 단계 절을 더하고 합친 뒤 http-api.md와 맞춰 다시 읽음"
+note: "ADR-0202: 관리자 권한 설명과 표에서 소스 가져오기를 뺐다"
 text_changed: true
-doc_hash: "8593219bfab0770a"
+doc_hash: "c50e152163949487"

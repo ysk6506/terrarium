@@ -24,7 +24,6 @@ import type {
   ExperimentSummary,
   ExperimentView,
   GeneratedWorld,
-  ImportedWorld,
   LeaderboardView,
   MetaView,
   RunbookDraftView,
@@ -93,7 +92,6 @@ export interface Responses {
   putWorldPhysics: WorldPhysicsView;
   createWorld: SavedWorld;
   generateWorld: GeneratedWorld;
-  importWorld: ImportedWorld;
   updateWorld: SavedWorld;
   deleteWorld: { readonly deleted: boolean };
   listScenarios: ScenarioWithScope[];

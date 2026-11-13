@@ -32,7 +32,6 @@ import type {
   MetricSeries,
   TimelineEntry,
 } from "@terrarium/core/session";
-import type { ImportReport } from "@terrarium/core/sources/realimport";
 import type { WorldgenResult } from "@terrarium/core/sources/worldgen";
 import type { CallEffect, Runbook } from "@terrarium/core/tools";
 import type { Blueprint, Issue, RunEvent } from "@terrarium/core/world";
@@ -43,15 +42,6 @@ export interface HarnessView extends HarnessInfo {
   /** Whether the harness answered when the server last asked. */
   readonly status: "ok" | "unreachable";
   readonly error?: string;
-}
-
-export interface SourceView {
-  readonly id: string;
-  readonly name: string;
-  readonly kind: "falkordb" | "sample";
-  /** Reality sources are only ever read (REQ-011). */
-  readonly readOnly: true;
-  readonly configured: boolean;
 }
 
 export interface MetaView {
@@ -72,7 +62,6 @@ export interface MetaView {
    */
   readonly people: readonly { readonly id: string; readonly name: string }[];
   readonly harnesses: readonly HarnessView[];
-  readonly sources: readonly SourceView[];
   readonly telemetry: { readonly configured: boolean; readonly name: string };
   readonly limits: SchedulerLimits & { readonly maxSeeds: number };
   readonly queue: { readonly running: number; readonly queued: number };
@@ -92,10 +81,6 @@ export interface SavedWorld {
 
 export interface GeneratedWorld extends SavedWorld {
   readonly stats: WorldgenResult["stats"];
-}
-
-export interface ImportedWorld extends SavedWorld {
-  readonly report: ImportReport;
 }
 
 export interface SavedScenario {

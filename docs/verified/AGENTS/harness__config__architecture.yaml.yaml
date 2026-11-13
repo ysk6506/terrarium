@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "e5eddb07a1d7e793"
+hash: "602ccf1fb271c43e"
 date: "2026-11-13"
-note: "architecture.yaml에 Astryx 두 패키지를 web.ui 안에서만 허용하는 줄이 더해진 것을 읽음"
+note: "ADR-0202: architecture.yaml에서 realimport 단위와 falkordb 줄이 빠진 것을 대조했고, 이 문서의 말은 그대로 맞다"
 text_changed: false
 doc_hash: "ad69b0fbbb0b5d9e"

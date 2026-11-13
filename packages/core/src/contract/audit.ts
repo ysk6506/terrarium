@@ -99,7 +99,7 @@ export const AUDIT_LABELS: Readonly<Record<AuditAction, string>> = {
   "access.denied": "허락되지 않은 일 해 보기",
   "world.create": "세계 만들기",
   "world.generate": "세계 짓기",
-  "world.import": "현실에서 세계 가져오기",
+  "world.import": "현실에서 세계 가져오기 (지금은 없는 기능)",
   "world.update": "세계 고치기",
   "world.physics_update": "세계의 물리 고치기",
   "world.delete": "세계 지우기",

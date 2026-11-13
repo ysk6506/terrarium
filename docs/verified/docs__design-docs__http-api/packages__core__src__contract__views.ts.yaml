@@ -1,7 +1,7 @@
 doc: "docs/design-docs/http-api.md"
 target: "packages/core/src/contract/views.ts"
-hash: "e0f8f96c99595dda"
+hash: "43cf70897fe66c30"
 date: "2026-11-13"
-note: "meta.people와 x-terrarium-reason 헤더를 더했고 길 표와 맞춰 읽음"
+note: "ADR-0202: 가져오기 길과 관리자 정책 길 수(3에서 2)를 고쳤고, 응답과 감사 분류에서 지운 길을 대조했다"
 text_changed: true
-doc_hash: "8122c8a166290fe7"
+doc_hash: "5397eb8cf484836b"

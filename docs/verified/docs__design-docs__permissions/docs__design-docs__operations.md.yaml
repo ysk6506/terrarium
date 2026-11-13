@@ -1,7 +1,7 @@
 doc: "docs/design-docs/permissions.md"
 target: "docs/design-docs/operations.md"
-hash: "0cd4bf67a07e4c29"
-date: "2026-11-12"
-note: "ADR-0193 8번이 바뀐 것(건·대신한 사람·에이전트 주체를 뺌)을 따라가는 문서와 대어 봤다: 이 문서에는 그 필드 서술이 없고 맞다"
-text_changed: false
-doc_hash: "a813c0a300fcf16c"
+hash: "8a996ed674b58a0a"
+date: "2026-11-13"
+note: "ADR-0202: 관리자 권한 설명과 표에서 소스 가져오기를 뺐다"
+text_changed: true
+doc_hash: "c50e152163949487"

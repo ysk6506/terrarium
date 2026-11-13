@@ -1,32 +1,22 @@
 /**
  * Everything the server reaches outside itself, built from the config in one place. The rest of the
- * server sees only ports (ExperimentStore, HarnessPort, RealitySource, TelemetryPort).
+ * server sees only ports (ExperimentStore, HarnessPort, TelemetryPort).
  */
 import path from "node:path";
 import type { TelemetryAdapter, TelemetryPort } from "@terrarium/core/analysis";
-import type { SourceView } from "@terrarium/core/contract";
 import {
   type AuditStore,
   type ExperimentStore,
   type HarnessPort,
   MemoryAuditStore,
 } from "@terrarium/core/experiments";
-import { MemorySource, type RealitySource, sampleGraph } from "@terrarium/core/sources/realimport";
 import type { Config, HarnessConfig } from "./config";
 import { secret } from "./config";
 import { type ConnectContext, connectorOf } from "./connectors";
-import { falkorSource } from "./falkordb";
 import type { FetchLike } from "./fetch";
 import { SecretBox } from "./secret-box";
 import { SqliteStore } from "./sqlite-store";
 import { ClickStackAdapter, ClickStackTelemetry } from "./telemetry";
-
-export const SAMPLE_SOURCE_ID = "sample";
-
-export interface SourceEntry {
-  readonly view: SourceView;
-  readonly source: RealitySource;
-}
 
 export interface Adapters {
   readonly store: ExperimentStore;
@@ -46,7 +36,6 @@ export interface Adapters {
   readonly secretBox: SecretBox;
   /** When unused connections go (the config's `connections.retentionDays` and `warnDays`). */
   readonly retention: { readonly days: number; readonly warnDays: number };
-  readonly sources: ReadonlyMap<string, SourceEntry>;
   readonly telemetry?: { readonly port: TelemetryPort; readonly name: string };
   /** The same server default as an adapter, which a connection that says "default" uses (ADR-0085). */
   readonly telemetryDefault?: TelemetryAdapter;
@@ -74,43 +63,11 @@ export function harnessFor(
   return connector.connect(config, { env, fetch: fetchImpl });
 }
 
-function realitySources(config: Config, env: NodeJS.ProcessEnv) {
-  const sources = new Map<string, SourceEntry>([
-    [
-      SAMPLE_SOURCE_ID,
-      {
-        view: {
-          id: SAMPLE_SOURCE_ID,
-          name: "샘플 그래프 (가상)",
-          kind: "sample",
-          readOnly: true,
-          configured: true,
-        },
-        source: new MemorySource("sample: 가상 cloud_topology", sampleGraph()),
-      },
-    ],
-  ]);
-  const closers: Array<() => Promise<void>> = [];
-  for (const s of config.sources) {
-    const { source, graph } = falkorSource(s, {
-      ...(s.usernameEnv ? { username: secret(env, s.usernameEnv) } : {}),
-      ...(s.passwordEnv ? { password: secret(env, s.passwordEnv) } : {}),
-    });
-    closers.push(() => graph.close());
-    sources.set(s.id, {
-      view: { id: s.id, name: s.name, kind: "falkordb", readOnly: true, configured: true },
-      source,
-    });
-  }
-  return { sources, closers };
-}
-
 export function buildAdapters(config: Config, options: AdapterOptions = {}): Adapters {
   const env = options.env ?? process.env;
   const fetchImpl = options.fetch ?? fetch;
   // Secrets are resolved first, so a missing one fails before anything is opened.
   const harnesses = config.harnesses.map((h) => harnessFor(h, env, fetchImpl));
-  const { sources, closers } = realitySources(config, env);
   const t = config.telemetry;
   const telemetry = t
     ? { port: new ClickStackTelemetry(t, secret(env, t.passwordEnv), fetchImpl), name: t.name }
@@ -132,11 +89,9 @@ export function buildAdapters(config: Config, options: AdapterOptions = {}): Ada
     secretBox: SecretBox.forServer(env, config.dataDir),
     retention: { days: config.connections.retentionDays, warnDays: config.connections.warnDays },
     ...(config.connections.allowedHosts ? { allowedHosts: config.connections.allowedHosts } : {}),
-    sources,
     ...(telemetry ? { telemetry } : {}),
     ...(telemetryDefault ? { telemetryDefault } : {}),
     async close() {
-      await Promise.all(closers.map((c) => c().catch(() => undefined)));
       ownStore?.close();
     },
   };

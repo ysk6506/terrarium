@@ -1,7 +1,7 @@
 doc: "docs/design-docs/http-api.md"
 target: "packages/core/src/contract/responses.ts"
-hash: "6c080b25b4344617"
-date: "2026-11-12"
-note: "ADR-0193: 새 행동 audit.limit이 닫힌 목록에 늘었을 뿐 길·정책 수·항목 모양은 그대로 맞다"
-text_changed: false
-doc_hash: "9b3ee21f1197804e"
+hash: "58c08bd40c59dcb2"
+date: "2026-11-13"
+note: "ADR-0202: 가져오기 길과 관리자 정책 길 수(3에서 2)를 고쳤고, 응답과 감사 분류에서 지운 길을 대조했다"
+text_changed: true
+doc_hash: "5397eb8cf484836b"

@@ -15,6 +15,9 @@ enforced_by:
   - ARCH040
 touches_protected: []
 decision_hash: a636b977623ef410
+amended_by:
+  - adr: "0202"
+    what: 단위 구성의 realimport와 FalkorDB
 ---
 # ADR-0011 단위 기반 아키텍처
 

@@ -311,18 +311,11 @@ describe("typed names are for one person on their own machine [REQ-054]", () => 
 
   test("[REQ-054] the admin token gates the admin routes in this mode", async () => {
     const { app } = self();
-    const post = (headers: Record<string, string>) =>
-      app.inject({
-        method: "POST",
-        url: "/api/worlds/import",
-        headers,
-        payload: { source: "sample" },
-      });
-    expect((await post(typed("하늘"))).statusCode).toBe(403);
-    expect((await post(typed("하늘", { "x-terrarium-admin-token": "wrong" }))).statusCode).toBe(
-      403,
-    );
-    expect((await post(typed("하늘", { "x-terrarium-admin-token": ADMIN_TOKEN }))).statusCode).toBe(
+    const get = (headers: Record<string, string>) =>
+      app.inject({ method: "GET", url: "/api/audit", headers });
+    expect((await get(typed("하늘"))).statusCode).toBe(403);
+    expect((await get(typed("하늘", { "x-terrarium-admin-token": "wrong" }))).statusCode).toBe(403);
+    expect((await get(typed("하늘", { "x-terrarium-admin-token": ADMIN_TOKEN }))).statusCode).toBe(
       200,
     );
   });

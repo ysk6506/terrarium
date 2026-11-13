@@ -1,4 +1,4 @@
-/** Wraps a reader so that every command is refused: the shape of a connection to reality (REQ-011). */
+/** Wraps a reader so that every command is refused: the shape of a connection to reality (REQ-008). */
 import type { Catalog } from "@terrarium/core/catalog";
 import { ReadOnlyViolationError } from "@terrarium/core/kernel";
 import type { EntityKind } from "./blueprint";

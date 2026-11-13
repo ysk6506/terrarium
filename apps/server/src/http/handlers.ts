@@ -94,7 +94,6 @@ export const HANDLERS: Handlers = {
   listWorldTemplates: (p, i) => p.worlds.templates(i.viewer),
   createWorld: (p, i) => p.worlds.create(i.viewer, i.body),
   generateWorld: (p, i) => p.worlds.generate(i.viewer, i.body),
-  importWorld: (p, i) => p.worlds.import(i.viewer, i.body),
   updateWorld: async (p, i) => {
     await p.gate.world(i.viewer, id(i));
     return p.worlds.update(i.viewer, id(i), i.body);
