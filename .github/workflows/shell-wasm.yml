@@ -30,6 +30,7 @@ jobs:
           cp apps/server/shell-wasm/bin/terrarium-sh.wasm "$RUNNER_TEMP/committed.wasm"
           bash apps/server/shell-wasm/scripts/build.sh
           cp apps/server/shell-wasm/bin/terrarium-sh.wasm "$RUNNER_TEMP/rebuilt.wasm"
+          python3 apps/server/shell-wasm/scripts/diff-diagnose.py "$RUNNER_TEMP/committed.wasm" apps/server/shell-wasm/bin/terrarium-sh.wasm
           cmp "$RUNNER_TEMP/committed.wasm" apps/server/shell-wasm/bin/terrarium-sh.wasm
           node apps/server/shell-wasm/scripts/lock.mjs verify
       - name: temporary diagnosis, removed once the build reproduces
