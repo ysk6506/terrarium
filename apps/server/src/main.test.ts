@@ -3,6 +3,7 @@ import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterAll, describe, expect, test } from "vitest";
+import { sampleBlueprint } from "../../../packages/core/src/world/test-support/sample";
 import { run } from "./main";
 
 const dir = mkdtempSync(path.join(tmpdir(), "terrarium-main-"));
@@ -38,14 +39,10 @@ describe("starting and stopping the server [REQ-030]", () => {
       harnesses: { id: string }[];
     };
     expect(meta.harnesses.map((h) => h.id)).toEqual(["builtin"]);
-    const made = await fetch(`${first.url}/api/worlds/import`, {
+    const made = await fetch(`${first.url}/api/worlds`, {
       method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-terrarium-user": "haneul",
-        "x-terrarium-admin-token": "invented-admin-token",
-      },
-      body: JSON.stringify({ source: "sample", name: "남는 세계" }),
+      headers: { "content-type": "application/json", "x-terrarium-user": "haneul" },
+      body: JSON.stringify({ name: "남는 세계", blueprint: sampleBlueprint() }),
     });
     expect(made.status).toBe(200);
     await first.stop();
@@ -54,6 +51,14 @@ describe("starting and stopping the server [REQ-030]", () => {
     expect(worlds.map((w) => w.name)).toEqual(["남는 세계"]);
     await second.stop();
   }, 60_000);
+
+  test("a config that still lists `sources` stops the start and says to remove it (ADR-0202)", async () => {
+    const file = path.join(dir, "old-sources.json");
+    writeFileSync(file, JSON.stringify({ sources: [{ kind: "falkordb", id: "kg" }] }));
+    await expect(run({ env: { TERRARIUM_CONFIG: file }, logger: false })).rejects.toThrow(
+      "sources 설정은 더 쓰지 않아요. 설정에서 지워 주세요 (ADR-0202)",
+    );
+  });
 
   test("a broken config stops the start with the reason", async () => {
     const file = path.join(dir, "broken.json");

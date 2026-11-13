@@ -1,6 +1,6 @@
 /**
- * Assembling a blueprint from rooms of racks and equipment (ADR-0008). worldgen and realimport both
- * describe *what* is where (hints, rack references); this module decides the geometry: the room layout
+ * Assembling a blueprint from rooms of racks and equipment (ADR-0008). worldgen
+ * describes *what* is where (hints, rack references); this module decides the geometry: the room layout
  * comes from core.spatial, then rooms are packed onto floors, floors stacked in buildings and buildings
  * packed onto the site. Nothing here knows where the description came from.
  */

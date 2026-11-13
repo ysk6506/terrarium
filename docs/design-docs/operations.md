@@ -55,9 +55,6 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
     }
   ],
   "connections": { "retentionDays": 30, "warnDays": 7, "allowedHosts": ["*.internal"] },
-  "sources": [
-    { "kind": "falkordb", "id": "kg", "name": "운영 KG", "url": "falkor://kg.internal:6379", "graph": "cloud_topology", "passwordEnv": "KG_PASSWORD" }
-  ],
   "telemetry": { "kind": "clickstack", "url": "http://clickhouse.internal:8123", "database": "otel", "user": "terrarium_ro", "passwordEnv": "CLICKHOUSE_PASSWORD" }
 }
 ```
@@ -77,7 +74,7 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
 | `connections.warnDays` | 지우기 며칠 전부터 만든 사람에게 알리는가 | 7 |
 | `audit.retentionDays` | 감사 기록을 며칠 둘지(ADR-0193). 서버가 뜰 때와 6시간마다 한 번의 정리가 이보다 오래된 기록을 지우고, 정리했다는 기록을 하나 남긴다. 0이면 지우지 않는다. 0~36500 | 365 |
 | `audit.preAuthLinesPerMinute` | 로그인 전의 실패(비밀 값이 없거나 틀림, 로그인 ID 없음)가 모두 합쳐 1분에 쓸 수 있는 줄 수. 같은 주소·까닭은 1분에 한 줄로 접히고 그 줄에 횟수가 남는다. 넘은 것은 지표로만 센다. 1~10000 | 60 |
-| `sources` | 세계를 가져올 현실. FalkorDB는 `GRAPH.RO_QUERY`로만 읽는다(REQ-011) | 샘플 그래프만 |
+| `sources` | 더 쓰지 않는다. 설정에 남아 있으면 서버가 시작하지 않고 "설정에서 지워 주세요"라고 한 줄로 말한다(ADR-0202). 현실의 것은 세계 스냅샷 파일로만 받는다(REQ-121) | 쓰지 않음 |
 | `telemetry` | 하네스가 남긴 trace·log를 읽을 ClickStack의 **기본값**. 읽기 전용 계정을 쓴다. 연결이 "서버 기본값"을 고르면 이것을 읽는다 | 토큰·모델 시간 칸이 비고 나머지 분석은 그대로 |
 | 하네스의 `traces` | 그 하네스의 트레이스가 쌓이는 곳: `{"kind": "none"}`, `{"kind": "default"}`, `{"kind": "clickstack", "url": …}`, `{"kind": "langfuse", "host": …, "publicKey": …, "secretKeyEnv": …}`. 화면에서는 연결 폼의 "이 하네스의 트레이스는 어디에 쌓이나요?"로 고른다 | 옛 규칙: 하네스가 `telemetry: "clickstack"`이면 서버 기본값 |
 
@@ -126,9 +123,7 @@ TERRARIUM_CONFIG=/etc/terrarium/terrarium.json pnpm start
    하네스의 OpenTelemetry 루트 스팬 부모로 받은 `traceparent`를 쓰면 ClickStack 분석이 자동으로 붙는다.
    - GoClaw와 Hermes는 전용 연결이 있다([ADR-0055](adr/0055-goclaw-hermes-slot.md)). GoClaw는 실행마다 우리 도구 주소를 자기 MCP 서버로 등록했다가 거두므로, GoClaw가 사설망 주소를 막고 있으면 허용 호스트에 `publicUrl`의 호스트를 넣는다. Hermes는 도구를 설정 파일에서만 읽으므로, 연결 카드가 보여 주는 **고정 도구 주소**를 Hermes `config.yaml`의 `mcp_servers`에 한 번 적는다(주소의 끝은 서버 열쇠에서 나오므로 열쇠를 옮기면 같은 주소가 유지된다). 한 연결의 실험은 차례로 돈다.
    - 두 연결은 소스와 문서를 읽고 만들어 가짜 서버로 시험했고, 실제 GoClaw·Hermes로 끝까지 돌려 본 적은 없다.
-2. **FalkorDB**: 실험 화면의 "현실에서 가져오기"에서 소스를 고르고 가져올 서버룸을 좁힌다. 매핑하지 못한 라벨과 가정은 가져오기 보고서와
-   모델링 브리프에 나온다.
-3. **트레이스(ClickStack, Langfuse)**: 연결마다 어댑터로 붙는다([ADR-0085](adr/0085-telemetry-adapters.md)). 연결 검사가 도구가 답하는지 보고, "말 걸어 보기"가 한 턴의 트레이스가 이어졌는지 보여 준다. Langfuse는 공개 키와 비밀 키(환경 변수 이름이나 직접 입력)만 있으면 되고, 하네스는 `run_id`를 세션 ID로 남겨야 한다. ClickStack: OpenTelemetry ClickHouse exporter 기본 스키마(`otel_traces`, `otel_logs`)를 가정한다. 테이블 이름이 다르면
+2. **트레이스(ClickStack, Langfuse)**: 연결마다 어댑터로 붙는다([ADR-0085](adr/0085-telemetry-adapters.md)). 연결 검사가 도구가 답하는지 보고, "말 걸어 보기"가 한 턴의 트레이스가 이어졌는지 보여 준다. Langfuse는 공개 키와 비밀 키(환경 변수 이름이나 직접 입력)만 있으면 되고, 하네스는 `run_id`를 세션 ID로 남겨야 한다. ClickStack: OpenTelemetry ClickHouse exporter 기본 스키마(`otel_traces`, `otel_logs`)를 가정한다. 테이블 이름이 다르면
    `telemetry.tables`에 적는다.
 
 어느 것이든 닿지 않으면 화면은 "…에 닿을 수 없다"와 이유를 보여 주고, 나머지 기능은 그대로 쓴다.

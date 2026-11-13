@@ -1,7 +1,7 @@
 doc: "docs/design-docs/trust-experiments.md"
 target: "docs/product-specs/requirements.md"
-hash: "f51b263c01d96ce9"
+hash: "ffc46a6d9a5093a6"
 date: "2026-11-13"
-note: "ADR-0199과 구현(조치 관문, 권한 수준 둘, 규칙 넷)에 맞춰 다시 읽고 어긋난 곳이 없음을 확인함"
-text_changed: true
+note: "ADR-0202: 요구사항 표에서 REQ-010, 011만 빠졌고 이 문서와 상관없다"
+text_changed: false
 doc_hash: "a83fe236cd12d80f"

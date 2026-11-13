@@ -37,6 +37,7 @@ export const AUDIT_ACTIONS = [
   "access.denied",
   "world.create",
   "world.generate",
+  // Kept so that entries written before ADR-0202 still read: the import route is gone.
   "world.import",
   "world.update",
   "world.physics_update",

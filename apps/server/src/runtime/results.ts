@@ -17,7 +17,6 @@ import {
   type Telemetry,
   type TelemetryAdapter,
   toJsonl,
-  type WorldGaps,
 } from "@terrarium/core/analysis";
 import type {
   CreateShareRequest,
@@ -38,7 +37,6 @@ import {
   PUBLIC_SIGHT,
   type RunRecord,
   type Sight,
-  seen,
 } from "@terrarium/core/experiments";
 import { NotFoundError, randomToken } from "@terrarium/core/kernel";
 import {
@@ -47,7 +45,6 @@ import {
   legacyEvents,
   operationScenario,
 } from "@terrarium/core/session";
-import type { ImportReport } from "@terrarium/core/sources/realimport";
 import { spanOf } from "@terrarium/core/topology";
 import { noteChange } from "./audit-context";
 import { must, type PlatformContext, type Viewer } from "./context";
@@ -326,20 +323,6 @@ export class Results {
 
   async twinBrief(viewer: Viewer, query: TwinQueryParams): Promise<string> {
     const records = await this.twinRecords(viewer, query);
-    const worldIds = [...new Set(records.map((r) => r.world.id))];
-    const worlds: WorldGaps[] = [];
-    for (const id of worldIds) {
-      const w = await this.ctx.store.getWorld(id);
-      const report = w?.provenance?.report as ImportReport | undefined;
-      if (w && report && seen(sightOf(viewer), w))
-        worlds.push({
-          worldId: w.id,
-          worldName: w.name,
-          unknownLabels: report.unknown.labels,
-          unknownRelationships: report.unknown.relationships,
-          assumptions: report.assumptions,
-        });
-    }
-    return modelingBrief({ records, worlds, generatedAt: this.ctx.stamps.now() });
+    return modelingBrief({ records, generatedAt: this.ctx.stamps.now() });
   }
 }

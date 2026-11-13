@@ -14,7 +14,6 @@ import {
   errorReply,
   ForkBody,
   GenerateWorldBody,
-  ImportWorldBody,
   invalidInput,
   isApiError,
   koreanErrorMap,
@@ -122,17 +121,7 @@ describe("worlds cross the wire intact [REQ-001] [REQ-009]", () => {
     expect(messages(WorldgenSpecSchema, { ...spec, fill: 3 }).length).toBe(1);
   });
 
-  test("imports name a source and stay within limits; saves need the version they started from", () => {
-    expect(
-      parseWith(ImportWorldBody, {
-        source: "cloud_topology",
-        rooms: ["A동"],
-        assume: { power: false },
-      }).ok,
-    ).toBe(true);
-    expect(messages(ImportWorldBody, { source: "cloud_topology", maxEntities: 10 })).toEqual([
-      "maxEntities: 100 이상이어야 해요",
-    ]);
+  test("saves need the version they started from", () => {
     expect(messages(UpdateWorldBody, { baseDigest: "abc" })).toEqual([
       "바꿀 이름이나 세계가 없어요",
     ]);

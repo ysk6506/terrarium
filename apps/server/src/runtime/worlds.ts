@@ -1,19 +1,15 @@
 /**
- * Worlds (REQ-009, REQ-010, REQ-035): built in the 3D builder, generated from a site preset, or read
- * from reality. Every save checks the blueprint; errors refuse the save, warnings come back with it.
+ * Worlds (REQ-009, REQ-035): built in the 3D builder or generated from a site preset. Every save checks the blueprint; errors refuse the save, warnings come back with it.
  * Saves are optimistic: two people editing the same world cannot overwrite each other unknowingly.
  */
 import {
   type CreateWorldRequest,
   type GeneratedWorld,
   type GenerateWorldRequest,
-  type ImportedWorld,
-  type ImportWorldRequest,
   InvalidInputError,
   type PutPhysicsRequest,
   type SavedWorld,
   type ScopeRequest,
-  UnavailableError,
   type UpdateWorldRequest,
   type WorldPhysicsView,
   type WorldWithScope,
@@ -24,9 +20,8 @@ import {
   type WorldSummary,
   withScope,
 } from "@terrarium/core/experiments";
-import { ConflictError, TerrariumError } from "@terrarium/core/kernel";
+import { ConflictError } from "@terrarium/core/kernel";
 import { DEFAULT_PROFILE, fingerprintOf, isDefaultProfile } from "@terrarium/core/physics/slots";
-import { importReality } from "@terrarium/core/sources/realimport";
 import {
   generateCampus,
   generateShaped,
@@ -173,37 +168,6 @@ export class Worlds {
       result.blueprint,
     );
     return { ...saved, stats: result.stats };
-  }
-
-  async import(viewer: Viewer, req: ImportWorldRequest): Promise<ImportedWorld> {
-    // It reads the company's systems with the server's own account, so it is for administrators (ADR-0152).
-    allow(viewer, "administer", {}, "소스에서 세계 가져오기");
-    const entry = must(this.ctx.sources.get(req.source), `현실 소스 '${req.source}'`);
-    const base = this.fresh(viewer, req.name ?? `${entry.view.name}에서 가져온 세계`, "import", {
-      scope: {},
-    });
-    let imported: Awaited<ReturnType<typeof importReality>>;
-    try {
-      imported = await importReality(entry.source, {
-        id: base.id,
-        name: base.name,
-        catalog: this.ctx.catalog,
-        ...(req.siteName ? { siteName: req.siteName } : {}),
-        ...(req.rooms ? { rooms: req.rooms } : {}),
-        ...(req.maxEntities ? { maxEntities: req.maxEntities } : {}),
-        ...(req.assume ? { assume: req.assume } : {}),
-      });
-    } catch (err) {
-      if (err instanceof TerrariumError) throw err;
-      throw new UnavailableError(
-        `${entry.view.name}에 연결할 수 없어요: ${(err as Error).message}`,
-      );
-    }
-    const saved = await this.save(
-      { ...base, provenance: { source: req.source, report: imported.report } },
-      imported.blueprint,
-    );
-    return { ...saved, report: imported.report };
   }
 
   async update(viewer: Viewer, id: string, req: UpdateWorldRequest): Promise<SavedWorld> {

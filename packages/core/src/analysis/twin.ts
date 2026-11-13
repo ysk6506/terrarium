@@ -146,15 +146,6 @@ export function fromJsonl(text: string): DiagnosisRecord[] {
     });
 }
 
-/** What an imported world could not represent, from its import report. */
-export interface WorldGaps {
-  readonly worldId: string;
-  readonly worldName: string;
-  readonly unknownLabels: Readonly<Record<string, number>>;
-  readonly unknownRelationships: Readonly<Record<string, number>>;
-  readonly assumptions: readonly string[];
-}
-
 export interface FaultTypeStats {
   readonly faultType: string;
   readonly runs: number;
@@ -250,7 +241,6 @@ function faultSection(stats: readonly FaultTypeStats[]): string[] {
 function suggestions(
   stats: readonly FaultTypeStats[],
   errors: readonly ToolErrorStats[],
-  gaps: readonly WorldGaps[],
 ): string[] {
   const out: string[] = [];
   for (const s of stats.filter((x) => x.typeRate < LOW_ACCURACY && x.agents >= 2))
@@ -265,46 +255,19 @@ function suggestions(
     out.push(
       `툴 \`${e.tool}\`${josa(e.tool, "이")} 같은 오류를 ${e.count}번 냈어요: "${e.example}". 에이전트가 기대한 동작을 시뮬레이터가 지원해야 하는지 판단해요.`,
     );
-  for (const g of gaps) {
-    const labels = Object.keys(g.unknownLabels);
-    const rels = Object.keys(g.unknownRelationships);
-    if (labels.length + rels.length > 0)
-      out.push(
-        `'${g.worldName}'${josa(g.worldName, "을")} 가져올 때 매핑하지 못한 것: ${[...labels, ...rels].join(", ")}. 실제 구성의 일부가 세계에 빠져 있어요.`,
-      );
-  }
   return out.length > 0
     ? out.map((s) => `- ${s}`)
     : ["- 지금 기록으로는 특별히 손볼 곳이 보이지 않아요."];
 }
 
-function gapSection(gaps: readonly WorldGaps[]): string[] {
-  if (gaps.length === 0) return [];
-  const out = ["## 가져온 세계의 빈틈", ""];
-  for (const g of gaps) {
-    out.push(`### ${g.worldName} (\`${g.worldId}\`)`, "");
-    const unknown = [...Object.entries(g.unknownLabels), ...Object.entries(g.unknownRelationships)];
-    out.push(
-      unknown.length > 0
-        ? `- 매핑하지 못한 라벨·링크: ${unknown.map(([k, n]) => `${k} ${n}개`).join(", ")}`
-        : "- 매핑하지 못한 라벨·링크 없음",
-    );
-    for (const a of g.assumptions) out.push(`- 가정: ${a}`);
-    out.push("");
-  }
-  return out;
-}
-
 export interface BriefInput {
   readonly records: readonly DiagnosisRecord[];
-  readonly worlds?: readonly WorldGaps[];
   readonly generatedAt?: string;
 }
 
 /** A Markdown hand-off for the agent that develops the simulator. */
 export function modelingBrief(input: BriefInput): string {
   const { records } = input;
-  const gaps = input.worlds ?? [];
   const faults = faultTypeStats(records);
   const errors = toolErrorStats(records);
   const diagnosed = records.filter((r) => r.truth);
@@ -336,10 +299,9 @@ export function modelingBrief(input: BriefInput): string {
           ),
           "",
         ]),
-    ...gapSection(gaps),
     "## 다음에 볼 곳",
     "",
-    ...suggestions(faults, errors, gaps),
+    ...suggestions(faults, errors),
     "",
   ];
   return lines.join("\n");

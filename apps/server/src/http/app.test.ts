@@ -54,6 +54,14 @@ describe("every route of the contract is served [REQ-030]", () => {
       expect(a.hasRoute({ method: route.method, url: route.path }), name).toBe(true);
     expect(a.hasRoute({ method: "GET", url: "/healthz" })).toBe(true);
   });
+
+  test("[REQ-030] there is no call that reads a world from a graph source: the route is gone and the meta lists no sources (ADR-0202)", async () => {
+    const { app: a } = app();
+    expect(a.hasRoute({ method: "POST", url: "/api/worlds/import" })).toBe(false);
+    const asked = await json(a, "POST", "/api/worlds/import", { source: "sample" });
+    expect(asked.status).toBe(404);
+    expect((await json(a, "GET", "/api/meta")).body).not.toHaveProperty("sources");
+  });
 });
 
 describe("an experiment over HTTP [REQ-030] [REQ-038]", () => {

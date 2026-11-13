@@ -1,7 +1,7 @@
 doc: "docs/design-docs/permissions.md"
 target: "docs/design-docs/operations.md"
-hash: "77858fcef630504e"
+hash: "e5cb7585449b909c"
 date: "2026-11-13"
-note: "셸 엔진 추가(ADR-0200)는 덧붙임이고 이 문서가 말하는 동작은 그대로임을 코드와 대조해 확인"
+note: "main(ADR-0202) 병합 뒤 다시 읽고 셸 엔진 내용과 맞는지 확인"
 text_changed: false
-doc_hash: "a813c0a300fcf16c"
+doc_hash: "c50e152163949487"

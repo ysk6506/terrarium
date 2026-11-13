@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/build-plan.md"
 target: "docs/exec-plans/active/beta-rounds.md"
-hash: "cd90458686bbf957"
-date: "2026-11-12"
-note: "따라가는 beta-rounds.md는 검사 시간 줄이기 항목 문장만 바뀜(ADR-0195). 단계 기록과 상관없다"
-text_changed: false
-doc_hash: "9739c793ce36fdd3"
+hash: "b232f57702db53d6"
+date: "2026-11-13"
+note: "ADR-0202: 단계 3과 5의 realimport, FalkorDB와 요구사항 번호를 고쳤다"
+text_changed: true
+doc_hash: "68fd0abec532c869"

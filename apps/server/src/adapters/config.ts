@@ -79,19 +79,6 @@ const HarnessEntry = z
     return z.NEVER;
   });
 
-const FalkorSource = z
-  .object({
-    kind: z.literal("falkordb"),
-    id: Id,
-    name: z.string(),
-    /** falkor://host:port */
-    url: z.string().regex(/^(falkors?|rediss?):\/\//),
-    graph: z.string().default("cloud_topology"),
-    usernameEnv: EnvName.optional(),
-    passwordEnv: EnvName.optional(),
-  })
-  .strict();
-
 const ClickStack = z
   .object({
     kind: z.literal("clickstack"),
@@ -180,7 +167,6 @@ export const ConfigSchema = z
       })
       .strict()
       .default({}),
-    sources: z.array(FalkorSource).default([]),
     telemetry: ClickStack.optional(),
     cluster: Cluster,
   })
@@ -198,7 +184,6 @@ export interface HarnessConfig {
 export type { IdentityConfig };
 export type Config = z.output<typeof ConfigSchema>;
 export type { HttpHarnessConfig } from "./connectors/harness-http";
-export type FalkorSourceConfig = z.output<typeof FalkorSource>;
 export type ClickStackConfig = z.output<typeof ClickStack>;
 
 /** The built-in harness is always there, so a fresh server can run an experiment at once. */
@@ -233,6 +218,11 @@ function withClusterEnv(
 }
 
 export function parseConfig(raw: unknown, origin = "설정"): Config {
+  // The reality sources are gone (ADR-0202): an old file that still lists them is told so, not silently read.
+  if (typeof raw === "object" && raw !== null && "sources" in raw)
+    throw new InvalidValueError(
+      `${origin}: sources 설정은 더 쓰지 않아요. 설정에서 지워 주세요 (ADR-0202)`,
+    );
   const parsed = parseWith(ConfigSchema, raw);
   if (!parsed.ok)
     throw new InvalidValueError(

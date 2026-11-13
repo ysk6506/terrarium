@@ -1,6 +1,6 @@
 /**
  * The world blueprint: a declarative, JSON-serialisable description of everything that exists.
- * The builder UI, worldgen and realimport all produce blueprints; a World is built from one.
+ * The builder UI and worldgen produce blueprints; a World is built from one.
  *
  * Containment tree: site > building > floor > room > (containment) > rack > rack-mounted device.
  * Floor-standing equipment (cooling units, panels, UPS) stands in a room. Virtual entities (vCenter,

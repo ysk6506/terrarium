@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "fb0cdef7040710b7"
+hash: "a40377c1d4c2ff29"
 date: "2026-11-13"
-note: "셸 엔진 추가(ADR-0200)는 덧붙임이고 이 문서가 말하는 동작은 그대로임을 코드와 대조해 확인"
-text_changed: false
-doc_hash: "a4cb61d30297e19a"
+note: "main(ADR-0202) 병합 뒤 다시 읽고 셸 엔진 내용과 맞는지 확인"
+text_changed: true
+doc_hash: "52ebf0105c3a8d62"
