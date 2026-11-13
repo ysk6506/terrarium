@@ -84,20 +84,46 @@ const isAct = (e: RunEvent): e is ToolEvent => e.kind === "tool" && e.effect ===
 const agentStartOf = (events: readonly RunEvent[]): number =>
   events.find((e) => e.kind === "score" && e.what === "agent_start")?.t ?? events[0]?.t ?? 0;
 
-/** The services that stopped right after one of the agent's changes while they were well before it. */
-function worsenedBy(timeline: ServiceTimeline, acts: readonly ToolEvent[]): string[] {
-  const out = new Set<string>();
+/** Each change of the agent's with the services that stopped right after it while they were well before it (changes that hurt nothing are left out). */
+function worsenedPairs(
+  timeline: ServiceTimeline,
+  acts: readonly ToolEvent[],
+): Array<{ readonly act: ToolEvent; readonly services: string[] }> {
+  const out: Array<{ act: ToolEvent; services: string[] }> = [];
   for (const act of acts) {
+    const services: string[] = [];
     for (const [id, changes] of timeline) {
       if (statusBefore(timeline, id, act.seq) !== "healthy") continue;
       const hit = changes.some(
         (c) =>
           c.seq > act.seq && c.t >= act.t && c.t <= act.t + WORSEN_WINDOW_S && c.status === "down",
       );
-      if (hit) out.add(id);
+      if (hit) services.push(id);
     }
+    if (services.length > 0) out.push({ act, services });
   }
-  return [...out];
+  return out;
+}
+
+/** The services that stopped right after one of the agent's changes while they were well before it. */
+function worsenedBy(timeline: ServiceTimeline, acts: readonly ToolEvent[]): string[] {
+  return [...new Set(worsenedPairs(timeline, acts).flatMap((p) => p.services))];
+}
+
+/**
+ * The agent's changes and what each made worse, read from the events alone: the same reading as `worsened` of the
+ * report (the rule "악화를 내지 않는다" counts these, REQ-125). `acts` is every change the report counts.
+ */
+export function worsenedActs(events: readonly RunEvent[]): {
+  readonly acts: readonly ToolEvent[];
+  readonly worsened: ReadonlyArray<{
+    readonly act: ToolEvent;
+    readonly services: readonly string[];
+  }>;
+} {
+  const start = agentStartOf(events);
+  const acts = events.filter(isAct).filter((a) => a.t >= start);
+  return { acts, worsened: worsenedPairs(serviceTimeline(events), acts) };
 }
 
 /** Money and delay: each stretch of time between two changes costs what the services in it cost. */

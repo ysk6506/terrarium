@@ -6,7 +6,12 @@
 
 import { hashValue } from "@terrarium/core/kernel";
 import { DEFAULT_FINGERPRINT } from "@terrarium/core/physics/slots";
-import { operationKey, operationProblem } from "@terrarium/core/session";
+import {
+  DEFAULT_PERMISSION,
+  operationKey,
+  operationProblem,
+  trustProblems,
+} from "@terrarium/core/session";
 import { TOOL_NAMES } from "@terrarium/core/tools";
 import { isDefaultLeadSettings, resolveLeadSettings } from "@terrarium/core/world";
 import type { Recipe, Snapshot } from "./model";
@@ -134,6 +139,7 @@ export function recipeProblems(recipe: Recipe, ctx: RecipeContext): string[] {
     ...humanProblems(recipe),
     ...profileProblems(recipe, ctx),
     ...operationProblems(recipe),
+    ...trustProblems(recipe, recipe.tools),
   ];
   if (!recipe.harnessId) out.push("하네스를 골라야 해요");
   if (!recipe.agentId) out.push("에이전트를 골라야 해요");
@@ -146,22 +152,28 @@ export function recipeProblems(recipe: Recipe, ctx: RecipeContext): string[] {
 export const physicsOf = (e: { readonly snapshot: Snapshot }): string =>
   e.snapshot.physics ?? DEFAULT_FINGERPRINT;
 
+/** Domains and lead times change the task, so they are in the key; unset they leave the key as it always was. */
+function scopeKey(recipe: Pick<Recipe, "domains" | "leadTimes">) {
+  return (recipe.domains && recipe.domains.length > 0) ||
+    (recipe.leadTimes && !isDefaultLeadSettings(recipe.leadTimes))
+    ? {
+        scope: {
+          domains: [...(recipe.domains ?? [])].sort(),
+          leadTimes: resolveLeadSettings(recipe.leadTimes),
+        },
+      }
+    : {};
+}
+
 /** The comparable task: same world and scenario versions, same scoring, same time and product versions. */
 export function benchmarkKey(
   snapshot: Snapshot,
-  recipe: Pick<Recipe, "time" | "profiles" | "domains" | "leadTimes" | "faultScope" | "operation">,
+  recipe: Pick<
+    Recipe,
+    "time" | "profiles" | "domains" | "leadTimes" | "faultScope" | "operation" | "permission"
+  >,
 ): string {
-  // domains and lead times change the task, so they are in the key; unset they leave the key as it always was
-  const scope =
-    (recipe.domains && recipe.domains.length > 0) ||
-    (recipe.leadTimes && !isDefaultLeadSettings(recipe.leadTimes))
-      ? {
-          scope: {
-            domains: [...(recipe.domains ?? [])].sort(),
-            leadTimes: resolveLeadSettings(recipe.leadTimes),
-          },
-        }
-      : {};
+  const scope = scopeKey(recipe);
   return hashValue({
     ...scope,
     world: snapshot.worldDigest,
@@ -176,6 +188,11 @@ export function benchmarkKey(
     // which faults can happen shapes the task; how escalation is answered and whether a runbook is given are
     // conditions of the agent, like its tools, so they stay out of the key (only where set, so old keys stay)
     ...(recipe.faultScope === "inside" ? { faultScope: "inside" } : {}),
+    // how far the agent is entrusted changes the task (what it may do), so a level other than the default is in the key;
+    // the rules only count what the agent did and are told to it like a runbook, so they stay out, like the tools
+    ...(recipe.permission && recipe.permission !== DEFAULT_PERMISSION
+      ? { permission: recipe.permission }
+      : {}),
     // an operation is a different task for each length, pace, fault source and rate; its instruction is a
     // condition of the agent and stays out, like the tools
     ...(recipe.operation ? { operation: operationKey(recipe.operation) } : {}),

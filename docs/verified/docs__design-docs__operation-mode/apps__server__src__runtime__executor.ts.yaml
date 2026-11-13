@@ -1,7 +1,7 @@
 doc: "docs/design-docs/operation-mode.md"
 target: "apps/server/src/runtime/executor.ts"
-hash: "c4e63aefaa77eb9a"
-date: "2026-11-12"
-note: "ADR-0183: 한 가지 말(번, 상황, 객체·링크, 넘기기)에 맞춰 인용한 화면 글을 고쳤다"
+hash: "93f7976ed96803d8"
+date: "2026-11-13"
+note: "ADR-0199과 구현(조치 관문, 권한 수준 둘, 규칙 넷)에 맞춰 다시 읽고 어긋난 곳이 없음을 확인함"
 text_changed: true
-doc_hash: "6bf1cbb54cb943cd"
+doc_hash: "d958e54ca523d6f3"

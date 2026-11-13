@@ -40,6 +40,8 @@ export interface ToolEvent extends Stamp {
   readonly targets: readonly string[];
   /** What came of it in a few words: what it changed, or why it failed; empty for a plain look. */
   readonly summary: string;
+  /** Set when the action gate stopped the call before it reached the tool (REQ-123): the world was not touched. */
+  readonly blockedBy?: "view";
 }
 
 /** Something that happened in the world: a fault, an alarm, a switch flipped. `cause` tells who did it. */

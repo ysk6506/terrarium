@@ -56,5 +56,5 @@ export {
   searchRunbooks,
   toolsIn,
 } from "./runbook";
-export { type CallEffect, callEffect, callTargets } from "./targets";
+export { type CallEffect, callEffect, callTargets, isWorldAction } from "./targets";
 export { Toolbox, type ToolResult, validateArgs } from "./toolbox";
