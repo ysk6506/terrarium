@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "f51b263c01d96ce9"
+hash: "ffc46a6d9a5093a6"
 date: "2026-11-13"
-note: "ADR-0199과 구현(조치 관문, 권한 수준 둘, 규칙 넷)에 맞춰 다시 읽고 어긋난 곳이 없음을 확인함"
-text_changed: false
-doc_hash: "c1ca5b1605c7930f"
+note: "ADR-0202: 요구사항 표 변경(REQ-010, 011 없앰)을 대조했고, 걷어낸다는 순서 줄을 뺐다"
+text_changed: true
+doc_hash: "8b41b0fee93e3583"

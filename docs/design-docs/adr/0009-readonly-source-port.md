@@ -1,11 +1,15 @@
 ---
 title: ADR-0009 읽기 전용 현실 소스 포트
 kind: decision
-status: active
+status: superseded
+superseded_by: 0202-remove-reality-import-code.md
 enforced_by:
   - ARCH020
 touches_protected: []
 decision_hash: 700b3f65a478327e
+amended_by:
+  - adr: "0202"
+    what: 읽기 전용 현실 소스 포트와 FalkorDB 어댑터(통째로 대체)
 ---
 # ADR-0009 읽기 전용 현실 소스 포트
 

@@ -63,6 +63,9 @@ touches_protected:
   - docs/design-docs/adr/0191-gateway-routes-verification-calls-to-terrarium.md
 amends_tests: []
 decision_hash: e8ffd3820f0a68ff
+amended_by:
+  - adr: "0202"
+    what: 결정 9의 걷어내기를 실행
 ---
 # ADR-0192 테라리움은 처음의 목표로 돌아간다 — 현실 세계 만들기와 워크플로 자동화는 다른 프로젝트가 맡고, 둘 사이는 세계 스냅샷과 판정으로만 잇는다
 

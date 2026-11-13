@@ -1,7 +1,7 @@
 doc: "docs/design-docs/experiments-and-analysis.md"
 target: "packages/core/src/analysis/twin.ts"
-hash: "d345ad35167981aa"
-date: "2026-11-12"
-note: "main을 합친 뒤 공개 범위(ADR-0174 나 단계, ADR-0179)에서 더한 서술을 합쳐진 코드와 대조했고, 바뀐 화면 글(ADR-0183)과 옛 말이 없음을 확인했다"
+hash: "9e6b56495905260c"
+date: "2026-11-13"
+note: "ADR-0202: modelingBrief가 가져온 세계의 빈틈 절을 더 만들지 않는 것에 맞춰 목록에서 셋째를 뺐다"
 text_changed: true
-doc_hash: "b7c9913420eb9265"
+doc_hash: "1eacf5caf0356e1b"

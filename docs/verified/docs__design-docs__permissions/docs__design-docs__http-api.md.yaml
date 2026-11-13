@@ -1,7 +1,7 @@
 doc: "docs/design-docs/permissions.md"
 target: "docs/design-docs/http-api.md"
-hash: "bdb8eca964a55d2d"
+hash: "5397eb8cf484836b"
 date: "2026-11-13"
-note: "ADR-0199과 구현(조치 관문, 권한 수준 둘, 규칙 넷)에 맞춰 다시 읽고 어긋난 곳이 없음을 확인함"
-text_changed: false
-doc_hash: "a813c0a300fcf16c"
+note: "ADR-0202: 관리자 권한 설명과 표에서 소스 가져오기를 뺐다"
+text_changed: true
+doc_hash: "c50e152163949487"
