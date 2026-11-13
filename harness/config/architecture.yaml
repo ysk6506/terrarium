@@ -37,7 +37,7 @@ units:
   web.ui:                   {path: apps/web/src/ui, may_import: ["core.*", web.logic, web.moss]}
   web.main:                 {path: apps/web/src, may_import: ["core.*", "web.*"], public_index: false}
   harness:                  {path: harness/src, may_import: [], public_index: false}
-  tests.spec:               {path: tests/spec, may_import: ["core.*", "server.*"], public_index: false}
+  tests.spec:               {path: tests/spec, may_import: ["core.*", "server.*", tests.e2e], public_index: false}
   tests.e2e:                {path: tests/e2e, may_import: ["core.*"], public_index: false}
 
 # Only these units may import Node built-ins (core and web must run in a browser).
