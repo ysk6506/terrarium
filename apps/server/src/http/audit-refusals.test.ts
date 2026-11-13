@@ -80,14 +80,14 @@ describe("a refusal after sign-in [REQ-054]", () => {
       { id: open.world.id, owner: "olivia" },
     ],
     [
-      "not an admin (403) on a route that is admin-only",
+      "not an admin (403) on the audit export",
       OMAR,
-      "POST",
-      "/api/worlds/import",
-      () => ({ source: "sample" }),
-      "world.import",
+      "GET",
+      "/api/audit/export",
+      () => undefined,
+      "audit.export",
       "not_admin",
-      { kind: "world" },
+      { kind: "audit" },
     ],
     [
       "not an admin (403) on the audit log itself",
@@ -189,7 +189,7 @@ describe("a refusal after sign-in [REQ-054]", () => {
   });
 
   test("[REQ-054] an admin-only refusal names no id: nothing was looked up, so nothing in the address is confirmed", async () => {
-    const { entries } = await traced(s, OMAR, "POST", "/api/worlds/import", { source: "sample" });
+    const { entries } = await traced(s, OMAR, "GET", "/api/audit");
     expect(entries[0]?.resource.id).toBeUndefined();
   });
 

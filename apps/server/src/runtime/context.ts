@@ -3,7 +3,6 @@ import type { TelemetryAdapter, TelemetryPort } from "@terrarium/core/analysis";
 import type { Catalog } from "@terrarium/core/catalog";
 import type { ExperimentStore, HarnessPort, Scope } from "@terrarium/core/experiments";
 import { NotFoundError, withJosa } from "@terrarium/core/kernel";
-import type { SourceEntry } from "../adapters";
 import type { EventBus, RunLogs } from "./events";
 import type { SessionHost } from "./hosts";
 import type { Stamps } from "./ids";
@@ -62,7 +61,6 @@ export interface PlatformContext {
   readonly store: ExperimentStore;
   readonly catalog: Catalog;
   readonly harnesses: HarnessDirectory;
-  readonly sources: ReadonlyMap<string, SourceEntry>;
   readonly telemetry?: { readonly port: TelemetryPort; readonly name: string };
   readonly host: SessionHost;
   readonly stamps: Stamps;

@@ -3,6 +3,7 @@ import { fromJsonl } from "@terrarium/core/analysis";
 import { ForbiddenError, UnavailableError } from "@terrarium/core/contract";
 import { NotFoundError } from "@terrarium/core/kernel";
 import { describe, expect, test } from "vitest";
+import { sampleBlueprint } from "../../../../packages/core/src/world/test-support/sample";
 import { buildAdapters, parseConfig } from "../adapters";
 import { sightOf } from "./permissions";
 import {
@@ -181,9 +182,24 @@ describe("benchmarks and the digital twin [REQ-039] [REQ-015]", () => {
     expect(await p.results.leaderboards({ worldId: "w-elsewhere" })).toEqual([]);
   });
 
-  test("diagnosis records export as JSON Lines; the brief names what imported worlds lack", async () => {
-    const { platform: p } = testPlatform();
-    const imported = await p.worlds.import(ADMIN, { source: "sample", name: "가져온 홀" });
+  test("[REQ-009] diagnosis records export as JSON Lines; a world saved with origin import and an old report runs as any world, and its report is not read (ADR-0202)", async () => {
+    const { platform: p, store } = testPlatform();
+    const made = await p.worlds.create(HANEUL, { name: "가져온 홀", blueprint: sampleBlueprint() });
+    // What an earlier version saved for a world it had read from a graph: the report is kept as it was written.
+    await store.putWorld({
+      ...made.world,
+      origin: "import",
+      provenance: {
+        source: "sample",
+        report: {
+          source: "sample",
+          unknown: { labels: { Chiller: 4 }, relationships: { FEEDS_WATER: 9 } },
+          assumptions: ["랙 높이를 42U로 가정했어요"],
+        },
+      },
+    });
+    const imported = { world: await p.worlds.get(made.world.id) };
+    expect(imported.world.origin).toBe("import");
     const room = imported.world.blueprint.entities.find((x) => x.kind === "cooling_unit");
     expect(room).toBeDefined();
     const { scenario } = await p.scenarios.create(HANEUL, {
@@ -208,7 +224,8 @@ describe("benchmarks and the digital twin [REQ-039] [REQ-015]", () => {
     ).toHaveLength(2);
     const brief = await p.results.twinBrief(ADMIN, {});
     expect(brief).toContain("# 시뮬레이터 모델링 브리프");
-    expect(brief).toContain("### 가져온 홀");
-    expect(brief).toContain("- 가정:");
+    expect(brief).not.toContain("가져온 세계의 빈틈");
+    expect(brief).not.toContain("가정:");
+    expect(brief).not.toContain("Chiller");
   });
 });

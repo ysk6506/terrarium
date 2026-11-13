@@ -1,18 +1,15 @@
-/** server.adapters: the server's connections to the outside — store, harnesses, reality sources, telemetry. */
+/** server.adapters: the server's connections to the outside — store, harnesses, telemetry. */
 export {
   type AdapterOptions,
   type Adapters,
   buildAdapters,
   harnessFor,
-  SAMPLE_SOURCE_ID,
-  type SourceEntry,
 } from "./build";
 export {
   BUILTIN_HARNESS_ID,
   type ClickStackConfig,
   type Config,
   ConfigSchema,
-  type FalkorSourceConfig,
   type HarnessConfig,
   type HttpHarnessConfig,
   type IdentityConfig,
@@ -26,7 +23,6 @@ export {
   type Connector,
   connectorOf,
 } from "./connectors";
-export { FalkorGraph, falkorSource, GraphSource, type ReadOnlyGraph } from "./falkordb";
 export type { FetchLike } from "./fetch";
 export { HARNESS_PROTOCOL, HttpHarness, type RemoteRunStatus, traceIdOf } from "./harness/http";
 export { CAUSE_CODES, ScriptedHarness } from "./harness/scripted";

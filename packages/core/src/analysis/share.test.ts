@@ -204,15 +204,6 @@ describe("diagnosis records and the modelling brief [REQ-015]", () => {
     const brief = modelingBrief({
       records,
       generatedAt: "2026-10-29",
-      worlds: [
-        {
-          worldId: "w-kg",
-          worldName: "평택 P2 가져오기",
-          unknownLabels: { Chiller: 4 },
-          unknownRelationships: { FEEDS_WATER: 9 },
-          assumptions: ["랙 높이를 42U로 가정했어요"],
-        },
-      ],
     });
     expect(brief.startsWith("# 시뮬레이터 모델링 브리프\n")).toBe(true);
     expect(brief).toContain("- 실행 4번 (진단 요구 4번), 실험 2개, 에이전트 2종");
@@ -221,12 +212,6 @@ describe("diagnosis records and the modelling brief [REQ-015]", () => {
     );
     expect(brief).toContain("'cooling_unit_failure'는 에이전트 2종에 걸쳐 정답률이 0%에 그쳐요");
     expect(brief).toContain("툴 `get_entity`가 같은 오류를 6번 냈어요");
-    expect(brief).toContain("### 평택 P2 가져오기 (`w-kg`)");
-    expect(brief).toContain("- 매핑하지 못한 라벨·링크: Chiller 4개, FEEDS_WATER 9개");
-    expect(brief).toContain("- 가정: 랙 높이를 42U로 가정했어요");
-    expect(brief).toContain(
-      "'평택 P2 가져오기'를 가져올 때 매핑하지 못한 것: Chiller, FEEDS_WATER",
-    );
   });
 
   test("an empty record set still gives a readable brief; easy faults are flagged too", () => {
@@ -234,7 +219,6 @@ describe("diagnosis records and the modelling brief [REQ-015]", () => {
     expect(empty).toContain("진단을 요구한 실행이 아직 없어요.");
     expect(empty).toContain("툴 오류가 없었어요.");
     expect(empty).toContain("- 지금 기록으로는 특별히 손볼 곳이 보이지 않아요.");
-    expect(empty).not.toContain("가져온 세계의 빈틈");
     const easy = experimentOf({ id: "z", runs: Array.from({ length: 5 }, () => SCRIPTS.good) });
     const brief = modelingBrief({ records: diagnosisRecords(easy.experiment, easy.runs) });
     expect(brief).toContain("5번 모두 맞혔어요. 현실보다 단서가 너무 뚜렷하지 않은지 봐요.");

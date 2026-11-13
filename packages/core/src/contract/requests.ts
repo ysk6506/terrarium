@@ -63,21 +63,6 @@ export const GenerateWorldBody = z.union([
     .strict(),
 ]);
 
-export const ImportWorldBody = z
-  .object({
-    /** A configured reality source, e.g. "cloud_topology" (FalkorDB) or "sample". */
-    source: IdSchema,
-    name: NameSchema.optional(),
-    siteName: NameSchema.optional(),
-    rooms: z.array(z.string().trim().min(1).max(80)).max(50).optional(),
-    maxEntities: z.number().int().min(100).max(100_000).optional(),
-    assume: z
-      .object({ power: z.boolean().optional(), cooling: z.boolean().optional() })
-      .strict()
-      .optional(),
-  })
-  .strict();
-
 /** Saves are optimistic: `baseDigest` is the version the editor started from. */
 export const UpdateWorldBody = z
   .object({
@@ -302,7 +287,6 @@ export const TwinQuery = z
 
 export type CreateWorldRequest = z.infer<typeof CreateWorldBody>;
 export type GenerateWorldRequest = z.infer<typeof GenerateWorldBody>;
-export type ImportWorldRequest = z.infer<typeof ImportWorldBody>;
 export type UpdateWorldRequest = z.infer<typeof UpdateWorldBody>;
 export type CreateScenarioRequest = z.infer<typeof CreateScenarioBody>;
 export type UpdateScenarioRequest = z.infer<typeof UpdateScenarioBody>;

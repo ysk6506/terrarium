@@ -3,10 +3,13 @@ title: ADR-0008 독립 공간 모듈과 소스 격리
 kind: decision
 status: active
 enforced_by:
-- ARCH010
-- ARCH012
+  - ARCH010
+  - ARCH012
 touches_protected: []
 decision_hash: 3a265dd887895a4b
+amended_by:
+  - adr: "0202"
+    what: worldgen과 realimport의 형제 격리
 ---
 # ADR-0008 독립 공간 모듈과 소스 격리
 

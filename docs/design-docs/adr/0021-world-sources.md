@@ -4,11 +4,12 @@ kind: decision
 status: active
 enforced_by:
   - packages/core/src/sources/worldgen/worldgen.test.ts
-  - packages/core/src/sources/realimport/realimport.test.ts
   - tests/spec/worldgen.test.ts
-  - tests/spec/realimport.test.ts
 touches_protected: []
 decision_hash: b0bb9b0ee6795d46
+amended_by:
+  - adr: "0202"
+    what: 가져오기 길과 KG 매핑 결정
 ---
 # ADR-0021 세계 소스
 

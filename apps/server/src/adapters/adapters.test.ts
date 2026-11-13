@@ -3,17 +3,9 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { NO_TELEMETRY, usageOf } from "@terrarium/core/analysis";
-import { ReadOnlyViolationError } from "@terrarium/core/kernel";
-import {
-  type CypherQuery,
-  importReality,
-  MemorySource,
-  sampleGraph,
-} from "@terrarium/core/sources/realimport";
 import { afterAll, describe, expect, test } from "vitest";
 import { buildAdapters } from "./build";
 import { BUILTIN_HARNESS_ID, loadConfig, parseConfig, secret } from "./config";
-import { GraphSource, type ReadOnlyGraph } from "./falkordb";
 import { SqliteStore } from "./sqlite-store";
 import { attributeValue, ClickStackTelemetry, logOf, spanOf } from "./telemetry/clickstack";
 import { FakeFetch } from "./test-support/fake-fetch";
@@ -27,7 +19,6 @@ describe("server configuration [REQ-031] [REQ-037]", () => {
     expect(config).toMatchObject({
       port: 8787,
       dataDir: "data",
-      sources: [],
       harnesses: [{ id: BUILTIN_HARNESS_ID }],
     });
     expect(config.telemetry).toBeUndefined();
@@ -44,9 +35,6 @@ describe("server configuration [REQ-031] [REQ-037]", () => {
           { kind: "http", id: "remote", name: "원격", url: "https://h.internal" },
           { kind: "a2a", id: "agent", name: "에이전트", url: "https://a.internal" },
         ],
-        sources: [
-          { kind: "falkordb", id: "kg", name: "운영 KG", url: "falkor://kg.internal:6379" },
-        ],
         telemetry: { kind: "clickstack", url: "http://ch:8123" },
       }),
     );
@@ -55,7 +43,6 @@ describe("server configuration [REQ-031] [REQ-037]", () => {
     expect(config.identity.header).toBe("x-forwarded-user");
     expect(config.harnesses.map((h) => h.id)).toEqual(["builtin", "remote", "agent"]);
     expect(config.telemetry?.tables).toEqual({ traces: "otel_traces", logs: "otel_logs" });
-    expect(config.sources[0]?.graph).toBe("cloud_topology");
   });
 
   test("mistakes are named in Korean, with where they are", () => {
@@ -79,7 +66,22 @@ describe("server configuration [REQ-031] [REQ-037]", () => {
     expect(() => secret({}, "LLM_KEY")).toThrow("환경 변수 LLM_KEY가 비어 있어요");
   });
 
-  test("adapters are built from the config; the sample graph is always there", async () => {
+  test("[REQ-031] a config that still has `sources` does not start: it says so in one line, and nothing is read silently (ADR-0202)", () => {
+    const old = {
+      sources: [{ kind: "falkordb", id: "kg", name: "운영 KG", url: "falkor://kg:6379" }],
+    };
+    expect(() => parseConfig(old)).toThrow(
+      "설정: sources 설정은 더 쓰지 않아요. 설정에서 지워 주세요 (ADR-0202)",
+    );
+    expect(() => parseConfig({ sources: [] }, "terrarium.json")).toThrow(
+      "terrarium.json: sources 설정은 더 쓰지 않아요",
+    );
+    const file = path.join(dir, "old-sources.json");
+    writeFileSync(file, JSON.stringify(old));
+    expect(() => loadConfig({ TERRARIUM_CONFIG: file })).toThrow("sources 설정은 더 쓰지 않아요");
+  });
+
+  test("adapters are built from the config", async () => {
     const config = parseConfig({
       dataDir: path.join(dir, "built"),
       harnesses: [
@@ -92,95 +94,14 @@ describe("server configuration [REQ-031] [REQ-037]", () => {
         },
         { kind: "a2a", id: "agent", name: "에이전트", url: "https://a.internal" },
       ],
-      sources: [
-        {
-          kind: "falkordb",
-          id: "kg",
-          name: "운영 KG",
-          url: "falkor://user:pw@kg.internal:6379",
-          passwordEnv: "KG_PW",
-        },
-      ],
       telemetry: { kind: "clickstack", url: "http://ch:8123" },
     });
-    const adapters = buildAdapters(config, { env: { H_TOKEN: "t", KG_PW: "p" } });
+    const adapters = buildAdapters(config, { env: { H_TOKEN: "t" } });
     expect(adapters.harnesses.map((h) => h.info.kind)).toEqual(["scripted", "http", "a2a"]);
-    expect([...adapters.sources.keys()]).toEqual(["sample", "kg"]);
-    expect(adapters.sources.get("kg")?.source.name).toBe(
-      "falkordb://kg.internal:6379/cloud_topology",
-    );
     expect(adapters.telemetry?.name).toBe("ClickStack");
     expect(adapters.store).toBeInstanceOf(SqliteStore);
     await adapters.close();
-    expect(() => buildAdapters(config, { env: { KG_PW: "p" } })).toThrow(
-      "환경 변수 H_TOKEN이 비어 있어요",
-    );
-  });
-});
-
-describe("the knowledge graph is only read [REQ-010] [REQ-011]", () => {
-  const dump = sampleGraph();
-  const queries: CypherQuery[] = [];
-  /** Answers READ_QUERIES from the sample dump, as FalkorDB would. */
-  const graph: ReadOnlyGraph = {
-    async roQuery(q) {
-      queries.push(q);
-      const memory = new MemorySource("m", dump);
-      if (q.text.includes("UNWIND labels(n)"))
-        return Object.entries((await memory.summary()).labels).map(([label, count]) => ({
-          label,
-          count,
-        }));
-      if (q.text.includes("type(r) AS type"))
-        return Object.entries((await memory.summary()).relationships).map(([type, count]) => ({
-          type,
-          count,
-        }));
-      const page = { offset: Number(q.params.offset), limit: Number(q.params.limit) };
-      const label = /MATCH \(n:(\w+)\)/.exec(q.text)?.[1];
-      if (label)
-        return (await memory.nodes(label, page)).map((n) => ({
-          id: n.id,
-          labels: n.labels,
-          props: n.props,
-        }));
-      const type = /\[r:(\w+)\]/.exec(q.text)?.[1] as string;
-      return (await memory.relationships(type, page)).map((r) => ({
-        from: r.from,
-        to: r.to,
-        props: r.props,
-      }));
-    },
-  };
-
-  test("importing through the graph adapter gives the same world as importing the dump", async () => {
-    const viaGraph = await importReality(new GraphSource("falkordb://test/cloud_topology", graph), {
-      id: "w",
-      name: "w",
-    });
-    const viaMemory = await importReality(new MemorySource("m", dump), { id: "w", name: "w" });
-    expect({ ...viaGraph.blueprint, meta: {} }).toEqual({ ...viaMemory.blueprint, meta: {} });
-    expect(viaGraph.blueprint.meta.from).toBe("falkordb://test/cloud_topology");
-    expect(viaGraph.report.source).toBe("falkordb://test/cloud_topology");
-    expect(queries.every((q) => !/\b(CREATE|MERGE|SET|DELETE)\b/.test(q.text))).toBe(true);
-  });
-
-  test("rows with missing parts still map; a writing query never reaches the graph", async () => {
-    const sparse = new GraphSource("x", {
-      roQuery: async (q) => (q.text.includes("MATCH (n:") ? [{ id: 7 }] : [{ from: 1, to: 2 }]),
-    });
-    expect(await sparse.nodes("Rack", { offset: 0, limit: 10 })).toEqual([
-      { id: "7", labels: ["Rack"], props: {} },
-    ]);
-    expect(await sparse.relationships("FEEDS", { offset: 0, limit: 10 })).toEqual([
-      { type: "FEEDS", from: "1", to: "2", props: {} },
-    ]);
-    const sneaky = new GraphSource("x", graph) as unknown as {
-      run(q: CypherQuery): Promise<unknown>;
-    };
-    expect(() => sneaky.run({ text: "MATCH (n) DETACH DELETE n", params: {} })).toThrow(
-      ReadOnlyViolationError,
-    );
+    expect(() => buildAdapters(config, { env: {} })).toThrow("환경 변수 H_TOKEN이 비어 있어요");
   });
 });
 

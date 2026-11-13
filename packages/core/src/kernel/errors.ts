@@ -34,7 +34,7 @@ export class UnsupportedError extends TerrariumError {
   override readonly status = 422;
 }
 
-/** Something tried to write to reality. Terrarium only ever reads real systems (REQ-011). */
+/** Something tried to write to reality. The port to a real system is read-only (REQ-008). */
 export class ReadOnlyViolationError extends TerrariumError {
   override readonly code = "read_only_violation";
   override readonly status = 403;

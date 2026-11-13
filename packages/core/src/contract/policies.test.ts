@@ -47,7 +47,7 @@ describe("every route says who may call it [REQ-054]", () => {
     expect(policyOf("recheckConnection")).toEqual({ action: "use" });
     expect(policyOf("checkModel")).toEqual({ action: "use" });
     expect(policyOf("setDefaultModel")).toEqual({ action: "change" });
-    expect(policyOf("importWorld")).toBe("admin");
+    expect(policyOf("listAudit")).toBe("admin");
     expect(policyOf("calibrateScenario")).toEqual({ action: "calibrate" });
     expect(policyOf("createShare")).toEqual({ action: "createShare" });
     expect(policyOf("putCurrentProcess")).toEqual({ action: "editProcess" });

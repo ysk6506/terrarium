@@ -25,7 +25,6 @@ import {
   ExperimentQuery,
   ForkBody,
   GenerateWorldBody,
-  ImportWorldBody,
   LeaderboardQuery,
   ReportQuery,
   RunEventsQuery,
@@ -159,14 +158,6 @@ export const ROUTES = {
     body: GenerateWorldBody,
     produces: json,
     policy: "signedIn",
-  },
-  importWorld: {
-    method: "POST",
-    path: "/api/worlds/import",
-    summary: "현실(KG 등)에서 읽기 전용으로 가져오기 (관리자만)",
-    body: ImportWorldBody,
-    produces: json,
-    policy: "admin",
   },
   updateWorld: {
     method: "PUT",

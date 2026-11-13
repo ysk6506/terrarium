@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/beta-feedback.md"
 target: "docs/exec-plans/active/beta-rounds.md"
-hash: "cd90458686bbf957"
-date: "2026-11-12"
-note: "따라가는 beta-rounds.md는 검사 시간 줄이기 항목 문장만 바뀜(ADR-0195). 피드백 장부와 상관없다"
+hash: "b232f57702db53d6"
+date: "2026-11-13"
+note: "ADR-0202: 차수 계획의 바뀐 줄(걷어내기 끝남)은 이 문서와 상관없다"
 text_changed: false
 doc_hash: "f701f42ae283462c"

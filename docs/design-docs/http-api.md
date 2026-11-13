@@ -84,7 +84,6 @@ covers:
 | `POST /api/worlds` | 빌더에서 지은 세계 저장 | |
 | `POST /api/worlds/generate` | 사업장 프리셋으로 세계 생성. 본문이 `{ shape }`이면 서비스부터(REQ-094; 크기는 `rooms`·`racksPerRoom`·`perRack`(REQ-109)이고 옛 `servers`만 있어도 같은 세계를 짓는다, 서비스마다 `load`(초당 요청·데이터 GB·동시 사용자·허용 중단 초·GPU 시간)를 받는다), `template: true`를 더하면 템플릿으로 저장, `startedFrom`(템플릿·세계 id)을 더하면 출처를 세계 기록에 남긴다(REQ-101) | |
 | `GET /api/world-templates` | 저장해 둔 세계 템플릿 목록(구성은 `provenance.shape`). `GET /api/worlds`에는 나오지 않는다 | |
-| `POST /api/worlds/import` | 현실(KG 등)에서 읽기 전용으로 가져오기 (관리자만) | |
 | `PUT /api/worlds/:id` | 세계 고쳐 저장 (버전 확인) | |
 | `PUT /api/worlds/:id/scope` · `PUT /api/scenarios/:id/scope` · `PUT /api/experiments/:id/scope` · `PUT /api/connections/:id/scope` · `PUT /api/models/:id/scope` | 누가 볼 수 있는지 바꾸기 `{ scope, group? }` (만든 사람과 관리자. 보이지 않으면 404). 아래 "공개 범위" | |
 | `DELETE /api/worlds/:id` | 세계 숨기기 (실험이 쓴 버전은 남는다) | |
@@ -135,7 +134,7 @@ covers:
 | `public` | 주소 안의 토큰이 비밀. 로그인 밖 (`GET /r/:token`) | 1 |
 | `open` | 신원 방식이 들여보낸 누구나. 누구인지 알려 주는 `meta` 하나 | 1 |
 | `signedIn` | 로그인한 누구나. 읽기, 만들기, 내 것만 보이는 저장해 둔 것, 내 것에 있던 일(`/api/audit/mine`) | 48 |
-| `admin` | 관리자만, 앱이 핸들러 앞에서 막는다 (소스에서 세계 가져오기, 감사 기록 목록과 내려받기) | 3 |
+| `admin` | 관리자만, 앱이 핸들러 앞에서 막는다 (감사 기록 목록과 내려받기) | 2 |
 | `{ action }` | 무엇에 하는 일인지 안 뒤 핸들러가 `may(viewer, action, resource)`로 정한다 | 38 |
 
 `{ action }`의 열네 가지 말(열다섯째 `administer`는 `admin` 정책이 쓴다): `change`·`remove`·`cancel`·`addRuns`·`answerEscalation`·`calibrate`·`editProcess`·`createShare`·`listShares`·`changeScope`는 만든 사람과 관리자, `editAgentVersions`는 만든 사람과 관리자(설정 파일의 연결은 관리자), `use`(연결·모델 쓰기, 그 연결로 실험 만들기·복제)는 **그것이 내게 보이는 사람**(설정 파일의 연결과 관리자가 정한 기본 모델은 로그인한 누구나), `deleteShare`는 링크를 만든 사람·실험을 만든 사람·관리자, `like`는 이름이 있는 사람. 소유는 로그인 ID로 견준다. 판정은 `apps/server/src/runtime/permissions.ts`의 `may` 한 곳이다.

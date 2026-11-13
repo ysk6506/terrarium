@@ -16,9 +16,9 @@ follows:
 | 0 | 하네스 (TS 이식) | REQ-020~025 | 완료 |
 | 1 | core: kernel·spatial·catalog·world·profiles·physics | REQ-001, 005, 012~014 | 완료 |
 | 2 | core: facades·tools·scenario·oracle·session | REQ-002~004, 007, 008, 034 | 완료 |
-| 3 | core: sources(worldgen 사업장 프리셋, realimport) | REQ-009~011, 033, 035 | 완료 |
+| 3 | core: sources(worldgen 사업장 프리셋; 현실 그래프를 읽는 realimport는 ADR-0202로 걷어냄) | REQ-009, 033, 035 | 완료 |
 | 4 | core: experiments·analysis·contract | REQ-015, 030, 031, 037~040 | 완료 |
-| 5 | server: 저장소·하네스 어댑터·워커 호스트·스케줄러·MCP·HTTP·ClickStack·FalkorDB | REQ-030~032, 037 | 완료 |
+| 5 | server: 저장소·하네스 어댑터·워커 호스트·스케줄러·MCP·HTTP·ClickStack | REQ-030~032, 037 | 완료 |
 | 6 | web: 타이쿤 빌더·시나리오 편집기·실험·결과·대시보드 | REQ-006, 034~036, 038~040 | 완료 |
 | 7 | UX Honeycomb 측정과 개선 반복 | REQ-041 | 완료 |
 | 7a | 스케일 아웃·스케일 업 (워커 노드, 클러스터 배치, 자동 확장 지표, 배포 예시) | REQ-042 | 완료 |

@@ -40,7 +40,7 @@ import { WorldBoard } from "./world-board";
 import { Worlds } from "./worlds";
 
 export interface PlatformOptions {
-  readonly adapters: Pick<Adapters, "store" | "harnesses" | "sources" | "telemetry"> &
+  readonly adapters: Pick<Adapters, "store" | "harnesses" | "telemetry"> &
     Partial<
       Pick<
         Adapters,
@@ -203,7 +203,6 @@ export class Platform {
       store: watched.store,
       catalog: new Catalog(),
       harnesses,
-      sources: options.adapters.sources,
       ...(options.adapters.telemetry ? { telemetry: options.adapters.telemetry } : {}),
       host: options.host,
       stamps,
@@ -291,7 +290,6 @@ export class Platform {
       },
       identity: { mode },
       harnesses: (await this.connections.views(viewer)).map(harnessViewOf),
-      sources: [...this.ctx.sources.values()].map((s) => s.view),
       telemetry: this.ctx.telemetry
         ? { configured: true, name: this.ctx.telemetry.name }
         : { configured: false, name: "ClickStack" },

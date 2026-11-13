@@ -11,7 +11,7 @@ import { TitlePills } from "../titles";
 export const ORIGIN_LABELS: Readonly<Record<WorldOrigin, string>> = {
   builder: "직접 지음",
   worldgen: "생성",
-  import: "현실에서 가져옴",
+  import: "밖에서 받음",
   sample: "예시",
   template: "템플릿",
 };
