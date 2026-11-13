@@ -1,7 +1,7 @@
 doc: "docs/design-docs/web-ui.md"
 target: "apps/web/src/styles.css"
-hash: "f27e62b32d7da9b0"
+hash: "fa61ce117af95281"
 date: "2026-11-13"
-note: "라 단계(ADR-0198)로 화면에 범위 표시·이름·감사 기록이 더해진 것을 읽고 이 문서의 말과 어긋나지 않음"
-text_changed: true
+note: "합친 뒤 ADR-0198 변경(meta.people, 이유 헤더, 범위 표시, 감사 화면)을 이 문서와 맞춰 다시 읽음"
+text_changed: false
 doc_hash: "24a6c35612368ad7"

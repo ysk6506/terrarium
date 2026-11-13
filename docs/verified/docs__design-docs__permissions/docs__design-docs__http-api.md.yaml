@@ -1,7 +1,7 @@
 doc: "docs/design-docs/permissions.md"
 target: "docs/design-docs/http-api.md"
-hash: "5397eb8cf484836b"
+hash: "b57f8549529794a7"
 date: "2026-11-13"
-note: "ADR-0202: 관리자 권한 설명과 표에서 소스 가져오기를 뺐다"
+note: "합친 뒤 ADR-0198 변경(meta.people, 이유 헤더, 범위 표시, 감사 화면)을 이 문서와 맞춰 다시 읽음"
 text_changed: true
-doc_hash: "c50e152163949487"
+doc_hash: "68c04e01f50e85a2"

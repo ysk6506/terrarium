@@ -1,7 +1,7 @@
 doc: "docs/design-docs/scenario-editor-review.md"
 target: "apps/web/src/ui/pages/scenarios.tsx"
-hash: "a88cf4075b97c3b1"
+hash: "4b147600d945871c"
 date: "2026-11-13"
-note: "라 단계(ADR-0198)로 화면에 범위 표시·이름·감사 기록이 더해진 것을 읽고 이 문서의 말과 어긋나지 않음"
+note: "합친 뒤 ADR-0198 변경(meta.people, 이유 헤더, 범위 표시, 감사 화면)을 이 문서와 맞춰 다시 읽음"
 text_changed: false
 doc_hash: "3da49ede908b12e0"
