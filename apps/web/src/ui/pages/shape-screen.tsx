@@ -428,7 +428,6 @@ export function ShapeScreen({
   const resume = useResume(kept, flow, clearMetas);
   useKeepWriting(keeps && !built, flow.draft(metas), Boolean(built));
   const { last, onBack, onNext, startNow } = useStepper(flow, make, quick, onLeave);
-  const sum = summaryOf(flow.step, spec, view);
   useShapeMoss({
     spec,
     flow,
@@ -469,7 +468,7 @@ export function ShapeScreen({
       <Problem text={error ?? quick.error} />
       <Bar
         flow={flow}
-        sum={sum}
+        sum={summaryOf(flow.step, spec, view)}
         busy={busy || quick.busy}
         onBack={onBack}
         onNext={onNext}

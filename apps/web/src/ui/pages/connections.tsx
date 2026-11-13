@@ -2,7 +2,7 @@
  * Connections (REQ-051, REQ-052, REQ-053): the harnesses and agents Terrarium can run experiments on, who
  * connected them, whether they answer, how long until an unused one is removed, and the agents each one has.
  */
-import type { ConnectionView } from "@terrarium/core/contract";
+import type { ConnectionView, ConnectorSpec } from "@terrarium/core/contract";
 import { useState } from "react";
 import { matchesFilter, type ScopeFilter, splitConnections } from "../../logic";
 import { connectionsState, useMossScreen } from "../../moss";
@@ -122,9 +122,52 @@ function useConnectionsMoss(
   });
 }
 
-export function ConnectionsPage() {
-  const { api, reloadMeta, me } = useApp();
+/** The connections made on this screen: how many, who sees them (filter), and one card each. */
+function MyConnections(props: {
+  readonly seen: readonly ConnectionView[];
+  readonly specs: readonly ConnectorSpec[];
+  readonly onEdit: (view: ConnectionView) => void;
+  readonly onDelete: (view: ConnectionView) => void;
+  readonly onChanged: () => void;
+}) {
+  const { seen, specs } = props;
+  const { me } = useApp();
   const [who, setWho] = useState<ScopeFilter>("all");
+  const mine = seen.filter((v) =>
+    matchesFilter(who, { ...(v.owner ? { owner: v.owner } : {}), scope: v.sharing.scope }, me),
+  );
+  return (
+    <section className="stack" style={{ gap: 12 }} aria-label="내 연결">
+      <h2 style={{ margin: 0 }}>내 연결 {mine.length}</h2>
+      {seen.length > 1 && (
+        <div className="scope-filter-row" style={{ marginBottom: 0 }}>
+          <ScopeFilterBar value={who} onChange={setWho} />
+        </div>
+      )}
+      {seen.length > 0 && mine.length === 0 && (
+        <FilterEmpty filter={who} onClear={() => setWho("all")} />
+      )}
+      {seen.length === 0 && (
+        <Empty title="아직 연결된 하네스가 없어요">
+          아래에서 쓰는 하네스를 고르면 주소와 토큰만 물어봐요. 연결하면 바로 확인해 줘요.
+        </Empty>
+      )}
+      {mine.map((view) => (
+        <ConnectionCard
+          key={view.id}
+          view={view}
+          spec={specs.find((c) => c.kind === view.connector)}
+          onEdit={() => props.onEdit(view)}
+          onDelete={() => props.onDelete(view)}
+          onChanged={props.onChanged}
+        />
+      ))}
+    </section>
+  );
+}
+
+export function ConnectionsPage() {
+  const { api, reloadMeta } = useApp();
   const list = useAsync((signal) => api.call("listConnections", { signal }), []);
   const connectors = useAsync((signal) => api.call("listConnectors", { signal }), []);
   const [editing, setEditing] = useState<Editing>();
@@ -135,9 +178,6 @@ export function ConnectionsPage() {
   };
   const addable = (connectors.data ?? []).filter((c) => c.fromScreen);
   const { mine: seen, reference } = splitConnections(list.data ?? []);
-  const mine = seen.filter((v) =>
-    matchesFilter(who, { ...(v.owner ? { owner: v.owner } : {}), scope: v.sharing.scope }, me),
-  );
   useConnectionsMoss(list.data, addable.length > 0, () => setEditing({}));
   return (
     <div className="page">
@@ -149,32 +189,13 @@ export function ConnectionsPage() {
       {list.error && <Failure error={list.error} retry={list.reload} />}
       {!list.data && !list.error && <Loading />}
       {list.data && (
-        <section className="stack" style={{ gap: 12 }} aria-label="내 연결">
-          <h2 style={{ margin: 0 }}>내 연결 {mine.length}</h2>
-          {seen.length > 1 && (
-            <div className="scope-filter-row" style={{ marginBottom: 0 }}>
-              <ScopeFilterBar value={who} onChange={setWho} />
-            </div>
-          )}
-          {seen.length > 0 && mine.length === 0 && (
-            <FilterEmpty filter={who} onClear={() => setWho("all")} />
-          )}
-          {seen.length === 0 && (
-            <Empty title="아직 연결된 하네스가 없어요">
-              아래에서 쓰는 하네스를 고르면 주소와 토큰만 물어봐요. 연결하면 바로 확인해 줘요.
-            </Empty>
-          )}
-          {mine.map((view) => (
-            <ConnectionCard
-              key={view.id}
-              view={view}
-              spec={(connectors.data ?? []).find((c) => c.kind === view.connector)}
-              onEdit={() => setEditing({ view })}
-              onDelete={() => setDeleting(view)}
-              onChanged={changed}
-            />
-          ))}
-        </section>
+        <MyConnections
+          seen={seen}
+          specs={connectors.data ?? []}
+          onEdit={(view) => setEditing({ view })}
+          onDelete={setDeleting}
+          onChanged={changed}
+        />
       )}
       {addable.length > 0 && (
         <section className="stack" style={{ gap: 12, marginTop: 28 }} aria-label="연결 더하기">

@@ -205,8 +205,53 @@ function NewExperiment({ children }: { readonly children: string }) {
   );
 }
 
+function NeedName() {
+  const { me, askName } = useApp();
+  if (me) return null;
+  return (
+    <p className="small muted" style={{ marginTop: 12 }}>
+      이름을 정해야 내 실험을 고를 수 있어요.{" "}
+      <Button data-moss-skip="세부 조절" size="small" kind="quiet" onClick={askName}>
+        이름 정하기
+      </Button>
+    </p>
+  );
+}
+
+type ExperimentList = ReturnType<typeof useAsync<readonly ExperimentSummary[]>>;
+
+/** What stands under the filters: the failure, the loading, the empty words, or the table. */
+function ExperimentResults(props: {
+  readonly list: ExperimentList;
+  readonly shown: readonly ExperimentSummary[];
+  readonly who: ScopeFilter;
+  readonly mine: boolean;
+  readonly onClear: () => void;
+}) {
+  const { list, shown, who, mine } = props;
+  return (
+    <>
+      {list.error && <Failure error={list.error} retry={list.reload} />}
+      {!list.data && !list.error && <Loading />}
+      {list.data && shown.length === 0 && who !== "all" && list.data.length > 0 && (
+        <FilterEmpty filter={who} onClear={() => props.onClear()} />
+      )}
+      {list.data?.length === 0 && (
+        <Empty
+          title={mine ? "아직 내 실험이 없어요" : "조건에 맞는 실험이 없어요"}
+          action={<NewExperiment>실험 만들기</NewExperiment>}
+        >
+          세계와 시나리오를 고르고, 하네스와 에이전트를 정하면 바로 돌아요.
+        </Empty>
+      )}
+      {shown.length > 0 && <ExperimentTable items={shown} />}
+      {mine && <NeedName />}
+    </>
+  );
+}
+
 export function ExperimentsPage() {
-  const { api, page, navigate, me, askName } = useApp();
+  const { api, page, navigate, me } = useApp();
   const [who, setWho] = useState<ScopeFilter>(
     page.name === "experiments" && page.mine === true ? "mine" : "all",
   );
@@ -247,28 +292,13 @@ export function ExperimentsPage() {
         <Segmented label="상태" value={status} options={STATUS_FILTERS} onChange={setStatus} />
         <MetaFilter value={meta} onChange={setMeta} />
       </div>
-      {list.error && <Failure error={list.error} retry={list.reload} />}
-      {!list.data && !list.error && <Loading />}
-      {list.data && shown.length === 0 && who !== "all" && list.data.length > 0 && (
-        <FilterEmpty filter={who} onClear={() => choose("all")} />
-      )}
-      {list.data?.length === 0 && (
-        <Empty
-          title={mine ? "아직 내 실험이 없어요" : "조건에 맞는 실험이 없어요"}
-          action={<NewExperiment>실험 만들기</NewExperiment>}
-        >
-          세계와 시나리오를 고르고, 하네스와 에이전트를 정하면 바로 돌아요.
-        </Empty>
-      )}
-      {shown.length > 0 && <ExperimentTable items={shown} />}
-      {mine && !me && (
-        <p className="small muted" style={{ marginTop: 12 }}>
-          이름을 정해야 내 실험을 고를 수 있어요.{" "}
-          <Button data-moss-skip="세부 조절" size="small" kind="quiet" onClick={askName}>
-            이름 정하기
-          </Button>
-        </p>
-      )}
+      <ExperimentResults
+        list={list}
+        shown={shown}
+        who={who}
+        mine={mine}
+        onClear={() => choose("all")}
+      />
     </div>
   );
 }

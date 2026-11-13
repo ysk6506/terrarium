@@ -14,17 +14,13 @@ import {
   blankForm,
   blankTraces,
   type ConnectionForm,
-  configOf,
   formOf,
   formProblems,
-  headersOf,
   hiddenWarning,
   metadataOf,
   reasonPhrase,
-  settingsOf,
   TRANSPORT_LABELS,
   tracesProblems,
-  tracesRequest,
 } from "../../logic";
 import { useAction, useApp, useAsync } from "../context";
 import { Button, Dialog, Note, TextField } from "../kit";
@@ -33,6 +29,7 @@ import { AgentCensusLine } from "./agent-census";
 import { PresetForm, TracesChooser } from "./connection-extras";
 import { ConnectorFieldInput, HeaderEditor, MetaEditor } from "./connection-form";
 import { KindCards } from "./connection-kinds";
+import { sharingOf, submit, switchedForm, tracesPart, wireOf } from "./connection-wire";
 
 const emptyForm: ConnectionForm = {
   name: "",
@@ -236,12 +233,7 @@ function useConnectionDialog({
   );
   const [check, setCheck] = useState<ConnectionCheck>();
   const [shown, setShown] = useState(false);
-  const sharing = useSharingChoice(
-    "connection",
-    existing
-      ? { ...existing.sharing, ...(existing.owner ? { owner: existing.owner } : {}) }
-      : undefined,
-  );
+  const sharing = useSharingChoice("connection", sharingOf(existing));
   const kept = existing?.secrets ?? [];
   const list = useAsync((signal) => api.call("listTelemetryAdapters", { signal }), []).data;
   const traces = form.traces ?? blankTraces(list);
@@ -253,13 +245,7 @@ function useConnectionDialog({
   const pick = (next: string) => {
     const chosen = connectors.find((c) => c.kind === next);
     setKind(next);
-    if (chosen)
-      setForm((f) => ({
-        ...blankForm(chosen),
-        name: f.name,
-        description: f.description,
-        ...(f.traces ? { traces: f.traces } : {}),
-      }));
+    if (chosen) setForm((f) => switchedForm(chosen, f));
     setCheck(undefined);
   };
   /** Show what is wrong, and say whether anything is. */
@@ -269,18 +255,14 @@ function useConnectionDialog({
       ? spec
       : undefined;
   };
-  /** Where the traces go, for the request; left out when the server's list of tools did not load. */
-  const tracesBody = () =>
-    list ? { traces: tracesRequest(list, traces, settingsOf) } : ({} as Record<string, never>);
   const test = async () => {
     const s = ready();
     if (!s) return;
     const body = {
       connector: s.kind,
       ...(existing ? { id: existing.id } : {}),
-      config: configOf(s, form),
-      headers: headersOf(form.headers),
-      ...tracesBody(),
+      ...wireOf(s, form),
+      ...tracesPart(list, traces),
     };
     const result = await run(() => api.call("checkConnection", { body }));
     if (result) setCheck(result);
@@ -291,25 +273,12 @@ function useConnectionDialog({
     const common = {
       name: form.name.trim(),
       description: form.description.trim(),
-      config: configOf(s, form),
-      headers: headersOf(form.headers),
       metadata: metadataOf(form.metadata),
-      ...tracesBody(),
+      ...wireOf(s, form),
+      ...tracesPart(list, traces),
     };
     const saved = await run(
-      async () => {
-        if (!existing)
-          return api.call("createConnection", {
-            body: { connector: s.kind, ...common, ...sharing.forCreate },
-          });
-        const done = await api.call("updateConnection", {
-          params: { id: existing.id },
-          body: common,
-          ...(sharing.reason ? { reason: sharing.reason } : {}),
-        });
-        await sharing.applyTo(existing.id);
-        return done;
-      },
+      () => submit(api, existing, { kind: s.kind, common }, sharing),
       existing ? "연결을 고쳤어요" : "연결을 저장했어요",
     );
     if (saved) onSaved(saved);

@@ -73,6 +73,22 @@ function useWorldBoard(limit?: number) {
 
 type Board = ReturnType<typeof useWorldBoard>;
 
+/** The "누가 볼 수 있나요" filter, and the words when it leaves nothing. */
+function WhoFilter(props: {
+  readonly who: ScopeFilter;
+  readonly onChange: (who: ScopeFilter) => void;
+  readonly none: boolean;
+}) {
+  return (
+    <>
+      <div className="scope-filter-row" style={{ marginBottom: 0 }}>
+        <ScopeFilterBar value={props.who} onChange={props.onChange} />
+      </div>
+      {props.none && <FilterEmpty filter={props.who} onClear={() => props.onChange("all")} />}
+    </>
+  );
+}
+
 function BoardBody({
   board,
   limit,
@@ -96,12 +112,7 @@ function BoardBody({
         <span className="small muted">{SORT_NOTES[sort]}</span>
       </div>
       {!limit && (
-        <div className="scope-filter-row" style={{ marginBottom: 0 }}>
-          <ScopeFilterBar value={who} onChange={setWho} />
-        </div>
-      )}
-      {!limit && list.data && cards.length > 0 && narrowed.length === 0 && (
-        <FilterEmpty filter={who} onClear={() => setWho("all")} />
+        <WhoFilter who={who} onChange={setWho} none={cards.length > 0 && narrowed.length === 0} />
       )}
       {list.error && <Failure error={list.error} retry={list.reload} />}
       {!list.data && !list.error && <Loading />}

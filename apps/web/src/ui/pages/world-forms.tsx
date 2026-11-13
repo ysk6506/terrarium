@@ -111,6 +111,23 @@ function useStage(busy: boolean, racks: number): string | undefined {
   return busy ? worldScale.stageAt(elapsed, racks) : undefined;
 }
 
+const resultText = (
+  preset: string | undefined,
+  changes: object,
+  size: ReturnType<typeof worldScale.sizeOf>,
+): string =>
+  preset && !Object.keys(changes).length
+    ? preset
+    : `${worldScale.sizeText(size)} — 정한 대로 만들어요`;
+
+function ResultLine({ text }: { readonly text: string }) {
+  return (
+    <p className="result-line" aria-live="polite" data-testid="world-result">
+      {text}
+    </p>
+  );
+}
+
 export function CampusForm({ onDone }: { readonly onDone: () => void }) {
   const { api, navigate, toast } = useApp();
   const [form, setForm] = useState<Form>(START);
@@ -161,11 +178,7 @@ export function CampusForm({ onDone }: { readonly onDone: () => void }) {
         scale={scale?.id ?? "real"}
         onPick={(next) => set({ scale: next, changes: {} })}
       />
-      <p className="result-line" aria-live="polite" data-testid="world-result">
-        {scale && !Object.keys(form.changes).length
-          ? scale.result
-          : `${worldScale.sizeText(size)} — 정한 대로 만들어요`}
-      </p>
+      <ResultLine text={resultText(scale?.result, form.changes, size)} />
       <WorldDetails
         spec={spec}
         onChange={(changes) => set({ changes: { ...form.changes, ...changes } })}
