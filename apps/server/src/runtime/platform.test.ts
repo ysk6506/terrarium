@@ -363,7 +363,7 @@ describe("worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034]", 
 });
 
 describe("what the server says about itself [REQ-031] [REQ-033]", () => {
-  test("who is asking, the harnesses with their agents, sources and limits", async () => {
+  test("who is asking, the harnesses with their agents and limits", async () => {
     const down = new ScriptHarness("down", untilStopped);
     let asked = 0;
     down.agents = async () => {
@@ -375,7 +375,6 @@ describe("what the server says about itself [REQ-031] [REQ-033]", () => {
     expect(meta).toMatchObject({
       version: "1.2.3",
       user: { id: "jimin", name: "jimin", source: "self" },
-      sources: [{ id: "sample", readOnly: true }],
       telemetry: { configured: false },
       limits: { maxRunning: 32, maxSeeds: 20 },
       queue: { running: 0, queued: 0 },
@@ -384,6 +383,7 @@ describe("what the server says about itself [REQ-031] [REQ-033]", () => {
       ["builtin", "ok", 4],
       ["down", "unreachable", 0],
     ]);
+    expect(meta).not.toHaveProperty("sources");
     await p.meta(JIMIN);
     expect(asked).toBe(1);
     expect(DEFAULT_TOOLSET.length).toBeGreaterThan(5);
