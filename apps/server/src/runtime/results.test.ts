@@ -182,7 +182,7 @@ describe("benchmarks and the digital twin [REQ-039] [REQ-015]", () => {
     expect(await p.results.leaderboards({ worldId: "w-elsewhere" })).toEqual([]);
   });
 
-  test("[REQ-121] diagnosis records export as JSON Lines; a world saved with origin import and an old report runs as any world, and its report is not read (ADR-0202)", async () => {
+  test("[REQ-009] diagnosis records export as JSON Lines; a world saved with origin import and an old report runs as any world, and its report is not read (ADR-0202)", async () => {
     const { platform: p, store } = testPlatform();
     const made = await p.worlds.create(HANEUL, { name: "가져온 홀", blueprint: sampleBlueprint() });
     // What an earlier version saved for a world it had read from a graph: the report is kept as it was written.

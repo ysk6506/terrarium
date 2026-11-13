@@ -1,5 +1,5 @@
 ---
-title: 세계 소스 — 생성과 가져오기
+title: 세계 소스 — 생성
 kind: spec
 status: active
 covers:
@@ -15,18 +15,16 @@ covers:
   - packages/core/src/world/bulk.ts
   - packages/core/src/sources/worldgen/shaped.ts
   - packages/core/src/sources/worldgen/shaped-plan.ts
-  - packages/core/src/sources/realimport/mapping.ts
-  - packages/core/src/sources/realimport/synthesize.ts
 ---
-# 세계 소스 (REQ-009~013, REQ-035, REQ-043~049)
+# 세계 소스 (REQ-009, REQ-012, REQ-013, REQ-035, REQ-043~049)
 
-세계(blueprint)를 만드는 길은 셋이다. 타이쿤 빌더로 직접 짓기(웹), **생성하기**(worldgen), **가져오기**(realimport).
-뒤의 둘은 "무엇이 어디 있는지"만 정하고, 실제 좌표는 공용 조립기(`BlueprintAssembler`)가 정한다.
+세계(blueprint)를 만드는 길은 둘이다. 타이쿤 빌더로 직접 짓기(웹)와 **생성하기**(worldgen). 현실의 그래프를 읽어 짓는 길은
+없다(ADR-0202). 밖에서 만든 세계는 스냅샷 파일로만 받는다(REQ-121, 아직 설계 전). worldgen은 "무엇이 어디 있는지"만 정하고,
+실제 좌표는 공용 조립기(`BlueprintAssembler`)가 정한다.
 
 ```
-worldgen ─┐                       ┌─ core.spatial: 서버룸 안 랙 줄·U 위치·설비 자리
-          ├─ BlueprintAssembler ──┤
-realimport┘                       └─ 서버룸 → 층 → 건물 → 부지 배치, 검증
+worldgen ── BlueprintAssembler ──┬─ core.spatial: 서버룸 안 랙 줄·U 위치·설비 자리
+                                 └─ 서버룸 → 층 → 건물 → 부지 배치, 검증
 ```
 
 ## 생성하기 (worldgen)
@@ -126,25 +124,3 @@ HPC센터의 방은 `campus-floor.ts`의 층 평면이 자리를 정한다(조�
 
 `generateShaped(spec)`(`worldgen/shaped.ts`)는 서비스·층 아홉 선택·크기(서버룸 · 룸당 랙 · 랙당 서버, 옛 서버 수도 열린다, REQ-109)로 세계를 짓는다. 먼저 `planShape`(`shaped-plan.ts`)가 랙·서버룸·스위치·PDU·냉방기·kW를 센다(서버 ÷ 랙당 서버가 서버 랙, 줄마다 기반 랙 하나. 세 숫자가 있으면 생성기가 서버 랙마다 정확히 랙당 서버 수를 채우고 계산한 서버 랙 수만 짓는다 — `serversPerRack`·`computeRacks`, REQ-111 — 그래서 `worldTotals`가 지은 세계와 같다). 그 계획대로 `generateWorld`가 서버룸을 짓고(기본 서비스는 뺀다), 서비스를 호스트(서로 다른 랙·서버룸)와 VM 위에 얹는다. 레거시 계층형은 서버룸마다 스파인을 하나만 둔다. 사업장 실측(`real`)은 서버 수 대신 `generateCampus`에 서비스를 얹는다. 점선 선택지는 가까운 칸 모양으로 짓는다. 자세한 규칙은 [세계 만들기 입구와 서비스부터](world-entry.md#세계에-서비스가-깔리는-규칙). 템플릿은 세계 기록의 출처 `template`이고 `provenance.shape`에 구성이 든다. 데이터베이스와 스토리지 칸을 고르면 서비스마다 클러스터가 깔리고 스토리지 칸이 풀을 만든다(`shaped-db.ts`, REQ-095). 인스턴스는 서비스가 쓰지 않는 서버를 다른 랙부터 골라 올라가고, 풀의 분산 노드는 서로 다른 랙에 선다. 베어메탈이면 서버 수에 인스턴스 몫이 더해진다(`planShape`의 `dbHosts`). 규칙은 [데이터베이스 층과 스토리지 HA 층](db-storage-layers.md#사다리와-세계-생성). 네트워크 칸이 SDN 오버레이나 클라우드 네이티브이면 서비스를 다 놓은 뒤 `shaped-sdn.ts`가 리프-스파인 위에 컨트롤러 둘, 리프마다 VTEP, 서비스마다 세그먼트·가상 방화벽(클라우드 네이티브는 CNI·정책·인그레스까지)을 깐다(REQ-097, [SDN 오버레이와 클라우드 네이티브 네트워크 층](sdn-network-layer.md#사다리와-세계-생성)).
 `generateShaped(spec)`(`worldgen/shaped.ts`)는 서비스·층 아홉 선택·크기(서버룸 · 룸당 랙 · 랙당 서버, 옛 서버 수도 열린다, REQ-109)로 세계를 짓는다. 먼저 `planShape`(`shaped-plan.ts`)가 랙·서버룸·스위치·PDU·냉방기·kW를 센다(서버 ÷ 랙당 서버가 서버 랙, 줄마다 기반 랙 하나. 세 숫자가 있으면 생성기가 서버 랙마다 정확히 랙당 서버 수를 채우고 계산한 서버 랙 수만 짓는다 — `serversPerRack`·`computeRacks`, REQ-111 — 그래서 `worldTotals`가 지은 세계와 같다). 그 계획대로 `generateWorld`가 서버룸을 짓고(기본 서비스는 뺀다), 서비스를 호스트(서로 다른 랙·서버룸)와 VM 위에 얹는다. 레거시 계층형은 서버룸마다 스파인을 하나만 둔다. 사업장 실측(`real`)은 서버 수 대신 `generateCampus`에 서비스를 얹는다. 서비스가 따로 고른 모양(`ServiceDraft.layers`: 컴퓨트·스토리지·데이터베이스·앱)이 있으면 그 서비스만 `buildFor`로 본 모양대로 얹는다(서버째냐 VM이냐, 호스트 수, 서비스마다의 예비 호스트, 공유 스토리지). 네트워크·전원·냉방·사업장은 건물 하나라 세계의 선택을 쓴다. 점선 선택지는 가까운 칸 모양으로 짓는다. 자세한 규칙은 [세계 만들기 입구와 서비스부터](world-entry.md#세계에-서비스가-깔리는-규칙). 템플릿은 세계 기록의 출처 `template`이고 `provenance.shape`에 구성이 든다.
-
-## 가져오기 (realimport)
-
-```
-RealitySource(읽기 전용) → classify(매핑으로 역할 판정) → resolve(위치·모델·링크) → 범위 → synthesize(가정) → 조립 → 보고서
-```
-
-- **소스**: 읽기 메서드 셋(`summary`, `nodes`, `relationships`)뿐이다. FalkorDB 어댑터(서버)와 메모리 소스(그래프 JSON 덤프, 샘플)가 있다.
-- **매핑**(`CLOUD_TOPOLOGY_MAPPING`): KG를 아는 유일한 곳. 노드 규칙은 위에서부터 첫 번째로 맞는 것이 이긴다
-  (`role: storage`인 PhysicalServer가 일반 서버보다 먼저). 관계는 (타입, 시작 역할, 끝 역할)로 판정하고, 저장 방향이 불확실하면 `either`.
-- **접기**: ESXi → 물리 서버에 합침 / NIC 포트 → 스위치 포트 → 포트 이름이 붙은 네트워크 링크 / 스토리지 볼륨 → 데이터스토어 `backed_by`.
-- **배치**: 관계(LOCATED_IN 등)가 먼저, 위치 속성(`floor_info`, `rack_row`, `u_position` …)이 다음, 둘 다 없으면 "미배치" 랙.
-- **가정**: 그래프에 없는 전력 계통, 냉방 관계가 없는 랙, 냉방기가 없는 서버룸. 더한 것은 `synthesized`로 표시하고 보고서에 문장으로 남긴다.
-  실제 냉방 용량이 부족하면 늘리지 않고 경고한다.
-- **보고서**: 소스에 있는 것, 만들어진 것, 모르는 라벨·링크(매핑 갱신 후보), 일부러 무시한 것(VDS, PortGroup, PEERS_WITH),
-  필터로 빠진 것, 범위 밖, 추정 개수, 가정, 배치 메모, 검증 결과.
-
-### KG 스키마가 바뀌면
-
-1. 가져오기 보고서의 `unknown`(모르는 라벨·링크)과 `unmatched`를 본다.
-2. 매핑에 라벨·링크 이름을 더하거나(변형은 목록에 추가) 새 규칙을 둔다. 코드는 고치지 않는다.
-3. `sampleGraph()`에 같은 모양을 넣고 테스트를 추가한다.

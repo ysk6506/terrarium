@@ -292,7 +292,7 @@ describe("worlds and scenarios are saved safely [REQ-009] [REQ-033] [REQ-034]", 
     expect(generated.stats.rack).toBe(8);
   });
 
-  test("[REQ-121] a world saved earlier with origin import opens, is renamed and is deleted like any world; no call makes a new one (ADR-0202)", async () => {
+  test("[REQ-009] a world saved earlier with origin import opens, is renamed and is deleted like any world; no call makes a new one (ADR-0202)", async () => {
     const { platform: p, store } = testPlatform();
     const saved = await p.worlds.create(HANEUL, { name: "받은 홀", blueprint: sampleBlueprint() });
     await store.putWorld({ ...saved.world, origin: "import", provenance: { source: "sample" } });

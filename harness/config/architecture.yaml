@@ -20,7 +20,6 @@ units:
   core.scenario:            {path: packages/core/src/scenario, may_import: [core.kernel, core.catalog, core.world, core.physics, core.tools]}
   core.oracle:              {path: packages/core/src/oracle, may_import: [core.kernel, core.world, core.scenario]}
   core.sources.worldgen:    {path: packages/core/src/sources/worldgen, may_import: [core.kernel, core.spatial, core.catalog, core.world, core.sources]}
-  core.sources.realimport:  {path: packages/core/src/sources/realimport, may_import: [core.kernel, core.spatial, core.catalog, core.world, core.sources]}
   core.sources:             {path: packages/core/src/sources, may_import: [core.kernel, core.spatial, core.catalog, core.world]}
   core.session:             {path: packages/core/src/session, may_import: [core.kernel, core.spatial, core.catalog, core.world, core.profiles, core.physics, core.physics.slots, core.facades, core.tools, core.scenario, core.oracle, core.sources]}
   core.experiments:         {path: packages/core/src/experiments, may_import: [core.kernel, core.catalog, core.world, core.physics.slots, core.tools, core.scenario, core.oracle, core.session, core.ranking]}
@@ -50,7 +49,6 @@ third_party:
   fastify: [server.http, server.cluster]
   "@fastify/static": [server.http]
   "@modelcontextprotocol/sdk": [server.mcp, server.adapters]
-  falkordb: [server.adapters]
   react: [web.ui, web.moss, web.main]
   react-dom: [web.ui, web.main]
   "@xyflow/react": [web.ui]
