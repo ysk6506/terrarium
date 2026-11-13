@@ -102,7 +102,7 @@ covers:
 | `GET /api/scenarios/:id/runbook-draft` | 이 시나리오로 끝난 실행 가운데 점수가 가장 높은 것의 툴 호출 순서로 만든 절차서 초안과 어느 실행에서 나왔는지 (끝난 실행이 없으면 빈 답) | |
 | `GET /api/experiments` | 실험 목록 (최신순). 만든 사람에게 칭호가 있으면 `ownerTitles`가 같이 온다 (REQ-101) | |
 | `GET /api/experiments/:id` | 실험 하나: 실행, 분석, 계보 | |
-| `POST /api/experiments` | 실험 만들고 대기열에 넣기. 레시피의 선택 칸: `escalation`(`{mode: wait/auto/fail, reply?}`), `faultScope`(`inside`나 `all`), `sop`(`none`, `given`, `search`). `faultScope: inside`인데 준 툴로 풀 수 없는 시나리오는 이유와 함께 거절 | |
+| `POST /api/experiments` | 실험 만들고 대기열에 넣기. 레시피의 선택 칸: `escalation`(`{mode: wait/auto/fail, reply?}`), `faultScope`(`inside`나 `all`), `sop`(`none`, `given`, `search`), `permission`(`view` 보기만, `act` 스스로 조치, 기본), `rules`(`look_first`, `impact_first`, `verify_after`, `no_harm` 중에서, 같은 것은 한 번). `faultScope: inside`인데 준 툴로 풀 수 없는 시나리오는 이유와 함께 거절. `rules`에 `impact_first`가 있는데 `get_impact` 툴이 없으면 거절 | |
 | `POST /api/experiments/:id/cancel` | 남은 실행 취소 | |
 | `POST /api/experiments/:id/fork` | 조건만 바꿔 다시 실행 | |
 | `POST /api/experiments/:id/runs` | 같은 조건으로 실행 추가: `{count}`(새 시드 n개), `{seeds}`(이 시드들) 또는 `{repeats}`(모든 시드에 n번씩 더)(REQ-118). 이미 있는 시드는 거절하고, 시드 × 반복이 60번을 넘어도 거절한다 | |
@@ -175,6 +175,7 @@ covers:
 - `GET /api/experiments/:id/events`: 실험 하나. 먼저 `experiment`(요약), 이후 `run`(실행 상태)과 `call`(툴 호출 하나: 시각 `t`, `tool`, `ok`, 그리고 `effect`와 `targets`).
 - 실험 만들기의 `recipe`와 포크의 `change`에 선택 필드 `repeats`(시드당 반복, 1~10, 기본 1)가 있고 실행은 시드 × 반복으로 60번까지다. 실행 요약(`RunSummary`)에는 `repeat`(1부터)가 있고 분석에는 `seeds`·`repeats`·`withinSeed`·`splitSeeds`가, 순위표 줄에는 `seeds`가 있다(REQ-118, [ADR-0158](adr/0158-repeats-per-seed-and-seed-level-statistics.md)).
 - 실험 만들기의 `recipe`에 선택 필드 `domains`(내 도메인 목록, 여섯 중에서)와 `leadTimes`(`vendorSla` 4h·nbd·3d, `spares` default·yes·no, `afterHours`, `start` weekday_day·weekday_night·weekend)가 있다(REQ-093). 포크의 `change`에도 있다. 실행 결과(`RunView`)의 `run.result`에는 `scope`(도메인과 설정 문구)와 `score.handoff`(넘긴 일)가 있다.
+- 실험 만들기의 `recipe`와 포크의 `change`에 선택 필드 `permission`과 `rules`가 있다(REQ-123, REQ-125, [ADR-0199](adr/0199-action-gate-two-levels-four-rules.md)). 사건 하나 실험과 운영 실험 모두에 듣는다. 둘 다 없거나 `permission: act`에 빈 `rules`면 예전 그대로다(레시피에 남지 않고 벤치마크 키도 같다). `permission: view`는 벤치마크 키에 들어가고 `rules`는 안 들어간다. 실행 결과(`RunView`)의 `run.result.trust`에는 `permission`, 규칙마다 `rule`, 센 호출 수 `checked`, 어긴 호출 `violations`(`seq`·`t`·`tool`·`targets`, 악화는 `harmed`), 판정할 수 없던 호출 `undetermined`(`why`: `no_target`, `run_ended`)가 있고 점수와는 따로다. 관문이 막은 호출은 `run.result.toolCalls`의 `blocked`와 사건 기록의 툴 사건 `blockedBy`(`view`)로 남고 `GET /api/runs/:id/events`로도 읽는다. 실험(`ExperimentView`)의 `analysis.trust`에는 규칙마다 상황별 위반 수의 평균(`violations`)과 판정할 수 없던 수의 평균(`undetermined`)이 있다. 새 실험 화면에는 아직 이 선택이 없어서 API로만 쓴다.
 - `GET /api/worlds/:id/activity` (REQ-050): 이 세계에서 도는 **모든 실험의 실행**. 늦게 연 화면이 알도록 지금 일하는 실행마다 `start`(누구인지: 실험 이름, 소유자,
   하네스, 에이전트, 모델)를 먼저 보내고, 이후 `call`(`runId`, `t`, `tool`, `ok`, `effect`, `targets`), `partner`(넘긴 일을 다른 팀이 시작하거나 끝냄: `runId`, `t`, `handoff`, `device`, `what` started·done, `team`, `who`, `replacing`, `onSite`; REQ-093)와 `end`를 보낸다. 세계가 없으면 404.
 - `effect`는 호출이 하는 일이다: `observe`(보기), `act`(세계를 바꿈. Redfish·vCenter 요청은 GET이 아닐 때만), `wait`(시간을 보냄), `answer`(진단 제출).

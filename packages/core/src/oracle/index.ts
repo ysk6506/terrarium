@@ -32,6 +32,7 @@ export {
   type ServiceHarm,
   serviceHarms,
   WORSEN_WINDOW_S,
+  worsenedActs,
 } from "./recovery";
 export {
   FULL_ORDER_S,

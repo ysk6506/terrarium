@@ -1,7 +1,7 @@
 doc: "docs/design-docs/measurement.md"
 target: "packages/core/src/oracle/recovery.ts"
-hash: "d5f694e6635f0b45"
-date: "2026-11-12"
-note: "ADR-0184: main을 합친 뒤 한계 힌트 변경과 이 문서의 서술이 어긋나지 않음을 대조"
+hash: "5fa00e15283947b3"
+date: "2026-11-13"
+note: "ADR-0199과 구현(조치 관문, 권한 수준 둘, 규칙 넷)에 맞춰 다시 읽고 어긋난 곳이 없음을 확인함"
 text_changed: true
-doc_hash: "17222b460d97ab7b"
+doc_hash: "58b5db5dbda5d277"

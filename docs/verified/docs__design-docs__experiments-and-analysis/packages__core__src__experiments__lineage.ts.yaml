@@ -1,7 +1,7 @@
 doc: "docs/design-docs/experiments-and-analysis.md"
 target: "packages/core/src/experiments/lineage.ts"
-hash: "7f87b117347abfae"
-date: "2026-11-12"
-note: "main을 합친 뒤 공개 범위(ADR-0174 나 단계, ADR-0179)에서 더한 서술을 합쳐진 코드와 대조했고, 바뀐 화면 글(ADR-0183)과 옛 말이 없음을 확인했다"
+hash: "3205bbf42748f706"
+date: "2026-11-13"
+note: "ADR-0199과 구현(조치 관문, 권한 수준 둘, 규칙 넷)에 맞춰 다시 읽고 어긋난 곳이 없음을 확인함"
 text_changed: true
-doc_hash: "b7c9913420eb9265"
+doc_hash: "c63ec632fb86ca59"
