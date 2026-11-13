@@ -44,10 +44,12 @@ clone goawk github.com/benhoyt/goawk
 clone x-sys golang.org/x/sys
 clone x-term golang.org/x/term
 
+# The replace paths are relative on purpose: the module list is stamped into the binary, and an absolute path would
+# make the file depend on where the repository is checked out.
 # The clones stay pristine; patches go on copies (without the clones' own history folder).
 rm -rf "$BUILD"
 mkdir -p "$BUILD/src" "$BUILD/mods"
-for m in sh goawk; do
+for m in sh goawk x-sys x-term; do
   cp -r "$VENDOR/$m" "$BUILD/mods/$m"
   rm -rf "$BUILD/mods/$m/.$VCS"
 done
@@ -58,10 +60,10 @@ cp "$HERE"/go/*.go "$BUILD/src/"
 cp "$HERE/go/go.mod" "$BUILD/src/go.mod"
 cat >> "$BUILD/src/go.mod" <<EOT
 
-replace mvdan.cc/sh/v3 => $BUILD/mods/sh
-replace github.com/benhoyt/goawk => $BUILD/mods/goawk
-replace golang.org/x/sys => $VENDOR/x-sys
-replace golang.org/x/term => $VENDOR/x-term
+replace mvdan.cc/sh/v3 => ../mods/sh
+replace github.com/benhoyt/goawk => ../mods/goawk
+replace golang.org/x/sys => ../mods/x-sys
+replace golang.org/x/term => ../mods/x-term
 EOT
 
 mkdir -p "$OUT"

@@ -33,12 +33,12 @@
     }
   },
   "inputs": {
-    "sha256": "49ba10151baee93011191568c73274396be22252284e49fa25647cffa4ec9dfa",
+    "sha256": "67c04bb747d5c5c3cb1524d65badd4be31b116c335d0c82ce63b0e106d8e2a5f",
     "files": 10
   },
   "output": {
     "file": "bin/terrarium-sh.wasm",
-    "bytes": 7893445,
-    "sha256": "6c895d6d6a56e6f0ef0890a8be33d367d0842abc4c680d56102b1d735aab52d1"
+    "bytes": 7893182,
+    "sha256": "4da24d043b7f3ff1ec0794ce4798b105d96367d1a97c2866c6efb67598aaea5c"
   }
 }
