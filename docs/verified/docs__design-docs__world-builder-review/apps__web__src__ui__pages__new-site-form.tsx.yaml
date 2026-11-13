@@ -1,7 +1,7 @@
 doc: "docs/design-docs/world-builder-review.md"
 target: "apps/web/src/ui/pages/new-site-form.tsx"
-hash: "3c852acf396e1ed9"
-date: "2026-11-11"
-note: "ADR-0146: 다음 칩이 토폴로지 보기에서도 아래 막대에 드는 것을 코드와 대조해 맞춤"
-text_changed: true
+hash: "109cc691db6d58b3"
+date: "2026-11-13"
+note: "라 단계(ADR-0198)로 화면에 범위 표시·이름·감사 기록이 더해진 것을 읽고 이 문서의 말과 어긋나지 않음"
+text_changed: false
 doc_hash: "4e9954c6bf26bc62"

@@ -11,6 +11,7 @@ import { dateText, type ResultTab, resultWords, statusLabel } from "../../logic"
 import { experimentState, useMossScreen } from "../../moss";
 import { Go, useApp, useAsync, useNow, usePageTitle } from "../context";
 import { Button, Failure, Loading, PageHead, Status } from "../kit";
+import { ScopeButton, ScopeTag, useOwnerName } from "../scope";
 import { EscalationCards } from "./escalation";
 import { CancelButton, ShareButton } from "./experiment-actions";
 import { ExportDialog } from "./experiment-export";
@@ -27,18 +28,31 @@ const ACTIVE = new Set(["queued", "running"]);
 function Meta({
   view,
   status,
+  onScope,
 }: {
   readonly view: ExperimentView;
   readonly status: ExperimentView["status"];
+  readonly onScope: () => void;
 }) {
   const e = view.experiment;
   const now = useNow();
+  const ownerOf = useOwnerName();
   const what = e.recipe.operation ? "운영 실험" : `${e.snapshot.scenarioName} 시나리오`;
   return (
     <>
       <Status status={status} operation={e.recipe.operation !== undefined} /> {what},{" "}
-      {e.snapshot.worldName}에서. {withJosa(e.owner, "이")} {dateText(e.createdAt, now)}에 돌렸어요.{" "}
-      {resultWords.progressLine(status, view.progress)}.
+      {e.snapshot.worldName}에서. {withJosa(ownerOf(e.owner), "이")} {dateText(e.createdAt, now)}에
+      돌렸어요. {resultWords.progressLine(status, view.progress)}. <ScopeTag item={e} />
+      {view.canChangeScope !== false && (
+        <ScopeButton
+          kind="experiment"
+          id={e.id}
+          name={e.name}
+          owner={e.owner}
+          current={{ scope: e.scope ?? "everyone", ...(e.group ? { group: e.group } : {}) }}
+          onChanged={onScope}
+        />
+      )}
     </>
   );
 }
@@ -48,18 +62,20 @@ function Head({
   status,
   onChange,
   onExport,
+  onScope,
 }: {
   readonly view: ExperimentView;
   readonly status: ExperimentView["status"];
   readonly onChange: (v: ExperimentView) => void;
   readonly onExport: () => void;
+  readonly onScope: () => void;
 }) {
   const e = view.experiment;
   return (
     <PageHead
       crumbs={<Go to={{ name: "experiments" }}>실험</Go>}
       title={e.name}
-      lede={<Meta view={view} status={status} />}
+      lede={<Meta view={view} status={status} onScope={onScope} />}
       actions={
         <>
           {view.canCancel && ACTIVE.has(status) && <CancelButton view={view} onDone={onChange} />}
@@ -196,7 +212,13 @@ export function ExperimentPage({
   const status = live?.summary?.status ?? view.status;
   return (
     <div className="page" data-status={status}>
-      <Head view={view} status={status} onChange={state.set} onExport={() => setExporting(true)} />
+      <Head
+        view={view}
+        status={status}
+        onChange={state.set}
+        onExport={() => setExporting(true)}
+        onScope={state.reload}
+      />
       <EscalationCards experimentId={id} />
       {view.experiment.recipe.operation && (
         <OperationCards

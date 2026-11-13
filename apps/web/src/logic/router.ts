@@ -41,6 +41,8 @@ export type Page =
   | { readonly name: "benchmarks"; readonly set?: string }
   | { readonly name: "connections" }
   | { readonly name: "settings" }
+  /** What was done to what and by whom (ADR-0193): the whole log for an administrator, a person's own things for anyone else. */
+  | { readonly name: "audit" }
   | { readonly name: "operationGuide" }
   | { readonly name: "agentVersions"; readonly connectionId: string; readonly agentId: string }
   | { readonly name: "notFound"; readonly path: string };
@@ -82,7 +84,7 @@ export const SETTINGS_SECTION = {
   key: "settings",
   label: "설정",
   page: { name: "settings" } as Page,
-  owns: ["settings"] as readonly PageName[],
+  owns: ["settings", "audit"] as readonly PageName[],
 } as const;
 
 export const sectionOf = (page: Page) =>
@@ -151,6 +153,7 @@ const PATTERNS: ReadonlyArray<[RegExp, (m: RegExpExecArray, q: URLSearchParams) 
   ],
   [/^\/connections\/?$/, () => ({ name: "connections" })],
   [/^\/settings\/?$/, () => ({ name: "settings" })],
+  [/^\/audit\/?$/, () => ({ name: "audit" })],
   [/^\/guides\/operation\/?$/, () => ({ name: "operationGuide" })],
   [
     new RegExp(`^/connections/${ID}/agents/${ID}/versions$`),
@@ -210,6 +213,7 @@ const HREFS: { readonly [N in PageName]: (page: Of<N>) => string } = {
   benchmarks: (p) => withQuery("/benchmarks", { set: p.set }),
   connections: () => "/connections",
   settings: () => "/settings",
+  audit: () => "/audit",
   operationGuide: () => "/guides/operation",
   agentVersions: (p) => `/connections/${enc(p.connectionId)}/agents/${enc(p.agentId)}/versions`,
   notFound: (p) => p.path,

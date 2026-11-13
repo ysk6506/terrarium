@@ -58,6 +58,7 @@ export { Models } from "./models";
 export { Moss } from "./moss";
 export { buildMossIndex, isRelevant, type MossChunk, MossIndex } from "./moss-index";
 export { isScoringQuestion, SCORING_FILES, scoringChunk } from "./moss-scoring";
+export { People } from "./people";
 export {
   allow,
   allowRunOn,

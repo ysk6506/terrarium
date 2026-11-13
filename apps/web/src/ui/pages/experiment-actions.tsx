@@ -5,53 +5,37 @@
 
 import type { ExperimentView, RunSummary } from "@terrarium/core/contract";
 import { repeatsOf, sizeProblemsOf } from "@terrarium/core/experiments";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { hallTopology } from "../../logic";
 import { useMossActions } from "../../moss";
 import { useAction, useApp } from "../context";
 import { Button, Dialog, NumberField } from "../kit";
 import { CompareRuns } from "../topology/RunReplay";
-import { copiedWords, DEFAULT_DAYS, ShareDialog, useCopy } from "./share-links";
+
+// The sharing dialog is drawn with Astryx (ADR-0198): it and the design system come down when it is opened.
+const ShareDialog = lazy(() => import("./share-links"));
 
 /**
- * 공유: one press makes a link anyone can open without signing in (30 days), and copies it. "링크 관리" opens the dialog
- * where the life of a link is chosen and the experiment's links are listed and taken back (ADR-0174).
+ * 공유: the one door to sharing an experiment. It opens the dialog where a link is made with its life chosen (30 days unless
+ * said otherwise) and where this experiment's links are listed and taken back (ADR-0174, ADR-0198).
  */
 export function ShareButton({ view }: { readonly view: ExperimentView }) {
-  const { api } = useApp();
-  const { busy, run } = useAction();
-  const copy = useCopy();
-  const [managing, setManaging] = useState(false);
-  const share = async () => {
-    const made = await run(
-      () =>
-        api.call("createShare", {
-          params: { id: view.experiment.id },
-          body: { expiresInDays: DEFAULT_DAYS },
-        }),
-      undefined,
-    );
-    if (made) await copy(made.url, copiedWords(DEFAULT_DAYS));
-  };
+  const [open, setOpen] = useState(false);
   return (
     <>
       <Button
         icon="share"
-        busy={busy}
         data-moss-skip="공유 링크는 누가 열 수 있는지 사람이 정해요"
-        onClick={() => void share()}
+        aria-haspopup="dialog"
+        onClick={() => setOpen(true)}
       >
         공유
       </Button>
-      {view.canChangeScope !== false && (
-        <Button
-          data-moss-skip="공유 링크는 누가 열 수 있는지 사람이 정해요"
-          onClick={() => setManaging(true)}
-        >
-          링크 관리
-        </Button>
+      {open && (
+        <Suspense fallback={null}>
+          <ShareDialog view={view} onClose={() => setOpen(false)} />
+        </Suspense>
       )}
-      {managing && <ShareDialog view={view} onClose={() => setManaging(false)} />}
     </>
   );
 }

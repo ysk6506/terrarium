@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "602ccf1fb271c43e"
+hash: "9ede8f5d462199c6"
 date: "2026-11-13"
-note: "ADR-0202: 구조 설정과 대조해 sources 단위, 형제 격리 규칙, 어댑터 설명에서 realimport와 FalkorDB를 뺐다"
-text_changed: true
+note: "architecture.yaml에 Astryx 두 패키지를 web.ui 안에서만 허용하는 줄을 읽고 합친 뒤에도 맞음"
+text_changed: false
 doc_hash: "fce20f0b4a7dc6e4"

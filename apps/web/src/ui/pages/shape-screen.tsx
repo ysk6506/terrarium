@@ -17,6 +17,7 @@ import {
   type RowMeta,
   recommendLine,
   retreat,
+  type ScopeValue,
   type ShapeView,
   shapeView,
   type WorldDraft,
@@ -25,6 +26,7 @@ import {
 } from "../../logic";
 import { messageOf, useApp } from "../context";
 import { Button, TextField } from "../kit";
+import { useSharingChoice } from "../scope";
 import { type Flow, type Step, useShapeFlow } from "./shape-flow";
 import { LaddersStep } from "./shape-ladders";
 import { useShapeMoss } from "./shape-moss";
@@ -242,7 +244,7 @@ function Bar(props: {
 }
 
 /** Build the world the spec comes to, and keep what came of it. */
-function useMake(spec: ShapeSpec, startedFrom?: string) {
+function useMake(spec: ShapeSpec, sharing: ScopeValue, startedFrom?: string) {
   const { api, toast } = useApp();
   const [busy, setBusy] = useState(false);
   const [built, setBuilt] = useState<Built>();
@@ -252,7 +254,7 @@ function useMake(spec: ShapeSpec, startedFrom?: string) {
     setError(undefined);
     try {
       const saved = await api.call("generateWorld", {
-        body: { shape: spec, ...(startedFrom ? { startedFrom } : {}) },
+        body: { shape: spec, ...sharing, ...(startedFrom ? { startedFrom } : {}) },
       });
       const world = saved.world;
       const counts = (world.provenance?.counts ?? {}) as ShapedResult["counts"];
@@ -419,13 +421,13 @@ export function ShapeScreen({
   const view = useMemo(() => shapeView(spec), [spec]);
   const plan = useMemo(() => planShape(spec), [spec]);
   const problem = shapeProblem(spec);
-  const { busy, built, error, make } = useMake(spec, startedFrom);
+  const sharing = useSharingChoice("world");
+  const { busy, built, error, make } = useMake(spec, sharing.forCreate, startedFrom);
   const quick = useQuickStart(view.templateIds);
   const { metas, setMeta, clearMetas } = useMetas(kept);
   const resume = useResume(kept, flow, clearMetas);
   useKeepWriting(keeps && !built, flow.draft(metas), Boolean(built));
   const { last, onBack, onNext, startNow } = useStepper(flow, make, quick, onLeave);
-  const sum = summaryOf(flow.step, spec, view);
   useShapeMoss({
     spec,
     flow,
@@ -460,12 +462,13 @@ export function ShapeScreen({
           onSize={flow.setSize}
           onReset={flow.resetSize}
           problem={problem}
+          extra={sharing.field}
         />
       )}
       <Problem text={error ?? quick.error} />
       <Bar
         flow={flow}
-        sum={sum}
+        sum={summaryOf(flow.step, spec, view)}
         busy={busy || quick.busy}
         onBack={onBack}
         onNext={onNext}

@@ -40,6 +40,8 @@ export interface CallInput<N extends RouteName> {
   readonly query?: QueryOf<N>;
   readonly body?: BodyOf<N>;
   readonly signal?: AbortSignal;
+  /** An administrator's reason for changing what is another person's; the audit log keeps it (permissions.md section 6). */
+  readonly reason?: string;
 }
 
 export interface ApiOptions {
@@ -88,6 +90,8 @@ export function createApi(options: ApiOptions = {}): Api {
       const user = options.user?.();
       const headers: Record<string, string> = { accept: "application/json" };
       if (user) headers["x-terrarium-user"] = encodeURIComponent(user);
+      if (input.reason?.trim())
+        headers["x-terrarium-reason"] = encodeURIComponent(input.reason.trim());
       if (input.body !== undefined) headers["content-type"] = "application/json";
       let response: Response;
       try {

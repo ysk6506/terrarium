@@ -25,6 +25,8 @@ import {
   SETTINGS_SECTION,
   sectionOf,
   titleOf,
+  type WhoLine,
+  whoLine,
   world3d,
 } from "../logic";
 import { AppContext, type AppServices, Go, type ToastTone, useApp, useAsync } from "./context";
@@ -75,6 +77,8 @@ const RunPage = lazy(() => import("./pages/run").then((m) => ({ default: m.RunPa
 const SettingsPage = lazy(() =>
   import("./pages/settings").then((m) => ({ default: m.SettingsPage })),
 );
+// The audit screen is drawn with Astryx (ADR-0198): its styles and parts come down only when it is opened.
+const AuditPage = lazy(() => import("./pages/audit").then((m) => ({ default: m.AuditPage })));
 
 const ICONS: Readonly<Record<string, string>> = {
   home: "home",
@@ -126,6 +130,7 @@ function otherView(
         | "agentVersions"
         | "operationGuide"
         | "settings"
+        | "audit"
         | "notFound";
     }
   >,
@@ -141,6 +146,8 @@ function otherView(
       return <OperationGuidePage />;
     case "settings":
       return <SettingsPage />;
+    case "audit":
+      return <AuditPage />;
     case "notFound":
       return <NotFound path={page.path} />;
   }
@@ -281,15 +288,44 @@ function useNavigation() {
   return { page, navigate, setLeaveGuard, setTitle: setDetail };
 }
 
+/** The person at the foot of the rail: a name the company login confirmed, or a typed one that says it protects nothing. */
+function Who({ who, onName }: { readonly who: WhoLine | undefined; readonly onName: () => void }) {
+  if (!who)
+    return (
+      <button type="button" className="rail-user" onClick={onName} title="이름 바꾸기">
+        이름 정하기
+      </button>
+    );
+  if (!who.unsafe)
+    return (
+      <span className="rail-user rail-user-fixed" title={who.note}>
+        {who.name}
+      </span>
+    );
+  return (
+    <>
+      <button type="button" className="rail-user" onClick={onName} title="이름 바꾸기">
+        {who.name}
+      </button>
+      <span
+        className="rail-note"
+        title="직접 적은 이름은 누구든 남의 이름을 적을 수 있어서, 누가 볼 수 있나요를 지켜 주지 못해요"
+      >
+        권한이 없는 방식
+      </span>
+    </>
+  );
+}
+
 function Rail({
   page,
   me,
-  proxied,
+  who,
   onName,
 }: {
   readonly page: Page;
   readonly me?: string;
-  readonly proxied: boolean;
+  readonly who: WhoLine | undefined;
   readonly onName: () => void;
 }) {
   const section = sectionOf(page);
@@ -318,15 +354,7 @@ function Rail({
         <Icon name={ICONS[SETTINGS_SECTION.key] as string} size={22} />
         {SETTINGS_SECTION.label}
       </Go>
-      <button
-        type="button"
-        className="rail-user"
-        onClick={onName}
-        disabled={proxied}
-        title={proxied ? "회사 로그인으로 확인된 이름" : "이름 바꾸기"}
-      >
-        {me ?? "이름 정하기"}
-      </button>
+      <Who who={who} onName={onName} />
       {me && <MyTitles me={me} />}
     </nav>
   );
@@ -369,7 +397,6 @@ export function App({ api, identity }: { readonly api: Api; readonly identity: I
   // Ownership is compared on the login id (ADR-0174), which is what the server stores as `owner`; the name is for showing.
   // Typed names are their own id, so there the two are the same.
   const me = proxied ? meta.data?.user.id : identity.name;
-  const myName = proxied ? meta.data?.user.name : identity.name;
   const services: AppServices = useMemo(
     () => ({
       api,
@@ -394,8 +421,8 @@ export function App({ api, identity }: { readonly api: Api; readonly identity: I
       <div className={`shell${mossOpen ? " moss-open" : ""}`}>
         <Rail
           page={page}
-          {...(myName ? { me: myName } : {})}
-          proxied={proxied}
+          {...(me ? { me } : {})}
+          who={whoLine(meta.data, identity.name)}
           onName={() => !proxied && setAsking(true)}
         />
         <main className="main" id={mainId} tabIndex={-1}>

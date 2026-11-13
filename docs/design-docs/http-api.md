@@ -40,7 +40,7 @@ covers:
 
 | 경로 | 하는 일 | |
 |---|---|---|
-| `GET /api/meta` | 누구인지(`user`: 로그인 `id`·보이는 `name`·`groups`·`roles`·`source`), 신원을 어떻게 믿는지(`identity.mode`: `proxy`·`self-declared`), 하네스·소스·대기열 상태, 곧 지워질 내 연결(`expiring`) | 열림 |
+| `GET /api/meta` | 누구인지(`user`: 로그인 `id`·보이는 `name`·`groups`·`roles`·`source`), 신원을 어떻게 믿는지(`identity.mode`: `proxy`·`self-declared`), 하네스·소스·대기열 상태, 곧 지워질 내 연결(`expiring`), 서버가 들은 사람 이름(`people`: `id`·`name`. 목록이 만든 사람을 이름으로 보여 주는 데 써요) | 열림 |
 | `GET /api/connectors` | 연결할 수 있는 방식(커넥터)과 입력 칸·툴 안내 | |
 | `GET /api/connections` | 연결된 하네스·에이전트, 발견된 에이전트, 남은 날 | |
 | `GET /api/telemetry-adapters` | 트레이스를 쌓아 두는 곳(ClickStack, Langfuse)과 입력 칸, 서버의 기본값 | |
@@ -128,6 +128,8 @@ covers:
 ## 누가 부를 수 있나 (ADR-0174, [권한](permissions.md))
 
 길마다 `ROUTES`의 `policy`가 한 줄로 말한다. 정책이 없는 길(공개 길 제외)이 생기면 `packages/core/src/contract/policies.test.ts`가 실패한다. 프록시 모드에서는 **정책과 상관없이** 프록시의 비밀 값이 없거나 틀리거나 로그인 헤더가 없는 요청은 공개가 아닌 모든 길과 두 실시간 스트림(`…/events`, `…/activity`)에서 401이다.
+
+관리자가 남의 것을 바꾸는 길에는 이유를 `x-terrarium-reason` 헤더(URL 인코딩, 200자까지)로 보낼 수 있다. 서버는 관리자의 요청일 때만 감사 기록의 `detail.reason`에 적는다(ADR-0198).
 
 | 정책 | 뜻 | 길 수 |
 |---|---|---|

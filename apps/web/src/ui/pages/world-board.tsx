@@ -8,8 +8,10 @@ import { useRef, useState } from "react";
 import {
   boardEmpty,
   type EmptyBoard,
+  matchesFilter,
   quietPopular,
   readWorldSort,
+  type ScopeFilter,
   SORT_NOTES,
   saveWorldSort,
   settledLike,
@@ -20,6 +22,7 @@ import { pickByText, useMossScreen, worldsState } from "../../moss";
 import { browserStore } from "../browser-store";
 import { Go, useApp, useAsync } from "../context";
 import { Empty, Failure, Loading, Section, Segmented } from "../kit";
+import { FilterEmpty, ScopeFilterBar } from "../scope";
 import { WorldCard } from "./world-card";
 
 function useWorldBoard(limit?: number) {
@@ -70,6 +73,22 @@ function useWorldBoard(limit?: number) {
 
 type Board = ReturnType<typeof useWorldBoard>;
 
+/** The "누가 볼 수 있나요" filter, and the words when it leaves nothing. */
+function WhoFilter(props: {
+  readonly who: ScopeFilter;
+  readonly onChange: (who: ScopeFilter) => void;
+  readonly none: boolean;
+}) {
+  return (
+    <>
+      <div className="scope-filter-row" style={{ marginBottom: 0 }}>
+        <ScopeFilterBar value={props.who} onChange={props.onChange} />
+      </div>
+      {props.none && <FilterEmpty filter={props.who} onClear={() => props.onChange("all")} />}
+    </>
+  );
+}
+
 function BoardBody({
   board,
   limit,
@@ -80,8 +99,11 @@ function BoardBody({
   readonly empty?: EmptyBoard;
 }) {
   const { sort, choose, list, toggle } = board;
+  const { me } = useApp();
+  const [who, setWho] = useState<ScopeFilter>("all");
   const cards = list.data ?? [];
-  const shown = limit ? cards.slice(0, limit) : cards;
+  const narrowed = limit ? cards : cards.filter((c) => matchesFilter(who, c, me));
+  const shown = limit ? narrowed.slice(0, limit) : narrowed;
   const quiet = quietPopular(sort, cards);
   return (
     <div className="stack" style={{ gap: 12 }}>
@@ -89,6 +111,9 @@ function BoardBody({
         <Segmented label="세계 순서" value={sort} options={WORLD_SORT_OPTIONS} onChange={choose} />
         <span className="small muted">{SORT_NOTES[sort]}</span>
       </div>
+      {!limit && (
+        <WhoFilter who={who} onChange={setWho} none={cards.length > 0 && narrowed.length === 0} />
+      )}
       {list.error && <Failure error={list.error} retry={list.reload} />}
       {!list.data && !list.error && <Loading />}
       {quiet && <p className="small muted">{quiet}</p>}
@@ -111,6 +136,7 @@ function BoardBody({
               key={c.id}
               card={c}
               onToggle={(x) => void toggle(x)}
+              onScope={list.reload}
               compact={Boolean(limit)}
             />
           ))}

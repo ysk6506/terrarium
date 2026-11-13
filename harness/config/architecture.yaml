@@ -52,6 +52,8 @@ third_party:
   react: [web.ui, web.moss, web.main]
   react-dom: [web.ui, web.main]
   "@xyflow/react": [web.ui]
+  "@astryxdesign/core": [web.ui]
+  "@astryxdesign/theme-neutral": [web.ui]
   three: [web.ui]
   typescript: [harness]
   yaml: [harness]

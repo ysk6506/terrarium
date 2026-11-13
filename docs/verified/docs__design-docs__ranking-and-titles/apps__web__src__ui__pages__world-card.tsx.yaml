@@ -1,7 +1,7 @@
 doc: "docs/design-docs/ranking-and-titles.md"
 target: "apps/web/src/ui/pages/world-card.tsx"
-hash: "7fe87c79a7a2f903"
+hash: "9a429d164f183c58"
 date: "2026-11-13"
-note: "ADR-0202: world-card의 기원 라벨 한 줄만 바뀌었고 이 문서가 말하는 것(startedFrom 등)과 상관없다"
+note: "합친 뒤 ADR-0198 변경(meta.people, 이유 헤더, 범위 표시, 감사 화면)을 이 문서와 맞춰 다시 읽음"
 text_changed: false
 doc_hash: "b43aee3516432e40"

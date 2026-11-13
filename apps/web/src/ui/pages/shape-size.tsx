@@ -10,7 +10,7 @@ import {
   SIZE_LIMITS,
   type SizeAsk,
 } from "@terrarium/core/sources/worldgen";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { type ShapeView, sizeView } from "../../logic";
 import { Button } from "../kit";
 import { ShapePanel } from "./shape-panel";
@@ -93,6 +93,8 @@ export function SizeStep(props: {
   readonly onSize: (patch: Partial<SizeAsk>) => void;
   readonly onReset: () => void;
   readonly problem: string | undefined;
+  /** What else the last screen asks: who can see the world. */
+  readonly extra?: ReactNode;
 }) {
   const { plan, size } = props;
   // every number of this screen is worked out here, once, from the plan the generator follows (REQ-111)
@@ -145,6 +147,7 @@ export function SizeStep(props: {
               서비스가 필요한 값으로 되돌리기
             </Button>
           )}
+          {props.extra}
         </section>
         <div className="we-rcol quiet">
           <ShapePanel view={props.view} />

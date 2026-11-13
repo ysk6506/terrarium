@@ -1,11 +1,13 @@
 /** The builder's top bar: the world's name, where we are, undo, "시운전", and how the world stands (saved on its own). */
+import type { Scope } from "@terrarium/core/experiments";
 import { useEffect, useState } from "react";
-import { builder } from "../../logic";
+import { builder, isAdmin } from "../../logic";
 import { useMossActions } from "../../moss";
-import { Go, useNow } from "../context";
+import { Go, useApp, useNow } from "../context";
 import { Segmented } from "../fields";
 import { Icon } from "../icons";
 import { Button } from "../kit";
+import { ScopeButton, ScopeTag } from "../scope";
 import type { Builder } from "./useBuilder";
 
 function WorldName({ b }: { readonly b: Builder }) {
@@ -46,6 +48,35 @@ function Crumbs({ b }: { readonly b: Builder }) {
         ),
       )}
     </nav>
+  );
+}
+
+/** Who can see the world: the tag, and for the maker and administrators the button that changes it. */
+function WorldScope({ b }: { readonly b: Builder }) {
+  const { api, meta } = useApp();
+  const { world, mine } = b.state;
+  const [seen, setSeen] = useState<{ scope?: Scope; group?: string }>({});
+  const scope = seen.scope ?? world.scope ?? "everyone";
+  const group = seen.group ?? world.group;
+  const item = { scope, ...(group ? { group } : {}) };
+  return (
+    <>
+      <ScopeTag item={item} />
+      {(mine || isAdmin(meta)) && (
+        <ScopeButton
+          kind="world"
+          id={world.id}
+          name={world.name}
+          owner={world.owner}
+          current={item}
+          onChanged={() =>
+            void api.call("getWorld", { params: { id: world.id } }).then((r) => {
+              setSeen({ scope: r.scope ?? "everyone", ...(r.group ? { group: r.group } : {}) });
+            })
+          }
+        />
+      )}
+    </>
   );
 }
 
@@ -183,6 +214,7 @@ export function BuilderBar({
         onClick={b.redo}
       />
       <TrialButton b={b} primary={false} />
+      <WorldScope b={b} />
       <SaveState b={b} />
     </div>
   );

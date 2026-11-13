@@ -6,6 +6,7 @@ import type { WorldCardView } from "@terrarium/core/contract";
 import type { WorldOrigin } from "@terrarium/core/experiments";
 import { count, evidenceHint, evidenceLine, likeLabel, relativeTime } from "../../logic";
 import { Go, useApp, useNow } from "../context";
+import { ScopeButton, ScopeTag, useOwnerName } from "../scope";
 import { TitlePills } from "../titles";
 
 export const ORIGIN_LABELS: Readonly<Record<WorldOrigin, string>> = {
@@ -65,14 +66,18 @@ export function LikeButton({
 export function WorldCard({
   card,
   onToggle,
+  onScope,
   compact = false,
 }: {
   readonly card: WorldCardView;
   readonly onToggle: (card: WorldCardView) => void;
+  /** After who can see it was changed: the list is read again. The home page shows no such button. */
+  readonly onScope?: () => void;
   readonly compact?: boolean;
 }) {
   const now = useNow();
   const { navigate } = useApp();
+  const ownerOf = useOwnerName();
   // The whole card opens the world (REQ-109): a press on a link, a button or a field keeps its own meaning.
   const open = (e: React.MouseEvent) => {
     if ((e.target as Element).closest("a, button, input, textarea, select, label")) return;
@@ -83,9 +88,12 @@ export function WorldCard({
     // biome-ignore lint/a11y/useKeyWithClickEvents: the name inside is the real link for keyboards; the card is only a larger target for the same link
     <article className="world-card" data-open="world" onClick={open}>
       <div className="wc-head">
-        <Go to={{ name: "world", id: card.id }} className="wc-name">
-          {card.name}
-        </Go>
+        <span>
+          <Go to={{ name: "world", id: card.id }} className="wc-name">
+            {card.name}
+          </Go>
+          <ScopeTag item={card} />
+        </span>
         <LikeButton card={card} onToggle={onToggle} />
       </div>
       <p className="wc-evidence" title={evidenceHint(card)}>
@@ -95,12 +103,25 @@ export function WorldCard({
         {ORIGIN_LABELS[card.origin]} · {scale(card)}
       </p>
       <div className="wc-foot">
-        <span className="small">{card.owner}</span>
+        <span className="small">{ownerOf(card.owner)}</span>
         <TitlePills who={card.owner} titles={card.ownerTitles} />
         {!compact && (
           <span className="small muted">고친 때 {relativeTime(card.updatedAt, now)}</span>
         )}
         <span className="we-spacer" />
+        {!compact && card.canChangeScope && onScope && (
+          <ScopeButton
+            kind="world"
+            id={card.id}
+            name={card.name}
+            owner={card.owner}
+            current={{
+              scope: card.scope ?? "everyone",
+              ...(card.group ? { group: card.group } : {}),
+            }}
+            onChanged={onScope}
+          />
+        )}
         <Go to={{ name: "scenarios", worldId: card.id }} className="small">
           시나리오<span className="sr-only"> ({card.name})</span>
         </Go>

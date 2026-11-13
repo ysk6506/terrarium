@@ -1,11 +1,14 @@
 /** The editor's top bar (REQ-034): the name, flow or sheet, undo and redo, a dry run, and the one next step. */
 
+import type { Scope } from "@terrarium/core/experiments";
 import { hasErrors } from "@terrarium/core/scenario";
 import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useEffect, useState } from "react";
-import { Go } from "../context";
+import { isAdmin } from "../../logic";
+import { Go, useApp } from "../context";
 import { Icon } from "../icons";
 import { Button } from "../kit";
+import { ScopeButton, ScopeTag } from "../scope";
 import type { ScenarioEditor } from "./useScenario";
 
 export type Tab = "flow" | "sheet" | "runbook";
@@ -65,6 +68,34 @@ function ModeSwitch({
         </button>
       ))}
     </div>
+  );
+}
+
+/** Who can see the scenario: the tag, and for the maker and administrators the button that changes it. */
+function ScenarioScope({ e }: { readonly e: ScenarioEditor }) {
+  const { api, meta } = useApp();
+  const [seen, setSeen] = useState<{ scope?: Scope; group?: string }>({});
+  const scope = seen.scope ?? e.record.scope ?? "everyone";
+  const group = seen.group ?? e.record.group;
+  const item = { scope, ...(group ? { group } : {}) };
+  return (
+    <>
+      <ScopeTag item={item} />
+      {(e.mine || isAdmin(meta)) && (
+        <ScopeButton
+          kind="scenario"
+          id={e.record.id}
+          name={e.record.name}
+          owner={e.record.owner}
+          current={item}
+          onChanged={() =>
+            void api.call("getScenario", { params: { id: e.record.id } }).then((r) => {
+              setSeen({ scope: r.scope ?? "everyone", ...(r.group ? { group: r.group } : {}) });
+            })
+          }
+        />
+      )}
+    </>
   );
 }
 
@@ -166,6 +197,7 @@ export function Bar({
       >
         이 시나리오로 실험
       </Go>
+      <ScenarioScope e={e} />
       <SaveButton e={e} />
     </div>
   );

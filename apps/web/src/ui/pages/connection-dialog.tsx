@@ -14,24 +14,21 @@ import {
   blankForm,
   blankTraces,
   type ConnectionForm,
-  configOf,
   formOf,
   formProblems,
-  headersOf,
   hiddenWarning,
-  metadataOf,
   reasonPhrase,
-  settingsOf,
   TRANSPORT_LABELS,
   tracesProblems,
-  tracesRequest,
 } from "../../logic";
 import { useAction, useApp, useAsync } from "../context";
 import { Button, Dialog, Note, TextField } from "../kit";
+import { useSharingChoice } from "../scope";
 import { AgentCensusLine } from "./agent-census";
 import { PresetForm, TracesChooser } from "./connection-extras";
 import { ConnectorFieldInput, HeaderEditor, MetaEditor } from "./connection-form";
 import { KindCards } from "./connection-kinds";
+import { namesOf, sharingOf, submit, switchedForm, tracesPart, wireOf } from "./connection-wire";
 
 const emptyForm: ConnectionForm = {
   name: "",
@@ -235,6 +232,7 @@ function useConnectionDialog({
   );
   const [check, setCheck] = useState<ConnectionCheck>();
   const [shown, setShown] = useState(false);
+  const sharing = useSharingChoice("connection", sharingOf(existing));
   const kept = existing?.secrets ?? [];
   const list = useAsync((signal) => api.call("listTelemetryAdapters", { signal }), []).data;
   const traces = form.traces ?? blankTraces(list);
@@ -246,13 +244,7 @@ function useConnectionDialog({
   const pick = (next: string) => {
     const chosen = connectors.find((c) => c.kind === next);
     setKind(next);
-    if (chosen)
-      setForm((f) => ({
-        ...blankForm(chosen),
-        name: f.name,
-        description: f.description,
-        ...(f.traces ? { traces: f.traces } : {}),
-      }));
+    if (chosen) setForm((f) => switchedForm(chosen, f));
     setCheck(undefined);
   };
   /** Show what is wrong, and say whether anything is. */
@@ -262,43 +254,41 @@ function useConnectionDialog({
       ? spec
       : undefined;
   };
-  /** Where the traces go, for the request; left out when the server's list of tools did not load. */
-  const tracesBody = () =>
-    list ? { traces: tracesRequest(list, traces, settingsOf) } : ({} as Record<string, never>);
+  /** What the server is told about the connection, with where the traces go. */
+  const wire = (s: ConnectorSpec) => ({ ...wireOf(s, form), ...tracesPart(list, traces) });
   const test = async () => {
     const s = ready();
     if (!s) return;
-    const body = {
-      connector: s.kind,
-      ...(existing ? { id: existing.id } : {}),
-      config: configOf(s, form),
-      headers: headersOf(form.headers),
-      ...tracesBody(),
-    };
+    const body = { connector: s.kind, ...(existing ? { id: existing.id } : {}), ...wire(s) };
     const result = await run(() => api.call("checkConnection", { body }));
     if (result) setCheck(result);
   };
   const save = async () => {
     const s = ready();
-    if (!s) return;
-    const common = {
-      name: form.name.trim(),
-      description: form.description.trim(),
-      config: configOf(s, form),
-      headers: headersOf(form.headers),
-      metadata: metadataOf(form.metadata),
-      ...tracesBody(),
-    };
+    if (!s || !sharing.ready) return;
+    const common = { ...namesOf(form), ...wire(s) };
     const saved = await run(
-      () =>
-        existing
-          ? api.call("updateConnection", { params: { id: existing.id }, body: common })
-          : api.call("createConnection", { body: { connector: s.kind, ...common } }),
+      () => submit(api, existing, { kind: s.kind, common }, sharing),
       existing ? "연결을 고쳤어요" : "연결을 저장했어요",
     );
     if (saved) onSaved(saved);
   };
-  return { busy, kind, spec, form, check, problems, kept, patch, pick, test, save, list, traces };
+  return {
+    busy,
+    kind,
+    spec,
+    form,
+    check,
+    problems,
+    kept,
+    patch,
+    pick,
+    test,
+    save,
+    list,
+    traces,
+    sharing,
+  };
 }
 
 type DialogState = ReturnType<typeof useConnectionDialog>;
@@ -374,6 +364,7 @@ function DialogFields({
         onChange={(traces) => d.patch({ traces })}
       />
       <Extras form={form} problems={problems} patch={d.patch} />
+      {d.sharing.field}
       {d.check && <CheckResult check={d.check} />}
       {!existing && (
         <p className="small muted" style={{ margin: 0 }}>

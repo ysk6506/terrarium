@@ -108,6 +108,18 @@ export const OTHER_SCREENS = {
       },
     ],
   },
+  audit: {
+    route: "audit",
+    title: "감사 기록",
+    oneLine: "누가 무엇을 했는지, 무엇이 막혔는지 읽어요. 고치거나 지울 수 없어요.",
+    stateLabel: "이 기록 목록",
+    questions: trio(
+      "감사 기록에는 무엇이 남아요?",
+      "막혔다는 건 무슨 뜻이에요?",
+      "기록을 파일로 받으려면요?",
+    ),
+    actions: [],
+  },
   notFound: {
     route: "notFound",
     title: "없는 화면",

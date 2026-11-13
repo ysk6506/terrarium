@@ -29,6 +29,7 @@ import { type Stamps, SYSTEM_STAMPS } from "./ids";
 import { Models, type ModelsOptions } from "./models";
 import { Moss } from "./moss";
 import { findDocsDir } from "./moss-index";
+import { People } from "./people";
 import { Presets } from "./presets";
 import { Processes } from "./processes";
 import { Results } from "./results";
@@ -187,6 +188,8 @@ export class Platform {
   readonly board: WorldBoard;
   /** What people earned (REQ-101, ADR-0122). */
   readonly titles: Titles;
+  /** The names people go by, for lists and the audit screen. */
+  readonly people = new People();
   /** The one writer of the audit log (ADR-0193). */
   readonly audit: Auditor;
   /** Reading the audit log: administrators' listing and file, and a person's view of their own things. */
@@ -289,6 +292,7 @@ export class Platform {
         source: viewer.source,
       },
       identity: { mode },
+      people: this.people.all(),
       harnesses: (await this.connections.views(viewer)).map(harnessViewOf),
       telemetry: this.ctx.telemetry
         ? { configured: true, name: this.ctx.telemetry.name }

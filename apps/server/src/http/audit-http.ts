@@ -152,6 +152,31 @@ const withStanding = (kind: string, rest: Partial<AuditResource>): AuditResource
   ...(rest.group ? { group: rest.group } : {}),
 });
 
+/** Header an administrator's screen sends with the reason for changing what is another person's (permissions.md section 6). */
+export const REASON_HEADER = "x-terrarium-reason";
+const REASON_MAX = 200;
+
+/** The reason as it is kept: decoded, one Unicode form, no control characters, cut to length; nothing when nothing is left. */
+export function reasonOf(raw: string | string[] | undefined): string | undefined {
+  const first = Array.isArray(raw) ? raw[0] : raw;
+  if (!first) return undefined;
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(first);
+  } catch {
+    return undefined;
+  }
+  // control characters are what is taken out (they could break a log line)
+  const clean = [...decoded.normalize("NFC")]
+    .map((ch) => {
+      const code = ch.codePointAt(0) ?? 0;
+      return code < 32 || code === 127 ? " " : ch;
+    })
+    .join("")
+    .trim();
+  return clean === "" ? undefined : clean.slice(0, REASON_MAX);
+}
+
 export class AuditedCall {
   readonly notes: Notes = newNotes();
   readonly class: RouteAudit;
@@ -161,6 +186,7 @@ export class AuditedCall {
     private readonly name: RouteName,
     readonly requestId: string,
     private readonly remoteAddress: string | undefined,
+    private readonly why: string | undefined = undefined,
   ) {
     this.class = AUDIT_CLASSES[name];
   }
@@ -230,6 +256,8 @@ export class AuditedCall {
       resource: this.target(viewer, end, true),
       ...(fields ? { fields } : {}),
       ...(this.notes.changes.length > 0 ? { changes: this.notes.changes } : {}),
+      // only an administrator's own words: anyone else's header is not a reason the screen asked for
+      ...(this.why && isAdmin(viewer) ? { detail: { reason: this.why } } : {}),
     };
     if (this.closed) await this.auditor.record(entry);
     else await this.auditor.tryRecord(entry);
@@ -308,5 +336,11 @@ export class AuditedCall {
 
 /** Start the audit of one request. The address is the socket's own, never a forwarded header. */
 export function auditCall(auditor: Auditor, name: RouteName, req: FastifyRequest): AuditedCall {
-  return new AuditedCall(auditor, name, req.id, req.socket?.remoteAddress);
+  return new AuditedCall(
+    auditor,
+    name,
+    req.id,
+    req.socket?.remoteAddress,
+    reasonOf(req.headers[REASON_HEADER]),
+  );
 }

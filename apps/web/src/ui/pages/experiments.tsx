@@ -1,10 +1,19 @@
 /** Experiments (REQ-030): everyone's, newest first, or only mine; status and results at a glance. */
 import type { ExperimentSummary } from "@terrarium/core/contract";
 import { useState } from "react";
-import { percent, progressWords, relativeTime, scoreText } from "../../logic";
+import {
+  matchesFilter,
+  percent,
+  progressWords,
+  relativeTime,
+  type ScopeFilter,
+  scoreText,
+} from "../../logic";
 import { experimentsState, useMossRead } from "../../moss";
 import { Go, useApp, useAsync, useNow } from "../context";
-import { Button, Empty, Failure, Loading, PageHead, Segmented, Status } from "../kit";
+import { Segmented } from "../fields";
+import { Button, Empty, Failure, Loading, PageHead, Status } from "../kit";
+import { FilterEmpty, ScopeFilterBar, ScopeTag, useOwnerName } from "../scope";
 import { TitlePills } from "../titles";
 
 export const progressText = (s: ExperimentSummary): string => progressWords(s.status, s.progress);
@@ -30,12 +39,14 @@ function ExperimentRow({
   showTitles,
   now,
   agentName,
+  ownerOf,
 }: {
   readonly s: ExperimentSummary;
   readonly showOwner: boolean;
   readonly showTitles: boolean;
   readonly now: number;
   readonly agentName: (e: ExperimentSummary["experiment"]) => string;
+  readonly ownerOf: (owner: string) => string;
 }) {
   return (
     <tr>
@@ -46,6 +57,7 @@ function ExperimentRow({
             포크
           </span>
         )}
+        <ScopeTag item={s.experiment} />
         <MetaTags metadata={s.experiment.metadata} />
       </td>
       <td className="exp-status">
@@ -65,7 +77,7 @@ function ExperimentRow({
       <td className="num exp-mean">{scoreText(s.meanScore)}</td>
       {showOwner && (
         <td className="exp-owner">
-          {s.experiment.owner}
+          {ownerOf(s.experiment.owner)}
           {showTitles && <TitlePills who={s.experiment.owner} titles={s.ownerTitles ?? []} />}
         </td>
       )}
@@ -86,6 +98,7 @@ export function ExperimentTable({
 }) {
   const now = useNow();
   const { meta } = useApp();
+  const ownerOf = useOwnerName();
   const agentName = (e: ExperimentSummary["experiment"]) =>
     e.subject?.agent.name ??
     meta?.harnesses
@@ -116,6 +129,7 @@ export function ExperimentTable({
               showTitles={showTitles}
               now={now}
               agentName={agentName}
+              ownerOf={ownerOf}
             />
           ))}
         </tbody>
@@ -191,9 +205,57 @@ function NewExperiment({ children }: { readonly children: string }) {
   );
 }
 
+function NeedName() {
+  const { me, askName } = useApp();
+  if (me) return null;
+  return (
+    <p className="small muted" style={{ marginTop: 12 }}>
+      이름을 정해야 내 실험을 고를 수 있어요.{" "}
+      <Button data-moss-skip="세부 조절" size="small" kind="quiet" onClick={askName}>
+        이름 정하기
+      </Button>
+    </p>
+  );
+}
+
+type ExperimentList = ReturnType<typeof useAsync<readonly ExperimentSummary[]>>;
+
+/** What stands under the filters: the failure, the loading, the empty words, or the table. */
+function ExperimentResults(props: {
+  readonly list: ExperimentList;
+  readonly shown: readonly ExperimentSummary[];
+  readonly who: ScopeFilter;
+  readonly mine: boolean;
+  readonly onClear: () => void;
+}) {
+  const { list, shown, who, mine } = props;
+  return (
+    <>
+      {list.error && <Failure error={list.error} retry={list.reload} />}
+      {!list.data && !list.error && <Loading />}
+      {list.data && shown.length === 0 && who !== "all" && list.data.length > 0 && (
+        <FilterEmpty filter={who} onClear={() => props.onClear()} />
+      )}
+      {list.data?.length === 0 && (
+        <Empty
+          title={mine ? "아직 내 실험이 없어요" : "조건에 맞는 실험이 없어요"}
+          action={<NewExperiment>실험 만들기</NewExperiment>}
+        >
+          세계와 시나리오를 고르고, 하네스와 에이전트를 정하면 바로 돌아요.
+        </Empty>
+      )}
+      {shown.length > 0 && <ExperimentTable items={shown} />}
+      {mine && <NeedName />}
+    </>
+  );
+}
+
 export function ExperimentsPage() {
-  const { api, page, navigate, me, askName } = useApp();
-  const mine = page.name === "experiments" && page.mine === true;
+  const { api, page, navigate, me } = useApp();
+  const [who, setWho] = useState<ScopeFilter>(
+    page.name === "experiments" && page.mine === true ? "mine" : "all",
+  );
+  const mine = who === "mine";
   const [status, setStatus] = useState<StatusFilter>("");
   const [meta, setMeta] = useState("");
   const list = useAsync(
@@ -209,7 +271,15 @@ export function ExperimentsPage() {
       }),
     [mine, me, status, meta],
   );
-  useMossRead("experiments", () => experimentsState(list.data ?? [], mine));
+  const shown = (list.data ?? []).filter((s) => matchesFilter(who, s.experiment, me));
+  useMossRead("experiments", () => experimentsState(shown, mine));
+  const choose = (next: ScopeFilter) => {
+    setWho(next);
+    navigate(
+      { name: "experiments", ...(next === "mine" ? { mine: true } : {}) },
+      { replace: true },
+    );
+  };
   return (
     <div className="page">
       <PageHead
@@ -217,43 +287,18 @@ export function ExperimentsPage() {
         lede="하네스, 에이전트, 툴 조합을 한 세계와 시나리오에 여러 번 돌린 기록."
         actions={<NewExperiment>새 실험</NewExperiment>}
       />
-      <div className="row" style={{ marginBottom: 16, gap: 16 }}>
-        <Segmented
-          label="누구의 실험"
-          value={mine ? "mine" : "all"}
-          options={[
-            { value: "all", label: "모두의 실험" },
-            { value: "mine", label: "내 실험" },
-          ]}
-          onChange={(v) =>
-            navigate(
-              { name: "experiments", ...(v === "mine" ? { mine: true } : {}) },
-              { replace: true },
-            )
-          }
-        />
+      <div className="scope-filter-row">
+        <ScopeFilterBar value={who} onChange={choose} />
         <Segmented label="상태" value={status} options={STATUS_FILTERS} onChange={setStatus} />
         <MetaFilter value={meta} onChange={setMeta} />
       </div>
-      {list.error && <Failure error={list.error} retry={list.reload} />}
-      {!list.data && !list.error && <Loading />}
-      {list.data?.length === 0 && (
-        <Empty
-          title={mine ? "아직 내 실험이 없어요" : "조건에 맞는 실험이 없어요"}
-          action={<NewExperiment>실험 만들기</NewExperiment>}
-        >
-          세계와 시나리오를 고르고, 하네스와 에이전트를 정하면 바로 돌아요.
-        </Empty>
-      )}
-      {list.data && list.data.length > 0 && <ExperimentTable items={list.data} />}
-      {mine && !me && (
-        <p className="small muted" style={{ marginTop: 12 }}>
-          이름을 정해야 내 실험을 고를 수 있어요.{" "}
-          <Button data-moss-skip="세부 조절" size="small" kind="quiet" onClick={askName}>
-            이름 정하기
-          </Button>
-        </p>
-      )}
+      <ExperimentResults
+        list={list}
+        shown={shown}
+        who={who}
+        mine={mine}
+        onClear={() => choose("all")}
+      />
     </div>
   );
 }
