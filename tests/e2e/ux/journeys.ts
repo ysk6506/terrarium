@@ -8,6 +8,7 @@ import { Catalog } from "@terrarium/core/catalog";
 import { DEFAULT_CAMPUS, generateCampus, SITE_CAMPUS_MIX } from "@terrarium/core/sources/worldgen";
 import type { Browser, Page } from "playwright";
 import { Driver, nav, visitor } from "./driver";
+import { dump, watch } from "./evidence";
 import { type Context, expectPath, home, SECOND } from "./journey-kit";
 import { ownCardOnly } from "./journey-own-card";
 import { repeatsInTheForm, shakingInTheResult } from "./journey-repeats";
@@ -606,9 +607,11 @@ export async function perform(
   browser: Browser,
   base: string,
   work: (c: Context) => Promise<void>,
+  id = "journey",
 ): Promise<Outcome> {
   const v = await visitor(browser);
   const d = new Driver(v.page);
+  const watcher = watch(v.page);
   const screens = new Set<string>();
   v.page.on(
     "framenavigated",
@@ -624,6 +627,13 @@ export async function perform(
     };
   } catch (err) {
     const note = err instanceof Error ? err.message.split("\n")[0] : String(err);
+    // Evidence for this failure only (ADR-0195): printed to the job log, the screenshot goes to a folder CI uploads.
+    const lines = await dump(v.page, watcher, {
+      id,
+      note: note ?? "",
+      dir: process.env.TERRARIUM_UX_EVIDENCE_DIR,
+    });
+    for (const line of lines) process.stdout.write(`${line}\n`);
     return {
       ok: false,
       actions: d.actions,

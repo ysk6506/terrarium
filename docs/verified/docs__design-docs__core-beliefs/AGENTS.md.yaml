@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "f85435f179a2e14d"
+hash: "ad69b0fbbb0b5d9e"
 date: "2026-11-12"
-note: "main을 합침: main에서 ADR-0192·0196·0197로 이미 대조한 문서다. 대상이 바뀐 옛 기록을 지금의 대상으로 다시 씀"
+note: "따라가는 AGENTS.md의 바뀐 곳은 CI 문단과 웹 화면 항목뿐(ADR-0195). 믿음 목록은 CI 구성을 말하지 않아 어긋나지 않는다"
 text_changed: false
 doc_hash: "670d77e72298eecc"
