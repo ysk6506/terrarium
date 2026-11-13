@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/beta-feedback.md"
 target: "docs/exec-plans/active/beta-rounds.md"
-hash: "b232f57702db53d6"
+hash: "a38143cd42b1db09"
 date: "2026-11-13"
-note: "ADR-0202: 차수 계획의 바뀐 줄(걷어내기 끝남)은 이 문서와 상관없다"
+note: "ADR-0204로 제품 설계와 차수 계획에 진짜 툴 붙이기가 더해졌다. 이 문서가 말하는 것(층마다의 표준, 피드백 기록, 만든 단계)은 그대로 맞다"
 text_changed: false
 doc_hash: "f701f42ae283462c"

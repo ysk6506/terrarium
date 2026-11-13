@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/beta-rounds.md"
-hash: "b232f57702db53d6"
+hash: "a38143cd42b1db09"
 date: "2026-11-13"
-note: "ADR-0202: 차수 계획의 바뀐 줄은 README에 없고, README는 현실 연결을 이미 하지 않는 것으로 적고 있어 그대로 맞다"
-text_changed: false
-doc_hash: "d2e57522ca3c5c44"
+note: "하지 않는 것과 원칙 6의 글을 ADR-0204에 맞췄다"
+text_changed: true
+doc_hash: "051450a408374b4e"

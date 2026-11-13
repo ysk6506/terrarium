@@ -18,6 +18,9 @@ touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
 decision_hash: fa052aff2eb06a74
+amended_by:
+  - adr: "0204"
+    what: 조치 관문의 자리는 내장 툴에서는 호출 자리, 밖의 툴에서는 뒷문이다
 ---
 # ADR-0199 조치 관문, 권한 수준 둘, 규칙 넷 — 기본은 바이트까지 그대로이고, 규칙은 사건 기록에서만 세며 점수와 따로 붙인다
 

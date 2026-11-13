@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/beta-rounds.md"
 target: "docs/product-specs/requirements.md"
-hash: "ffc46a6d9a5093a6"
+hash: "b0b4606bd5fa098f"
 date: "2026-11-13"
-note: "ADR-0202: 현실 연결 코드 걷어내기를 끝난 것으로 고쳤다"
+note: "ADR-0204: 진짜 툴은 실험용 서버로, 앞문과 뒷문, 문서 다섯. 이 문서에 반영했다"
 text_changed: true
-doc_hash: "b232f57702db53d6"
+doc_hash: "a38143cd42b1db09"
