@@ -1,0 +1,7 @@
+doc: "docs/exec-plans/active/paused.md"
+target: "docs/exec-plans/active/beta-rounds.md"
+hash: "a38143cd42b1db09"
+date: "2026-11-13"
+note: "중단 시점의 열린 PR, 끝나지 않은 작업, 다음 차례를 차수 계획과 대어 적었다"
+text_changed: true
+doc_hash: "b59d70fb26635d97"

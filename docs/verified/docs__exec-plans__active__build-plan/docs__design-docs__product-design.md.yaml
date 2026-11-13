@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/build-plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "8b41b0fee93e3583"
+hash: "db7b6b18eb17340e"
 date: "2026-11-13"
-note: "ADR-0202: 단계 3과 5의 realimport, FalkorDB와 요구사항 번호를 고쳤다"
-text_changed: true
+note: "ADR-0204로 제품 설계와 차수 계획에 진짜 툴 붙이기가 더해졌다. 이 문서가 말하는 것(층마다의 표준, 피드백 기록, 만든 단계)은 그대로 맞다"
+text_changed: false
 doc_hash: "68fd0abec532c869"

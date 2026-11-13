@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "ffc46a6d9a5093a6"
+hash: "b0b4606bd5fa098f"
 date: "2026-11-13"
-note: "ADR-0202: 요구사항 표 변경(REQ-010, 011 없앰)을 대조했고, 걷어낸다는 순서 줄을 뺐다"
+note: "ADR-0204: 진짜 툴은 실험용 서버로, 앞문과 뒷문, 문서 다섯. 이 문서에 반영했다"
 text_changed: true
-doc_hash: "8b41b0fee93e3583"
+doc_hash: "db7b6b18eb17340e"
