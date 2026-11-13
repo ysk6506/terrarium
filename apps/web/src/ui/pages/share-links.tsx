@@ -13,6 +13,7 @@ import { dateText } from "../../logic";
 import { AstryxScope } from "../astryx";
 import { useAction, useApp, useAsync } from "../context";
 import { Failure, Loading } from "../kit";
+import { useOwnerName } from "../scope";
 
 /** How long a new link opens, in days; the server's own default is the first (30). */
 const LIFETIMES = [
@@ -45,6 +46,7 @@ function LinkRow({ link, onGone }: { readonly link: ShareListItem; readonly onGo
   const { api } = useApp();
   const { busy, run } = useAction();
   const copy = useCopy();
+  const ownerOf = useOwnerName();
   const until = link.expiresAt ? `${dateText(link.expiresAt)}까지` : "기간 없음";
   const take = async () => {
     const done = await run(
@@ -60,7 +62,7 @@ function LinkRow({ link, onGone }: { readonly link: ShareListItem; readonly onGo
           {dateText(link.createdAt)}에 만든 링크 · {until}
         </Text>
         <Text size="sm" color="secondary">
-          {link.createdBy}
+          {ownerOf(link.createdBy)}
         </Text>
       </span>
       <span className="share-row-actions">

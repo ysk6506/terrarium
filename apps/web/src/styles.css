@@ -6850,3 +6850,146 @@ a.res-cell:hover {
     white-space: nowrap;
   }
 }
+
+/* The audit screen and the share dialog (Astryx trial, TD-0007) sit in the app's own spacing. */
+.audit {
+  display: grid;
+  gap: 16px;
+}
+
+.audit-filters {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+
+.audit-selects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+}
+
+.audit-selects > * {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.audit-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.audit-what,
+.audit-outcome {
+  display: grid;
+  gap: 2px;
+  justify-items: start;
+  overflow-wrap: anywhere;
+}
+
+.audit-what > *,
+.audit-outcome > * {
+  display: block;
+}
+
+.share-body {
+  display: grid;
+  gap: 16px;
+}
+
+.share-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.share-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.share-row-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.share-row-actions {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .audit-selects > * {
+    flex-basis: 100%;
+  }
+}
+
+/* The scenarios table on a phone: the name on its own line, then a few short facts, nothing past the right edge. */
+@media (max-width: 640px) {
+  .scenarios-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .scenarios-table,
+  .scenarios-table tbody {
+    display: block;
+  }
+
+  .scenarios-table tr {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--fill);
+  }
+
+  .scenarios-table tr:last-child {
+    border-bottom: 0;
+  }
+
+  .scenarios-table td {
+    padding: 0;
+    border-bottom: 0;
+    color: var(--ink-2);
+    font-size: 14px;
+  }
+
+  .scenarios-table .sc-name {
+    flex: 1 0 100%;
+    margin-bottom: 4px;
+    color: var(--ink);
+    font-size: 16px;
+  }
+
+  .scenarios-table .sc-blocks::before {
+    content: "블록 ";
+  }
+
+  .scenarios-table .sc-checks::before {
+    content: "채점 항목 ";
+  }
+
+  .scenarios-table .sc-owner::before {
+    content: "만든 사람 ";
+  }
+
+  .scenarios-table td:last-child {
+    margin-left: auto;
+  }
+}

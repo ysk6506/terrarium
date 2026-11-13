@@ -226,7 +226,7 @@ function ScenarioTable({
   const worldName = (id: string) => worlds.find((w) => w.id === id)?.name ?? id;
   return (
     <div className="table-wrap">
-      <table className="table">
+      <table className="table scenarios-table">
         <thead>
           <tr>
             <th>이름</th>
@@ -245,15 +245,15 @@ function ScenarioTable({
             .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
             .map((s) => (
               <tr key={s.id}>
-                <td>
+                <td className="sc-name">
                   <Go to={{ name: "scenario", id: s.id }}>{s.name}</Go>
                   <ScopeTag item={s} />
                 </td>
-                <td>{worldName(s.worldId)}</td>
-                <td className="num">{s.doc.nodes.length}</td>
-                <td className="num">{s.doc.expectations.length}</td>
-                <td>{ownerOf(s.owner)}</td>
-                <td>{relativeTime(s.updatedAt, now)}</td>
+                <td className="sc-world">{worldName(s.worldId)}</td>
+                <td className="num sc-blocks">{s.doc.nodes.length}</td>
+                <td className="num sc-checks">{s.doc.expectations.length}</td>
+                <td className="sc-owner">{ownerOf(s.owner)}</td>
+                <td className="sc-when">{relativeTime(s.updatedAt, now)}</td>
                 <td>
                   <Go to={{ name: "newExperiment", scenarioId: s.id }}>
                     실험하기<span className="sr-only"> ({s.name})</span>

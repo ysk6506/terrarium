@@ -277,6 +277,8 @@ async function share(c: Context): Promise<void> {
   const { page } = c.v;
   await openFinishedExperiment(c);
   await c.d.click(page.getByRole("button", { name: "공유" }));
+  // the dialog asks how long the link stays open first (ADR-0198); the default is what the old one button did
+  await c.d.click(page.getByRole("dialog").getByRole("button", { name: "링크 만들어 복사" }));
   await page
     .getByText("링크를 복사했어요")
     .first()
