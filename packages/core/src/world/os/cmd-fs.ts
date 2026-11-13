@@ -322,7 +322,7 @@ export function whichCmd(c: Cmd, known: (name: string) => boolean): R {
 }
 
 export function env(c: Cmd): R {
-  const rows = [
+  const rows = c.env ?? [
     "SHELL=/bin/bash",
     `HOSTNAME=${c.h.name}`,
     "USER=ops",

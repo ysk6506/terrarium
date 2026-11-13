@@ -89,14 +89,14 @@ function assignments(args: readonly string[], operands: readonly string[]): [str
     .map((m) => [m[1] as string, escapes(m[2] as string)]);
 }
 
-const AWK_SUPPORTED =
+export const AWK_SUPPORTED =
   "-F 구분자, -v 변수=값, -f 프로그램파일; 패턴 { 동작 } 규칙과 BEGIN/END, 변수·배열·정규식, if/while/do/for/delete/next/exit, print/printf, 내장 함수 length substr index split sub gsub match sprintf tolower toupper int sqrt exp log sin cos atan2 rand srand";
-const AWK_EXAMPLES: Readonly<Record<string, string>> = {
+export const AWK_EXAMPLES: Readonly<Record<string, string>> = {
   "redirect-output": "awk '{print $1}' /etc/hosts > /tmp/awk-out.txt",
   system: "echo hi | awk '{print toupper($0)}'",
   function: "awk 'BEGIN{x=3; print x*x}'",
 };
-const AWK_EXAMPLE = "awk 'NR==2{print $1}' /etc/hosts";
+export const AWK_EXAMPLE = "awk 'NR==2{print $1}' /etc/hosts";
 
 /** What awk says about a program it cannot run: its own words for a mistake, the gap's lines for a feature it lacks. */
 function awkRefusal(e: AwkSyntax): R {

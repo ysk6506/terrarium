@@ -8,7 +8,14 @@
  * `outside` so the run's result can say where the fake is thin (ADR-0117 decision 6).
  */
 import { InvalidValueError } from "@terrarium/core/kernel";
-import { type EmulationGap, hostOsOf, runLine, type WorldPort } from "@terrarium/core/world";
+import {
+  type EmulationGap,
+  hostOsOf,
+  runLine,
+  runLineWith,
+  type ShellPlug,
+  type WorldPort,
+} from "@terrarium/core/world";
 import "./shell-layers";
 
 export interface ShellResult {
@@ -42,8 +49,13 @@ function reachable(world: WorldPort, id: string): boolean {
 
 const trimEnd = (s: string): string => s.replace(/\n$/, "");
 
-/** Run one command line on a server or VM. */
-export function runShell(world: WorldPort, id: string, line: string): ShellResult {
+/** Run one command line on a server or VM; with a `plug` a shell engine runs it, else the old shell (ADR-0200). */
+export function runShell(
+  world: WorldPort,
+  id: string,
+  line: string,
+  plug?: ShellPlug,
+): ShellResult {
   const kind = world.index.entity(id).kind;
   if (kind !== "server" && kind !== "vm")
     throw new InvalidValueError(`'${id}' is a ${kind}; run_command needs a server or VM`);
@@ -51,8 +63,11 @@ export function runShell(world: WorldPort, id: string, line: string): ShellResul
     const stderr = `ssh: connect to host ${world.index.entity(id).name} port 22: Connection timed out`;
     return { output: stderr, stdout: "", stderr, exitCode: 255, outside: [], gaps: [] };
   }
-  const r = runLine(world, id, line);
-  const output = clip(trimEnd(r.stdout + r.stderr));
+  const r = plug ? runLineWith(world, id, line, plug) : runLine(world, id, line);
+  // the new engine's `terrarium:` lines come last and must survive the clipping of a long output
+  const output = plug
+    ? [clip(trimEnd(r.stdout)), trimEnd(r.stderr)].filter((t) => t !== "").join("\n")
+    : clip(trimEnd(r.stdout + r.stderr));
   return {
     output,
     stdout: trimEnd(r.stdout),

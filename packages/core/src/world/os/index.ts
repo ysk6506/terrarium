@@ -5,6 +5,20 @@ export { instanceOn } from "./cmd-db";
 export { ipOf } from "./host";
 export { realCommandExamples, realCommandNames } from "./real-commands";
 export { exampleOf as realToolExample, realTools } from "./real-options";
+export type {
+  ShellClock,
+  ShellEngine,
+  ShellEngineResult,
+  ShellFileStat,
+  ShellHostPort,
+  ShellJob,
+  ShellLimitKind,
+  ShellLimits,
+  ShellPlug,
+  ShellUse,
+} from "./shell-engine";
+export { limitLine, SHELL_LIMITS } from "./shell-engine";
 export { registerShellCommand, runLine, type ShellOutcome } from "./shell-exec";
 export { changesWorld } from "./shell-parse";
+export { runLineWith } from "./shell-run";
 export type { Cmd, Handler, R } from "./types";

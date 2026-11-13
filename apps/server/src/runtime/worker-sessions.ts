@@ -5,6 +5,7 @@
  */
 import { TerrariumError } from "@terrarium/core/kernel";
 import { Session, WarmStartCache } from "@terrarium/core/session";
+import type { ShellEngine } from "@terrarium/core/world";
 import { LocalSession } from "./hosts";
 import {
   type FromWorker,
@@ -26,7 +27,10 @@ export class WorkerSessions {
   /** Checked and indexed worlds of this thread, shared by its sessions (ADR-0056). */
   readonly worlds = new WorldCache();
 
-  constructor(private readonly send: (message: FromWorker) => void) {}
+  constructor(
+    private readonly send: (message: FromWorker) => void,
+    private readonly options: { readonly shellEngine?: ShellEngine } = {},
+  ) {}
 
   get size(): number {
     return this.sessions.size;
@@ -53,7 +57,13 @@ export class WorkerSessions {
         return;
       }
       const local = new LocalSession(
-        Session.create({ ...config, blueprint: prepared.blueprint, warm: this.warm, prepared }),
+        Session.create({
+          ...config,
+          blueprint: prepared.blueprint,
+          warm: this.warm,
+          prepared,
+          ...(this.options.shellEngine ? { shellEngine: this.options.shellEngine } : {}),
+        }),
         (reason) => this.send({ kind: "ended", id, reason }),
         (events, journal) => this.send({ kind: "events", id, events, journal }),
         resume,

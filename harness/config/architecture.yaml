@@ -27,7 +27,8 @@ units:
   core.analysis:            {path: packages/core/src/analysis, may_import: [core.kernel, core.world, core.tools, core.scenario, core.oracle, core.session, core.experiments]}
   core.contract:            {path: packages/core/src/contract, may_import: [core.kernel, core.spatial, core.catalog, core.world, core.physics.slots, core.profiles, core.tools, core.scenario, core.oracle, core.session, core.sources, core.sources.worldgen, core.sources.realimport, core.experiments, core.analysis, core.llm]}
   server.adapters:          {path: apps/server/src/adapters, may_import: ["core.*"]}
-  server.runtime:           {path: apps/server/src/runtime, may_import: ["core.*", server.adapters]}
+  server.shell:             {path: apps/server/src/shell, may_import: ["core.*"]}
+  server.runtime:           {path: apps/server/src/runtime, may_import: ["core.*", server.adapters, server.shell]}
   server.cluster:           {path: apps/server/src/cluster, may_import: ["core.*", server.runtime]}
   server.mcp:               {path: apps/server/src/mcp, may_import: ["core.*", server.runtime]}
   server.http:              {path: apps/server/src/http, may_import: ["core.*", server.adapters, server.runtime, server.mcp]}

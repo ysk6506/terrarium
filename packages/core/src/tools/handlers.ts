@@ -13,6 +13,7 @@ import {
   type EntityState,
   type LinkKind,
   reportedInletC,
+  type ShellPlug,
   type WorldPort,
 } from "@terrarium/core/world";
 import { ACCEL_HANDLERS } from "./handlers-accel";
@@ -51,6 +52,8 @@ export interface ToolContext {
   readonly runbooks?: readonly Runbook[];
   /** Handing work over to another team and keeping tickets (REQ-093); the session provides it. */
   readonly ops?: OpsPort;
+  /** The shell engine of `run_command` and how the world's time goes with it; absent: the old shell (ADR-0200). */
+  readonly shell?: ShellPlug;
 }
 
 export type Args = Readonly<Record<string, unknown>>;

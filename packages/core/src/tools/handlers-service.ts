@@ -98,7 +98,7 @@ const restartService: Handler = (ctx, args) => {
 
 const runCommand: Handler = (ctx, args) => {
   const host = str(args, "host");
-  const result = runShell(ctx.world, host, str(args, "cmd"));
+  const result = runShell(ctx.world, host, str(args, "cmd"), ctx.shell);
   return {
     host,
     cmd: args.cmd,

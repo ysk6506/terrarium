@@ -15,6 +15,7 @@ import type {
   LeadTimeSettings,
   PreparedWorld,
   RunEvent,
+  ShellEngine,
 } from "@terrarium/core/world";
 import type { EscalationPolicy, HumanRequest, HumanSummary } from "./human";
 import type { OperationConfig, OperationMetrics } from "./operation";
@@ -75,6 +76,11 @@ export interface SessionConfig {
    * time follows the pace. The host syncs it to the wall clock like a realtime session.
    */
   readonly operation?: OperationConfig;
+  /**
+   * The shell engine `run_command` uses instead of the old shell (ADR-0196, ADR-0200). The side that opens the session
+   * plugs it in; it lives outside the core. Not part of a config that travels to a worker thread.
+   */
+  readonly shellEngine?: ShellEngine;
 }
 
 /** Whether the agent gets the team's runbook (ADR-0087 item 6): not at all, in its task, or by searching for it. */

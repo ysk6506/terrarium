@@ -66,7 +66,8 @@ interface Placement {
 function placementOf(config: Config, token: string | undefined): Placement {
   const c = config.cluster;
   const threads = threadsOf(config, c.role);
-  const local = threads > 0 ? new WorkerHost({ size: threads }) : undefined;
+  const local =
+    threads > 0 ? new WorkerHost({ size: threads, shellEngine: config.shell.engine }) : undefined;
   const localSlots = threads * c.sessionsPerThread;
   const hooks = { onJoin: (): void => undefined };
   const placement: Placement = {
@@ -190,7 +191,10 @@ async function runControl(
 /** A worker node: runs sessions for a control plane and nothing else. Leaving drains it first. */
 async function runWorker(config: Config, token: string): Promise<Running> {
   const c = config.cluster;
-  const host = new WorkerHost({ size: threadsOf(config, "worker") });
+  const host = new WorkerHost({
+    size: threadsOf(config, "worker"),
+    shellEngine: config.shell.engine,
+  });
   const slots = threadsOf(config, "worker") * c.sessionsPerThread;
   const id = c.nodeId ?? `${hostname()}-${randomToken(4)}`;
   const advertised = c.advertiseUrl ?? `http://${hostname()}:${config.port}`;
